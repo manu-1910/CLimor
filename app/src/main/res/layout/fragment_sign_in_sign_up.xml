@@ -1,140 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/brandSecondary400">
 
-    <ImageView
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:layout_above="@+id/llytSignupSignInButtons"
-            android:src="@mipmap/ic_launcher_round"
+    <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:contentDescription="@string/app_name"/>
+            android:layout_height="wrap_content">
 
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-        <ImageView
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium"
-                android:id="@+id/ivSplashLogo"
-                android:layout_width="180dp"
-                android:layout_height="32dp"
-                android:layout_gravity="center_horizontal"
-                android:contentDescription="@string/app_name"
-                android:scaleType="fitXY"
-                android:layout_marginTop="@dimen/marginHuge"
-                app:srcCompat="@mipmap/ic_launcher_round"/>
-
-        <TextView
-                android:id="@+id/tvSignTitle"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium"
-                android:textAlignment="center"
-                android:textStyle="bold"
-                android:textColor="@color/colorAccent"
-                android:textSize="@dimen/textSizeLarge"
-                android:layout_marginTop="@dimen/marginLarge"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/app_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-        <TextView
-                android:id="@+id/tvSignSubTitle"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium"
-                android:textAlignment="center"
-                android:textColor="@color/colorAccent"
-                android:textSize="@dimen/textSizeNormal"
-                android:layout_marginTop="@dimen/marginSmall"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/app_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-            android:id="@+id/llytSignupSignInButtons"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingBottom="@dimen/marginMedium">
-
-        <androidx.appcompat.widget.AppCompatButton
-                android:visibility="gone"
-                android:id="@+id/btnSignInWithGoogle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@android:style/Widget.Material.Button.Borderless.Colored"
-                android:text="@string/app_name"
-                android:textColor="@color/text_title"
-                android:textSize="@dimen/textSizeNormal"
-                android:drawableStart="@drawable/googleg_standard_color_18"
-                android:paddingStart="@dimen/marginMedium"
-                android:paddingEnd="@dimen/marginMedium"
-                android:textAllCaps="false"
-                android:elevation="@dimen/buttonElevation"
-                android:background="@color/white"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginTop="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium"/>
-
-        <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnSignInWithEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@android:style/Widget.Material.Button.Borderless.Colored"
-                android:text="@string/app_name"
-                android:textColor="@color/white"
-                android:textSize="@dimen/textSizeNormal"
-                android:textAllCaps="false"
-                android:elevation="@dimen/buttonElevation"
-                android:background="@mipmap/ic_launcher_round"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginTop="@dimen/marginMedium"
-                android:layout_marginBottom="@dimen/marginVerySmall"
-                android:layout_marginEnd="@dimen/marginMedium"/>
-
-        <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/tvContinueWithoutEmail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                style="@android:style/Widget.Material.Button.Borderless.Colored"
-                android:textColor="@color/colorPrimary"
-                android:textAllCaps="false"
-                android:textStyle="normal"
-                android:layout_marginLeft="@dimen/marginMedium"
-                android:layout_marginRight="@dimen/marginMedium"
-                android:layout_marginTop="@dimen/marginMedium"
-                android:layout_marginBottom="@dimen/marginLarge"
-                android:textSize="@dimen/textSizeNormal"/>
         <LinearLayout
-                android:id="@+id/llytHorizontalDivisor"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/white"
-                android:layout_marginBottom="@dimen/marginMedium"
-                android:orientation="vertical"/>
-
-        <TextView
-                android:id="@+id/tvDontHaveAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textAlignment="center"
-                android:layout_marginBottom="@dimen/marginMedium"
-                android:textSize="@dimen/textSizeNormal"/>
+                android:gravity="center"
+                android:orientation="vertical">
 
-    </LinearLayout>
-</RelativeLayout>
+            <ImageView
+                    android:id="@+id/ivSplashLogo"
+                    android:layout_width="@dimen/imageSizeSmall"
+                    android:layout_height="@dimen/imageSizeSmall"
+                    android:layout_marginEnd="@dimen/marginVeryHuge"
+                    android:layout_marginStart="@dimen/marginVeryHuge"
+                    android:contentDescription="@string/app_name"
+                    app:srcCompat="@drawable/logotype" />
+
+            <io.square1.limor.components.EditTextComponent
+                    android:id="@+id/edtEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:fontColor="@color/light"
+                    app:hasShadow="false"
+                    app:hintText="@string/email"
+                    app:inputType="2"
+                    app:isPassword="false"
+                    app:topTitleLeft="@string/email" />
+
+            <io.square1.limor.components.EditTextComponent
+                    android:id="@+id/edtPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/marginMedium"
+                    app:fontColor="@color/light"
+                    app:hasShadow="false"
+                    app:hintText="@string/password"
+                    app:isPassword="true"
+                    app:topTitleLeft="@string/password" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnSignIn"
+                    style="@android:style/Widget.Material.Button.Borderless.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/marginMedium"
+                    android:background="@drawable/bg_round_yellow_ripple"
+                    android:text="@string/sig_in"
+                    android:textAllCaps="false"
+                    android:textColor="@color/brandSecondary500"
+                    android:textSize="@dimen/textSizeNormal" />
+
+            <Button
+                    android:id="@+id/btnForgotPass"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/forgot_password"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/textSizeSmall" />
+
+            <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="@dimen/marginSmall"
+                    android:layout_marginEnd="@dimen/marginSmall"
+                    android:background="@color/brandSecondary100"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnSignUp"
+                    style="@android:style/Widget.Material.Button.Borderless.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/marginMedium"
+                    android:background="@drawable/bg_round_grey_ripple"
+                    android:text="@string/sign_up_with_email"
+                    android:textAllCaps="false"
+                    android:textColor="@color/light"
+                    android:textSize="@dimen/textSizeNormal" />
+
+        </LinearLayout>
+
+        <ProgressBar
+                android:id="@+id/pbSignIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:theme="@style/ProgressBarTheme"
+                android:visibility="gone" />
+    </RelativeLayout>
+</ScrollView>

@@ -5,12 +5,21 @@ import android.graphics.Color
 import android.text.Editable
 import android.text.InputType
 import android.text.method.PasswordTransformationMethod
+import android.text.method.ScrollingMovementMethod
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import io.square1.limor.R
 import kotlinx.android.synthetic.main.component_edit_text.view.*
+import org.jetbrains.anko.dimen
+import org.jetbrains.anko.singleLine
 import org.jetbrains.anko.textColor
+import org.jetbrains.anko.topPadding
 
 
 /**
@@ -22,7 +31,7 @@ import org.jetbrains.anko.textColor
  *
  * Example of usage:
  *
- *     <io.square1.limor.components.EditTextComponent
+ *     <io.square1.clickoffices.components.EditTextComponent
  *           android:id="@+id/customComponent1"
  *           android:layout_width="match_parent"
  *           android:layout_height="wrap_content"
@@ -32,6 +41,7 @@ import org.jetbrains.anko.textColor
  *           app:topTitleLeft="Password"
  *           app:topTextRight="Forgot your password?"
  *           app:textSize="17"
+ *           app:hasArrow="false"
  *           android:layout_marginTop="100dp"/>
  *
  * @param hasShadow boolean indicates that the edit text must have shadow or not (plain).
@@ -43,6 +53,7 @@ import org.jetbrains.anko.textColor
  * @param lines Set the number of lines that will show the edittext
  * @param hintText Set the size of the text of the edit text
  * @param inputType Set the type of keyboard that will be displayed depending on if the edittext is an email, a number, a normal text or a password.
+ * @param hasArrow If true paint an arrow drawable at the right of the edittext
  *
  */
 class EditTextComponent(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
@@ -68,6 +79,7 @@ class EditTextComponent(context: Context, attrs: AttributeSet) : LinearLayout(co
                 val lines = getInteger(R.styleable.edit_text_component_attributes_lines, 1)
                 val hintText = getString(R.styleable.edit_text_component_attributes_hintText)
                 val inputType = getInteger(R.styleable.edit_text_component_attributes_inputType, 0)
+                val hasArrow = getBoolean(R.styleable.edit_text_component_attributes_hasArrow, false)
 
                 //Top Text align at left (title of edittext)
                 if (topTitleLeft.isNullOrEmpty()) {
@@ -104,9 +116,21 @@ class EditTextComponent(context: Context, attrs: AttributeSet) : LinearLayout(co
                 when (inputType){
                     1 -> myEdit.inputType = InputType.TYPE_CLASS_NUMBER
                     2 -> myEdit.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                    3 -> myEdit.inputType = InputType.TYPE_NUMBER_FLAG_DECIMAL
                 }
 
                 //Number of lines (eight)
+                if(lines > 1){
+                    myEdit.singleLine = false
+                    myEdit.imeOptions = EditorInfo.IME_FLAG_NO_ENTER_ACTION
+                    //myEdit.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                    myEdit.gravity = Gravity.TOP
+                    myEdit.topPadding = dimen(R.dimen.marginSmall)
+                    //myEdit.minLines = lines -1
+                    myEdit.isVerticalScrollBarEnabled = true
+                    myEdit.movementMethod = ScrollingMovementMethod.getInstance()
+                    myEdit.scrollBarStyle = View.SCROLLBARS_INSIDE_INSET
+                }
                 myEdit.setLines(lines)
 
                 //Hint text
@@ -126,6 +150,15 @@ class EditTextComponent(context: Context, attrs: AttributeSet) : LinearLayout(co
 
                 //Manage editable
                 myEdit.isEnabled = isEditable
+
+                //has arrow at the right?
+                if(hasArrow){
+                    val drawable = ResourcesCompat.getDrawable(resources, R.drawable.ic_rigth_arrow, null)
+                    drawable!!.setBounds(0, 0, 50, 50)
+
+                    DrawableCompat.setTint(drawable, ContextCompat.getColor(context, R.color.brandSecondary100))
+                    myEdit.setCompoundDrawables(null, null, drawable, null)
+                }
 
 
             } catch (e: Throwable) {
