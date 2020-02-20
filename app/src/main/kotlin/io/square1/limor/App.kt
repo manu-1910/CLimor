@@ -46,10 +46,7 @@ class App : Application(), HasActivityInjector, HasServiceInjector {
         realm = initRealm()
 
         // Obtain the FirebaseAnalytics instance.
-        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
-
-        //Crashlytics
-        Fabric.with(this, Crashlytics())
+        //firebaseAnalytics = FirebaseAnalytics.getInstance(this)
     }
 
     private fun initRealm(): Realm? {
