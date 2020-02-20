@@ -3,8 +3,8 @@
     <color name="colorPrimary">#424242</color>
     <color name="colorPrimaryDark">#424242</color>
     <color name="colorAccent">#f7bb3d</color>
-    <color name="colorAccentDark">#f7bb3d</color>
-    <color name="colorAccentRipple">#f7bb3d</color>
+    <color name="colorAccentDark">#BE8F2E</color>
+    <color name="colorAccentRipple">#40F7BB3D</color>
 
     <color name="black">#000000</color>
 

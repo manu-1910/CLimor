@@ -10,6 +10,7 @@
     <dimen name="marginAlmostLarge">24dp</dimen>
     <dimen name="marginVeryLarge">48dp</dimen>
     <dimen name="marginHuge">64dp</dimen>
+    <dimen name="marginVeryHuge">82dp</dimen>
 
     <!-- Text dimens -->
     <dimen name="textSizeVeryTiny">10sp</dimen>

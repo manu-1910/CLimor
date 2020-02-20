@@ -11,5 +11,6 @@
         <attr name="lines" format="integer" />
         <attr name="hintText" format="string"/>
         <attr name="inputType" format="integer"/>
+        <attr name="hasArrow" format="boolean" />
     </declare-styleable>
 </resources>
