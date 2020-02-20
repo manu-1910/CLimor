@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="edit_text_component_attributes">
+        <attr name="hasShadow" format="boolean" />
+        <attr name="isPassword" format="boolean" />
+        <attr name="fontColor" format="string" />
+        <attr name="topTitleLeft" format="string" />
+        <attr name="topTextRight" format="string" />
+        <attr name="etTextSize" format="integer" />
+        <attr name="isEditable" format="boolean" />
+        <attr name="lines" format="integer" />
+        <attr name="hintText" format="string"/>
+        <attr name="inputType" format="integer"/>
+    </declare-styleable>
+</resources>

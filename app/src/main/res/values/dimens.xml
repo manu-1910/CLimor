@@ -1,0 +1,41 @@
+<resources>
+
+    <!-- Margins -->
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="marginMedium">16dp</dimen>
+    <dimen name="marginSmall">8dp</dimen>
+    <dimen name="marginVerySmall">4dp</dimen>
+    <dimen name="marginTiny">2dp</dimen>
+    <dimen name="marginLarge">32dp</dimen>
+    <dimen name="marginAlmostLarge">24dp</dimen>
+    <dimen name="marginVeryLarge">48dp</dimen>
+    <dimen name="marginHuge">64dp</dimen>
+
+    <!-- Text dimens -->
+    <dimen name="textSizeVeryTiny">10sp</dimen>
+    <dimen name="textSizeTiny">12sp</dimen>
+    <dimen name="textSizeVerySmall">13sp</dimen>
+    <dimen name="textSizeSmall">15sp</dimen>
+    <dimen name="textSizeNormal">17sp</dimen>
+    <dimen name="textSizeLarge">22sp</dimen>
+    <dimen name="textSizeVeryLarge">28sp</dimen>
+
+    <dimen name="imageSizeMedium">150dp</dimen>
+    <dimen name="imageSizeTiny">100dp</dimen>
+    <dimen name="imageSizeVerySmall">140dp</dimen>
+    <dimen name="imageSizeVeryTiny">60dp</dimen>
+    <dimen name="imageSizeSmall">150dp</dimen>
+    <dimen name="imageSizeNormal">175dp</dimen>
+    <dimen name="imageSizeLarge">200dp</dimen>
+    <dimen name="imageSizeVeryLarge">250dp</dimen>
+    <dimen name="imageSizeHuge">300dp</dimen>
+
+    <dimen name="iconSizeSmall">16dp</dimen>
+    <dimen name="iconSizeVerySmall">10dp</dimen>
+    <dimen name="cornerRadiusNormal">8dp</dimen>
+    <dimen name="marginBetweenCircles">3dp</dimen>
+    <dimen name="cornerRadiusSmall">4dp</dimen>
+    <dimen name="iconSizeTiny">4dp</dimen>
+
+    <dimen name="buttonElevation">4dp</dimen>
+</resources>

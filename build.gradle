@@ -1,0 +1,43 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    apply from: 'buildsystem/dependencies.gradle'
+
+    addRepos(repositories)
+
+    dependencies {
+        classpath deps.android_gradle_plugin
+        classpath deps.google_services.plugin
+        classpath deps.kotlin.plugin
+        classpath deps.kotlin.extensions
+        classpath deps.kotlin.serialization
+        classpath deps.realm
+        classpath deps.fabric
+        classpath 'com.android.tools.build:gradle:3.5.3'
+    }
+    repositories {
+        google()
+    }
+}
+
+allprojects {
+    addRepos(repositories)
+    ext {
+        androidApplicationId = "com.limor.app"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testApplicationId = androidApplicationId + '.test'
+    }
+
+    task runUnitTests(dependsOn: [':data:testDebugUnitTest', ':domain:testDebugUnitTest', ':app:testDebugUnitTest', ':app:generateDebugSources']) {
+        description 'Run all unit tests'
+    }
+
+    task runAcceptanceTests(dependsOn: [':app:connectedAndroidTest']) {
+        description 'Run all acceptance tests.'
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+

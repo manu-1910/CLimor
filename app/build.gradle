@@ -1,0 +1,244 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlinx-serialization'
+apply plugin: 'io.fabric'
+
+android {
+    def globalConfiguration = rootProject.ext
+
+    compileSdkVersion build_versions.target_sdk
+    buildToolsVersion build_versions.build_tools
+
+    lintOptions {
+        abortOnError true
+    }
+
+    defaultConfig {
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
+
+        applicationId globalConfiguration.androidApplicationId
+        versionCode 1
+        versionName "0.0.1"
+
+        testInstrumentationRunner globalConfiguration.testInstrumentationRunner
+        testApplicationId globalConfiguration.testApplicationId
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file("${System.env.HOME}/dev/keystores/limor_dev.jks")
+            storeFile file("keystores/limor_dev.jks")
+            storePassword DEV_PASSWORD
+            keyAlias DEV_KEY_ALIAS
+            keyPassword DEV_KEY_PASSWORD
+        }
+
+        beta {
+            storeFile file("${System.env.HOME}/dev/keystores/limor_beta.jks")
+            storeFile file("keystores/limor_beta.jks")
+            storePassword BETA_PASSWORD
+            keyAlias BETA_KEY_ALIAS
+            keyPassword BETA_KEY_PASSWORD
+        }
+
+        release {
+            storeFile file("${System.env.HOME}/dev/keystores/limor_production.jks")
+            storeFile file("keystores/limor_production.jks")
+            storePassword PRODUCTION_PASSWORD
+            keyAlias PRODUCTION_KEY_ALIAS
+            keyPassword PRODUCTION_KEY_PASSWORD
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+            versionNameSuffix '-dev'
+            applicationIdSuffix '.dev'
+            buildConfigField "String", "API_KEY", "\"api-key\""
+            buildConfigField "String", "BASE_URL", "\"https://staging.api.limor.ie/\""
+        }
+        beta {
+            signingConfig signingConfigs.beta
+            versionNameSuffix '-beta'
+            applicationIdSuffix '.beta'
+            buildConfigField "String", "API_KEY", "\"api-key\""
+            buildConfigField "String", "BASE_URL", "\"https://beta.api.limor.ie/\""
+        }
+        release {
+            minifyEnabled true
+            zipAlignEnabled true
+            shrinkResources true
+            debuggable false
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "API_KEY", "\"api-key\""
+            buildConfigField "String", "BASE_URL", "\"https://api.limor.ie/\""
+        }
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/main.kotlin_module'
+    }
+
+    dataBinding {
+        enabled = true
+    }
+}
+
+kapt {
+    useBuildCache = true
+}
+
+dependencies {
+    // Anko
+    implementation deps.anko.sdk
+    implementation deps.anko.sdk_listeners
+    implementation deps.anko.commons
+    implementation deps.anko.appcompat
+    implementation deps.anko.design
+
+    // Support libraries
+    implementation deps.support.app_compat
+    implementation deps.support.design
+    implementation deps.support.annotations
+    implementation deps.support.recyclerview
+    implementation deps.support.cardview
+    implementation deps.support.core_utils
+    implementation deps.support.constraint_layout
+    implementation deps.support.coordinator
+
+    //Google
+    implementation deps.google_services.maps
+    implementation deps.google_services.map_utils
+    implementation deps.google_services.map_services
+
+    // Architecture components
+    implementation deps.lifecycle.extensions
+    implementation deps.lifecycle.reactive
+    implementation deps.support.supportv4
+    kapt deps.lifecycle.compiler
+
+    // Kotlin
+    implementation deps.kotlin.stdlib
+    implementation deps.kotlin.rx
+    kapt deps.kotlin.databinding
+
+    // Dagger
+    implementation deps.dagger.runtime
+    implementation deps.dagger.android
+    implementation deps.dagger.android_support
+    kapt deps.dagger.android_support_compiler
+    kapt deps.dagger.compiler
+
+    //Firebase
+    implementation deps.firebase.core
+    implementation deps.firebase.messaging
+    implementation deps.firebase.crashlytics
+    implementation deps.firebase.firebase_ads
+
+    //rx
+    implementation deps.kotlin.rx
+    implementation deps.rx_android
+    implementation deps.rxjava2
+    implementation deps.rx_binding
+
+    // Third party
+    implementation deps.gson
+    implementation deps.timber
+    implementation(deps.crashlytics, { transitive = true })
+    implementation(deps.fabric_sdk, { transitive = true })
+    implementation deps.glide
+    kapt deps.glide_annotation
+
+    // Unit testing
+    testImplementation deps.junit
+    testImplementation deps.mock_web_server
+    testImplementation(deps.arch_core.testing, {
+        exclude group: 'androidx.appcompat', module: 'appcompat'
+        exclude group: 'androidx.annotation', module: 'annotations'
+        exclude group: 'androidx.legacy', module: 'legacy-support-core-utils'
+        exclude group: 'androidx.lifecycle', module: 'lifecycle-runtime'
+        exclude group: 'androidx.lifecycle', module: 'lifecycle-common'
+    })
+    testImplementation deps.lifecycle.runtime
+    testImplementation deps.lifecycle.common
+    testImplementation deps.mockito.core
+    testImplementation deps.mockito.inline
+    testImplementation deps.robolectric
+
+    // Acceptance tests
+    androidTestImplementation deps.support.app_compat
+    androidTestImplementation deps.support.recyclerview
+    androidTestImplementation deps.support.cardview
+    androidTestImplementation deps.support.design
+    androidTestImplementation deps.mock_web_server
+    androidTestImplementation(deps.espresso.core, {
+        exclude group: 'androidx.annotation', module: 'annotations'
+        exclude group: 'com.google.code.findbugs', module: 'jsr305'
+    })
+    androidTestImplementation(deps.espresso.intents, {
+        exclude group: 'androidx.annotation', module: 'annotations'
+        exclude group: 'com.google.code.findbugs', module: 'jsr305'
+    })
+    androidTestImplementation(deps.espresso.contrib, {
+        exclude group: 'androidx.annotation', module: 'annotations'
+        exclude group: 'com.google.code.findbugs', module: 'jsr305'
+    })
+    androidTestImplementation(deps.arch_core.testing, {
+        exclude group: 'androidx.lifecycle', module: 'lifecycle-runtime'
+        exclude group: 'androidx.lifecycle', module: 'lifecycle-common'
+    })
+    androidTestImplementation deps.lifecycle.runtime
+    androidTestImplementation deps.lifecycle.common
+    androidTestImplementation deps.mockito.core, { exclude group: 'net.bytebuddy' }
+    androidTestImplementation deps.atsl.runner
+    androidTestImplementation deps.atsl.uiautomator
+
+    api project(':data')
+    api project(':remote')
+    api project(':storage')
+
+    implementation deps.navigation
+    implementation deps.navigation_fragment
+
+    //RangeBar
+    //implementation deps.simple_range_bar
+
+    implementation deps.skeleton
+    implementation deps.shimmerlayout
+
+    //Circle dots indicator
+    implementation deps.circle_dots_indicator
+
+    //Expandable Linear Layout
+    //implementation deps.expansion_panel
+
+    //Google Places
+    //implementation deps.google_places
+
+    //PhotoView visor with zoom
+    //implementation deps.photo_view
+}

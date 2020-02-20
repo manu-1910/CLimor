@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/sign_nav"
+            app:startDestination="@id/signInSignUpFragment">
+
+    <fragment android:id="@+id/signInSignUpFragment"
+              android:name="io.square1.limor.scenes.authentication.SignInSignUpFragment"
+              android:label="SignInSignUpFragment"/>
+</navigation>

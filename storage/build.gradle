@@ -1,0 +1,84 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'realm-android'
+
+android {
+    def globalConfiguration = rootProject.ext
+
+    compileSdkVersion build_versions.target_sdk
+
+    defaultConfig {
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner globalConfiguration.testInstrumentationRunner
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/main.kotlin_module'
+        doNotStrip '*/mips/*.so'
+        doNotStrip '*/mips64/*.so'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        beta {
+            minifyEnabled false
+        }
+        release{
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError true
+    }
+}
+
+dependencies {
+    // Third party
+    implementation deps.rx_android
+    implementation deps.rxjava2
+    kapt deps.realm_fields_names_helper
+    implementation deps.timber
+
+    // Kotlin
+    implementation deps.kotlin.stdlib
+    implementation deps.kotlin.rx
+
+    // Dagger
+    implementation deps.dagger.runtime
+    implementation deps.dagger.android
+    implementation deps.dagger.android_support
+    kapt deps.dagger.android_support_compiler
+    kapt deps.dagger.compiler
+
+    // Unit testing
+    testImplementation deps.junit
+    testImplementation deps.mockito.core
+    testImplementation deps.mockito.inline
+
+    implementation project(":data")
+}

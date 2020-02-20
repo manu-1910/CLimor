@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Limor</string>
+    <string name="some_error">Sorry, there was an error, please try again</string>
+    <string name="exception_message_generic">There was an error</string>
+</resources>
