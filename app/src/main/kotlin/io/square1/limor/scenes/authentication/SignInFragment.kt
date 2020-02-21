@@ -8,14 +8,14 @@ import android.view.ViewGroup
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 
-class SignInSignUpFragment : BaseFragment() {
+class SignInFragment : BaseFragment() {
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_sign_in_sign_up, container, false)
+        return inflater.inflate(R.layout.fragment_sign_in, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

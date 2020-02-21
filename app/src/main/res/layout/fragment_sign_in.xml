@@ -25,7 +25,7 @@
                     app:srcCompat="@drawable/logotype" />
 
             <io.square1.limor.components.EditTextComponent
-                    android:id="@+id/edtEmail"
+                    android:id="@+id/edtSignInEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:fontColor="@color/light"
@@ -36,10 +36,9 @@
                     app:topTitleLeft="@string/email" />
 
             <io.square1.limor.components.EditTextComponent
-                    android:id="@+id/edtPassword"
+                    android:id="@+id/edtSignInPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/marginMedium"
                     app:fontColor="@color/light"
                     app:hasShadow="false"
                     app:hintText="@string/password"
@@ -59,7 +58,7 @@
                     android:textSize="@dimen/textSizeNormal" />
 
             <Button
-                    android:id="@+id/btnForgotPassword"
+                    android:id="@+id/btnSignInForgotPassword"
                     style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
