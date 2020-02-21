@@ -16,9 +16,9 @@
                 android:orientation="vertical">
 
             <ImageView
-                    android:id="@+id/ivSplashLogo"
-                    android:layout_width="@dimen/imageSizeSmall"
-                    android:layout_height="@dimen/imageSizeSmall"
+                    android:layout_width="@dimen/imageSizeVerySmall"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/marginLarge"
                     android:layout_marginEnd="@dimen/marginVeryHuge"
                     android:layout_marginStart="@dimen/marginVeryHuge"
                     android:contentDescription="@string/app_name"
@@ -59,21 +59,34 @@
                     android:textSize="@dimen/textSizeNormal" />
 
             <Button
-                    android:id="@+id/btnForgotPass"
+                    android:id="@+id/btnForgotPassword"
                     style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/forgot_password"
                     android:textAllCaps="false"
                     android:textColor="@color/colorAccent"
-                    android:textSize="@dimen/textSizeSmall" />
+                    android:textSize="@dimen/textSizeNormal" />
 
             <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginStart="@dimen/marginSmall"
-                    android:layout_marginEnd="@dimen/marginSmall"
+                    android:layout_margin="@dimen/marginMedium"
                     android:background="@color/brandSecondary100"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnSignInFacebook"
+                    style="@android:style/Widget.Material.Button.Borderless.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/marginMedium"
+                    android:layout_marginEnd="@dimen/marginMedium"
+                    android:background="@drawable/bg_round_blue_ripple"
+                    android:text="@string/continue_with_facebook"
+                    android:drawableStart="@drawable/ic_navigate_before"
+                    android:textAllCaps="false"
+                    android:textColor="@color/light"
+                    android:textSize="@dimen/textSizeNormal" />
 
             <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnSignUp"

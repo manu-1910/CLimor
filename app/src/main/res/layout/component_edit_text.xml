@@ -45,6 +45,7 @@
                 android:layout_marginTop="@dimen/marginVerySmall"
                 android:layout_marginEnd="@dimen/marginMedium"
                 android:layout_marginBottom="@dimen/marginSmall"
+                app:cardBackgroundColor="@color/brandSecondary400"
                 app:cardCornerRadius="@dimen/cornerRadiusSmall">
 
             <com.google.android.material.textfield.TextInputLayout

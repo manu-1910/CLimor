@@ -4,7 +4,6 @@
     <color name="colorPrimaryDark">#424242</color>
     <color name="colorAccent">#f7bb3d</color>
     <color name="colorAccentDark">#BE8F2E</color>
-    <color name="colorAccentRipple">#40F7BB3D</color>
 
     <color name="black">#000000</color>
 
@@ -39,6 +38,8 @@
     <color name="blue700">#2b6cb0</color>
     <color name="blue800">#2c5282</color>
     <color name="blue900">#2a4365</color>
+
+    <color name="facebookColor">#4267b2</color>
 
     <color name="green100">#f0fff4</color>
     <color name="green200">#c6f6d5</color>
