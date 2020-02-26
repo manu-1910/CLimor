@@ -15,15 +15,6 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-            <ImageView
-                    android:layout_width="@dimen/imageSizeVerySmall"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/marginLarge"
-                    android:layout_marginEnd="@dimen/marginVeryHuge"
-                    android:layout_marginStart="@dimen/marginVeryHuge"
-                    android:contentDescription="@string/app_name"
-                    app:srcCompat="@drawable/logotype" />
-
             <io.square1.limor.components.EditTextComponent
                     android:id="@+id/edtSignInEmail"
                     android:layout_width="match_parent"

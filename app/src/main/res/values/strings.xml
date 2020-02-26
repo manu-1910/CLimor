@@ -6,12 +6,16 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="username">Username</string>
-    <string name="join_limor">Join Limor</string>
+    <string name="join_limor">Join LIMOR</string>
     <string name="sig_in">Sign in</string>
     <string name="continue_with_facebook">Continue with Facebook</string>
     <string name="forgot_password">Forgot Password?</string>
     <string name="sign_up_with_email">Sign up with Email</string>
     <string name="terms">By signing up, you agree to our Terms and Conditions</string>
     <string name="already_account">Already have an account? Sign in</string>
+    <string name="cant_open">Can\'t open!</string>
+    <string name="error_not_valid_email">Please enter a valid email</string>
+    <string name="error_not_valid_password">Password must contain 8+ characters</string>
+    <string name="error_empty_field_template">%1$s must not be empty</string>
 
 </resources>

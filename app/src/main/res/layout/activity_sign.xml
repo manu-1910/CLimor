@@ -5,7 +5,17 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center"
         android:background="@color/brandSecondary400">
+
+    <ImageView
+            android:layout_width="@dimen/imageSizeVerySmall"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/marginLarge"
+            android:layout_marginEnd="@dimen/marginVeryHuge"
+            android:layout_marginStart="@dimen/marginVeryHuge"
+            android:contentDescription="@string/app_name"
+            app:srcCompat="@drawable/logotype" />
 
     <fragment
             android:layout_width="match_parent"

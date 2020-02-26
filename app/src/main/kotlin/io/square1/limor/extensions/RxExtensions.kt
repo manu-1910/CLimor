@@ -7,6 +7,9 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.square1.limor.common.ErrorMessageFactory
 import io.square1.limor.common.SingleLiveEvent
+import io.square1.limor.remote.extensions.parseSuccessResponse
+import io.square1.limor.uimodels.UIErrorResponse
+import retrofit2.HttpException
 
 fun<T: Any> Observable<T>.trackError(errorTracker: SingleLiveEvent<Int>) : Observable<T> {
     return this.doOnError{
@@ -63,7 +66,7 @@ fun<T: Any> Flowable<T>.trackError(errorTracker: SingleLiveEvent<Int>) : Flowabl
 }
 
 //************* New Extensions For Track UIErrorResponse
-/*fun<T: Any> Single<T>.trackErrorResponse(errorTracker: SingleLiveEvent<UIErrorResponse>) : Single<T> {
+fun<T: Any> Single<T>.trackErrorResponse(errorTracker: SingleLiveEvent<UIErrorResponse>) : Single<T> {
     return this.doOnError{
 
         var error = it as HttpException
@@ -77,4 +80,4 @@ fun<T: Any> Observable<T>.trackErrorResponse(errorTracker: SingleLiveEvent<UIErr
     return this.doOnError{
         errorTracker.postValue(errorTracker.value)
     }
-}*/
+}

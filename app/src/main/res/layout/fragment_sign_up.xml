@@ -15,15 +15,6 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-            <ImageView
-                    android:layout_width="@dimen/imageSizeVerySmall"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/marginLarge"
-                    android:layout_marginEnd="@dimen/marginVeryHuge"
-                    android:layout_marginStart="@dimen/marginVeryHuge"
-                    android:contentDescription="@string/app_name"
-                    app:srcCompat="@drawable/logotype" />
-
             <io.square1.limor.components.EditTextComponent
                     android:id="@+id/edtSignUpUsername"
                     android:layout_width="match_parent"
@@ -63,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/marginMedium"
                     android:background="@drawable/bg_round_yellow_ripple"
-                    android:text="@string/sig_in"
+                    android:text="@string/join_limor"
                     android:textAllCaps="false"
                     android:textColor="@color/brandSecondary500"
                     android:textSize="@dimen/textSizeNormal" />

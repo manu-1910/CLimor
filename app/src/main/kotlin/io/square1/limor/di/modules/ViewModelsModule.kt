@@ -7,7 +7,7 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 import io.square1.limor.common.ViewModelFactory
 import io.square1.limor.di.ViewModelKey
-import io.square1.limor.scenes.authentication.SignInSignUpViewModel
+import io.square1.limor.scenes.authentication.viewmodels.SignViewModel
 
 
 @Module
@@ -17,7 +17,7 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(SignInSignUpViewModel::class)
-    abstract fun bindSignInSignUpViewModel(signInSignUpViewModel: SignInSignUpViewModel): ViewModel
+    @ViewModelKey(SignViewModel::class)
+    abstract fun bindSignInSignUpViewModel(signViewModel: SignViewModel): ViewModel
 
 }
