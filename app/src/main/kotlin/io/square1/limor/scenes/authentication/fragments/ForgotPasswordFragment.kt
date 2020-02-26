@@ -13,14 +13,14 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.authentication.viewmodels.SignViewModel
-import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.component_edit_text.view.*
-import kotlinx.android.synthetic.main.fragment_sign_in.*
+import androidx.navigation.fragment.findNavController
+import kotlinx.android.synthetic.main.fragment_forgot_password.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import timber.log.Timber
 import javax.inject.Inject
 
-class SignInFragment : BaseFragment() {
+class ForgotPasswordFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -28,9 +28,9 @@ class SignInFragment : BaseFragment() {
     var app: App? = null
 
     companion object {
-        fun newInstance(bundle: Bundle? = null): SignInFragment {
+        fun newInstance(bundle: Bundle? = null): ForgotPasswordFragment {
             val fragment =
-                SignInFragment()
+                ForgotPasswordFragment()
             bundle?.let { fragment.arguments = it }
             return fragment
         }
@@ -41,7 +41,7 @@ class SignInFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? =
-        inflater.inflate(R.layout.fragment_sign_in, container, false)
+        inflater.inflate(R.layout.fragment_forgot_password, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -62,14 +62,10 @@ class SignInFragment : BaseFragment() {
 
     private fun apiCall() {
         //val output = viewModel.transform(SignViewModel.Input(
-        //    edtSignInEmail?.myEdit?.textChanges()?.map { it.toString() },
-        //    edtSignInPassword?.myEdit?.textChanges()?.map { it.toString() },
+        //    edtForgotPasswordEmail?.myEdit?.textChanges()?.map { it.toString() }},
         //    //Only launch onClick function if the field pass the validations
-        //    btnSignIn?.clicks()?.filter {
-        //        validatedEmail(edtSignInEmail?.myEdit?.text.toString()) &&
-        //                validatedPassword(
-        //                    edtSignInPassword?.myEdit?.text.toString()
-        //                )
+        //    btnForgotPasswordReset?.clicks()?.filter {
+        //        validatedEmail(edtForgotPasswordEmail?.myEdit?.text.toString())
         //    }
         //))
 
@@ -84,9 +80,9 @@ class SignInFragment : BaseFragment() {
        // output.backgroundWorkingProgress.observe(this, Observer {
        //     trackBackgroudProgress(it)
        //     if (it)
-       //         pbSignIn?.visibility = View.VISIBLE
+       //         pbForgotPassword?.visibility = View.VISIBLE
        //     else {
-       //         pbSignIn?.visibility = View.GONE
+       //         pbForgotPassword?.visibility = View.GONE
        //         view?.hideKeyboard()
        //     }
        // })
@@ -118,19 +114,10 @@ class SignInFragment : BaseFragment() {
     }
 
     private fun listeners() {
-        btnSignInForgotPassword?.onClick {
+        btnForgotPasswordAlreadyAccount?.onClick {
             view?.hideKeyboard()
             try {
-                findNavController().navigate(R.id.action_signInFragment_to_forgotPasswordFragment)
-            } catch (e: IllegalArgumentException) {
-                Timber.e(getString(R.string.cant_open))
-            }
-        }
-
-        btnSignUp?.onClick {
-            view?.hideKeyboard()
-            try {
-                findNavController().navigate(R.id.action_signInFragment_to_signUpFragment)
+                findNavController().popBackStack()
             } catch (e: IllegalArgumentException) {
                 Timber.e(getString(R.string.cant_open))
             }
@@ -140,31 +127,15 @@ class SignInFragment : BaseFragment() {
     //FIELDS VALIDATIONS
     private fun validatedEmail(email: String): Boolean {
         return if (email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            edtSignInEmail?.myEditLyt?.isErrorEnabled = false
-            edtSignInEmail?.myEditLyt?.error = null
+            edtForgotPasswordEmail?.myEditLyt?.isErrorEnabled = false
+            edtForgotPasswordEmail?.myEditLyt?.error = null
 
             true
         } else {
-            edtSignInEmail?.myEditLyt?.isErrorEnabled = true
-            edtSignInEmail?.myEditLyt?.error = getString(R.string.error_not_valid_email)
-            edtSignInEmail?.requestFocus()
-            edtSignInEmail?.myEdit?.background = resources.getDrawable(R.drawable.edittext, null)
-
-            false
-        }
-    }
-
-    private fun validatedPassword(password: String): Boolean {
-        return if (password.isNotBlank() && password.count() >= resources.getInteger(R.integer.PASSWORD_MIN_LENGTH)) {
-            edtSignInPassword?.myEditLyt?.isErrorEnabled = false
-            edtSignInPassword?.myEditLyt?.error = null
-
-            true
-        } else {
-            edtSignInPassword?.myEditLyt?.isErrorEnabled = true
-            edtSignInPassword?.myEditLyt?.error = getString(R.string.error_not_valid_password)
-            edtSignInPassword?.requestFocus()
-            edtSignInPassword?.myEdit?.background = resources.getDrawable(R.drawable.edittext, null)
+            edtForgotPasswordEmail?.myEditLyt?.isErrorEnabled = true
+            edtForgotPasswordEmail?.myEditLyt?.error = getString(R.string.error_not_valid_email)
+            edtForgotPasswordEmail?.requestFocus()
+            edtForgotPasswordEmail?.myEdit?.background = resources.getDrawable(R.drawable.edittext, null)
 
             false
         }

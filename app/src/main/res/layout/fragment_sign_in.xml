@@ -55,6 +55,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/forgot_password"
                     android:textAllCaps="false"
+                    android:layout_marginStart="@dimen/marginMedium"
+                    android:layout_marginEnd="@dimen/marginMedium"
                     android:textColor="@color/colorAccent"
                     android:textSize="@dimen/textSizeNormal" />
 

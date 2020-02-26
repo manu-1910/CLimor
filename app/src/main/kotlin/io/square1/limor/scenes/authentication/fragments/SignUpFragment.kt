@@ -87,9 +87,9 @@ class SignUpFragment : BaseFragment() {
        // output.backgroundWorkingProgress.observe(this, Observer {
        //     trackBackgroudProgress(it)
        //     if (it)
-       //         pbSignIn?.visibility = View.VISIBLE
+       //         pbSignUp?.visibility = View.VISIBLE
        //     else {
-       //         pbSignIn?.visibility = View.GONE
+       //         pbSignUp?.visibility = View.GONE
        //         view?.hideKeyboard()
        //     }
        // })

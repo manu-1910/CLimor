@@ -17,5 +17,6 @@
     <string name="error_not_valid_email">Please enter a valid email</string>
     <string name="error_not_valid_password">Password must contain 8+ characters</string>
     <string name="error_empty_field_template">%1$s must not be empty</string>
+    <string name="reset_password">Reset password</string>
 
 </resources>
