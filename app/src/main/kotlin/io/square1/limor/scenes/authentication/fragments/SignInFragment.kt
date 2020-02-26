@@ -1,33 +1,22 @@
-package io.square1.limor.scenes.authentication
+package io.square1.limor.scenes.authentication.fragments
 
 
-import android.content.Intent
 import android.os.Bundle
-import android.text.Spannable
-import android.text.TextPaint
-import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
 import android.util.Patterns
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
-import com.jakewharton.rxbinding3.view.clicks
-import com.jakewharton.rxbinding3.widget.textChanges
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.extensions.hideKeyboard
+import io.square1.limor.scenes.authentication.viewmodels.SignViewModel
+import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.component_edit_text.view.*
 import kotlinx.android.synthetic.main.fragment_sign_in.*
-import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
-import org.jetbrains.anko.support.v4.alert
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -35,12 +24,13 @@ class SignInFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private lateinit var viewModel: SignInSignUpViewModel
+    private lateinit var viewModel: SignViewModel
     var app: App? = null
 
     companion object {
         fun newInstance(bundle: Bundle? = null): SignInFragment {
-            val fragment = SignInFragment()
+            val fragment =
+                SignInFragment()
             bundle?.let { fragment.arguments = it }
             return fragment
         }
@@ -66,12 +56,12 @@ class SignInFragment : BaseFragment() {
             viewModel =
                 ViewModelProviders
                     .of(fragmentActivity, viewModelFactory)
-                    .get(SignInSignUpViewModel::class.java)
+                    .get(SignViewModel::class.java)
         }
     }
 
     private fun apiCall() {
-        //val output = viewModel.transform(SignInSignUpViewModel.Input(
+        //val output = viewModel.transform(SignViewModel.Input(
         //    edtSignInEmail?.myEdit?.textChanges()?.map { it.toString() },
         //    edtSignInPassword?.myEdit?.textChanges()?.map { it.toString() },
         //    //Only launch onClick function if the field pass the validations
@@ -140,7 +130,7 @@ class SignInFragment : BaseFragment() {
         btnSignUp?.onClick {
             view?.hideKeyboard()
             try {
-         //       findNavController().navigate(R.id.action_authSignInFragment_to_signInForgotPasswordFragment)
+                findNavController().navigate(R.id.action_signInFragment_to_signUpFragment)
             } catch (e: IllegalArgumentException) {
                 Timber.e(getString(R.string.cant_open))
             }
