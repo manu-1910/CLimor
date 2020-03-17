@@ -3,21 +3,20 @@ package io.square1.limor.scenes.main.fragments
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
+import android.media.AudioFormat
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat.getColor
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
+import com.github.squti.androidwaverecorder.WaveRecorder
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import kotlinx.android.synthetic.main.fragment_record.*
@@ -28,7 +27,7 @@ import org.jetbrains.anko.support.v4.toast
 class RecordFragment : BaseFragment() {
 
 
-    private var mediaRecorder: MediaRecorder? = null
+    //private var mediaRecorder: MediaRecorder? = null
     private var mediaPlayer: MediaPlayer? = null
     private var audioFilePath: String? = null
     private var isRecording = false
@@ -37,6 +36,9 @@ class RecordFragment : BaseFragment() {
     private val STORAGE_REQUEST_CODE = 102
     // create the Handler for visualizer update
     private var handler: Handler = Handler()
+    private var amplitudeUpdated:Int = 0
+
+    private var waveRecorder: WaveRecorder? = null
 
     companion object {
         val TAG: String = RecordFragment::class.java.simpleName
@@ -72,32 +74,24 @@ class RecordFragment : BaseFragment() {
 
 
 
-    private fun listeners(){
-        playButton.onClick { playAudio() }
-        nextButton.onClick {
-            try {
-                mediaRecorder?.release()
-                mediaRecorder = null
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            toast("Do something with the audio file")
-        }
-        recordButton.onClick {
-            if (isRecording){
-                stopAudio()
-            }else{
-                recordAudio()
-            }
-        }
-    }
-
-
     private fun audioSetup() {
 
         nextButton.isEnabled = false
 
-        audioFilePath = Environment.getExternalStorageDirectory().absolutePath + "/myaudio.3gp"
+        //audioFilePath = Environment.getExternalStorageDirectory().absolutePath + "/myaudio.3gp"
+
+        /**
+         * This path points to application cache directory.
+         * you could change it based on your usage
+         */
+        audioFilePath = Environment.getExternalStorageDirectory()?.absolutePath + "/audioFile.wav"
+
+        waveRecorder = WaveRecorder(audioFilePath!!)
+        waveRecorder?.waveConfig?.sampleRate = 44100
+        waveRecorder?.waveConfig?.channels = AudioFormat.CHANNEL_IN_STEREO
+        waveRecorder?.waveConfig?.audioEncoding = AudioFormat.ENCODING_PCM_8BIT
+        waveRecorder?.noiseSuppressorActive = true
+
 
         val PERMISSION_ALL = 1
         val PERMISSIONS = arrayOf(
@@ -107,6 +101,33 @@ class RecordFragment : BaseFragment() {
 
         requestPermissions(PERMISSIONS, PERMISSION_ALL)
     }
+
+
+
+    private fun listeners(){
+        playButton.onClick { playAudio() }
+
+        nextButton.onClick {
+            toast("Do something with the audio file")
+        }
+
+        recordButton.onClick {
+            if (isRecording){
+                stopAudio()
+            }else{
+                recordAudio()
+            }
+        }
+
+
+        waveRecorder?.onAmplitudeListener = {
+            Log.i(TAG, "Amplitude : $it")
+            amplitudeUpdated = it
+        }
+    }
+
+
+
 
 
 
@@ -123,39 +144,43 @@ class RecordFragment : BaseFragment() {
 
             isFirstTapRecording = false
 
-            try {
-                mediaRecorder = MediaRecorder()
-                mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
-                mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-                mediaRecorder?.setOutputFile(audioFilePath)
-                mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-                mediaRecorder?.prepare()
+         //   try {
+         //       mediaRecorder = MediaRecorder()
+         //       mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
+         //       mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+         //       mediaRecorder?.setOutputFile(audioFilePath)
+         //       mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+         //       mediaRecorder?.prepare()
+//
+         //   } catch (e: Exception) {
+         //       e.printStackTrace()
+         //   }
+//
+         //   mediaRecorder?.start()
 
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            mediaRecorder?.start()
+            waveRecorder?.startRecording()
 
         }else{
 
-            if (mediaRecorder != null) { //MediaRecorder has not been stopped (released)
-                try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        mediaRecorder?.resume()
-                    }else{
-                        mediaRecorder?.start()
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }else{
-                mediaRecorder?.start()
-            }
+            waveRecorder?.resumeRecording()
+
+            //if (mediaRecorder != null) { //MediaRecorder has not been stopped (released)
+            //    try {
+            //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            //            mediaRecorder?.resume()
+            //        }else{
+            //            mediaRecorder?.start()
+            //        }
+            //    } catch (e: Exception) {
+            //        e.printStackTrace()
+            //    }
+            //}else{
+            //    mediaRecorder?.start()
+            //}
 
         }
 
-        handler.post(updateVisualizer)
+        //handler.post(updateVisualizer)
 
         //Start timer
         c_meter.start()
@@ -173,9 +198,11 @@ class RecordFragment : BaseFragment() {
 
         if (isRecording) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                mediaRecorder?.pause()
+                //mediaRecorder?.pause()
+                waveRecorder?.pauseRecording()
             }else{
-                mediaRecorder?.stop()
+                //mediaRecorder?.stop()
+                waveRecorder?.stopRecording()
             }
             //mediaRecorder?.release()
             //mediaRecorder = null
@@ -203,8 +230,8 @@ class RecordFragment : BaseFragment() {
         nextButton.isEnabled = false
 
         try {
-            mediaRecorder?.release()
-            mediaRecorder = null
+            //mediaRecorder?.release()
+            //mediaRecorder = null
 
             mediaPlayer = MediaPlayer()
             mediaPlayer?.setDataSource(audioFilePath)
@@ -254,11 +281,13 @@ class RecordFragment : BaseFragment() {
     private var updateVisualizer: Runnable = object : Runnable {
         override fun run() {
 
-            if(mediaRecorder?.maxAmplitude != null){
-                graphVisualizer.addAmplitude(mediaRecorder!!.maxAmplitude.toFloat())
-            }else {
-                graphVisualizer.addAmplitude(1.toFloat())
-            }
+            //if(mediaRecorder?.maxAmplitude != null){
+            //    graphVisualizer.addAmplitude(mediaRecorder!!.maxAmplitude.toFloat())
+            //}else {
+            //    graphVisualizer.addAmplitude(1.toFloat())
+            //}
+
+            graphVisualizer.addAmplitude(amplitudeUpdated.toFloat())
             graphVisualizer.invalidate() // refresh the VisualizerView
             // update each 40 milliseconds
             handler.postDelayed(this, 40)
@@ -273,8 +302,8 @@ class RecordFragment : BaseFragment() {
         handler.removeCallbacks(updateVisualizer)
 
         //Stop mediarecorder
-        mediaRecorder?.release()
-        mediaRecorder = null
+        //mediaRecorder?.release()
+        //mediaRecorder = null
 
         mediaPlayer?.release()
         mediaPlayer = null

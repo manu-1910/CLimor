@@ -9,7 +9,7 @@
     <io.square1.limor.scenes.utils.VisualizerView
         android:id="@+id/graphVisualizer"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
+        android:layout_height="185dp"
         android:layout_marginBottom="@dimen/marginMedium"/>
 
 
