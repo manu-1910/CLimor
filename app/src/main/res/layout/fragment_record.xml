@@ -3,14 +3,89 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/brandSecondary400">
+    android:background="@color/brandSecondary500">
 
-    <TextView
+
+    <io.square1.limor.scenes.utils.VisualizerView
+        android:id="@+id/graphVisualizer"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_marginBottom="@dimen/marginMedium"/>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/brandSecondary300"/>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:text="record"/>
+        android:background="@color/brandSecondary400"
+        android:padding="@dimen/marginMedium"
+        android:gravity="center_horizontal">
+
+
+        <Chronometer
+            android:id="@+id/c_meter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@color/white"
+            android:layout_centerHorizontal="true"
+            android:textSize="28sp" />
+
+
+        <Button
+            android:id="@+id/recordButton"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_below="@id/c_meter"
+            android:layout_marginTop="@dimen/marginMedium"
+            android:background="@drawable/record_red"
+            android:layout_centerHorizontal="true" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/marginMedium"
+            android:layout_below="@id/recordButton"
+            android:orientation="horizontal">
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/nextButton"
+                style="@android:style/Widget.Material.Button.Borderless.Colored"
+                android:layout_width="250dp"
+                android:layout_gravity="bottom"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_round_yellow_ripple"
+                android:text="@string/btn_next"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSizeNormal" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/playButton"
+                style="@android:style/Widget.Material.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_round_yellow_ripple"
+                android:text="PLAY"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:layout_marginLeft="32dp"
+                android:textSize="@dimen/textSizeNormal" />
+
+        </LinearLayout>
+
+
+
+
+    </RelativeLayout>
+
+
 
 </LinearLayout>
