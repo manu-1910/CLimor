@@ -1,6 +1,7 @@
 package io.square1.limor.scenes.authentication.fragments
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import io.square1.limor.common.BaseFragment
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.authentication.viewmodels.SignViewModel
 import androidx.navigation.fragment.findNavController
+import io.square1.limor.scenes.main.MainActivity
 import kotlinx.android.synthetic.main.component_edit_text.view.*
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -135,6 +137,20 @@ class SignInFragment : BaseFragment() {
                 Timber.e(getString(R.string.cant_open))
             }
         }
+
+        //TODO only implemented to go to MainActivity to continue the development JJ
+        btnSignInFacebook?.onClick {
+            view?.hideKeyboard()
+            try {
+                val mainIntent = Intent(context, MainActivity::class.java)
+                startActivity(mainIntent)
+                //(activity as SignActivity).finish()
+            } catch (e: IllegalArgumentException) {
+                Timber.e(getString(R.string.cant_open))
+            }
+        }
+
+
     }
 
     //FIELDS VALIDATIONS

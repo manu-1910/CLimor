@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/navigation_home">
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="io.square1.limor.scenes.main.fragments.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_home">
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_discover"
+        android:name="io.square1.limor.scenes.main.fragments.DiscoverFragment"
+        android:label="DiscoverFragment"
+        tools:layout="@layout/fragment_discover">
+
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_record"
+        android:name="io.square1.limor.scenes.main.fragments.RecordFragment"
+        android:label="RecordFragment"
+        tools:layout="@layout/fragment_record">
+
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="io.square1.limor.scenes.main.fragments.NotificationsFragment"
+        android:label="NotificationsFragment"
+        tools:layout="@layout/fragment_notifications">
+
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="io.square1.limor.scenes.main.fragments.ProfileFragment"
+        android:label="ProfileFragment"
+        tools:layout="@layout/fragment_profile">
+    </fragment>
+    <!--<fragment
+        android:id="@+id/navigation_more"
+        android:name="io.square1.clickoffices.scenes.main.fragments.MoreFragment"
+        android:label="MoreFragment"
+        tools:layout="@layout/fragment_more">
+        <action android:id="@+id/action_navigation_more_to_navigation_more_web_view"
+            app:destination="@id/navigation_more_web_view"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+        <action android:id="@+id/action_navigation_more_to_navigation_more_my_account"
+            app:destination="@id/navigation_more_my_account"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+    </fragment>-->
+</navigation>

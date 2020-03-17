@@ -24,4 +24,12 @@
     <style name="ProgressBarTheme" parent="Base.Widget.AppCompat.ProgressBar">
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
+    <!-- Bottom Navigation Theme -->
+    <style name="BottomNavigationTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="colorPrimary">@color/brandPrimary500</item>
+        <item name="android:textColorSecondary">@color/toolbar_text</item>
+        <item name="android:colorControlHighlight">@color/brandPrimary500</item>
+    </style>
+
 </resources>
