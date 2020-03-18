@@ -57,9 +57,9 @@
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/nextButton"
                 style="@android:style/Widget.Material.Button.Borderless.Colored"
-                android:layout_width="250dp"
-                android:layout_gravity="bottom"
+                android:layout_width="220dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:background="@drawable/bg_round_yellow_ripple"
                 android:text="@string/btn_next"
                 android:textAllCaps="false"
