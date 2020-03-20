@@ -17,13 +17,13 @@
         tools:layout="@layout/fragment_discover">
 
     </fragment>
-    <fragment
+    <activity
         android:id="@+id/navigation_record"
         android:name="io.square1.limor.scenes.main.fragments.RecordFragment"
         android:label="RecordFragment"
         tools:layout="@layout/fragment_record">
 
-    </fragment>
+    </activity>
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="io.square1.limor.scenes.main.fragments.NotificationsFragment"

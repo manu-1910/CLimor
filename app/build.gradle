@@ -242,6 +242,7 @@ dependencies {
     //PhotoView visor with zoom
     //implementation deps.photo_view
 
+    //Audio Recorder Library
     implementation 'com.github.squti:Android-Wave-Recorder:1.4.0'
 
 }

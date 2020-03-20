@@ -122,8 +122,8 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
                 //viewModel.unreadCountCentres = 0
                 tvToolbarTitle?.text = toolbarTitle
 
-                btnToolbarCancel?.visibility = View.GONE
-                btnToolbarCancel?.onClick { navController.popBackStack() }
+                btnToolbarLeft?.visibility = View.GONE
+                btnToolbarLeft?.onClick { navController.popBackStack() }
 
                 /*badgeVisibility()
                 badgeViewingVisibility()
@@ -140,8 +140,8 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
                 //viewModel.unreadCountLeads = 0
                 tvToolbarTitle?.text = toolbarTitle
 
-                btnToolbarCancel?.visibility = View.GONE
-                btnToolbarCancel?.onClick { navController.popBackStack() }
+                btnToolbarLeft?.visibility = View.GONE
+                btnToolbarLeft?.onClick { navController.popBackStack() }
 
                 /*badgeVisibility()
                 badgeViewingVisibility()
@@ -159,8 +159,8 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
                 //viewModel.unreadCountViewings = 0
                 tvToolbarTitle?.text = toolbarTitle
 
-                btnToolbarCancel?.visibility = View.GONE
-                btnToolbarCancel?.onClick { navController.popBackStack() }
+                btnToolbarLeft?.visibility = View.GONE
+                btnToolbarLeft?.onClick { navController.popBackStack() }
 
                 /*badgeVisibility()
                 badgeViewingVisibility()
@@ -177,8 +177,8 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
             getString(R.string.title_notifications) -> {
                 tvToolbarTitle?.text = toolbarTitle
 
-                btnToolbarCancel?.visibility = View.GONE
-                btnToolbarCancel?.onClick { navController.popBackStack() }
+                btnToolbarLeft?.visibility = View.GONE
+                btnToolbarLeft?.onClick { navController.popBackStack() }
 
                 /*badgeVisibility()
                 badgeViewingVisibility()
@@ -195,8 +195,8 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
                 tvToolbarTitle?.text = toolbarTitle
 
-                btnToolbarCancel?.visibility = View.GONE
-                btnToolbarCancel?.onClick { navController.popBackStack() }
+                btnToolbarLeft?.visibility = View.GONE
+                btnToolbarLeft?.onClick { navController.popBackStack() }
 
                 /*badgeVisibility()
                 badgeViewingVisibility()

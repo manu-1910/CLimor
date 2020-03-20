@@ -39,6 +39,8 @@
 
     <string name="description_back">Back</string>
     <string name="btn_next">Next</string>
+    <string name="btn_drafts">Drafts</string>
+
 
     <string name="record_permission_required">Record permission required</string>
     <string name="storage_permission_required">Record permission required</string>

@@ -57,26 +57,13 @@
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/nextButton"
                 style="@android:style/Widget.Material.Button.Borderless.Colored"
-                android:layout_width="220dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:background="@drawable/bg_round_yellow_ripple"
                 android:text="@string/btn_next"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
-                android:textSize="@dimen/textSizeNormal" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/playButton"
-                style="@android:style/Widget.Material.Button.Borderless.Colored"
-                android:layout_width="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_round_yellow_ripple"
-                android:text="PLAY"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:layout_marginLeft="32dp"
                 android:textSize="@dimen/textSizeNormal" />
 
         </LinearLayout>

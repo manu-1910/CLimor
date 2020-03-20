@@ -7,10 +7,14 @@ import android.media.AudioFormat
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
+import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.TextView
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import com.github.squti.androidwaverecorder.WaveRecorder
@@ -32,6 +36,7 @@ class RecordFragment : BaseFragment() {
     private val RECORD_REQUEST_CODE = 101
     private val STORAGE_REQUEST_CODE = 102
     private lateinit var waveRecorder: WaveRecorder
+    private var timeWhenStopped: Long = 0
 
     val PERMISSION_ALL = 1
     val PERMISSIONS = arrayOf(
@@ -53,6 +58,7 @@ class RecordFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bindViewModel()
+        configureToolbar()
         audioSetup()
         listeners()
     }
@@ -67,6 +73,26 @@ class RecordFragment : BaseFragment() {
          }*/
     }
 
+
+    private fun configureToolbar() {
+        val titleToolbar = activity?.findViewById<TextView>(R.id.tvToolbarTitle)
+        titleToolbar?.text = getString(R.string.title_record)
+
+        val btnToolbarLeft = activity?.findViewById<ImageButton>(R.id.btnToolbarLeft)
+        btnToolbarLeft?.setImageResource(R.drawable.upload)
+        btnToolbarLeft?.visibility = View.VISIBLE
+        btnToolbarLeft?.onClick {
+            toast("Clicked on Upload")
+        }
+
+
+        val btnToolbarRigth = activity?.findViewById<Button>(R.id.btnToolbarRight)
+        btnToolbarRigth?.visibility = View.VISIBLE
+        btnToolbarRigth?.text = getString(R.string.btn_drafts)
+        btnToolbarRigth?.onClick {
+            toast("Clicked on Drafts")
+        }
+    }
 
 
     private fun audioSetup() {
@@ -92,12 +118,11 @@ class RecordFragment : BaseFragment() {
 
 
     private fun listeners(){
-        // Play Button TODO this will be removed
-        playButton.onClick { playAudio() }
 
         // Next Button
         nextButton.onClick {
             toast("Do something with the audio file")
+            playAudio()
         }
 
         // Record Button
@@ -112,15 +137,12 @@ class RecordFragment : BaseFragment() {
         // Listener on amplitudes changes to update the Audio Visualizer
         waveRecorder.onAmplitudeListener = {
             Log.i(TAG, "Amplitude : $it")
-
-
             runOnUiThread {
                 Log.i(TAG, "runOnUiThread")
                 if(isRecording){
                     graphVisualizer.addAmplitude(it.toFloat())
                     graphVisualizer.invalidate() // refresh the Visualizer
                 }
-
             }
         }
 
@@ -146,6 +168,7 @@ class RecordFragment : BaseFragment() {
         }
 
         //Start timer
+        c_meter.base = SystemClock.elapsedRealtime() + timeWhenStopped
         c_meter.start()
     }
 
@@ -161,6 +184,10 @@ class RecordFragment : BaseFragment() {
 
         if (isRecording) {
             waveRecorder.pauseRecording()
+
+            //Stop the chronometer and anotate the time when it is stopped
+            timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
+
             isRecording = false
         } else {
             mediaPlayer.release()
@@ -188,8 +215,13 @@ class RecordFragment : BaseFragment() {
             //mediaRecorder?.release()
             //mediaRecorder = null
             waveRecorder.stopRecording()
+
             graphVisualizer?.clearAnimation()
             graphVisualizer?.clear()
+
+            //Stop chronometer
+            c_meter.base = SystemClock.elapsedRealtime()
+            timeWhenStopped = 0
 
             mediaPlayer = MediaPlayer()
             mediaPlayer.setDataSource(audioFilePath)
