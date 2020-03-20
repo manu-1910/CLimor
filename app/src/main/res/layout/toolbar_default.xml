@@ -20,6 +20,7 @@
             android:layout_height="?attr/actionBarSize"
             android:layout_alignParentStart="true"
             android:src="@drawable/ic_navigate_before"
+            android:fontFamily="@font/roboto"
             android:visibility="gone"
             android:contentDescription="@string/description_back"/>
 
@@ -28,15 +29,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:fontFamily="@font/roboto_medium"
             android:textColor="@color/toolbar_text"
-            android:textStyle="bold"
-            android:textSize="@dimen/textSizeNormal"/>
+            android:textSize="@dimen/textSizeNormal"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/btnToolbarRight"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
+            android:fontFamily="@font/roboto"
             android:textColor="@color/brandPrimary500"
             android:textSize="@dimen/textSizeNormal"
             android:gravity="center_vertical"

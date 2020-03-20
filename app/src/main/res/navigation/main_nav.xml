@@ -19,9 +19,9 @@
     </fragment>
     <activity
         android:id="@+id/navigation_record"
-        android:name="io.square1.limor.scenes.main.fragments.RecordFragment"
-        android:label="RecordFragment"
-        tools:layout="@layout/fragment_record">
+        android:name="io.square1.limor.scenes.main.fragments.record.RecordActivity"
+        android:label="RecordActivity"
+        tools:layout="@layout/activity_record">
 
     </activity>
     <fragment

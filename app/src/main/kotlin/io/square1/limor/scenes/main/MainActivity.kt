@@ -1,7 +1,6 @@
 package io.square1.limor.scenes.main
 
 
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -14,6 +13,7 @@ import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseActivity
 import io.square1.limor.scenes.main.fragments.*
+import io.square1.limor.scenes.main.fragments.record.RecordActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -73,7 +73,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
                 DiscoverFragment.TAG -> {
                     showHomeToolbar(getString(R.string.title_discover))
                 }
-                RecordFragment.TAG -> {
+                RecordActivity.TAG -> {
                     showHomeToolbar(getString(R.string.title_record))
                 }
                 NotificationsFragment.TAG -> {
@@ -98,11 +98,11 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
                 }
                 R.id.navigation_record -> {
                     navController.navigate(R.id.navigation_record)
-                    return@setOnNavigationItemSelectedListener true
+                    return@setOnNavigationItemSelectedListener false
                 }
                 R.id.navigation_notifications -> {
                     navController.navigate(R.id.navigation_notifications)
-                    return@setOnNavigationItemSelectedListener false
+                    return@setOnNavigationItemSelectedListener true
                 }
                 R.id.navigation_profile -> {
                     navController.navigate(R.id.navigation_profile)

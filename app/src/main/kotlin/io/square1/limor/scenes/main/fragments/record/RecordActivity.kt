@@ -1,4 +1,4 @@
-package io.square1.limor.scenes.main.fragments
+package io.square1.limor.scenes.main.fragments.record
 
 import android.Manifest
 import android.app.Activity
@@ -9,9 +9,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.SystemClock
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
@@ -19,14 +17,14 @@ import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import com.github.squti.androidwaverecorder.WaveRecorder
 import io.square1.limor.R
-import io.square1.limor.common.BaseFragment
-import kotlinx.android.synthetic.main.fragment_record.*
+import io.square1.limor.common.BaseActivity
+import kotlinx.android.synthetic.main.activity_record.*
+import kotlinx.android.synthetic.main.toolbar_default.*
 import org.jetbrains.anko.sdk23.listeners.onClick
-import org.jetbrains.anko.support.v4.runOnUiThread
-import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.toast
 
 
-class RecordFragment : BaseFragment() {
+class RecordActivity : BaseActivity() {
 
 
     private lateinit var mediaPlayer: MediaPlayer
@@ -45,22 +43,22 @@ class RecordFragment : BaseFragment() {
     )
 
     companion object {
-        val TAG: String = RecordFragment::class.java.simpleName
-        fun newInstance() = RecordFragment()
+        val TAG: String = RecordActivity::class.java.simpleName
+        fun newInstance() = RecordActivity()
     }
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_record, container, false)
-    }
 
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_record)
+
         bindViewModel()
         configureToolbar()
         audioSetup()
         listeners()
+
     }
 
 
@@ -75,10 +73,10 @@ class RecordFragment : BaseFragment() {
 
 
     private fun configureToolbar() {
-        val titleToolbar = activity?.findViewById<TextView>(R.id.tvToolbarTitle)
-        titleToolbar?.text = getString(R.string.title_record)
+        //val titleToolbar = findViewById<TextView>(R.id.tvToolbarTitle)
+        tvToolbarTitle?.text = getString(R.string.title_record)
 
-        val btnToolbarLeft = activity?.findViewById<ImageButton>(R.id.btnToolbarLeft)
+        //val btnToolbarLeft = findViewById<ImageButton>(R.id.btnToolbarLeft)
         btnToolbarLeft?.setImageResource(R.drawable.upload)
         btnToolbarLeft?.visibility = View.VISIBLE
         btnToolbarLeft?.onClick {
@@ -86,10 +84,10 @@ class RecordFragment : BaseFragment() {
         }
 
 
-        val btnToolbarRigth = activity?.findViewById<Button>(R.id.btnToolbarRight)
-        btnToolbarRigth?.visibility = View.VISIBLE
-        btnToolbarRigth?.text = getString(R.string.btn_drafts)
-        btnToolbarRigth?.onClick {
+        //val btnToolbarRigth = findViewById<Button>(R.id.btnToolbarRight)
+        btnToolbarRight?.visibility = View.VISIBLE
+        btnToolbarRight?.text = getString(R.string.btn_drafts)
+        btnToolbarRight?.onClick {
             toast("Clicked on Drafts")
         }
     }
@@ -97,7 +95,8 @@ class RecordFragment : BaseFragment() {
 
     private fun audioSetup() {
 
-        requestPermissions(PERMISSIONS, PERMISSION_ALL)
+        //requestPermissions(PERMISSIONS, PERMISSION_ALL)
+        //TODO this call requires min api level 23 and current is 21
 
         nextButton.isEnabled = false
 
@@ -155,10 +154,10 @@ class RecordFragment : BaseFragment() {
         isRecording = true
 
         // Disable next button
-        nextButton.background = context?.getDrawable(R.drawable.bg_round_grey_ripple)
+        nextButton.background = applicationContext?.getDrawable(R.drawable.bg_round_grey_ripple)
         nextButton.isEnabled = false
 
-        recordButton.background = ContextCompat.getDrawable(requireContext(), R.drawable.pause_red)
+        recordButton.background = ContextCompat.getDrawable(applicationContext, R.drawable.pause_red)
 
         if(isFirstTapRecording){
             isFirstTapRecording = false
@@ -176,10 +175,10 @@ class RecordFragment : BaseFragment() {
 
     private fun stopAudio() {
 
-        recordButton.background = ContextCompat.getDrawable(requireContext(), R.drawable.record_red)
+        recordButton.background = ContextCompat.getDrawable(applicationContext, R.drawable.record_red)
 
         // Enable next button
-        nextButton.background = context?.getDrawable(R.drawable.bg_round_yellow_ripple)
+        nextButton.background = applicationContext?.getDrawable(R.drawable.bg_round_yellow_ripple)
         nextButton.isEnabled = true
 
         if (isRecording) {
@@ -234,9 +233,9 @@ class RecordFragment : BaseFragment() {
 
 
     private fun requestPermission(permissionType: String, requestCode: Int) {
-        val permission = ContextCompat.checkSelfPermission(requireContext(), permissionType)
+        val permission = ContextCompat.checkSelfPermission(applicationContext, permissionType)
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(context as Activity, arrayOf(permissionType), requestCode
+            requestPermissions(applicationContext as Activity, arrayOf(permissionType), requestCode
             )
         }
     }
@@ -270,8 +269,12 @@ class RecordFragment : BaseFragment() {
     override fun onDestroy() {
         super.onDestroy()
 
-        mediaPlayer.release()
-        //mediaPlayer = null
+        try {
+            mediaPlayer.release()
+            //mediaPlayer = null
+        } catch (e: Exception) {
+        }
+
     }
 
 
