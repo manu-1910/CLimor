@@ -42,8 +42,13 @@
     <string name="btn_drafts">Drafts</string>
 
 
-    <string name="record_permission_required">Record permission required</string>
-    <string name="storage_permission_required">Record permission required</string>
+    <string name="record_permission_title">title record</string>
+    <string name="record_permission_description">Record permission required</string>
+
+    <string name="storage_permission_title">title storage</string>
+    <string name="storage_permission_description">Storage permission required</string>
+
+
 
 
 

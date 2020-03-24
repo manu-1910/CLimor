@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/brandSecondary500"
+    android:orientation="vertical">
+
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_default" />
+
+    <io.square1.limor.scenes.utils.VisualizerView
+        android:id="@+id/graphVisualizer"
+        android:layout_width="match_parent"
+        android:layout_height="185dp"
+        android:layout_marginBottom="@dimen/marginMedium" />
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/brandSecondary300" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/brandSecondary400"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/marginMedium">
+
+
+        <Chronometer
+            android:id="@+id/c_meter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/roboto_bold"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@color/white"
+            android:textSize="28sp" />
+
+
+        <Button
+            android:id="@+id/recordButton"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_below="@id/c_meter"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/marginMedium"
+            android:background="@drawable/record_red" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/recordButton"
+            android:layout_margin="@dimen/marginMedium"
+            android:orientation="horizontal">
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/nextButton"
+                style="@android:style/Widget.Material.Button.Borderless.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="@drawable/bg_round_yellow_ripple"
+                android:fontFamily="@font/roboto_medium"
+                android:text="@string/btn_next"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/textSizeNormal" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>
