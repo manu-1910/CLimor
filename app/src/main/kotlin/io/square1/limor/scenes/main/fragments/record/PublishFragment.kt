@@ -5,11 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
+import androidx.navigation.fragment.findNavController
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
-import kotlinx.android.synthetic.main.toolbar_default.*
+import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
+import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
+import kotlinx.android.synthetic.main.toolbar_with_cross.*
 import org.jetbrains.anko.sdk23.listeners.onClick
-import org.jetbrains.anko.support.v4.toast
 
 
 class PublishFragment : BaseFragment() {
@@ -56,23 +58,18 @@ class PublishFragment : BaseFragment() {
 
     private fun configureToolbar() {
 
-        tvToolbarTitle?.text = getString(R.string.title_record)
+        //Toolbar title
+        tvToolbarTitle?.text = getString(R.string.title_publish)
 
         //Toolbar Left
-        //btnToolbarLeft.background = getDrawable(R.drawable.upload)
-        //btnToolbarLeft.setBackgroundResource(R.drawable.upload)
-        //btnToolbarLeft.height = 16
-        btnToolbarLeft.text = "Cancel"
-        btnToolbarLeft.onClick {
+        btnClose.onClick {
             //this.finish()
-            toast("Clicked on Cancel")
+            findNavController().popBackStack()
         }
 
         //Toolbar Right
-        btnToolbarRight.text = getString(R.string.btn_drafts)
-        btnToolbarRight.onClick {
-            toast("Clicked on Drafts")
-        }
+        btnToolbarRight.visibility = View.GONE
+
     }
 
 

@@ -7,6 +7,7 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseActivity
 import io.square1.limor.common.SessionManager
 import io.square1.limor.scenes.authentication.SignActivity
+import io.square1.limor.scenes.main.MainActivity
 import javax.inject.Inject
 
 class SplashActivity : BaseActivity() {
@@ -26,7 +27,8 @@ class SplashActivity : BaseActivity() {
                 this.finish()*/
 
             }else{
-                startActivity(Intent(applicationContext, SignActivity::class.java))
+                //startActivity(Intent(applicationContext, SignActivity::class.java))
+                startActivity(Intent(applicationContext, MainActivity::class.java)) //for faster development //TODO
                 finish()
 
             }

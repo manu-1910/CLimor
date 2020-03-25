@@ -3,21 +3,223 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/brandSecondary500"
+    android:background="@color/brandSecondary400"
     android:orientation="vertical">
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar_default"/>
+        layout="@layout/toolbar_with_cross"/>
+
+    <RelativeLayout
+        android:layout_marginTop="@dimen/marginMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_centerInParent="true"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/add"
+            android:translationZ="4dp"/>
+
+        <ImageView
+            android:id="@+id/placeHolder"
+            android:layout_centerInParent="true"
+            android:layout_width="119dp"
+            android:layout_height="119dp"
+            android:src="@drawable/publish_placeholder"/>
+
+
+
+    </RelativeLayout>
 
     <TextView
-        android:layout_margin="@dimen/marginLarge"
-        android:id="@+id/textView"
+        android:id="@+id/tvChoosePhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:layout_gravity="center"
-        android:text="Publish Fragment" />
+        android:layout_marginTop="@dimen/marginVerySmall"
+        android:textColor="@color/brandPrimary500"
+        android:textSize="@dimen/textSizeVerySmall"
+        android:fontFamily="@font/roboto_medium"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/choose_a_photo" />
 
+
+    <View
+        android:layout_marginTop="@dimen/marginSmall"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/brandSecondary300"/>
+
+    <LinearLayout
+        android:id="@+id/lytForm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginEnd="@dimen/marginMedium"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSizeNormal"
+                android:fontFamily="@font/roboto"
+                android:text="@string/title_title" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSizeNormal"
+                android:fontFamily="@font/roboto"
+                android:hint="@string/title_title" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginEnd="@dimen/marginMedium"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvCaption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSizeNormal"
+                android:fontFamily="@font/roboto"
+                android:text="@string/title_caption" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSizeNormal"
+                android:fontFamily="@font/roboto"
+                android:hint="@string/title_caption"
+                android:lines="3"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginEnd="@dimen/marginMedium"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvHashtags"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSizeNormal"
+                android:fontFamily="@font/roboto"
+                android:text="@string/title_hashtags" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSizeNormal"
+                android:fontFamily="@font/roboto"
+                android:hint="@string/title_hashtags" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginEnd="@dimen/marginMedium"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSizeNormal"
+                android:fontFamily="@font/roboto"
+                android:text="@string/title_Location" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSizeNormal"
+                android:fontFamily="@font/roboto"
+                android:hint="@string/title_Location" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/lytPlayer"
+        android:layout_marginTop="@dimen/marginMedium"
+        android:layout_width="match_parent"
+        android:layout_height="91dp"
+        android:background="@color/blue400"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="Audio Player" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/marginMedium"
+        android:layout_marginEnd="@dimen/marginMedium"
+        android:layout_marginBottom="@dimen/marginMedium"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnSaveAsDraft"
+            style="@android:style/Widget.Material.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bg_round_yellow_ripple"
+            android:fontFamily="@font/roboto_medium"
+            android:text="@string/btn_save_as_draft"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/textSizeNormal"
+            android:layout_weight="1"
+            android:layout_marginRight="@dimen/marginSmall"/>
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnPublish"
+            style="@android:style/Widget.Material.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bg_round_yellow_ripple"
+            android:fontFamily="@font/roboto_medium"
+            android:text="@string/btn_publish"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/textSizeNormal"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/marginSmall"/>
+
+    </LinearLayout>
 
 </LinearLayout>
