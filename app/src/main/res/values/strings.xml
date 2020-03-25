@@ -33,6 +33,8 @@
     <string name="title_record">Record</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_profile">Profile</string>
+    <string name="title_drafts">Drafts</string>
+    <string name="title_edit">Edit</string>
 
 
 
@@ -40,6 +42,7 @@
     <string name="description_back">Back</string>
     <string name="btn_next">Next</string>
     <string name="btn_drafts">Drafts</string>
+    <string name="btn_edit">Edit</string>
 
 
     <string name="record_permission_title">title record</string>

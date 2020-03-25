@@ -11,12 +11,12 @@ import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
-import androidx.navigation.NavController
+import androidx.core.view.ViewCompat
+import androidx.navigation.fragment.findNavController
 import com.github.squti.androidwaverecorder.WaveRecorder
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
@@ -24,7 +24,6 @@ import kotlinx.android.synthetic.main.fragment_record.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.runOnUiThread
-import org.jetbrains.anko.support.v4.toast
 
 
 class RecordFragment : BaseFragment() {
@@ -61,6 +60,9 @@ class RecordFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //Setup animation transition
+        ViewCompat.setTranslationZ(view, 1f)
+
         bindViewModel()
         configureToolbar()
         audioSetup()
@@ -92,23 +94,23 @@ class RecordFragment : BaseFragment() {
 
     private fun configureToolbar() {
 
-        //btnToolbarLeft = <Button>(R.id.btnToolbarLeft)
-        //btnToolbarRight = findViewById<Button>(R.id.btnToolbarRight)
+        //Toolbar title
         tvToolbarTitle?.text = getString(R.string.title_record)
 
         //Toolbar Left
-        //btnToolbarLeft.background = getDrawable(R.drawable.upload)
-        //btnToolbarLeft.setBackgroundResource(R.drawable.upload)
-        //btnToolbarLeft.height = 16
         btnToolbarLeft.text = "Cancel"
         btnToolbarLeft.onClick {
-            //this.finish()
+            activity?.finish()
         }
 
         //Toolbar Right
         btnToolbarRight.text = getString(R.string.btn_drafts)
         btnToolbarRight.onClick {
-            toast("Clicked on Drafts")
+            try {
+                findNavController().navigate(R.id.action_record_fragment_to_record_drafts)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -135,6 +137,7 @@ class RecordFragment : BaseFragment() {
         btnToolbarRight.text = ""
     }
 
+
     private fun changeToEditToolbar(){
 
         clearToolBarButtons()
@@ -145,15 +148,22 @@ class RecordFragment : BaseFragment() {
         //val btnToolbarLeft = findViewById<ImageButton>(R.id.btnToolbarLeft)
         btnToolbarLeft.text = "Cancel"
         btnToolbarLeft.onClick {
-            //this.finish()
+            try {
+                activity?.finish()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
 
         //val btnToolbarRigth = findViewById<Button>(R.id.btnToolbarRight)
         btnToolbarRight.text = "Edit"
         btnToolbarRight.onClick {
-            toast("Clicked on Edit")
-
+            try {
+                findNavController().navigate(R.id.action_record_fragment_to_record_edit)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -161,6 +171,8 @@ class RecordFragment : BaseFragment() {
     private fun audioSetup() {
 
         nextButton.isEnabled = false
+
+        mediaPlayer = MediaPlayer() //TODO this is temporaly
 
         /**
          * This path points to application cache directory.
@@ -182,11 +194,13 @@ class RecordFragment : BaseFragment() {
 
         // Next Button
         nextButton.onClick {
-            toast("Do something with the audio file")
+            //toast("Do something with the audio file")
+            //changeToEditToolbar()
+            //playAudio()
 
-            changeToEditToolbar()
-            playAudio()
+            findNavController().navigate(R.id.action_record_fragment_to_record_publish)
         }
+
 
         // Record Button
         recordButton.onClick {
@@ -196,6 +210,7 @@ class RecordFragment : BaseFragment() {
                 recordAudio()
             }
         }
+
 
         // Listener on amplitudes changes to update the Audio Visualizer
         waveRecorder.onAmplitudeListener = {
@@ -218,7 +233,11 @@ class RecordFragment : BaseFragment() {
 
         //Check if all permissions are granted, if not, request again
         if (!hasPermissions(requireContext(), *PERMISSIONS)) {
-            requestPermissions(requireActivity(), PERMISSIONS, PERMISSION_ALL)
+            try {
+                requestPermissions(requireActivity(), PERMISSIONS, PERMISSION_ALL)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }else{
 
             isRecording = true
@@ -271,14 +290,9 @@ class RecordFragment : BaseFragment() {
         }
 
 
+        //Change toolbar
         changeToEditToolbar()
-
         showToolbarButtons()
-
-
-        //handler.removeCallbacks(updateVisualizer)
-        //graphVisualizer?.clearAnimation()
-        //graphVisualizer?.clear()
 
         //Stop timer
         c_meter.stop()
@@ -291,8 +305,6 @@ class RecordFragment : BaseFragment() {
         nextButton.isEnabled = false
 
         try {
-            //mediaRecorder?.release()
-            //mediaRecorder = null
             waveRecorder.stopRecording()
 
             graphVisualizer?.clearAnimation()
@@ -302,7 +314,7 @@ class RecordFragment : BaseFragment() {
             c_meter.base = SystemClock.elapsedRealtime()
             timeWhenStopped = 0
 
-            mediaPlayer = MediaPlayer()
+            //mediaPlayer = MediaPlayer()
             mediaPlayer.setDataSource(audioFilePath)
             mediaPlayer.prepare()
             mediaPlayer.start()
@@ -316,11 +328,15 @@ class RecordFragment : BaseFragment() {
     override fun onDestroy() {
         super.onDestroy()
 
-        try {
-            mediaPlayer.release()
-            //mediaPlayer = null
-        } catch (e: Exception) {
+        if (mediaPlayer != null) {
+            try {
+                mediaPlayer.release()
+                //mediaPlayer = null
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
+
 
     }
 

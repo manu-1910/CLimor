@@ -8,7 +8,7 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar_with_2_icons"/>
+        layout="@layout/toolbar_with_cross"/>
 
     <TextView
         android:layout_margin="@dimen/marginLarge"
@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/black"
         android:layout_gravity="center"
-        android:text="Edit Fragment" />
+        android:text="Drafts Fragment" />
 
 
 </LinearLayout>

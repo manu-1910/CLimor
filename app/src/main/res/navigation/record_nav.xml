@@ -11,10 +11,22 @@
        tools:layout="@layout/fragment_record">
       <action
           android:id="@+id/action_record_fragment_to_record_edit"
-          app:destination="@id/record_edit" />
+          app:destination="@id/record_edit"
+          app:enterAnim="@anim/push_up_in_enter_no_alpha"
+          app:exitAnim="@anim/no_anim"
+          app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha"/>
       <action
           android:id="@+id/action_record_fragment_to_record_publish"
-          app:destination="@id/record_publish" />
+          app:destination="@id/record_publish"
+          app:enterAnim="@anim/push_up_in_enter_no_alpha"
+          app:exitAnim="@anim/no_anim"
+          app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha"/>
+      <action
+          android:id="@+id/action_record_fragment_to_record_drafts"
+          app:destination="@id/record_drafts"
+          app:enterAnim="@anim/push_up_in_enter_no_alpha"
+          app:exitAnim="@anim/no_anim"
+          app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha"/>
    </fragment>
 
    <fragment
@@ -31,5 +43,17 @@
        tools:layout="@layout/fragment_publish">
    </fragment>
 
+   <fragment
+       android:id="@+id/record_drafts"
+       android:name="io.square1.limor.scenes.main.fragments.record.DraftsFragment"
+       android:label="DraftsFragment"
+       tools:layout="@layout/fragment_drafts">
+      <action
+          android:id="@+id/action_record_drafts_to_record_edit"
+          app:destination="@id/record_edit"
+          app:enterAnim="@anim/push_up_in_enter_no_alpha"
+          app:exitAnim="@anim/no_anim"
+          app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha"/>
+   </fragment>
 
 </navigation>

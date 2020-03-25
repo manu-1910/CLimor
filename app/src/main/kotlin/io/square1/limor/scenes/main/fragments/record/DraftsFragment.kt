@@ -5,19 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
+import androidx.navigation.fragment.findNavController
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
-import kotlinx.android.synthetic.main.toolbar_default.*
+import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
+import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
+import kotlinx.android.synthetic.main.toolbar_with_cross.*
 import org.jetbrains.anko.sdk23.listeners.onClick
-import org.jetbrains.anko.support.v4.toast
 
 
-class PublishFragment : BaseFragment() {
+class DraftsFragment : BaseFragment() {
 
 
     companion object {
-        val TAG: String = PublishFragment::class.java.simpleName
-        fun newInstance() = PublishFragment()
+        val TAG: String = DraftsFragment::class.java.simpleName
+        fun newInstance() = DraftsFragment()
     }
 
 
@@ -26,7 +28,7 @@ class PublishFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_publish, container, false)
+        return inflater.inflate(R.layout.fragment_drafts, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -37,6 +39,7 @@ class PublishFragment : BaseFragment() {
 
         bindViewModel()
         configureToolbar()
+
     }
 
 
@@ -56,22 +59,28 @@ class PublishFragment : BaseFragment() {
 
     private fun configureToolbar() {
 
-        tvToolbarTitle?.text = getString(R.string.title_record)
+        //btnToolbarLeft = findViewById<Button>(R.id.btnToolbarLeft)
+        //btnToolbarRight = findViewById<Button>(R.id.btnToolbarRight)
+        tvToolbarTitle?.text = getString(R.string.title_drafts)
 
-        //Toolbar Left
-        //btnToolbarLeft.background = getDrawable(R.drawable.upload)
-        //btnToolbarLeft.setBackgroundResource(R.drawable.upload)
-        //btnToolbarLeft.height = 16
-        btnToolbarLeft.text = "Cancel"
-        btnToolbarLeft.onClick {
+
+        btnClose.onClick {
             //this.finish()
-            toast("Clicked on Cancel")
+            try {
+                findNavController().popBackStack()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         //Toolbar Right
-        btnToolbarRight.text = getString(R.string.btn_drafts)
+        btnToolbarRight.text = getString(R.string.btn_edit)
         btnToolbarRight.onClick {
-            toast("Clicked on Drafts")
+            try {
+                findNavController().navigate(R.id.action_record_drafts_to_record_edit)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

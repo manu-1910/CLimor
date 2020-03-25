@@ -4,19 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import androidx.core.view.ViewCompat
+import androidx.navigation.fragment.findNavController
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
-import kotlinx.android.synthetic.main.toolbar_default.*
+import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
+import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
+import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
 
 
 class EditFragment : BaseFragment() {
-
-
-    private lateinit var btnToolbarLeft: Button
-    private lateinit var btnToolbarRight: Button
 
 
     companion object {
@@ -35,6 +35,9 @@ class EditFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //Setup animation transition
+        ViewCompat.setTranslationZ(view, 100f)
 
         bindViewModel()
         configureToolbar()
@@ -60,22 +63,36 @@ class EditFragment : BaseFragment() {
 
         //btnToolbarLeft = findViewById<Button>(R.id.btnToolbarLeft)
         //btnToolbarRight = findViewById<Button>(R.id.btnToolbarRight)
-        tvToolbarTitle?.text = getString(R.string.title_record)
+        tvToolbarTitle?.text = getString(R.string.title_edit)
 
-        //Toolbar Left
-        //btnToolbarLeft.background = getDrawable(R.drawable.upload)
-        //btnToolbarLeft.setBackgroundResource(R.drawable.upload)
-        //btnToolbarLeft.height = 16
-        btnToolbarLeft.text = "Cancel"
-        btnToolbarLeft.onClick {
-            //this.finish()
-            toast("Clicked on cancel")
+/*
+        btnArrowBack.onClick {
+            try {
+                findNavController().popBackStack()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
+
         //Toolbar Right
-        btnToolbarRight.text = getString(R.string.btn_drafts)
         btnToolbarRight.onClick {
-            toast("Clicked on Drafts")
+            toast("Clicked on Info")
+        }
+*/
+
+        btnClose.onClick {
+            try {
+                findNavController().popBackStack()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        btnInfo.onClick {
+            alert("info dialog") {
+                okButton { }
+            }.show()
         }
     }
 

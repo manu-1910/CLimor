@@ -5,19 +5,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar_default"/>
-
-    <TextView
-        android:layout_margin="@dimen/marginSmall"
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:layout_gravity="center"
-        android:text="Yo soy el record fragment" />
-
     <FrameLayout
         android:id="@+id/mainContainer"
         android:layout_width="match_parent"
@@ -33,6 +20,5 @@
             app:defaultNavHost="true"
             app:navGraph="@navigation/record_nav"/>
     </FrameLayout>
-
 
 </LinearLayout>
