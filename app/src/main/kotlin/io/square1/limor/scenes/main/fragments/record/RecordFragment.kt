@@ -3,18 +3,19 @@ package io.square1.limor.scenes.main.fragments.record
 import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.media.AudioFormat
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
 import android.os.SystemClock
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
@@ -26,9 +27,6 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import kotlinx.android.synthetic.main.fragment_record.*
 import kotlinx.android.synthetic.main.toolbar_default.*
-import org.jetbrains.anko.cancelButton
-import org.jetbrains.anko.noButton
-import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.runOnUiThread
@@ -52,7 +50,6 @@ class RecordFragment : BaseFragment() {
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
 
-
     companion object {
         val TAG: String = RecordFragment::class.java.simpleName
         fun newInstance() = RecordFragment()
@@ -65,6 +62,7 @@ class RecordFragment : BaseFragment() {
     ): View? {
         return inflater.inflate(R.layout.fragment_record, container, false)
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -113,16 +111,13 @@ class RecordFragment : BaseFragment() {
             alert(getString(R.string.alert_cancel_record_descr), getString(R.string.alert_cancel_record_title)) {
 
                 positiveButton(getString(R.string.alert_cancel_record_save)){
+                    it.dismiss()
                     showSaveDraftAlert(view!!)
                 }
 
                 negativeButton(getString(R.string.alert_cancel_record_do_not_save)){
                     activity?.finish()
                 }
-
-                /*cancelButton {
-                    toast("cancel")
-                }*/
 
             }.show()
         }
@@ -136,27 +131,38 @@ class RecordFragment : BaseFragment() {
 
 
     private fun showSaveDraftAlert(view: View) {
-        val builder = AlertDialog.Builder(context)
+        val dialog = AlertDialog.Builder(context)
         val inflater = layoutInflater
-        builder.setTitle(getString(R.string.save_draft_dialog_title))
+        dialog.setTitle(getString(R.string.save_draft_dialog_title))
         val dialogLayout = inflater.inflate(R.layout.dialog_with_edittext, null)
+        val positiveButton= dialogLayout.findViewById<Button>(R.id.saveButton)
+        val cancelButton = dialogLayout.findViewById<Button>(R.id.cancelButton)
         val editText  = dialogLayout.findViewById<EditText>(R.id.editText)
-        builder.setView(dialogLayout)
-        builder.setCancelable(false)
-        builder.setPositiveButton(getString(R.string.btn_save)) { dialog, i ->
+        dialog.setView(dialogLayout)
+        dialog.setCancelable(false)
+        val ad: AlertDialog = dialog.show()
 
-            //TODO temporal approach
-            if (editText.text.toString().isNotEmpty()){
-                toast("Cast name is " + editText.text.toString())
-                findNavController().navigate(R.id.action_record_fragment_to_record_drafts)
-            }else{
-                toast("you must type a name for the draft")
-                showSaveDraftAlert(view)
+        positiveButton.onClick {
+            toast("Cast name is " + editText.text.toString())
+            findNavController().navigate(R.id.action_record_fragment_to_record_drafts)
+            ad.dismiss()
+        }
+
+        cancelButton.onClick {
+            ad.dismiss()
+        }
+
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
             }
 
-        }
-        builder.setNegativeButton(getString(R.string.btn_cancel)) { dialog: DialogInterface?, which: Int ->  dialog!!.dismiss()}
-        builder.show()
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                positiveButton.isEnabled = !p0.isNullOrEmpty()
+            }
+        })
     }
 
 
@@ -240,13 +246,8 @@ class RecordFragment : BaseFragment() {
 
         // Next Button
         nextButton.onClick {
-            //toast("Do something with the audio file")
-            //changeToEditToolbar()
-            //playAudio()
-
             findNavController().navigate(R.id.action_record_fragment_to_record_publish)
         }
-
 
         // Record Button
         recordButton.onClick {
@@ -256,7 +257,6 @@ class RecordFragment : BaseFragment() {
                 recordAudio()
             }
         }
-
 
         // Listener on amplitudes changes to update the Audio Visualizer
         waveRecorder.onAmplitudeListener = {
@@ -311,7 +311,6 @@ class RecordFragment : BaseFragment() {
             c_meter.start()
 
             hideToolbarButtons()
-
         }
 
     }
