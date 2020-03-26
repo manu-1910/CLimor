@@ -8,10 +8,12 @@ import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.findNavController
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
+import kotlinx.android.synthetic.main.fragment_publish.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_cross.*
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.support.v4.toast
 
 
 class PublishFragment : BaseFragment() {
@@ -39,6 +41,7 @@ class PublishFragment : BaseFragment() {
 
         bindViewModel()
         configureToolbar()
+        listeners()
     }
 
 
@@ -53,9 +56,6 @@ class PublishFragment : BaseFragment() {
 
 
 
-
-
-
     private fun configureToolbar() {
 
         //Toolbar title
@@ -63,7 +63,6 @@ class PublishFragment : BaseFragment() {
 
         //Toolbar Left
         btnClose.onClick {
-            //this.finish()
             findNavController().popBackStack()
         }
 
@@ -72,6 +71,21 @@ class PublishFragment : BaseFragment() {
 
     }
 
+
+    private fun listeners(){
+
+        placeHolder.onClick {
+            toast("Choose a photo here")
+        }
+
+        btnSaveAsDraft.onClick {
+            toast("Save as Daft here")
+        }
+
+        btnPublish.onClick {
+            toast ("Publish here")
+        }
+    }
 
 
 

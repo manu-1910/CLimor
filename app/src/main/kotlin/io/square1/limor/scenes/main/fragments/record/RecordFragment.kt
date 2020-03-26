@@ -1,7 +1,9 @@
 package io.square1.limor.scenes.main.fragments.record
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.media.AudioFormat
 import android.media.MediaPlayer
@@ -11,6 +13,8 @@ import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
@@ -22,8 +26,13 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import kotlinx.android.synthetic.main.fragment_record.*
 import kotlinx.android.synthetic.main.toolbar_default.*
+import org.jetbrains.anko.cancelButton
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.runOnUiThread
+import org.jetbrains.anko.support.v4.toast
 
 
 class RecordFragment : BaseFragment() {
@@ -98,20 +107,56 @@ class RecordFragment : BaseFragment() {
         tvToolbarTitle?.text = getString(R.string.title_record)
 
         //Toolbar Left
-        btnToolbarLeft.text = "Cancel"
+        btnToolbarLeft.text = getString(R.string.btn_cancel)
         btnToolbarLeft.onClick {
-            activity?.finish()
+
+            alert(getString(R.string.alert_cancel_record_descr), getString(R.string.alert_cancel_record_title)) {
+
+                positiveButton(getString(R.string.alert_cancel_record_save)){
+                    showSaveDraftAlert(view!!)
+                }
+
+                negativeButton(getString(R.string.alert_cancel_record_do_not_save)){
+                    activity?.finish()
+                }
+
+                /*cancelButton {
+                    toast("cancel")
+                }*/
+
+            }.show()
         }
 
         //Toolbar Right
         btnToolbarRight.text = getString(R.string.btn_drafts)
         btnToolbarRight.onClick {
-            try {
-                findNavController().navigate(R.id.action_record_fragment_to_record_drafts)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            findNavController().navigate(R.id.action_record_fragment_to_record_drafts)
         }
+    }
+
+
+    private fun showSaveDraftAlert(view: View) {
+        val builder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        builder.setTitle(getString(R.string.save_draft_dialog_title))
+        val dialogLayout = inflater.inflate(R.layout.dialog_with_edittext, null)
+        val editText  = dialogLayout.findViewById<EditText>(R.id.editText)
+        builder.setView(dialogLayout)
+        builder.setCancelable(false)
+        builder.setPositiveButton(getString(R.string.btn_save)) { dialog, i ->
+
+            //TODO temporal approach
+            if (editText.text.toString().isNotEmpty()){
+                toast("Cast name is " + editText.text.toString())
+                findNavController().navigate(R.id.action_record_fragment_to_record_drafts)
+            }else{
+                toast("you must type a name for the draft")
+                showSaveDraftAlert(view)
+            }
+
+        }
+        builder.setNegativeButton(getString(R.string.btn_cancel)) { dialog: DialogInterface?, which: Int ->  dialog!!.dismiss()}
+        builder.show()
     }
 
 
@@ -142,10 +187,10 @@ class RecordFragment : BaseFragment() {
 
         clearToolBarButtons()
 
-        //val titleToolbar = findViewById<TextView>(R.id.tvToolbarTitle)
+        //Toolbar title
         tvToolbarTitle?.text = getString(R.string.title_record)
 
-        //val btnToolbarLeft = findViewById<ImageButton>(R.id.btnToolbarLeft)
+        //Toolbar Left
         btnToolbarLeft.text = "Cancel"
         btnToolbarLeft.onClick {
             try {
@@ -155,8 +200,7 @@ class RecordFragment : BaseFragment() {
             }
         }
 
-
-        //val btnToolbarRigth = findViewById<Button>(R.id.btnToolbarRight)
+        //Toolbar Right
         btnToolbarRight.text = "Edit"
         btnToolbarRight.onClick {
             try {
@@ -170,6 +214,8 @@ class RecordFragment : BaseFragment() {
 
     private fun audioSetup() {
 
+        // Disable next button
+        nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
         nextButton.isEnabled = false
 
         mediaPlayer = MediaPlayer() //TODO this is temporaly
@@ -215,13 +261,18 @@ class RecordFragment : BaseFragment() {
         // Listener on amplitudes changes to update the Audio Visualizer
         waveRecorder.onAmplitudeListener = {
             //Log.i(TAG, "Amplitude : $it")
-            runOnUiThread {
-                //Log.i(TAG, "runOnUiThread")
-                if(isRecording){
-                    graphVisualizer.addAmplitude(it.toFloat())
-                    graphVisualizer.invalidate() // refresh the Visualizer
+            try {
+                runOnUiThread {
+                    //Log.i(TAG, "runOnUiThread")
+                    if(isRecording){
+                        graphVisualizer.addAmplitude(it.toFloat())
+                        graphVisualizer.invalidate() // refresh the Visualizer
+                    }
                 }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
             }
+
         }
 
     }

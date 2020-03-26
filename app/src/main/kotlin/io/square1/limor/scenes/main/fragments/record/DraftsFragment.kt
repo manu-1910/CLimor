@@ -54,16 +54,12 @@ class DraftsFragment : BaseFragment() {
 
 
 
-
-
-
     private fun configureToolbar() {
 
-        //btnToolbarLeft = findViewById<Button>(R.id.btnToolbarLeft)
-        //btnToolbarRight = findViewById<Button>(R.id.btnToolbarRight)
+        //Toolbar title
         tvToolbarTitle?.text = getString(R.string.title_drafts)
 
-
+        //Toolbar Left
         btnClose.onClick {
             //this.finish()
             try {
@@ -77,6 +73,9 @@ class DraftsFragment : BaseFragment() {
         btnToolbarRight.text = getString(R.string.btn_edit)
         btnToolbarRight.onClick {
             try {
+                //Setup animation transition
+                ViewCompat.setTranslationZ(view!!, 1f)
+
                 findNavController().navigate(R.id.action_record_drafts_to_record_edit)
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -13,7 +13,6 @@ import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.support.v4.toast
 
 
 class EditFragment : BaseFragment() {
@@ -57,30 +56,12 @@ class EditFragment : BaseFragment() {
 
 
 
-
-
     private fun configureToolbar() {
 
-        //btnToolbarLeft = findViewById<Button>(R.id.btnToolbarLeft)
-        //btnToolbarRight = findViewById<Button>(R.id.btnToolbarRight)
+        //Toolbar Title
         tvToolbarTitle?.text = getString(R.string.title_edit)
 
-/*
-        btnArrowBack.onClick {
-            try {
-                findNavController().popBackStack()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-
-        //Toolbar Right
-        btnToolbarRight.onClick {
-            toast("Clicked on Info")
-        }
-*/
-
+        //Toolbar left
         btnClose.onClick {
             try {
                 findNavController().popBackStack()
@@ -89,11 +70,13 @@ class EditFragment : BaseFragment() {
             }
         }
 
+        //Toolbar Right
         btnInfo.onClick {
             alert("info dialog") {
                 okButton { }
             }.show()
         }
+
     }
 
 

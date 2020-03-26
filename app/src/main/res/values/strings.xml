@@ -39,13 +39,15 @@
 
 
 
-
+    <!-- Record Screen -->
     <string name="description_back">Back</string>
     <string name="btn_next">Next</string>
     <string name="btn_drafts">Drafts</string>
     <string name="btn_edit">Edit</string>
     <string name="btn_save_as_draft">Save as Draft</string>
     <string name="btn_publish">Publish</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_save">Save</string>
 
 
     <string name="record_permission_title">title record</string>
@@ -54,13 +56,22 @@
     <string name="storage_permission_title">title storage</string>
     <string name="storage_permission_description">Storage permission required</string>
 
+    <string name="alert_cancel_record_title">Cancel Cast</string>
+    <string name="alert_cancel_record_descr">What would you wish to do with your Cast?</string>
+    <string name="alert_cancel_record_save">Save as Draft</string>
+    <string name="alert_cancel_record_do_not_save">Don\'t Save</string>
+
+    <string name="save_draft_dialog_title">Save as Draft</string>
+    <string name="save_draft_dialog_descr">Give your draft a name.</string>
+    <string name="save_draft_dialog_hint_name">New Cast</string>
+
 
     <!-- Publish Screen -->
     <string name="choose_a_photo">Choose a photo</string>
     <string name="title_title">Title</string>
     <string name="title_caption">Caption</string>
     <string name="title_hashtags">Hashtags</string>
-    <string name="title_Location">Location</string>
+    <string name="title_location">Location</string>
 
 
 
