@@ -15,12 +15,14 @@ abstract class MainActivityFragmentsBuildersModule {
     @ContributesAndroidInjector
     abstract fun contributeDiscoverFragmentInjector(): DiscoverFragment
 
-    @ContributesAndroidInjector
-    abstract fun contributeRecordFragmentInjector(): RecordFragment
+    //@ContributesAndroidInjector
+    //abstract fun contributeRecordFragmentInjector(): RecordActivity
 
     @ContributesAndroidInjector
     abstract fun contributeNotificationsFragmentInjector(): NotificationsFragment
 
     @ContributesAndroidInjector
     abstract fun contributeProfileFragmentInjector(): ProfileFragment
+
+
 }
