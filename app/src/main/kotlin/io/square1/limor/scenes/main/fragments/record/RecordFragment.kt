@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioFormat
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
 import android.os.SystemClock
@@ -23,8 +22,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.findNavController
 import com.github.squti.androidwaverecorder.WaveRecorder
+import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
+import io.square1.limor.scenes.utils.VisualizerView
 import kotlinx.android.synthetic.main.fragment_record.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -36,13 +37,14 @@ import org.jetbrains.anko.support.v4.toast
 class RecordFragment : BaseFragment() {
 
 
-    private lateinit var mediaPlayer: MediaPlayer
-    private lateinit var waveRecorder: WaveRecorder
-
+    private var waveRecorder: WaveRecorder? = null
     private lateinit var audioFilePath: String
     private var isRecording = false
     private var isFirstTapRecording = true
     private var timeWhenStopped: Long = 0
+    private var rootView: View? = null
+    private var voiceGraph : VisualizerView? = null
+    var app: App? = null
 
     private val PERMISSION_ALL = 1
     private var PERMISSIONS = arrayOf(
@@ -57,11 +59,29 @@ class RecordFragment : BaseFragment() {
 
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_record, container, false)
+        if (rootView == null) {
+            rootView = inflater.inflate(R.layout.fragment_record, container, false)
+
+            voiceGraph = rootView?.findViewById(R.id.graphVisualizer)
+            //rvLeads = rootView?.findViewById(R.id.rvLeads)
+            //pbMainLeads = rootView?.findViewById(R.id.pbMainLeads)
+            //lytLeadsFilter = rootView?.findViewById(R.id.lytLeadsFilter)
+            //tvLeadsFilter = rootView?.findViewById(R.id.tvLeadsFilter)
+        }
+        app = context?.applicationContext as App
+        return rootView
     }
+
+    //override fun onCreateView(
+    //    inflater: LayoutInflater, container: ViewGroup?,
+    //    savedInstanceState: Bundle?
+    //): View? {
+    //    return inflater.inflate(R.layout.fragment_record, container, false)
+    //}
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -98,7 +118,6 @@ class RecordFragment : BaseFragment() {
     }
 
 
-
     private fun configureToolbar() {
 
         //Toolbar title
@@ -107,18 +126,14 @@ class RecordFragment : BaseFragment() {
         //Toolbar Left
         btnToolbarLeft.text = getString(R.string.btn_cancel)
         btnToolbarLeft.onClick {
-
             alert(getString(R.string.alert_cancel_record_descr), getString(R.string.alert_cancel_record_title)) {
-
                 positiveButton(getString(R.string.alert_cancel_record_save)){
                     it.dismiss()
                     showSaveDraftAlert(view!!)
                 }
-
                 negativeButton(getString(R.string.alert_cancel_record_do_not_save)){
                     activity?.finish()
                 }
-
             }.show()
         }
 
@@ -143,7 +158,7 @@ class RecordFragment : BaseFragment() {
         val ad: AlertDialog = dialog.show()
 
         positiveButton.onClick {
-            toast("Cast name is " + editText.text.toString())
+            toast("Cast name is " + editText.text.toString()) //TODO delete this when drafts screen implemented
             findNavController().navigate(R.id.action_record_fragment_to_record_drafts)
             ad.dismiss()
         }
@@ -199,32 +214,21 @@ class RecordFragment : BaseFragment() {
         //Toolbar Left
         btnToolbarLeft.text = "Cancel"
         btnToolbarLeft.onClick {
-            try {
-                activity?.finish()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            activity?.finish()
         }
 
         //Toolbar Right
         btnToolbarRight.text = "Edit"
         btnToolbarRight.onClick {
-            try {
-                findNavController().navigate(R.id.action_record_fragment_to_record_edit)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            findNavController().navigate(R.id.action_record_fragment_to_record_edit)
         }
     }
 
 
     private fun audioSetup() {
 
-        // Disable next button
-        nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
-        nextButton.isEnabled = false
 
-        mediaPlayer = MediaPlayer() //TODO this is temporaly
+
 
         /**
          * This path points to application cache directory.
@@ -232,11 +236,22 @@ class RecordFragment : BaseFragment() {
          */
         audioFilePath = Environment.getExternalStorageDirectory()?.absolutePath + "/audioFile.wav"
 
-        waveRecorder = WaveRecorder(audioFilePath)
-        waveRecorder.waveConfig.sampleRate = 44100
-        waveRecorder.waveConfig.channels = AudioFormat.CHANNEL_IN_STEREO
-        waveRecorder.waveConfig.audioEncoding = AudioFormat.ENCODING_PCM_16BIT
-        waveRecorder.noiseSuppressorActive = true
+        if(waveRecorder == null){
+            waveRecorder = WaveRecorder(audioFilePath)
+            waveRecorder?.waveConfig?.sampleRate = 44100
+            waveRecorder?.waveConfig?.channels = AudioFormat.CHANNEL_IN_STEREO
+            waveRecorder?.waveConfig?.audioEncoding = AudioFormat.ENCODING_PCM_16BIT
+            waveRecorder?.noiseSuppressorActive = true
+
+            // Disable next button
+            nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
+            nextButton.isEnabled = false
+        }else{
+            // Enable next button
+            nextButton.background = requireContext().getDrawable(R.drawable.bg_round_yellow_ripple)
+            nextButton.isEnabled = true
+        }
+
 
     }
 
@@ -246,6 +261,13 @@ class RecordFragment : BaseFragment() {
 
         // Next Button
         nextButton.onClick {
+            waveRecorder?.stopRecording()
+
+            //Stop chronometer
+            c_meter.base = SystemClock.elapsedRealtime()
+            timeWhenStopped = 0
+
+            //Go tu Publish fragment
             findNavController().navigate(R.id.action_record_fragment_to_record_publish)
         }
 
@@ -259,20 +281,17 @@ class RecordFragment : BaseFragment() {
         }
 
         // Listener on amplitudes changes to update the Audio Visualizer
-        waveRecorder.onAmplitudeListener = {
-            //Log.i(TAG, "Amplitude : $it")
+        waveRecorder?.onAmplitudeListener = {
             try {
                 runOnUiThread {
-                    //Log.i(TAG, "runOnUiThread")
                     if(isRecording){
-                        graphVisualizer.addAmplitude(it.toFloat())
-                        graphVisualizer.invalidate() // refresh the Visualizer
+                        voiceGraph?.addAmplitude(it.toFloat())
+                        voiceGraph?.invalidate() // refresh the Visualizer
                     }
                 }
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }
-
         }
 
     }
@@ -301,9 +320,9 @@ class RecordFragment : BaseFragment() {
 
             if(isFirstTapRecording){
                 isFirstTapRecording = false
-                waveRecorder.startRecording()
+                waveRecorder?.startRecording()
             }else{
-                waveRecorder.resumeRecording()
+                waveRecorder?.resumeRecording()
             }
 
             //Start timer
@@ -326,17 +345,14 @@ class RecordFragment : BaseFragment() {
         nextButton.isEnabled = true
 
         if (isRecording) {
-            waveRecorder.pauseRecording()
+            waveRecorder?.pauseRecording()
 
             //Stop the chronometer and anotate the time when it is stopped
             timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
 
             isRecording = false
         } else {
-            mediaPlayer.release()
-            //mediaPlayer = null
-
-            waveRecorder.stopRecording()
+            waveRecorder?.stopRecording()
         }
 
 
@@ -350,43 +366,11 @@ class RecordFragment : BaseFragment() {
 
 
 
-    private fun playAudio() {
-        //TODO This functionallity will not exists, only for test purposes (delete it)
-        nextButton.isEnabled = false
-
-        try {
-            waveRecorder.stopRecording()
-
-            graphVisualizer?.clearAnimation()
-            graphVisualizer?.clear()
-
-            //Stop chronometer
-            c_meter.base = SystemClock.elapsedRealtime()
-            timeWhenStopped = 0
-
-            //mediaPlayer = MediaPlayer()
-            mediaPlayer.setDataSource(audioFilePath)
-            mediaPlayer.prepare()
-            mediaPlayer.start()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-
-
     override fun onDestroy() {
         super.onDestroy()
 
-        if (mediaPlayer != null) {
-            try {
-                mediaPlayer.release()
-                //mediaPlayer = null
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
+        voiceGraph?.clearAnimation()
+        voiceGraph?.clear()
 
     }
 
