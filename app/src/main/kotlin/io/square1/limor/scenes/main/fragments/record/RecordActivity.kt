@@ -32,9 +32,6 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_record)
 
-        //Initialize Shared Preferences to store device firebase token
-        //sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
         //bindViewModel()
         setupNavigationController()
 

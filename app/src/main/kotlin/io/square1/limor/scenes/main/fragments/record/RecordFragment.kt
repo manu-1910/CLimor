@@ -67,10 +67,6 @@ class RecordFragment : BaseFragment() {
             rootView = inflater.inflate(R.layout.fragment_record, container, false)
 
             voiceGraph = rootView?.findViewById(R.id.graphVisualizer)
-            //rvLeads = rootView?.findViewById(R.id.rvLeads)
-            //pbMainLeads = rootView?.findViewById(R.id.pbMainLeads)
-            //lytLeadsFilter = rootView?.findViewById(R.id.lytLeadsFilter)
-            //tvLeadsFilter = rootView?.findViewById(R.id.tvLeadsFilter)
         }
         app = context?.applicationContext as App
         return rootView
@@ -212,13 +208,13 @@ class RecordFragment : BaseFragment() {
         tvToolbarTitle?.text = getString(R.string.title_record)
 
         //Toolbar Left
-        btnToolbarLeft.text = "Cancel"
+        btnToolbarLeft.text = getString(R.string.btn_cancel)
         btnToolbarLeft.onClick {
             activity?.finish()
         }
 
         //Toolbar Right
-        btnToolbarRight.text = "Edit"
+        btnToolbarRight.text = getString(R.string.btn_edit)
         btnToolbarRight.onClick {
             findNavController().navigate(R.id.action_record_fragment_to_record_edit)
         }

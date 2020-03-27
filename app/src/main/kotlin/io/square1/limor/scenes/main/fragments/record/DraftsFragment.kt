@@ -61,7 +61,6 @@ class DraftsFragment : BaseFragment() {
 
         //Toolbar Left
         btnClose.onClick {
-            //this.finish()
             try {
                 findNavController().popBackStack()
             } catch (e: Exception) {
