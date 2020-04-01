@@ -34,6 +34,9 @@
        android:name="io.square1.limor.scenes.main.fragments.record.EditFragment"
        android:label="EditFragment"
        tools:layout="@layout/fragment_edit">
+      <argument
+          android:name="audioFilename"
+          app:type="io.square1.limor.uimodels.UIRecordingItem" />
    </fragment>
 
    <fragment

@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/brandSecondary400"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_with_2_icons"/>
+
+    <!--<View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@drawable/shadow_below"/>-->
+
+    <AbsoluteLayout
+        android:id="@+id/absoluteLayout"
+        android:layout_width="match_parent"
+        android:layout_marginTop="2dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/colorPrimary">
+
+        <io.square1.limor.scenes.utils.waveform.view.WaveformView
+            android:id="@+id/waveform"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </AbsoluteLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/brandSecondary300"/>
+
+    <LinearLayout
+        android:id="@+id/llEditingTools"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/brandSecondary400"
+        android:layout_height="40dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="42dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tvCopy"
+                    android:layout_marginRight="8dp"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:text="Copy"/>
+
+                <TextView
+                    android:id="@+id/tvPaste"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:text="Paste"/>
+
+                <TextView
+                    android:id="@+id/tvDelete"
+                    android:layout_marginLeft="8dp"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:padding="4dp"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:text="Delete"/>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlPreviewSection"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:alpha="0.4"
+            android:visibility="gone">
+
+            <RelativeLayout
+                android:id="@+id/rlPreview"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/ivPlayPreview"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="4dp"
+                    android:padding="4dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/play"/>
+
+                <TextView
+                    android:id="@+id/tvPreview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Preview"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/ivPlayPreview"/>
+
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/verticalDivider"
+                android:layout_width="1dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:layout_height="match_parent"
+                android:layout_toEndOf="@+id/rlPreview"
+                android:background="@color/brandSecondary600"
+                android:layout_marginStart="6dp"/>
+
+            <TextView
+                android:id="@+id/tvTimePassPreview"
+                android:textColor="@color/white"
+                android:layout_toEndOf="@+id/verticalDivider"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_centerVertical="true"
+                android:textSize="@dimen/textSizeVerySmall"
+                android:text="00:00"/>
+
+            <SeekBar
+                android:id="@+id/seekBarPreview"
+                android:layout_centerInParent="true"
+                android:layout_toStartOf="@+id/tvDurationPreview"
+                android:layout_toEndOf="@+id/tvTimePassPreview"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"/>
+
+            <TextView
+                android:id="@+id/tvDurationPreview"
+                android:textColor="@color/white"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:textSize="@dimen/textSizeVerySmall"
+                android:text="00:00"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/brandSecondary400"
+        android:layout_marginStart="@dimen/marginMedium"
+        android:layout_marginEnd="@dimen/marginMedium">
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="3dip"/>
+
+        <TextView
+            android:id="@+id/tvTimePass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/seekBar"
+            android:textSize="@dimen/textSizeVerySmall"
+            android:textColor="@color/brandSecondary100"
+            android:fontFamily="@font/roboto"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:gravity="left"
+            android:text="00:00"/>
+
+        <TextView
+            android:id="@+id/tvDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/seekBar"
+            android:textSize="@dimen/textSizeVerySmall"
+            android:textColor="@color/brandSecondary100"
+            android:fontFamily="@font/roboto"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:gravity="right"
+            android:text="00:00"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="62dip">
+
+        <TextView
+            android:id="@+id/tvUndo"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:gravity="center"
+            android:text="@string/undo"
+            android:fontFamily="@font/roboto"
+            android:textColor="@color/brandSecondary100"
+            android:textSize="@dimen/textSizeNormal" />
+
+        <ImageButton android:id="@+id/rew"
+            android:layout_toLeftOf="@id/play"
+            android:layout_width="64dip"
+            android:layout_height="52dip"
+            android:layout_marginTop="6dip"
+            android:layout_marginBottom="6dip"
+            style="@android:style/MediaButton"
+            android:contentDescription="@string/rewind"
+            android:src="@drawable/rewind" />
+
+        <ImageButton android:id="@+id/play"
+            android:layout_centerHorizontal="true"
+            android:layout_width="71dip"
+            android:layout_height="52dip"
+            android:layout_marginTop="6dip"
+            android:layout_marginBottom="6dip"
+            style="@android:style/MediaButton"
+            android:contentDescription="@string/play"
+            android:src="@drawable/play" />
+
+        <ImageButton android:id="@+id/ffwd"
+            android:layout_toRightOf="@id/play"
+            android:layout_width="64dip"
+            android:layout_height="52dip"
+            android:layout_marginRight="5dip"
+            android:layout_marginTop="6dip"
+            android:layout_marginBottom="6dip"
+            style="@android:style/MediaButton"
+            android:contentDescription="@string/ffwd"
+            android:src="@drawable/forward" />
+
+        <TextView
+            android:id="@+id/tvRedo"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:text="@string/redo"
+            android:layout_marginEnd="@dimen/marginMedium"
+            android:fontFamily="@font/roboto"
+            android:textColor="@color/brandSecondary100"
+            android:textSize="@dimen/textSizeNormal"  />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/marginLarge"
+        android:layout_marginTop="@dimen/marginLarge"
+        android:layout_marginStart="@dimen/marginMedium"
+        android:layout_marginEnd="@dimen/marginMedium"
+        android:orientation="horizontal">
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/nextButtonEdit"
+            style="@android:style/Widget.Material.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bg_round_yellow_ripple"
+            android:fontFamily="@font/roboto_medium"
+            android:text="@string/btn_next"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/textSizeNormal" />
+
+    </LinearLayout>
+
+</LinearLayout>

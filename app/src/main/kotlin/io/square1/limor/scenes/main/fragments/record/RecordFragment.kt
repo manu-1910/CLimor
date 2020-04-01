@@ -26,8 +26,10 @@ import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.scenes.utils.VisualizerView
+import io.square1.limor.uimodels.UIRecordingItem
 import kotlinx.android.synthetic.main.fragment_record.*
 import kotlinx.android.synthetic.main.toolbar_default.*
+import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.runOnUiThread
@@ -45,6 +47,7 @@ class RecordFragment : BaseFragment() {
     private var rootView: View? = null
     private var voiceGraph : VisualizerView? = null
     var app: App? = null
+    var recordingItem: UIRecordingItem? = null
 
     private val PERMISSION_ALL = 1
     private var PERMISSIONS = arrayOf(
@@ -216,7 +219,9 @@ class RecordFragment : BaseFragment() {
         //Toolbar Right
         btnToolbarRight.text = getString(R.string.btn_edit)
         btnToolbarRight.onClick {
-            findNavController().navigate(R.id.action_record_fragment_to_record_edit)
+            waveRecorder?.stopRecording() //TODO JJ
+            var bundle = bundleOf("recordingItem" to recordingItem)
+            findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
         }
     }
 
@@ -317,6 +322,9 @@ class RecordFragment : BaseFragment() {
             if(isFirstTapRecording){
                 isFirstTapRecording = false
                 waveRecorder?.startRecording()
+
+                recordingItem = UIRecordingItem()
+
             }else{
                 waveRecorder?.resumeRecording()
             }
@@ -346,9 +354,21 @@ class RecordFragment : BaseFragment() {
             //Stop the chronometer and anotate the time when it is stopped
             timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
 
+            recordingItem?.filePath = audioFilePath
+            recordingItem?.editedFilePath = audioFilePath
+            recordingItem?.length = timeWhenStopped
+            recordingItem?.title = "Autosave"
+            recordingItem?.time = System.currentTimeMillis() / 1000
+
             isRecording = false
         } else {
             waveRecorder?.stopRecording()
+
+            recordingItem?.filePath = audioFilePath
+            recordingItem?.editedFilePath = audioFilePath
+            recordingItem?.length = c_meter.base
+            recordingItem?.title = "Autosave"
+            recordingItem?.time = System.currentTimeMillis() / 1000
         }
 
 

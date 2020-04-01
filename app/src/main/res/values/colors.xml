@@ -68,4 +68,33 @@
 
     <color name="toolbar_text">#ffffff</color>
 
+
+    <color name="colorRandomRed">#ff1744</color>
+    <color name="colorRandomBlue">#2979ff</color>
+    <color name="colorRandomYellow">#beb128</color>
+    <color name="colorRandomPurple">#d500f9</color>
+    <color name="colorRandomGreen">#00c853</color>
+    <color name="colorRandomPink">#ff4081</color>
+    <color name="colorRandomLightBlue">#00e5ff</color>
+    <color name="colorRandomOrange">#ff9100</color>
+    <color name="colorRandomDarkPurple">#6200ea</color>
+    <color name="colorRandomTurquoise">#1de9b6</color>
+
+
+    <!--Waveform Colors-->
+    <color name="waveform_selected">#00d6dc</color>
+    <color name="waveform_unselected">#00F8FF</color>
+    <color name="waveform_unselected_bkgnd_overlay">#000000</color>
+    <color name="waveform_selected_bkgnd_overlay">#a7056f</color>
+    <color name="selection_border">#ffffff</color>
+    <color name="playback_indicator">#ffff66</color>
+    <color name="grid_line">#66ffffff</color>
+    <color name="timecode">#ffffff</color>
+    <color name="timecode_shadow">#aa000000</color>
+    <color name="type_bkgnd_alarm">#88880000</color>
+    <color name="type_bkgnd_ringtone">#88008888</color>
+    <color name="type_bkgnd_notification">#88666600</color>
+    <color name="type_bkgnd_music">#88000000</color>
+    <color name="type_bkgnd_unsupported">#88cccccc</color>
+
 </resources>

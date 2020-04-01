@@ -245,4 +245,10 @@ dependencies {
     //Audio Recorder Library
     implementation 'com.github.squti:Android-Wave-Recorder:1.4.0'
 
+    // Date, Time & Money
+    implementation 'joda-time:joda-time:2.9.9'
+    implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
+    implementation 'org.joda:joda-money:0.12'
+    //implementation 'org.mp4parser:isoparser:1.9.27'
+    implementation group: 'com.googlecode.mp4parser', name: 'isoparser', version: '1.0.6'
 }
