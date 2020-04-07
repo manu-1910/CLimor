@@ -67,9 +67,9 @@
 
 
     <color name="toolbar_text">#ffffff</color>
+    <color name="marker_time_text">#95959b</color>
 
-
-    <color name="colorRandomRed">#ff1744</color>
+    <!--<color name="colorRandomRed">#ff1744</color>
     <color name="colorRandomBlue">#2979ff</color>
     <color name="colorRandomYellow">#beb128</color>
     <color name="colorRandomPurple">#d500f9</color>
@@ -78,7 +78,10 @@
     <color name="colorRandomLightBlue">#00e5ff</color>
     <color name="colorRandomOrange">#ff9100</color>
     <color name="colorRandomDarkPurple">#6200ea</color>
-    <color name="colorRandomTurquoise">#1de9b6</color>
+    <color name="colorRandomTurquoise">#1de9b6</color>-->
+    <!--Markers -->
+    <color name="colorBackgroundMarker">#bee3f8</color>
+    <color name="colorRandomBlue">#4299e1</color>
 
 
     <!--Waveform Colors-->

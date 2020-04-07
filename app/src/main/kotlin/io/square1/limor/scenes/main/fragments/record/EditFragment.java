@@ -8,9 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -59,7 +57,7 @@ public class EditFragment extends WaveformFragment {
     public static String BROADCAST_UPDATE_DRAFTS = "update_drafts";
 
 
-    private TextView tvRedo, tvUndo, tvPaste, tvCopy, tvDelete;
+    private TextView tvRedo, tvUndo, tvPaste, tvCopy, tvDelete, tvToolbarTitle;
     private ImageButton closeButton, infoButton;
     private Button nextButton;
 
@@ -153,6 +151,9 @@ public class EditFragment extends WaveformFragment {
         tvCopy = (TextView) getView().findViewById(R.id.tvCopy);
         tvDelete = (TextView) getView().findViewById(R.id.tvDelete);
 
+        tvToolbarTitle = (TextView) getView().findViewById(R.id.tvToolbarTitle);
+        tvToolbarTitle.setText(getString(R.string.edit));
+
         closeButton = (ImageButton) getView().findViewById(R.id.btnClose);
         infoButton = (ImageButton) getView().findViewById(R.id.btnInfo);
         nextButton = (Button) getView().findViewById(R.id.nextButtonEdit);
@@ -217,7 +218,8 @@ public class EditFragment extends WaveformFragment {
                     }
                 }
                 //AnalyticsManager.getInstance().recordEditEvent(AnalyticsManager.RecordingEditEventType.RECORDING_EDIT_COPY_PASTE);
-                addMarker(selectedMarker.getStartPos(), selectedMarker.getStartPos() + 2, true, null);
+                //addMarker(selectedMarker.getStartPos(), selectedMarker.getStartPos() + 2, true, null);    //TODO JJ esta es la original
+                addMarker(selectedMarker.getStartPos(), selectedMarker.getStartPos(), true, null); //TODO JJ
             }
         });
 

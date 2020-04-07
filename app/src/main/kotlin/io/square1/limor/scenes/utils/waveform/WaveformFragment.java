@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -58,7 +59,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     // region Variables
 
-    protected AbsoluteLayout absoluteLayout;
+    protected RelativeLayout absoluteLayout;
     protected ProgressDialog progressDialog;
     protected SoundFile soundFile;
     protected File file;
@@ -86,6 +87,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected long markerTouchStartMsec;
     protected float density;
     protected int markerSize;
+    protected int markerSizeDown;
     protected int markerInset;
     protected int markerTopOffset;
     protected ArrayList<MarkerSet> markerSets;
@@ -365,7 +367,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         isEditMode = isEditMarker;
         updateDisplay();
         if (markerSets.size() > 0) {
-            rlPreviewSection.setAlpha(1.0f);
+            //rlPreviewSection.setAlpha(1.0f);
+            rlPreviewSection.setAlpha(0.4f); //TODO JJ set alpha to 60% of visibility
         }
     }
 
@@ -468,9 +471,12 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         density = metrics.density;
 
-        markerSize = (int) (24 * density);
-        markerInset = (int) (18 * density);
-        markerTopOffset = (int) (10 * density);
+        System.out.println("Density is: " + density); //TODO JJ
+
+        markerSize = (int) (24 * density); //TODO JJ Había un 24
+        markerSizeDown = (int) (14 * density); //TODO JJ Había un 14
+        markerInset = (int) (18 * density); //18
+        markerTopOffset = (int) (10 * density); //10
 
         absoluteLayout = view.findViewById(R.id.absoluteLayout);
         playButton = view.findViewById(R.id.play);
@@ -611,7 +617,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         waveformView.invalidate();
     }
 
-    protected synchronized void updateMarkers() {
+    private synchronized void updateMarkers() {
 
         if (markerSets != null && markerSets.size() > 0) {
 
@@ -633,7 +639,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     }
                     markerSet.setStartX(0);
                 }
-                markerSet.setMiddleX(markerSet.getMiddlePos() - offset - markerSize + (markerSize / 2));
+                markerSet.setMiddleX(markerSet.getMiddlePos() - offset - markerSize + (markerSize / 2)); //TODO estaba markerSize
                 if (markerSet.getMiddleX() + markerSet.getMiddleMarker().getWidth() >= 0) {
                     if (!markerSet.isMiddleVisible()) {
                         handler.postDelayed(() -> {
@@ -679,18 +685,32 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     markerSet.getEndMarker().setAlpha(0.15f);
                 }
 
-                markerSet.getStartMarker().setLayoutParams(new AbsoluteLayout.LayoutParams(
-                                markerSize,
-                                markerSize,
-                                markerSet.getStartX(), waveformView.getMeasuredHeight() - markerSet.getStartMarker().getHeight() - dpToPx(getActivity(), 2)));
-                markerSet.getEndMarker().setLayoutParams(new AbsoluteLayout.LayoutParams(
-                                markerSize,
-                                markerSize,
-                                markerSet.getEndX(), waveformView.getMeasuredHeight() - markerSet.getEndMarker().getHeight() - dpToPx(getActivity(), 2)));
-                markerSet.getMiddleMarker().setLayoutParams(new AbsoluteLayout.LayoutParams(
-                                markerSize,
-                                markerSize,
-                                markerSet.getMiddleX(), dpToPx(getActivity(), 28)));
+
+                int test1 = (int) (11 * density);
+                int test2 = (int) (25 * density);
+                System.out.println("marker height is: " + markerSet.getEndMarker().getHeight());
+                System.out.println("test 1        is: " + test1);
+
+                RelativeLayout.LayoutParams startMarkerParams = new RelativeLayout.LayoutParams(markerSizeDown, markerSizeDown);
+                startMarkerParams.leftMargin = markerSet.getStartX() + dpToPx(getActivity(), 11);
+                //startMarkerParams.topMargin = waveformView.getMeasuredHeight() - markerSet.getStartMarker().getHeight() - dpToPx(getActivity(), 14); //TODO había un 2
+                //startMarkerParams.topMargin = waveformView.getMeasuredHeight() - markerSet.getStartMarker().getHeight() - test1;
+                startMarkerParams.topMargin = waveformView.getMeasuredHeight() - test2;
+                markerSet.getStartMarker().setLayoutParams(startMarkerParams);
+
+
+                RelativeLayout.LayoutParams endMarkerParams = new RelativeLayout.LayoutParams(markerSizeDown, markerSizeDown);
+                endMarkerParams.leftMargin = markerSet.getEndX() - dpToPx(getActivity(), 11);
+                //endMarkerParams.topMargin = waveformView.getMeasuredHeight() - markerSet.getEndMarker().getHeight() - dpToPx(getActivity(), 14); //TODO había un 2
+                //endMarkerParams.topMargin = waveformView.getMeasuredHeight() - markerSet.getEndMarker().getHeight() - test1;
+                endMarkerParams.topMargin = waveformView.getMeasuredHeight() - test2;
+                markerSet.getEndMarker().setLayoutParams(endMarkerParams);
+
+
+                RelativeLayout.LayoutParams middleMarkerParams = new RelativeLayout.LayoutParams(markerSize, markerSize);
+                middleMarkerParams.leftMargin =  markerSet.getMiddleX();
+                middleMarkerParams.topMargin = dpToPx(getActivity(), 28);
+                markerSet.getMiddleMarker().setLayoutParams(middleMarkerParams);
             }
         }
     }
@@ -884,7 +904,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     private void setupSeekBarPreview() {
         seekBarPreview.setMax(playerPreview.getDuration());
-        seekBarPreview.setMinimumHeight(3); //TODO JJ
+        //seekBarPreview.setMinimumHeight(3); //TODO JJ
         seekBarPreview.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
@@ -1014,21 +1034,21 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
 
     public static int getRandomColor() {
-        Random rand = new Random();
-        int randomNumber = rand.nextInt(10);
-        switch (randomNumber) {
-            case 0 : return R.color.colorRandomRed;
-            case 1 : return R.color.colorRandomBlue;
-            case 2 : return R.color.colorRandomYellow;
-            case 3 : return R.color.colorRandomPurple;
-            case 4 : return R.color.colorRandomGreen;
-            case 5 : return R.color.colorRandomPink;
-            case 6 : return R.color.colorRandomLightBlue;
-            case 7 : return R.color.colorRandomOrange;
-            case 8 : return R.color.colorRandomDarkPurple;
-            case 9 : return R.color.colorRandomTurquoise;
-        }
-        return R.color.colorPrimary;
+//        Random rand = new Random();
+//        int randomNumber = rand.nextInt(10);
+//        switch (randomNumber) {
+//            case 0 : return R.color.colorRandomRed;
+//            case 1 : return R.color.colorRandomBlue;
+//            case 2 : return R.color.colorRandomYellow;
+//            case 3 : return R.color.colorRandomPurple;
+//            case 4 : return R.color.colorRandomGreen;
+//            case 5 : return R.color.colorRandomPink;
+//            case 6 : return R.color.colorRandomLightBlue;
+//            case 7 : return R.color.colorRandomOrange;
+//            case 8 : return R.color.colorRandomDarkPurple;
+//            case 9 : return R.color.colorRandomTurquoise;
+//        }
+        return R.color.colorBackgroundMarker;
     }
 
 

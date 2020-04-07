@@ -4,7 +4,4 @@
     android:shape="oval">
     <solid
         android:color="@color/colorRandomBlue"/>
-    <size
-        android:width="10dp"
-        android:height="10dp"/>
 </shape>

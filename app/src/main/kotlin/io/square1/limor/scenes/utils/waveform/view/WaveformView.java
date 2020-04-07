@@ -75,6 +75,7 @@ public class WaveformView extends View {
     protected Paint playbackLinePaint;
     protected Paint timeCodePaint;
     protected Paint timeCodePaintBlack;
+    protected Paint separatorLine; //TODO JJ
 
     protected int[] lenByZoomLevel;
     protected float[] zoomFactorByZoomLevel;
@@ -98,6 +99,9 @@ public class WaveformView extends View {
     public static final long ONE_MINUTE = ONE_SECOND * 60;
     public static final long ONE_HOUR = ONE_MINUTE * 60;
 
+    public static final int TEXT_SIZE_13 = 13;
+    public static final int TEXT_SIZE_8 = 8;
+
     public static int LINE_WIDTH = 10;
 
     // endregion
@@ -109,30 +113,31 @@ public class WaveformView extends View {
 
         gridPaint = new Paint();
         gridPaint.setAntiAlias(false);
-        gridPaint.setColor(getResources().getColor(R.color.grid_line));
+        gridPaint.setColor(getResources().getColor(R.color.brandSecondary500)); //grid_line
 
         selectedLinePaint = new Paint();
-        //selectedLinePaint.setAntiAlias(false);
-        //selectedLinePaint.setColor(getResources().getColor(R.color.waveform_selected));
-        selectedLinePaint.setColor(getResources().getColor(R.color.brandPrimary500)); // set color to green
+        selectedLinePaint.setAntiAlias(false);
+        selectedLinePaint.setColor(getResources().getColor(R.color.waveform_selected));
+
+        /*selectedLinePaint.setColor(getResources().getColor(R.color.white));
         selectedLinePaint.setStrokeWidth(LINE_WIDTH); // set stroke width
         selectedLinePaint.setDither(true);                    // set the dither to true
         selectedLinePaint.setStyle(Paint.Style.STROKE);       // set to STOKE
         selectedLinePaint.setStrokeJoin(Paint.Join.ROUND);    // set the join to round you want
         selectedLinePaint.setStrokeCap(Paint.Cap.ROUND);      // set the paint cap to round too
         selectedLinePaint.setPathEffect(new CornerPathEffect(10) );   // set the path effect when they join.
-        selectedLinePaint.setAntiAlias(true);
+        selectedLinePaint.setAntiAlias(true);*/
 
         unselectedLinePaint = new Paint();
         unselectedLinePaint.setAntiAlias(false);
         unselectedLinePaint.setColor(getResources().getColor(R.color.blue500)); //waveform_unselected
         unselectedBackgroundPaint = new Paint();
         unselectedBackgroundPaint.setAntiAlias(false);
-        unselectedBackgroundPaint.setColor(getResources().getColor(R.color.green500)); //waveform_unselected_bkgnd_overlay //Este está OK
+        unselectedBackgroundPaint.setColor(getResources().getColor(R.color.brandSecondary500)); // waveform_unselected_bkgnd_overlay //Este está OK
 
         greyBackgroundPaint = new Paint();
         greyBackgroundPaint.setAntiAlias(false);
-        greyBackgroundPaint.setColor(getResources().getColor(R.color.brandSecondary500)); //Éste está OK
+        greyBackgroundPaint.setColor(getResources().getColor(R.color.brandSecondary500)); //green500
 
         dividerBackgroundPaint = new Paint();
         dividerBackgroundPaint.setAntiAlias(false);
@@ -148,17 +153,22 @@ public class WaveformView extends View {
 
         playbackLinePaint = new Paint();
         playbackLinePaint.setAntiAlias(false);
-        playbackLinePaint.setColor(getResources().getColor(R.color.white)); //Éste está OK
+        playbackLinePaint.setColor(getResources().getColor(R.color.brandPrimary500));
+
+        //TODO JJ
+        separatorLine = new Paint();
+        separatorLine.setAntiAlias(false);
+        separatorLine.setColor(getResources().getColor(R.color.brandSecondary100));
 
         timeCodePaint = new Paint();
-        timeCodePaint.setTextSize(8);
+        timeCodePaint.setTextSize(TEXT_SIZE_13);
         timeCodePaint.setAntiAlias(true);
-        timeCodePaint.setColor(getResources().getColor(R.color.brandSecondary100)); //timecode   //Éste es el color de texto de la barra de tiempos?
+        timeCodePaint.setColor(getResources().getColor(R.color.brandSecondary100)); //Éste es el color de texto de la barra de tiempos
 
         timeCodePaintBlack = new Paint();
-        timeCodePaintBlack.setTextSize(8);
+        timeCodePaintBlack.setTextSize(TEXT_SIZE_13);
         timeCodePaintBlack.setAntiAlias(true);
-        timeCodePaintBlack.setColor(getResources().getColor(R.color.black)); //black
+        timeCodePaintBlack.setColor(getResources().getColor(R.color.marker_time_text)); //Éste es el color del texto del tiempo cuando creas un Marker
 
 
         gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
@@ -347,8 +357,8 @@ public class WaveformView extends View {
 
     public void recomputeHeights(float density) {
         this.density = density;
-        timeCodePaint.setTextSize((int) (8 * density));
-        timeCodePaintBlack.setTextSize((int) (8 * density));
+        timeCodePaint.setTextSize((int) (TEXT_SIZE_13 * density));
+        timeCodePaintBlack.setTextSize((int) (TEXT_SIZE_13 * density));
         invalidate();
     }
 
@@ -393,88 +403,73 @@ public class WaveformView extends View {
             // Waveform itself
             double h = (getScaledHeight(zoomFactorByZoomLevel[zoomLevel], start + i) * getMeasuredHeight() / 2) * 0.5; // scale the wave here
             int height = (int)h;
-            drawWaveformLine(canvas, i, ctr - height, ctr + 1 + height, selectedLinePaint);         //TODO JJ aquí es donde pinta la linea del waveform?
+            drawWaveformLine(canvas, i, ctr - height, ctr + 1 + height, selectedLinePaint);         //TODO JJ aquí es donde pinta la linea del waveform
 
             for (MarkerSet markerSet : markerSets) {
                 if (i + start >= markerSet.getStartPos() && i + start < markerSet.getEndPos()) {
-                    //selectedBackgroundPaint.setAntiAlias(false);
-                    //selectedBackgroundPaint.setColor(getResources().getColor(markerSet.getBackgroundColor()));
-                    //selectedBackgroundPaint.setAlpha(WaveformFragment.isEditMode && ! markerSet.isEditMarker() ? 60 : 120);
-                    selectedBackgroundPaint.setColor(getResources().getColor(R.color.white)); // set color to green
-                    selectedBackgroundPaint.setStrokeWidth(LINE_WIDTH); // set stroke width
-                    selectedBackgroundPaint.setDither(true);                    // set the dither to true
-                    selectedBackgroundPaint.setStyle(Paint.Style.STROKE);       // set to STOKE
-                    selectedBackgroundPaint.setStrokeJoin(Paint.Join.ROUND);    // set the join to round you want
-                    selectedBackgroundPaint.setStrokeCap(Paint.Cap.ROUND);      // set the paint cap to round too
-                    selectedBackgroundPaint.setPathEffect(new CornerPathEffect(10) );   // set the path effect when they join.
-                    selectedBackgroundPaint.setAntiAlias(true);
+                    selectedBackgroundPaint.setAntiAlias(false);
+                    selectedBackgroundPaint.setColor(getResources().getColor(markerSet.getBackgroundColor()));  //TODO JJ Éste es el background cuando seleccionas un marker
                     selectedBackgroundPaint.setAlpha(WaveformFragment.isEditMode && ! markerSet.isEditMarker() ? 60 : 120);
-
                     drawWaveformLine(canvas, i, topOffset, measuredHeight - topOffset, selectedBackgroundPaint);
                 }
             }
-            //ctr = ctr + LINE_WIDTH; //TODO JJ
-            i = i + LINE_WIDTH; //TODO JJ
-            //i++; //Ésto es lo que había
+            i++;
         }
 
-        // Grid
+        //// Grid
         float quarter = getMeasuredWidth() / 4;
         float eight = quarter / 2;
-        for (int count = 1; count < 8; count++) {
-            canvas.drawRect(eight * count, topOffset, eight * count + 2, measuredHeight - topOffset, gridPaint);
-        }
+        //for (int count = 1; count < 8; count++) {
+        //    canvas.drawRect(eight * count, topOffset, eight * count + 2, measuredHeight - topOffset, gridPaint);
+        //}
 
         // Draw borders of the selection and marker timestamps
-        float timeStampBoxWidth = dpToPx(getContext(), 38);
-        float timeStampBoxHeight = dpToPx(getContext(), 16);
-
         for (MarkerSet markerSet : markerSets) {
-            // Borders
-            canvas.drawLine(markerSet.getStartPos() - offset + 1f, 0, markerSet.getStartPos() - offset + 1f, measuredHeight, borderLinePaint);
-            canvas.drawLine(markerSet.getEndPos() - offset + 1f, 0, markerSet.getEndPos() - offset + 1f, measuredHeight, borderLinePaint);
+            // Vertical borders of marker area
+            canvas.drawLine(markerSet.getStartPos() - offset + 1f, 0, markerSet.getStartPos() - offset + 1f, measuredHeight - topOffset, borderLinePaint);
+            canvas.drawLine(markerSet.getEndPos() - offset + 1f, 0, markerSet.getEndPos() - offset + 1f, measuredHeight - topOffset, borderLinePaint);
 
             // Right top timestamp
             if (!markerSet.isEditMarker()) {
-                float leftEnd = markerSet.getEndPos() - offset;
-                float topEnd = topOffset * 3 - dpToPx(getContext(), 11);
-                float rightEnd = leftEnd + timeStampBoxWidth;
-                float bottomEnd = topEnd + timeStampBoxHeight;
-
-                canvas.drawRect(leftEnd, topEnd, rightEnd, bottomEnd, timeCodePaint);
+                float leftEnd = markerSet.getEndPos() + dpToPx(getContext(), 16); //11
+                float topEnd = measuredHeight - topOffset + dpToPx(getContext(), 16);//11
                 String timeCode = "" + getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getEndPos()));
-                canvas.drawText(timeCode, markerSet.getEndPos() - offset + dpToPx(getContext(), 2), topOffset * 3, timeCodePaintBlack);
+                canvas.drawText(timeCode, leftEnd, topEnd, timeCodePaintBlack);
             }
 
             // Left bottom timestamp
-            float leftStart = markerSet.getStartPos() - offset - timeStampBoxWidth;
-            float topStart = measuredHeight - topOffset * (markerSet.isEditMarker() ? 4 : 2) - dpToPx(getContext(), 11);
-            float rightStart = markerSet.getStartPos() - offset;
-            float bottomStart = topStart + timeStampBoxHeight;
-
-            canvas.drawRect(leftStart, topStart, rightStart, bottomStart, timeCodePaint);
+            float leftStart = markerSet.getStartPos() - dpToPx(getContext(), 44);
+            float topStart = measuredHeight - topOffset + dpToPx(getContext(), 16);//11
             String timeCodeStart = "" + getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getStartPos()));
-            canvas.drawText(timeCodeStart, markerSet.getStartPos() - offset - timeStampBoxWidth + dpToPx(getContext(), 2),measuredHeight - topOffset * (markerSet.isEditMarker() ? 4 : 2), timeCodePaintBlack);
+            canvas.drawText(timeCodeStart, leftStart, topStart, timeCodePaintBlack);
         }
 
         // Top background
         canvas.drawRect(0f, 0f, (float)getMeasuredWidth(), topOffset * 2, greyBackgroundPaint);
         canvas.drawRect(0f, topOffset - 3, (float)getMeasuredWidth(), topOffset - 1, dividerBackgroundPaint);
 
+
+        //Light grey separator lines //TODO JJ
+        canvas.drawLine(0f, topOffset, (float)getMeasuredWidth(), topOffset, separatorLine);
+        canvas.drawLine(0f, topOffset * 2, (float)getMeasuredWidth(), topOffset * 2, separatorLine);
+        canvas.drawLine(0f, measuredHeight - topOffset - 1f, (float)getMeasuredWidth(), measuredHeight - topOffset - 1f, separatorLine);
+
+
         // Bottom background
-        canvas.drawRect(0f, measuredHeight - topOffset, (float)getMeasuredWidth(), measuredHeight, greyBackgroundPaint);
+        //canvas.drawRect(0f, measuredHeight - topOffset / 2, (float)getMeasuredWidth(), measuredHeight, greyBackgroundPaint); //greyBackgroundPaint
+        canvas.drawRect(0f, measuredHeight, (float)getMeasuredWidth(), measuredHeight, playbackLinePaint); //greyBackgroundPaint
 
         // Draw text
         for (int count = 1; count < 8; count++) {
             String timeCode = "" + getLengthFromEpochForPlayer(pixelsToMillisecs((int)(eight * count) + offset));
             float offset = (float) (0.5 * timeCodePaint.measureText(timeCode));
-            canvas.drawText(timeCode, eight * count - offset, (int) (12 * density), timeCodePaint);
+            canvas.drawText(timeCode, eight * count - offset , (int) (16 * density), timeCodePaint);
         }
 
         i = 0;
 
         while (i < width) {
-            // Playback marker
+            // Playback marker //TODO JJ linea vertical cuando le das al play
             if (i + start == playbackPos) {
                 canvas.drawRect(i, topOffset * 2 , i + dpToPx(getContext(), 2), measuredHeight - topOffset, playbackLinePaint);
             }
