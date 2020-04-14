@@ -16,7 +16,7 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="@dimen/marginMedium"
         android:layout_weight="1"/>
-    
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
