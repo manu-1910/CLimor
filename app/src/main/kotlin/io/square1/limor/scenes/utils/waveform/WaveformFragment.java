@@ -471,7 +471,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         density = metrics.density;
 
-        System.out.println("Density is: " + density); //TODO JJ
+        //System.out.println("Density is: " + density); //TODO JJ
 
         markerSize = (int) (24 * density); //TODO JJ Había un 24
         markerSizeDown = (int) (14 * density); //TODO JJ Había un 14
