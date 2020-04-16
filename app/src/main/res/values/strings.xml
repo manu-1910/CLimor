@@ -130,4 +130,10 @@
     <string name="invalid_email_prompt">Invalid Email</string>
     <string name="add_photo">Add Photo</string>
 
+    <!-- Menu Marker -->
+    <string name="menu_copy">Copy</string>
+    <string name="menu_paste">Paste</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_dismiss">Dismiss</string>
+
 </resources>

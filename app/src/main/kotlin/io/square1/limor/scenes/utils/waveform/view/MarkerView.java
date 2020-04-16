@@ -30,6 +30,7 @@ public class MarkerView extends androidx.appcompat.widget.AppCompatImageView {
     public final static int MIDDLE_MARKER = 1;
     public final static int END_MARKER = 2;
 
+
     public interface MarkerListener {
         void markerTouchStart(MarkerView marker, float pos);
         void markerTouchMove(MarkerView marker, float pos);

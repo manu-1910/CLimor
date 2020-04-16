@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -22,10 +23,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.content.ContextCompat;
 import org.joda.time.DateTime;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -37,6 +42,10 @@ import io.square1.limor.scenes.utils.statemanager.StepManager;
 import io.square1.limor.scenes.utils.waveform.soundfile.SoundFile;
 import io.square1.limor.scenes.utils.waveform.view.MarkerView;
 import io.square1.limor.scenes.utils.waveform.view.WaveformView;
+import me.kareluo.ui.OptionMenu;
+import me.kareluo.ui.OptionMenuView;
+import me.kareluo.ui.PopupMenuView;
+import me.kareluo.ui.PopupView;
 
 /*
  * Copyright (C) 2008 Google Inc.
@@ -113,6 +122,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     private boolean isMovingTooMuch;
 
     private final int ALLOWED_PIXEL_OFFSET = 18;
+
+    private enum MenuOption {
+        Copy, Paste, Delete, Dismiss;
+    }
 
     // endregion
 
@@ -293,15 +306,19 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         long elapsedMsec = System.currentTimeMillis() - markerTouchStartMsec;
 
         if (elapsedMsec > 350 && marker.getType() == MarkerView.MIDDLE_MARKER && !isMovingTooMuch) {
-            showAlertYesNo(getActivity(), getString(R.string.remove), getString(R.string.remove_marker_prompt), new DialogInterface.OnClickListener() {
+
+            showPopUpMenu(marker); //TODO JJ new
+
+            /*showAlertYesNo(getActivity(), getString(R.string.remove), getString(R.string.remove_marker_prompt), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     removeMarker(marker.getMarkerSet());
                 }
-            });
+            });*/
         }
         isMovingTooMuch = false;
         touchDragging = false;
+
     }
 
     @Override
@@ -310,6 +327,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             marker.clearFocus();
         }
     }
+
 
     protected void addMarker(int startPos, int endPos, boolean isEditMarker, Integer color) {
 
@@ -330,6 +348,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         MarkerView middleMarker = new MarkerView(getActivity());
         middleMarker.setType(MarkerView.MIDDLE_MARKER);
         middleMarker.setImageDrawable(getResources().getDrawable(isEditMarker ? R.drawable.more_tab : R.drawable.marker_top));
+        //middleMarker.setColorFilter(R.color.marker_blue); //TODO JJ
         middleMarker.setListener(this);
         middleMarker.setOnFocusChangeListener((view, isSelected) -> {
             MarkerView markerView = (MarkerView)view;
@@ -353,7 +372,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         newMarkerSet.setEndPos(endPos);
         newMarkerSet.setEndVisible(true);
 
-        newMarkerSet.setBackgroundColor(isEditMarker ?  R.color.white : color != null ? color : getRandomColor());
+        newMarkerSet.setBackgroundColor(isEditMarker ?  R.color.white : color != null ? color : R.color.colorBackgroundMarker);
         newMarkerSet.setId(System.currentTimeMillis());
         newMarkerSet.setEditMarker(isEditMarker);
 
@@ -389,6 +408,55 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         removeMarker(firstMarkerSet);
         removeMarker(secondMarkerSet);
         shouldReloadPreview = true;
+    }
+
+
+    public void showPopUpMenu(MarkerView marker){ //TODO JJ new
+
+        PopupMenuView menuView = new PopupMenuView(getContext(), R.menu.menu_popup_edit, new MenuBuilder(getContext()));
+
+        if (marker.getMarkerSet().isMiddleVisible() && marker.getMarkerSet().isEditMarker()){
+            //If is the Paste marker I only will show the "paste" option menu
+            menuView.setMenuItems(Arrays.asList(
+                    new OptionMenu(getString(R.string.menu_paste))//,
+                    //new OptionMenu(getString(R.string.menu_dismiss))
+            ));
+        }else{
+            menuView.setMenuItems(Arrays.asList(
+                    //new OptionMenu("Copy"), new OptionMenu("copy1"),
+                    new OptionMenu(getString(R.string.menu_copy)),
+                    new OptionMenu(getString(R.string.menu_paste)),
+                    new OptionMenu(getString(R.string.menu_delete)),
+                    new OptionMenu(getString(R.string.menu_dismiss))
+            ));
+        }
+
+        //menuView.setSites(PopupView.SITE_BOTTOM, PopupView.SITE_LEFT, PopupView.SITE_TOP, PopupView.SITE_RIGHT);
+        menuView.setSites( PopupView.SITE_TOP );
+
+        menuView.setOnMenuClickListener(new OptionMenuView.OnOptionMenuClickListener() {
+            @Override
+            public boolean onOptionMenuClick(int position, OptionMenu menu) {
+                MenuOption menuOption = MenuOption.valueOf(menu.getTitle().toString());
+                switch (menuOption){
+                    case Copy:
+                        tvCopy.performClick();
+                        break;
+                    case Paste :
+                        tvPaste.performClick();
+                        break;
+                    case Delete :
+                        tvDelete.performClick();
+                        break;
+                    case Dismiss :
+                        removeMarker(marker.getMarkerSet());
+                        break;
+                }
+                return true;
+            }
+        });
+
+        menuView.show(marker);
     }
 
     protected void removeMarker(MarkerSet markerSet) {
@@ -471,10 +539,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         density = metrics.density;
 
-        //System.out.println("Density is: " + density); //TODO JJ
-
         markerSize = (int) (24 * density); //TODO JJ Había un 24
-        markerSizeDown = (int) (14 * density); //TODO JJ Había un 14
+        markerSizeDown = (int) (19 * density); //TODO JJ Había un 14
         markerInset = (int) (18 * density); //18
         markerTopOffset = (int) (10 * density); //10
 
@@ -639,7 +705,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     }
                     markerSet.setStartX(0);
                 }
-                markerSet.setMiddleX(markerSet.getMiddlePos() - offset - markerSize + (markerSize / 2)); //TODO estaba markerSize
+                markerSet.setMiddleX(markerSet.getMiddlePos() - offset - markerSize + (markerSize / 2));
                 if (markerSet.getMiddleX() + markerSet.getMiddleMarker().getWidth() >= 0) {
                     if (!markerSet.isMiddleVisible()) {
                         handler.postDelayed(() -> {
@@ -672,12 +738,12 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     markerSet.setEndX(0);
                 }
 
-                markerSet.getMiddleMarker().setColorFilter(ContextCompat.getColor(getContext(), markerSet.getBackgroundColor()));
-                markerSet.getMiddleMarker().setAlpha(markerSet.isEditMarker() ? 1.0f : 0.5f);
-                markerSet.getStartMarker().setColorFilter(ContextCompat.getColor(getContext(), markerSet.getBackgroundColor()));
-                markerSet.getStartMarker().setAlpha(0.5f);
-                markerSet.getEndMarker().setColorFilter(ContextCompat.getColor(getContext(), markerSet.getBackgroundColor()));
-                markerSet.getEndMarker().setAlpha(0.5f);
+                //markerSet.getMiddleMarker().setColorFilter(ContextCompat.getColor(getContext(), markerSet.getBackgroundColor()));
+                //markerSet.getMiddleMarker().setAlpha(markerSet.isEditMarker() ? 1.0f : 0.5f);
+                //markerSet.getStartMarker().setColorFilter(ContextCompat.getColor(getContext(), markerSet.getBackgroundColor()));
+                //markerSet.getStartMarker().setAlpha(0.5f);
+                //markerSet.getEndMarker().setColorFilter(ContextCompat.getColor(getContext(), markerSet.getBackgroundColor()));
+                //markerSet.getEndMarker().setAlpha(0.5f);
 
                 if (isEditMode && !markerSet.isEditMarker()) {
                     markerSet.getMiddleMarker().setAlpha(0.15f);
@@ -686,26 +752,17 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                 }
 
 
-                int test1 = (int) (11 * density);
-                int test2 = (int) (25 * density);
-                System.out.println("marker height is: " + markerSet.getEndMarker().getHeight());
-                System.out.println("test 1        is: " + test1);
+                int markerTopMargin = (int) (25 * density);
 
                 RelativeLayout.LayoutParams startMarkerParams = new RelativeLayout.LayoutParams(markerSizeDown, markerSizeDown);
-                startMarkerParams.leftMargin = markerSet.getStartX() + dpToPx(getActivity(), 11);
-                //startMarkerParams.topMargin = waveformView.getMeasuredHeight() - markerSet.getStartMarker().getHeight() - dpToPx(getActivity(), 14); //TODO había un 2
-                //startMarkerParams.topMargin = waveformView.getMeasuredHeight() - markerSet.getStartMarker().getHeight() - test1;
-                startMarkerParams.topMargin = waveformView.getMeasuredHeight() - test2;
+                startMarkerParams.leftMargin = markerSet.getStartX() + dpToPx(getActivity(), 9);
+                startMarkerParams.topMargin = waveformView.getMeasuredHeight() - markerTopMargin;
                 markerSet.getStartMarker().setLayoutParams(startMarkerParams);
 
-
                 RelativeLayout.LayoutParams endMarkerParams = new RelativeLayout.LayoutParams(markerSizeDown, markerSizeDown);
-                endMarkerParams.leftMargin = markerSet.getEndX() - dpToPx(getActivity(), 11);
-                //endMarkerParams.topMargin = waveformView.getMeasuredHeight() - markerSet.getEndMarker().getHeight() - dpToPx(getActivity(), 14); //TODO había un 2
-                //endMarkerParams.topMargin = waveformView.getMeasuredHeight() - markerSet.getEndMarker().getHeight() - test1;
-                endMarkerParams.topMargin = waveformView.getMeasuredHeight() - test2;
+                endMarkerParams.leftMargin = markerSet.getEndX() - dpToPx(getActivity(), 9);
+                endMarkerParams.topMargin = waveformView.getMeasuredHeight() - markerTopMargin;
                 markerSet.getEndMarker().setLayoutParams(endMarkerParams);
-
 
                 RelativeLayout.LayoutParams middleMarkerParams = new RelativeLayout.LayoutParams(markerSize, markerSize);
                 middleMarkerParams.leftMargin =  markerSet.getMiddleX();
@@ -1032,36 +1089,16 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     protected abstract void populateMarkers();
 
-
-    public static int getRandomColor() {
-//        Random rand = new Random();
-//        int randomNumber = rand.nextInt(10);
-//        switch (randomNumber) {
-//            case 0 : return R.color.colorRandomRed;
-//            case 1 : return R.color.colorRandomBlue;
-//            case 2 : return R.color.colorRandomYellow;
-//            case 3 : return R.color.colorRandomPurple;
-//            case 4 : return R.color.colorRandomGreen;
-//            case 5 : return R.color.colorRandomPink;
-//            case 6 : return R.color.colorRandomLightBlue;
-//            case 7 : return R.color.colorRandomOrange;
-//            case 8 : return R.color.colorRandomDarkPurple;
-//            case 9 : return R.color.colorRandomTurquoise;
-//        }
-        return R.color.colorBackgroundMarker;
-    }
-
-
     public static int dpToPx(Context context, int dps) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return (int) (TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, dps, context.getResources().getDisplayMetrics()));
     }
 
-
     public static void showAlertYesNo(Context context, int title, int message, DialogInterface.OnClickListener listener) {
         showAlertCustomButtons(context, context.getString(title), context.getString(message), listener, context.getString(R.string.yes), null, context.getString(R.string.no));
     }
+
     public static void showAlertYesNo(Context context, String title, String message, DialogInterface.OnClickListener listener) {
         showAlertCustomButtons(context, title, message, listener, context.getString(R.string.yes), null, context.getString(R.string.no));
     }

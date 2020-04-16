@@ -139,10 +139,6 @@ public class EditFragment extends WaveformFragment {
         }
     }
 
-
-
-
-
     protected void listeners() {
 
         tvRedo = (TextView) getView().findViewById(R.id.tvRedo);
@@ -380,6 +376,7 @@ public class EditFragment extends WaveformFragment {
         }).start();
     }
 
+
     protected void deleteMarkedChunk() {
         if (markerSets == null || markerSets.size() == 0 || isPlayingPreview || isPlaying || selectedMarker == null) {
             return;
@@ -480,6 +477,7 @@ public class EditFragment extends WaveformFragment {
 
     }
 
+
     private void handleTimeStamps(MarkerSet markerSet, ArrayList<UITimeStamp> timeStamps, int startPos, int endPos) {
         UITimeStamp timeStamp = new UITimeStamp();
         timeStamp.setStartSample(startPos);
@@ -498,13 +496,10 @@ public class EditFragment extends WaveformFragment {
     private void registerReceivers(){
 
         // your oncreate code should be
-
         IntentFilter filter = new IntentFilter();
         filter.addAction("BROADCAST_OPEN_HOW_TO_EDIT");
         filter.addAction("BROADCAST_OPEN_PUBLISH_SCREEN");
         filter.addAction("BROADCAST_RESTORE_INITIAL_RECORDING");
-
-
 
         receiver = new BroadcastReceiver() {
             @Override
@@ -521,7 +516,6 @@ public class EditFragment extends WaveformFragment {
             }
         };
         getContext().registerReceiver(receiver, filter);
-
     }
 
 
@@ -560,6 +554,7 @@ public class EditFragment extends WaveformFragment {
         //        PublishFragment.newInstance(recordingItem),
         //        true);
     }
+
 
     protected void restoreToInitialState() {
         recordingItem.setTimeStamps(initialTimeStamps);
@@ -600,4 +595,6 @@ public class EditFragment extends WaveformFragment {
             progressDialog.dismiss();
         }
     }
+
+
 }

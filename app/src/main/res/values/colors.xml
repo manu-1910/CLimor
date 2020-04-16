@@ -81,7 +81,8 @@
     <color name="colorRandomTurquoise">#1de9b6</color>-->
     <!--Markers -->
     <color name="colorBackgroundMarker">#bee3f8</color>
-    <color name="colorRandomBlue">#4299e1</color>
+    <color name="marker_blue">#4299e1</color>
+    <color name="marker_paste_green">#319795</color>
 
 
     <!--Waveform Colors-->
@@ -89,7 +90,7 @@
     <color name="waveform_unselected">#00F8FF</color>
     <color name="waveform_unselected_bkgnd_overlay">#000000</color>
     <color name="waveform_selected_bkgnd_overlay">#a7056f</color>
-    <color name="selection_border">#ffffff</color>
+    <color name="selection_border">#4299e1</color>
     <color name="playback_indicator">#ffff66</color>
     <color name="grid_line">#66ffffff</color>
     <color name="timecode">#ffffff</color>

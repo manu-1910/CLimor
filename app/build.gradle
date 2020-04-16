@@ -251,4 +251,7 @@ dependencies {
     implementation 'org.joda:joda-money:0.12'
     //implementation 'org.mp4parser:isoparser:1.9.27'
     implementation group: 'com.googlecode.mp4parser', name: 'isoparser', version: '1.0.6'
+
+    //Popup menu view like UIMenuController
+    implementation 'me.kareluo.ui:popmenu:1.1.0'
 }
