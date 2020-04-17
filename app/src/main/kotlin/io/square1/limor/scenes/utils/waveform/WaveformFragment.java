@@ -124,7 +124,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     private final int ALLOWED_PIXEL_OFFSET = 18;
 
     private enum MenuOption {
-        Copy, Paste, Delete, Dismiss;
+        Copy, Paste, Delete, Dismiss, Preview;
     }
 
     // endregion
@@ -324,7 +324,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     @Override
     public void markerFocus(MarkerView marker) {
         if (isEditMode && !marker.getMarkerSet().isEditMarker()) {
-            marker.clearFocus();
+            //TODO JJ New the app explote copying and pasting multiple markers, I add try/catch to avoid ANR and investigate later
+                marker.clearFocus();
         }
     }
 
@@ -335,9 +336,14 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
         MarkerView startMarker = new MarkerView(getActivity());
         startMarker.setType(MarkerView.START_MARKER);
-        startMarker.setImageDrawable(getResources().getDrawable(R.drawable.marker_circle_blue));
+        if (isEditMarker){
+            startMarker.setImageDrawable(getResources().getDrawable(R.drawable.marker_circle_green));
+        }else{
+            startMarker.setImageDrawable(getResources().getDrawable(R.drawable.marker_circle_blue));
+        }
         startMarker.setListener(this);
         enableMarker(startMarker, !isEditMarker);
+
 
         MarkerView endMarker = new MarkerView(getActivity());
         endMarker.setType(MarkerView.END_MARKER);
@@ -348,7 +354,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         MarkerView middleMarker = new MarkerView(getActivity());
         middleMarker.setType(MarkerView.MIDDLE_MARKER);
         middleMarker.setImageDrawable(getResources().getDrawable(isEditMarker ? R.drawable.more_tab : R.drawable.marker_top));
-        //middleMarker.setColorFilter(R.color.marker_blue); //TODO JJ
+
         middleMarker.setListener(this);
         middleMarker.setOnFocusChangeListener((view, isSelected) -> {
             MarkerView markerView = (MarkerView)view;
@@ -359,6 +365,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             }
         });
         enableMarker(middleMarker, true);
+        enableMarker(startMarker, true); //TODO JJ new
 
         newMarkerSet.setMiddleMarker(middleMarker);
         newMarkerSet.setMiddlePos(startPos + ((endPos - startPos) / 2));
@@ -393,6 +400,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     private void enableMarker(MarkerView markerView, boolean shouldEnable) {
         if (shouldEnable) {
+            //markerView.setImageAlpha(255);
             markerView.setImageAlpha(255);
             markerView.setFocusable(true);
             markerView.setFocusableInTouchMode(true);
@@ -413,7 +421,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     public void showPopUpMenu(MarkerView marker){ //TODO JJ new
 
-        PopupMenuView menuView = new PopupMenuView(getContext(), R.menu.menu_popup_edit, new MenuBuilder(getContext()));
+        PopupMenuView menuView = new PopupMenuView(getContext(), R.menu.menu_popup_edit, new MenuBuilder(getActivity()));
 
         if (marker.getMarkerSet().isMiddleVisible() && marker.getMarkerSet().isEditMarker()){
             //If is the Paste marker I only will show the "paste" option menu
@@ -424,8 +432,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }else{
             menuView.setMenuItems(Arrays.asList(
                     //new OptionMenu("Copy"), new OptionMenu("copy1"),
+                    new OptionMenu(getString(R.string.menu_preview)),
                     new OptionMenu(getString(R.string.menu_copy)),
-                    new OptionMenu(getString(R.string.menu_paste)),
                     new OptionMenu(getString(R.string.menu_delete)),
                     new OptionMenu(getString(R.string.menu_dismiss))
             ));
@@ -442,14 +450,17 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     case Copy:
                         tvCopy.performClick();
                         break;
-                    case Paste :
+                    case Paste:
                         tvPaste.performClick();
                         break;
-                    case Delete :
+                    case Delete:
                         tvDelete.performClick();
                         break;
-                    case Dismiss :
+                    case Dismiss:
                         removeMarker(marker.getMarkerSet());
+                        break;
+                    case Preview:
+                        ivPlayPreview.performClick();
                         break;
                 }
                 return true;
@@ -738,6 +749,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     markerSet.setEndX(0);
                 }
 
+
+
+                markerSet.getMiddleMarker().setColorFilter( markerSet.isEditMarker() ? ContextCompat.getColor(getContext(), R.color.marker_paste_green) : ContextCompat.getColor(getContext(), R.color.marker_blue));
+
                 //markerSet.getMiddleMarker().setColorFilter(ContextCompat.getColor(getContext(), markerSet.getBackgroundColor()));
                 //markerSet.getMiddleMarker().setAlpha(markerSet.isEditMarker() ? 1.0f : 0.5f);
                 //markerSet.getStartMarker().setColorFilter(ContextCompat.getColor(getContext(), markerSet.getBackgroundColor()));
@@ -746,9 +761,11 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                 //markerSet.getEndMarker().setAlpha(0.5f);
 
                 if (isEditMode && !markerSet.isEditMarker()) {
-                    markerSet.getMiddleMarker().setAlpha(0.15f);
+                    /*markerSet.getMiddleMarker().setAlpha(0.15f);
                     markerSet.getStartMarker().setAlpha(0.15f);
-                    markerSet.getEndMarker().setAlpha(0.15f);
+                    markerSet.getEndMarker().setAlpha(0.15f);*/
+                    //TODO JJ I've commented lines above
+                    //markerSet.getStartMarker().setColorFilter(ContextCompat.getColor(getContext(), R.color.marker_paste_green));
                 }
 
 

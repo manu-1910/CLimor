@@ -77,6 +77,7 @@ public class WaveformView extends View {
     protected Paint timeCodePaintBlack;
     protected Paint separatorLine; //TODO JJ
     protected Paint testLine; //TODO JJ
+    protected Paint borderLinePaintEdit; //TODO JJ
 
     protected int[] lenByZoomLevel;
     protected float[] zoomFactorByZoomLevel;
@@ -159,6 +160,12 @@ public class WaveformView extends View {
         borderLinePaint.setStrokeWidth(dpToPx(getContext(), 2));
         borderLinePaint.setPathEffect(new DashPathEffect(new float[]{3.0f, 2.0f}, 0.0f));
         borderLinePaint.setColor(getResources().getColor(R.color.selection_border));
+
+        borderLinePaintEdit = new Paint();
+        borderLinePaintEdit.setAntiAlias(true);
+        borderLinePaintEdit.setStrokeWidth(dpToPx(getContext(), 2));
+        borderLinePaintEdit.setPathEffect(new DashPathEffect(new float[]{3.0f, 2.0f}, 0.0f));
+        borderLinePaintEdit.setColor(getResources().getColor(R.color.marker_paste_green));
 
         playbackLinePaint = new Paint();
         playbackLinePaint.setAntiAlias(false);
@@ -458,9 +465,15 @@ public class WaveformView extends View {
 
         // Draw borders of the selection and marker timestamps
         for (MarkerSet markerSet : markerSets) {
+
             // Vertical borders of marker area
-            canvas.drawLine(markerSet.getStartPos() - offset + 1f, 0, markerSet.getStartPos() - offset + 1f, measuredHeight - topOffset, borderLinePaint);
-            canvas.drawLine(markerSet.getEndPos() - offset + 1f, 0, markerSet.getEndPos() - offset + 1f, measuredHeight - topOffset, borderLinePaint);
+            if (!markerSet.isEditMarker()) {
+                canvas.drawLine(markerSet.getStartPos() - offset + 1f, 0, markerSet.getStartPos() - offset + 1f, measuredHeight - topOffset, borderLinePaint);
+                canvas.drawLine(markerSet.getEndPos() - offset + 1f, 0, markerSet.getEndPos() - offset + 1f, measuredHeight - topOffset, borderLinePaint);
+            }else{
+                canvas.drawLine(markerSet.getStartPos() - offset + 1f, 0, markerSet.getStartPos() - offset + 1f, measuredHeight - topOffset, borderLinePaintEdit);
+                canvas.drawLine(markerSet.getEndPos() - offset + 1f, 0, markerSet.getEndPos() - offset + 1f, measuredHeight - topOffset, borderLinePaintEdit);
+            }
 
             // Right top timestamp
             if (!markerSet.isEditMarker()) {
@@ -470,7 +483,7 @@ public class WaveformView extends View {
                 canvas.drawText(timeCode, leftEnd, topEnd, timeCodePaintBlack);
             }
 
-            // Left bottom timestamp
+            // Left bottom timestamp (is always visible, for normal marker and for edit marker
             float leftStart = markerSet.getStartPos() - dpToPx(getContext(), 44);
             float topStart = measuredHeight - topOffset + dpToPx(getContext(), 16);
             String timeCodeStart = "" + getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getStartPos()));

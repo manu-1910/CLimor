@@ -350,8 +350,12 @@ public class EditFragment extends WaveformFragment {
                                 handleTimeStamps(markerSet, timeStamps, startPosMillisecondsAdjusted, endPosMillisecondsAdjusted);
                                 iterator.remove();
                             } else if (markerSet.isEditMarker()){
+                                //Middle marker
                                 markerSet.getMiddleMarker().setVisibility(View.GONE);
                                 markerSet.setMiddleMarker(null);
+                                //Start marker
+                                markerSet.getStartMarker().setVisibility(View.GONE);//TODO JJ new
+                                markerSet.setStartMarker(null);//TODO JJ new
                                 iterator.remove();
                             }
                         }

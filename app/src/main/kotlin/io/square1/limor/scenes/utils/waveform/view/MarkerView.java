@@ -98,6 +98,7 @@ public class MarkerView extends androidx.appcompat.widget.AppCompatImageView {
     @Override
     protected void onFocusChanged(boolean gainFocus, int direction, Rect previouslyFocusedRect) {
         if (gainFocus && listener != null) {
+            //TODO JJ new the app explote here
             listener.markerFocus(this);
         }
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);

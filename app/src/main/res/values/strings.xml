@@ -135,5 +135,6 @@
     <string name="menu_paste">Paste</string>
     <string name="menu_delete">Delete</string>
     <string name="menu_dismiss">Dismiss</string>
+    <string name="menu_preview">Preview</string>
 
 </resources>
