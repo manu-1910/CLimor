@@ -365,13 +365,11 @@ public class WaveformView extends View {
     }
 
     public int getOffset() {
-        return offset;  //TODO JJ original line
-        //return offset + LINE_WIDTH;
+        return offset;
     }
 
     public void setPlayback(int pos) {
-        playbackPos = pos; //TODO JJ original line
-        //playbackPos = pos + LINE_WIDTH;
+        playbackPos = pos;
     }
 
     public void setListener(WaveformListener listener) {
@@ -543,7 +541,6 @@ public class WaveformView extends View {
         }
     }
 
-
     protected float getHeight(int i, int numFrames, int[] frameGains, float scaleFactor, float minGain, float range) {
         float value = (getGain(i, numFrames, frameGains) * scaleFactor - minGain) / range;
         if (value < 0.0) {
@@ -684,14 +681,14 @@ public class WaveformView extends View {
 
     protected float getScaledHeight(float zoomLevel, int i) {
         //TODO JJ original lines
-        //if (zoomLevel == 1.0) {
-        //    return getNormalHeight(i);
-        //} else if (zoomLevel < 1.0) {
-        //    return getZoomedOutHeight(zoomLevel, i);
-        //}
-        //return getZoomedInHeight(zoomLevel, i);
+        if (zoomLevel == 1.0) {
+            return getNormalHeight(i);
+        } else if (zoomLevel < 1.0) {
+            return getZoomedOutHeight(zoomLevel, i);
+        }
+        return getZoomedInHeight(zoomLevel, i);
 
-        float mHeight = 0f;
+        /*float mHeight = 0f;
         //System.out.println("---------------------------------------");
         if (zoomLevel == 1.0) {
             mHeight = getNormalHeight(i);
@@ -705,7 +702,7 @@ public class WaveformView extends View {
         }
 
         //System.out.println("Height returned by getScaledHeight  is: " + mHeight);
-        return mHeight;
+        return mHeight;*/
 
     }
 

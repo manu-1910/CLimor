@@ -634,6 +634,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     e.printStackTrace();
                     progressDialog.dismiss();
                     return;
+                }  catch (OutOfMemoryError e) {
+                    e.printStackTrace();
+                    progressDialog.dismiss();
+                    showAlertYesNo(getContext(), "ERROR", "You don't have enough free memory", null);
                 }
                 if (loadingKeepGoing) {
                     handler.post(() -> finishOpeningSoundFile());
@@ -815,7 +819,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             player.pause();
         }
         if (waveformView != null) {
-            waveformView.setPlayback(-1);
+            //waveformView.setPlayback(-1); //TODO JJ Aquí no escondo la barra vertical amarilla del play
         }
         isPlaying = false;
         enableDisableButtons();
@@ -951,6 +955,18 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
                 if (isSeekBarTouched) {
                     tvTimePass.setText(getLengthFromEpochForPlayer(progress));
+                    //TODO JJ new
+                    if (waveformView != null) {
+                        //System.out.println("seekbar progress       : " + progress);
+                        //player.seekTo(progress);
+
+                        int xPlayPos = waveformView.millisecsToPixels(progress);
+                        waveformView.setPlayback(xPlayPos);
+
+                        //updateDisplay();
+
+
+                    }
                 }
             }
             @Override
