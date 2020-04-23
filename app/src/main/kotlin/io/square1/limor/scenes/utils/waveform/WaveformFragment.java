@@ -27,12 +27,25 @@ import android.widget.Toast;
 
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.content.ContextCompat;
+
+import com.coremedia.iso.boxes.Container;
+import com.googlecode.mp4parser.authoring.Movie;
+import com.googlecode.mp4parser.authoring.Track;
+import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
+import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
+import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
+
 import org.joda.time.DateTime;
 import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
@@ -462,7 +475,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                         removeMarker(marker.getMarkerSet());
                         break;
                     case Preview:
-                        ivPlayPreview.performClick();
+                        //ivPlayPreview.performClick();
+                        saveNewFileFromMarkers(true);
                         break;
                 }
                 return true;
@@ -966,7 +980,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                         int xPlayPos = waveformView.millisecsToPixels(progress);
                         waveformView.setPlayback(xPlayPos);
 
-                        //updateDisplay();
+                        updateDisplay();
 
 
                     }
@@ -1059,7 +1073,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         editedWithMarkersFileName = getActivity().getExternalCacheDir().getAbsolutePath();
         editedWithMarkersFileName += "/limor_record" + System.currentTimeMillis() + "_marked.m4a";
 
-        /*try {
+        try {
             String mediaKey = "soun";
             List<Movie> listMovies = new ArrayList<>();
             for (String filename : audioFilePaths) {
@@ -1099,7 +1113,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             }
         } catch (IOException ex) {
             ex.printStackTrace();
-        }*/
+        }
     }
 
     protected void updateUndoRedoButtons() {
