@@ -242,9 +242,6 @@ dependencies {
     //PhotoView visor with zoom
     //implementation deps.photo_view
 
-    //Audio Recorder Library
-    implementation 'com.github.squti:Android-Wave-Recorder:1.4.0'
-
     // Date, Time & Money
     implementation 'joda-time:joda-time:2.9.9'
     implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
@@ -254,4 +251,6 @@ dependencies {
 
     //Popup menu view like UIMenuController
     implementation 'me.kareluo.ui:popmenu:1.1.0'
+
+
 }

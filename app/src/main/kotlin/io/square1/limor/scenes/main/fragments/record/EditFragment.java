@@ -64,6 +64,7 @@ public class EditFragment extends WaveformFragment {
     private BroadcastReceiver receiver;
 
 
+
     public static EditFragment newInstance(UIRecordingItem recordingItem) {
         //AnalyticsManager.getInstance().recordEditEvent(AnalyticsManager.RecordingEditEventType.RECORDING_EDIT_DRAFT);
         //return EditFragment.builder().recordingItem(recordingItem).build();
@@ -79,6 +80,8 @@ public class EditFragment extends WaveformFragment {
 
         recordingItem = new UIRecordingItem();
         recordingItem = (UIRecordingItem) getArguments().get("recordingItem");
+
+
     }
 
 
@@ -103,11 +106,8 @@ public class EditFragment extends WaveformFragment {
 //                    Constants.BACK_STACK_TAG_RECORD);
 //        }
 
-        if (receiver != null) {
-            getContext().unregisterReceiver(receiver);
-            receiver = null;
-        }
     }
+
 
     @Override
     protected String getFileName() {
@@ -158,44 +158,21 @@ public class EditFragment extends WaveformFragment {
         tvRedo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (stepManager.getLastRedoStep() != null && stepManager.getStepsToRedo().size() > 0) {
-                    stepManager.addNewUndoStep(new Step(System.currentTimeMillis(), fileName, recordingItem.getTimeStamps()));
-                    recordingItem.setTimeStamps(stepManager.getLastRedoStep().getTimeStamps());
-                    fileName = stepManager.getLastRedoStep().getFilePath();
-                    loadFromFile(fileName);
-                    stepManager.handleLastRedoStep();
-                }
-                updateUndoRedoButtons();
+                redoClick();
             }
         });
 
         tvUndo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (stepManager.getLastUndoStep() != null && stepManager.getStepsToUndo().size() > 0) {
-                    stepManager.addNewRedoStep(new Step(System.currentTimeMillis(), fileName, recordingItem.getTimeStamps()));
-                    fileName = stepManager.getLastUndoStep().getFilePath();
-                    loadFromFile(fileName);
-                    stepManager.handleLastUndoStep();
-                }
-                updateUndoRedoButtons();
+                undoClick();
             }
         });
 
         tvPaste.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isEditMode) {
-                    return;
-                }
-                if (editMarker == null || (editMarker.getStartPos() >= selectedMarker.getStartPos() && editMarker.getStartPos() <= selectedMarker.getEndPos())) {
-                    showAlertOK(getActivity(), getString(R.string.alert_title_oops), getString(R.string.paste_overlap_alert), null);
-                    return;
-                }
-                showAlertYesNo(getActivity(), getString(R.string.paste), getString(R.string.paste_prompt), (dialog, which) -> {
-                    pasteMarkedChunk();
-                    //AnalyticsManager.getInstance().recordEditEvent(AnalyticsManager.RecordingEditEventType.RECORDING_EDIT_COPY_PASTE);
-                });
+                pasteClick();
             }
         });
 
@@ -203,19 +180,7 @@ public class EditFragment extends WaveformFragment {
         tvCopy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (selectedMarker == null) {
-                    showAlertOK(getActivity(), getString(R.string.alert_title_oops), getString(R.string.select_marker_firs_prompt), null);
-                    return;
-                }
-                for (MarkerSet markerSet : markerSets){
-                    if (markerSet.isEditMarker()) {
-                        showAlertOK(getActivity(), getString(R.string.alert_title_oops), getString(R.string.cant_create_more_than_one_marker_prompt), null);
-                        return;
-                    }
-                }
-                //AnalyticsManager.getInstance().recordEditEvent(AnalyticsManager.RecordingEditEventType.RECORDING_EDIT_COPY_PASTE);
-                //addMarker(selectedMarker.getStartPos(), selectedMarker.getStartPos() + 2, true, null);    //TODO JJ esta es la original
-                addMarker(selectedMarker.getStartPos(), selectedMarker.getStartPos(), true, null); //TODO JJ
+                copyClick();
             }
         });
 
@@ -223,11 +188,7 @@ public class EditFragment extends WaveformFragment {
         tvDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (selectedMarker == null) {
-                    showAlertOK(getActivity(), getString(R.string.alert_title_oops), getString(R.string.select_marker_firs_prompt), null);
-                    return;
-                }
-                showAlertOkCancel(getActivity(), getString(R.string.remove), getString(R.string.remove_piece_of_audio_prompt), (dialogInterface, i) -> deleteMarkedChunk());
+                deleteClick();
             }
         });
 
@@ -256,6 +217,65 @@ public class EditFragment extends WaveformFragment {
         });
 
 
+    }
+
+    public void redoClick(){
+        if (stepManager.getLastRedoStep() != null && stepManager.getStepsToRedo().size() > 0) {
+            stepManager.addNewUndoStep(new Step(System.currentTimeMillis(), fileName, recordingItem.getTimeStamps()));
+            recordingItem.setTimeStamps(stepManager.getLastRedoStep().getTimeStamps());
+            fileName = stepManager.getLastRedoStep().getFilePath();
+            loadFromFile(fileName);
+            stepManager.handleLastRedoStep();
+        }
+        updateUndoRedoButtons();
+    }
+
+    public void undoClick(){
+        if (stepManager.getLastUndoStep() != null && stepManager.getStepsToUndo().size() > 0) {
+            stepManager.addNewRedoStep(new Step(System.currentTimeMillis(), fileName, recordingItem.getTimeStamps()));
+            fileName = stepManager.getLastUndoStep().getFilePath();
+            loadFromFile(fileName);
+            stepManager.handleLastUndoStep();
+        }
+        updateUndoRedoButtons();
+    }
+
+    public void pasteClick(){
+        if (!isEditMode) {
+            return;
+        }
+        if (editMarker == null || (editMarker.getStartPos() >= selectedMarker.getStartPos() && editMarker.getStartPos() <= selectedMarker.getEndPos())) {
+            showAlertOK(getActivity(), getString(R.string.alert_title_oops), getString(R.string.paste_overlap_alert), null);
+            return;
+        }
+        showAlertYesNo(getActivity(), getString(R.string.paste), getString(R.string.paste_prompt), (dialog, which) -> {
+            pasteMarkedChunk();
+            //AnalyticsManager.getInstance().recordEditEvent(AnalyticsManager.RecordingEditEventType.RECORDING_EDIT_COPY_PASTE);
+        });
+    }
+
+    public void copyClick(){
+        if (selectedMarker == null) {
+            showAlertOK(getActivity(), getString(R.string.alert_title_oops), getString(R.string.select_marker_firs_prompt), null);
+            return;
+        }
+        for (MarkerSet markerSet : markerSets){
+            if (markerSet.isEditMarker()) {
+                showAlertOK(getActivity(), getString(R.string.alert_title_oops), getString(R.string.cant_create_more_than_one_marker_prompt), null);
+                return;
+            }
+        }
+        //AnalyticsManager.getInstance().recordEditEvent(AnalyticsManager.RecordingEditEventType.RECORDING_EDIT_COPY_PASTE);
+        //addMarker(selectedMarker.getStartPos(), selectedMarker.getStartPos() + 2, true, null);    //TODO JJ esta es la original
+        addMarker(selectedMarker.getStartPos(), selectedMarker.getStartPos(), true, null); //TODO JJ
+    }
+
+    public void deleteClick(){
+        if (selectedMarker == null) {
+            showAlertOK(getActivity(), getString(R.string.alert_title_oops), getString(R.string.select_marker_firs_prompt), null);
+            return;
+        }
+        showAlertOkCancel(getActivity(), getString(R.string.remove), getString(R.string.remove_piece_of_audio_prompt), (dialogInterface, i) -> deleteMarkedChunk());
     }
 
     private void pasteMarkedChunk() {
@@ -599,6 +619,5 @@ public class EditFragment extends WaveformFragment {
             progressDialog.dismiss();
         }
     }
-
 
 }

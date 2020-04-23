@@ -38,6 +38,7 @@ import java.util.Random;
 import java.util.TimeZone;
 import io.square1.limor.R;
 import io.square1.limor.common.BaseFragment;
+import io.square1.limor.scenes.main.fragments.record.EditFragment;
 import io.square1.limor.scenes.utils.statemanager.StepManager;
 import io.square1.limor.scenes.utils.waveform.soundfile.SoundFile;
 import io.square1.limor.scenes.utils.waveform.view.MarkerView;
@@ -68,8 +69,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     // region Variables
 
-    protected RelativeLayout absoluteLayout;
-    protected ProgressDialog progressDialog;
+    private RelativeLayout absoluteLayout;
+    private ProgressDialog progressDialog;
     protected SoundFile soundFile;
     protected File file;
     protected String fileName;
@@ -104,13 +105,13 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     private boolean newMarkerAdded;
     protected boolean isPlaying;
     protected boolean isPlayingPreview;
-    protected int playStartOffset;
-    protected int playEndMsec;
-    protected int playStartMsec;
+    private int playStartOffset;
+    private int playEndMsec;
+    private int playStartMsec;
     private SeekBar seekBar;
     private boolean isSeekBarTouched;
-    protected ImageView ivPlayPreview;
-    protected RelativeLayout rlPreview, rlPreviewSection;
+    private ImageView ivPlayPreview;
+    private RelativeLayout rlPreview, rlPreviewSection;
     private SeekBar seekBarPreview;
     private boolean isSeekBarTouchedPreview;
     protected boolean shouldReloadPreview;
@@ -128,6 +129,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
     // endregion
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -630,14 +632,15 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             public void run() {
                 try {
                     soundFile = SoundFile.create(file.getAbsolutePath(), listener);
+                } catch (OutOfMemoryError e) {
+                    e.printStackTrace();
+                    progressDialog.dismiss();
+                    showAlertYesNo(getContext(), "ERROR", "You don't have enough free memory", null);
+                    return;
                 } catch (final Exception e) {
                     e.printStackTrace();
                     progressDialog.dismiss();
                     return;
-                }  catch (OutOfMemoryError e) {
-                    e.printStackTrace();
-                    progressDialog.dismiss();
-                    showAlertYesNo(getContext(), "ERROR", "You don't have enough free memory", null);
                 }
                 if (loadingKeepGoing) {
                     handler.post(() -> finishOpeningSoundFile());
@@ -871,9 +874,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected View.OnClickListener playListener = sender -> {
         if (sender.getId() == R.id.play) {
             onPlay();
-        } else if (sender.getId() == R.id.rlPreview){
+        } /*else if (sender.getId() == R.id.rlPreview){
             saveNewFileFromMarkers(true);
-        }
+        }*/
     };
 
     protected View.OnClickListener rewindListener = new View.OnClickListener() {

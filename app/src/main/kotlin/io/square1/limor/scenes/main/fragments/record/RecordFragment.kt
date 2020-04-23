@@ -4,9 +4,9 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
-import android.media.AudioFormat
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.os.SystemClock
 import android.text.Editable
 import android.text.TextWatcher
@@ -21,7 +21,6 @@ import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.findNavController
-import com.github.squti.androidwaverecorder.WaveRecorder
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
@@ -32,15 +31,13 @@ import kotlinx.android.synthetic.main.toolbar_default.*
 import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.support.v4.runOnUiThread
 import org.jetbrains.anko.support.v4.toast
+import java.io.File
 
 
 class RecordFragment : BaseFragment() {
 
 
-    private var waveRecorder: WaveRecorder? = null
-    private lateinit var audioFilePath: String
     private var isRecording = false
     private var isFirstTapRecording = true
     private var timeWhenStopped: Long = 0
@@ -48,6 +45,9 @@ class RecordFragment : BaseFragment() {
     private var voiceGraph : VisualizerView? = null
     var app: App? = null
     var recordingItem: UIRecordingItem? = null
+    private var handler = Handler()
+    private lateinit var updater: Runnable
+    private lateinit var mRecorder : AMRAudioRecorder
 
     private val PERMISSION_ALL = 1
     private var PERMISSIONS = arrayOf(
@@ -219,7 +219,11 @@ class RecordFragment : BaseFragment() {
         //Toolbar Right
         btnToolbarRight.text = getString(R.string.btn_edit)
         btnToolbarRight.onClick {
-            waveRecorder?.stopRecording() //TODO JJ
+            //waveRecorder?.stopRecording() //TODO JJ
+
+            isRecording = false
+            stopAudio()
+
             var bundle = bundleOf("recordingItem" to recordingItem)
             findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
         }
@@ -231,28 +235,40 @@ class RecordFragment : BaseFragment() {
 
 
 
-        /**
-         * This path points to application cache directory.
-         * you could change it based on your usage
-         */
-        audioFilePath = Environment.getExternalStorageDirectory()?.absolutePath + "/audioFile.wav"
+//        /**
+//         * This path points to application cache directory.
+//         * you could change it based on your usage
+//         */
+//        audioFilePath = Environment.getExternalStorageDirectory()?.absolutePath + "/audioFile.wav"
+//
+//        if(waveRecorder == null){
+//            waveRecorder = WaveRecorder(audioFilePath)
+//            waveRecorder?.waveConfig?.sampleRate = 16000
+//            waveRecorder?.waveConfig?.channels = AudioFormat.CHANNEL_IN_STEREO
+//            waveRecorder?.waveConfig?.audioEncoding = AudioFormat.ENCODING_PCM_16BIT
+//            waveRecorder?.noiseSuppressorActive = true
+//
+//            // Disable next button
+//            nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
+//            nextButton.isEnabled = false
+//        }else{
+//            // Enable next button
+//            nextButton.background = requireContext().getDrawable(R.drawable.bg_round_yellow_ripple)
+//            nextButton.isEnabled = true
+//        }
 
-        if(waveRecorder == null){
-            waveRecorder = WaveRecorder(audioFilePath)
-            waveRecorder?.waveConfig?.sampleRate = 44100
-            waveRecorder?.waveConfig?.channels = AudioFormat.CHANNEL_IN_STEREO
-            waveRecorder?.waveConfig?.audioEncoding = AudioFormat.ENCODING_PCM_16BIT
-            waveRecorder?.noiseSuppressorActive = true
 
-            // Disable next button
-            nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
-            nextButton.isEnabled = false
-        }else{
-            // Enable next button
-            nextButton.background = requireContext().getDrawable(R.drawable.bg_round_yellow_ripple)
-            nextButton.isEnabled = true
+        // Note: this is not the audio file name, it's a directory.
+        val recordingDirectory = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/")
+        if(!recordingDirectory.exists()){
+            recordingDirectory.mkdir()
         }
 
+        mRecorder = AMRAudioRecorder(recordingDirectory.absolutePath)
+
+        // Disable next button
+        nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
+        nextButton.isEnabled = false
 
     }
 
@@ -262,7 +278,9 @@ class RecordFragment : BaseFragment() {
 
         // Next Button
         nextButton.onClick {
-            waveRecorder?.stopRecording()
+            //waveRecorder?.stopRecording()
+            mRecorder.stop() //TODO JJ
+
 
             //Stop chronometer
             c_meter.base = SystemClock.elapsedRealtime()
@@ -281,22 +299,22 @@ class RecordFragment : BaseFragment() {
             }
         }
 
+
         // Listener on amplitudes changes to update the Audio Visualizer
-        waveRecorder?.onAmplitudeListener = {
-            try {
-                runOnUiThread {
+        updater = object : Runnable {
+            override fun run() {
+                handler.postDelayed(this, 40)
+                val maxAmplitude: Int = mRecorder.maxAmplitude
+                if (maxAmplitude != 0) {
                     if(isRecording){
-                        voiceGraph?.addAmplitude(it.toFloat())
+                        voiceGraph?.addAmplitude(maxAmplitude.toFloat())
                         voiceGraph?.invalidate() // refresh the Visualizer
                     }
                 }
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
             }
         }
 
     }
-
 
 
 
@@ -321,12 +339,11 @@ class RecordFragment : BaseFragment() {
 
             if(isFirstTapRecording){
                 isFirstTapRecording = false
-                waveRecorder?.startRecording()
-
+                mRecorder.start()
                 recordingItem = UIRecordingItem()
-
+                handler.post(updater);
             }else{
-                waveRecorder?.resumeRecording()
+                mRecorder.resume()
             }
 
             //Start timer
@@ -349,23 +366,26 @@ class RecordFragment : BaseFragment() {
         nextButton.isEnabled = true
 
         if (isRecording) {
-            waveRecorder?.pauseRecording()
+            mRecorder.pause()
 
             //Stop the chronometer and anotate the time when it is stopped
             timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
-
-            recordingItem?.filePath = audioFilePath
-            recordingItem?.editedFilePath = audioFilePath
-            recordingItem?.length = timeWhenStopped
-            recordingItem?.title = "Autosave"
-            recordingItem?.time = System.currentTimeMillis() / 1000
+//
+//            //recordingItem?.filePath = audioFilePath
+//            recordingItem?.filePath =  mRecorder.audioFilePath
+//            //recordingItem?.editedFilePath = audioFilePath
+//            recordingItem?.editedFilePath = mRecorder.audioFilePath
+//            recordingItem?.length = timeWhenStopped
+//            recordingItem?.title = "Autosave"
+//            recordingItem?.time = System.currentTimeMillis() / 1000
 
             isRecording = false
         } else {
-            waveRecorder?.stopRecording()
 
-            recordingItem?.filePath = audioFilePath
-            recordingItem?.editedFilePath = audioFilePath
+            mRecorder.stop()
+
+            recordingItem?.filePath = mRecorder.audioFilePath
+            recordingItem?.editedFilePath = mRecorder.audioFilePath
             recordingItem?.length = c_meter.base
             recordingItem?.title = "Autosave"
             recordingItem?.time = System.currentTimeMillis() / 1000
@@ -385,9 +405,10 @@ class RecordFragment : BaseFragment() {
     override fun onDestroy() {
         super.onDestroy()
 
+        handler.removeCallbacks(updater);
+
         voiceGraph?.clearAnimation()
         voiceGraph?.clear()
-
     }
 
 
