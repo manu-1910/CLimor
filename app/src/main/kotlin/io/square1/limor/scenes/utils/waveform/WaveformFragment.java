@@ -347,6 +347,12 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     protected void addMarker(int startPos, int endPos, boolean isEditMarker, Integer color) {
 
+        //Only 1 marker is available at same time //TODO jj
+        if (markerSets.size() >= 1 && isEditMarker == false) {
+           return;
+        }
+
+
         MarkerSet newMarkerSet = new MarkerSet();
 
         MarkerView startMarker = new MarkerView(getActivity());
@@ -423,6 +429,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             markerView.setImageAlpha(0);
             markerView.setFocusable(false);
             markerView.setFocusableInTouchMode(false);
+            //markerView.setFocusedByDefault(false); //TODO JJ new
         }
     }
 
@@ -775,18 +782,16 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                 markerSet.getMiddleMarker().setColorFilter( markerSet.isEditMarker() ? ContextCompat.getColor(getContext(), R.color.marker_paste_green) : ContextCompat.getColor(getContext(), R.color.marker_blue));
 
                 //markerSet.getMiddleMarker().setColorFilter(ContextCompat.getColor(getContext(), markerSet.getBackgroundColor()));
-                //markerSet.getMiddleMarker().setAlpha(markerSet.isEditMarker() ? 1.0f : 0.5f);
+                markerSet.getMiddleMarker().setAlpha(markerSet.isEditMarker() ? 1.0f : 0.5f);
                 //markerSet.getStartMarker().setColorFilter(ContextCompat.getColor(getContext(), markerSet.getBackgroundColor()));
-                //markerSet.getStartMarker().setAlpha(0.5f);
+                markerSet.getStartMarker().setAlpha(0.5f);
                 //markerSet.getEndMarker().setColorFilter(ContextCompat.getColor(getContext(), markerSet.getBackgroundColor()));
-                //markerSet.getEndMarker().setAlpha(0.5f);
+                markerSet.getEndMarker().setAlpha(0.5f);
 
                 if (isEditMode && !markerSet.isEditMarker()) {
-                    /*markerSet.getMiddleMarker().setAlpha(0.15f);
+                    markerSet.getMiddleMarker().setAlpha(0.15f);
                     markerSet.getStartMarker().setAlpha(0.15f);
-                    markerSet.getEndMarker().setAlpha(0.15f);*/
-                    //TODO JJ I've commented lines above
-                    //markerSet.getStartMarker().setColorFilter(ContextCompat.getColor(getContext(), R.color.marker_paste_green));
+                    markerSet.getEndMarker().setAlpha(0.15f);
                 }
 
 

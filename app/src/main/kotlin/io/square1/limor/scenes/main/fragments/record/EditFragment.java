@@ -69,7 +69,6 @@ public class EditFragment extends WaveformFragment {
         //AnalyticsManager.getInstance().recordEditEvent(AnalyticsManager.RecordingEditEventType.RECORDING_EDIT_DRAFT);
         //return EditFragment.builder().recordingItem(recordingItem).build();
 
-
         EditFragment myFragment = new EditFragment();
         return myFragment;
     }
@@ -80,8 +79,6 @@ public class EditFragment extends WaveformFragment {
 
         recordingItem = new UIRecordingItem();
         recordingItem = (UIRecordingItem) getArguments().get("recordingItem");
-
-
     }
 
 

@@ -77,12 +77,14 @@ public class MarkerView extends androidx.appcompat.widget.AppCompatImageView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
         if (markerSet.isEditMarker() && (type == START_MARKER || type == END_MARKER)) {
             return false;
         }
+
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                requestFocus();
+                requestFocus(); //TODO JJ, This was uncommented
                 listener.markerTouchStart(this, event.getRawX());
                 break;
             case MotionEvent.ACTION_MOVE:
