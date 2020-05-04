@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Queue;
 
 import io.square1.limor.R;
+import io.square1.limor.scenes.utils.Commons;
 import io.square1.limor.scenes.utils.statemanager.Step;
 import io.square1.limor.scenes.utils.waveform.MarkerSet;
 import io.square1.limor.scenes.utils.waveform.WaveformFragment;
@@ -245,7 +246,7 @@ public class EditFragment extends WaveformFragment {
             showAlertOK(getActivity(), getString(R.string.alert_title_oops), getString(R.string.paste_overlap_alert), null);
             return;
         }
-        showAlertYesNo(getActivity(), getString(R.string.paste), getString(R.string.paste_prompt), (dialog, which) -> {
+        Commons.showAlertYesNo(getActivity(), getString(R.string.paste), getString(R.string.paste_prompt), (dialog, which) -> {
             pasteMarkedChunk();
             //AnalyticsManager.getInstance().recordEditEvent(AnalyticsManager.RecordingEditEventType.RECORDING_EDIT_COPY_PASTE);
         });
@@ -593,11 +594,11 @@ public class EditFragment extends WaveformFragment {
 
 
     public static void showAlertOK(Context context, String title, String message, DialogInterface.OnClickListener listener) {
-        showAlertCustomButtons(context, title, message, listener, context.getString(R.string.ok), null, null);
+        Commons.showAlertCustomButtons(context, title, message, listener, context.getString(R.string.ok), null, null);
     }
 
     public static void showAlertOkCancel(Context context, String title, String message, DialogInterface.OnClickListener listener) {
-        showAlertCustomButtons(context, title, message, listener, context.getString(R.string.ok), null, context.getString(R.string.cancel));
+        Commons.showAlertCustomButtons(context, title, message, listener, context.getString(R.string.ok), null, context.getString(R.string.cancel));
     }
 
     public void showProgress(String message) {

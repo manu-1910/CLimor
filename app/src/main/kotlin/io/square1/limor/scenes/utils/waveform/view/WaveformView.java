@@ -24,22 +24,15 @@ import android.graphics.CornerPathEffect;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
-import org.joda.time.DateTime;
-
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import io.square1.limor.R;
+import io.square1.limor.scenes.utils.Commons;
 import io.square1.limor.scenes.utils.waveform.MarkerSet;
 import io.square1.limor.scenes.utils.waveform.WaveformFragment;
 import io.square1.limor.scenes.utils.waveform.soundfile.SoundFile;
@@ -105,6 +98,9 @@ public class WaveformView extends View {
     public static final int TEXT_SIZE_8 = 8;
 
     public static int LINE_WIDTH = 10;
+    public static int LINE_SCALE = 65;
+
+    int totalVecesPasoPorAqui = 0;
 
     // endregion
 
@@ -118,23 +114,25 @@ public class WaveformView extends View {
         gridPaint.setColor(getResources().getColor(R.color.brandSecondary500)); //grid_line
 
         selectedLinePaint = new Paint();
-        //selectedLinePaint.setAntiAlias(false);
-        //selectedLinePaint.setColor(getResources().getColor(R.color.brandPrimary500));
-
         selectedLinePaint.setColor(getResources().getColor(R.color.white));
-        selectedLinePaint.setStrokeWidth(LINE_WIDTH); // set stroke width
+        selectedLinePaint.setStrokeWidth(10); // set stroke width
         selectedLinePaint.setDither(true);                    // set the dither to true
         selectedLinePaint.setStyle(Paint.Style.STROKE);       // set to STOKE
         selectedLinePaint.setStrokeJoin(Paint.Join.ROUND);    // set the join to round you want
         selectedLinePaint.setStrokeCap(Paint.Cap.ROUND);      // set the paint cap to round too
         selectedLinePaint.setPathEffect(new CornerPathEffect(10) );   // set the path effect when they join.
-        selectedLinePaint.setAntiAlias(true);
+        selectedLinePaint.setAntiAlias(false);
 
 
         testLine = new Paint();
         testLine.setAntiAlias(false);
         testLine.setColor(getResources().getColor(R.color.green500)); //brandSecondary500
-        //testLine.setStrokeWidth(10); // set stroke width
+        testLine.setStrokeWidth(5); // set stroke width
+        testLine.setDither(true);                    // set the dither to true
+        testLine.setStyle(Paint.Style.STROKE);       // set to STOKE
+        testLine.setStrokeJoin(Paint.Join.ROUND);    // set the join to round you want
+        testLine.setStrokeCap(Paint.Cap.ROUND);      // set the paint cap to round too
+        testLine.setPathEffect(new CornerPathEffect(5) );   // set the path effect when they join.
 
 
         unselectedLinePaint = new Paint();
@@ -157,13 +155,13 @@ public class WaveformView extends View {
 
         borderLinePaint = new Paint();
         borderLinePaint.setAntiAlias(true);
-        borderLinePaint.setStrokeWidth(dpToPx(getContext(), 2));
+        borderLinePaint.setStrokeWidth(Commons.dpToPx(getContext(), 2));
         borderLinePaint.setPathEffect(new DashPathEffect(new float[]{3.0f, 2.0f}, 0.0f));
         borderLinePaint.setColor(getResources().getColor(R.color.selection_border));
 
         borderLinePaintEdit = new Paint();
         borderLinePaintEdit.setAntiAlias(true);
-        borderLinePaintEdit.setStrokeWidth(dpToPx(getContext(), 2));
+        borderLinePaintEdit.setStrokeWidth(Commons.dpToPx(getContext(), 2));
         borderLinePaintEdit.setPathEffect(new DashPathEffect(new float[]{3.0f, 2.0f}, 0.0f));
         borderLinePaintEdit.setColor(getResources().getColor(R.color.marker_paste_green));
 
@@ -223,7 +221,7 @@ public class WaveformView extends View {
         density = 1.0f;
         initialized = false;
         markerSets = new ArrayList<>();
-        topOffset = dpToPx(context, 26);
+        topOffset = Commons.dpToPx(context, 26);
     }
 
     @Override
@@ -237,7 +235,7 @@ public class WaveformView extends View {
                 listener.waveformTouchStart(event.getX());
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (event.getY() > dpToPx(getContext(), 72) && event.getY() < (getMeasuredHeight() - dpToPx(getContext(), 40))) {
+                if (event.getY() > Commons.dpToPx(getContext(), 72) && event.getY() < (getMeasuredHeight() - Commons.dpToPx(getContext(), 40))) {
                     listener.waveformTouchMove(event.getX());
                 }
                 break;
@@ -254,8 +252,8 @@ public class WaveformView extends View {
 
     public void setSoundFile(SoundFile soundFile) {
         this.soundFile = soundFile;
-        sampleRate = this.soundFile.getSampleRate();
-        samplesPerFrame = this.soundFile.getSamplesPerFrame();
+        sampleRate = this.soundFile.getSampleRate(); //TODO JJ
+        samplesPerFrame = this.soundFile.getSamplesPerFrame(); //TODO JJ
         computeDoublesForAllZoomLevels();
     }
 
@@ -287,9 +285,11 @@ public class WaveformView extends View {
                 int mSelectionEnd = (int)(markerSet.getEndPos() * factor);
                 markerSet.setEndPos(mSelectionEnd);
             }
-            int offsetCenter = offset + (int) (getMeasuredWidth() / factor);
+            //int offsetCenter = offset + (int) (getMeasuredWidth() / factor); //TODO JJ original line
+            int offsetCenter = offset + (int) ((getMeasuredWidth()*20) / factor);
             offsetCenter *= factor;
-            offset = offsetCenter - (int) (getMeasuredWidth() / factor);
+            //offset = offsetCenter - (int) (getMeasuredWidth() / factor); //TODO JJ original line
+            offset = offsetCenter - (int) ((getMeasuredWidth()*20) / factor);
             if (offset < 0) {
                 offset = 0;
             }
@@ -313,9 +313,11 @@ public class WaveformView extends View {
                 int mSelectionEnd = (int)(markerSet.getEndPos() / factor);
                 markerSet.setEndPos(mSelectionEnd);
             }
-            int offsetCenter = (int) (offset + getMeasuredWidth() / factor);
+            //int offsetCenter = (int) (offset + getMeasuredWidth() / factor); //TODO JJ original line
+            int offsetCenter = (int) (offset + getMeasuredWidth()*20 / factor);
             offsetCenter /= factor;
-            offset = offsetCenter - (int) (getMeasuredWidth() / factor);
+            //offset = offsetCenter - (int) (getMeasuredWidth() / factor); //TODO JJ original line
+            offset = offsetCenter - (int) (getMeasuredWidth()*20 / factor);
             if (offset < 0) {
                 offset = 0;
             }
@@ -333,30 +335,30 @@ public class WaveformView extends View {
 
     public int secondsToPixels(double seconds) {
         double z = zoomFactorByZoomLevel[zoomLevel]; //TODO JJ original line
-        //double z = 1.0f;
         return (int) (z * seconds * sampleRate / samplesPerFrame + 0.5);
     }
 
     public double pixelsToSeconds(int pixels) {
         double z = zoomFactorByZoomLevel[zoomLevel]; //TODO JJ original line
-        //double z = 1.0f;
         return (pixels * (double) samplesPerFrame / (sampleRate * z));
     }
 
     public int millisecsToPixels(int msecs) {
         double z = zoomFactorByZoomLevel[zoomLevel]; //TODO JJ original line
-        //double z = 1.0f;
-        return (int) ((msecs * 1.0 * sampleRate * z) / (1000.0 * samplesPerFrame) + 0.5);
+        //return (int) ((msecs * 1.0 * sampleRate * z) / (1000.0 * samplesPerFrame) + 0.5); //TODO JJ original line
+        int returned1 = (int) ((msecs * 1.0 * sampleRate * z ) / (1000.0 * samplesPerFrame) + 0.5);
+        return returned1;
     }
 
     public int pixelsToMillisecs(int pixels) {
         if (zoomFactorByZoomLevel == null) {
             return -1;
         }
-        double z = zoomFactorByZoomLevel[zoomLevel]; //TODO JJ original line
-        //double z = 1.0f;
+        double z = zoomFactorByZoomLevel[zoomLevel]; //TODO JJ original line  *20
         //return (int) (pixels * (1000.0 * samplesPerFrame) / (sampleRate * z) + 0.5); //TODO JJ original line
-        return (int) (pixels * (1000.0 * samplesPerFrame) / (sampleRate * z) + 0.5);
+        int returned2 = (int) (pixels * (1000.0 * samplesPerFrame) / (sampleRate * z) + 0.5);
+
+        return returned2;
     }
 
     public void setParameters(ArrayList<MarkerSet> markerSets, int offset) {
@@ -369,7 +371,7 @@ public class WaveformView extends View {
     }
 
     public void setPlayback(int pos) {
-        playbackPos = pos;
+        playbackPos = pos; //TODO JJ * 20
     }
 
     public void setListener(WaveformListener listener) {
@@ -393,11 +395,11 @@ public class WaveformView extends View {
         if (soundFile == null) {
             return;
         }
-        int measuredWidth = getMeasuredWidth();
+        int measuredWidth = getMeasuredWidth(); //TODO JJ * 20
         int measuredHeight = getMeasuredHeight();
         int start = offset;
-        int width = lenByZoomLevel[zoomLevel] - start;
-        int ctr = measuredHeight / 2 + dpToPx(getContext(), 12);//TODO JJ 12
+        int width = lenByZoomLevel[zoomLevel] - start; //TODO JJ
+        int ctr = measuredHeight / 2 + Commons.dpToPx(getContext(), 12);//TODO JJ 12
 
         if (width > measuredWidth) {
             width = measuredWidth;
@@ -412,33 +414,20 @@ public class WaveformView extends View {
             factor++;
         }
 
-        int i = 0;
-        //int countTen = 0;
-        //int startDifference = 0;
 
+        int i = 0;
         while (i < width) {
 
-            double h = (getScaledHeight(zoomFactorByZoomLevel[zoomLevel], start + i) * getMeasuredHeight() / 2) * 0.5; // scale the wave here
+            double h = (getScaledHeight(zoomFactorByZoomLevel[zoomLevel],  start + i) * getMeasuredHeight() / 2) * 0.5; // scale the wave here
             int height = (int)h;
 
-            /*if (countTen > 19){
-                if(height == 0){
-                    height = 1;
-                }
-                height = laMedia/20;
-                laMedia = 0;
-                drawWaveformLine(canvas, i, ctr + height, ctr + 1 - height, selectedLinePaint); //selectedLinePaint  //testLine
-                countTen = 1;
-            }else{
-                //drawWaveformLine(canvas, i, ctr + height, ctr + 1 - height, unselectedLinePaint); //greyBackgroundPaint
-                laMedia = laMedia + height;
-            }*/
+            drawWaveformLine(canvas, (i * 20), ctr + height, ctr - height, selectedLinePaint); //i*20
 
-            drawWaveformLine(canvas, i, ctr + height, ctr + 1 - height, selectedLinePaint);
+            //System.out.println(String.format("%20s %20s %20s %20s %20s", "height", "i", "zoomFactor", "zoomLevel", "width"));
+            //System.out.println(String.format("%20s %20s %20s %20s %20s", height, i, zoomFactorByZoomLevel[zoomLevel], zoomLevel, width));
+            //drawWaveformLine(canvas,  (i * LINE_WIDTH), 1, -1, testLine);
 
             i++;
-            //countTen++;
-            //lastStart = start;
         }
 
 
@@ -475,16 +464,16 @@ public class WaveformView extends View {
 
             // Right top timestamp
             if (!markerSet.isEditMarker()) {
-                float leftEnd = markerSet.getEndPos() + dpToPx(getContext(), 16);
-                float topEnd = measuredHeight - topOffset + dpToPx(getContext(), 16);
-                String timeCode = "" + getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getEndPos()));
+                float leftEnd = markerSet.getEndPos() + Commons.dpToPx(getContext(), 16);
+                float topEnd = measuredHeight - topOffset + Commons.dpToPx(getContext(), 16);
+                String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getEndPos()));
                 canvas.drawText(timeCode, leftEnd, topEnd, timeCodePaintBlack);
             }
 
             // Left bottom timestamp (is always visible, for normal marker and for edit marker
-            float leftStart = markerSet.getStartPos() - dpToPx(getContext(), 44);
-            float topStart = measuredHeight - topOffset + dpToPx(getContext(), 16);
-            String timeCodeStart = "" + getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getStartPos()));
+            float leftStart = markerSet.getStartPos() - Commons.dpToPx(getContext(), 44);
+            float topStart = measuredHeight - topOffset + Commons.dpToPx(getContext(), 16);
+            String timeCodeStart = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getStartPos()));
             canvas.drawText(timeCodeStart, leftStart, topStart, timeCodePaintBlack);
         }
 
@@ -502,21 +491,26 @@ public class WaveformView extends View {
         canvas.drawRect(0f, measuredHeight, (float)getMeasuredWidth(), measuredHeight, playbackLinePaint); //greyBackgroundPaint
 
         // Grid
-        float eight = (getMeasuredWidth() / 4f) / 2f;
+        float quarter = getMeasuredWidth() / 4;
+        float eight = quarter / 2;
         // Draw text
         for (int count = 1; count < 8; count++) {
-            String timeCode = "" + getLengthFromEpochForPlayer(pixelsToMillisecs((int)(eight * count) + offset));
+            String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs((int)(eight * count) + offset));
             float offsetText = (float) (0.5 * timeCodePaint.measureText(timeCode));
             canvas.drawText(timeCode, eight * count - offsetText , (int) (16 * density), timeCodePaint);
         }
 
-        int xPlayPos = 0;
-        while (xPlayPos < width) {
+        i = 0;
+        while (i < width) {
             // Playback marker //TODO JJ linea vertical cuando le das al play
-            if (xPlayPos + start == playbackPos) {
-                canvas.drawRect(xPlayPos, topOffset * 2 , xPlayPos + dpToPx(getContext(), 2), measuredHeight - topOffset, playbackLinePaint);
+
+            //System.out.println("***************************************************");
+            //System.out.println(String.format("i: %20s  start: %20s playbackPos: %20s", i, start, playbackPos));
+
+            if (i + start == playbackPos) { //TODO JJ new /20
+                canvas.drawRect(i, topOffset * 2 , i + Commons.dpToPx(getContext(), 2), measuredHeight - topOffset, playbackLinePaint);
             }
-            xPlayPos++;
+            i++;
         }
 
         if (listener != null) {
@@ -605,32 +599,69 @@ public class WaveformView extends View {
         lenByZoomLevel = new int[5];
         zoomFactorByZoomLevel = new float[5];
 
-        float ratio = getMeasuredWidth() / (float) numFrames;
+        float ratio = getMeasuredWidth() / (float) numFrames; //TODO JJ
+
+       //if (ratio < 1) {
+       //    lenByZoomLevel[0] = Math.round(numFrames * ratio);
+       //    zoomFactorByZoomLevel[0] = ratio;
+       //    lenByZoomLevel[1] = numFrames;
+       //    zoomFactorByZoomLevel[1] = 1.0f;
+       //    lenByZoomLevel[2] = numFrames * 2; //TODO JJ *20
+       //    zoomFactorByZoomLevel[2] = 2.0f;
+       //    lenByZoomLevel[3] = numFrames * 3; //TODO JJ *20
+       //    zoomFactorByZoomLevel[3] = 3.0f;
+       //    lenByZoomLevel[4] = numFrames * 4; //TODO JJ *20
+       //    zoomFactorByZoomLevel[4] = 4.0f;
+       //    zoomLevel = 0;
+       //} else {
+       //    lenByZoomLevel[0] = numFrames; //TODO JJ *20
+       //    zoomFactorByZoomLevel[0] = 1.0f;
+       //    lenByZoomLevel[1] = numFrames * 2; //TODO JJ *20
+       //    zoomFactorByZoomLevel[1] = 2f;
+       //    lenByZoomLevel[2] = numFrames * 3; //TODO JJ *20
+       //    zoomFactorByZoomLevel[2] = 3.0f;
+       //    lenByZoomLevel[3] = numFrames * 4; //TODO JJ *20
+       //    zoomFactorByZoomLevel[3] = 4.0f;
+       //    lenByZoomLevel[4] = numFrames * 5; //TODO JJ *20
+       //    zoomFactorByZoomLevel[4] = 5.0f;
+       //    zoomLevel = 0;
+       //    for (int i = 0; i < 5; i++) {
+       //        if (lenByZoomLevel[zoomLevel] - getMeasuredWidth() > 0) {
+       //            break;
+       //        } else {
+       //            zoomLevel = i;
+       //        }
+       //    }
+       //}
+
 
         if (ratio < 1) {
-            lenByZoomLevel[0] = Math.round(numFrames * ratio);
+            lenByZoomLevel[0] = (Math.round(numFrames * ratio)) * 20;
             zoomFactorByZoomLevel[0] = ratio;
-            lenByZoomLevel[1] = numFrames;
+
+            lenByZoomLevel[1] = numFrames *20;
             zoomFactorByZoomLevel[1] = 1.0f;
-            lenByZoomLevel[2] = numFrames * 2;
+
+            lenByZoomLevel[2] = (numFrames * 2)*20; //TODO JJ *20
             zoomFactorByZoomLevel[2] = 2.0f;
-            lenByZoomLevel[3] = numFrames * 3;
+            lenByZoomLevel[3] = (numFrames * 3)*20; //TODO JJ *20
             zoomFactorByZoomLevel[3] = 3.0f;
-            lenByZoomLevel[4] = numFrames * 4;
+            lenByZoomLevel[4] = (numFrames * 4)*20; //TODO JJ *20
             zoomFactorByZoomLevel[4] = 4.0f;
             zoomLevel = 0;
         } else {
-            lenByZoomLevel[0] = numFrames;
+            lenByZoomLevel[0] = numFrames * 20; //TODO JJ *20
             zoomFactorByZoomLevel[0] = 1.0f;
-            lenByZoomLevel[1] = numFrames * 2;
+            lenByZoomLevel[1] = (numFrames * 2)*20; //TODO JJ *20
             zoomFactorByZoomLevel[1] = 2f;
-            lenByZoomLevel[2] = numFrames * 3;
+            lenByZoomLevel[2] = (numFrames * 3)*20; //TODO JJ *20
             zoomFactorByZoomLevel[2] = 3.0f;
-            lenByZoomLevel[3] = numFrames * 4;
+            lenByZoomLevel[3] = (numFrames * 4)*20; //TODO JJ *20
             zoomFactorByZoomLevel[3] = 4.0f;
-            lenByZoomLevel[4] = numFrames * 5;
+            lenByZoomLevel[4] = (numFrames * 5)*20; //TODO JJ *20
             zoomFactorByZoomLevel[4] = 5.0f;
             zoomLevel = 0;
+            //int measureddddwidth = getMeasuredWidth() * 20;
             for (int i = 0; i < 5; i++) {
                 if (lenByZoomLevel[zoomLevel] - getMeasuredWidth() > 0) {
                     break;
@@ -680,55 +711,16 @@ public class WaveformView extends View {
 
 
     protected float getScaledHeight(float zoomLevel, int i) {
-        //TODO JJ original lines
         if (zoomLevel == 1.0) {
             return getNormalHeight(i);
         } else if (zoomLevel < 1.0) {
             return getZoomedOutHeight(zoomLevel, i);
         }
         return getZoomedInHeight(zoomLevel, i);
-
-        /*float mHeight = 0f;
-        //System.out.println("---------------------------------------");
-        if (zoomLevel == 1.0) {
-            mHeight = getNormalHeight(i);
-            //System.out.println("getNormalHeight     is: " + mHeight);
-        } else if (zoomLevel < 1.0) {
-            mHeight = getZoomedOutHeight(zoomLevel, i);
-            //System.out.println("getZoomedOutHeight  is: " + mHeight);
-        }else{
-            mHeight = getZoomedInHeight(zoomLevel, i);
-            //System.out.println("getZoomedInHeight  is: " + mHeight);
-        }
-
-        //System.out.println("Height returned by getScaledHeight  is: " + mHeight);
-        return mHeight;*/
-
     }
 
 
-    //TODO
-    public static int dpToPx(Context context, int dps) {
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        return (int) (TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, dps, context.getResources().getDisplayMetrics()));
-    }
 
-
-    public static String getLengthFromEpochForPlayer(long milliSeconds) {
-        DateTime time = new DateTime(milliSeconds);
-        final DateTime hour = time.secondOfMinute().roundHalfCeilingCopy();
-        Date date = new Date(milliSeconds);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeZone(TimeZone.getTimeZone("GMT+00"));
-        calendar.setTime(date);
-        calendar.set(Calendar.SECOND, hour.getSecondOfMinute());
-        if (milliSeconds <= ONE_HOUR) {
-            return String.format(Locale.getDefault(), "%02d:%02d", calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
-        } else {
-            return String.format(Locale.getDefault(), "%02d:%02d:%02d", calendar.get(Calendar.HOUR) - 1, calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
-        }
-    }
 
 
 }

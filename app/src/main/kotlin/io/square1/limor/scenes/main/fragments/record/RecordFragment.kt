@@ -366,6 +366,7 @@ class RecordFragment : BaseFragment() {
         nextButton.isEnabled = true
 
         if (isRecording) {
+
             mRecorder.pause()
 
             //Stop the chronometer and anotate the time when it is stopped
@@ -380,17 +381,21 @@ class RecordFragment : BaseFragment() {
 //            recordingItem?.time = System.currentTimeMillis() / 1000
 
             isRecording = false
+
         } else {
 
             mRecorder.stop()
 
-            recordingItem?.filePath = mRecorder.audioFilePath
-            recordingItem?.editedFilePath = mRecorder.audioFilePath
+            //TODO JJ only for testing purposes
+            //recordingItem?.filePath = mRecorder.audioFilePath
+            //recordingItem?.editedFilePath = mRecorder.audioFilePath
+            recordingItem?.filePath = Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/1587987477835.amr"
+            recordingItem?.editedFilePath = Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/1587987477835.amr"
+
             recordingItem?.length = c_meter.base
             recordingItem?.title = "Autosave"
             recordingItem?.time = System.currentTimeMillis() / 1000
         }
-
 
         //Change toolbar
         changeToEditToolbar()
