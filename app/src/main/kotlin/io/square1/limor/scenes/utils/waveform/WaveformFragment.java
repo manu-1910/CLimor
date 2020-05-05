@@ -123,6 +123,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     private boolean isMovingTooMuch;
 
     private final int ALLOWED_PIXEL_OFFSET = 18;
+    public static final int NEW_WIDTH = 20;
 
     private enum MenuOption {
         Copy, Paste, Delete, Dismiss, Preview;
@@ -677,7 +678,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             int now = player.getCurrentPosition();   //playStartOffset siempre es 0
             System.out.println("now is: " + now);
 
-            int frames = waveformView.millisecsToPixels(now*20);
+            int frames = waveformView.millisecsToPixels(now * NEW_WIDTH);
             System.out.println("frames is: " + frames);
 
 
@@ -1006,7 +1007,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                         //player.seekTo(progress);
 
                         int xPlayPos = waveformView.millisecsToPixels(progress);
-                        waveformView.setPlayback(xPlayPos * 20);
+                        waveformView.setPlayback(xPlayPos * NEW_WIDTH);
 
                         updateDisplay();
 
