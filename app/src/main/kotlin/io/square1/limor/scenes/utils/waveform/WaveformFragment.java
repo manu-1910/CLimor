@@ -673,9 +673,14 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected synchronized void updateDisplay() {
         if (isPlaying) {
             //int now = player.getCurrentPosition() + playStartOffset; //TODO JJ original line
-            System.out.println("playStartOffset is: " + playStartOffset);
-            int now = (player.getCurrentPosition() * 20) + playStartOffset;
-            int frames = waveformView.millisecsToPixels(now);//TODO JJ new *10
+
+            int now = player.getCurrentPosition();   //playStartOffset siempre es 0
+            System.out.println("now is: " + now);
+
+            int frames = waveformView.millisecsToPixels(now*20);
+            System.out.println("frames is: " + frames);
+
+
             if (waveformView != null) {
                 waveformView.setPlayback(frames); //TODO JJ
             }
@@ -686,12 +691,15 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             //System.out.println("frames is: " + frames);
             //System.out.println("width is: " + width);
             //System.out.println("--------------------");
-            setOffsetGoalNoUpdate(frames - width / 2);
-            int offsetDelta = (offsetGoal/20) - offset;  //TODO JJ new /20  Está OK no tocar
+            setOffsetGoalNoUpdate(frames - width / 2); //TODO JJ no tocar, ésto hace que la línea del play se quede en el centro de la pantalla
+            int offsetDelta = offsetGoal - offset;  //TODO JJ new /20  Está OK no tocar
 
+            System.out.println("-----------------------------");
+            System.out.println("setOffsetGoalNoUpdate(" + (frames - width / 2) + ")");
             System.out.println("offsetGoal is : " + offsetGoal);
             System.out.println("offset is     : " + offset);
             System.out.println("offsetDelta is: " + offsetDelta);
+            System.out.println("-----------------------------");
 
             if (offsetDelta >  10) {
                 offsetDelta = offsetDelta / 10;
@@ -705,9 +713,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                 offsetDelta = 0;
             }
             offset = offset + offsetDelta;
-            System.out.println("---------------------");
-            System.out.println("new offset is     : " + offset);
-            System.out.println("new offsetDelta is: " + offsetDelta);
+            //System.out.println("---------------------");
+            //System.out.println("new offset is     : " + offset);
+            //System.out.println("new offsetDelta is: " + offsetDelta);
             enableDisableSeekButtons();
         } else {
             if (offset + width > maxPos) {
@@ -720,7 +728,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         offsetGoal = offset; //TODO JJ /20
         updateMarkers();
         //waveformView.setParameters(markerSets, offset); //TODO JJ ORIGINAL LINE
-        waveformView.setParameters(markerSets, offset); //TODO JJ /10
+        waveformView.setParameters(markerSets, offsetGoal); //TODO JJ /10
         waveformView.invalidate();
     }
 
@@ -821,9 +829,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         if (touchDragging) {
             return;
         }
-        System.out.println("offset is: " + offset);
-        System.out.println("maxPos is: " + maxPos);
-        System.out.println("--------------------");
+        //System.out.println("offset is: " + offset);
+        //System.out.println("maxPos is: " + maxPos);
+        //System.out.println("--------------------");
 
         int lamitad = width/2;
 
@@ -874,13 +882,13 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         if (player == null) {
             return;
         }
-        //playStartMsec = waveformView.pixelsToMillisecs(0); //TODO JJ original line
         playStartMsec = waveformView.pixelsToMillisecs(0);
         playStartOffset = 0;
         try {
             isPlaying = true;
             player.start();
             playStartOffset = playStartMsec;
+            System.out.println("playStartOffset (onPlay 884): " + playStartOffset);
             player.setOnCompletionListener((MediaPlayer mediaPlayer) -> handlePause());
             enableDisableButtons();
             updateDisplay();
@@ -984,6 +992,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     private void setupSeekBar() {
         seekBar.setMax(player.getDuration());
+
+        System.out.println("player duration is: " + player.getDuration());
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
@@ -995,7 +1006,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                         //player.seekTo(progress);
 
                         int xPlayPos = waveformView.millisecsToPixels(progress);
-                        waveformView.setPlayback(xPlayPos);
+                        waveformView.setPlayback(xPlayPos * 20);
 
                         updateDisplay();
 

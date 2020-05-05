@@ -395,9 +395,9 @@ public class WaveformView extends View {
         if (soundFile == null) {
             return;
         }
-        int measuredWidth = getMeasuredWidth(); //TODO JJ * 20
+        int measuredWidth = getMeasuredWidth();
         int measuredHeight = getMeasuredHeight();
-        int start = offset;
+        int start = offset; //TODO JJ
         int width = lenByZoomLevel[zoomLevel] - start; //TODO JJ
         int ctr = measuredHeight / 2 + Commons.dpToPx(getContext(), 12);//TODO JJ 12
 
@@ -426,6 +426,10 @@ public class WaveformView extends View {
             //System.out.println(String.format("%20s %20s %20s %20s %20s", "height", "i", "zoomFactor", "zoomLevel", "width"));
             //System.out.println(String.format("%20s %20s %20s %20s %20s", height, i, zoomFactorByZoomLevel[zoomLevel], zoomLevel, width));
             //drawWaveformLine(canvas,  (i * LINE_WIDTH), 1, -1, testLine);
+
+            if (i + start == playbackPos) { //TODO JJ new /20
+                canvas.drawRect(i, topOffset * 2 , i + Commons.dpToPx(getContext(), 2), measuredHeight - topOffset, playbackLinePaint);
+            }
 
             i++;
         }
@@ -495,23 +499,25 @@ public class WaveformView extends View {
         float eight = quarter / 2;
         // Draw text
         for (int count = 1; count < 8; count++) {
-            String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs((int)(eight * count) + offset));
+            String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(((int)(eight * count) + offset)/20));
+            System.out.println("timeCode on draw: pixelsToMillisecs(" + (int)(eight * count) + offset + ")");
+            System.out.println("timeCode on draw: offset is: " + offset);
             float offsetText = (float) (0.5 * timeCodePaint.measureText(timeCode));
             canvas.drawText(timeCode, eight * count - offsetText , (int) (16 * density), timeCodePaint);
         }
 
-        i = 0;
-        while (i < width) {
-            // Playback marker //TODO JJ linea vertical cuando le das al play
-
-            //System.out.println("***************************************************");
-            //System.out.println(String.format("i: %20s  start: %20s playbackPos: %20s", i, start, playbackPos));
-
-            if (i + start == playbackPos) { //TODO JJ new /20
-                canvas.drawRect(i, topOffset * 2 , i + Commons.dpToPx(getContext(), 2), measuredHeight - topOffset, playbackLinePaint);
-            }
-            i++;
-        }
+        //i = 0;
+        //while (i < width) {
+        //    // Playback marker //TODO JJ linea vertical cuando le das al play
+//
+        //    //System.out.println("***************************************************");
+        //    //System.out.println(String.format("i: %20s  start: %20s playbackPos: %20s", i, start, playbackPos));
+//
+        //    if (i + start == playbackPos) { //TODO JJ new /20
+        //        canvas.drawRect(i, topOffset * 2 , i + Commons.dpToPx(getContext(), 2), measuredHeight - topOffset, playbackLinePaint);
+        //    }
+        //    i++;
+        //}
 
         if (listener != null) {
             listener.waveformDraw();
@@ -599,69 +605,33 @@ public class WaveformView extends View {
         lenByZoomLevel = new int[5];
         zoomFactorByZoomLevel = new float[5];
 
+        numFrames = numFrames * 20; //numframes = maxpos ó duration o maxlength o width
         float ratio = getMeasuredWidth() / (float) numFrames; //TODO JJ
 
-       //if (ratio < 1) {
-       //    lenByZoomLevel[0] = Math.round(numFrames * ratio);
-       //    zoomFactorByZoomLevel[0] = ratio;
-       //    lenByZoomLevel[1] = numFrames;
-       //    zoomFactorByZoomLevel[1] = 1.0f;
-       //    lenByZoomLevel[2] = numFrames * 2; //TODO JJ *20
-       //    zoomFactorByZoomLevel[2] = 2.0f;
-       //    lenByZoomLevel[3] = numFrames * 3; //TODO JJ *20
-       //    zoomFactorByZoomLevel[3] = 3.0f;
-       //    lenByZoomLevel[4] = numFrames * 4; //TODO JJ *20
-       //    zoomFactorByZoomLevel[4] = 4.0f;
-       //    zoomLevel = 0;
-       //} else {
-       //    lenByZoomLevel[0] = numFrames; //TODO JJ *20
-       //    zoomFactorByZoomLevel[0] = 1.0f;
-       //    lenByZoomLevel[1] = numFrames * 2; //TODO JJ *20
-       //    zoomFactorByZoomLevel[1] = 2f;
-       //    lenByZoomLevel[2] = numFrames * 3; //TODO JJ *20
-       //    zoomFactorByZoomLevel[2] = 3.0f;
-       //    lenByZoomLevel[3] = numFrames * 4; //TODO JJ *20
-       //    zoomFactorByZoomLevel[3] = 4.0f;
-       //    lenByZoomLevel[4] = numFrames * 5; //TODO JJ *20
-       //    zoomFactorByZoomLevel[4] = 5.0f;
-       //    zoomLevel = 0;
-       //    for (int i = 0; i < 5; i++) {
-       //        if (lenByZoomLevel[zoomLevel] - getMeasuredWidth() > 0) {
-       //            break;
-       //        } else {
-       //            zoomLevel = i;
-       //        }
-       //    }
-       //}
-
-
         if (ratio < 1) {
-            lenByZoomLevel[0] = (Math.round(numFrames * ratio)) * 20;
+            lenByZoomLevel[0] = Math.round(numFrames * ratio);
             zoomFactorByZoomLevel[0] = ratio;
-
-            lenByZoomLevel[1] = numFrames *20;
+            lenByZoomLevel[1] = numFrames;
             zoomFactorByZoomLevel[1] = 1.0f;
-
-            lenByZoomLevel[2] = (numFrames * 2)*20; //TODO JJ *20
+            lenByZoomLevel[2] = numFrames * 2; //TODO JJ *20
             zoomFactorByZoomLevel[2] = 2.0f;
-            lenByZoomLevel[3] = (numFrames * 3)*20; //TODO JJ *20
+            lenByZoomLevel[3] = numFrames * 3; //TODO JJ *20
             zoomFactorByZoomLevel[3] = 3.0f;
-            lenByZoomLevel[4] = (numFrames * 4)*20; //TODO JJ *20
+            lenByZoomLevel[4] = numFrames * 4; //TODO JJ *20
             zoomFactorByZoomLevel[4] = 4.0f;
             zoomLevel = 0;
         } else {
-            lenByZoomLevel[0] = numFrames * 20; //TODO JJ *20
+            lenByZoomLevel[0] = numFrames; //TODO JJ *20
             zoomFactorByZoomLevel[0] = 1.0f;
-            lenByZoomLevel[1] = (numFrames * 2)*20; //TODO JJ *20
+            lenByZoomLevel[1] = numFrames * 2; //TODO JJ *20
             zoomFactorByZoomLevel[1] = 2f;
-            lenByZoomLevel[2] = (numFrames * 3)*20; //TODO JJ *20
+            lenByZoomLevel[2] = numFrames * 3; //TODO JJ *20
             zoomFactorByZoomLevel[2] = 3.0f;
-            lenByZoomLevel[3] = (numFrames * 4)*20; //TODO JJ *20
+            lenByZoomLevel[3] = numFrames * 4; //TODO JJ *20
             zoomFactorByZoomLevel[3] = 4.0f;
-            lenByZoomLevel[4] = (numFrames * 5)*20; //TODO JJ *20
+            lenByZoomLevel[4] = numFrames * 5; //TODO JJ *20
             zoomFactorByZoomLevel[4] = 5.0f;
             zoomLevel = 0;
-            //int measureddddwidth = getMeasuredWidth() * 20;
             for (int i = 0; i < 5; i++) {
                 if (lenByZoomLevel[zoomLevel] - getMeasuredWidth() > 0) {
                     break;
@@ -670,6 +640,43 @@ public class WaveformView extends View {
                 }
             }
         }
+
+
+        //if (ratio < 1) {
+        //    lenByZoomLevel[0] = Math.round(numFrames * ratio) * 20;
+        //    zoomFactorByZoomLevel[0] = ratio;
+//
+        //    lenByZoomLevel[1] = numFrames *20;
+        //    zoomFactorByZoomLevel[1] = 1.0f;
+//
+        //    lenByZoomLevel[2] = (numFrames * 2)*20; //TODO JJ *20
+        //    zoomFactorByZoomLevel[2] = 2.0f;
+        //    lenByZoomLevel[3] = (numFrames * 3)*20; //TODO JJ *20
+        //    zoomFactorByZoomLevel[3] = 3.0f;
+        //    lenByZoomLevel[4] = (numFrames * 4)*20; //TODO JJ *20
+        //    zoomFactorByZoomLevel[4] = 4.0f;
+        //    zoomLevel = 0;
+        //} else {
+        //    lenByZoomLevel[0] = numFrames * 20; //TODO JJ *20
+        //    zoomFactorByZoomLevel[0] = 1.0f;
+        //    lenByZoomLevel[1] = (numFrames * 2)*20; //TODO JJ *20
+        //    zoomFactorByZoomLevel[1] = 2f;
+        //    lenByZoomLevel[2] = (numFrames * 3)*20; //TODO JJ *20
+        //    zoomFactorByZoomLevel[2] = 3.0f;
+        //    lenByZoomLevel[3] = (numFrames * 4)*20; //TODO JJ *20
+        //    zoomFactorByZoomLevel[3] = 4.0f;
+        //    lenByZoomLevel[4] = (numFrames * 5)*20; //TODO JJ *20
+        //    zoomFactorByZoomLevel[4] = 5.0f;
+        //    zoomLevel = 0;
+        //    //int measureddddwidth = getMeasuredWidth() * 20;
+        //    for (int i = 0; i < 5; i++) {
+        //        if (lenByZoomLevel[zoomLevel] - getMeasuredWidth() > 0) {
+        //            break;
+        //        } else {
+        //            zoomLevel = i;
+        //        }
+        //    }
+        //}
         initialized = true;
     }
 
@@ -718,7 +725,6 @@ public class WaveformView extends View {
         }
         return getZoomedInHeight(zoomLevel, i);
     }
-
 
 
 
