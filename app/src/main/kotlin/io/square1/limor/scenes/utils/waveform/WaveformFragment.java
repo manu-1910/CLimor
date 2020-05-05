@@ -695,12 +695,12 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             setOffsetGoalNoUpdate(frames - width / 2); //TODO JJ no tocar, ésto hace que la línea del play se quede en el centro de la pantalla
             int offsetDelta = offsetGoal - offset;  //TODO JJ new /20  Está OK no tocar
 
-            System.out.println("-----------------------------");
-            System.out.println("setOffsetGoalNoUpdate(" + (frames - width / 2) + ")");
-            System.out.println("offsetGoal is : " + offsetGoal);
-            System.out.println("offset is     : " + offset);
-            System.out.println("offsetDelta is: " + offsetDelta);
-            System.out.println("-----------------------------");
+            //System.out.println("-----------------------------");
+            //System.out.println("setOffsetGoalNoUpdate(" + (frames - width / 2) + ")");
+            //System.out.println("offsetGoal is : " + offsetGoal);
+            //System.out.println("offset is     : " + offset);
+            //System.out.println("offsetDelta is: " + offsetDelta);
+            //System.out.println("-----------------------------");
 
             if (offsetDelta >  10) {
                 offsetDelta = offsetDelta / 10;
@@ -714,9 +714,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                 offsetDelta = 0;
             }
             offset = offset + offsetDelta;
-            //System.out.println("---------------------");
-            //System.out.println("new offset is     : " + offset);
-            //System.out.println("new offsetDelta is: " + offsetDelta);
+            System.out.println("-----------------------------");
+            System.out.println(" new offset is     : " + offset);
+            System.out.println(" new offsetDelta is: " + offsetDelta);
+            System.out.println("-----------------------------");
             enableDisableSeekButtons();
         } else {
             if (offset + width > maxPos) {
@@ -826,20 +827,23 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
     }
 
-    protected void setOffsetGoalNoUpdate(int offset) {
+
+
+    /*
+    * This function is the responsible to maintain
+    * the play line in the middle of the waveform
+    * */
+    private void setOffsetGoalNoUpdate(int offset) {
         if (touchDragging) {
             return;
         }
-        //System.out.println("offset is: " + offset);
-        //System.out.println("maxPos is: " + maxPos);
-        //System.out.println("--------------------");
 
-        int lamitad = width/2;
+        int middle = width/2;
 
         offsetGoal = offset;
 
-        if (offsetGoal + lamitad > maxPos) {
-            offsetGoal = maxPos - lamitad;
+        if (offsetGoal + middle > maxPos) {
+            offsetGoal = maxPos - middle;
         }
         if (offsetGoal < 0) {
             offsetGoal = 0;

@@ -278,11 +278,9 @@ public class WaveformView extends View {
                 int mSelectionEnd = (int)(markerSet.getEndPos() * factor);
                 markerSet.setEndPos(mSelectionEnd);
             }
-            //int offsetCenter = offset + (int) (getMeasuredWidth() / factor); //TODO JJ original line
-            int offsetCenter = offset + (int) ((getMeasuredWidth() * NEW_WIDTH) / factor);
+            int offsetCenter = offset + (int) (getMeasuredWidth() / factor);
             offsetCenter *= factor;
-            //offset = offsetCenter - (int) (getMeasuredWidth() / factor); //TODO JJ original line
-            offset = offsetCenter - (int) ((getMeasuredWidth() * NEW_WIDTH) / factor);
+            offset = offsetCenter - (int) (getMeasuredWidth() / factor);
             if (offset < 0) {
                 offset = 0;
             }
@@ -307,10 +305,10 @@ public class WaveformView extends View {
                 markerSet.setEndPos(mSelectionEnd);
             }
             //int offsetCenter = (int) (offset + getMeasuredWidth() / factor); //TODO JJ original line
-            int offsetCenter = (int) (offset + getMeasuredWidth() * NEW_WIDTH / factor);
+            int offsetCenter = (int) (offset + getMeasuredWidth() / factor);
             offsetCenter /= factor;
             //offset = offsetCenter - (int) (getMeasuredWidth() / factor); //TODO JJ original line
-            offset = offsetCenter - (int) (getMeasuredWidth() * NEW_WIDTH / factor);
+            offset = offsetCenter - (int) (getMeasuredWidth() / factor);
             if (offset < 0) {
                 offset = 0;
             }
@@ -412,15 +410,12 @@ public class WaveformView extends View {
         int i = 0;
         while (i < width) {
 
+            //White bars
             double h = (getScaledHeight(zoomFactorByZoomLevel[zoomLevel],  start + i) * getMeasuredHeight() / 2) * 0.5; // scale the wave here
             int height = (int)h;
-
             drawWaveformLine(canvas, (i * NEW_WIDTH), ctr + height, ctr - height, selectedLinePaint);
 
-            //System.out.println(String.format("%20s %20s %20s %20s %20s", "height", "i", "zoomFactor", "zoomLevel", "width"));
-            //System.out.println(String.format("%20s %20s %20s %20s %20s", height, i, zoomFactorByZoomLevel[zoomLevel], zoomLevel, width));
-            //drawWaveformLine(canvas,  (i * LINE_WIDTH), 1, -1, testLine);
-
+            //Yellow play line
             if (i + start == playbackPos) { //TODO JJ new /20
                 canvas.drawRect(i, topOffset * 2 , i + Commons.dpToPx(getContext(), 2), measuredHeight - topOffset, playbackLinePaint);
             }
@@ -494,8 +489,8 @@ public class WaveformView extends View {
         // Draw text
         for (int count = 1; count < 8; count++) {
             String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(((int)(eight * count) + offset)/ NEW_WIDTH));
-            System.out.println("timeCode on draw: pixelsToMillisecs(" + (int)(eight * count) + offset + ")");
-            System.out.println("timeCode on draw: offset is: " + offset);
+            //System.out.println("timeCode on draw: pixelsToMillisecs(" + (int)(eight * count) + offset + ")");
+            //System.out.println("timeCode on draw: offset is: " + offset);
             float offsetText = (float) (0.5 * timeCodePaint.measureText(timeCode));
             canvas.drawText(timeCode, eight * count - offsetText , (int) (16 * density), timeCodePaint);
         }
