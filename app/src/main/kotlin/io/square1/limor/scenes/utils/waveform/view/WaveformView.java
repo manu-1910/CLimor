@@ -94,6 +94,7 @@ public class WaveformView extends View {
     public static final int TEXT_SIZE_13 = 13;
     public static final int TEXT_SIZE_8 = 8;
     public static final int NEW_WIDTH = 20;
+    public static final int LINE_WIDTH = 10;
 
     // endregion
 
@@ -108,12 +109,12 @@ public class WaveformView extends View {
 
         selectedLinePaint = new Paint();
         selectedLinePaint.setColor(getResources().getColor(R.color.white));
-        selectedLinePaint.setStrokeWidth(10); // set stroke width
+        selectedLinePaint.setStrokeWidth(LINE_WIDTH); // set stroke width
         selectedLinePaint.setDither(true);                    // set the dither to true
         selectedLinePaint.setStyle(Paint.Style.STROKE);       // set to STOKE
         selectedLinePaint.setStrokeJoin(Paint.Join.ROUND);    // set the join to round you want
         selectedLinePaint.setStrokeCap(Paint.Cap.ROUND);      // set the paint cap to round too
-        selectedLinePaint.setPathEffect(new CornerPathEffect(10) );   // set the path effect when they join.
+        selectedLinePaint.setPathEffect(new CornerPathEffect(LINE_WIDTH) );   // set the path effect when they join.
         selectedLinePaint.setAntiAlias(false);
 
 
@@ -209,7 +210,7 @@ public class WaveformView extends View {
 
         soundFile = null;
         lenByZoomLevel = null;
-        offset = 0; //TODO JJ había un 0
+        offset = 0;
         playbackPos = -1;
         density = 1.0f;
         initialized = false;
@@ -278,8 +279,11 @@ public class WaveformView extends View {
                 int mSelectionEnd = (int)(markerSet.getEndPos() * factor);
                 markerSet.setEndPos(mSelectionEnd);
             }
-            int offsetCenter = offset + (int) (getMeasuredWidth() / factor);
+            int offsetCenter = offset + (int) (getMeasuredWidth() * NEW_WIDTH / factor); //TODO JJ Esto mantiene la linea amarilla del play en el centro de la pantalla
             offsetCenter *= factor;
+
+            System.out.println("offsetCenter zoomIn: " + offsetCenter);
+
             offset = offsetCenter - (int) (getMeasuredWidth() / factor);
             if (offset < 0) {
                 offset = 0;
@@ -305,9 +309,11 @@ public class WaveformView extends View {
                 markerSet.setEndPos(mSelectionEnd);
             }
             //int offsetCenter = (int) (offset + getMeasuredWidth() / factor); //TODO JJ original line
-            int offsetCenter = (int) (offset + getMeasuredWidth() / factor);
+            int offsetCenter = (int) (offset + getMeasuredWidth() * NEW_WIDTH / factor);
             offsetCenter /= factor;
             //offset = offsetCenter - (int) (getMeasuredWidth() / factor); //TODO JJ original line
+            System.out.println("offsetCenter zoomOut: " + offsetCenter);
+
             offset = offsetCenter - (int) (getMeasuredWidth() / factor);
             if (offset < 0) {
                 offset = 0;
@@ -388,7 +394,7 @@ public class WaveformView extends View {
         }
         int measuredWidth = getMeasuredWidth();
         int measuredHeight = getMeasuredHeight();
-        int start = offset;
+        int start = offset; //TODO JJ new
         int width = lenByZoomLevel[zoomLevel] - start;
         int ctr = measuredHeight / 2 + Commons.dpToPx(getContext(), 12);
 
@@ -489,8 +495,6 @@ public class WaveformView extends View {
         // Draw text
         for (int count = 1; count < 8; count++) {
             String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(((int)(eight * count) + offset)/ NEW_WIDTH));
-            //System.out.println("timeCode on draw: pixelsToMillisecs(" + (int)(eight * count) + offset + ")");
-            //System.out.println("timeCode on draw: offset is: " + offset);
             float offsetText = (float) (0.5 * timeCodePaint.measureText(timeCode));
             canvas.drawText(timeCode, eight * count - offsetText , (int) (16 * density), timeCodePaint);
         }
