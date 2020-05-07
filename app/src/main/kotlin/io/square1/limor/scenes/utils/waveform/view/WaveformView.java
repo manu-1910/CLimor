@@ -67,7 +67,6 @@ public class WaveformView extends View {
     protected Paint timeCodePaint;
     protected Paint timeCodePaintBlack;
     protected Paint separatorLine; //TODO JJ
-    protected Paint testLine; //TODO JJ
     protected Paint borderLinePaintEdit; //TODO JJ
 
     protected int[] lenByZoomLevel;
@@ -116,18 +115,6 @@ public class WaveformView extends View {
         selectedLinePaint.setStrokeCap(Paint.Cap.ROUND);      // set the paint cap to round too
         selectedLinePaint.setPathEffect(new CornerPathEffect(LINE_WIDTH) );   // set the path effect when they join.
         selectedLinePaint.setAntiAlias(false);
-
-
-        testLine = new Paint();
-        testLine.setAntiAlias(false);
-        testLine.setColor(getResources().getColor(R.color.green500)); //brandSecondary500
-        testLine.setStrokeWidth(5); // set stroke width
-        testLine.setDither(true);                    // set the dither to true
-        testLine.setStyle(Paint.Style.STROKE);       // set to STOKE
-        testLine.setStrokeJoin(Paint.Join.ROUND);    // set the join to round you want
-        testLine.setStrokeCap(Paint.Cap.ROUND);      // set the paint cap to round too
-        testLine.setPathEffect(new CornerPathEffect(5) );   // set the path effect when they join.
-
 
         unselectedLinePaint = new Paint();
         unselectedLinePaint.setAntiAlias(false);
@@ -246,8 +233,8 @@ public class WaveformView extends View {
 
     public void setSoundFile(SoundFile soundFile) {
         this.soundFile = soundFile;
-        sampleRate = this.soundFile.getSampleRate(); //TODO JJ
-        samplesPerFrame = this.soundFile.getSamplesPerFrame(); //TODO JJ
+        sampleRate = soundFile.getSampleRate();
+        samplesPerFrame = soundFile.getSamplesPerFrame();
         computeDoublesForAllZoomLevels();
     }
 
@@ -258,6 +245,8 @@ public class WaveformView extends View {
     public int getZoomLevel() {
         return zoomLevel;
     }
+
+    public float getZoomFactorActual() { return zoomFactorByZoomLevel[zoomLevel]; }
 
     public void setZoomLevel(int zoomLevel) {
         this.zoomLevel = zoomLevel;
@@ -279,10 +268,10 @@ public class WaveformView extends View {
                 int mSelectionEnd = (int)(markerSet.getEndPos() * factor);
                 markerSet.setEndPos(mSelectionEnd);
             }
-            int offsetCenter = offset + (int) (getMeasuredWidth() * NEW_WIDTH / factor); //TODO JJ Esto mantiene la linea amarilla del play en el centro de la pantalla
+            int offsetCenter = offset + (int) (getMeasuredWidth() / factor); //TODO JJ Esto mantiene la linea amarilla del play en el centro de la pantalla
             offsetCenter *= factor;
 
-            System.out.println("offsetCenter zoomIn: " + offsetCenter);
+            //System.out.println("offsetCenter zoomIn: " + offsetCenter);
 
             offset = offsetCenter - (int) (getMeasuredWidth() / factor);
             if (offset < 0) {
@@ -308,11 +297,11 @@ public class WaveformView extends View {
                 int mSelectionEnd = (int)(markerSet.getEndPos() / factor);
                 markerSet.setEndPos(mSelectionEnd);
             }
-            //int offsetCenter = (int) (offset + getMeasuredWidth() / factor); //TODO JJ original line
-            int offsetCenter = (int) (offset + getMeasuredWidth() * NEW_WIDTH / factor);
+            int offsetCenter = (int) (offset + getMeasuredWidth() / factor); //TODO JJ original line
+            //int offsetCenter = (int) (offset + getMeasuredWidth() * NEW_WIDTH / factor);
             offsetCenter /= factor;
             //offset = offsetCenter - (int) (getMeasuredWidth() / factor); //TODO JJ original line
-            System.out.println("offsetCenter zoomOut: " + offsetCenter);
+            //System.out.println("offsetCenter zoomOut: " + offsetCenter);
 
             offset = offsetCenter - (int) (getMeasuredWidth() / factor);
             if (offset < 0) {
@@ -330,32 +319,31 @@ public class WaveformView extends View {
         return (int) (1.0 * seconds * sampleRate / samplesPerFrame + 0.5);
     }
 
+    public int getNumFramesByZoomlevel(){
+        return lenByZoomLevel[zoomLevel];
+    }
+
     public int secondsToPixels(double seconds) {
-        double z = zoomFactorByZoomLevel[zoomLevel]; //TODO JJ original line
+        double z = zoomFactorByZoomLevel[zoomLevel];
         return (int) (z * seconds * sampleRate / samplesPerFrame + 0.5);
     }
 
     public double pixelsToSeconds(int pixels) {
-        double z = zoomFactorByZoomLevel[zoomLevel]; //TODO JJ original line
+        double z = zoomFactorByZoomLevel[zoomLevel];
         return (pixels * (double) samplesPerFrame / (sampleRate * z));
     }
 
     public int millisecsToPixels(int msecs) {
         double z = zoomFactorByZoomLevel[zoomLevel]; //TODO JJ original line
-        //return (int) ((msecs * 1.0 * sampleRate * z) / (1000.0 * samplesPerFrame) + 0.5); //TODO JJ original line
-        int returned1 = (int) ((msecs * 1.0 * sampleRate * z ) / (1000.0 * samplesPerFrame) + 0.5);
-        return returned1;
+        return (int) ((msecs * 1.0 * sampleRate * z) / (1000.0 * samplesPerFrame) + 0.5);
     }
 
     public int pixelsToMillisecs(int pixels) {
         if (zoomFactorByZoomLevel == null) {
             return -1;
         }
-        double z = zoomFactorByZoomLevel[zoomLevel]; //TODO JJ original line
-        //return (int) (pixels * (1000.0 * samplesPerFrame) / (sampleRate * z) + 0.5); //TODO JJ original line
-        int returned2 = (int) (pixels * (1000.0 * samplesPerFrame) / (sampleRate * z) + 0.5);
-
-        return returned2;
+        double z = zoomFactorByZoomLevel[zoomLevel];
+        return (int) (pixels * (1000.0 * samplesPerFrame) / (sampleRate * z) + 0.5);
     }
 
     public void setParameters(ArrayList<MarkerSet> markerSets, int offset) {
@@ -375,6 +363,7 @@ public class WaveformView extends View {
         this.listener = listener;
     }
 
+
     public void recomputeHeights(float density) {
         this.density = density;
         timeCodePaint.setTextSize((int) (TEXT_SIZE_13 * density));
@@ -382,9 +371,6 @@ public class WaveformView extends View {
         invalidate();
     }
 
-    protected void drawWaveformLine(Canvas canvas, int x, int y0, int y1, Paint paint) {
-        canvas.drawLine(x, y0, x, y1, paint);
-    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -394,7 +380,7 @@ public class WaveformView extends View {
         }
         int measuredWidth = getMeasuredWidth();
         int measuredHeight = getMeasuredHeight();
-        int start = offset; //TODO JJ new
+        int start = offset;
         int width = lenByZoomLevel[zoomLevel] - start;
         int ctr = measuredHeight / 2 + Commons.dpToPx(getContext(), 12);
 
@@ -412,23 +398,26 @@ public class WaveformView extends View {
         }
 
 
-        //Waveform bars and play yellow line
+        //Waveform white bars
         int i = 0;
         while (i < width) {
-
-            //White bars
             double h = (getScaledHeight(zoomFactorByZoomLevel[zoomLevel],  start + i) * getMeasuredHeight() / 2) * 0.5; // scale the wave here
             int height = (int)h;
-            drawWaveformLine(canvas, (i * NEW_WIDTH), ctr + height, ctr - height, selectedLinePaint);
 
-            //Yellow play line
-            if (i + start == playbackPos) { //TODO JJ new /20
-                canvas.drawRect(i, topOffset * 2 , i + Commons.dpToPx(getContext(), 2), measuredHeight - topOffset, playbackLinePaint);
-            }
+            canvas.drawLine(i * NEW_WIDTH, ctr + height, i * NEW_WIDTH, ctr - height, selectedLinePaint);
 
             i++;
         }
 
+
+        //Yellow play line
+        int play = 0;
+        while (play < width) {
+            if (play + start == playbackPos) {
+                canvas.drawRect(play, topOffset * 2 , play + Commons.dpToPx(getContext(), 2), measuredHeight - topOffset, playbackLinePaint);
+            }
+            play++;
+        }
 
         //Background color when a marker is created
         int j = 0;
@@ -440,9 +429,10 @@ public class WaveformView extends View {
             for (MarkerSet markerSet : markerSets) {
                 if (j + start >= markerSet.getStartPos() && j + start < markerSet.getEndPos()) {
                     selectedBackgroundPaint.setAntiAlias(false);
-                    selectedBackgroundPaint.setColor(getResources().getColor(markerSet.getBackgroundColor()));  //TODO JJ Éste es el background cuando seleccionas un marker
+                    selectedBackgroundPaint.setColor(getResources().getColor(markerSet.getBackgroundColor()));  //This is the background when you select a marker
                     selectedBackgroundPaint.setAlpha(WaveformFragment.isEditMode && ! markerSet.isEditMarker() ? 60 : 120);
-                    drawWaveformLine(canvas, j, topOffset, measuredHeight - topOffset, selectedBackgroundPaint);
+                    //drawWaveformLine(canvas, j, topOffset, measuredHeight - topOffset, selectedBackgroundPaint);
+                    canvas.drawLine( j, topOffset,  j, measuredHeight - topOffset, selectedBackgroundPaint);
                 }
             }
             j++;
@@ -494,6 +484,7 @@ public class WaveformView extends View {
         float eight = quarter / 2;
         // Draw text
         for (int count = 1; count < 8; count++) {
+            //String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(((int)(eight * count) + offset)/ NEW_WIDTH));
             String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(((int)(eight * count) + offset)/ NEW_WIDTH));
             float offsetText = (float) (0.5 * timeCodePaint.measureText(timeCode));
             canvas.drawText(timeCode, eight * count - offsetText , (int) (16 * density), timeCodePaint);
@@ -537,6 +528,7 @@ public class WaveformView extends View {
     // Called once when a new sound file is added
     protected void computeDoublesForAllZoomLevels() {
         int numFrames = soundFile.getNumFrames();
+
         // Make sure the range is no more than 0 - 255
         float maxGain = 1.0f;
         for (int i = 0; i < numFrames; i++) {
@@ -587,7 +579,9 @@ public class WaveformView extends View {
         lenByZoomLevel = new int[5];
         zoomFactorByZoomLevel = new float[5];
 
+
         numFrames = numFrames * NEW_WIDTH; //numframes = maxpos ó duration o maxlength o width //TODO JJ new line
+
         float ratio = getMeasuredWidth() / (float) numFrames;
 
         if (ratio < 1) {

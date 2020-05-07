@@ -177,7 +177,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             return;
         }
 
-        //width = waveformView.getMeasuredWidth(); //TODO JJ original line
         width = waveformView.getMeasuredWidth();
         if (newMarkerAdded || (offsetGoal != offset)) {
             updateMarkers();
@@ -310,19 +309,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         long elapsedMsec = System.currentTimeMillis() - markerTouchStartMsec;
 
         if (elapsedMsec > 350 && marker.getType() == MarkerView.MIDDLE_MARKER && !isMovingTooMuch) {
-
-            showPopUpMenu(marker); //TODO JJ new
-
-            /*showAlertYesNo(getActivity(), getString(R.string.remove), getString(R.string.remove_marker_prompt), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    removeMarker(marker.getMarkerSet());
-                }
-            });*/
+            showPopUpMenu(marker);
         }
         isMovingTooMuch = false;
         touchDragging = false;
-
     }
 
     @Override
@@ -426,19 +416,20 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         shouldReloadPreview = true;
     }
 
-    public void showPopUpMenu(MarkerView marker){ //TODO JJ new
+    /*
+    * This function will show a contextual menú at the top of the marker
+    * */
+    private void showPopUpMenu(MarkerView marker){
 
         PopupMenuView menuView = new PopupMenuView(getContext(), R.menu.menu_popup_edit, new MenuBuilder(getActivity()));
 
         if (marker.getMarkerSet().isMiddleVisible() && marker.getMarkerSet().isEditMarker()){
             //If is the Paste marker I only will show the "paste" option menu
             menuView.setMenuItems(Arrays.asList(
-                    new OptionMenu(getString(R.string.menu_paste))//,
-                    //new OptionMenu(getString(R.string.menu_dismiss))
+                    new OptionMenu(getString(R.string.menu_paste))
             ));
         }else{
             menuView.setMenuItems(Arrays.asList(
-                    //new OptionMenu("Copy"), new OptionMenu("copy1"),
                     new OptionMenu(getString(R.string.menu_preview)),
                     new OptionMenu(getString(R.string.menu_copy)),
                     new OptionMenu(getString(R.string.menu_delete)),
@@ -558,10 +549,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         density = metrics.density;
 
-        markerSize = (int) (24 * density); //TODO JJ Había un 24
-        markerSizeDown = (int) (19 * density); //TODO JJ Había un 14
-        markerInset = (int) (18 * density); //18
-        markerTopOffset = (int) (10 * density); //10
+        markerSize = (int) (24 * density);
+        markerSizeDown = (int) (19 * density);
+        markerInset = (int) (18 * density);
+        markerTopOffset = (int) (10 * density);
 
         absoluteLayout = view.findViewById(R.id.absoluteLayout);
         playButton = view.findViewById(R.id.play);
@@ -673,36 +664,43 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     protected synchronized void updateDisplay() {
         if (isPlaying) {
-            //int now = player.getCurrentPosition() + playStartOffset; //TODO JJ original line
-            int now = player.getCurrentPosition();   //playStartOffset siempre es 0
-            int frames = waveformView.millisecsToPixels(now * NEW_WIDTH);
+            int now = (player.getCurrentPosition() + playStartOffset) * NEW_WIDTH;
+            int frames = waveformView.millisecsToPixels(now);
 
 
             if (waveformView != null) {
                 waveformView.setPlayback(frames); //TODO JJ
             }
+
+            System.out.println("DISPLAY getNumFramesByZoomlevel is: " + waveformView.getNumFramesByZoomlevel());
+            System.out.println("DISPLAY now frames  is: " + frames);
+            System.out.println("DISPLAY width is: " + width);
+
             setOffsetGoalNoUpdate(frames - width / 2); //TODO JJ no tocar, ésto hace que la línea del play se quede en el centro de la pantalla
+            //setOffsetGoalNoUpdate(frames - width / 2); //TODO JJ no tocar, ésto hace que la línea del play se quede en el centro de la pantalla
 
             int offsetDelta = offsetGoal - offset;  //TODO JJ new /20  Está OK no tocar
-            System.out.println(String.format("offsetGoal: %5s  offset: %5s  offsetDelta: %5s", offsetGoal, offset, offsetDelta));
+            //System.out.println(String.format("offsetGoal: %5s  offset: %5s  offsetDelta: %5s", offsetGoal, offset, offsetDelta));
 
-            //int CORRECTION = 10; //TODO JJ había un 10
-            //
-            //if (offsetDelta > CORRECTION) {
-            //    offsetDelta = offsetDelta / CORRECTION;
-            //} else if (offsetDelta > 0) {
-            //    offsetDelta = 1;
-            //} else if (offsetDelta < -1*CORRECTION) {
-            //    offsetDelta = offsetDelta / CORRECTION;
-            //} else if (offsetDelta < 0) {
-            //    offsetDelta = -1;
-            //} else {
-            //    offsetDelta = 0;
-            //}
-            //
-            //offset = (offset + offsetDelta)/20;
+            int CORRECTION = 10; //TODO JJ había un 10
 
-            offset = offset + 1;
+            if (offsetDelta > CORRECTION) {
+                offsetDelta = offsetDelta / CORRECTION;
+            } else if (offsetDelta > 0) {
+                offsetDelta = 1;
+            } else if (offsetDelta < -1*CORRECTION) {
+                offsetDelta = offsetDelta / CORRECTION;
+            } else if (offsetDelta < 0) {
+                offsetDelta = -1;
+            } else {
+                offsetDelta = 0;
+            }
+
+            offset += offsetDelta;
+
+
+            calculateNewOffset();
+
             enableDisableSeekButtons();
 
         } else {
@@ -712,16 +710,32 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             if (offset < 0) {
                 offset = 0;
             }
+            calculateNewOffset();
         }
 
-        offsetGoal = offset; //TODO JJ /20
+
+
+        offsetGoal = offset;
 
         System.out.println("LAST offsetGoal is: " + offsetGoal);
 
         updateMarkers();
-        waveformView.setParameters(markerSets, offset); //TODO JJ ORIGINAL LINE
-        //waveformView.setParameters(markerSets, offsetGoal); //TODO JJ /10
+        waveformView.setParameters(markerSets, offset);
         waveformView.invalidate();
+    }
+
+    private void calculateNewOffset(){
+        if (waveformView.getZoomLevel() == 0){
+            offset = (offset / (20*1));
+        }else if(waveformView.getZoomLevel() == 1){
+            offset = (offset / (20*2));
+        }else if(waveformView.getZoomLevel() == 2){
+            offset = (offset / (20*3));
+        }else if(waveformView.getZoomLevel() == 3){
+            offset = (offset / (20*4));
+        }else if(waveformView.getZoomLevel() == 4){
+            offset = (offset / (20*5));
+        }
     }
 
     private synchronized void updateMarkers() {
@@ -832,6 +846,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
         offsetGoal = offset;
 
+        System.out.println("DISPLAY maxPos is: " + maxPos);
+        System.out.println("DISPLAY offsetGoal is: " + offsetGoal);
+
         if (offsetGoal + middle > maxPos) {
             offsetGoal = maxPos - middle;
         }
@@ -883,7 +900,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             isPlaying = true;
             player.start();
             playStartOffset = playStartMsec;
-            System.out.println("playStartOffset (onPlay 884): " + playStartOffset);
             player.setOnCompletionListener((MediaPlayer mediaPlayer) -> handlePause());
             enableDisableButtons();
             updateDisplay();
@@ -987,25 +1003,16 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     private void setupSeekBar() {
         seekBar.setMax(player.getDuration());
-
-        System.out.println("player duration is: " + player.getDuration());
-
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
                 if (isSeekBarTouched) {
                     tvTimePass.setText(Commons.getLengthFromEpochForPlayer(progress));
-                    //TODO JJ new
                     if (waveformView != null) {
-                        //System.out.println("seekbar progress       : " + progress);
-                        //player.seekTo(progress);
-
-                        int xPlayPos = waveformView.millisecsToPixels(progress);
-                        waveformView.setPlayback(xPlayPos * NEW_WIDTH);
-
+                        player.seekTo(progress);
+                        int xPlayPos = waveformView.millisecsToPixels(progress * NEW_WIDTH);
+                        waveformView.setPlayback(xPlayPos);
                         updateDisplay();
-
-
                     }
                 }
             }
@@ -1034,7 +1041,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     private void setupSeekBarPreview() {
         seekBarPreview.setMax(playerPreview.getDuration());
-        //seekBarPreview.setMinimumHeight(3); //TODO JJ
         seekBarPreview.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
