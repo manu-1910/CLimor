@@ -1,23 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/brandSecondary500"
-    android:orientation="vertical">
+    android:background="@color/brandSecondary500">
 
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar_with_cross"/>
 
-    <TextView
-        android:layout_margin="@dimen/marginLarge"
-        android:id="@+id/textView"
+    <RelativeLayout
+        android:id="@+id/rlytCentersPlaceHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvCentresTitle"
+            android:layout_below="@+id/ivAddCentre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="@dimen/textSizeLarge"
+            android:fontFamily="@font/roboto_medium"
+            android:text="add_centre_title"
+            android:layout_marginTop="@dimen/marginLarge"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginEnd="@dimen/marginMedium"
+            android:layout_centerHorizontal="true"/>
+        <TextView
+            android:id="@+id/tvCentresDescription"
+            android:layout_below="@+id/tvCentresTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="@dimen/textSizeSmall"
+            android:fontFamily="@font/roboto_light"
+            android:text="add_a_centre_description"
+            android:layout_marginTop="@dimen/marginVerySmall"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginEnd="@dimen/marginMedium"
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:clipToPadding="false"
+        android:paddingTop="@dimen/marginSmall"
+        android:paddingBottom="@dimen/marginSmall"
+        android:id="@+id/rvCentres"
+        tools:listitem="@layout/fragment_drafts_item"/>
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddCentre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:layout_gravity="center"
-        android:text="Drafts Fragment" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="end|bottom"
+        android:backgroundTint="@color/colorAccent"
+        android:src="@drawable/ic_rigth_arrow"
+        app:borderWidth="0dp"
+        android:layout_margin="@dimen/marginMedium"/>
 
+    <ProgressBar
+        android:id="@+id/pbMainCentre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:theme="@style/ProgressBarTheme"
+        android:visibility="gone"/>
 
-</LinearLayout>
+</RelativeLayout>

@@ -1,6 +1,9 @@
 package io.square1.limor.di.modules
 
+import dagger.Binds
 import dagger.Module
+import repositories.DataDraftsRepository
+import repositories.DraftsRepository
 
 
 @Module
@@ -19,4 +22,8 @@ abstract class DataModule {
         }*/
     }
 
-   }
+    @Binds
+    abstract fun bindDraftsRepository(draftsRepository: DataDraftsRepository): DraftsRepository
+
+
+}

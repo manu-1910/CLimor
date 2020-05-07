@@ -387,10 +387,10 @@ class RecordFragment : BaseFragment() {
             mRecorder.stop()
 
             //TODO JJ only for testing purposes
-            //recordingItem?.filePath = mRecorder.audioFilePath
-            //recordingItem?.editedFilePath = mRecorder.audioFilePath
-            recordingItem?.filePath = Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/1587987477835.amr"
-            recordingItem?.editedFilePath = Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/1587987477835.amr"
+            recordingItem?.filePath = mRecorder.audioFilePath
+            recordingItem?.editedFilePath = mRecorder.audioFilePath
+            //recordingItem?.filePath = Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/1587987477835.amr"
+            //recordingItem?.editedFilePath = Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/1587987477835.amr"
 
             recordingItem?.length = c_meter.base
             recordingItem?.title = "Autosave"

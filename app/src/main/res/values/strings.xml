@@ -137,4 +137,18 @@
     <string name="menu_dismiss">Dismiss</string>
     <string name="menu_preview">Preview</string>
 
+
+
+
+    <!-- Drafts list -->
+    <string name="draft_title">New Draft</string>
+
+    <string name="draft_deleted">Draft deleted</string>
+    <string name="draft_not_deleted">Draft NOT deleted</string>
+    <string name="centre_not_deleted_error">There was an error deleting the draft</string>
+
+
+
+
+
 </resources>
