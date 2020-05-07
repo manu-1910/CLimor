@@ -698,9 +698,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
             offset += offsetDelta;
 
-
-            calculateNewOffset();
-
             enableDisableSeekButtons();
 
         } else {
@@ -710,12 +707,13 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             if (offset < 0) {
                 offset = 0;
             }
-            calculateNewOffset();
         }
 
 
 
         offsetGoal = offset;
+        calculateNewOffset();
+
 
         System.out.println("LAST offsetGoal is: " + offsetGoal);
 
@@ -726,15 +724,15 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     private void calculateNewOffset(){
         if (waveformView.getZoomLevel() == 0){
-            offset = (offset / (20*1));
+            offset = (offset / NEW_WIDTH);
         }else if(waveformView.getZoomLevel() == 1){
-            offset = (offset / (20*2));
+            offset = (offset / (NEW_WIDTH*2));
         }else if(waveformView.getZoomLevel() == 2){
-            offset = (offset / (20*3));
+            offset = (offset / (NEW_WIDTH*3));
         }else if(waveformView.getZoomLevel() == 3){
-            offset = (offset / (20*4));
+            offset = (offset / (NEW_WIDTH*4));
         }else if(waveformView.getZoomLevel() == 4){
-            offset = (offset / (20*5));
+            offset = (offset / (NEW_WIDTH*5));
         }
     }
 
@@ -834,8 +832,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
 
     /*
-    * This function is the responsible to maintain
-    * the play line in the middle of the waveform
+    * This function is the responsible to set the offsetGoal in the center of the screen
     * */
     private void setOffsetGoalNoUpdate(int offset) {
         if (touchDragging) {

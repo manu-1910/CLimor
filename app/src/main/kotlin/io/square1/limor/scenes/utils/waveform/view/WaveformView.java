@@ -150,7 +150,6 @@ public class WaveformView extends View {
         playbackLinePaint.setAntiAlias(false);
         playbackLinePaint.setColor(getResources().getColor(R.color.brandPrimary500));
 
-        //TODO JJ
         separatorLine = new Paint();
         separatorLine.setAntiAlias(false);
         separatorLine.setColor(getResources().getColor(R.color.brandSecondary100));
@@ -268,11 +267,9 @@ public class WaveformView extends View {
                 int mSelectionEnd = (int)(markerSet.getEndPos() * factor);
                 markerSet.setEndPos(mSelectionEnd);
             }
-            int offsetCenter = offset + (int) (getMeasuredWidth() / factor); //TODO JJ Esto mantiene la linea amarilla del play en el centro de la pantalla
+            int offsetCenter = offset + (int) (getMeasuredWidth() / factor); //This line is the responsible to maintain the play line in the middle of the waveform
             offsetCenter *= factor;
-
             //System.out.println("offsetCenter zoomIn: " + offsetCenter);
-
             offset = offsetCenter - (int) (getMeasuredWidth() / factor);
             if (offset < 0) {
                 offset = 0;
@@ -297,12 +294,9 @@ public class WaveformView extends View {
                 int mSelectionEnd = (int)(markerSet.getEndPos() / factor);
                 markerSet.setEndPos(mSelectionEnd);
             }
-            int offsetCenter = (int) (offset + getMeasuredWidth() / factor); //TODO JJ original line
-            //int offsetCenter = (int) (offset + getMeasuredWidth() * NEW_WIDTH / factor);
+            int offsetCenter = (int) (offset + getMeasuredWidth() / factor);
             offsetCenter /= factor;
-            //offset = offsetCenter - (int) (getMeasuredWidth() / factor); //TODO JJ original line
             //System.out.println("offsetCenter zoomOut: " + offsetCenter);
-
             offset = offsetCenter - (int) (getMeasuredWidth() / factor);
             if (offset < 0) {
                 offset = 0;
@@ -356,7 +350,7 @@ public class WaveformView extends View {
     }
 
     public void setPlayback(int pos) {
-        playbackPos = pos; //TODO JJ
+        playbackPos = pos;
     }
 
     public void setListener(WaveformListener listener) {
