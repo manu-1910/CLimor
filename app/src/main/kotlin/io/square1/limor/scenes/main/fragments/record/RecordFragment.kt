@@ -4,12 +4,10 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Bundle
-import android.os.Environment
-import android.os.Handler
-import android.os.SystemClock
+import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,12 +18,17 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
+import io.square1.limor.scenes.main.viewmodels.DraftViewModel
 import io.square1.limor.scenes.utils.VisualizerView
-import io.square1.limor.uimodels.UIRecordingItem
+import io.square1.limor.uimodels.UIDraft
 import kotlinx.android.synthetic.main.fragment_record.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import org.jetbrains.anko.bundleOf
@@ -33,10 +36,18 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
 import java.io.File
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
+import javax.inject.Inject
 
 
 class RecordFragment : BaseFragment() {
 
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private lateinit var draftViewModel: DraftViewModel
 
     private var isRecording = false
     private var isFirstTapRecording = true
@@ -44,7 +55,7 @@ class RecordFragment : BaseFragment() {
     private var rootView: View? = null
     private var voiceGraph : VisualizerView? = null
     var app: App? = null
-    var recordingItem: UIRecordingItem? = null
+    var recordingItem: UIDraft? = null
     private var handler = Handler()
     private lateinit var updater: Runnable
     private lateinit var mRecorder : AMRAudioRecorder
@@ -54,6 +65,8 @@ class RecordFragment : BaseFragment() {
         Manifest.permission.RECORD_AUDIO,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
+
+    private val insertDraftTrigger = PublishSubject.create<Unit>()
 
     companion object {
         val TAG: String = RecordFragment::class.java.simpleName
@@ -75,12 +88,6 @@ class RecordFragment : BaseFragment() {
         return rootView
     }
 
-    //override fun onCreateView(
-    //    inflater: LayoutInflater, container: ViewGroup?,
-    //    savedInstanceState: Bundle?
-    //): View? {
-    //    return inflater.inflate(R.layout.fragment_record, container, false)
-    //}
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -93,22 +100,12 @@ class RecordFragment : BaseFragment() {
         configureToolbar()
         audioSetup()
         listeners()
+        insertDraft()
 
         //Check Permissions
         if (!hasPermissions(requireContext(), *PERMISSIONS)) {
             requestPermissions( PERMISSIONS, PERMISSION_ALL)
         }
-    }
-
-
-
-
-    private fun bindViewModel() {
-        /* activity?.let { fragmentActivity ->
-             mainViewModel = ViewModelProviders
-                 .of(fragmentActivity, viewModelFactory)
-                 .get(MainViewModel::class.java)
-         }*/
     }
 
 
@@ -118,7 +115,6 @@ class RecordFragment : BaseFragment() {
 
 
     private fun configureToolbar() {
-
         //Toolbar title
         tvToolbarTitle?.text = getString(R.string.title_record)
 
@@ -180,6 +176,15 @@ class RecordFragment : BaseFragment() {
     }
 
 
+    private fun bindViewModel() {
+        activity?.let {
+            draftViewModel = ViewModelProviders
+                .of(it, viewModelFactory)
+                .get(DraftViewModel::class.java)
+        }
+    }
+
+
     private fun hideToolbarButtons(){
         btnToolbarRight.visibility = View.GONE
         btnToolbarLeft.visibility = View.GONE
@@ -232,32 +237,6 @@ class RecordFragment : BaseFragment() {
 
     private fun audioSetup() {
 
-
-
-
-//        /**
-//         * This path points to application cache directory.
-//         * you could change it based on your usage
-//         */
-//        audioFilePath = Environment.getExternalStorageDirectory()?.absolutePath + "/audioFile.wav"
-//
-//        if(waveRecorder == null){
-//            waveRecorder = WaveRecorder(audioFilePath)
-//            waveRecorder?.waveConfig?.sampleRate = 16000
-//            waveRecorder?.waveConfig?.channels = AudioFormat.CHANNEL_IN_STEREO
-//            waveRecorder?.waveConfig?.audioEncoding = AudioFormat.ENCODING_PCM_16BIT
-//            waveRecorder?.noiseSuppressorActive = true
-//
-//            // Disable next button
-//            nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
-//            nextButton.isEnabled = false
-//        }else{
-//            // Enable next button
-//            nextButton.background = requireContext().getDrawable(R.drawable.bg_round_yellow_ripple)
-//            nextButton.isEnabled = true
-//        }
-
-
         // Note: this is not the audio file name, it's a directory.
         val recordingDirectory = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/")
         if(!recordingDirectory.exists()){
@@ -273,12 +252,10 @@ class RecordFragment : BaseFragment() {
     }
 
 
-
     private fun listeners(){
 
         // Next Button
         nextButton.onClick {
-            //waveRecorder?.stopRecording()
             mRecorder.stop() //TODO JJ
 
 
@@ -299,7 +276,6 @@ class RecordFragment : BaseFragment() {
             }
         }
 
-
         // Listener on amplitudes changes to update the Audio Visualizer
         updater = object : Runnable {
             override fun run() {
@@ -315,7 +291,6 @@ class RecordFragment : BaseFragment() {
         }
 
     }
-
 
 
     private fun recordAudio() {
@@ -340,8 +315,16 @@ class RecordFragment : BaseFragment() {
             if(isFirstTapRecording){
                 isFirstTapRecording = false
                 mRecorder.start()
-                recordingItem = UIRecordingItem()
-                handler.post(updater);
+
+                var fileList : List<File> = getNewestAudioFile();
+
+                recordingItem = UIDraft()
+                recordingItem?.id = System.currentTimeMillis()/1000000
+                recordingItem?.filePath = fileList[0].absolutePath
+                recordingItem?.editedFilePath = fileList[0].absolutePath
+
+
+                handler.post(updater)
             }else{
                 mRecorder.resume()
             }
@@ -366,36 +349,26 @@ class RecordFragment : BaseFragment() {
         nextButton.isEnabled = true
 
         if (isRecording) {
-
             mRecorder.pause()
-
             //Stop the chronometer and anotate the time when it is stopped
             timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
-//
-//            //recordingItem?.filePath = audioFilePath
-//            recordingItem?.filePath =  mRecorder.audioFilePath
-//            //recordingItem?.editedFilePath = audioFilePath
-//            recordingItem?.editedFilePath = mRecorder.audioFilePath
-//            recordingItem?.length = timeWhenStopped
-//            recordingItem?.title = "Autosave"
-//            recordingItem?.time = System.currentTimeMillis() / 1000
-
             isRecording = false
-
         } else {
-
             mRecorder.stop()
-
-            //TODO JJ only for testing purposes
-            recordingItem?.filePath = mRecorder.audioFilePath
-            recordingItem?.editedFilePath = mRecorder.audioFilePath
-            //recordingItem?.filePath = Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/1587987477835.amr"
-            //recordingItem?.editedFilePath = Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/1587987477835.amr"
-
-            recordingItem?.length = c_meter.base
-            recordingItem?.title = "Autosave"
-            recordingItem?.time = System.currentTimeMillis() / 1000
         }
+
+
+        //Model to save in Realm
+        recordingItem?.title = "Autosave"
+        recordingItem?.caption = getDateTimeFormatted()
+        recordingItem?.length = c_meter.base
+        recordingItem?.time = System.currentTimeMillis() / 1000
+        recordingItem?.audioDuration = c_meter.base.toInt()
+        recordingItem?.audioStart = c_meter.base.toInt()
+        recordingItem?.audioEnd = c_meter.base.toInt()
+        //Inserting in Realm
+        draftViewModel.uiDraft = recordingItem!!
+        insertDraftTrigger.onNext(Unit)
 
         //Change toolbar
         changeToEditToolbar()
@@ -416,6 +389,52 @@ class RecordFragment : BaseFragment() {
         voiceGraph?.clear()
     }
 
+
+
+    private fun insertDraft() {
+        val output = draftViewModel.insertDraftRealm(
+            DraftViewModel.InputInsert(
+                insertDraftTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if (it) {
+                toast(getString(R.string.draft_inserted))
+            } else{
+                toast(getString(R.string.draft_not_inserted))
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            toast(getString(R.string.draft_not_inserted_error))
+        })
+    }
+
+
+    private fun getNewestAudioFile() : List<File> {
+        val recordingDirectory = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/")
+        return File(recordingDirectory.absolutePath).walk(FileWalkDirection.TOP_DOWN)
+            .filter { !it.isDirectory }
+            .toList()
+    }
+
+
+    private fun getDateTimeFormatted() : String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val current = LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+            current.format(formatter)
+        } else {
+            var date = Date()
+            val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm")
+            formatter.format(date)
+        }
+    }
 
 }
 

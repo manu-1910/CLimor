@@ -5,7 +5,7 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 
 interface StorageDraftProvider {
-    fun insertRealmDraft(centreEntity: DraftEntity): Completable
+    fun insertRealmDraft(draftEntity: DraftEntity): Completable
     fun loadRealmDrafts(): Flowable<List<DraftEntity>>
-    fun deleteRealmDraft(centreEntity: DraftEntity): Completable
+    fun deleteRealmDraft(draftEntity: DraftEntity): Completable
 }

@@ -16,5 +16,6 @@ data class DraftEntity(
     val time: Long?,
     val audioDuration: Int?,
     val audioStart: Int?,
-    val audioEnd: Int?
+    val audioEnd: Int?,
+    val isEditMode: Boolean?
 )

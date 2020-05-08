@@ -3,6 +3,7 @@ package io.square1.limor.mappers
 import entities.response.DraftEntity
 import entities.response.DraftsResponseEntity
 import io.reactivex.Single
+import io.square1.limor.scenes.utils.waveform.WaveformFragment.isEditMode
 import io.square1.limor.uimodels.UIDraft
 import io.square1.limor.uimodels.UIDraftsResponse
 
@@ -43,7 +44,8 @@ fun DraftEntity.asUIModel(): UIDraft {
         time,
         audioDuration,
         audioStart,
-        audioEnd
+        audioEnd,
+        isEditMode
     )
 }
 
@@ -66,6 +68,7 @@ fun UIDraft.asDataEntity(): DraftEntity {
         time,
         audioDuration,
         audioStart,
-        audioEnd
+        audioEnd,
+        isEditMode
     )
 }

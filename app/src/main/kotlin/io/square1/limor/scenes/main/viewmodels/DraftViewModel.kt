@@ -26,7 +26,7 @@ class DraftViewModel @Inject constructor(
     var uiDraft = UIDraft()
 
     /************************************
-    INSERT A DRAFT CENTRE INTO REALM
+    INSERT A DRAFT INTO REALM
     ************************************/
     data class InputInsert(
         val trigger: Observable<Unit>
@@ -81,8 +81,7 @@ class DraftViewModel @Inject constructor(
     /************************************
         LOAD A DRAFT LIST IN REALM
      ************************************/
-    fun loadDraftRealm(): LiveData<List<UIDraft>>? =
-        draftLoadRealmUseCase.execute()
+    fun loadDraftRealm(): LiveData<List<UIDraft>>? = draftLoadRealmUseCase.execute()
 
     override fun onCleared() {
         if (!compositeDispose.isDisposed) compositeDispose.dispose()

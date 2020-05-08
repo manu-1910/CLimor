@@ -3,6 +3,8 @@
     <string name="some_error">Sorry, there was an error, please try again</string>
     <string name="exception_message_generic">There was an error</string>
 
+    <string name="image_content_description_default">image description</string>
+
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="username">Username</string>
@@ -148,6 +150,14 @@
     <string name="centre_not_deleted_error">There was an error deleting the draft</string>
 
 
+    <string name="draft_inserted">Draft inserted</string>
+    <string name="draft_not_inserted">Draft NOT inserted</string>
+    <string name="draft_not_inserted_error">There was an error inserting the draft</string>
+
+    <string name="no_drafts_saved_title">There is not saved drafts</string>
+    <string name="no_drafts_saved_description">Will appear saved drafts</string>
+
+    <string name="btnDone">Done</string>
 
 
 

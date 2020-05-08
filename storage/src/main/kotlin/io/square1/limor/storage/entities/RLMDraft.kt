@@ -15,5 +15,6 @@ open class RLMDraft(
     var time: Long? = 0,
     var audioDuration: Int? = 0,
     var audioStart: Int? = 0,
-    var audioEnd: Int? = 0
+    var audioEnd: Int? = 0,
+    var isEditMode: Boolean? = false
 ):RealmObject()

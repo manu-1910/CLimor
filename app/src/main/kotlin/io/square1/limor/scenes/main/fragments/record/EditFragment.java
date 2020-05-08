@@ -78,8 +78,9 @@ public class EditFragment extends WaveformFragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
-        recordingItem = new UIRecordingItem();
-        recordingItem = (UIRecordingItem) getArguments().get("recordingItem");
+        //TODO JJ temporary commented I have to replace the UIRecordingItem with UIDraft (mappers, objects, code, storage) in order to store it on DDBB
+        //recordingItem = new UIRecordingItem();
+        //recordingItem = (UIRecordingItem) getArguments().get("recordingItem");
     }
 
 

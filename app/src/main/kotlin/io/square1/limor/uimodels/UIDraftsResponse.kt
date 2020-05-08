@@ -21,8 +21,9 @@ data class UIDraft(
     var time: Long?,
     var audioDuration: Int?,
     var audioStart: Int?,
-    var audioEnd: Int?
+    var audioEnd: Int?,
+    var isEditMode: Boolean?
 
 ): Serializable {
-    constructor() : this( 0,"", "", "", "", "", 0, 0, 0, 0, 0)
+    constructor() : this( 0,"", "", "", "", "", 0, 0, 0, 0, 0, false)
 }

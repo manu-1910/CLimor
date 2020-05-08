@@ -17,7 +17,8 @@ fun RLMDraft.asDataEntity(): DraftEntity {
         time,
         audioDuration,
         audioStart,
-        audioEnd
+        audioEnd,
+        isEditMode
     )
 }
 
@@ -37,7 +38,8 @@ fun DraftEntity.asStorageEntity(): RLMDraft {
         time,
         audioDuration,
         audioStart,
-        audioEnd
+        audioEnd,
+        isEditMode
     )
 }
 
