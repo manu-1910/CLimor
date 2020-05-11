@@ -1,10 +1,12 @@
 package io.square1.limor.scenes.main.adapters
 
 
+import android.media.MediaPlayer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import io.square1.limor.R
@@ -12,12 +14,12 @@ import io.square1.limor.uimodels.UIDraft
 import org.jetbrains.anko.sdk23.listeners.onClick
 import java.util.*
 
+
 class DraftAdapter(
     private val draftsList: ArrayList<UIDraft>,
     private val listener: OnItemClickListener,
     private val deleteListener: OnDeleteItemClickListener
 ) : RecyclerView.Adapter<DraftAdapter.ViewHolder>() {
-
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -25,6 +27,14 @@ class DraftAdapter(
         val tvDraftTitle: TextView = itemView.findViewById(R.id.tvDraftTitle)
         val tvDraftDescription: TextView = itemView.findViewById(R.id.tvDraftDescription)
         val ivDraftDelete: ImageView = itemView.findViewById(R.id.ivDraftDelete)
+
+        val ivPlayPause: ImageView = itemView.findViewById(R.id.ivPlayPause)
+
+        val sbProgress: SeekBar = itemView.findViewById(R.id.sbProgress)
+
+        val tvIndex: TextView = itemView.findViewById(R.id.tvIndex)
+
+
 
     }
 
@@ -49,6 +59,7 @@ class DraftAdapter(
         holder.tvDraftDescription.text = draftsList[position].caption
         holder.itemView.setOnClickListener { listener.onItemClick(draftsList[position]) }
 
+
         if (draftsList[position].isEditMode!!) {
             holder.ivDraftDelete.setImageResource(R.drawable.delete_symbol)
             holder.ivDraftDelete.onClick { deleteListener.onDeleteItemClick(position) }
@@ -66,6 +77,8 @@ class DraftAdapter(
     interface OnDeleteItemClickListener {
         fun onDeleteItemClick(position: Int)
     }
+
+
 
 }
 

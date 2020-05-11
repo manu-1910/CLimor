@@ -19,10 +19,11 @@ import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
-import io.square1.limor.scenes.main.adapters.DraftAdapter
+import io.square1.limor.scenes.main.adapters.testJavaAdapter
+
+
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
 import io.square1.limor.uimodels.UIDraft
-import kotlinx.android.synthetic.main.toolbar_with_cross.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.toast
 import timber.log.Timber
@@ -42,7 +43,8 @@ class DraftsFragment : BaseFragment() {
     private val getDraftsTrigger = PublishSubject.create<Unit>()
     private val deleteDraftsTrigger = PublishSubject.create<Unit>()
     private var draftsLocalList: ArrayList<UIDraft> = ArrayList()
-    private var adapter: DraftAdapter? = null
+    //private var adapter: DraftAdapter? = null
+    private var adapter: testJavaAdapter? = null
     private var comesFromEditMode = false
 
     private var btnEditToolbarUpdate: Button? = null
@@ -158,42 +160,46 @@ class DraftsFragment : BaseFragment() {
     private fun configureAdapter() {
         val layoutManager = LinearLayoutManager(context)
         rvDrafts?.layoutManager = layoutManager
-        adapter = DraftAdapter(
-            draftsLocalList,
-            object : DraftAdapter.OnItemClickListener {
-                override fun onItemClick(item: UIDraft) {
-                    if (!comesFromEditMode) {
+        adapter = context?.let {
+            testJavaAdapter(
+                it,
+                draftsLocalList,
+                object : testJavaAdapter.OnItemClickListener {
+                    override fun onItemClick(item: UIDraft) {
+                        if (!comesFromEditMode) {
 
-                        //TODO JJ use this draft to go to edit fragment and edit it
-                        //val searchPropertiesIntent =
-                        //    Intent(context, SearchPropertiesActivity::class.java)
-                        //configureUISearchRequestLocal(item)
-                        //searchPropertiesIntent.putExtra(
-                        //    getString(R.string.savedSearchesWithFilterObjectKey),
-                        //    uiSearchRequestLocal
-                        //)
-                        //startActivityForResult(
-                        //    searchPropertiesIntent,
-                        //    context!!.resources.getInteger(R.integer.REQUEST_CODE_SEARCH_PROPERTIES)
-                        //)
+                            //TODO JJ use this draft to go to edit fragment and edit it
+                            //val searchPropertiesIntent =
+                            //    Intent(context, SearchPropertiesActivity::class.java)
+                            //configureUISearchRequestLocal(item)
+                            //searchPropertiesIntent.putExtra(
+                            //    getString(R.string.savedSearchesWithFilterObjectKey),
+                            //    uiSearchRequestLocal
+                            //)
+                            //startActivityForResult(
+                            //    searchPropertiesIntent,
+                            //    context!!.resources.getInteger(R.integer.REQUEST_CODE_SEARCH_PROPERTIES)
+                            //)
+                        }
+                    }
+                },
+                object : testJavaAdapter.OnDeleteItemClickListener {
+                    override fun onDeleteItemClick(position: Int) {
+                        pbDrafts?.visibility = View.VISIBLE
+
+                        draftViewModel.uiDraft = draftsLocalList[position]
+                        deleteDraftsTrigger.onNext(Unit)
+
+                        draftsLocalList.removeAt(position)
+
+                        rvDrafts?.adapter?.notifyItemRemoved(position)
+                        rvDrafts?.adapter?.notifyItemRangeChanged(0, draftsLocalList.size)
+
+
                     }
                 }
-            },
-            object : DraftAdapter.OnDeleteItemClickListener {
-                override fun onDeleteItemClick(position: Int) {
-                    pbDrafts?.visibility = View.VISIBLE
-
-                    draftViewModel.uiDraft = draftsLocalList[position]
-                    deleteDraftsTrigger.onNext(Unit)
-
-                    draftsLocalList.removeAt(position)
-
-                    rvDrafts?.adapter?.notifyItemRemoved(position)
-                    rvDrafts?.adapter?.notifyItemRangeChanged(0, draftsLocalList.size)
-
-
-                }
-            })
+            )
+        }
         rvDrafts?.adapter = adapter
         rvDrafts?.setHasFixedSize(false)
     }
