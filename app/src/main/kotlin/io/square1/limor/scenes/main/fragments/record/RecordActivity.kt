@@ -16,16 +16,15 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
 
     @Inject
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
-
-    private lateinit var navController: NavController
-
-    override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> = fragmentInjector
-
+    lateinit var navController: NavController
 
     companion object {
         val TAG: String = RecordActivity::class.java.simpleName
         fun newInstance() = RecordActivity()
     }
+
+
+    override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> = fragmentInjector
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

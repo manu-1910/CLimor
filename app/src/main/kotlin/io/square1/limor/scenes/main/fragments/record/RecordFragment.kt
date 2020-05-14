@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,25 +47,23 @@ class RecordFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var draftViewModel: DraftViewModel
-
     private var isRecording = false
     private var isFirstTapRecording = true
     private var timeWhenStopped: Long = 0
     private var rootView: View? = null
     private var voiceGraph : VisualizerView? = null
-    var app: App? = null
-    var recordingItem: UIDraft? = null
     private var handler = Handler()
     private lateinit var updater: Runnable
     private lateinit var mRecorder : AMRAudioRecorder
-
     private val PERMISSION_ALL = 1
     private var PERMISSIONS = arrayOf(
         Manifest.permission.RECORD_AUDIO,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
-
     private val insertDraftTrigger = PublishSubject.create<Unit>()
+    var app: App? = null
+    var recordingItem: UIDraft? = null
+
 
     companion object {
         val TAG: String = RecordFragment::class.java.simpleName
@@ -153,7 +150,14 @@ class RecordFragment : BaseFragment() {
         val ad: AlertDialog = dialog.show()
 
         positiveButton.onClick {
-            toast("Cast name is " + editText.text.toString()) //TODO delete this when drafts screen implemented
+
+            recordingItem?.title = editText.text.toString()
+            recordingItem?.caption = getDateTimeFormatted()
+
+            //Inserting in Realm
+            draftViewModel.uiDraft = recordingItem!!
+            insertDraftTrigger.onNext(Unit)
+
             findNavController().navigate(R.id.action_record_fragment_to_record_drafts)
             ad.dismiss()
         }
@@ -264,7 +268,8 @@ class RecordFragment : BaseFragment() {
             timeWhenStopped = 0
 
             //Go tu Publish fragment
-            findNavController().navigate(R.id.action_record_fragment_to_record_publish)
+            var bundle = bundleOf("recordingItem" to recordingItem)
+            findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
         }
 
         // Record Button
@@ -316,13 +321,13 @@ class RecordFragment : BaseFragment() {
                 isFirstTapRecording = false
                 mRecorder.start()
 
-                var fileList : List<File> = getNewestAudioFile();
+                //val fileList : List<File> = getNewestAudioFile(); //TODO JJ comprobar que es el último fichero de verdad
+                val fileChosen : File? = getLastModified(); //TODO JJ comprobar que es el último fichero de verdad
 
                 recordingItem = UIDraft()
                 recordingItem?.id = System.currentTimeMillis()/1000000
-                recordingItem?.filePath = fileList[0].absolutePath
-                recordingItem?.editedFilePath = fileList[0].absolutePath
-
+                recordingItem?.filePath = fileChosen?.absolutePath
+                recordingItem?.editedFilePath = fileChosen?.absolutePath
 
                 handler.post(updater)
             }else{
@@ -355,20 +360,19 @@ class RecordFragment : BaseFragment() {
             isRecording = false
         } else {
             mRecorder.stop()
+
+            //Model to save in Realm
+            if(recordingItem?.title.isNullOrEmpty()){
+                recordingItem?.title = getString(R.string.autosaved_draft)
+            }
+            recordingItem?.caption = getDateTimeFormatted()
+            recordingItem?.length = c_meter.base
+            recordingItem?.time = System.currentTimeMillis() / 1000
+            //Inserting in Realm
+            draftViewModel.uiDraft = recordingItem!!
+            insertDraftTrigger.onNext(Unit)
         }
 
-
-        //Model to save in Realm
-        recordingItem?.title = "Autosave"
-        recordingItem?.caption = getDateTimeFormatted()
-        recordingItem?.length = c_meter.base
-        recordingItem?.time = System.currentTimeMillis() / 1000
-        recordingItem?.audioDuration = c_meter.base.toInt()
-        recordingItem?.audioStart = c_meter.base.toInt()
-        recordingItem?.audioEnd = c_meter.base.toInt()
-        //Inserting in Realm
-        draftViewModel.uiDraft = recordingItem!!
-        insertDraftTrigger.onNext(Unit)
 
         //Change toolbar
         changeToEditToolbar()
@@ -423,6 +427,22 @@ class RecordFragment : BaseFragment() {
             .toList()
     }
 
+    fun getLastModified(): File? {
+        val directoryFilePath = Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/"
+        val directory = File(directoryFilePath)
+        val files = directory.listFiles { obj: File -> obj.isFile }
+        var lastModifiedTime = Long.MIN_VALUE
+        var chosenFile: File? = null
+        if (files != null) {
+            for (file in files) {
+                if (file.lastModified() > lastModifiedTime) {
+                    chosenFile = file
+                    lastModifiedTime = file.lastModified()
+                }
+            }
+        }
+        return chosenFile
+    }
 
     private fun getDateTimeFormatted() : String {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

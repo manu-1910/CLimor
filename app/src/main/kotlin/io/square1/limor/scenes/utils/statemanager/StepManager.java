@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 
 
-public class StepManager implements Parcelable {
+public class StepManager{
 
     private final static int MAX_STEPS = 4;
 
@@ -76,28 +76,28 @@ public class StepManager implements Parcelable {
         stepsToRedo.clear();
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+//   @Override
+//   public int describeContents() {
+//       return 0;
+//   }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedList(this.stepsToUndo);
-    }
+//   @Override
+//   public void writeToParcel(Parcel dest, int flags) {
+//       dest.writeTypedList(this.stepsToUndo);
+//   }
 
-    protected StepManager(Parcel in) {
-        this.stepsToUndo = in.createTypedArrayList(Step.CREATOR);
-    }
+//   protected StepManager(Parcel in) {
+//       this.stepsToUndo = in.createTypedArrayList(Step.CREATOR);
+//   }
 
-    public static final Parcelable.Creator<StepManager> CREATOR = new Parcelable.Creator<StepManager>() {
-        @Override
-        public StepManager createFromParcel(Parcel source) {
-            return new StepManager(source);
-        }
-        @Override
-        public StepManager[] newArray(int size) {
-            return new StepManager[size];
-        }
-    };
+//   public static final Parcelable.Creator<StepManager> CREATOR = new Parcelable.Creator<StepManager>() {
+//       @Override
+//       public StepManager createFromParcel(Parcel source) {
+//           return new StepManager(source);
+//       }
+//       @Override
+//       public StepManager[] newArray(int size) {
+//           return new StepManager[size];
+//       }
+//   };
 }

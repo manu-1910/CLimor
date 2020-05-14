@@ -14,8 +14,13 @@ data class DraftEntity(
     val tempPhotoPath: String?,
     val length: Long?,
     val time: Long?,
-    val audioDuration: Int?,
-    val audioStart: Int?,
-    val audioEnd: Int?,
-    val isEditMode: Boolean?
+    val isEditMode: Boolean?,
+    val timeStamps: ArrayList<TimeStampEntity>
+)
+
+
+data class TimeStampEntity(
+    val duration: Int?,
+    val startSample: Int?,
+    val endSample: Int?
 )

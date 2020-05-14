@@ -2,11 +2,11 @@ package io.square1.limor.uimodels
 
 
 import java.io.Serializable
-import kotlin.collections.ArrayList
+
 
 data class UIDraftsResponse(
-    val data: ArrayList<UIDraft>,
-    val status: String
+    var data: ArrayList<UIDraft>,
+    var status: String
 )
 
 
@@ -19,11 +19,20 @@ data class UIDraft(
     var tempPhotoPath: String?,
     var length: Long?,
     var time: Long?,
-    var audioDuration: Int?,
-    var audioStart: Int?,
-    var audioEnd: Int?,
-    var isEditMode: Boolean?
-
+    var isEditMode: Boolean?,
+    var timeStamps: ArrayList<UITimeStamp>?
 ): Serializable {
-    constructor() : this( 0,"", "", "", "", "", 0, 0, 0, 0, 0, false)
+    constructor() : this( 0,"", "", "", "", "", 0, 0, false, ArrayList())
 }
+
+
+data class UITimeStamp(
+    var duration: Int?,
+    var startSample: Int?,
+    var endSample: Int?
+): Serializable {
+    constructor() : this( 0,0, 0)
+}
+
+
+

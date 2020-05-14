@@ -30,6 +30,7 @@
                 android:layout_marginEnd="@dimen/marginMedium"
                 android:textColor="@color/white"
                 android:textStyle="bold"
+                android:text="Draft title"
                 android:maxLines="1" />
 
             <TextView
@@ -41,11 +42,9 @@
                 android:layout_marginEnd="@dimen/marginMedium"
                 android:textColor="@color/brandSecondary100"
                 android:textStyle="normal"
+                android:text="11/05/2020 09:00"
                 android:maxLines="1" />
-
-
         </LinearLayout>
-
 
         <ImageView
             android:id="@+id/ivDraftDelete"
@@ -55,51 +54,132 @@
             android:layout_centerVertical="true"
             android:contentDescription="@string/image_content_description_default"
             android:src="@drawable/delete_symbol"/>
-
     </RelativeLayout>
 
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/itemPlayer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="visible">
 
-        <View
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#3000"/>
+            android:layout_height="60dp"
+            android:background="@color/brandSecondary400"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginEnd="@dimen/marginMedium">
 
-        <TextView
-            android:id="@+id/tvIndex"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="16dp"/>
+            <SeekBar
+                android:id="@+id/sbProgress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxHeight="4dp"
+                android:minHeight="4dp"
+                android:paddingTop="8dip"
+                android:progress="50"
+                android:progressDrawable="@drawable/custom_seekbar_progress" />
+
+            <TextView
+                android:id="@+id/tvTimePass"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sbProgress"
+                android:textSize="@dimen/textSizeVerySmall"
+                android:textColor="@color/brandSecondary100"
+                android:fontFamily="@font/roboto"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="@dimen/marginSmall"
+                android:layout_marginTop="@dimen/marginTiny"
+                android:gravity="left"
+                android:text="00:00"/>
+
+            <TextView
+                android:id="@+id/tvDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sbProgress"
+                android:textSize="@dimen/textSizeVerySmall"
+                android:textColor="@color/brandSecondary100"
+                android:fontFamily="@font/roboto"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="@dimen/marginSmall"
+                android:layout_marginTop="@dimen/marginTiny"
+                android:gravity="right"
+                android:text="00:00"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="62dip">
+
+            <ImageButton android:id="@+id/btnMore"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:layout_marginStart="@dimen/marginAlmostLarge"
+                android:gravity="center"
+                style="@android:style/MediaButton"
+                android:contentDescription="@string/image_content_description_default"
+                android:src="@drawable/more"
+                android:scaleType="fitCenter"/>
 
 
+            <ImageButton android:id="@+id/ibRew"
+                android:layout_toLeftOf="@id/ibPlayPause"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:layout_marginRight="@dimen/marginMedium"
+                style="@android:style/MediaButton"
+                android:contentDescription="@string/rewind"
+                android:src="@drawable/rewind"
+                android:scaleType="fitCenter"/>
 
-        <SeekBar
-            android:id="@+id/sbProgress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tvIndex"/>
+            <ImageButton android:id="@+id/ibPlayPause"
+                android:layout_centerHorizontal="true"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                style="@android:style/MediaButton"
+                android:contentDescription="@string/play"
+                android:src="@drawable/play"
+                android:scaleType="fitCenter"/>
 
-        <ImageView
-            android:id="@+id/ivPlayPause"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="@dimen/marginMedium"
-            android:layout_marginBottom="@dimen/marginSmall"
-            android:layout_below="@+id/sbProgress"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/play"
-            android:tint="@color/colorPrimary"/>
-    </RelativeLayout>
+            <ImageButton android:id="@+id/ibFfwd"
+                android:layout_toRightOf="@id/ibPlayPause"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:layout_marginLeft="@dimen/marginMedium"
+                style="@android:style/MediaButton"
+                android:contentDescription="@string/ffwd"
+                android:src="@drawable/forward"
+                android:scaleType="fitCenter"/>
+
+            <TextView
+                android:id="@+id/tvEditItem"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:text="@string/btn_edit"
+                android:layout_marginEnd="@dimen/marginMedium"
+                android:fontFamily="@font/roboto"
+                android:textColor="@color/brandPrimary500"
+                android:textSize="@dimen/textSizeNormal"  />
+        </RelativeLayout>
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/brandSecondary400" />
+        android:background="@color/brandSecondary300" />
 
 </LinearLayout>

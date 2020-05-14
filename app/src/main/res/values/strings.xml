@@ -143,6 +143,7 @@
 
 
     <!-- Drafts list -->
+    <string name="autosaved_draft">Autosave</string>
     <string name="draft_title">New Draft</string>
 
     <string name="draft_deleted">Draft deleted</string>
@@ -158,6 +159,9 @@
     <string name="no_drafts_saved_description">Will appear saved drafts</string>
 
     <string name="btnDone">Done</string>
+
+    <string name="menu_delete_cast">Delete cast</string>
+    <string name="menu_duplicate_cast">Duplicate cast</string>
 
 
 

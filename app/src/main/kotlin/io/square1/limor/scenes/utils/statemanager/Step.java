@@ -3,20 +3,21 @@ package io.square1.limor.scenes.utils.statemanager;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.square1.limor.uimodels.UITimeStamp;
 
-public class Step implements Parcelable {
+public class Step{
 
     private long timestamp;
     private String filePath;
-    private List<UITimeStamp> timeStamps;
+    private ArrayList<UITimeStamp> timeStamps;
 
     public Step() {
     }
 
-    public Step(long timestamp, String filePath, List<UITimeStamp> timeStamps) {
+    public Step(long timestamp, String filePath, ArrayList<UITimeStamp> timeStamps) {
         this.timestamp = timestamp;
         this.filePath = filePath;
         this.timeStamps = timeStamps;
@@ -38,41 +39,41 @@ public class Step implements Parcelable {
         this.filePath = filePath;
     }
 
-    public List<UITimeStamp> getTimeStamps() {
+    public ArrayList<UITimeStamp> getTimeStamps() {
         return timeStamps;
     }
 
-    public void setTimeStamps(List<UITimeStamp> timeStamps) {
+    public void setTimeStamps(ArrayList<UITimeStamp> timeStamps) {
         this.timeStamps = timeStamps;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(this.timestamp);
-        dest.writeString(this.filePath);
-        dest.writeTypedList(this.timeStamps);
-    }
-
-    protected Step(Parcel in) {
-        this.timestamp = in.readLong();
-        this.filePath = in.readString();
-        this.timeStamps = in.createTypedArrayList(UITimeStamp.CREATOR);
-    }
-
-    public static final Creator<Step> CREATOR = new Creator<Step>() {
-        @Override
-        public Step createFromParcel(Parcel source) {
-            return new Step(source);
-        }
-
-        @Override
-        public Step[] newArray(int size) {
-            return new Step[size];
-        }
-    };
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel dest, int flags) {
+//        dest.writeLong(this.timestamp);
+//        dest.writeString(this.filePath);
+//        dest.writeTypedList(this.timeStamps);
+//    }
+//
+//    protected Step(Parcel in) {
+//        this.timestamp = in.readLong();
+//        this.filePath = in.readString();
+//        this.timeStamps = in.createTypedArrayList(UITimeStamp.CREATOR);
+//    }
+//
+//    public static final Creator<Step> CREATOR = new Creator<Step>() {
+//        @Override
+//        public Step createFromParcel(Parcel source) {
+//            return new Step(source);
+//        }
+//
+//        @Override
+//        public Step[] newArray(int size) {
+//            return new Step[size];
+//        }
+//    };
 }

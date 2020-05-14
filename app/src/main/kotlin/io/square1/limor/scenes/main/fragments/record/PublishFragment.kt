@@ -5,19 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
+import io.square1.limor.uimodels.UIDraft
 import kotlinx.android.synthetic.main.fragment_publish.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
-import kotlinx.android.synthetic.main.toolbar_with_cross.*
+import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
+import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.toast
 
 
 class PublishFragment : BaseFragment() {
 
+    lateinit var recordingItem : UIDraft
 
     companion object {
         val TAG: String = PublishFragment::class.java.simpleName
@@ -25,11 +29,7 @@ class PublishFragment : BaseFragment() {
     }
 
 
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_publish, container, false)
     }
 
@@ -38,6 +38,9 @@ class PublishFragment : BaseFragment() {
 
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 100f)
+
+        recordingItem = UIDraft()
+        recordingItem = arguments!!["recordingItem"] as UIDraft
 
         bindViewModel()
         configureToolbar()

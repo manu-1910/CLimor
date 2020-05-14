@@ -19,7 +19,7 @@ import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
-import io.square1.limor.scenes.main.adapters.testJavaAdapter
+import io.square1.limor.scenes.main.adapters.DraftAdapter
 
 
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
@@ -27,6 +27,7 @@ import io.square1.limor.uimodels.UIDraft
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.toast
 import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 
@@ -35,7 +36,6 @@ class DraftsFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var draftViewModel: DraftViewModel
-
     private var rootView: View? = null
     private var rvDrafts: RecyclerView? = null
     private var pbDrafts: ProgressBar? = null
@@ -43,15 +43,13 @@ class DraftsFragment : BaseFragment() {
     private val getDraftsTrigger = PublishSubject.create<Unit>()
     private val deleteDraftsTrigger = PublishSubject.create<Unit>()
     private var draftsLocalList: ArrayList<UIDraft> = ArrayList()
-    //private var adapter: DraftAdapter? = null
-    private var adapter: testJavaAdapter? = null
+    private var adapter: DraftAdapter? = null
     private var comesFromEditMode = false
-
     private var btnEditToolbarUpdate: Button? = null
     private var btnCloseToolbar: ImageButton? = null
     private var tvTitleToolbar: TextView? = null
-
     var app: App? = null
+
 
     companion object {
         val TAG: String = DraftsFragment::class.java.simpleName
@@ -92,8 +90,9 @@ class DraftsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         //Setup animation transition
-        ViewCompat.setTranslationZ(view, 100f)
+        ViewCompat.setTranslationZ(view, 20f)
     }
 
 
@@ -108,10 +107,6 @@ class DraftsFragment : BaseFragment() {
 
     private fun configureToolbar() {
 
-        //btnEditToolbarUpdate = (activity as RecordActivity).findViewById(R.id.btnToolbarRight)
-        //btnCloseToolbar = (activity as RecordActivity).findViewById(R.id.btnClose)
-        //tvTitleToolbar = (activity as RecordActivity).findViewById(R.id.tvToolbarTitle)
-
         //Toolbar title
         tvTitleToolbar?.text = getString(R.string.title_drafts)
 
@@ -125,7 +120,6 @@ class DraftsFragment : BaseFragment() {
                 }
             }
         }
-
 
         //Toolbar Right
         btnEditToolbarUpdate?.text = getText(R.string.edit)
@@ -161,11 +155,12 @@ class DraftsFragment : BaseFragment() {
         val layoutManager = LinearLayoutManager(context)
         rvDrafts?.layoutManager = layoutManager
         adapter = context?.let {
-            testJavaAdapter(
+            DraftAdapter(
                 it,
                 draftsLocalList,
-                object : testJavaAdapter.OnItemClickListener {
+                object : DraftAdapter.OnItemClickListener {
                     override fun onItemClick(item: UIDraft) {
+
                         if (!comesFromEditMode) {
 
                             //TODO JJ use this draft to go to edit fragment and edit it
@@ -183,13 +178,21 @@ class DraftsFragment : BaseFragment() {
                         }
                     }
                 },
-                object : testJavaAdapter.OnDeleteItemClickListener {
+                object : DraftAdapter.OnDeleteItemClickListener {
                     override fun onDeleteItemClick(position: Int) {
                         pbDrafts?.visibility = View.VISIBLE
 
                         draftViewModel.uiDraft = draftsLocalList[position]
                         deleteDraftsTrigger.onNext(Unit)
 
+                        //Remove the audio file from the folder
+                        try {
+                            val file = File(draftsLocalList[position].filePath)
+                            file.delete()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                        //Remove item from the list
                         draftsLocalList.removeAt(position)
 
                         rvDrafts?.adapter?.notifyItemRemoved(position)
@@ -197,7 +200,8 @@ class DraftsFragment : BaseFragment() {
 
 
                     }
-                }
+                },
+                findNavController()
             )
         }
         rvDrafts?.adapter = adapter

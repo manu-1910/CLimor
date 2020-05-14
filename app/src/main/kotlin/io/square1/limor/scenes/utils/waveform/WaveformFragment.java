@@ -121,6 +121,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     public static boolean isEditMode;
     protected boolean isInitialised;
     private boolean isMovingTooMuch;
+    private View rootView;
 
     private final int ALLOWED_PIXEL_OFFSET = 18;
     public static final int NEW_WIDTH = 20;
@@ -135,14 +136,18 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_waveform, container, false);
-        loadGui(view);
+        if (rootView == null) {
+            rootView = inflater.inflate(R.layout.fragment_waveform, container, false);
+            loadGui(rootView);
+        }
+
         if (soundFile == null) {
             loadFromFile(fileName);
         } else {
             handler.post(() -> finishOpeningSoundFile());
         }
-        return view;
+
+        return rootView;
     }
 
     @Override

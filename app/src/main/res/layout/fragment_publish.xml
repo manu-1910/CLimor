@@ -8,7 +8,7 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar_with_cross"/>
+        layout="@layout/toolbar_with_back_arrow_icon"/>
 
     <RelativeLayout
         android:layout_marginTop="@dimen/marginMedium"
