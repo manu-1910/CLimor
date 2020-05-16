@@ -24,6 +24,7 @@ class DraftAdapter(
     list: ArrayList<UIDraft>,
     private val listener: DraftAdapter.OnItemClickListener,
     private val deleteListener: DraftAdapter.OnDeleteItemClickListener,
+    private val duplicateListener: DraftAdapter.OnDuplicateItemClickListener,
     private val navController: NavController
 ) : RecyclerView.Adapter<DraftAdapter.ViewHolder>() {
     var inflator: LayoutInflater
@@ -48,7 +49,7 @@ class DraftAdapter(
         try {
             mediaPlayer.setDataSource(modelList.filePath)
             mediaPlayer.prepare() // might take long for buffering.
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
 
@@ -185,6 +186,7 @@ class DraftAdapter(
                 when (item.itemId) {
                     R.id.menu_duplicate_cast -> {
                         Toast.makeText(context, "duplicate cast", Toast.LENGTH_SHORT).show()
+                        duplicateListener.onDuplicateItemClick(position)
                         true
                     }
                     R.id.menu_delete_cast -> {
@@ -275,6 +277,10 @@ class DraftAdapter(
 
     interface OnDeleteItemClickListener {
         fun onDeleteItemClick(position: Int)
+    }
+
+    interface OnDuplicateItemClickListener {
+        fun onDuplicateItemClick(position: Int)
     }
 
 

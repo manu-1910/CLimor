@@ -26,6 +26,7 @@ import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
+import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.VisualizerView
 import io.square1.limor.uimodels.UIDraft
 import kotlinx.android.synthetic.main.fragment_record.*
@@ -118,15 +119,7 @@ class RecordFragment : BaseFragment() {
         //Toolbar Left
         btnToolbarLeft.text = getString(R.string.btn_cancel)
         btnToolbarLeft.onClick {
-            alert(getString(R.string.alert_cancel_record_descr), getString(R.string.alert_cancel_record_title)) {
-                positiveButton(getString(R.string.alert_cancel_record_save)){
-                    it.dismiss()
-                    showSaveDraftAlert(view!!)
-                }
-                negativeButton(getString(R.string.alert_cancel_record_do_not_save)){
-                    activity?.finish()
-                }
-            }.show()
+            activity?.finish()
         }
 
         //Toolbar Right
@@ -152,7 +145,7 @@ class RecordFragment : BaseFragment() {
         positiveButton.onClick {
 
             recordingItem?.title = editText.text.toString()
-            recordingItem?.caption = getDateTimeFormatted()
+            recordingItem?.caption = CommonsKt.getDateTimeFormatted()
 
             //Inserting in Realm
             draftViewModel.uiDraft = recordingItem!!
@@ -221,8 +214,16 @@ class RecordFragment : BaseFragment() {
 
         //Toolbar Left
         btnToolbarLeft.text = getString(R.string.btn_cancel)
-        btnToolbarLeft.onClick {
-            activity?.finish()
+        btnToolbarLeft.onClick { //Here the user has start recording
+            alert(getString(R.string.alert_cancel_record_descr), getString(R.string.alert_cancel_record_title)) {
+                positiveButton(getString(R.string.alert_cancel_record_save)){
+                    it.dismiss()
+                    showSaveDraftAlert(view!!)
+                }
+                negativeButton(getString(R.string.alert_cancel_record_do_not_save)){
+                    activity?.finish()
+                }
+            }.show()
         }
 
         //Toolbar Right
@@ -247,11 +248,28 @@ class RecordFragment : BaseFragment() {
             recordingDirectory.mkdir()
         }
 
-        mRecorder = AMRAudioRecorder(recordingDirectory.absolutePath)
 
-        // Disable next button
-        nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
-        nextButton.isEnabled = false
+        if (recordingItem != null){
+            changeToEditToolbar()
+        }else{
+            mRecorder = AMRAudioRecorder(recordingDirectory.absolutePath)
+
+            // Disable next button
+            nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
+            nextButton.isEnabled = false
+        }
+
+        //if (this::mRecorder.isInitialized){
+        //    //Has come back from other fragment
+        //    changeToEditToolbar()
+        //}else{
+        //    mRecorder = AMRAudioRecorder(recordingDirectory.absolutePath)
+//
+        //    // Disable next button
+        //    nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
+        //    nextButton.isEnabled = false
+        //}
+
 
     }
 
@@ -260,14 +278,14 @@ class RecordFragment : BaseFragment() {
 
         // Next Button
         nextButton.onClick {
-            mRecorder.stop() //TODO JJ
-
+            //Stop the recorder
+            mRecorder.stop()
 
             //Stop chronometer
             c_meter.base = SystemClock.elapsedRealtime()
             timeWhenStopped = 0
 
-            //Go tu Publish fragment
+            //Go to Publish fragment
             var bundle = bundleOf("recordingItem" to recordingItem)
             findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
         }
@@ -365,7 +383,7 @@ class RecordFragment : BaseFragment() {
             if(recordingItem?.title.isNullOrEmpty()){
                 recordingItem?.title = getString(R.string.autosaved_draft)
             }
-            recordingItem?.caption = getDateTimeFormatted()
+            recordingItem?.caption = CommonsKt.getDateTimeFormatted()
             recordingItem?.length = c_meter.base
             recordingItem?.time = System.currentTimeMillis() / 1000
             //Inserting in Realm
@@ -442,18 +460,6 @@ class RecordFragment : BaseFragment() {
             }
         }
         return chosenFile
-    }
-
-    private fun getDateTimeFormatted() : String {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val current = LocalDateTime.now()
-            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
-            current.format(formatter)
-        } else {
-            var date = Date()
-            val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm")
-            formatter.format(date)
-        }
     }
 
 }

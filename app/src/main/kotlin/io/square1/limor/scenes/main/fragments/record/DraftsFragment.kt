@@ -1,6 +1,8 @@
 package io.square1.limor.scenes.main.fragments.record
 
+
 import android.os.Bundle
+import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,9 +22,9 @@ import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.scenes.main.adapters.DraftAdapter
-
-
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
+import io.square1.limor.scenes.utils.CommonsKt.Companion.copyFile
+import io.square1.limor.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import io.square1.limor.uimodels.UIDraft
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.toast
@@ -42,6 +44,7 @@ class DraftsFragment : BaseFragment() {
     private var emptyScenarioDraftsLayout: View? = null
     private val getDraftsTrigger = PublishSubject.create<Unit>()
     private val deleteDraftsTrigger = PublishSubject.create<Unit>()
+    private val insertDraftsTrigger = PublishSubject.create<Unit>()
     private var draftsLocalList: ArrayList<UIDraft> = ArrayList()
     private var adapter: DraftAdapter? = null
     private var comesFromEditMode = false
@@ -80,6 +83,7 @@ class DraftsFragment : BaseFragment() {
             configureAdapter()
             loadDrafts()
             deleteDraft()
+            insertDraft()
         }
         configureToolbar()
         app = context?.applicationContext as App
@@ -160,22 +164,7 @@ class DraftsFragment : BaseFragment() {
                 draftsLocalList,
                 object : DraftAdapter.OnItemClickListener {
                     override fun onItemClick(item: UIDraft) {
-
-                        if (!comesFromEditMode) {
-
-                            //TODO JJ use this draft to go to edit fragment and edit it
-                            //val searchPropertiesIntent =
-                            //    Intent(context, SearchPropertiesActivity::class.java)
-                            //configureUISearchRequestLocal(item)
-                            //searchPropertiesIntent.putExtra(
-                            //    getString(R.string.savedSearchesWithFilterObjectKey),
-                            //    uiSearchRequestLocal
-                            //)
-                            //startActivityForResult(
-                            //    searchPropertiesIntent,
-                            //    context!!.resources.getInteger(R.integer.REQUEST_CODE_SEARCH_PROPERTIES)
-                            //)
-                        }
+                        if (!comesFromEditMode) { }
                     }
                 },
                 object : DraftAdapter.OnDeleteItemClickListener {
@@ -201,6 +190,32 @@ class DraftsFragment : BaseFragment() {
 
                     }
                 },
+                object : DraftAdapter.OnDuplicateItemClickListener {
+                    override fun onDuplicateItemClick(position: Int) {
+                        pbDrafts?.visibility = View.VISIBLE
+
+                        var newItem = draftsLocalList[position]
+                        newItem.id = System.currentTimeMillis()
+                        newItem.title = getString(R.string.duplicated_draft)
+                        newItem.caption = getDateTimeFormatted()
+
+                        try {
+                            val originalFile = File(draftsLocalList[position].filePath)
+                            val destFile = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() +".amr")
+                            copyFile(originalFile, destFile)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+
+                        //Insert in Realm
+                        draftViewModel.uiDraft = newItem
+                        insertDraftsTrigger.onNext(Unit)
+
+                        //Add item to the list
+                        draftsLocalList.add(newItem)
+                        rvDrafts?.adapter?.notifyItemChanged(position)
+                    }
+                },
                 findNavController()
             )
         }
@@ -210,8 +225,17 @@ class DraftsFragment : BaseFragment() {
 
 
     private fun showEmptyScenario() {
+        //Show empty scenario layout
         emptyScenarioDraftsLayout?.visibility = View.VISIBLE
+        //Hide Recyclerview
         rvDrafts?.visibility = View.GONE
+        //Hide progress bar
+        pbDrafts?.visibility = View.GONE
+
+        //Clear right toolbar button
+        btnEditToolbarUpdate?.background = null
+        btnEditToolbarUpdate?.text = ""
+        btnEditToolbarUpdate?.onClick {null}
     }
 
 
@@ -269,6 +293,31 @@ class DraftsFragment : BaseFragment() {
         })
         output.errorMessage.observe(this, Observer {
             Timber.e(getString(R.string.centre_not_deleted_error))
+        })
+    }
+
+
+    private fun insertDraft() {
+        val output = draftViewModel.insertDraftRealm(
+            DraftViewModel.InputInsert(
+                insertDraftsTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if (it) {
+                toast(getString(R.string.draft_inserted))
+            } else{
+                toast(getString(R.string.draft_not_inserted))
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            toast(getString(R.string.draft_not_inserted_error))
         })
     }
 
