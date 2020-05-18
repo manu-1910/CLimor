@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
-
+import java.util.concurrent.TimeUnit
 
 
 class CommonsKt{
@@ -46,6 +46,22 @@ class CommonsKt{
                 source?.close()
                 destination?.close()
             }
+        }
+
+
+        fun calculateDurationMediaPlayer(duration: Int): String {
+            var finalDuration = ""
+            val minutes = TimeUnit.MILLISECONDS.toMinutes(duration.toLong())
+            val seconds = TimeUnit.MILLISECONDS.toSeconds(duration.toLong())
+            if (minutes == 0L) {
+                finalDuration = "0:$seconds"
+            } else {
+                if (seconds >= 60) {
+                    val sec = seconds - minutes * 60
+                    finalDuration = "$minutes:$sec"
+                }
+            }
+            return finalDuration
         }
 
     }

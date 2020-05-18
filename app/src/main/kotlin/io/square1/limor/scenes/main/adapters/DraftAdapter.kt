@@ -13,11 +13,13 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import io.square1.limor.R
+import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIDraft
 import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk23.listeners.onClick
-import java.io.IOException
 import java.util.concurrent.TimeUnit
+
+
 
 class DraftAdapter(
     var context: Context,
@@ -103,7 +105,7 @@ class DraftAdapter(
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })
         holder.tvTimePass.text = "0:00"
-        holder.tvTimeDuration.text = calculateDuration(mediaPlayer.duration)
+        holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
         holder.btnPlay.setOnClickListener {
             if (!mediaPlayer.isPlaying) {
                 mediaPlayer.start()
@@ -122,12 +124,12 @@ class DraftAdapter(
                             TimeUnit.MILLISECONDS.toSeconds(miliSeconds.toLong())
                         if (minutes == 0L) {
                             holder.tvTimePass.text = "0:$seconds"
-                            holder.tvTimeDuration.text = calculateDuration(mediaPlayer.duration)
+                            holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
                         } else {
                             if (seconds >= 60) {
                                 val sec = seconds - minutes * 60
                                 holder.tvTimePass.text = "$minutes:$sec"
-                                holder.tvTimeDuration.text = calculateDuration(mediaPlayer.duration)
+                                holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
                             }
                         }
                     } else {
@@ -139,12 +141,12 @@ class DraftAdapter(
                             TimeUnit.MILLISECONDS.toSeconds(totalTime.toLong())
                         if (minutes == 0L) {
                             holder.tvTimePass.text = "0:$seconds"
-                            holder.tvTimeDuration.text = calculateDuration(mediaPlayer.duration)
+                            holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
                         } else {
                             if (seconds >= 60) {
                                 val sec = seconds - minutes * 60
                                 holder.tvTimePass.text = "$minutes:$sec"
-                                holder.tvTimeDuration.text = calculateDuration(mediaPlayer.duration)
+                                holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
                             }
                         }
                     }
@@ -248,20 +250,7 @@ class DraftAdapter(
     }
 
 
-    private fun calculateDuration(duration: Int): String {
-        var finalDuration = ""
-        val minutes = TimeUnit.MILLISECONDS.toMinutes(duration.toLong())
-        val seconds = TimeUnit.MILLISECONDS.toSeconds(duration.toLong())
-        if (minutes == 0L) {
-            finalDuration = "0:$seconds"
-        } else {
-            if (seconds >= 60) {
-                val sec = seconds - minutes * 60
-                finalDuration = "$minutes:$sec"
-            }
-        }
-        return finalDuration
-    }
+
 
 
     init {

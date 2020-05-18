@@ -3,22 +3,32 @@ package io.square1.limor.scenes.utils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.util.DisplayMetrics;
 import android.util.TypedValue;
+
+import com.coremedia.iso.boxes.Container;
+import com.googlecode.mp4parser.authoring.Track;
+import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
+import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
+import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
 
 import org.joda.time.DateTime;
 
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import io.square1.limor.R;
+import timber.log.Timber;
 
 public class Commons {
 
@@ -84,5 +94,90 @@ public class Commons {
     //}
 
 
+    public static boolean mergeMediaFiles(boolean isAudio, ArrayList<File> sourceFiles, String targetFile) {
+        try {
+            String mediaKey = isAudio ? "soun" : "vide";
+            List<com.googlecode.mp4parser.authoring.Movie> listMovies = new ArrayList<com.googlecode.mp4parser.authoring.Movie>();
+
+            for (File filename : sourceFiles) {
+                listMovies.add(MovieCreator.build(filename.getAbsolutePath()));
+            }
+            List<Track> listTracks = new LinkedList<>();
+            for (com.googlecode.mp4parser.authoring.Movie movie : listMovies) {
+                for (Track track : movie.getTracks()) {
+                    if (track.getHandler().equals(mediaKey)) {
+                        listTracks.add(track);
+                    }
+                }
+            }
+            com.googlecode.mp4parser.authoring.Movie outputMovie = new com.googlecode.mp4parser.authoring.Movie();
+            if (!listTracks.isEmpty()) {
+                outputMovie.addTrack(new AppendTrack(listTracks.toArray(new Track[listTracks.size()])));
+            }
+            Container container = new DefaultMp4Builder().build(outputMovie);
+            FileChannel fileChannel = new RandomAccessFile(String.format(targetFile), "rws").getChannel();
+            container.writeContainer(fileChannel);
+            fileChannel.close();
+            return true;
+        }
+        catch (Exception e) {
+            Timber.e("Error merging media files. exception: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean deleteFilesInArray(ArrayList<File> filesToDelete) {
+        try {
+            for (File singleFile : filesToDelete){
+                singleFile.delete();
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    public static boolean mergeAmrAudioFiles(ArrayList<File> files, String mergedFilePath){
+
+        // Merge files
+        try {
+            FileOutputStream fos = new FileOutputStream(mergedFilePath);
+
+            for (int i = 0,len = files.size();i<len;i++) {
+                File file = new File(files.get(i).getAbsolutePath());
+                FileInputStream fis = new FileInputStream(file);
+
+                // Skip file header bytes,
+                // amr file header's length is 6 bytes
+                if (i > 0) {
+                    for (int j=0; j<6; j++) {
+                        fis.read();
+                    }
+                }
+
+                byte[] buffer = new byte[512];
+                int count = 0;
+                while ( (count = fis.read(buffer)) != -1 ) {
+                    fos.write(buffer,0,count);
+                }
+
+                fis.close();
+                fos.flush();
+                file.delete();
+            }
+
+            fos.flush();
+            fos.close();
+
+            return true;
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 
 }

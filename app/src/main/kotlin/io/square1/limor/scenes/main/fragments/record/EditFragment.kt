@@ -72,7 +72,7 @@ class EditFragment : WaveformFragment() {
     }
 
     override fun getFileName(): String {
-        return recordingItem!!.filePath!!
+        return recordingItem?.filePath!!
     }
 
     override fun populateMarkers() {
