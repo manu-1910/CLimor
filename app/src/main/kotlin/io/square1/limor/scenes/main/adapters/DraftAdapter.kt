@@ -123,12 +123,12 @@ class DraftAdapter(
                         val seconds =
                             TimeUnit.MILLISECONDS.toSeconds(miliSeconds.toLong())
                         if (minutes == 0L) {
-                            holder.tvTimePass.text = "0:$seconds"
+                            holder.tvTimePass.text = "00:" + String.format("%02d", seconds)
                             holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
                         } else {
                             if (seconds >= 60) {
                                 val sec = seconds - minutes * 60
-                                holder.tvTimePass.text = "$minutes:$sec"
+                                holder.tvTimePass.text = String.format("%02d", minutes)+":"+String.format("%02d", seconds)
                                 holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
                             }
                         }
@@ -140,12 +140,12 @@ class DraftAdapter(
                         val seconds =
                             TimeUnit.MILLISECONDS.toSeconds(totalTime.toLong())
                         if (minutes == 0L) {
-                            holder.tvTimePass.text = "0:$seconds"
+                            holder.tvTimePass.text = "00:" + String.format("%02d", seconds)
                             holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
                         } else {
                             if (seconds >= 60) {
                                 val sec = seconds - minutes * 60
-                                holder.tvTimePass.text = "$minutes:$sec"
+                                holder.tvTimePass.text = String.format("%02d", minutes)+":"+String.format("%02d", seconds)
                                 holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
                             }
                         }

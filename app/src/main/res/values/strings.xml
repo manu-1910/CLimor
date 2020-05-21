@@ -139,8 +139,9 @@
     <string name="menu_dismiss">Dismiss</string>
     <string name="menu_preview">Preview</string>
 
-
-
+    <!-- ImagePicker strings -->
+    <string name="imagepicker_folder">Folder</string>
+    <string name="imagepicker_tap_to_select">Tap to select</string>
 
     <!-- Drafts list -->
     <string name="autosaved_draft">Autosave</string>
@@ -155,6 +156,10 @@
     <string name="draft_inserted">Draft inserted</string>
     <string name="draft_not_inserted">Draft NOT inserted</string>
     <string name="draft_not_inserted_error">There was an error inserting the draft</string>
+    <string name="draft_updated">Draft updated</string>
+    <string name="draft_not_updated">Draft NOT updated</string>
+    <string name="draft_not_updated_error">There was an error updating the draft</string>
+
 
     <string name="no_drafts_saved_title">There is no saved drafts</string>
     <string name="no_drafts_saved_description">Here will appear a list with your saved drafts ready to use with the app</string>

@@ -17,11 +17,15 @@
             layout="@layout/toolbar_with_back_arrow_icon"/>
 
         <RelativeLayout
-            android:layout_marginTop="@dimen/marginMedium"
+            android:id="@+id/lytImagePlaceHolder"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:layout_marginBottom="@dimen/marginSmall"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="visible">
 
             <ImageView
+                android:id="@+id/ivDraftImage"
                 android:layout_centerInParent="true"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
@@ -35,20 +39,38 @@
                 android:layout_height="119dp"
                 android:src="@drawable/publish_placeholder"/>
 
-
+            <TextView
+                android:id="@+id/tvChoosePhoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/marginAlmostLarge"
+                android:textColor="@color/brandPrimary500"
+                android:textSize="@dimen/textSizeVerySmall"
+                android:fontFamily="@font/roboto_medium"
+                android:layout_centerHorizontal="true"
+                android:text="@string/choose_a_photo"
+                android:layout_below="@+id/placeHolder"/>
 
         </RelativeLayout>
 
-        <TextView
-            android:id="@+id/tvChoosePhoto"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/lytImage"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:layout_marginBottom="@dimen/marginSmall"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/marginVerySmall"
-            android:textColor="@color/brandPrimary500"
-            android:textSize="@dimen/textSizeVerySmall"
-            android:fontFamily="@font/roboto_medium"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/choose_a_photo" />
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ivDraft"
+                android:layout_centerInParent="true"
+                android:layout_width="119dp"
+                android:layout_height="119dp"
+                android:src="@drawable/publish_placeholder"/>
+
+        </RelativeLayout>
+
+
 
 
         <View
@@ -290,15 +312,14 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSaveAsDraft"
-                style="@android:style/Widget.Material.Button.Borderless.Colored"
+                style="@android:style/Widget.Material.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:background="@drawable/bg_round_yellow_ripple"
                 android:fontFamily="@font/roboto_medium"
                 android:text="@string/btn_save_as_draft"
                 android:textAllCaps="false"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/brandPrimary500"
                 android:textSize="@dimen/textSizeNormal"
                 android:layout_weight="1"
                 android:layout_marginRight="@dimen/marginSmall"/>

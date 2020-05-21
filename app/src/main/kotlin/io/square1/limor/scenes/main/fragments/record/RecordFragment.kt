@@ -305,7 +305,11 @@ class RecordFragment : BaseFragment() {
         nextButton.onClick {
 
             //Stop the recorder
-            mRecorder.stop()
+            try {
+                mRecorder.stop()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
             isFirstTapRecording = true
             resetAudioSetup()
@@ -402,10 +406,16 @@ class RecordFragment : BaseFragment() {
                 //This is the recorded audio file saved in storage
                 val fileChosen : File? = getLastModified()
 
-                recordingItem = UIDraft()
-                recordingItem?.id = System.currentTimeMillis()/1000000
-                recordingItem?.filePath = fileChosen?.absolutePath
-                recordingItem?.editedFilePath = fileChosen?.absolutePath
+                if(recordingItem != null){
+                    recordingItem?.filePath = fileChosen?.absolutePath
+                    recordingItem?.editedFilePath = fileChosen?.absolutePath
+                }else{
+                    recordingItem = UIDraft()
+                    recordingItem?.id = System.currentTimeMillis()/1000000
+                    recordingItem?.filePath = fileChosen?.absolutePath
+                    recordingItem?.editedFilePath = fileChosen?.absolutePath
+                }
+
 
                 handler.post(updater)
             }else{

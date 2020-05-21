@@ -1,6 +1,7 @@
 package io.square1.limor.scenes.utils
 
 import android.os.Build
+import android.text.Editable
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -54,15 +55,19 @@ class CommonsKt{
             val minutes = TimeUnit.MILLISECONDS.toMinutes(duration.toLong())
             val seconds = TimeUnit.MILLISECONDS.toSeconds(duration.toLong())
             if (minutes == 0L) {
-                finalDuration = "0:$seconds"
+                //finalDuration = "0:$seconds"
+                finalDuration = String.format("00:%02d", seconds)
             } else {
                 if (seconds >= 60) {
                     val sec = seconds - minutes * 60
-                    finalDuration = "$minutes:$sec"
+                    //finalDuration = "$minutes:$sec"
+                    finalDuration = String.format("%1$02d:%1$02d", minutes, sec)
                 }
             }
             return finalDuration
         }
+
+        fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
 
     }
 
