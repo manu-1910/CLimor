@@ -35,7 +35,8 @@ fun<T: Any> Single<T>.trackError(errorTracker: SingleLiveEvent<Int>) : Single<T>
 fun<T: Any> Single<T>.trackProgress(progressTracker: MutableLiveData<Boolean>) : Single<T> {
     return this.doOnSubscribe { progressTracker.postValue(true) }
         .doOnSuccess { progressTracker.postValue(false)  }
-        .doOnError{ progressTracker.postValue(false) }
+        .doOnError{
+            progressTracker.postValue(false) }
 }
 
 fun Completable.trackProgress(progressTracker: MutableLiveData<Boolean>) : Completable {

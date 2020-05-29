@@ -4,6 +4,8 @@ import dagger.Binds
 import dagger.Module
 import repositories.DataDraftsRepository
 import repositories.DraftsRepository
+import repositories.auth.AuthRepository
+import repositories.auth.DataAuthRepository
 
 
 @Module
@@ -21,6 +23,9 @@ abstract class DataModule {
         return InstanceOfSomething
         }*/
     }
+
+    @Binds
+    abstract fun bindAuthRepository(authRepository: DataAuthRepository): AuthRepository
 
     @Binds
     abstract fun bindDraftsRepository(draftsRepository: DataDraftsRepository): DraftsRepository

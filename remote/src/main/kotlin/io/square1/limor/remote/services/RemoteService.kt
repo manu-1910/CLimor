@@ -11,22 +11,25 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 const val DATE_FORMAT_MASK = "yyyy-MM-dd'T'HH:mm:ss.SSS"
 
 data class RemoteServiceConfig(
-    val apiKey: String,
-    var sessionId: String? = null,
     val baseUrl: String,
     val debug: Boolean,
-    val appVersion: String
+    val client_id: String,
+    val client_secret: String,
+    var token: String
+
 )
 
 const val REQUEST_TYPE_ID = "RequestTypeId"
 
 abstract class RemoteService<T>
 constructor(c: Class<T>, private val config: RemoteServiceConfig) {
+
     protected var service: T
 
     init {
@@ -37,6 +40,8 @@ constructor(c: Class<T>, private val config: RemoteServiceConfig) {
         registerResponseDateFormatSerializer()
 
         val builder = OkHttpClient.Builder()
+            .connectTimeout(45, TimeUnit.SECONDS)
+            .readTimeout(45, TimeUnit.SECONDS)
             .addInterceptor(getLoggingInterceptor())
             .addInterceptor(getRequestInterceptor())
 
@@ -65,19 +70,28 @@ constructor(c: Class<T>, private val config: RemoteServiceConfig) {
             })
     }
 
+
     private fun getRequestInterceptor(): Interceptor = Interceptor { chain ->
         chain.proceed(
             chain.request().newBuilder()
                 .url(addBaseParameters(chain.request().url()))
-                .header("x-MyHome-App-Version", config.appVersion)
+                .header("Authorization", "Bearer " + config.token)
+                .header("Accept-Language", "en")
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .header("X-API-VERSION", "2.1")
+                .header("Platform", "android 6.0.1")
+                .header("OS", "android")
+                .header("AppVersion", "2.2.7")
                 .build()
         )
     }
 
+
     private fun addBaseParameters(url: HttpUrl): HttpUrl {
         val builder = url.newBuilder()
-        builder.addQueryParameter("ApiKey", config.apiKey)
-        builder.addQueryParameter("CorrelationId", UUID.randomUUID().toString())
+        //builder.addQueryParameter("ApiKey", config.apiKey)
+        //builder.addQueryParameter("CorrelationId", UUID.randomUUID().toString())
         //config.sessionId?.let { builder.addQueryParameter("SessionId", it) }
         return builder.build()
     }
@@ -85,10 +99,11 @@ constructor(c: Class<T>, private val config: RemoteServiceConfig) {
 
     private fun getLoggingInterceptor(): Interceptor {
         val logging = HttpLoggingInterceptor()
-        logging.level = if (config.debug)
-            HttpLoggingInterceptor.Level.BODY
-        else
-            HttpLoggingInterceptor.Level.NONE
+        //logging.level = if (config.debug)
+        //    HttpLoggingInterceptor.Level.BODY
+        //else
+        //    HttpLoggingInterceptor.Level.NONE
+        HttpLoggingInterceptor.Level.BODY
         return logging
     }
 
@@ -109,4 +124,6 @@ constructor(c: Class<T>, private val config: RemoteServiceConfig) {
             null
         }
     }
+
+
 }

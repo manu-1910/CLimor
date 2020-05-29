@@ -7,12 +7,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class NWErrorResponse(
     @Optional
-    @SerialName("ErrorCode")
-    var code: String = "",
+    @SerialName("code")
+    var code: Int = 0,
     @Optional
-    @SerialName("FieldName")
-    var fieldName: String = "",
+    @SerialName("message")
+    var messageStr: String = "",
     @Optional
-    @SerialName("Message")
-    override var message: String = ""
+    @SerialName("data")
+    var data: String = ""
 ): Throwable()

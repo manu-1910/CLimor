@@ -109,6 +109,8 @@ versions.circledotsindicator = '1.1.2'
 versions.skeleton = '1.1.1'
 //shimmerlayout
 versions.shimmerlayout = '2.1.0'
+//Merlin connectivity
+versions.merlin = '1.2.0'
 
 versions.navigation = '1.0.0-alpha02'
 
@@ -271,4 +273,5 @@ deps.navigation = "android.arch.navigation:navigation-ui-ktx:$versions.navigatio
 deps.navigation_fragment = "android.arch.navigation:navigation-fragment-ktx:$versions.navigation"
 deps.skeleton = "com.ethanhua:skeleton:$versions.skeleton"
 deps.shimmerlayout = "io.supercharge:shimmerlayout:$versions.shimmerlayout"
+deps.merlin = "com.novoda:merlin:$versions.merlin"
 ext.deps = deps

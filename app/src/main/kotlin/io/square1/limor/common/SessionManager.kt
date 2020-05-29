@@ -1,14 +1,20 @@
 package io.square1.limor.common
 
 import android.content.Context
+import io.square1.limor.remote.services.RemoteServiceConfig
 import javax.inject.Inject
 
 
 class SessionManager @Inject constructor(context: Context) {
 
+    @Inject
+    lateinit var remoteServiceConfig: RemoteServiceConfig
+
+
     private val preferences = context.getSharedPreferences("app", Context.MODE_PRIVATE)
 
-    private val sessionKey = "session_id_key"
+    private val tokenKey = "token_id_key"
+
     private val userIdKey = "user_id_key"
     private val userEmailKey = "user_email_key"
     private val userNameKey = "user_name_key"
@@ -17,13 +23,23 @@ class SessionManager @Inject constructor(context: Context) {
     private val firstRun = "first_run"
 
 
-    fun storeSession(sessionId: String): Boolean {
-        return preferences.edit().putString(sessionKey, sessionId).commit()
+    fun storeToken(tokenId: String): Boolean {
+        //Set the token to the RemoteService to send the Authorization header with Bearer token
+        remoteServiceConfig.token = tokenId
+        return preferences.edit().putString(tokenKey, tokenId).commit()
     }
 
     fun getStoredSession(): String? {
-        return preferences.getString(sessionKey, null)
+        return preferences.getString(tokenKey, "")
     }
+
+
+
+
+
+
+
+
 
     fun storeUserId(userId: String): Boolean {
         return preferences.edit().putString(userIdKey, userId).commit()
@@ -43,7 +59,7 @@ class SessionManager @Inject constructor(context: Context) {
 
     fun logOut() {
         preferences.edit()
-            .remove(sessionKey)
+            .remove(tokenKey)
             .remove(userIdKey)
             .remove(userEmailKey)
             .remove(userNameKey)

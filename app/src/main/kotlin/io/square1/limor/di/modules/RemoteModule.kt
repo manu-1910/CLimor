@@ -1,9 +1,13 @@
 package io.square1.limor.di.modules
 
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import io.square1.limor.BuildConfig
+import io.square1.limor.remote.providers.RemoteAuthProviderImp
 import io.square1.limor.remote.services.RemoteServiceConfig
+import kotlinx.serialization.ImplicitReflectionSerializer
+import providers.remote.RemoteAuthProvider
 import javax.inject.Singleton
 
 @Module
@@ -18,11 +22,16 @@ abstract class RemoteModule {
         @JvmStatic
         @Singleton
         fun provideRemoteServiceConfig(): RemoteServiceConfig = RemoteServiceConfig(
-            apiKey = BuildConfig.API_KEY,
             baseUrl = BuildConfig.BASE_URL,
-            appVersion = "test-version",
-            debug = BuildConfig.DEBUG
+            debug = BuildConfig.DEBUG,
+            client_id = BuildConfig.CLIENT_ID,
+            client_secret = BuildConfig.CLIENT_SECRET,
+            token = ""
         )
     }
+
+    @ImplicitReflectionSerializer
+    @Binds
+    abstract fun bindAuthProvider(remoteAuthProviderImp: RemoteAuthProviderImp): RemoteAuthProvider
 
    }

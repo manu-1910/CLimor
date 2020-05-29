@@ -20,17 +20,12 @@ class SplashActivity : BaseActivity() {
         if (!isFinishing) {
 
             if(!sessionManager.getStoredSession().isNullOrEmpty()){
-
-              /*  var mainIntent: Intent
-                mainIntent = Intent(this, MainActivity::class.java)
+                var mainIntent: Intent = Intent(this, MainActivity::class.java)
                 startActivity(mainIntent)
-                this.finish()*/
-
+                this.finish()
             }else{
-                //startActivity(Intent(applicationContext, SignActivity::class.java))
-                startActivity(Intent(applicationContext, MainActivity::class.java)) //for faster development //TODO
+                startActivity(Intent(applicationContext, SignActivity::class.java))
                 finish()
-
             }
         }
     }

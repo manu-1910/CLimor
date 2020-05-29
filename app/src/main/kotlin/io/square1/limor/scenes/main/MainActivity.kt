@@ -14,7 +14,6 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseActivity
 import io.square1.limor.scenes.main.fragments.*
 import io.square1.limor.scenes.main.fragments.record.RecordActivity
-import io.square1.limor.scenes.main.fragments.record.RecordFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import org.jetbrains.anko.sdk23.listeners.onClick
