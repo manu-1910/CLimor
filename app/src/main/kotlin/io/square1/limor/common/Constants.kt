@@ -1,5 +1,7 @@
 package io.square1.limor.common
 
+import io.square1.limor.BuildConfig
+
 class Constants{
 
 
@@ -9,10 +11,35 @@ class Constants{
         val SUPPORT_EMAIL = "support@limor.ie"
 
         // Authorization
-        val CLIENT_ID: String = io.square1.limor.BuildConfig.CLIENT_ID
-        val CLIENT_SECRET: String = io.square1.limor.BuildConfig.CLIENT_SECRET
+        val CLIENT_ID: String = BuildConfig.CLIENT_ID
+        val CLIENT_SECRET: String = BuildConfig.CLIENT_SECRET
         const val GRANT_TYPE_FACEBOOK = "facebook"
         const val GRANT_TYPE = "password"
         const val SCOPES = "user"
+
+        // AWS and Image Handling
+        const val AWS_IDENTITY_POOL: String = BuildConfig.AWS_S3_IDENTITY_POOL
+        const val AWS_BUCKET: String = BuildConfig.AWS_S3_BUCKET
+        const val AWS_IMAGE_BASE_URL = "https://$AWS_BUCKET.s3.amazonaws.com/"
+
+        const val AWS_FOLDER_PROFILE_IMAGE = "user_image_direct_upload/"
+        const val AWS_FOLDER_AUDIO_COMMENT = "podcast_comment_audio_direct_upload/"
+        const val AWS_FOLDER_PODCAST_IMAGE = "podcast_image_direct_upload/"
+        const val AWS_FOLDER_AUDIO_PODCAST = "podcast_audio_direct_upload/"
+
+        const val AWS_FILE_PROFILE_IMAGE_IDENTIFIER = "user_avatar"
+        const val AWS_FILE_PODCAST_IMAGE_IDENTIFIER = "podcast_image"
+
+        const val AWS_FOLDER_MESSAGE_ATTACHMENTS = "direct_message_attachment_upload/"
+        const val AWS_FILE_MESSAGE_ATTACHMENT = "message_attachment"
+        const val AWS_FOLDER_TIMELINE_MEDIA_ITEM = "timeline_media_items/"
+        const val AWS_FILE_TIMELINE_MEDIA = "timeline_media"
+        const val AWS_FOLDER_IMAGE = "image/"
+        const val AWS_FOLDER_VIDEO = "video/"
+        const val AWS_FOLDER_AUDIO = "audio/"
+
+        const val AUDIO_TYPE_PODCAST = 2
+        const val AUDIO_TYPE_COMMENT = 3
+        const val AUDIO_TYPE_ATTACHMENT = 6
     }
 }

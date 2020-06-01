@@ -25,7 +25,9 @@ import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
+import io.square1.limor.common.Constants
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
+import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
 import io.square1.limor.uimodels.UIDraft
@@ -172,12 +174,34 @@ class PublishFragment : BaseFragment() {
 
         btnPublishDraft?.onClick {
             toast ("Click on Publish button") //TODO JJ implement API CALL
-            draftViewModel.uiDraft = UIDraft()
-            activity?.finish()
+            //draftViewModel.uiDraft = UIDraft()
+            //activity?.finish()
+            publishPodcast()
+
         }
 
 
     }
+
+    private fun publishPodcast() {
+
+        Commons.getInstance().uploadAudio(
+            context,
+            File(Uri.parse(recordingItem.filePath).path!!),
+            Constants.AUDIO_TYPE_PODCAST,
+            object : Commons.AudioUploadCallback {
+                override fun onSuccess(audioUrl: String?) {
+                    var url = audioUrl
+
+                }
+
+                override fun onError(error: String?) {
+                    var error= error
+
+                }
+            })
+    }
+
 
     private fun loadExistingData(){
         if(!draftViewModel.uiDraft.title.toString().trim().isNullOrEmpty()){

@@ -5,6 +5,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.util.TypedValue;
 
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.coremedia.iso.boxes.Container;
 import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
@@ -25,19 +34,34 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.TimeZone;
 
 import io.square1.limor.R;
+import io.square1.limor.common.Constants;
 import timber.log.Timber;
 
 public class Commons {
 
-
+    private static Commons instance;
     private static final long ONE_SECOND = 1000;
     private static final long ONE_MINUTE = ONE_SECOND * 60;
     private static final long ONE_HOUR = ONE_MINUTE * 60;
+    //public boolean isImageReadyForUpload;
 
+    public interface AudioUploadCallback {
+        void onSuccess(String audioUrl);
+        void onError(String error);
+    }
 
+    public static Commons getInstance() {
+        if (instance == null) {
+            instance = new Commons();
+        }
+        return instance;
+    }
+    private Commons() {
+    }
 
     public static int dpToPx(Context context, int dps) {
         return (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dps, context.getResources().getDisplayMetrics()));
@@ -178,6 +202,61 @@ public class Commons {
         }
 
         return false;
+    }
+
+    public void uploadAudio(Context context, File audioFile, int audioType, final AudioUploadCallback callback) {
+        if (audioFile == null) {
+            callback.onError(context.getString(R.string.error_something_went_wrong));
+            return;
+        }
+
+        String path = "";
+        switch (audioType) {
+            case Constants.AUDIO_TYPE_PODCAST:
+                path = Constants.AWS_FOLDER_AUDIO_PODCAST + "audioFile_" + String.valueOf(new Random().nextInt((9999 - 1) + 1) + 1) + "_" + System.currentTimeMillis() + ".amr";
+                break;
+            case Constants.AUDIO_TYPE_COMMENT:
+                path = Constants.AWS_FOLDER_AUDIO_COMMENT + "audioFile_" + String.valueOf(new Random().nextInt((9999 - 1) + 1) + 1) + "_" + System.currentTimeMillis() + ".amr";
+                break;
+            case Constants.AUDIO_TYPE_ATTACHMENT:
+                path = Constants.AWS_FOLDER_MESSAGE_ATTACHMENTS + "audioFile_" + String.valueOf(new Random().nextInt((9999 - 1) + 1) + 1) + "_" + System.currentTimeMillis() + ".amr";
+                break;
+            default:
+                break;
+        }
+
+        final String completeUrl = Constants.AWS_IMAGE_BASE_URL + path;
+
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType("audio/amr");
+        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                context,
+                Constants.AWS_IDENTITY_POOL,
+                Regions.EU_WEST_1
+        );
+        final AmazonS3 s3 = new AmazonS3Client(credentialsProvider);
+        TransferUtility transferUtility = new TransferUtility(s3, context);
+        TransferObserver observer = transferUtility.upload(
+                Constants.AWS_BUCKET,
+                path,
+                audioFile,
+                metadata);
+
+        observer.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                if (state == TransferState.COMPLETED) {
+                    //isImageReadyForUpload = false;
+                    callback.onSuccess(completeUrl);
+                }
+            }
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {}
+            @Override
+            public void onError(int id, Exception ex) {
+                callback.onError(ex.getLocalizedMessage());
+            }
+        });
     }
 
 }
