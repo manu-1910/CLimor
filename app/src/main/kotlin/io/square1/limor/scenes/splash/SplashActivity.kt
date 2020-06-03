@@ -19,7 +19,7 @@ class SplashActivity : BaseActivity() {
     private val mRunnable: Runnable = Runnable {
         if (!isFinishing) {
 
-            if(!sessionManager.getStoredSession().isNullOrEmpty()){
+            if(!sessionManager.getStoredToken().isNullOrEmpty()){
                 var mainIntent: Intent = Intent(this, MainActivity::class.java)
                 startActivity(mainIntent)
                 this.finish()

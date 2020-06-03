@@ -2,10 +2,12 @@ package io.square1.limor.di.modules
 
 import dagger.Binds
 import dagger.Module
-import repositories.DataDraftsRepository
-import repositories.DraftsRepository
+import repositories.drafts.DataDraftsRepository
+import repositories.drafts.DraftsRepository
 import repositories.auth.AuthRepository
 import repositories.auth.DataAuthRepository
+import repositories.user.DataUserRepository
+import repositories.user.UserRepository
 
 
 @Module
@@ -29,6 +31,9 @@ abstract class DataModule {
 
     @Binds
     abstract fun bindDraftsRepository(draftsRepository: DataDraftsRepository): DraftsRepository
+
+    @Binds
+    abstract fun bindUserRepository(userRepository: DataUserRepository): UserRepository
 
 
 }

@@ -1,4 +1,4 @@
-package repositories
+package repositories.drafts
 
 import entities.response.DraftEntity
 import io.reactivex.Completable

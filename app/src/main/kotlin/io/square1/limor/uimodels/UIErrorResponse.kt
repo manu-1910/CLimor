@@ -11,10 +11,10 @@ data class UIErrorResponse(
     var code: Int = 0,
     @Optional
     @SerialName("message")
-    var errorMessage: String = ""
+    var errorMessage: String? = ""
     //@Optional
     //@SerialName("data")
-    //var data: UIErrorData = UIErrorData()
+    //var data: Object<Any>
 ) : Throwable()
 
 @Serializable

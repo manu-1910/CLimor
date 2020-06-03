@@ -10,6 +10,7 @@ fun Single<NWSignUpResponse>.asDataEntity(): Single<SignUpResponseEntity> {
     return this.map { it.asDataEntity() }
 }
 
+
 fun NWSignUpResponse.asDataEntity(): SignUpResponseEntity{
     return SignUpResponseEntity(
         code,

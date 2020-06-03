@@ -3,6 +3,7 @@ package io.square1.limor.scenes.authentication.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,7 @@ import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
+import io.square1.limor.common.Constants
 import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.authentication.SignActivity
@@ -34,6 +36,7 @@ import kotlinx.android.synthetic.main.fragment_sign_in.*
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.support.v4.toast
 import org.json.JSONException
 import timber.log.Timber
 import javax.inject.Inject
@@ -85,6 +88,9 @@ class SignInFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //sessionManager = context?.let { SessionManager(it) }!!
+        sessionManager = SessionManager(App.instance)
 
         if (arguments?.containsKey("email")!!){
             emailFromForgotPassword = arguments?.get("email") as String
@@ -146,7 +152,7 @@ class SignInFragment : BaseFragment() {
        output.errorMessage.observe(this, Observer {
             if (app!!.merlinsBeard!!.isConnected) {
                 val message: StringBuilder = StringBuilder()
-                if (it.errorMessage.isNotEmpty()) {
+                if (it.errorMessage!!.isNotEmpty()) {
                     message.append(it.errorMessage)
                 } else {
                     message.append(R.string.some_error)
@@ -174,20 +180,31 @@ class SignInFragment : BaseFragment() {
             pbSignIn?.visibility = View.GONE
             view?.hideKeyboard()
 
-            if (it.code == 0) {
-                /*val mainIntent = Intent(context, MainActivity::class.java)
-                startActivity(mainIntent)
-                (activity as SignActivity).finish()*/
-
-                //sessionManager.storeToken(it.data.token.access_token)
-
-                mergeAccounts(
-                    viewModelSignInFB.fbUidViewModel,
-                    viewModelSignInFB.fbAccessTokenViewModel,
-                    it.data.token.access_token
-                )
-
+            var token: String = ""
+            try{
+                token = it.data.token.access_token
+            }catch (e: Exception){
+                token = ""
+                e.printStackTrace()
             }
+
+            if(it.message == "Success"){
+                sessionManager.storeToken(token)
+                proceedLogin(token)
+            }else{
+                if (it.code == Constants.ERROR_CODE_FACEBOOK_USER_EXISTS) {
+                    alert(it.message) {
+                        okButton {
+                            mergeAccounts(
+                                viewModelSignInFB.fbUidViewModel,
+                                viewModelSignInFB.fbAccessTokenViewModel,
+                                token
+                            )
+                        }
+                    }.show()
+                }
+            }
+
         })
 
         output.backgroundWorkingProgress.observe(this, Observer {
@@ -199,7 +216,7 @@ class SignInFragment : BaseFragment() {
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
                 val message: StringBuilder = StringBuilder()
-                if (it.errorMessage.isNotEmpty()) {
+                if (it.errorMessage!!.isNotEmpty()) {
                     message.append(it.errorMessage)
                 } else {
                     message.append(R.string.some_error)
@@ -227,7 +244,7 @@ class SignInFragment : BaseFragment() {
             pbSignIn?.visibility = View.GONE
             view?.hideKeyboard()
 
-            if (it.code == 0) {
+            if (it.message == "Success") {
                 proceedLogin(it.data.token.access_token)
             }
         })
@@ -241,7 +258,7 @@ class SignInFragment : BaseFragment() {
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
                 val message: StringBuilder = StringBuilder()
-                if (it.errorMessage.isNotEmpty()) {
+                if (it.errorMessage!!.isNotEmpty()) {
                     message.append(it.errorMessage)
                 } else {
                     message.append(R.string.some_error)
@@ -278,7 +295,6 @@ class SignInFragment : BaseFragment() {
             }
         }
 
-        //TODO only implemented to go to MainActivity to continue the development JJ
         btnSignInFacebook?.onClick {
             view?.hideKeyboard()
             getUserDataFromGraph()
@@ -325,25 +341,31 @@ class SignInFragment : BaseFragment() {
 
     private fun getUserDataFromGraph() {
 
+        // Login
         callbackManager = CallbackManager.Factory.create()
-        LoginManager.getInstance()
-            .registerCallback(callbackManager, object : FacebookCallback<LoginResult?> {
-                override fun onSuccess(loginResult: LoginResult?) {
-                    val grantedPermissions: Set<String> = loginResult!!.recentlyGrantedPermissions
-                    if (grantedPermissions.contains("email") && grantedPermissions.contains("public_profile")) {
-                        val request: GraphRequest =
-                            GraphRequest.newMeRequest(loginResult.accessToken
-                            ) { obj, _ ->
+        LoginManager.getInstance().logInWithReadPermissions(this, listOf("public_profile", "email"))
+        LoginManager.getInstance().registerCallback(callbackManager,
+            object : FacebookCallback<LoginResult> {
+                override fun onSuccess(loginResult: LoginResult) {
+
+                    val request = GraphRequest.newMeRequest(loginResult.accessToken) { data, response ->
+                        try {
+                            //here is the data that you want
+                            Timber.d("FBLOGIN_JSON_RES $data")
+
+                            if (data.has("id")) {
+                                Timber.d("Facebook token: $loginResult.accessToken.token ")
+                                //startActivity(Intent(context, MainActivity::class.java))
                                 val fbUid: String = AccessToken.getCurrentAccessToken().userId
                                 val fbToken: String = AccessToken.getCurrentAccessToken().token
-                                var firstName: String? = null
-                                var lastName: String? = null
-                                var email: String? = null
-                                var userImageUrl: String? = null
+                                var firstName: String = ""
+                                var lastName: String = ""
+                                var email: String = ""
+                                var userImageUrl: String = ""
                                 try {
-                                    firstName = obj.getString("first_name")
-                                    lastName = obj.getString("last_name")
-                                    email = obj.getString("email")
+                                    firstName = data.getString("first_name")
+                                    lastName = data.getString("last_name")
+                                    email = data.getString("email")
                                     userImageUrl = "https://graph.facebook.com/$fbUid/picture?type=large"
                                 } catch (e: JSONException) {
                                     e.printStackTrace()
@@ -354,24 +376,36 @@ class SignInFragment : BaseFragment() {
                                     "$firstName $lastName"
                                 )
                                 tryLoginWithFacebook(fbUid, fbToken, user)
+                            } else {
+                                Timber.e("FBLOGIN_FAILD $data")
                             }
-                        val parameters = Bundle()
-                        parameters.putString("fields", "first_name, last_name, email")
-                        request.parameters = parameters
-                        request.executeAsync()
-                    } else {
-                        alert { getString(R.string.you_have_no_permissions_facebook) }
+
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            //dismissDialogLogin()
+                        }
                     }
+
+                    val parameters = Bundle()
+                    parameters.putString("fields", "first_name, last_name, email")
+                    request.parameters = parameters
+                    request.executeAsync()
                 }
 
-                override fun onCancel() {}
+                override fun onCancel() {
+                    Timber.d("Facebook onCancel.")
+
+                }
+
                 override fun onError(error: FacebookException) {
-                    alert { error.localizedMessage }
-                }
+                    error.printStackTrace()
+                    Timber.d("Facebook onError.")
 
+                }
             })
-        LoginManager.getInstance().logInWithReadPermissions(this, listOf("email", "public_profile"))
+
     }
+
 
 
     private fun tryLoginWithFacebook(fbUid: String, fbToken: String, user: UISignUpUser) {
@@ -383,9 +417,18 @@ class SignInFragment : BaseFragment() {
         signUpFBLoginTrigger.onNext(Unit)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        callbackManager?.onActivityResult(requestCode, resultCode, data)
+    }
 
     private fun mergeAccounts(fbUid: String, fbToken: String, temporaryAccessToken: String) {
-        sessionManager.storeToken(temporaryAccessToken)
+
+        if (sessionManager != null){
+            sessionManager.storeToken(temporaryAccessToken)
+        }
+
 
         viewModelMergeFacebookAccount.fbAccessTokenViewModel = fbToken
         viewModelMergeFacebookAccount.fbUidViewModel = fbUid

@@ -173,5 +173,16 @@
 
 
 
+    <!-- Profile fragment -->
+    <string name="title_fullname">Full Name</string>
+    <string name="title_username">Username</string>
+    <string name="title_website">Website</string>
+    <string name="title_bio">Bio</string>
+    <string name="title_email">Email</string>
+    <string name="title_phone">Phone No.</string>
+    <string name="title_age">Age</string>
+    <string name="title_gender">Gender</string>
+    <string name="logout">Logout</string>
+
 
 </resources>

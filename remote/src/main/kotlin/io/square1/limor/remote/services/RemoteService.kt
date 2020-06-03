@@ -12,6 +12,9 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.prefs.PreferenceChangeEvent
+import java.util.prefs.Preferences
+import javax.inject.Inject
 
 
 const val DATE_FORMAT_MASK = "yyyy-MM-dd'T'HH:mm:ss.SSS"
@@ -27,13 +30,13 @@ data class RemoteServiceConfig(
 
 const val REQUEST_TYPE_ID = "RequestTypeId"
 
-abstract class RemoteService<T>
-constructor(c: Class<T>, private val config: RemoteServiceConfig) {
+abstract class RemoteService<T> constructor(c: Class<T>, private val config: RemoteServiceConfig) {
 
     protected var service: T
 
     init {
         service = initApiService().create(c)
+
     }
 
     private fun initApiService(): Retrofit {

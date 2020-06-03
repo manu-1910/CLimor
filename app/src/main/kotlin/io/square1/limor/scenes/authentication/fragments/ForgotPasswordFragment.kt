@@ -110,7 +110,7 @@ class ForgotPasswordFragment : BaseFragment() {
             if (app!!.merlinsBeard!!.isConnected) {
                 val message: StringBuilder = StringBuilder()
 
-                if (it.errorMessage.isNotEmpty()) {
+                if (it.errorMessage!!.isNotEmpty()) {
                     message.append(it.errorMessage)
                 } else {
                     message.append(R.string.some_error)

@@ -11,8 +11,8 @@ data class NWErrorResponse(
     var code: Int = 0,
     @Optional
     @SerialName("message")
-    var messageStr: String = "",
-    @Optional
-    @SerialName("data")
-    var data: String = ""
+    var messageStr: String? = ""
+    //@Optional
+    //@SerialName("data")
+    //var data: String = ""
 ): Throwable()

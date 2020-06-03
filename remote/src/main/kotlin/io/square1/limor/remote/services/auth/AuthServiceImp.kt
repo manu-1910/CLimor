@@ -1,6 +1,6 @@
 package io.square1.limor.remote.services.auth
 
-import entities.request.DataMergeFacebookAccountRequest
+
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.square1.limor.remote.entities.requests.*
@@ -14,6 +14,7 @@ import kotlinx.serialization.Mapper
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
 import okhttp3.RequestBody
+import java.util.prefs.Preferences
 import javax.inject.Inject
 
 

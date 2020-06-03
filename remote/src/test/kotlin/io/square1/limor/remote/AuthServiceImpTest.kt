@@ -4,9 +4,8 @@ package io.square1.limor.remote
 import io.square1.limor.remote.entities.requests.NWSignUpRequest
 import io.square1.limor.remote.entities.requests.NWSignUpUser
 import io.square1.limor.remote.services.RemoteServiceConfig
-import io.square1.limor.remote.services.auth.AuthServiceImp
+import io.square1.limor.remote.services.user.AuthServiceImp
 import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.json.Json
 import org.junit.Test
 
 

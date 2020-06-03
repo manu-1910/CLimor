@@ -35,7 +35,7 @@ private fun parseErrorResponse(jsonString: String): NWErrorResponse {
     } catch (e: Exception) {
         customError.code = 999
         customError.messageStr = "Unexpected Error UFO"
-        customError.data = "ufo error ufo error"
+        //customError.data = "ufo error ufo error"
     }
     return customError
 }

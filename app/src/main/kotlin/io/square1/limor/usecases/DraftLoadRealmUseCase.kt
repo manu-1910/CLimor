@@ -4,7 +4,7 @@ import io.square1.limor.common.executors.PostExecutionThread
 import io.square1.limor.mappers.asUIModel
 import io.square1.limor.remote.executors.JobExecutor
 import io.square1.limor.uimodels.UIDraft
-import repositories.DataDraftsRepository
+import repositories.drafts.DataDraftsRepository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
 import io.reactivex.Flowable

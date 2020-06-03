@@ -5,7 +5,7 @@ import io.square1.limor.common.executors.PostExecutionThread
 import io.square1.limor.mappers.asDataEntity
 import io.square1.limor.remote.executors.JobExecutor
 import io.square1.limor.uimodels.UIDraft
-import repositories.DataDraftsRepository
+import repositories.drafts.DataDraftsRepository
 import javax.inject.Inject
 
 class DraftInsertRealmUseCase @Inject constructor(

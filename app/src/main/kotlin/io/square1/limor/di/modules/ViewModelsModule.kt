@@ -9,6 +9,8 @@ import io.square1.limor.common.ViewModelFactory
 import io.square1.limor.di.ViewModelKey
 import io.square1.limor.scenes.authentication.viewmodels.*
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
+import io.square1.limor.scenes.main.viewmodels.LogoutViewModel
+import io.square1.limor.scenes.main.viewmodels.ProfileViewModel
 
 
 @Module
@@ -45,4 +47,14 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(DraftViewModel::class)
     abstract fun bindDraftViewModel(draftViewModel: DraftViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ProfileViewModel::class)
+    abstract fun bindProfileViewModel(profileViewModel: ProfileViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LogoutViewModel::class)
+    abstract fun bindLogoutViewModel(logoutViewModel: LogoutViewModel): ViewModel
 }

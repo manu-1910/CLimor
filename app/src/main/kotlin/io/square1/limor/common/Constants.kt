@@ -14,5 +14,11 @@ class Constants{
         const val GRANT_TYPE_FACEBOOK = "facebook"
         const val GRANT_TYPE = "password"
         const val SCOPES = "user"
+
+
+        // Errors
+        private val ERROR_CODE_NO_AUTHENTICATED_USER: Int = 10
+        private const val ERROR_CODE_AUTH_INVALID_CREDENTIALS = 100
+        const val ERROR_CODE_FACEBOOK_USER_EXISTS = 1337
     }
 }
