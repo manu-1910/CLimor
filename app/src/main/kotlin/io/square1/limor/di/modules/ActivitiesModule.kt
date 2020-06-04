@@ -19,21 +19,18 @@ abstract class ActivitiesModule {
 
 
     @ContributesAndroidInjector(modules = [
-        (CommonFragmentsBuildersModule::class),
         (SignActivityFragmentsBuildersModule::class)
     ])
     abstract fun contributeSignActivityInjector(): SignActivity
 
 
     @ContributesAndroidInjector(modules = [
-        (CommonFragmentsBuildersModule::class),
         (MainActivityFragmentsBuildersModule::class)
     ])
     abstract fun contributeMainActivityInjector(): MainActivity
 
 
     @ContributesAndroidInjector(modules = [
-        (CommonFragmentsBuildersModule::class),
         (RecordActivityFragmentsBuildersModule::class)
     ])
     abstract fun contributeRecordActivityInjector(): RecordActivity

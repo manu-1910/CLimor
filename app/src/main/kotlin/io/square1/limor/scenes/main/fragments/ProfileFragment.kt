@@ -27,7 +27,6 @@ import kotlinx.android.synthetic.main.fragment_profile.*
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
 
 
@@ -36,13 +35,16 @@ class ProfileFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-
+    @Inject
     lateinit var sessionManager: SessionManager
+
     private lateinit var viewModelProfile: ProfileViewModel
     private lateinit var viewModelLogout: LogoutViewModel
     private val getUserDataTrigger = PublishSubject.create<Unit>()
     private val logoutTrigger = PublishSubject.create<Unit>()
+
     var app: App? = null
+
 
     companion object {
         val TAG: String = ProfileFragment::class.java.simpleName
@@ -62,27 +64,22 @@ class ProfileFragment : BaseFragment() {
 
         app = context?.applicationContext as App
 
-        sessionManager = SessionManager(App.instance)
-
         listeners()
         bindViewModel()
         apiCallGetUser()
         apiCallLogout()
-        //setVersion()
 
         getUserDataTrigger.onNext(Unit)
     }
 
 
     private fun listeners() {
-
         btnLogout.onClick {
             logoutTrigger.onNext(Unit)
-
-            sessionManager.logOut()
             logOutFromFacebook()
         }
     }
+
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
@@ -107,10 +104,7 @@ class ProfileFragment : BaseFragment() {
         output.response.observe(this, Observer {
             //pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
-
-            if (it.data.user != null) {
-                printUserData(it.data.user )
-            }
+            printUserData(it.data.user)
         })
 
         output.backgroundWorkingProgress.observe(this, Observer {
@@ -140,10 +134,6 @@ class ProfileFragment : BaseFragment() {
 
 
 
-
-
-
-
     private fun apiCallLogout() {
         val output = viewModelLogout.transform(
             LogoutViewModel.Input(
@@ -155,8 +145,10 @@ class ProfileFragment : BaseFragment() {
             //pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
 
-            //if (it.message == "Success") { //TODO review why message is erroressage and is null
+            //if (it.message == "Success") { //TODO review why message is errormessage and is null
             if (it.code == 0) {
+
+                sessionManager.logOut()
 
                 val mainIntent = Intent(context, SplashActivity::class.java)
                 startActivity(mainIntent)

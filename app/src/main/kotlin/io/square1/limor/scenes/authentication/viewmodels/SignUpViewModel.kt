@@ -53,8 +53,8 @@ class SignUpViewModel @Inject constructor(private val signUpWithEmailUseCase: Si
                     )
                 )
             ).subscribe({
-                response.value = it
                 sessionManager.storeToken(it.data.access_token.token.access_token)
+                response.value = it
             }, {
                 try {
                     val error = it as HttpException

@@ -35,6 +35,7 @@ class ForgotPasswordFragment : BaseFragment() {
     private val resetPassTrigger = PublishSubject.create<Unit>()
     var app: App? = null
 
+
     companion object {
         fun newInstance(bundle: Bundle? = null): ForgotPasswordFragment {
             val fragment = ForgotPasswordFragment()
@@ -42,6 +43,7 @@ class ForgotPasswordFragment : BaseFragment() {
             return fragment
         }
     }
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_forgot_password, container, false)

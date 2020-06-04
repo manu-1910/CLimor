@@ -56,7 +56,7 @@ class SignFBViewModel @Inject constructor(private val signInFBUseCase: SignInFBU
                     userViewModel
                 )
             ).subscribe({
-                sessionManager.storeToken(it.data.token.access_token)
+                //sessionManager.storeToken(it.data.token.access_token)
                 response.value = it
             }, {
                 try {

@@ -9,9 +9,8 @@ import javax.inject.Inject
 
 class SessionManager @Inject constructor(context: Context) {
 
-    //@Inject
-    //lateinit var remoteServiceConfig: RemoteServiceConfig
-
+    @Inject
+    lateinit var remoteServiceConfig: RemoteServiceConfig
 
     private val preferences = context.getSharedPreferences("app", Context.MODE_PRIVATE)
 
@@ -26,16 +25,9 @@ class SessionManager @Inject constructor(context: Context) {
     private val userLastNameKey = "user_last_name_key"
 
 
-
     fun storeToken(tokenId: String): Boolean {
         //Set the token to the RemoteService to send the Authorization header with Bearer token
-        //try {
-        //    if(remoteServiceConfig.token.isNullOrEmpty()){
-        //        remoteServiceConfig.token = tokenId
-        //    }
-        //} catch (e: Exception) {
-        //    e.printStackTrace()
-        //}
+        remoteServiceConfig.token = tokenId
 
         return preferences.edit().putString(tokenKey, tokenId).commit()
     }
@@ -66,57 +58,14 @@ class SessionManager @Inject constructor(context: Context) {
     }
 
     fun logOut() {
+        //Remove token from RemoteServiceConfig to clean up the api calls
+        remoteServiceConfig.token = ""
+
         preferences.edit()
             .remove(tokenKey)
             .remove(userKey)
             .apply()
     }
-
-
-/*
-*UIUser(
-            active = false,
-            autoplay_enabled = false,
-            blocked = false,
-            blocked_by = false,
-            date_of_birth = 0,
-            description = "",
-            email = "",
-            first_name = "",
-            followed = false,
-            followed_by = false,
-            followers_count = 0,
-            following_count = 0,
-            gender = "",
-            id = 0,
-            images = UIImages("", "", "", ""),
-            last_name = "",
-            links = UILinks(""),
-            notifications_enabled = false,
-            phone_number = "",
-            sharing_url = "",
-            suspended = false,
-            unread_conversations = false,
-            unread_conversations_count = 0,
-            unread_messages = false,
-            unread_messages_count = 0,
-            username = "",
-            verified = false,
-            website = ""
-        ))
-* */
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

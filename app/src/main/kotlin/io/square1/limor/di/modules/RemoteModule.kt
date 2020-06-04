@@ -24,11 +24,11 @@ abstract class RemoteModule {
     companion object {
 
         private val sessionManager = SessionManager(App.instance)
-        //private val tokenId = if (sessionManager.getStoredToken().isNullOrEmpty()) {
-        //    ""
-        //} else {
-        //    sessionManager.getStoredToken().toString()
-        //}
+        private val tokenId = if (sessionManager.getStoredToken().isNullOrEmpty()) {
+            ""
+        } else {
+            sessionManager.getStoredToken().toString()
+        }
 
         @Provides
         @JvmStatic
@@ -38,16 +38,16 @@ abstract class RemoteModule {
             debug = BuildConfig.DEBUG,
             client_id = BuildConfig.CLIENT_ID,
             client_secret = BuildConfig.CLIENT_SECRET,
-            token = sessionManager.getStoredToken().toString()
+            token = tokenId
         )
     }
 
     @ImplicitReflectionSerializer
     @Binds
-    abstract fun bindAuthProvider(remoteAuthProviderImp: RemoteAuthProviderImp): RemoteAuthProvider
+    abstract fun bindRemoteAuthProvider(remoteAuthProviderImp: RemoteAuthProviderImp): RemoteAuthProvider
 
     @ImplicitReflectionSerializer
     @Binds
-    abstract fun bindUserProvider(remoteUserProviderImp: RemoteUserProviderImp): RemoteUserProvider
+    abstract fun bindRemoteUserProvider(remoteUserProviderImp: RemoteUserProviderImp): RemoteUserProvider
 
    }

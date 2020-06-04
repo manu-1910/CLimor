@@ -42,7 +42,6 @@ import kotlinx.android.synthetic.main.fragment_sign_up.*
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.support.v4.toast
 import org.json.JSONException
 import timber.log.Timber
 import javax.inject.Inject
@@ -52,6 +51,7 @@ class SignUpFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject
     lateinit var sessionManager: SessionManager
 
     private lateinit var viewModel: SignUpViewModel
@@ -65,7 +65,6 @@ class SignUpFragment : BaseFragment() {
     private var callbackManager: CallbackManager? = null
 
     var app: App? = null
-
 
 
     companion object {
@@ -88,7 +87,6 @@ class SignUpFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
 
         app = context?.applicationContext as App
-        sessionManager = SessionManager(App.instance)
 
         bindViewModel()
         apiCall()
@@ -96,7 +94,6 @@ class SignUpFragment : BaseFragment() {
         apiCallMergeFacebookAccount()
         setMessageWithClickableLink(tvTermsAndConditions)
         listeners()
-
     }
 
 
@@ -182,8 +179,7 @@ class SignUpFragment : BaseFragment() {
             }
 
             if(it.message == "Success"){
-                sessionManager.storeToken(token)
-                proceedLogin(token)
+                proceedLogin()
             }else{
                 if (it.code == Constants.ERROR_CODE_FACEBOOK_USER_EXISTS) {
                     alert(it.message) {
@@ -238,7 +234,7 @@ class SignUpFragment : BaseFragment() {
             view?.hideKeyboard()
 
             if (it.message == "Success") {
-                proceedLogin(it.data.token.access_token)
+                proceedLogin()
             }
         })
 
@@ -295,8 +291,7 @@ class SignUpFragment : BaseFragment() {
 
         }
 
-        tvTermsAndConditions?.onClick {
-        }
+        tvTermsAndConditions?.onClick {}
     }
 
     private fun setMessageWithClickableLink(textView: TextView) {
@@ -440,7 +435,6 @@ class SignUpFragment : BaseFragment() {
 
                 override fun onCancel() {
                     Timber.d("Facebook onCancel.")
-
                 }
 
                 override fun onError(error: FacebookException) {
@@ -455,7 +449,6 @@ class SignUpFragment : BaseFragment() {
 
 
     private fun tryLoginWithFacebook(fbUid: String, fbToken: String, user: UISignUpUser) {
-
         viewModelSignInFB.fbAccessTokenViewModel = fbToken
         viewModelSignInFB.fbUidViewModel = fbUid
         viewModelSignInFB.userViewModel = user
@@ -470,22 +463,13 @@ class SignUpFragment : BaseFragment() {
     }
 
     private fun mergeAccounts(fbUid: String, fbToken: String, temporaryAccessToken: String) {
-
-        if (sessionManager != null){
-            sessionManager.storeToken(temporaryAccessToken)
-        }
-
-
         viewModelMergeFacebookAccount.fbAccessTokenViewModel = fbToken
         viewModelMergeFacebookAccount.fbUidViewModel = fbUid
 
         mergeFacebookAccountTrigger.onNext(Unit)
     }
 
-    private fun proceedLogin(accessToken: String) {
-
-        sessionManager.storeToken(accessToken);
-
+    private fun proceedLogin() {
         //DataManager.getInstance().getUserInfoData(true, null)
 
         val mainIntent = Intent(context, MainActivity::class.java)

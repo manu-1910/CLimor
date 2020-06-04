@@ -12,9 +12,6 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import java.util.prefs.PreferenceChangeEvent
-import java.util.prefs.Preferences
-import javax.inject.Inject
 
 
 const val DATE_FORMAT_MASK = "yyyy-MM-dd'T'HH:mm:ss.SSS"
@@ -25,7 +22,6 @@ data class RemoteServiceConfig(
     val client_id: String,
     val client_secret: String,
     var token: String
-
 )
 
 const val REQUEST_TYPE_ID = "RequestTypeId"
@@ -82,10 +78,10 @@ abstract class RemoteService<T> constructor(c: Class<T>, private val config: Rem
                 .header("Accept-Language", "en")
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/json")
-                .header("X-API-VERSION", "2.1")
-                .header("Platform", "android 6.0.1")
-                .header("OS", "android")
-                .header("AppVersion", "2.2.7")
+                .header("X-API-VERSION", "2.1") //TODO JJ modify this to send real data from device
+                .header("Platform", "android 6.0.1") //TODO JJ modify this to send real data from device
+                .header("OS", "android") //TODO JJ modify this to send real data from device
+                .header("AppVersion", "2.2.7") //TODO JJ modify this to send real data from device
                 .build()
         )
     }

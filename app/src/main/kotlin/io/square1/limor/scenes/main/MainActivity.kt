@@ -38,21 +38,12 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
         setContentView(R.layout.activity_main)
         app = applicationContext as App
 
-        //Initialize Shared Preferences to store device firebase token
-        //sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
         //Initialize Firebase Instance
         //FirebaseApp.initializeApp(this)
 
         //bindViewModel()
         setupNavigationController()
-
     }
-
-
-
-
-
 
 
 

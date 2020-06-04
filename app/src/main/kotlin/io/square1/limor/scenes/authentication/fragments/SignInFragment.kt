@@ -3,7 +3,6 @@ package io.square1.limor.scenes.authentication.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
@@ -36,7 +35,6 @@ import kotlinx.android.synthetic.main.fragment_sign_in.*
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.support.v4.toast
 import org.json.JSONException
 import timber.log.Timber
 import javax.inject.Inject
@@ -46,12 +44,12 @@ class SignInFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject
     lateinit var sessionManager: SessionManager
 
     private lateinit var viewModelSignInMail: SignViewModel
     private lateinit var viewModelSignInFB: SignFBViewModel
     private lateinit var viewModelMergeFacebookAccount: MergeFacebookAccountViewModel
-
 
     private var emailFromForgotPassword: String = ""
     private var callbackManager: CallbackManager? = null
@@ -88,9 +86,6 @@ class SignInFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        //sessionManager = context?.let { SessionManager(it) }!!
-        sessionManager = SessionManager(App.instance)
 
         if (arguments?.containsKey("email")!!){
             emailFromForgotPassword = arguments?.get("email") as String
@@ -189,8 +184,7 @@ class SignInFragment : BaseFragment() {
             }
 
             if(it.message == "Success"){
-                sessionManager.storeToken(token)
-                proceedLogin(token)
+                proceedLogin()
             }else{
                 if (it.code == Constants.ERROR_CODE_FACEBOOK_USER_EXISTS) {
                     alert(it.message) {
@@ -243,9 +237,8 @@ class SignInFragment : BaseFragment() {
         output.response.observe(this, Observer {
             pbSignIn?.visibility = View.GONE
             view?.hideKeyboard()
-
             if (it.message == "Success") {
-                proceedLogin(it.data.token.access_token)
+                proceedLogin()
             }
         })
 
@@ -347,12 +340,8 @@ class SignInFragment : BaseFragment() {
         LoginManager.getInstance().registerCallback(callbackManager,
             object : FacebookCallback<LoginResult> {
                 override fun onSuccess(loginResult: LoginResult) {
-
                     val request = GraphRequest.newMeRequest(loginResult.accessToken) { data, response ->
                         try {
-                            //here is the data that you want
-                            Timber.d("FBLOGIN_JSON_RES $data")
-
                             if (data.has("id")) {
                                 Timber.d("Facebook token: $loginResult.accessToken.token ")
                                 //startActivity(Intent(context, MainActivity::class.java))
@@ -382,7 +371,6 @@ class SignInFragment : BaseFragment() {
 
                         } catch (e: Exception) {
                             e.printStackTrace()
-                            //dismissDialogLogin()
                         }
                     }
 
@@ -394,7 +382,6 @@ class SignInFragment : BaseFragment() {
 
                 override fun onCancel() {
                     Timber.d("Facebook onCancel.")
-
                 }
 
                 override fun onError(error: FacebookException) {
@@ -409,7 +396,6 @@ class SignInFragment : BaseFragment() {
 
 
     private fun tryLoginWithFacebook(fbUid: String, fbToken: String, user: UISignUpUser) {
-
         viewModelSignInFB.fbAccessTokenViewModel = fbToken
         viewModelSignInFB.fbUidViewModel = fbUid
         viewModelSignInFB.userViewModel = user
@@ -425,20 +411,13 @@ class SignInFragment : BaseFragment() {
 
     private fun mergeAccounts(fbUid: String, fbToken: String, temporaryAccessToken: String) {
 
-        if (sessionManager != null){
-            sessionManager.storeToken(temporaryAccessToken)
-        }
-
-
         viewModelMergeFacebookAccount.fbAccessTokenViewModel = fbToken
         viewModelMergeFacebookAccount.fbUidViewModel = fbUid
 
         mergeFacebookAccountTrigger.onNext(Unit)
     }
 
-    private fun proceedLogin(accessToken: String) {
-
-        sessionManager.storeToken(accessToken);
+    private fun proceedLogin() {
 
         //DataManager.getInstance().getUserInfoData(true, null)
 
