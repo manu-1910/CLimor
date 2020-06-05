@@ -178,6 +178,7 @@ class SignUpFragment : BaseFragment() {
                 e.printStackTrace()
             }
 
+
             if(it.message == "Success"){
                 proceedLogin()
             }else{
