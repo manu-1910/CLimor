@@ -64,28 +64,65 @@ android {
 
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
-            versionNameSuffix '-dev'
-            applicationIdSuffix '.dev'
-            buildConfigField "String", "API_KEY", "\"api-key\""
-            buildConfigField "String", "BASE_URL", "\"https://staging.api.limor.ie/\""
-        }
-        beta {
-            signingConfig signingConfigs.beta
-            versionNameSuffix '-beta'
-            applicationIdSuffix '.beta'
-            buildConfigField "String", "API_KEY", "\"api-key\""
-            buildConfigField "String", "BASE_URL", "\"https://beta.api.limor.ie/\""
-        }
-        release {
-            minifyEnabled true
+            applicationIdSuffix ".dev"
+            resValue "string", "APP_LABEL", "Limor Dev"
+            buildConfigField "String", "CLIENT_ID", '"0dfe2bcc2df49782dd737f8763c37e991b9666369903dae249bef54fc66c12d6"'
+            buildConfigField "String", "CLIENT_SECRET", '"54d3d2ddbceceab3960dd1deb565e44ea8cf827a7364720ed9679b9cce73ccca"'
+            buildConfigField "String", "BASE_URL", '"https://limor-api-development.herokuapp.com/"'
+            buildConfigField "String", "AWS_S3_IDENTITY_POOL", '"eu-west-1:dd6cfc23-c34c-4ecf-b99d-a8a130db8169"'
+            buildConfigField "String", "AWS_S3_BUCKET", '"limor-platform-development"'
+            resValue "string", "BRANCH_KEY", "key_test_lkDI7HqFLvjE4vZBtBQRxpbaDuh52F3t"
+            resValue "string", "GOOGLE_MAPS_KEY", "AIzaSyBnVfRNJUGmRCqTX3sDxy_kqu-KmhZ8tTg"
+
+            buildConfigField "boolean", "REPORT_CRASHES", "false"
+            buildConfigField "String",  "ANALYTICS_TRACKING_ID", '"UA-123281132-1"'
+            minifyEnabled false
+            debuggable true
             zipAlignEnabled true
-            shrinkResources true
-            debuggable false
-            signingConfig signingConfigs.release
+            useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "API_KEY", "\"api-key\""
-            buildConfigField "String", "BASE_URL", "\"https://api.limor.ie/\""
+            signingConfig signingConfigs.debug
+        }
+
+        beta {
+            applicationIdSuffix ".beta"
+            resValue "string", "APP_LABEL", "Limor Beta"
+            buildConfigField "String", "CLIENT_ID", '"2711e12535ceb15773fe87dc691bcb8c26295bb1434f7d8f4912006dff6a189c"'
+            buildConfigField "String", "CLIENT_SECRET", '"af570a038fbb5e9eb7c5338068f57b5a22c119d5fd273909f38b1cf4f9acd996"'
+            buildConfigField "String", "BASE_URL", '"https://limor-api-staging.herokuapp.com/"'
+            buildConfigField "String", "AWS_S3_IDENTITY_POOL", '"eu-west-1:dd6cfc23-c34c-4ecf-b99d-a8a130db8169"'
+            buildConfigField "String", "AWS_S3_BUCKET", '"limor-platform-staging"'
+            resValue "string", "BRANCH_KEY", "key_test_lkDI7HqFLvjE4vZBtBQRxpbaDuh52F3t"
+            resValue "string", "GOOGLE_MAPS_KEY", "AIzaSyCFxp58xVwtoNQ-PDuNBsNqE2CH31_BF18"
+
+            buildConfigField "boolean", "REPORT_CRASHES", "false"
+            buildConfigField "String",  "ANALYTICS_TRACKING_ID", '"UA-123275575-1"'
+            minifyEnabled false
+            debuggable true
+            zipAlignEnabled true
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.beta
+        }
+
+        release {
+            resValue "string", "APP_LABEL", "Limor"
+            buildConfigField "String", "CLIENT_ID", '"ab080557350d05720908723a056a6874a3ff7658869ace599ded7e3f3d844a89"'
+            buildConfigField "String", "CLIENT_SECRET", '"76a25c5d05639556e7fbfc57973c2f9b05d16b35fc7a66239c10aca1ae3c427b"'
+            buildConfigField "String", "BASE_URL", '"https://limor-api-production.herokuapp.com/"'
+            buildConfigField "String", "AWS_S3_IDENTITY_POOL", '"eu-west-1:8ab3d094-6fd5-4238-8330-b3b7e0c5037f"'
+            buildConfigField "String", "AWS_S3_BUCKET", '"limor-platform-production"'
+            resValue "string", "BRANCH_KEY", "key_live_fkyI5MsFMrbA5q2CxvMOrcmjCyp8Wq6m"
+            resValue "string", "GOOGLE_MAPS_KEY", "AIzaSyAYYSDraOB8_iDfJTrSuD3kye1tM4RBJw4"
+
+            buildConfigField "boolean", "REPORT_CRASHES", "true"
+            buildConfigField "String",  "ANALYTICS_TRACKING_ID", '"UA-123270039-1"'
+            minifyEnabled true
+            debuggable true
+            zipAlignEnabled true
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     sourceSets {
@@ -242,7 +279,31 @@ dependencies {
     //PhotoView visor with zoom
     //implementation deps.photo_view
 
-    //Audio Recorder Library
-    implementation 'com.github.squti:Android-Wave-Recorder:1.4.0'
+    // Date, Time & Money
+    implementation 'joda-time:joda-time:2.9.9'
+    implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
+    implementation 'org.joda:joda-money:0.12'
+    //implementation 'org.mp4parser:isoparser:1.9.27'
+    implementation group: 'com.googlecode.mp4parser', name: 'isoparser', version: '1.0.6'
+
+    //Popup menu view like UIMenuController
+    implementation 'me.kareluo.ui:popmenu:1.1.0'
+
+    implementation 'com.github.esafirm.android-image-picker:imagepicker:2.2.0'
+    // for experimental rx picker
+    implementation 'com.github.esafirm.android-image-picker:rximagepicker:2.2.0'
+    // If you have a problem with Glide, please use the same Glide version or simply open an issue
+    //implementation 'com.github.bumptech.glide:glide:4.5.0'
+    
+    implementation deps.merlin
+
+    // Facebook
+    implementation 'com.facebook.android:facebook-android-sdk:4.42.0'
+
+    // AWS
+    implementation 'com.amazonaws:aws-android-sdk-core:2.7.6'
+    implementation 'com.amazonaws:aws-android-sdk-s3:2.7.6'
+    implementation 'com.amazonaws:aws-android-sdk-ddb:2.7.6'
+
 
 }

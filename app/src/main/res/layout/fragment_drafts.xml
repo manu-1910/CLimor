@@ -1,23 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content"
+    android:background="@color/brandSecondary400"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/brandSecondary500"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar_with_cross"/>
+        layout="@layout/toolbar_with_back_arrow_icon"/>
 
-    <TextView
-        android:layout_margin="@dimen/marginLarge"
-        android:id="@+id/textView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvDrafts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:nestedScrollingEnabled="false"
+        android:paddingTop="@dimen/marginSmall"
+        android:paddingBottom="?attr/actionBarSize"
+        android:layout_below="@id/toolbar"
+        tools:listitem="@layout/fragment_drafts_item"/>
+
+
+    <include
+        android:id="@+id/emptyScenarioDraftsLayout"
+        layout="@layout/fragment_drafts_empty_scenario"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+
+    <ProgressBar
+        android:id="@+id/pbDrafts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:layout_gravity="center"
-        android:text="Drafts Fragment" />
+        android:layout_centerInParent="true"
+        android:theme="@style/ProgressBarTheme"
+        android:visibility="gone"/>
+</RelativeLayout>
 
-
-</LinearLayout>

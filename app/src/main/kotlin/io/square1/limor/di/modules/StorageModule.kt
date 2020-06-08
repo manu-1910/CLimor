@@ -1,6 +1,10 @@
 package io.square1.limor.di.modules
 
+import dagger.Binds
 import dagger.Module
+import io.square1.limor.storage.providers.StorageDraftProviderImp
+import kotlinx.serialization.ImplicitReflectionSerializer
+import providers.storage.StorageDraftProvider
 
 
 @Module
@@ -19,4 +23,8 @@ abstract class StorageModule {
         return InstanceOfSomething
         }*/
     }
+
+    @ImplicitReflectionSerializer
+    @Binds
+    abstract fun bindStorageDraftProvider(storageDraftProviderImpl: StorageDraftProviderImp): StorageDraftProvider
 }

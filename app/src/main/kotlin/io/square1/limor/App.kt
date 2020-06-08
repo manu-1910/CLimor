@@ -5,7 +5,9 @@ import android.app.Application
 import android.app.Service
 import androidx.annotation.VisibleForTesting
 import com.crashlytics.android.Crashlytics
+import com.facebook.FacebookSdk
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.novoda.merlin.MerlinsBeard
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -25,6 +27,7 @@ class App : Application(), HasActivityInjector, HasServiceInjector {
 
     private var realm: Realm? = null
     lateinit var firebaseAnalytics: FirebaseAnalytics
+    var merlinsBeard: MerlinsBeard? = null
 
     override fun activityInjector(): DispatchingAndroidInjector<Activity> = activityInjector
     override fun serviceInjector(): AndroidInjector<Service> = serviceInjector
@@ -45,8 +48,14 @@ class App : Application(), HasActivityInjector, HasServiceInjector {
 
         realm = initRealm()
 
+        //Connection
+        merlinsBeard = MerlinsBeard.Builder().build(this)
+
         // Obtain the FirebaseAnalytics instance.
         //firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+
+        //Initialize Facebook SDK
+        FacebookSdk.sdkInitialize(this)
     }
 
     private fun initRealm(): Realm? {

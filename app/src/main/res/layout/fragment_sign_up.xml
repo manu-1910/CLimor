@@ -60,6 +60,7 @@
                     android:textSize="@dimen/textSizeNormal" />
 
            <TextView
+                   android:id="@+id/tvTermsAndConditions"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
                    android:text="@string/terms"
@@ -83,10 +84,12 @@
                     android:layout_marginEnd="@dimen/marginMedium"
                     android:background="@drawable/bg_round_blue_ripple"
                     android:text="@string/continue_with_facebook"
-                    android:drawableStart="@drawable/ic_navigate_before"
+                    android:drawableStart="@drawable/facebook"
+                    android:paddingStart="50dp"
                     android:textAllCaps="false"
                     android:textColor="@color/light"
-                    android:textSize="@dimen/textSizeNormal" />
+                    android:textSize="@dimen/textSizeNormal"
+                    android:visibility="visible"/>
 
             <Button
                     android:id="@+id/btnSignUpAlreadyAccount"

@@ -7,11 +7,14 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UIErrorResponse(
     @Optional
-    @SerialName("statusLead")
-    var status: String = "",
+    @SerialName("code")
+    var code: Int = 0,
     @Optional
-    @SerialName("data")
-    var data: UIErrorData = UIErrorData()
+    @SerialName("message")
+    var errorMessage: String? = ""
+    //@Optional
+    //@SerialName("data")
+    //var data: Object<Any>
 ) : Throwable()
 
 @Serializable

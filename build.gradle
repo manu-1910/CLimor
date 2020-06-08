@@ -12,7 +12,6 @@ buildscript {
         classpath deps.kotlin.serialization
         classpath deps.realm
         classpath deps.fabric
-        classpath 'com.android.tools.build:gradle:3.5.3'
     }
     repositories {
         google()

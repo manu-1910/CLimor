@@ -7,6 +7,7 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.Json
 import okhttp3.ResponseBody
 
+
 fun<T> ResponseBody.parseSuccessResponse(serializer: DeserializationStrategy<T>): T {
     val  jsonString = string()
     try {
@@ -28,14 +29,13 @@ fun<T> ResponseBody.parseSuccessResponseGson(serializer: Class<T>): T {
 
 @Throws
 private fun parseErrorResponse(jsonString: String): NWErrorResponse {
-    //return Json.nonstrict.parse(NWErrorResponse.serializer(), jsonString)
     var customError = NWErrorResponse()
     try {
         customError = Json.nonstrict.parse(NWErrorResponse.serializer(), jsonString)
     } catch (e: Exception) {
-        customError.code = "999"
-        customError.fieldName = "XXX"
-        customError.message = "xxx xxx xxx"
+        customError.code = 999
+        customError.messageStr = "Unexpected Error UFO"
+        //customError.data = "ufo error ufo error"
     }
     return customError
 }

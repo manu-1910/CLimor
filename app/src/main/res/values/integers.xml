@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="SPLASH_DELAY">2000</integer>
-    <integer name="PASSWORD_MIN_LENGTH">8</integer>
+    <integer name="PASSWORD_MIN_LENGTH">6</integer>
+    <integer name="MAX_PHOTOS">1</integer>
+
 
 </resources>

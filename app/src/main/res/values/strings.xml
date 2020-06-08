@@ -2,7 +2,11 @@
     <string name="app_name">Limor</string>
     <string name="some_error">Sorry, there was an error, please try again</string>
     <string name="exception_message_generic">There was an error</string>
+    <string name="image_content_description_default">image description</string>
+    <string name="default_no_internet">Check your internet connection and try again.</string>
 
+
+    <!-- Signin and Signup strings -->
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="username">Username</string>
@@ -15,9 +19,10 @@
     <string name="already_account">Already have an account? Sign in</string>
     <string name="cant_open">Can\'t open!</string>
     <string name="error_not_valid_email">Please enter a valid email</string>
-    <string name="error_not_valid_password">Password must contain 8+ characters</string>
+    <string name="error_not_valid_password">Password must contain 6+ characters</string>
     <string name="error_empty_field_template">%1$s must not be empty</string>
     <string name="reset_password">Reset password</string>
+    <string name="you_have_no_permissions_facebook">You have not granted the required permissions to login with Facebook. We need your email address.</string>
 
 
 
@@ -27,7 +32,6 @@
     <string name="bottom_menu_record">Record</string>
     <string name="bottom_menu_notifications">Notifications</string>
     <string name="bottom_menu_profile">Profile</string>
-
     <string name="title_home">Home</string>
     <string name="title_discover">Discover</string>
     <string name="title_record">Record</string>
@@ -36,7 +40,6 @@
     <string name="title_drafts">Drafts</string>
     <string name="title_edit">Edit</string>
     <string name="title_publish">Publish</string>
-
 
 
     <!-- Record Screen -->
@@ -48,19 +51,14 @@
     <string name="btn_publish">Publish</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_save">Save</string>
-
-
     <string name="record_permission_title">title record</string>
     <string name="record_permission_description">Record permission required</string>
-
     <string name="storage_permission_title">title storage</string>
     <string name="storage_permission_description">Storage permission required</string>
-
     <string name="alert_cancel_record_title">Cancel Cast</string>
     <string name="alert_cancel_record_descr">What would you wish to do with your Cast?</string>
     <string name="alert_cancel_record_save">Save as Draft</string>
     <string name="alert_cancel_record_do_not_save">Don\'t Save</string>
-
     <string name="save_draft_dialog_title">Save as Draft</string>
     <string name="save_draft_dialog_descr">Give your draft a name.</string>
     <string name="save_draft_dialog_hint_name">New Cast</string>
@@ -74,8 +72,117 @@
     <string name="title_location">Location</string>
 
 
+    <!-- Edit Screen -->
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="publish_now">Publish Now</string>
+    <string name="publish_later">Publish Later</string>
+    <string name="bookmark">Bookmark:</string>
+    <string name="autosave">Autosave</string>
+    <string name="uploading_audio">Uploading Audio…</string>
+    <string name="hey">Hey</string>
+    <string name="do_you_wish_to_stop">Do you wish to stop recording?</string>
+    <string name="start_marker">Start marker</string>
+    <string name="end_marker">End marker</string>
+    <string name="rewind">Rewind</string>
+    <string name="play">Play</string>
+    <string name="stop">Stop</string>
+    <string name="ffwd">Fast forward</string>
+    <string name="start_label">Start:</string>
+    <string name="end_label">End:</string>
+    <string name="progress_dialog_loading">Loading...</string>
+    <string name="time_seconds">seconds</string>
+    <string name="processing_audio">Processing Audio...</string>
+    <string name="merge">Merge</string>
+    <string name="merge_sections_prompt">Do you want to merge these sections?</string>
+    <string name="remove">Remove</string>
+    <string name="remove_marker_prompt">Do you want to remove this marker?</string>
+    <string name="remove_piece_of_audio_prompt">Do you want to remove this piece of Audio?</string>
+    <string name="select_marker_firs_prompt">You must select a marker first.</string>
+    <string name="cant_create_more_than_one_marker_prompt">You can\'t create more than one Edit Marker.</string>
+    <string name="paste">Paste</string>
+    <string name="paste_prompt">Do you want to paste it here?</string>
+    <string name="edit">Edit</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="save_changes">Save Changes?</string>
+    <string name="recording_changed_prompt">The recording has been changed. Do you want to save these changes?</string>
+    <string name="edit_or_publish_prompt">Would you like to edit this recording or go straight to the Publish screen?</string>
+    <string name="publish">Publish</string>
+    <string name="paste_overlap_alert">You cannot paste this section on top of itself. Please select different area.</string>
+    <string name="how_to_edit_description">1: Tap top bar to drop a marker\n2: Mark the pieces you wish to keep\n3: Delete a marker by holding down top of it\n4: You can have multiple markers\n5: You can also delete, copy &amp; paste selected pieces of the cast</string>
+    <string name="how_to_edit_title">How to Edit</string>
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
 
 
+    <!--ALERTS-->
+    <string name="offline_mode_toast">Offline Mode</string>
+    <string name="alert_title_oops">Oops!</string>
+    <string name="error_something_went_wrong">Something went wrong. Please try again.</string>
+    <string name="progress_please_wait">Please wait…</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="empty_fields_prompt">Please make sure to fill all required fields.</string>
+    <string name="invalid_email_prompt">Invalid Email</string>
+    <string name="add_photo">Add Photo</string>
+
+
+    <!-- Menu Marker -->
+    <string name="menu_copy">Copy</string>
+    <string name="menu_paste">Paste</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_dismiss">Dismiss</string>
+    <string name="menu_preview">Preview</string>
+
+
+    <!-- ImagePicker strings -->
+    <string name="imagepicker_folder">Folder</string>
+    <string name="imagepicker_tap_to_select">Tap to select</string>
+
+
+    <!-- Drafts list -->
+    <string name="autosaved_draft">Autosave</string>
+    <string name="duplicated_draft">Copy of cast</string>
+    <string name="draft_title">New Draft</string>
+    <string name="draft_deleted">Draft deleted</string>
+    <string name="draft_not_deleted">Draft NOT deleted</string>
+    <string name="centre_not_deleted_error">There was an error deleting the draft</string>
+    <string name="draft_inserted">Draft inserted</string>
+    <string name="draft_not_inserted">Draft NOT inserted</string>
+    <string name="draft_not_inserted_error">There was an error inserting the draft</string>
+    <string name="draft_updated">Draft updated</string>
+    <string name="draft_not_updated">Draft NOT updated</string>
+    <string name="draft_not_updated_error">There was an error updating the draft</string>
+    <string name="no_drafts_saved_title">There is no saved drafts</string>
+    <string name="no_drafts_saved_description">Here will appear a list with your saved drafts ready to use with the app</string>
+    <string name="btnDone">Done</string>
+    <string name="menu_delete_cast">Delete cast</string>
+    <string name="menu_duplicate_cast">Duplicate cast</string>
+
+
+    <!-- Facebook strings -->
+    <string name="facebook_app_id">304214713248690</string>
+    <string name="fb_login_protocol_scheme">fb304214713248690</string>
+
+
+
+
+
+    <string name="error_403_forgot_password">You\'re request has been registered. If your email exists in our system, you\'ll receive an email to reset your password.</string>
+    <string name="error_500_or_higher">Sorry, we couldn\'t process your request. Please, try again later.</string>
+
+
+
+    <!-- Profile fragment -->
+    <string name="title_fullname">Full Name</string>
+    <string name="title_username">Username</string>
+    <string name="title_website">Website</string>
+    <string name="title_bio">Bio</string>
+    <string name="title_email">Email</string>
+    <string name="title_phone">Phone No.</string>
+    <string name="title_age">Age</string>
+    <string name="title_gender">Gender</string>
+    <string name="logout">Logout</string>
 
 
 </resources>

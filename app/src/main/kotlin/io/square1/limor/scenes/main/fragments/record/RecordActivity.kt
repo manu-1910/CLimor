@@ -16,10 +16,7 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
 
     @Inject
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
-
-    override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> = fragmentInjector
-
-    private lateinit var navController: NavController
+    lateinit var navController: NavController
 
     companion object {
         val TAG: String = RecordActivity::class.java.simpleName
@@ -27,21 +24,19 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
     }
 
 
+    override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> = fragmentInjector
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_record)
 
-        //bindViewModel()
         setupNavigationController()
-
     }
-
 
 
     private fun setupNavigationController() {
         navController = Navigation.findNavController(this, R.id.navigation_host_fragment_record)
     }
-
 
 }

@@ -1,5 +1,6 @@
 package io.square1.limor.scenes.authentication.viewmodels
 
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.MutableLiveData
@@ -17,62 +18,60 @@ import io.square1.limor.extensions.trackErrorResponse
 
 import javax.inject.Inject
 
-class SignViewModel @Inject constructor(
-    private val singInUseCase: SignInUseCase,
-    private val sessionManager: SessionManager
-) : ViewModel() {
 
- //  data class Input(
- //      val emailObservable: Observable<String>,
- //      val passwordObservable: Observable<String>,
- //      val singInTrigger: Observable<Unit>
- //  )
 
- //  data class Output(
- //      val response: LiveData<Boolean>,
- //      val backgroundWorkingProgress: LiveData<Boolean>,
- //      val errorMessage: SingleLiveEvent<UIErrorResponse>
- //  )
+class SignViewModel @Inject constructor(private val singInUseCase: SignInUseCase, private val sessionManager: SessionManager) : ViewModel() {
+    var emailSavedViewModel: String = ""
 
- //  fun transform(input: Input): Output {
- //      val errorTracker = SingleLiveEvent<UIErrorResponse>()
- //      val backgroundWorkingProgress = MutableLiveData<Boolean>()
+   data class Input(
+       val emailObservable: Observable<String>,
+       val passwordObservable: Observable<String>,
+       val singInTrigger: Observable<Unit>
+   )
 
- //      val singInResponse = LiveDataReactiveStreams.fromPublisher(
- //          formObservable(input, errorTracker)
- //              .flatMapSingle { doLogin(it, errorTracker, backgroundWorkingProgress) }
- //              .toFlowable(BackpressureStrategy.LATEST)
- //              .onErrorReturn { false }
- //      )
- //      return Output(singInResponse, backgroundWorkingProgress, errorTracker)
- //  }
+   data class Output(
+       val response: LiveData<Boolean>,
+       val backgroundWorkingProgress: LiveData<Boolean>,
+       val errorMessage: SingleLiveEvent<UIErrorResponse>
+   )
 
- //  private fun formObservable(
- //      input: Input,
- //      errorTracker: SingleLiveEvent<UIErrorResponse>
- //  ): Observable<Pair<String, String>> = input.singInTrigger.withLatestFrom(
- //      input.emailObservable,
- //      input.passwordObservable,
- //      Function3<Unit, String, String, Pair<String, String>> { _, email: String, password: String ->
- //          Pair(email, password)
- //      }).trackErrorResponse(errorTracker)
+   fun transform(input: Input): Output {
+       val errorTracker = SingleLiveEvent<UIErrorResponse>()
+       val backgroundWorkingProgress = MutableLiveData<Boolean>()
 
- //  private fun doLogin(
- //      it: Pair<String, String>,
- //      errorTracker: SingleLiveEvent<UIErrorResponse>,
- //      backgroundWorkingProgress: MutableLiveData<Boolean>
- //  ): Single<Boolean>? =
- //      singInUseCase.execute(it.first, it.second)
- //      .map {
- //          //sessionManager.storeUserEmail(it.data.user.email)
- //          //sessionManager.storeUserFirstName(it.data.user.first_name)
- //          //sessionManager.storeUserLastName(it.data.user.last_name)
- //          //sessionManager.storeUserId(it.data.user.id)
- //          //sessionManager.storeSession(it.data.token)
- //      }
- //      .trackProgress(backgroundWorkingProgress)
- //      .trackErrorResponse(errorTracker)
- //      .onErrorReturn { false }
+       val singInResponse = LiveDataReactiveStreams.fromPublisher(
+           formObservable(input, errorTracker)
+               .flatMapSingle { doLogin(it, errorTracker, backgroundWorkingProgress) }
+               .toFlowable(BackpressureStrategy.LATEST)
+               .onErrorReturn { false }
+       )
+       return Output(singInResponse, backgroundWorkingProgress, errorTracker)
+   }
+
+
+   private fun formObservable(
+       input: Input,
+       errorTracker: SingleLiveEvent<UIErrorResponse>
+   ): Observable<Pair<String, String>> = input.singInTrigger.withLatestFrom(
+       input.emailObservable,
+       input.passwordObservable,
+       Function3<Unit, String, String, Pair<String, String>> { _, email: String, password: String ->
+           Pair(email, password)
+       }).trackErrorResponse(errorTracker)
+
+
+   private fun doLogin(
+       it: Pair<String, String>,
+       errorTracker: SingleLiveEvent<UIErrorResponse>,
+       backgroundWorkingProgress: MutableLiveData<Boolean>
+   ): Single<Boolean>? = singInUseCase.execute(it.first, it.second)
+       .map {
+           sessionManager.storeToken(it.data.token.access_token)
+       }
+       .trackProgress(backgroundWorkingProgress)
+       .trackErrorResponse(errorTracker)
+       .onErrorReturn { false }
+
 }
 
 

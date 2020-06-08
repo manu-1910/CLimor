@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:ignore="MissingDefaultResource">
+    <item
+        android:id="@+id/menu_duplicate_cast"
+        android:title="@string/menu_duplicate_cast"/>
+    <item
+        android:id="@+id/menu_delete_cast"
+        android:title="@string/menu_delete_cast"/>
+</menu>

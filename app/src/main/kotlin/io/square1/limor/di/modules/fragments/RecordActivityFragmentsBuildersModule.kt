@@ -7,6 +7,7 @@ import io.square1.limor.scenes.main.fragments.record.DraftsFragment
 import io.square1.limor.scenes.main.fragments.record.EditFragment
 import io.square1.limor.scenes.main.fragments.record.PublishFragment
 import io.square1.limor.scenes.main.fragments.record.RecordFragment
+import io.square1.limor.scenes.utils.waveform.WaveformFragment
 
 
 @Module
@@ -17,6 +18,9 @@ abstract class RecordActivityFragmentsBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeEditFragmentInjector(): EditFragment
+
+    //@ContributesAndroidInjector
+    //abstract fun contributeWaveformragmentInjector(): WaveformFragment
 
     @ContributesAndroidInjector
     abstract fun contributePublishFragmentInjector(): PublishFragment
