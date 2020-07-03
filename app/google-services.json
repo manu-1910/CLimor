@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "534016189071",
+    "firebase_url": "https://limorv2-9be47.firebaseio.com",
+    "project_id": "limorv2-9be47",
+    "storage_bucket": "limorv2-9be47.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534016189071:android:356beef9ed2bc662a506fa",
+        "android_client_info": {
+          "package_name": "io.square1.limor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "534016189071-8g3qpn8a9fa2r5ed1p0v8r8a8op553go.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6g7SQjy80rh3UqiGLBphQu0eOl39jWYI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "534016189071-8g3qpn8a9fa2r5ed1p0v8r8a8op553go.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534016189071:android:902f7ca78731eb83a506fa",
+        "android_client_info": {
+          "package_name": "io.square1.limor.app.beta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "534016189071-8g3qpn8a9fa2r5ed1p0v8r8a8op553go.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6g7SQjy80rh3UqiGLBphQu0eOl39jWYI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "534016189071-8g3qpn8a9fa2r5ed1p0v8r8a8op553go.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

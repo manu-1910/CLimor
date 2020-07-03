@@ -241,7 +241,8 @@ class RecordFragment : BaseFragment() {
             //Merge audios and delete all them except the Audio Merged
             if (filesArray.size == 1) {
                 var bundle = bundleOf("recordingItem" to recordingItem)
-                findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
+                //findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
+                findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
             }else{
                 doAsync {
                     val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".amr")
