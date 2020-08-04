@@ -11,6 +11,7 @@ import io.square1.limor.scenes.authentication.viewmodels.*
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
 import io.square1.limor.scenes.main.viewmodels.LogoutViewModel
 import io.square1.limor.scenes.main.viewmodels.ProfileViewModel
+import io.square1.limor.scenes.main.viewmodels.PublishViewModel
 
 
 @Module
@@ -57,4 +58,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(LogoutViewModel::class)
     abstract fun bindLogoutViewModel(logoutViewModel: LogoutViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PublishViewModel::class)
+    abstract fun bindPublishViewModel(publishViewModel: PublishViewModel): ViewModel
 }

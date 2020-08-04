@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.getColor
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -37,6 +38,7 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.textColor
 import org.jetbrains.anko.uiThread
 import java.io.File
 import javax.inject.Inject
@@ -283,8 +285,11 @@ class RecordFragment : BaseFragment() {
             mRecorder = AMRAudioRecorder(recordingDirectory.absolutePath)
 
             // Disable next button
+            //nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
             nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
+            nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.white)
             nextButton.isEnabled = false
+            nextButton.visibility = View.GONE
         }
 
     }
@@ -397,6 +402,7 @@ class RecordFragment : BaseFragment() {
             // Disable next button
             nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
             nextButton.isEnabled = false
+            nextButton.visibility = View.VISIBLE
 
             recordButton.background = ContextCompat.getDrawable(requireContext(), R.drawable.pause_red)
 
@@ -439,6 +445,7 @@ class RecordFragment : BaseFragment() {
         recordButton.background = ContextCompat.getDrawable(requireContext(), R.drawable.record_red)
 
         // Enable next button
+        nextButton.visibility = View.VISIBLE
         nextButton.background = requireContext().getDrawable(R.drawable.bg_round_yellow_ripple)
         nextButton.isEnabled = true
 

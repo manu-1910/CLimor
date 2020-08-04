@@ -69,6 +69,7 @@ class EditFragment : WaveformFragment() {
     override fun onDestroy() {
         super.onDestroy()
         isEditMode = false
+        context!!.unregisterReceiver(receiver)
     }
 
     override fun getFileName(): String {

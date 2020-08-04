@@ -6,6 +6,8 @@ import repositories.drafts.DataDraftsRepository
 import repositories.drafts.DraftsRepository
 import repositories.auth.AuthRepository
 import repositories.auth.DataAuthRepository
+import repositories.podcast.DataPodcastRepository
+import repositories.podcast.PodcastRepository
 import repositories.user.DataUserRepository
 import repositories.user.UserRepository
 
@@ -34,6 +36,9 @@ abstract class DataModule {
 
     @Binds
     abstract fun bindUserRepository(userRepository: DataUserRepository): UserRepository
+
+    @Binds
+    abstract fun bindPodcastRepository(podcastRepository: DataPodcastRepository): PodcastRepository
 
 
 }

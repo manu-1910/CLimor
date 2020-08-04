@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
-class PublishFragment : BaseFragment() {
+class HashtagsFragment : BaseFragment() {
 
 
     @Inject
@@ -89,14 +89,14 @@ class PublishFragment : BaseFragment() {
 
 
     companion object {
-        val TAG: String = PublishFragment::class.java.simpleName
-        fun newInstance() = PublishFragment()
+        val TAG: String = HashtagsFragment::class.java.simpleName
+        fun newInstance() = HashtagsFragment()
     }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_publish, container, false)
+            rootView = inflater.inflate(R.layout.fragment_hashtags, container, false)
 
             audioSeekbar = rootView?.findViewById(R.id.sbProgress)
             timePass = rootView?.findViewById(R.id.tvTimePass)
@@ -339,7 +339,7 @@ class PublishFragment : BaseFragment() {
         recordingItem.caption = etDraftCaption?.text.toString()
         //recordingItem.hastags
         //recordingItem.location
-        
+
         //Compose the viewmodel object
         draftViewModel.uiDraft.title = etDraftTitle?.text.toString()
         draftViewModel.uiDraft.caption = etDraftCaption?.text.toString()

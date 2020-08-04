@@ -70,6 +70,8 @@
     <string name="title_caption">Caption</string>
     <string name="title_hashtags">Hashtags</string>
     <string name="title_location">Location</string>
+    <string name="cast_published_ok_title">Published</string>
+    <string name="cast_published_ok_description">Your cast has been published successfully</string>
 
 
     <!-- Edit Screen -->
@@ -183,6 +185,12 @@
     <string name="title_age">Age</string>
     <string name="title_gender">Gender</string>
     <string name="logout">Logout</string>
+
+
+    <!-- Hashtags and Locations fragment -->
+    <string name="search">Search</string>
+    <string name="description_delete">Delete description</string>
+
 
 
 </resources>

@@ -21,7 +21,8 @@ data class RemoteServiceConfig(
     val debug: Boolean,
     val client_id: String,
     val client_secret: String,
-    var token: String
+    var token: String,
+    var expiredIn: Long
 )
 
 const val REQUEST_TYPE_ID = "RequestTypeId"
@@ -37,6 +38,10 @@ abstract class RemoteService<T> constructor(c: Class<T>, private val config: Rem
 
     private fun initApiService(): Retrofit {
         registerResponseDateFormatSerializer()
+
+        println("El token que se envía es Bearer " + config.token)
+        println("El token que se envía es Bearer " + config.token)
+        println("El token que se envía es Bearer " + config.token)
 
         val builder = OkHttpClient.Builder()
             .connectTimeout(45, TimeUnit.SECONDS)

@@ -26,9 +26,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         android:background="@color/brandSecondary400"
         android:gravity="center_horizontal"
-        android:layout_weight="1"
         android:padding="@dimen/marginMedium">
 
 

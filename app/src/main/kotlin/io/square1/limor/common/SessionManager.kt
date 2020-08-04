@@ -17,12 +17,7 @@ class SessionManager @Inject constructor(context: Context) {
     private val tokenKey = "token_id_key"
     private val userKey = "user_key"
     private val pushTokenKey = "push_token_key"
-
-
-
-    private val userNameKey = "user_name_key"
-    private val userFirstNameKey = "user_first_name_key"
-    private val userLastNameKey = "user_last_name_key"
+    private val sessionExpiredIn = "session_expired_in"
 
 
     fun storeToken(tokenId: String): Boolean {
@@ -66,6 +61,19 @@ class SessionManager @Inject constructor(context: Context) {
             .remove(userKey)
             .apply()
     }
+
+
+    fun storeSessionExpiredTime(sessionTime: Long): Boolean {
+        remoteServiceConfig.expiredIn = sessionTime
+
+        return preferences.edit().putLong(sessionExpiredIn, sessionTime).commit()
+    }
+
+    fun getStoredSessionTime(): Long? {
+        return preferences.getLong(sessionExpiredIn, 0)
+    }
+
+
 
 
 }

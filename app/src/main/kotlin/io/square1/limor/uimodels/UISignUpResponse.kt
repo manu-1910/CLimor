@@ -1,7 +1,5 @@
 package io.square1.limor.uimodels
 
-import java.lang.reflect.Constructor
-
 
 data class UISignUpResponse(
     var code: Int,
