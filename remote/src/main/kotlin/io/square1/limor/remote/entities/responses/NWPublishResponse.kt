@@ -66,7 +66,7 @@ data class NWPodcast(
     @Optional
     val sharing_url: String = "",
     @Optional
-    val tags: NWTags = NWTags(),
+    val tags: ArrayList<NWTags> = ArrayList(),
     @Optional
     val title: String = "",
     @Optional
@@ -100,4 +100,12 @@ class NWMentions(
 
 @Serializable
 class NWTags(
+    @Optional
+    val id: Int = 0,
+    @Optional
+    val text: String = "",
+    @Optional
+    val count: Int = 0,
+    @Optional
+    val isSelected: Boolean = false
 )

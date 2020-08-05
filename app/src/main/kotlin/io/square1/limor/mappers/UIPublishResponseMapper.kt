@@ -53,7 +53,7 @@ fun PodcastEntity.asUIModel(): UIPodcast {
         reported,
         saved,
         sharing_url,
-        tags.asUIModel(),
+        getAllUITags(tags),
         title,
         updated_at,
         user.asUIModel()
@@ -82,6 +82,10 @@ fun MentionsEntity.asUIModel(): UIMentions {
 
 fun TagsEntity.asUIModel(): UITags {
     return UITags(
+        id,
+        text,
+        count,
+        isSelected
     )
 }
 
@@ -94,4 +98,16 @@ fun DataMetaData.asUIModel(): UIMetaData {
         longitude,
         image_url
     )
+}
+
+
+fun getAllUITags(entityList: ArrayList<TagsEntity>?): ArrayList<UITags> {
+    val uiList = ArrayList<UITags>()
+    if (entityList != null) {
+        for (item in entityList) {
+            if (item != null)
+                uiList.add(item.asUIModel())
+        }
+    }
+    return uiList
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/brandSecondary400">
 
 
@@ -14,333 +14,33 @@
 
         <include
             android:id="@+id/toolbar"
-            layout="@layout/toolbar_with_back_arrow_icon"/>
-
-        <RelativeLayout
-            android:id="@+id/lytImagePlaceHolder"
-            android:layout_marginTop="@dimen/marginSmall"
-            android:layout_marginBottom="@dimen/marginSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="visible">
-
-            <ImageView
-                android:id="@+id/ivDraftImage"
-                android:layout_centerInParent="true"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/add"
-                android:translationZ="4dp"/>
-
-            <ImageView
-                android:id="@+id/placeHolder"
-                android:layout_centerInParent="true"
-                android:layout_width="119dp"
-                android:layout_height="119dp"
-                android:src="@drawable/publish_placeholder"/>
-
-            <TextView
-                android:id="@+id/tvChoosePhoto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/marginAlmostLarge"
-                android:textColor="@color/brandPrimary500"
-                android:textSize="@dimen/textSizeVerySmall"
-                android:fontFamily="@font/roboto_medium"
-                android:layout_centerHorizontal="true"
-                android:text="@string/choose_a_photo"
-                android:layout_below="@+id/placeHolder"/>
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/lytImage"
-            android:layout_marginTop="@dimen/marginSmall"
-            android:layout_marginBottom="@dimen/marginSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/ivDraft"
-                android:layout_centerInParent="true"
-                android:layout_width="119dp"
-                android:layout_height="119dp"
-                android:src="@drawable/publish_placeholder"/>
-
-        </RelativeLayout>
-
-
-
+            layout="@layout/toolbar_with_searchview" />
 
         <View
-            android:layout_marginTop="@dimen/marginSmall"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/brandSecondary300"/>
 
-
-        <LinearLayout
-            android:id="@+id/lytForm"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:layout_marginBottom="@dimen/marginSmall"
+            android:textSize="@dimen/textSizeVerySmall"
+            android:textColor="@color/brandSecondary100"
+            android:text="@string/max_5_tags"/>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium">
-
-                <TextView
-                    android:id="@+id/tvTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/title_title"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"/>
-
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/etTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginVeryHuge"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:hint="@string/title_title"
-                    android:layout_alignParentEnd="true"/>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium">
-
-                <TextView
-                    android:id="@+id/tvCaption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/title_caption"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"/>
-
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/etCaption"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginVeryHuge"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:lines="3"
-                    android:hint="@string/title_caption"
-                    android:layout_alignParentEnd="true"/>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium">
-
-                <TextView
-                    android:id="@+id/tvHashtags"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/title_hashtags"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"/>
-
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/etHashtags"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginVeryHuge"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:hint="@string/title_hashtags"
-                    android:layout_alignParentEnd="true"/>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium">
-
-                <TextView
-                    android:id="@+id/tvLocation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/title_location"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"/>
-
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/etLocation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginVeryHuge"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:hint="@string/title_location"
-                    android:layout_alignParentEnd="true"/>
-            </RelativeLayout>
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/lytPlayer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/marginAlmostLarge"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@color/brandSecondary400"
-                android:layout_marginTop="@dimen/marginSmall"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium">
-
-                <SeekBar
-                    android:id="@+id/sbProgress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:maxHeight="4dp"
-                    android:minHeight="4dp"
-                    android:paddingTop="8dip"
-                    android:progress="50"
-                    android:progressDrawable="@drawable/custom_seekbar_progress" />
-
-                <TextView
-                    android:id="@+id/tvTimePass"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/sbProgress"
-                    android:textSize="@dimen/textSizeVerySmall"
-                    android:textColor="@color/brandSecondary100"
-                    android:fontFamily="@font/roboto"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginStart="@dimen/marginSmall"
-                    android:layout_marginTop="@dimen/marginTiny"
-                    android:gravity="left"
-                    android:text="00:00"/>
-
-                <TextView
-                    android:id="@+id/tvDuration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/sbProgress"
-                    android:textSize="@dimen/textSizeVerySmall"
-                    android:textColor="@color/brandSecondary100"
-                    android:fontFamily="@font/roboto"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="@dimen/marginSmall"
-                    android:layout_marginTop="@dimen/marginTiny"
-                    android:gravity="right"
-                    android:text="00:00"/>
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="62dip">
-
-                <ImageButton android:id="@+id/ibRew"
-                    android:layout_toLeftOf="@id/ibPlayPause"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="6dp"
-                    android:layout_marginRight="@dimen/marginMedium"
-                    style="@android:style/MediaButton"
-                    android:contentDescription="@string/rewind"
-                    android:src="@drawable/rewind"
-                    android:scaleType="fitCenter"/>
-
-                <ImageButton android:id="@+id/ibPlayPause"
-                    android:layout_centerHorizontal="true"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    style="@android:style/MediaButton"
-                    android:contentDescription="@string/play"
-                    android:src="@drawable/play"
-                    android:scaleType="fitCenter"/>
-
-                <ImageButton android:id="@+id/ibFfwd"
-                    android:layout_toRightOf="@id/ibPlayPause"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="6dp"
-                    android:layout_marginLeft="@dimen/marginMedium"
-                    style="@android:style/MediaButton"
-                    android:contentDescription="@string/ffwd"
-                    android:src="@drawable/forward"
-                    android:scaleType="fitCenter"/>
-
-            </RelativeLayout>
-        </LinearLayout>
-
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvHashtags"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/marginMedium"
-            android:layout_marginEnd="@dimen/marginMedium"
-            android:layout_marginBottom="@dimen/marginMedium"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnSaveAsDraft"
-                style="@android:style/Widget.Material.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:fontFamily="@font/roboto_medium"
-                android:text="@string/btn_save_as_draft"
-                android:textAllCaps="false"
-                android:textColor="@color/brandPrimary500"
-                android:textSize="@dimen/textSizeNormal"
-                android:layout_weight="1"
-                android:layout_marginRight="@dimen/marginSmall"/>
-
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnPublish"
-                style="@android:style/Widget.Material.Button.Borderless.Colored"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:background="@drawable/bg_round_yellow_ripple"
-                android:fontFamily="@font/roboto_medium"
-                android:text="@string/btn_publish"
-                android:textAllCaps="false"
-                android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/textSizeNormal"
-                android:layout_weight="1"
-                android:layout_marginLeft="@dimen/marginSmall"/>
-
-        </LinearLayout>
+            android:scrollbars="vertical"
+            android:clipToPadding="false"
+            android:visibility="visible"
+            android:paddingTop="@dimen/marginSmall"
+            android:paddingBottom="@dimen/marginSmall"
+            tools:listitem="@layout/hashtag_item"/>
 
     </LinearLayout>
 

@@ -8,8 +8,7 @@ import providers.remote.RemotePodcastProvider
 import javax.inject.Inject
 
 
-class DataPodcastRepository @Inject constructor(private val remoteProvider: RemotePodcastProvider):
-    PodcastRepository {
+class DataPodcastRepository @Inject constructor(private val remoteProvider: RemotePodcastProvider): PodcastRepository {
 
 
     override fun publishPodcast(dataPublishRequest: DataPublishRequest): Single<PublishResponseEntity>? {

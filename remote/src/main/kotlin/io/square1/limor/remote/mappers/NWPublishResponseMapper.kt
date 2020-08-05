@@ -50,7 +50,7 @@ fun NWPodcast.asDataEntity(): PodcastEntity {
         reported,
         saved,
         sharing_url,
-        tags.asDataEntity(),
+        getAllTagsEntities(tags),
         title,
         updated_at,
         user.asDataEntity()
@@ -74,8 +74,24 @@ fun NWMentions.asDataEntity(): MentionsEntity {
 }
 
 fun NWTags.asDataEntity(): TagsEntity {
-    return TagsEntity()
+    return TagsEntity(
+        id,
+        text,
+        count,
+        isSelected
+    )
 }
 
+
+fun getAllTagsEntities(nwList: ArrayList<NWTags>?): ArrayList<TagsEntity> {
+    val entityList = ArrayList<TagsEntity>()
+    if (nwList != null) {
+        for (item in nwList) {
+            if (item != null)
+                entityList.add(item.asDataEntity())
+        }
+    }
+    return entityList
+}
 
 

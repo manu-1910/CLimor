@@ -34,7 +34,7 @@ data class PodcastEntity(
     var reported: Boolean,
     var saved: Boolean,
     var sharing_url: String,
-    var tags: TagsEntity,
+    var tags: ArrayList<TagsEntity>,
     var title: String,
     var updated_at: Int,
     var user: UserEntity
@@ -56,5 +56,9 @@ class MentionsEntity(
 )
 
 class TagsEntity(
+    var id: Int,
+    var text: String,
+    var count: Int,
+    var isSelected: Boolean
 )
 

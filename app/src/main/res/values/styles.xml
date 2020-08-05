@@ -45,10 +45,9 @@
     </style>
 
     <!-- SearchViewToolbar theme. -->
-    <style name="SearchViewToolbarTheme">
-        <item name="colorControlNormal">@android:color/white</item>
-        <item name="colorControlActivated">@color/colorPrimary</item>
-        <item name="android:textColorHighlight">@color/colorPrimary</item>
+    <style name="SearchViewToolbarTheme" parent="ThemeOverlay.MaterialComponents.Light">
+        <item name="android:editTextColor">@color/white</item>
+        <item name="android:textColorHint">@color/brandSecondary100</item>
     </style>
 
 </resources>

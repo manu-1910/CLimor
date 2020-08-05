@@ -3,10 +3,7 @@ package io.square1.limor.di.modules.fragments
 
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import io.square1.limor.scenes.main.fragments.record.DraftsFragment
-import io.square1.limor.scenes.main.fragments.record.EditFragment
-import io.square1.limor.scenes.main.fragments.record.PublishFragment
-import io.square1.limor.scenes.main.fragments.record.RecordFragment
+import io.square1.limor.scenes.main.fragments.record.*
 import io.square1.limor.scenes.utils.waveform.WaveformFragment
 
 
@@ -27,4 +24,10 @@ abstract class RecordActivityFragmentsBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeDraftsFragmentInjector(): DraftsFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeHashtagsFragmentInjector(): HashtagsFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeLocationsFragmentInjector(): LocationsFragment
 }

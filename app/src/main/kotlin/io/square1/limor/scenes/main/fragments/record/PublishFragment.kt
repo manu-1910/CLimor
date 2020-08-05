@@ -31,10 +31,12 @@ import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.MainActivity
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
 import io.square1.limor.scenes.main.viewmodels.PublishViewModel
+import io.square1.limor.scenes.main.viewmodels.TagsViewModel
 import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
 import io.square1.limor.uimodels.*
+import kotlinx.android.synthetic.main.fragment_publish.*
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
@@ -57,6 +59,9 @@ class PublishFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var draftViewModel: DraftViewModel
     private lateinit var publishViewModel: PublishViewModel
+    private lateinit var hashtagViewModel: TagsViewModel
+
+
 
     lateinit var recordingItem : UIDraft
     private lateinit var mediaPlayer: MediaPlayer
@@ -84,6 +89,9 @@ class PublishFragment : BaseFragment() {
     private var etDraftCaption: EditText? = null
     private var etDraftHashtags: EditText? = null
     private var etDraftLocation: EditText? = null
+
+    private var lytHashtags: RelativeLayout? = null
+    private var lytLocation: RelativeLayout? = null
 
 
 
@@ -115,6 +123,9 @@ class PublishFragment : BaseFragment() {
             etDraftHashtags = rootView?.findViewById(R.id.etHashtags)
             etDraftLocation = rootView?.findViewById(R.id.etLocation)
 
+            lytHashtags = rootView?.findViewById(R.id.lytHashtags)
+            lytLocation = rootView?.findViewById(R.id.lytLocation)
+
             mediaPlayer = MediaPlayer()
         }
         app = context?.applicationContext as App
@@ -138,6 +149,18 @@ class PublishFragment : BaseFragment() {
         updateDraft()
         apiCallPublishPodcast()
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        //load selected hashtags
+        var hashtagListString: String = ""
+        for (tag in hashtagViewModel.localListTagsSelected){
+            hashtagListString = "#"+tag.text+", "
+        }
+        etHashtags.text = hashtagListString.toEditable()
+    }
+
 
     private fun apiCallPublishPodcast() {
         val output = publishViewModel.transform(
@@ -222,6 +245,10 @@ class PublishFragment : BaseFragment() {
             publishViewModel = ViewModelProviders
                 .of(it, viewModelFactory)
                 .get(PublishViewModel::class.java)
+
+            hashtagViewModel = ViewModelProviders
+                .of(it, viewModelFactory)
+                .get(TagsViewModel::class.java)
         }
     }
 
@@ -259,6 +286,14 @@ class PublishFragment : BaseFragment() {
 
         btnPublishDraft?.onClick {
             publishPodcast()
+        }
+
+        lytHashtags?.onClick {
+            findNavController().navigate(R.id.action_record_publish_to_record_hashtags)
+        }
+
+        lytLocation?.onClick {
+            findNavController().navigate(R.id.action_record_publish_to_record_locations)
         }
     }
 

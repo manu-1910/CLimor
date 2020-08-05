@@ -190,6 +190,7 @@
     <!-- Hashtags and Locations fragment -->
     <string name="search">Search</string>
     <string name="description_delete">Delete description</string>
+    <string name="max_5_tags">You can select max 5 hashtags</string>
 
 
 

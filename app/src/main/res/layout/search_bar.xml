@@ -1,38 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/shape_background_search_view"
-    android:focusableInTouchMode="true">
+    android:background="@color/colorPrimaryDark">
 
-    <AutoCompleteTextView
-        android:id="@+id/searchViewAutoCompleteToolbar"
+
+    <RelativeLayout
+        android:layout_margin="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toStartOf="@+id/ibAutoCompleteRemoveText"
-        android:layout_centerInParent="true"
-        android:background="@android:color/transparent"
-        android:drawableStart="@drawable/search"
-        android:drawablePadding="@dimen/marginSmall"
-        android:hint="@string/search"
-        android:inputType="textCapSentences"
-        android:textColor="@android:color/white"
-        android:textColorHint="@android:color/white"
-        android:theme="@style/SearchViewToolbarTheme"
-        android:imeOptions="actionDone"
-        android:padding="@dimen/marginMedium"/>
-    <ImageButton
-        android:id="@+id/ibAutoCompleteRemoveText"
-        style="?android:attr/buttonBarButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:contentDescription="@string/description_delete"
-        android:padding="@dimen/marginSmall"
-        android:visibility="invisible"
-        app:srcCompat="@drawable/ic_close_black_24dp"/>
-</RelativeLayout>
+        android:background="@drawable/shape_background_search_view"
+        android:focusableInTouchMode="true">
+
+        <AutoCompleteTextView
+            android:id="@+id/searchViewAutoCompleteToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/ibAutoCompleteRemoveText"
+            android:layout_centerInParent="true"
+            android:background="@android:color/transparent"
+            android:drawableStart="@drawable/search"
+            android:drawablePadding="@dimen/marginSmall"
+            android:hint="@string/search"
+            android:inputType="textCapSentences"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            android:theme="@style/SearchViewToolbarTheme"
+            android:imeOptions="actionDone"
+            android:padding="@dimen/marginSmall"/>
+        <ImageButton
+            android:id="@+id/ibAutoCompleteRemoveText"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/description_delete"
+            android:padding="@dimen/marginSmall"
+            android:visibility="invisible"
+            app:srcCompat="@drawable/ic_close_black_24dp"/>
+    </RelativeLayout>
+
+</LinearLayout>
+
 
