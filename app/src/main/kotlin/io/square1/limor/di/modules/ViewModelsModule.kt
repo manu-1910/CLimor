@@ -65,4 +65,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(TagsViewModel::class)
     abstract fun bindTagsViewModel(tagsViewModel: TagsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LocationsViewModel::class)
+    abstract fun bindLocationsViewModel(locationsViewModel: LocationsViewModel): ViewModel
 }

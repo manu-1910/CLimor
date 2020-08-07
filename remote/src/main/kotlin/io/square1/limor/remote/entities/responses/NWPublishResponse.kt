@@ -66,7 +66,7 @@ data class NWPodcast(
     @Optional
     val sharing_url: String = "",
     @Optional
-    val tags: ArrayList<NWTags> = ArrayList(),
+    val tags: NWTagsArray = NWTagsArray(),
     @Optional
     val title: String = "",
     @Optional

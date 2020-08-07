@@ -34,7 +34,7 @@ data class UIPodcast(
     val reported: Boolean,
     val saved: Boolean,
     val sharing_url: String,
-    val tags: ArrayList<UITags>,
+    val tags: UITagsArray,
     val title: String,
     val updated_at: Int,
     val user: UIUser
@@ -54,9 +54,3 @@ data class UIPodcast(
 class UIMentions(
 )
 
-class UITags(
-    val id: Int,
-    val text: String,
-    val count: Int,
-    var isSelected: Boolean
-)

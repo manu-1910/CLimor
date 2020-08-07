@@ -201,8 +201,10 @@ class HashtagsFragment : BaseFragment() {
 
             }
 
+            //adapter?.notifyDataSetChanged()
 
 
+            rvHashtags?.adapter?.notifyDataSetChanged()
 
 
 

@@ -30,6 +30,7 @@ import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.MainActivity
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
+import io.square1.limor.scenes.main.viewmodels.LocationsViewModel
 import io.square1.limor.scenes.main.viewmodels.PublishViewModel
 import io.square1.limor.scenes.main.viewmodels.TagsViewModel
 import io.square1.limor.scenes.utils.Commons
@@ -60,7 +61,7 @@ class PublishFragment : BaseFragment() {
     private lateinit var draftViewModel: DraftViewModel
     private lateinit var publishViewModel: PublishViewModel
     private lateinit var hashtagViewModel: TagsViewModel
-
+    private lateinit var locationsViewModel: LocationsViewModel
 
 
     lateinit var recordingItem : UIDraft
@@ -92,6 +93,8 @@ class PublishFragment : BaseFragment() {
 
     private var lytHashtags: RelativeLayout? = null
     private var lytLocation: RelativeLayout? = null
+
+    private var podcastLocation: UILocations = UILocations("", 0.0, 0.0, false)
 
 
 
@@ -153,12 +156,16 @@ class PublishFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
 
-        //load selected hashtags
+        //Load selected hashtags
         var hashtagListString: String = ""
         for (tag in hashtagViewModel.localListTagsSelected){
             hashtagListString = "#"+tag.text+", "
         }
         etHashtags.text = hashtagListString.toEditable()
+
+        //Load selected location
+        podcastLocation = locationsViewModel.locationSelectedItem
+        etLocation.text = podcastLocation.address.toEditable()
     }
 
 
@@ -249,6 +256,9 @@ class PublishFragment : BaseFragment() {
             hashtagViewModel = ViewModelProviders
                 .of(it, viewModelFactory)
                 .get(TagsViewModel::class.java)
+            locationsViewModel = ViewModelProviders
+                .of(it, viewModelFactory)
+                .get(LocationsViewModel::class.java)
         }
     }
 
@@ -325,8 +335,8 @@ class PublishFragment : BaseFragment() {
                             meta_data = UIMetaData(
                                 title =  etDraftTitle?.text.toString(),
                                 caption = etDraftCaption?.text.toString(),
-                                latitude = 0.0,
-                                longitude = 0.0,
+                                latitude = podcastLocation?.latitude.takeIf { podcastLocation?.latitude != 0.0 } ?:  0.0,
+                                longitude = podcastLocation?.longitude.takeIf { podcastLocation?.longitude != 0.0 } ?:  0.0,
                                 image_url = "https://www.google.com/url?sa=i&url=https%3A%2F%2Funsplash.com%2Fexplore&psig=AOvVaw32sorEzNMl6cJEfuMBBExZ&ust=1596609860902000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCLjZ4q75gOsCFQAAAAAdAAAAABAE"
                             )
                         )

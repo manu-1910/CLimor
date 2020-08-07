@@ -50,7 +50,7 @@ fun NWPodcast.asDataEntity(): PodcastEntity {
         reported,
         saved,
         sharing_url,
-        getAllTagsEntities(tags),
+        tags.asDataEntity(),
         title,
         updated_at,
         user.asDataEntity()
@@ -68,6 +68,8 @@ fun NWAudio.asDataEntity(): AudioEntity {
         total_samples
     )
 }
+
+
 
 fun NWMentions.asDataEntity(): MentionsEntity {
     return MentionsEntity()

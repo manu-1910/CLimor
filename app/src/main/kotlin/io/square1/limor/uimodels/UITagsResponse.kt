@@ -10,3 +10,10 @@ data class UITagsResponse(
 data class UITagsArray(
     val tags: ArrayList<UITags>
 )
+
+class UITags(
+    val id: Int,
+    val text: String,
+    val count: Int,
+    var isSelected: Boolean
+)

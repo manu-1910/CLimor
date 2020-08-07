@@ -53,7 +53,7 @@ fun PodcastEntity.asUIModel(): UIPodcast {
         reported,
         saved,
         sharing_url,
-        getAllUITags(tags),
+        tags.asUIModel(),
         title,
         updated_at,
         user.asUIModel()

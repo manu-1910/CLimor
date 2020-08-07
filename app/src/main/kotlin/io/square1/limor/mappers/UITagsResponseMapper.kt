@@ -25,18 +25,3 @@ fun TagsArrayEntity.asUIModel(): UITagsArray{
         getAllUITags(tags)
     )
 }
-
-
-
-/**
-//
-data class UITagsResponse(
-    val code: Int,
-    val message: String,
-    val data: UITagsArray
-)
-
-data class UITagsArray(
-    val tags: ArrayList<UITags>
-)
-// */

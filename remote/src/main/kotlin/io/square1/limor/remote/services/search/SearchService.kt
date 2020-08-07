@@ -8,6 +8,7 @@ import retrofit2.http.POST
 
 
 const val SEARCH_TAG_PATH = "/api/v1/searches/tags"
+const val SEARCH_LOCATION_PATH = "/api/v1/searches/locations"
 
 
 interface SearchService {
@@ -17,5 +18,10 @@ interface SearchService {
         @Body tagRequest: RequestBody
     ): Single<ResponseBody>
 
+
+    @POST(SEARCH_LOCATION_PATH)
+    fun searchLocation(
+        @Body locationsRequest: RequestBody
+    ): Single<ResponseBody>
 
 }
