@@ -21,8 +21,6 @@ class LocationsViewModel @Inject constructor(private val locationsUseCase: Locat
     var uiLocationsRequest = UILocationsRequest(
         term = ""
     )
-
-    var localListLocationsSelected: ArrayList<UILocations> = ArrayList()
     var localListLocations: ArrayList<UILocations> = ArrayList()
     var locationSelectedItem: UILocations = UILocations("", 0.0, 0.0, true)
 

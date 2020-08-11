@@ -18,11 +18,9 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.authentication.SignActivity
-import io.square1.limor.scenes.main.fragments.record.adapters.HashtagsAdapter
 import io.square1.limor.scenes.main.fragments.record.adapters.LocationsAdapter
 import io.square1.limor.scenes.main.viewmodels.LocationsViewModel
 import io.square1.limor.uimodels.UILocations
-import io.square1.limor.uimodels.UITags
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
@@ -43,9 +41,7 @@ class LocationsFragment : BaseFragment() {
 
     private var rvLocations: RecyclerView? = null
     private var rootView: View? = null
-    private var adapter: LocationsAdapter? = null
     private var listLocations = ArrayList<UILocations>()
-    private var listLocationsSelected = ArrayList<UILocations>()
     private val locationsTrigger = PublishSubject.create<Unit>()
     private var locationSelectedItem: UILocations? = null
 
@@ -77,7 +73,6 @@ class LocationsFragment : BaseFragment() {
 
         bindViewModel()
         configureToolbar()
-        //configureAdapter()
         apiCallSearchTags()
         setupRecycler(listLocations)
     }
@@ -103,55 +98,40 @@ class LocationsFragment : BaseFragment() {
 
         //Toolbar Right
         btnDone.onClick {
-            toast("Done clicked")
-//            var test = listLocationsSelected
-//            println("selected tags are: " +listLocationsSelected)
-
-            //viewModelSearchProperties.uiSearchRequest.localityArraySelectedItems.clear()
-            //viewModelSearchProperties.uiSearchRequest.localityArray.clear()
-
-            locationsViewModel.localListLocationsSelected.clear()
             locationsViewModel.localListLocations.clear()
 
-            locationsViewModel.locationSelectedItem = locationSelectedItem!!
-            //locationsViewModel.localListLocations.addAll(listLocations)
-            //locationsViewModel.localListLocationsSelected.addAll(listLocationsSelected)
-
+            locationSelectedItem.let {
+                if (it != null) {
+                    locationsViewModel.locationSelectedItem = it
+                }
+            }
             findNavController().popBackStack()
-
         }
 
 
 
         //Search View
-        search_view.setOnQueryTextListener(object :
-            androidx.appcompat.widget.SearchView.OnQueryTextListener {
-
+        search_view.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
-                //Timber.d("Text changed:$newText")
                 if (newText.isNotEmpty() && newText.length > 3){
-                    println("entro aquí onquerytextchange")
-                    //searchTags(newText)
-                    //setupRecycler(listLocations)
+                    searchLocations(newText)
                 }
                 return false
             }
 
             override fun onQueryTextSubmit(query: String): Boolean {
-                //Timber.d("Submit:$query")
                 if (query.isNotEmpty() && query.length > 3){
-                    searchTags(query)
+                    searchLocations(query)
                 }else{
-                    toast("You should type at least 3 characters")
+                    toast(getString(R.string.min_3_chars))
                 }
                 return false
             }
-
         })
     }
 
 
-    private fun searchTags(term: String){
+    private fun searchLocations(term: String){
         //Make api call
         locationsViewModel.uiLocationsRequest.term = term
         locationsTrigger.onNext(Unit)
@@ -170,57 +150,16 @@ class LocationsFragment : BaseFragment() {
             view?.hideKeyboard()
 
             if (it.code == 0) { //Tags Response Ok
-
-                listLocations.clear()
-                //listLocationsSelected.clear()
-                //listLocationsSelected.addAll(locationsViewModel.localListLocationsSelected)
-
-                //Add others localities
-                for (location in it.data.locations) {
-                    listLocations.add(location)
+                if (it.data.locations.size > 0) {
+                    //hidePlaceHolder()
+                    listLocations.clear()
+                    listLocations.addAll(it.data.locations)
+                    setupRecycler(listLocations)
+                    rvLocations?.adapter?.notifyDataSetChanged()
+                } else {
+                    //showPlaceHolder()
                 }
-
-//                var someLocationSelected = false
-//
-//                //Check if localityArrayItemsSelected is empty or not
-//                if (listLocationsSelected.isNotEmpty()) {
-//                    for (location in listLocations) {
-//                        //Set selection
-//                        for (tagSelected in listLocationsSelected) {
-//                            if (location.address == tagSelected.address) {
-//                                location.isSelected = true
-//                                someLocationSelected = true
-//                            }
-//                        }
-//                    }
-//                }
-//                if (someLocationSelected){
-//                    //Set any isSelected false
-//                    for (location in listLocations){
-//                        if (location.address == ""){
-//                            location.isSelected = false
-//                        }
-//                    }
-//                }
-
             }
-
-            //adapter?.notifyDataSetChanged()
-
-
-            rvLocations?.adapter?.notifyDataSetChanged()
-
-
-
-//                if (it.data.tags.size > 0) {
-//                    hidePlaceHolder()
-//                    listLocations.addAll(it.data.tags)
-//                    rvLocations?.adapter?.notifyDataSetChanged()
-//                } else {
-//                    showPlaceHolder()
-//                }
-
-
         })
 
         output.backgroundWorkingProgress.observe(this, Observer {
@@ -272,6 +211,7 @@ class LocationsFragment : BaseFragment() {
             object : LocationsAdapter.OnItemClickListener {
                 override fun onItemClick(item: UILocations) {
 
+                    locationSelectedItem?.isSelected = false //Des-select previous selected item
                     locationSelectedItem = item
 
                     for (location in listLocations) {
@@ -281,50 +221,10 @@ class LocationsFragment : BaseFragment() {
                         }
                     }
 
-//                    //If no item selected -> select any
-//                    var itemSelected = false
-//                    for (location in listLocations) {
-//                        if (location.isSelected){
-//                            itemSelected = true
-//                        }
-//                    }
-//
-//                    //Add tags to tagsSelectedArray
-//                    listLocationsSelected.clear()
-//                    for (location in listLocations) {
-//                        if (location.isSelected)
-//                            listLocationsSelected.add(location)
-//                    }
-
                     rvLocations?.adapter?.notifyDataSetChanged()
                 }
             })
     }
-
-
-
-
-
-//    private fun configureAdapter() {
-//        val layoutManager = LinearLayoutManager(context)
-//        rvLocations?.layoutManager = layoutManager
-//        adapter = HashtagsAdapter(
-//            listLocations,
-//            object : HashtagsAdapter.OnItemClickListener {
-//                override fun onItemClick(item: UITags, position: Int) {
-////                    val intent = Intent(context, OfficeDetailsActivity::class.java)
-//////                    val bundle = Bundle()
-//////                    bundle.putSerializable(getString(R.string.centre_key), viewModel.uiCentre)
-//////                    bundle.putSerializable(getString(R.string.office_key), item)
-//////                    intent.putExtra(getString(R.string.office_bundle_key), bundle)
-//////                    startActivity(intent)
-//                    toast("item clicked: " + position)
-//                }
-//            }
-//        )
-//        rvLocations?.adapter = adapter
-//        rvLocations?.setHasFixedSize(false)
-//    }
 
 
 }

@@ -34,6 +34,7 @@ class TagsViewModel @Inject constructor(private val tagsUseCase: TagsUseCase, pr
 
     data class Output(
         val response: LiveData<UITagsResponse>,
+        //val response: LiveData<UIPromotedTagsResponse>,
         val backgroundWorkingProgress: LiveData<Boolean>,
         val errorMessage: SingleLiveEvent<UIErrorResponse>
     )
@@ -42,6 +43,7 @@ class TagsViewModel @Inject constructor(private val tagsUseCase: TagsUseCase, pr
         val errorTracker = SingleLiveEvent<UIErrorResponse>()
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
         val response = MutableLiveData<UITagsResponse>()
+        //val response = MutableLiveData<UIPromotedTagsResponse>()
 
         input.tagsTrigger.subscribe({
             tagsUseCase.execute(uiTagsRequest).subscribe({

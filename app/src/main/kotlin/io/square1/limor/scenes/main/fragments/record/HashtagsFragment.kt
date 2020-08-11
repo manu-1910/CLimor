@@ -79,6 +79,12 @@ class HashtagsFragment : BaseFragment() {
         setupRecycler(listTags)
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        tagsTrigger.onNext(Unit)
+    }
+
 
     private fun bindViewModel() {
         activity?.let {

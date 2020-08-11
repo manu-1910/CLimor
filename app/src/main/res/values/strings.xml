@@ -191,6 +191,8 @@
     <string name="search">Search</string>
     <string name="description_delete">Delete description</string>
     <string name="max_5_tags">You can select max 5 hashtags</string>
+    <string name="min_3_chars">You should type at least 3 characters</string>
+
 
 
 

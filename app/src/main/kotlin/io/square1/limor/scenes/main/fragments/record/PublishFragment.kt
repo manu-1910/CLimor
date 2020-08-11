@@ -1,5 +1,6 @@
 package io.square1.limor.scenes.main.fragments.record
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
@@ -10,6 +11,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
@@ -18,6 +20,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
@@ -42,8 +45,6 @@ import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.noButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -88,14 +89,18 @@ class PublishFragment : BaseFragment() {
 
     private var etDraftTitle: EditText? = null
     private var etDraftCaption: EditText? = null
-    private var etDraftHashtags: EditText? = null
-    private var etDraftLocation: EditText? = null
+    private var etDraftHashtags: TextView? = null
+    private var etDraftLocation: TextView? = null
 
     private var lytHashtags: RelativeLayout? = null
     private var lytLocation: RelativeLayout? = null
 
     private var podcastLocation: UILocations = UILocations("", 0.0, 0.0, false)
 
+    private var imageUrlFinal: String? = ""
+    private var audioUrlFinal: String? = ""
+
+    private var isPublished: Boolean = false
 
 
 
@@ -161,11 +166,11 @@ class PublishFragment : BaseFragment() {
         for (tag in hashtagViewModel.localListTagsSelected){
             hashtagListString = "#"+tag.text+", "
         }
-        etHashtags.text = hashtagListString.toEditable()
+        etDraftHashtags?.text = hashtagListString
 
         //Load selected location
         podcastLocation = locationsViewModel.locationSelectedItem
-        etLocation.text = podcastLocation.address.toEditable()
+        etLocation.text = podcastLocation.address
     }
 
 
@@ -181,6 +186,8 @@ class PublishFragment : BaseFragment() {
             view?.hideKeyboard()
 
             if (it.code == 0) { //Publish Ok
+
+                isPublished = true
 
                 alert {
                     this.titleResource = R.string.cast_published_ok_title
@@ -256,6 +263,7 @@ class PublishFragment : BaseFragment() {
             hashtagViewModel = ViewModelProviders
                 .of(it, viewModelFactory)
                 .get(TagsViewModel::class.java)
+
             locationsViewModel = ViewModelProviders
                 .of(it, viewModelFactory)
                 .get(LocationsViewModel::class.java)
@@ -281,6 +289,7 @@ class PublishFragment : BaseFragment() {
     }
 
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun listeners(){
         lytImagePlaceholder?.onClick {
             loadImagePicker()
@@ -295,19 +304,28 @@ class PublishFragment : BaseFragment() {
         }
 
         btnPublishDraft?.onClick {
-            publishPodcast()
+            publishPodcastImage()
+            publishPodcastAudio()
         }
 
-        lytHashtags?.onClick {
+
+        lytHashtags?.setOnTouchListener(OnTouchListener { view, motionEvent -> // Show an alert dialog.
             findNavController().navigate(R.id.action_record_publish_to_record_hashtags)
-        }
+            // Return false, then android os will still process click event,
+            // if return true, the on click listener will never be triggered.
+            false
+        })
 
-        lytLocation?.onClick {
+        lytLocation?.setOnTouchListener(OnTouchListener { view, motionEvent -> // Show an alert dialog.
             findNavController().navigate(R.id.action_record_publish_to_record_locations)
-        }
+            // Return false, then android os will still process click event,
+            // if return true, the on click listener will never be triggered.
+            false
+        })
+
     }
 
-    private fun publishPodcast() {
+    private fun publishPodcastAudio() {
 
         //Upload audio file to AWS
         Commons.getInstance().uploadAudio(
@@ -317,36 +335,10 @@ class PublishFragment : BaseFragment() {
             object : Commons.AudioUploadCallback {
                 override fun onSuccess(audioUrl: String?) {
                     println("Audio upload to AWS succesfully")
-                    var url = audioUrl
+                    //var url = audioUrl
+                    audioUrlFinal = audioUrl
 
-                    //var imageFile = File(Uri.parse(draftImage))
-
-                    var uiPublishRequest = UIPublishRequest(
-                        podcast = UIPodcastRequest(
-                            audio = UIAudio(
-                                audio_url = url!!,
-                                original_audio_url = url,
-                                duration = mediaPlayer.duration,
-                                total_samples = 0.0,
-                                total_length = recordingItem.length!!.toDouble(),
-                                sample_rate = 0.0,
-                                timestamps = ArrayList() //recordingItem.timeStamps
-                            ),
-                            meta_data = UIMetaData(
-                                title =  etDraftTitle?.text.toString(),
-                                caption = etDraftCaption?.text.toString(),
-                                latitude = podcastLocation?.latitude.takeIf { podcastLocation?.latitude != 0.0 } ?:  0.0,
-                                longitude = podcastLocation?.longitude.takeIf { podcastLocation?.longitude != 0.0 } ?:  0.0,
-                                image_url = "https://www.google.com/url?sa=i&url=https%3A%2F%2Funsplash.com%2Fexplore&psig=AOvVaw32sorEzNMl6cJEfuMBBExZ&ust=1596609860902000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCLjZ4q75gOsCFQAAAAAdAAAAABAE"
-                            )
-                        )
-                    )
-
-                    publishViewModel.uiPublishRequest = uiPublishRequest
-
-                    //TODO set the pusblishRequest and set it to the viewmodel
-
-                    publishPodcastTrigger.onNext(Unit)
+                    apiCallPublish()
                 }
 
                 override fun onError(error: String?) {
@@ -355,6 +347,69 @@ class PublishFragment : BaseFragment() {
 
                 }
             })
+    }
+
+    private fun publishPodcastImage() {
+
+        //Upload audio file to AWS
+        Commons.getInstance().uploadImage(
+            context,
+            object : Commons.ImageUploadCallback {
+                override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onSuccess(imageUrl: String?) {
+                    println("Image upload to AWS succesfully")
+                    //var imageUploadedUrl = imageUrl
+                    imageUrlFinal = imageUrl
+
+                }
+
+                override fun onStateChanged(id: Int, state: TransferState?) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onError(error: String?) {
+                    var error= error
+                    println("Image upload to AWS error: $error")
+
+                }
+            }, Commons.IMAGE_TYPE_ATTACHMENT)
+    }
+
+    private fun apiCallPublish(){
+
+        println("llego aquí muchas veces???????????????")
+        
+        if(!isPublished){
+            var uiPublishRequest = UIPublishRequest(
+                podcast = UIPodcastRequest(
+                    audio = UIAudio(
+                        audio_url = audioUrlFinal.toString(),
+                        original_audio_url = audioUrlFinal.toString(),
+                        duration = mediaPlayer.duration,
+                        total_samples = 0.0,
+                        total_length = recordingItem.length!!.toDouble(),
+                        sample_rate = 0.0,
+                        timestamps = ArrayList() //recordingItem.timeStamps
+                    ),
+                    meta_data = UIMetaData(
+                        title =  etDraftTitle?.text.toString(),
+                        caption = etDraftCaption?.text.toString(),
+                        latitude = podcastLocation.latitude.takeIf { podcastLocation.latitude != 0.0 } ?:  0.0,
+                        longitude = podcastLocation.longitude.takeIf { podcastLocation.longitude != 0.0 } ?:  0.0,
+                        image_url = imageUrlFinal.toString()
+                    )
+                )
+            )
+            publishViewModel.uiPublishRequest = uiPublishRequest
+
+            publishPodcastTrigger.onNext(Unit)
+
+        }
+
+
     }
 
 
@@ -405,7 +460,7 @@ class PublishFragment : BaseFragment() {
             .toolbarFolderTitle(getString(R.string.imagepicker_folder)) // folder selection title
             .toolbarImageTitle(getString(R.string.imagepicker_tap_to_select)) // image selection title
             .toolbarArrowColor(Color.WHITE) // Toolbar 'up' arrow color
-            .includeVideo(false) // Show video on image picker
+            .includeVideo(true) // Show video on image picker
             .limit(resources.getInteger(R.integer.MAX_PHOTOS)) // max images can be selected (99 by default)
             .theme(R.style.ImagePickerTheme) // must inherit ef_BaseTheme. please refer to sample
             .start()
@@ -524,6 +579,10 @@ class PublishFragment : BaseFragment() {
                 Glide.with(context!!).load(filesSelected[0].path).into(draftImage!!)
                 //Add the photopath to recording item
                 draftViewModel.uiDraft.tempPhotoPath = filesSelected[0].path
+
+                var imageFile = File(filesSelected[0].path)
+                Commons.getInstance().handleImage(context, Commons.IMAGE_TYPE_PODCAST, imageFile, "podcast_photo")
+
                 //Update recording item in Realm
                 updateDraftTrigger.onNext(Unit)
 

@@ -3,6 +3,7 @@ package io.square1.limor.remote.providers
 import entities.request.DataLocationsRequest
 import entities.request.DataTagsRequest
 import entities.response.LocationsResponseEntity
+import entities.response.PromotedTagsResponseEntity
 import entities.response.TagsResponseEntity
 import io.reactivex.Single
 import io.square1.limor.remote.mappers.asDataEntity
@@ -25,6 +26,15 @@ class RemoteSearchProviderImp @Inject constructor(private val provider: SearchSe
         return provider.searchLocations(dataLocationsRequest.asRemoteEntity())?.asDataEntity()
     }
 
+
+    override fun trendingTags(): Single<TagsResponseEntity>? {
+        return provider.trendingTags()?.asDataEntity()
+    }
+
+
+    override fun promotedTags(): Single<PromotedTagsResponseEntity>? {
+        return provider.promotedTags()?.asDataEntity()
+    }
 }
 
 

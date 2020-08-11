@@ -498,7 +498,10 @@ class RecordFragment : BaseFragment() {
         } catch (e: Exception) {
         }
 
-        handler.removeCallbacks(updater);
+        try {
+            handler.removeCallbacks(updater)
+        } catch (e: Exception) {
+        }
 
         voiceGraph?.clearAnimation()
         voiceGraph?.clear()
