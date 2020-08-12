@@ -39,9 +39,7 @@ abstract class RemoteService<T> constructor(c: Class<T>, private val config: Rem
     private fun initApiService(): Retrofit {
         registerResponseDateFormatSerializer()
 
-        println("El token que se envía es Bearer " + config.token)
-        println("El token que se envía es Bearer " + config.token)
-        println("El token que se envía es Bearer " + config.token)
+        //println("El token que se envía es Bearer " + config.token)
 
         val builder = OkHttpClient.Builder()
             .connectTimeout(45, TimeUnit.SECONDS)

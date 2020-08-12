@@ -127,6 +127,8 @@
     <string name="empty_fields_prompt">Please make sure to fill all required fields.</string>
     <string name="invalid_email_prompt">Invalid Email</string>
     <string name="add_photo">Add Photo</string>
+    <string name="title_cannot_be_empty">Title can not be empty</string>
+    <string name="caption_cannot_be_empty">Caption can not be empty</string>
 
 
     <!-- Menu Marker -->

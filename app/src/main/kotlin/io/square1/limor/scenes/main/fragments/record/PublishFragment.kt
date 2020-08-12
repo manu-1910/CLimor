@@ -218,27 +218,19 @@ class PublishFragment : BaseFragment() {
                     message.append(R.string.some_error)
                 }
 
-
                 if(it.code == 10){  //Session expired
                     alert(message.toString()) {
                         okButton {
                             val intent = Intent(context, SignActivity::class.java)
                             //intent.putExtra(getString(R.string.otherActivityKey), true)
-                            startActivityForResult(
-                                intent,
-                                resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
-                            )
-
+                            startActivityForResult(intent, resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH))
                         }
                     }.show()
-
                 }else{
                     alert(message.toString()) {
                         okButton { }
                     }.show()
                 }
-
-
 
             } else {
                 alert(getString(R.string.default_no_internet)) {
@@ -304,10 +296,11 @@ class PublishFragment : BaseFragment() {
         }
 
         btnPublishDraft?.onClick {
-            publishPodcastImage()
-            publishPodcastAudio()
+            if (checkEmptyFields()){
+                publishPodcastImage()
+                publishPodcastAudio()
+            }
         }
-
 
         lytHashtags?.setOnTouchListener(OnTouchListener { view, motionEvent -> // Show an alert dialog.
             findNavController().navigate(R.id.action_record_publish_to_record_hashtags)
@@ -324,6 +317,7 @@ class PublishFragment : BaseFragment() {
         })
 
     }
+
 
     private fun publishPodcastAudio() {
 
@@ -348,6 +342,7 @@ class PublishFragment : BaseFragment() {
                 }
             })
     }
+
 
     private fun publishPodcastImage() {
 
@@ -378,10 +373,11 @@ class PublishFragment : BaseFragment() {
             }, Commons.IMAGE_TYPE_ATTACHMENT)
     }
 
+
     private fun apiCallPublish(){
 
         println("llego aquí muchas veces???????????????")
-        
+
         if(!isPublished){
             var uiPublishRequest = UIPublishRequest(
                 podcast = UIPodcastRequest(
@@ -433,6 +429,7 @@ class PublishFragment : BaseFragment() {
         }
     }
 
+
     private fun addDataToRecordingItem(){
         //Compose the local object
         recordingItem.title = etDraftTitle?.text.toString()
@@ -452,6 +449,7 @@ class PublishFragment : BaseFragment() {
         updateDraftTrigger.onNext(Unit)
 
     }
+
 
     private fun loadImagePicker(){
         ImagePicker.create(this) // Activity or Fragment
@@ -476,7 +474,7 @@ class PublishFragment : BaseFragment() {
             mediaPlayer.setDataSource(recordingItem.filePath)
             mediaPlayer.prepare() // might take long for buffering.
         } catch (e: Exception) {
-            e.printStackTrace()
+            //e.printStackTrace()
         }
 
 
@@ -641,7 +639,32 @@ class PublishFragment : BaseFragment() {
     }
 
 
+    private fun checkEmptyFields(): Boolean{ //TODO Check with API what the mandatory fields are
 
+        var returned = true
+
+        //Check the Title of the cast
+        if(etDraftTitle?.text?.isNotEmpty()!!) {
+            returned = true
+        }else{
+            alert(getString(R.string.title_cannot_be_empty)) {
+                okButton {}
+            }.show()
+            returned = false
+        }
+
+        //Check the Caption of the cast
+        if(etDraftCaption?.text?.isNotEmpty()!!) {
+            returned = true
+        }else{
+            alert(getString(R.string.caption_cannot_be_empty)) {
+                okButton {}
+            }.show()
+            returned = false
+        }
+
+        return returned
+    }
 
 
 }
