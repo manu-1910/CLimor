@@ -238,13 +238,13 @@ public class Commons {
         String path = "";
         switch (audioType) {
             case Constants.AUDIO_TYPE_PODCAST:
-                path = Constants.AWS_FOLDER_AUDIO_PODCAST + "audioFile_" + String.valueOf(new Random().nextInt((9999 - 1) + 1) + 1) + "_" + System.currentTimeMillis() + ".amr";
+                path = Constants.AWS_FOLDER_AUDIO_PODCAST + "audioFile_" + String.valueOf(new Random().nextInt((9999 - 1) + 1) + 1) + "_" + System.currentTimeMillis() + ".aac";
                 break;
             case Constants.AUDIO_TYPE_COMMENT:
-                path = Constants.AWS_FOLDER_AUDIO_COMMENT + "audioFile_" + String.valueOf(new Random().nextInt((9999 - 1) + 1) + 1) + "_" + System.currentTimeMillis() + ".amr";
+                path = Constants.AWS_FOLDER_AUDIO_COMMENT + "audioFile_" + String.valueOf(new Random().nextInt((9999 - 1) + 1) + 1) + "_" + System.currentTimeMillis() + ".aac";
                 break;
             case Constants.AUDIO_TYPE_ATTACHMENT:
-                path = Constants.AWS_FOLDER_MESSAGE_ATTACHMENTS + "audioFile_" + String.valueOf(new Random().nextInt((9999 - 1) + 1) + 1) + "_" + System.currentTimeMillis() + ".amr";
+                path = Constants.AWS_FOLDER_MESSAGE_ATTACHMENTS + "audioFile_" + String.valueOf(new Random().nextInt((9999 - 1) + 1) + 1) + "_" + System.currentTimeMillis() + ".aac";
                 break;
             default:
                 break;

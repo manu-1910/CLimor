@@ -77,11 +77,7 @@ class RecordFragment : BaseFragment() {
     }
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_record, container, false)
 
@@ -247,7 +243,7 @@ class RecordFragment : BaseFragment() {
                 findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
             }else{
                 doAsync {
-                    val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".amr")
+                    val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".aac")
                     recordingItem?.filePath = finalAudio.absolutePath
                     if(mergeAmrAudioFiles(filesArray, finalAudio.absolutePath)){
                         //Delete all files when they are merged
@@ -338,9 +334,10 @@ class RecordFragment : BaseFragment() {
                 findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
             }else{
                 doAsync {
-                    val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".amr")
-                    recordingItem?.filePath = finalAudio.absolutePath
+                    val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".aac")
+
                     if(mergeAmrAudioFiles(filesArray, finalAudio.absolutePath)){
+                        recordingItem?.filePath = finalAudio.absolutePath
                         //Delete all files when they are merged
                         if(deleteFilesInArray(filesArray)){
                             filesArray.clear()
@@ -457,7 +454,6 @@ class RecordFragment : BaseFragment() {
         } else {
             mRecorder.stop()
 
-            //Add the file to the files array
             //Add the file to the files array
             getLastModified()?.let {
                 if(!filesArray.contains(it)){
