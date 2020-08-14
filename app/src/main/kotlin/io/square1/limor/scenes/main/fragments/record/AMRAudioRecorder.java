@@ -131,7 +131,7 @@ public class AMRAudioRecorder  {
         }
 
         // Merge files
-        String mergedFilePath = this.fileDirectory + new Date().getTime() + ".aac";
+        String mergedFilePath = this.fileDirectory + new Date().getTime() + ".amr";
         try {
             FileOutputStream fos = new FileOutputStream(mergedFilePath);
 
@@ -190,13 +190,13 @@ public class AMRAudioRecorder  {
             throw new IllegalArgumentException("[AMRAudioRecorder] audioFileDirectory is a not valid directory!");
         }
 
-        String filePath = directory.getAbsolutePath() + "/" + new Date().getTime() + ".aac";
+        String filePath = directory.getAbsolutePath() + "/" + new Date().getTime() + ".amr";
         this.files.add(filePath);
 
         recorder.setOutputFile(filePath);
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_WB);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
 
 
     }

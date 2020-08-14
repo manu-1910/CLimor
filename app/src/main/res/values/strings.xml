@@ -151,8 +151,8 @@
     <string name="draft_deleted">Draft deleted</string>
     <string name="draft_not_deleted">Draft NOT deleted</string>
     <string name="centre_not_deleted_error">There was an error deleting the draft</string>
-    <string name="draft_inserted">Draft inserted</string>
-    <string name="draft_not_inserted">Draft NOT inserted</string>
+    <string name="draft_inserted">Draft saved succesfully</string>
+    <string name="draft_not_inserted">There was an error saving your draft</string>
     <string name="draft_not_inserted_error">There was an error inserting the draft</string>
     <string name="draft_updated">Draft updated</string>
     <string name="draft_not_updated">Draft NOT updated</string>
