@@ -200,7 +200,18 @@ class EditFragment : WaveformFragment() {
         }
         //AnalyticsManager.getInstance().recordEditEvent(AnalyticsManager.RecordingEditEventType.RECORDING_EDIT_COPY_PASTE);
         //addMarker(selectedMarker.getStartPos(), selectedMarker.getStartPos() + 2, true, null);    //TODO JJ esta es la original
+
+
+        //addMarker(selectedMarker.startPos, selectedMarker.startPos, true, null) //TODO JJ
+
+
         addMarker(selectedMarker.startPos, selectedMarker.startPos, true, null) //TODO JJ
+
+        /*
+        *  double startTime = waveformView.pixelsToSeconds(markerSet.getStartPos() / NEW_WIDTH); //TODO JJ 1310020 seems to be ok with time
+           double endTime = waveformView.pixelsToSeconds(markerSet.getEndPos() / NEW_WIDTH);
+        * */
+
     }
 
     private fun deleteClick() {
@@ -240,9 +251,9 @@ class EditFragment : WaveformFragment() {
                 Objects.requireNonNull(activity)!!.externalCacheDir
             ).absolutePath + "/limor_record_chunk_copied.m4a"
             val startFrameCopied =
-                waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.startPos / 20)) //TODO JJ NEW 131020
+                waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.startPos / NEW_WIDTH)) //TODO JJ NEW 131020
             val endFrameCopied =
-                waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.endPos / 20)) //TODO JJ NEW 131020
+                waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.endPos / NEW_WIDTH)) //TODO JJ NEW 131020
             val outFileCopied = File(outPathCopied)
             try {
                 soundFile.WriteFile(
@@ -259,9 +270,9 @@ class EditFragment : WaveformFragment() {
                 val outPath = activity!!.externalCacheDir
                     .absolutePath + "/limor_record_chunk_" + i + ".m4a"
                 val startTime =
-                    waveformView.pixelsToSeconds(if (i == 0) 0 else editMarker.startPos - 10)
+                    waveformView.pixelsToSeconds(if (i == 0) 0 else (editMarker.startPos / NEW_WIDTH) - 10)
                 val endTime = waveformView.pixelsToSeconds(
-                    if (i == 0) editMarker.startPos else waveformView.millisecsToPixels(player.duration - 10)
+                    if (i == 0) (editMarker.startPos / NEW_WIDTH) else waveformView.millisecsToPixels(player.duration - 10)
                 )
                 val startFrame = waveformView.secondsToFrames(startTime)
                 val endFrame = waveformView.secondsToFrames(endTime)
@@ -310,9 +321,9 @@ class EditFragment : WaveformFragment() {
                 audioFilePaths = ArrayList()
                 val copiedLength: Int
                 val startPosMilliseconds =
-                    waveformView.pixelsToMillisecs(selectedMarker.startPos)
+                    waveformView.pixelsToMillisecs(selectedMarker.startPos / NEW_WIDTH)
                 val endPosMilliseconds =
-                    waveformView.pixelsToMillisecs(selectedMarker.endPos)
+                    waveformView.pixelsToMillisecs(selectedMarker.endPos / NEW_WIDTH)
                 copiedLength = endPosMilliseconds - startPosMilliseconds
                 activity!!.runOnUiThread {
                     val timeStamps =
@@ -325,19 +336,19 @@ class EditFragment : WaveformFragment() {
                             if (!markerSet.isEditMarker) {
                                 var startPosMillisecondsAdjusted: Int
                                 var endPosMillisecondsAdjusted: Int
-                                if (waveformView.pixelsToMillisecs(markerSet.startPos) < waveformView.pixelsToMillisecs(
-                                        editMarker.startPos
+                                if (waveformView.pixelsToMillisecs(markerSet.startPos / NEW_WIDTH) < waveformView.pixelsToMillisecs(
+                                        editMarker.startPos / NEW_WIDTH
                                     )
                                 ) {
                                     startPosMillisecondsAdjusted =
-                                        waveformView.pixelsToMillisecs(markerSet.startPos)
+                                        waveformView.pixelsToMillisecs(markerSet.startPos / NEW_WIDTH)
                                     endPosMillisecondsAdjusted =
-                                        waveformView.pixelsToMillisecs(markerSet.endPos)
+                                        waveformView.pixelsToMillisecs(markerSet.endPos / NEW_WIDTH)
                                 } else {
                                     startPosMillisecondsAdjusted =
-                                        waveformView.pixelsToMillisecs(markerSet.startPos) + copiedLength
+                                        waveformView.pixelsToMillisecs(markerSet.startPos / NEW_WIDTH) + copiedLength
                                     endPosMillisecondsAdjusted =
-                                        waveformView.pixelsToMillisecs(markerSet.endPos) + copiedLength
+                                        waveformView.pixelsToMillisecs(markerSet.endPos / NEW_WIDTH) + copiedLength
                                 }
                                 handleTimeStamps(
                                     markerSet,
