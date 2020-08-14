@@ -240,9 +240,9 @@ class EditFragment : WaveformFragment() {
                 Objects.requireNonNull(activity)!!.externalCacheDir
             ).absolutePath + "/limor_record_chunk_copied.m4a"
             val startFrameCopied =
-                waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.startPos))
+                waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.startPos / 20)) //TODO JJ NEW 131020
             val endFrameCopied =
-                waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.endPos))
+                waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.endPos / 20)) //TODO JJ NEW 131020
             val outFileCopied = File(outPathCopied)
             try {
                 soundFile.WriteFile(

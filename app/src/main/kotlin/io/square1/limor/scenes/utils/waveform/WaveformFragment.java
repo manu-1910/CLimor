@@ -279,6 +279,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         float delta = x - touchStart;
         if (marker.getType() == MarkerView.START_MARKER) {
             int currentStartPos = trap((int) (touchInitialStartPos + delta));
+
             marker.getMarkerSet().setMiddlePos(currentStartPos + ((marker.getMarkerSet().getEndPos() - currentStartPos) / 2));
             marker.getMarkerSet().setStartPos(currentStartPos);
             if (marker.getMarkerSet().getStartPos() > marker.getMarkerSet().getEndPos()) {
@@ -288,12 +289,14 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             checkIfTriggerMerge(marker);
         } else if (marker.getType() == MarkerView.MIDDLE_MARKER) {
             int currentMiddlePos = trap((int) (touchInitialMiddlePos + delta));
+
             marker.getMarkerSet().setMiddlePos(currentMiddlePos);
             marker.getMarkerSet().setStartPos(currentMiddlePos - marker.getMarkerSet().getDistanceFromTheMiddle());
             marker.getMarkerSet().setEndPos(currentMiddlePos + marker.getMarkerSet().getDistanceFromTheMiddle());
             checkIfTriggerMerge(marker);
         } else {
             int currentEndPos = trap((int) (touchInitialEndPos + delta));
+
             marker.getMarkerSet().setMiddlePos(marker.getMarkerSet().getStartPos() + ((currentEndPos - marker.getMarkerSet().getStartPos()) / 2));
             marker.getMarkerSet().setEndPos(currentEndPos);
             if (marker.getMarkerSet().getEndPos() < marker.getMarkerSet().getStartPos()) {
@@ -682,7 +685,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             System.out.println("DISPLAY width is: " + width);
 
             setOffsetGoalNoUpdate(frames - width / 2); //TODO JJ no tocar, ésto hace que la línea del play se quede en el centro de la pantalla
-            //setOffsetGoalNoUpdate(frames - width / 2); //TODO JJ no tocar, ésto hace que la línea del play se quede en el centro de la pantalla
 
             int offsetDelta = offsetGoal - offset;  //TODO JJ new /20  Está OK no tocar
             //System.out.println(String.format("offsetGoal: %5s  offset: %5s  offsetDelta: %5s", offsetGoal, offset, offsetDelta));
@@ -739,6 +741,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }else if(waveformView.getZoomLevel() == 4){
             offset = (offset / (NEW_WIDTH*5));
         }
+        System.out.println("calculateNewOffset() offset="+offset);
     }
 
     private synchronized void updateMarkers() {
@@ -860,6 +863,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
     protected int trap(int pos) {
+
+        //pos = pos/NEW_WIDTH; //TODO JJ 131020
+
         if (pos < 0) {
             return 0;
         }
@@ -1088,8 +1094,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
         for (MarkerSet markerSet : markerSets) {
             final String outPath = getActivity().getExternalCacheDir().getAbsolutePath() + "/limor_record" + markerSet.getId() + ".m4a";
-            double startTime = waveformView.pixelsToSeconds(markerSet.getStartPos());
-            double endTime = waveformView.pixelsToSeconds(markerSet.getEndPos());
+            //double startTime = waveformView.pixelsToSeconds(markerSet.getStartPos() / NEW_WIDTH); //TODO JJ 1310020 seems to be ok with time
+            //double endTime = waveformView.pixelsToSeconds(markerSet.getEndPos() / NEW_WIDTH);    //TODO JJ 1310020 seems to be ok with time
+            double startTime = waveformView.pixelsToSeconds(markerSet.getStartPos() / NEW_WIDTH); //TODO JJ 1310020 seems to be ok with time
+            double endTime = waveformView.pixelsToSeconds(markerSet.getEndPos() / NEW_WIDTH);    //TODO JJ 1310020 seems to be ok with time
             final int startFrame = waveformView.secondsToFrames(startTime);
             final int endFrame = waveformView.secondsToFrames(endTime);
             final File outFile = new File(outPath);

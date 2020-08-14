@@ -449,14 +449,16 @@ public class WaveformView extends View {
             if (!markerSet.isEditMarker()) {
                 float leftEnd = markerSet.getEndPos() + Commons.dpToPx(getContext(), 16);
                 float topEnd = measuredHeight - topOffset + Commons.dpToPx(getContext(), 16);
-                String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getEndPos()));
+                String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getEndPos() / NEW_WIDTH)); //TODO JJ 131020 seems to be ok with the time drawed
+                //kString timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getEndPos())); //TODO JJ 131020 seems to be ok with the time drawed
                 canvas.drawText(timeCode, leftEnd, topEnd, timeCodePaintBlack);
             }
 
             // Left bottom timestamp (is always visible, for normal marker and for edit marker
             float leftStart = markerSet.getStartPos() - Commons.dpToPx(getContext(), 44);
             float topStart = measuredHeight - topOffset + Commons.dpToPx(getContext(), 16);
-            String timeCodeStart = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getStartPos()));
+            String timeCodeStart = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getStartPos() / NEW_WIDTH)); //TODO JJ 131020 seems to be ok with the time drawed
+            //String timeCodeStart = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getStartPos())); //TODO JJ 131020 seems to be ok with the time drawed
             canvas.drawText(timeCodeStart, leftStart, topStart, timeCodePaintBlack);
         }
 
@@ -521,7 +523,7 @@ public class WaveformView extends View {
 
     // Called once when a new sound file is added
     protected void computeDoublesForAllZoomLevels() {
-        int numFrames = soundFile.getNumFrames();
+        int numFrames = soundFile.getNumFrames() * NEW_WIDTH;
 
         // Make sure the range is no more than 0 - 255
         float maxGain = 1.0f;
@@ -532,7 +534,7 @@ public class WaveformView extends View {
             }
         }
         scaleFactor = 1.0f;
-        if (maxGain > 255.0) {
+        if (maxGain > 255.0 ) {
             scaleFactor = 255 / maxGain;
         }
         // Build histogram of 256 bins and figure out the new scaled max
@@ -574,7 +576,7 @@ public class WaveformView extends View {
         zoomFactorByZoomLevel = new float[5];
 
 
-        numFrames = numFrames * NEW_WIDTH; //numframes = maxpos ó duration o maxlength o width //TODO JJ new line
+        //numFrames = numFrames * NEW_WIDTH; //numframes = maxpos ó duration o maxlength o width //TODO JJ new line
 
         float ratio = getMeasuredWidth() / (float) numFrames;
 
