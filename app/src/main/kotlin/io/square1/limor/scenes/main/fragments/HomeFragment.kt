@@ -28,6 +28,11 @@ class HomeFragment : BaseFragment() {
         //listeners()
         bindViewModel()
         //setVersion()
+        checkIfFollowingSomeone()
+    }
+
+    private fun checkIfFollowingSomeone() {
+
     }
 
     private fun bindViewModel() {

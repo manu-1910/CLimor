@@ -194,8 +194,8 @@
     <string name="description_delete">Delete description</string>
     <string name="max_5_tags">You can select max 5 hashtags</string>
     <string name="min_3_chars">You should type at least 3 characters</string>
-
-
+    <string name="sorry_there_are_no_podcasts_right_now">Sorry, there are no podcasts right now</string>
+    <string name="maybe_you_could_try_later">Maybe you could try later</string>
 
 
 </resources>

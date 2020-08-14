@@ -70,4 +70,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(LocationsViewModel::class)
     abstract fun bindLocationsViewModel(locationsViewModel: LocationsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(FeedViewModel::class)
+    abstract fun bindFeedViewModel(feedViewModel: FeedViewModel): ViewModel
 }

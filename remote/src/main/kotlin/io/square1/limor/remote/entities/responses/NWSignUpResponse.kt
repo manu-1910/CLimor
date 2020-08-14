@@ -31,7 +31,48 @@ data class NWAccessToken(
 @Serializable
 data class NWLinks(
     @Optional
-    val links: String = ""
+    val website: ArrayList<NWWebsiteItems> = ArrayList(),
+    @Optional
+    val content: ArrayList<NWContentItems> = ArrayList(),
+    @Optional
+    val caption: ArrayList<NWCaptionItems> = ArrayList()
+)
+
+@Serializable
+data class NWWebsiteItems (
+    @Optional
+    val id : Int = 0,
+    @Optional
+    val link : String = "",
+    @Optional
+    val start_index : Int = 0,
+    @Optional
+    val end_index : Int = 0
+)
+
+
+@Serializable
+data class NWContentItems (
+    @Optional
+    val id : Int = 0,
+    @Optional
+    val link : String = "",
+    @Optional
+    val start_index : Int = 0,
+    @Optional
+    val end_index : Int = 0
+)
+
+@Serializable
+data class NWCaptionItems (
+    @Optional
+    val id : Int = 0,
+    @Optional
+    val link : String = "",
+    @Optional
+    val start_index : Int = 0,
+    @Optional
+    val end_index : Int = 0
 )
 
 @Serializable

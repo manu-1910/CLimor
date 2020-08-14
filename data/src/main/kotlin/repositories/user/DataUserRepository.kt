@@ -3,6 +3,7 @@ package repositories.user
 
 import entities.request.DataLogoutRequest
 import entities.response.ErrorResponseEntity
+import entities.response.FeedResponseEntity
 import entities.response.SignUpResponseEntity
 import entities.response.UserEntity
 import io.reactivex.Single
@@ -19,6 +20,10 @@ class DataUserRepository @Inject constructor(private val remoteProvider: RemoteU
 
     override fun logOut(dataLogoutRequest: DataLogoutRequest): Single<ErrorResponseEntity> {
         return remoteProvider.logOut(dataLogoutRequest)
+    }
+
+    override fun feedShow(): Single<FeedResponseEntity> {
+        return remoteProvider.feedShow()
     }
 
 }

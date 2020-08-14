@@ -31,7 +31,8 @@ class AuthServiceImpTest{
             debug = true,
             client_id = "2711e12535ceb15773fe87dc691bcb8c26295bb1434f7d8f4912006dff6a189c",
             client_secret = "af570a038fbb5e9eb7c5338068f57b5a22c119d5fd273909f38b1cf4f9acd996",
-            token = ""
+            token = "",
+            expiredIn = 90000000000
         )
 
         authservice = AuthServiceImp(config)
@@ -50,7 +51,8 @@ class AuthServiceImpTest{
            debug = true,
            client_id = "2711e12535ceb15773fe87dc691bcb8c26295bb1434f7d8f4912006dff6a189c",
            client_secret = "af570a038fbb5e9eb7c5338068f57b5a22c119d5fd273909f38b1cf4f9acd996",
-           token = ""
+           token = "",
+           expiredIn = 90000000000
        )
 
        authservice = AuthServiceImp(config)

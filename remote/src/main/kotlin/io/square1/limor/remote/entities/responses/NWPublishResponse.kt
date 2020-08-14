@@ -38,7 +38,7 @@ data class NWPodcast(
     @Optional
     val images: NWImages = NWImages(),
     @Optional
-    val latitude: Double = 0.0,
+    val latitude: Double? = 0.0,
     @Optional
     val liked: Boolean = false,
     @Optional
@@ -46,7 +46,7 @@ data class NWPodcast(
     @Optional
     val listened: Boolean = false,
     @Optional
-    val longitude: Double = 0.0,
+    val longitude: Double? = 0.0,
     @Optional
     val mentions: NWMentions = NWMentions(),
     @Optional

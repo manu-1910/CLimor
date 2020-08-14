@@ -6,9 +6,9 @@
     app:startDestination="@id/navigation_home">
     <fragment
         android:id="@+id/navigation_home"
-        android:name="io.square1.limor.scenes.main.fragments.HomeFragment"
-        android:label="HomeFragment"
-        tools:layout="@layout/fragment_home">
+        android:name="io.square1.limor.scenes.main.fragments.FeedFragment"
+        android:label="FeedFragment"
+        tools:layout="@layout/fragment_feed">
     </fragment>
     <fragment
         android:id="@+id/navigation_discover"

@@ -20,7 +20,30 @@ data class UIAccessToken(
 
 
 data class UILinks(
-    var links: String
+    var website: ArrayList<UIWebsite>,
+    var content: ArrayList<UIContent>,
+    var caption: ArrayList<UICaption>
+)
+
+data class UIWebsite (
+    var id: Int,
+    var link: String,
+    var startIndex: Int,
+    var endIndex: Int
+)
+
+data class UIContent (
+    var id: Int,
+    var link: String,
+    var startIndex: Int,
+    var endIndex: Int
+)
+
+data class UICaption (
+    var id: Int,
+    var link: String,
+    var startIndex: Int,
+    var endIndex: Int
 )
 
 

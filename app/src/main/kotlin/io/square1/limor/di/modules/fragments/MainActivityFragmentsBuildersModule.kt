@@ -13,6 +13,9 @@ abstract class MainActivityFragmentsBuildersModule {
     abstract fun contributeHomeFragmentInjector(): HomeFragment
 
     @ContributesAndroidInjector
+    abstract fun contributeFeedFragmentInjector(): FeedFragment
+
+    @ContributesAndroidInjector
     abstract fun contributeDiscoverFragmentInjector(): DiscoverFragment
 
     //@ContributesAndroidInjector

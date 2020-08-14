@@ -10,6 +10,7 @@ import retrofit2.http.*
 
 const val USER_ME_PATH = "/api/v1/users/me"
 const val LOG_OUT_PATH = "/oauth/revoke"
+const val SHOW_FEED_PATH = "/api/v1/users/feed"
 
 
 interface UserService {
@@ -22,5 +23,12 @@ interface UserService {
     fun logOut(
         @Body logoutRequest: RequestBody
     ): Single<ResponseBody>
+
+
+    @GET(SHOW_FEED_PATH)
+    fun feedShow(@Query ("limit") limit : Int?, @Query("offset") offset : Int?): Single<ResponseBody>
+
+    @GET(SHOW_FEED_PATH)
+    fun feedShow(): Single<ResponseBody>
 
 }

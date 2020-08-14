@@ -89,11 +89,79 @@ fun NWImages.asDataEntity(): ImagesEntity {
 }
 
 
+
+
 fun NWLinks.asDataEntity(): LinksEntity {
     return LinksEntity(
-        links
+        getAllWebsiteItemssEntities(website),
+        getAllContentItemssEntities(content),
+        getAllCaptionItemssEntities(caption)
     )
 }
+
+fun NWWebsiteItems.asDataEntity() : WebsiteEntity {
+    return WebsiteEntity(
+        id, link, start_index, end_index
+    )
+}
+
+fun NWContentItems.asDataEntity() : ContentEntity {
+    return ContentEntity(
+        id, link, start_index, end_index
+    )
+}
+
+fun NWCaptionItems.asDataEntity() : CaptionEntity {
+    return CaptionEntity(
+        id, link, start_index, end_index
+    )
+}
+
+fun getAllWebsiteItemssEntities(nwList: ArrayList<NWWebsiteItems>?): ArrayList<WebsiteEntity> {
+    val entityList = ArrayList<WebsiteEntity>()
+    if (nwList != null) {
+        for (item in nwList) {
+            if (item != null)
+                entityList.add(item.asDataEntity())
+        }
+    }
+    return entityList
+}
+
+fun getAllContentItemssEntities(nwList: ArrayList<NWContentItems>?): ArrayList<ContentEntity> {
+    val entityList = ArrayList<ContentEntity>()
+    if (nwList != null) {
+        for (item in nwList) {
+            if (item != null)
+                entityList.add(item.asDataEntity())
+        }
+    }
+    return entityList
+}
+
+fun getAllCaptionItemssEntities(nwList: ArrayList<NWCaptionItems>?): ArrayList<CaptionEntity> {
+    val entityList = ArrayList<CaptionEntity>()
+    if (nwList != null) {
+        for (item in nwList) {
+            if (item != null)
+                entityList.add(item.asDataEntity())
+        }
+    }
+    return entityList
+}
+
+// trying to generify this function to not repeat it everytime
+//fun <T, V> getAllItemsEntities(nwList: ArrayList<T>?) : ArrayList<V> {
+//    val entityList = ArrayList<V>()
+//    if (nwList != null) {
+//        for (item in nwList) {
+//            if (item != null)
+//                entityList.add(item.asDataEntity())
+//        }
+//    }
+//    return entityList
+//}
+
 
 
 

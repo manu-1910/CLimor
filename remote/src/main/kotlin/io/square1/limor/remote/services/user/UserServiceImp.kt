@@ -4,6 +4,7 @@ package io.square1.limor.remote.services.user
 import io.reactivex.Single
 import io.square1.limor.remote.entities.requests.NWLogoutRequest
 import io.square1.limor.remote.entities.responses.NWErrorResponse
+import io.square1.limor.remote.entities.responses.NWFeedResponse
 import io.square1.limor.remote.entities.responses.NWSignUpResponse
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
@@ -20,12 +21,9 @@ class UserServiceImp @Inject constructor(private val serviceConfig: RemoteServic
 
     fun userMe(): Single<NWSignUpResponse> {
         return service.userMe()
-            .doOnSuccess { success ->
-                println("SUCCESS: $success")
-            }
-            .map { response ->
-                response.parseSuccessResponse(NWSignUpResponse.serializer())
-            }
+            .map { response -> response.parseSuccessResponse(NWSignUpResponse.serializer()) }
+            .doOnSuccess { success -> println("SUCCESS: $success") }
+            .doOnError{error -> println("ERROR: $error")}
     }
 
 
@@ -38,6 +36,26 @@ class UserServiceImp @Inject constructor(private val serviceConfig: RemoteServic
             .doOnError{
                     error -> println("ERROR: $error")
             }
+    }
+
+    fun feedShow(limit: Int?, offset: Int?): Single<NWFeedResponse> {
+        return service.feedShow(limit, offset)
+            .map { response -> response.parseSuccessResponse(NWFeedResponse.serializer()) }
+            .doOnSuccess { response -> run {
+                println("SUCCESS: $response")
+                println("Hemos recibido ${response.data.feed_items.size} items")
+            } }
+            .doOnError { error -> println("ERROR: $error") }
+    }
+
+    fun feedShow(): Single<NWFeedResponse> {
+        return service.feedShow()
+            .map { response -> response.parseSuccessResponse(NWFeedResponse.serializer()) }
+            .doOnSuccess { response -> run {
+                println("SUCCESS: $response")
+                println("Hemos recibido ${response.data.feed_items.size} items")
+            } }
+            .doOnError { error -> println("ERROR: $error") }
     }
 
 }
