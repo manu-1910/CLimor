@@ -1,5 +1,6 @@
 package io.square1.limor.remote
 
+import io.square1.limor.remote.entities.requests.NWCreateFriendRequest
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.user.UserServiceImp
 import kotlinx.serialization.ImplicitReflectionSerializer
@@ -7,8 +8,8 @@ import org.junit.Test
 
 @ImplicitReflectionSerializer
 class UserServiceImpTest {
-    private lateinit var feedService: UserServiceImp
-//    private val baseURL = "https://limor-api-staging.herokuapp.com/api/v1/users/feed/"
+    private lateinit var userService: UserServiceImp
+//    private val baseURL = "https://limor-api-staging.herokuapp.com/"
     private val baseURL = "https://limor-api-development.herokuapp.com"
 
 
@@ -24,9 +25,9 @@ class UserServiceImpTest {
             expiredIn = 0
         )
 
-        feedService = UserServiceImp(config)
+        userService = UserServiceImp(config)
 
-        val response = feedService.feedShow().test()
+        val response = userService.feedShow().test()
 
         response?.assertNoErrors()
         response?.assertValue {
@@ -46,9 +47,9 @@ class UserServiceImpTest {
             expiredIn = 0
         )
 
-        feedService = UserServiceImp(config)
+        userService = UserServiceImp(config)
 
-        val response = feedService.feedShow(10, 0).test()
+        val response = userService.feedShow(10, 0).test()
 
         response?.assertNoErrors()
         response?.assertValue {
@@ -68,15 +69,38 @@ class UserServiceImpTest {
             expiredIn = 0
         )
 
-        feedService = UserServiceImp(config)
+        userService = UserServiceImp(config)
 
-        val response = feedService.userMe().test()
+        val response = userService.userMe().test()
 
         response?.assertNoErrors()
         response?.assertValue {
             it.message == "Success"
         }
 
+    }
+
+    @Test
+    fun should_create_friend_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = baseURL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = "9b1b2517ba88187cc8e50a2f40446a0ff10200b9353ef356441c751553dc33ce",
+            expiredIn = 0
+        )
+
+        userService = UserServiceImp(config)
+
+        val signUpRequest = NWCreateFriendRequest(
+            141
+        )
+
+        val response = userService.createFriend(signUpRequest).test()
+
+        response.assertNoErrors()
+        response.assertValue { it.message == "Success" }
     }
 
 

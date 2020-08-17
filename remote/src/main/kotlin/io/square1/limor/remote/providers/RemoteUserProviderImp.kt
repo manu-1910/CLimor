@@ -1,7 +1,9 @@
 package io.square1.limor.remote.providers
 
 
+import entities.request.DataCreateFriendRequest
 import entities.request.DataLogoutRequest
+import entities.response.CreateFriendResponseEntity
 import entities.response.ErrorResponseEntity
 import entities.response.FeedResponseEntity
 import entities.response.SignUpResponseEntity
@@ -28,6 +30,10 @@ class RemoteUserProviderImp @Inject constructor(private val provider: UserServic
 
     override fun feedShow(): Single<FeedResponseEntity> {
         return provider.feedShow().asDataEntity()
+    }
+
+    override fun createFriend(dataCreateFriendRequest: DataCreateFriendRequest): Single<CreateFriendResponseEntity> {
+        return provider.createFriend(dataCreateFriendRequest.asRemoteEntity()).asDataEntity()
     }
 }
 

@@ -2,7 +2,9 @@ package io.square1.limor.remote.services.user
 
 
 import io.reactivex.Single
+import io.square1.limor.remote.entities.requests.NWCreateFriendRequest
 import io.square1.limor.remote.entities.requests.NWLogoutRequest
+import io.square1.limor.remote.entities.responses.NWCreateFriendResponse
 import io.square1.limor.remote.entities.responses.NWErrorResponse
 import io.square1.limor.remote.entities.responses.NWFeedResponse
 import io.square1.limor.remote.entities.responses.NWSignUpResponse
@@ -43,7 +45,7 @@ class UserServiceImp @Inject constructor(private val serviceConfig: RemoteServic
             .map { response -> response.parseSuccessResponse(NWFeedResponse.serializer()) }
             .doOnSuccess { response -> run {
                 println("SUCCESS: $response")
-                println("Hemos recibido ${response.data.feed_items.size} items")
+                //println("Hemos recibido ${response.data.feed_items.size} items")
             } }
             .doOnError { error -> println("ERROR: $error") }
     }
@@ -53,9 +55,22 @@ class UserServiceImp @Inject constructor(private val serviceConfig: RemoteServic
             .map { response -> response.parseSuccessResponse(NWFeedResponse.serializer()) }
             .doOnSuccess { response -> run {
                 println("SUCCESS: $response")
-                println("Hemos recibido ${response.data.feed_items.size} items")
+                //println("Hemos recibido ${response.data.feed_items.size} items")
             } }
             .doOnError { error -> println("ERROR: $error") }
+    }
+
+    fun createFriend(request : NWCreateFriendRequest): Single<NWCreateFriendResponse> {
+        val stringRequest: String = Json.nonstrict.stringify(NWCreateFriendRequest.serializer(), request)
+        return service.createFriend(RequestBody.create(MediaType.parse("application/json"), stringRequest))
+            .map { response -> response.parseSuccessResponse(NWCreateFriendResponse.serializer()) }
+            .doOnSuccess { response -> run {
+                println("SUCCESS: $response")
+                println("Hemos seguido correctamente al user? ${response.data?.followed}")
+            } }
+            .doOnError { error ->
+                println("ERROR: $error")
+            }
     }
 
 }

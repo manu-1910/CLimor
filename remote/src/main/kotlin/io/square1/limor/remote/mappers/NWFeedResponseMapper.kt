@@ -19,14 +19,14 @@ fun NWFeedResponse.asDataEntity(): FeedResponseEntity {
 }
 
 
-fun NWFeedItemsArray.asDataEntity(): FeedsEntityArray {
-    return FeedsEntityArray(
+fun NWFeedItemsArray.asDataEntity(): FeedsItemsEntityArray {
+    return FeedsItemsEntityArray(
         getAllFeedItemssEntities(feed_items)
     )
 }
 
-fun NWFeedItems.asDataEntity(): FeedsEntity{
-    return FeedsEntity(
+fun NWFeedItems.asDataEntity(): FeedsItemsEntity{
+    return FeedsItemsEntity(
         id,
         podcast?.asDataEntity(),
         user.asDataEntity(),
@@ -40,8 +40,8 @@ fun NWFeedItems.asDataEntity(): FeedsEntity{
 
 
 
-fun getAllFeedItemssEntities(nwList: ArrayList<NWFeedItems>?): ArrayList<FeedsEntity> {
-    val entityList = ArrayList<FeedsEntity>()
+fun getAllFeedItemssEntities(nwList: ArrayList<NWFeedItems>?): ArrayList<FeedsItemsEntity> {
+    val entityList = ArrayList<FeedsItemsEntity>()
     if (nwList != null) {
         for (item in nwList) {
             if (item != null)

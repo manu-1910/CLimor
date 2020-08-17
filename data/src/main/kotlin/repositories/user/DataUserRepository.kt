@@ -1,11 +1,9 @@
 package repositories.user
 
 
+import entities.request.DataCreateFriendRequest
 import entities.request.DataLogoutRequest
-import entities.response.ErrorResponseEntity
-import entities.response.FeedResponseEntity
-import entities.response.SignUpResponseEntity
-import entities.response.UserEntity
+import entities.response.*
 import io.reactivex.Single
 import providers.remote.RemoteUserProvider
 import javax.inject.Inject
@@ -24,6 +22,10 @@ class DataUserRepository @Inject constructor(private val remoteProvider: RemoteU
 
     override fun feedShow(): Single<FeedResponseEntity> {
         return remoteProvider.feedShow()
+    }
+
+    override fun createFriend(dataCreateFriendRequest: DataCreateFriendRequest): Single<CreateFriendResponseEntity> {
+        return remoteProvider.createFriend(dataCreateFriendRequest)
     }
 
 }
