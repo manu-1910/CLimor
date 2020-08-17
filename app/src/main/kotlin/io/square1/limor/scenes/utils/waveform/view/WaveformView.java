@@ -357,7 +357,6 @@ public class WaveformView extends View {
         this.listener = listener;
     }
 
-
     public void recomputeHeights(float density) {
         this.density = density;
         timeCodePaint.setTextSize((int) (TEXT_SIZE_13 * density));
@@ -412,6 +411,7 @@ public class WaveformView extends View {
             }
             play++;
         }
+
 
         //Background color when a marker is created
         int j = 0;

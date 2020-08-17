@@ -246,10 +246,12 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     // endregion
 
+
     // region Markers
 
     @Override
     public void markerDraw() {}
+
 
     @Override
     public void markerTouchStart(MarkerView marker, float x) {
@@ -263,6 +265,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         touchInitialMiddlePos = marker.getMarkerSet().getMiddlePos();
         touchInitialEndPos = marker.getMarkerSet().getEndPos();
     }
+
 
     @Override
     public void markerTouchMove(MarkerView marker, float x) {
@@ -309,6 +312,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         shouldReloadPreview = true;
     }
 
+
     @Override
     public void markerTouchEnd(MarkerView marker) {
         if (isEditMode && !marker.getMarkerSet().isEditMarker()) {
@@ -323,6 +327,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         touchDragging = false;
     }
 
+
     @Override
     public void markerFocus(MarkerView marker) {
         if (isEditMode && !marker.getMarkerSet().isEditMarker()) {
@@ -331,13 +336,13 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
     }
 
+
     protected void addMarker(int startPos, int endPos, boolean isEditMarker, Integer color) {
 
         //Only 1 marker is available at same time //TODO jj
         if (markerSets.size() >= 1 && isEditMarker == false) {
            return;
         }
-
 
         MarkerSet newMarkerSet = new MarkerSet();
 
@@ -405,6 +410,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
     }
 
+
     private void enableMarker(MarkerView markerView, boolean shouldEnable) {
         if (shouldEnable) {
             markerView.setImageAlpha(255);
@@ -417,12 +423,14 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
     }
 
+
     private void proceedMerge(MarkerSet firstMarkerSet, MarkerSet secondMarkerSet) {
         addMarker(firstMarkerSet.getStartPos(), secondMarkerSet.getEndPos(), false, null);
         removeMarker(firstMarkerSet);
         removeMarker(secondMarkerSet);
         shouldReloadPreview = true;
     }
+
 
     /*
     * This function will show a contextual menú at the top of the marker
@@ -477,6 +485,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         menuView.show(marker);
     }
 
+
     protected void removeMarker(MarkerSet markerSet) {
         if (markerSet.getStartMarker() != null) {
             markerSet.getStartMarker().setVisibility(View.GONE);
@@ -502,6 +511,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             rlPreviewSection.setAlpha(0.4f);
         }
     }
+
 
     private void checkIfTriggerMerge(MarkerView marker) {
         for (MarkerSet markerSet : markerSets) {
@@ -600,6 +610,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         updateDisplay();
     }
 
+
     protected void loadFromFile(String fileName) {
         file = new File(fileName);
         loadingLastUpdateTime = System.currentTimeMillis();
@@ -654,6 +665,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }.start();
     }
 
+
     protected void finishOpeningSoundFile() {
         waveformView.setSoundFile(soundFile);
         waveformView.recomputeHeights(density);
@@ -670,11 +682,11 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         shouldReloadPreview = true;
     }
 
+
     protected synchronized void updateDisplay() {
         if (isPlaying) {
             int now = (player.getCurrentPosition() + playStartOffset) * NEW_WIDTH;
             int frames = waveformView.millisecsToPixels(now);
-
 
             if (waveformView != null) {
                 waveformView.setPlayback(frames); //TODO JJ
@@ -717,7 +729,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
 
 
-
         offsetGoal = offset;
         calculateNewOffset();
 
@@ -727,21 +738,33 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         updateMarkers();
         waveformView.setParameters(markerSets, offset);
         waveformView.invalidate();
+
+
     }
 
     private void calculateNewOffset(){
         if (waveformView.getZoomLevel() == 0){
             offset = (offset / NEW_WIDTH);
         }else if(waveformView.getZoomLevel() == 1){
-            offset = (offset / (NEW_WIDTH*2));
+            offset = (offset / NEW_WIDTH) * 2;
         }else if(waveformView.getZoomLevel() == 2){
-            offset = (offset / (NEW_WIDTH*3));
+            offset = (offset / NEW_WIDTH) * 3;
         }else if(waveformView.getZoomLevel() == 3){
-            offset = (offset / (NEW_WIDTH*4));
+            offset = (offset / NEW_WIDTH) * 4;
         }else if(waveformView.getZoomLevel() == 4){
-            offset = (offset / (NEW_WIDTH*5));
+            offset = (offset / NEW_WIDTH) * 5;
         }
-        System.out.println("calculateNewOffset() offset="+offset);
+
+//        switch (waveformView.getZoomLevel()){
+//            case 0: offset = offset / NEW_WIDTH; System.out.println("zoomLevel=0, newOffset="+offset);
+//            case 1: offset = offset * 2; System.out.println("zoomLevel=1, newOffset="+offset);
+//            case 2: offset = offset * 3; System.out.println("zoomLevel=2, newOffset="+offset);
+//            case 3: offset = (offset / NEW_WIDTH) *4; System.out.println("zoomLevel=3, newOffset="+offset);
+//            case 4: offset = (offset / NEW_WIDTH) *5; System.out.println("zoomLevel=4, newOffset="+offset);
+//            default:
+//                System.out.println("Default case zoom level is"+waveformView.getZoomLevel());
+//        }
+
     }
 
     private synchronized void updateMarkers() {
@@ -851,8 +874,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
         offsetGoal = offset;
 
-        System.out.println("DISPLAY maxPos is: " + maxPos);
-        System.out.println("DISPLAY offsetGoal is: " + offsetGoal);
+//        System.out.println("DISPLAY maxPos is: " + maxPos);
+//        System.out.println("DISPLAY offsetGoal is: " + offsetGoal);
 
         if (offsetGoal + middle > maxPos) {
             offsetGoal = maxPos - middle;
