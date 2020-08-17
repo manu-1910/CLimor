@@ -5,12 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/brandSecondary400">
 
-    <TextView
-        android:text="Home/Feed"
-        android:textColor="@color/white"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:ignore="HardcodedText" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvFeed"

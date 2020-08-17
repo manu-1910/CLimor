@@ -7,10 +7,10 @@ data class UIFeedResponse(
 )
 
 data class UIFeedItemsArray(
-    var feed_items: ArrayList<UIFeedItems> = ArrayList()
+    var feed_items: ArrayList<UIFeedItem> = ArrayList()
 )
 
-data class UIFeedItems(
+data class UIFeedItem(
     var id: String,
     var podcast: UIPodcast?,
     var user: UIUser,

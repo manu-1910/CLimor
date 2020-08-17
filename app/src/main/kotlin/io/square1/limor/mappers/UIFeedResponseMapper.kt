@@ -26,8 +26,8 @@ fun FeedsItemsEntityArray.asUIModel(): UIFeedItemsArray {
 }
 
 
-fun FeedsItemsEntity.asUIModel(): UIFeedItems {
-    return UIFeedItems(
+fun FeedsItemsEntity.asUIModel(): UIFeedItem {
+    return UIFeedItem(
         id,
         podcast?.asUIModel(),
         user.asUIModel(),
@@ -37,8 +37,8 @@ fun FeedsItemsEntity.asUIModel(): UIFeedItems {
 }
 
 
-fun getAllUIFeedItems(entityList: ArrayList<FeedsItemsEntity>?): ArrayList<UIFeedItems> {
-    val uiList = ArrayList<UIFeedItems>()
+fun getAllUIFeedItems(entityList: ArrayList<FeedsItemsEntity>?): ArrayList<UIFeedItem> {
+    val uiList = ArrayList<UIFeedItem>()
     if (entityList != null) {
         for (item in entityList) {
             if (item != null)

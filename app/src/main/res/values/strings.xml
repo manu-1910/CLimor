@@ -198,4 +198,10 @@
     <string name="maybe_you_could_try_later">Maybe you could try later</string>
 
 
+    <!-- Feed fragment -->
+    <string name="user_picture">User picture</string>
+    <string name="podcast_picture">Podcast picture</string>
+    <string name="more">More</string>
+
+
 </resources>
