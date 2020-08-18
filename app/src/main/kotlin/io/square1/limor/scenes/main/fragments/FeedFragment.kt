@@ -1,13 +1,16 @@
 package io.square1.limor.scenes.main.fragments
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.subjects.PublishSubject
@@ -19,6 +22,7 @@ import io.square1.limor.scenes.main.adapters.FeedAdapter
 import io.square1.limor.scenes.main.viewmodels.FeedViewModel
 import io.square1.limor.uimodels.UIFeedItem
 import javax.inject.Inject
+
 
 class FeedFragment : BaseFragment() {
 
@@ -38,8 +42,8 @@ class FeedFragment : BaseFragment() {
     var rootView: View? = null
 
     var rvFeed: RecyclerView? = null
-    var feedAdapter : FeedAdapter? = null
-    var feedItemsList : ArrayList<UIFeedItem> = ArrayList()
+    var feedAdapter: FeedAdapter? = null
+    var feedItemsList: ArrayList<UIFeedItem> = ArrayList()
 
 
     companion object {
@@ -77,6 +81,13 @@ class FeedFragment : BaseFragment() {
         }
         rvFeed?.adapter = feedAdapter
         rvFeed?.setHasFixedSize(false)
+        val divider = DividerItemDecoration(
+            context,
+            DividerItemDecoration.VERTICAL
+        )
+        context?.getDrawable(R.drawable.divider_item_recyclerview)?.let { divider.setDrawable(it) }
+        rvFeed?.addItemDecoration(divider)
+
     }
 
 
@@ -101,7 +112,7 @@ class FeedFragment : BaseFragment() {
 
 
     private fun bindViewModel() {
-        activity?.let{ fragmentActivity ->
+        activity?.let { fragmentActivity ->
             viewModelFeed = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(FeedViewModel::class.java)

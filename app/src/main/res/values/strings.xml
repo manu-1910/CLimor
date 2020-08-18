@@ -172,7 +172,7 @@
 
 
 
-    <string name="error_403_forgot_password">You\'re request has been registered. If your email exists in our system, you\'ll receive an email to reset your password.</string>
+    <string name="error_403_forgot_password">Your request has been registered. If your email exists in our system, you\'ll receive an email to reset your password.</string>
     <string name="error_500_or_higher">Sorry, we couldn\'t process your request. Please, try again later.</string>
 
 
@@ -202,6 +202,12 @@
     <string name="user_picture">User picture</string>
     <string name="podcast_picture">Podcast picture</string>
     <string name="more">More</string>
+    <string name="listens">Listens</string>
+    <string name="comments">Comments</string>
+    <string name="likes">Likes</string>
+    <string name="recasts">Recasts</string>
+    <string name="send">Send</string>
+    <string name="podcast_time">Podcast time</string>
 
 
 </resources>
