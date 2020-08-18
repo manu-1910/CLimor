@@ -19,55 +19,72 @@ import javax.inject.Inject
 
 
 @ImplicitReflectionSerializer
-class UserServiceImp @Inject constructor(private val serviceConfig: RemoteServiceConfig) : RemoteService<UserService>(UserService::class.java, serviceConfig) {
+class UserServiceImp @Inject constructor(private val serviceConfig: RemoteServiceConfig) :
+    RemoteService<UserService>(UserService::class.java, serviceConfig) {
 
     fun userMe(): Single<NWSignUpResponse> {
         return service.userMe()
             .map { response -> response.parseSuccessResponse(NWSignUpResponse.serializer()) }
             .doOnSuccess { success -> println("SUCCESS: $success") }
-            .doOnError{error -> println("ERROR: $error")}
+            .doOnError { error -> println("ERROR: $error") }
     }
 
 
-
-
     fun logOut(nwLogoutRequest: NWLogoutRequest): Single<NWErrorResponse> {
-        return service.logOut(RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWLogoutRequest.serializer(), nwLogoutRequest)))
+        return service.logOut(
+            RequestBody.create(
+                MediaType.parse("application/json"),
+                Json.nonstrict.stringify(NWLogoutRequest.serializer(), nwLogoutRequest)
+            )
+        )
             .map { response -> response.parseSuccessResponse(NWErrorResponse.serializer()) }
             .doOnSuccess { success -> println("SUCCESS: $success") }
-            .doOnError{
-                    error -> println("ERROR: $error")
+            .doOnError { error ->
+                println("ERROR: $error")
             }
     }
 
     fun feedShow(limit: Int?, offset: Int?): Single<NWFeedResponse> {
         return service.feedShow(limit, offset)
             .map { response -> response.parseSuccessResponse(NWFeedResponse.serializer()) }
-            .doOnSuccess { response -> run {
-                println("SUCCESS: $response")
-                //println("Hemos recibido ${response.data.feed_items.size} items")
-            } }
-            .doOnError { error -> println("ERROR: $error") }
+            .doOnSuccess { response ->
+                run {
+                    println("SUCCESS: $response")
+                    //println("Hemos recibido ${response.data.feed_items.size} items")
+                }
+            }
+            .doOnError { error ->
+                run {
+                    println("ERROR: $error")
+                }
+            }
     }
 
     fun feedShow(): Single<NWFeedResponse> {
         return service.feedShow()
             .map { response -> response.parseSuccessResponse(NWFeedResponse.serializer()) }
-            .doOnSuccess { response -> run {
-                println("SUCCESS: $response")
-                //println("Hemos recibido ${response.data.feed_items.size} items")
-            } }
-            .doOnError { error -> println("ERROR: $error") }
+            .doOnSuccess { response ->
+                run {
+                    println("SUCCESS: $response")
+                    //println("Hemos recibido ${response.data.feed_items.size} items")
+                }
+            }
+            .doOnError { error ->
+                run {
+                    println("ERROR: $error")
+                }
+            }
     }
 
-    fun createFriend(request : NWCreateFriendRequest): Single<NWCreateFriendResponse> {
-        val stringRequest: String = Json.nonstrict.stringify(NWCreateFriendRequest.serializer(), request)
-        return service.createFriend(RequestBody.create(MediaType.parse("application/json"), stringRequest))
+    fun createFriend(id: Int): Single<NWCreateFriendResponse> {
+        return service.createFriend(id)
             .map { response -> response.parseSuccessResponse(NWCreateFriendResponse.serializer()) }
-            .doOnSuccess { response -> run {
-                println("SUCCESS: $response")
-                println("Hemos seguido correctamente al user? ${response.data?.followed}")
-            } }
+            .doOnSuccess { response ->
+                run {
+                    println("SUCCESS: $response")
+                    println("Hemos seguido correctamente al user? ${response.data?.followed}")
+                }
+            }
             .doOnError { error ->
                 println("ERROR: $error")
             }

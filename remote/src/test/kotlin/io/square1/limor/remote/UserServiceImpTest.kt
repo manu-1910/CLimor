@@ -1,6 +1,5 @@
 package io.square1.limor.remote
 
-import io.square1.limor.remote.entities.requests.NWCreateFriendRequest
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.user.UserServiceImp
 import kotlinx.serialization.ImplicitReflectionSerializer
@@ -93,11 +92,9 @@ class UserServiceImpTest {
 
         userService = UserServiceImp(config)
 
-        val signUpRequest = NWCreateFriendRequest(
-            141
-        )
+        val idNewFriend = 123
 
-        val response = userService.createFriend(signUpRequest).test()
+        val response = userService.createFriend(idNewFriend).test()
 
         response.assertNoErrors()
         response.assertValue { it.message == "Success" }

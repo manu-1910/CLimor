@@ -14,5 +14,5 @@ interface RemoteUserProvider {
     fun userMe(): Single<SignUpResponseEntity>
     fun logOut(dataLogoutRequest: DataLogoutRequest): Single<ErrorResponseEntity>
     fun feedShow(): Single<FeedResponseEntity>
-    fun createFriend(dataCreateFriendRequest: DataCreateFriendRequest) : Single<CreateFriendResponseEntity>
+    fun createFriend(id: Int) : Single<CreateFriendResponseEntity>
 }

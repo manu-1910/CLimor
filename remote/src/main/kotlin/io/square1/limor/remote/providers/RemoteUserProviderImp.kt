@@ -32,8 +32,8 @@ class RemoteUserProviderImp @Inject constructor(private val provider: UserServic
         return provider.feedShow().asDataEntity()
     }
 
-    override fun createFriend(dataCreateFriendRequest: DataCreateFriendRequest): Single<CreateFriendResponseEntity> {
-        return provider.createFriend(dataCreateFriendRequest.asRemoteEntity()).asDataEntity()
+    override fun createFriend(id : Int): Single<CreateFriendResponseEntity> {
+        return provider.createFriend(id).asDataEntity()
     }
 }
 

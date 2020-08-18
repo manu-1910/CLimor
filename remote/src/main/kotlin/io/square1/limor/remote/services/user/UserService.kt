@@ -4,16 +4,13 @@ package io.square1.limor.remote.services.user
 import io.reactivex.Single
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 
 
 const val USER_ME_PATH = "/api/v1/users/me"
 const val LOG_OUT_PATH = "/oauth/revoke"
 const val SHOW_FEED_PATH = "/api/v1/users/feed"
-const val CREATE_FRIEND_PATH = "/api/v1/users/me/friends"
+const val CREATE_FRIEND_PATH = "/api/v1/users/{id}/friends"
 
 
 interface UserService {
@@ -35,6 +32,6 @@ interface UserService {
     fun feedShow(): Single<ResponseBody>
 
     @POST(CREATE_FRIEND_PATH)
-    fun createFriend(@Body createFriendRequest : RequestBody): Single<ResponseBody>
+    fun createFriend(@Path("id") id : Int): Single<ResponseBody>
 
 }

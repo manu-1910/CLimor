@@ -33,7 +33,7 @@ data class PodcastEntity(
     var recasted: Boolean,
     var reported: Boolean,
     var saved: Boolean,
-    var sharing_url: String,
+    var sharing_url: String?,
     var tags: TagsArrayEntity,
     var title: String,
     var updated_at: Int,

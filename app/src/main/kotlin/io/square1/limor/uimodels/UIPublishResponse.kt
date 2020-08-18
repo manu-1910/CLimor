@@ -33,7 +33,7 @@ data class UIPodcast(
     val recasted: Boolean,
     val reported: Boolean,
     val saved: Boolean,
-    val sharing_url: String,
+    val sharing_url: String?,
     val tags: UITagsArray,
     val title: String,
     val updated_at: Int,

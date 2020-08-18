@@ -6,6 +6,7 @@ import android.location.Geocoder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -66,7 +67,8 @@ class FeedAdapter(
             }
         }
         val datetimeString = getDateTimeFormattedFromTimestamp(currentItem.created_at.toLong())
-        holder.tvDateAndLocation.text = "$datetimeString$locationString"
+        val dateAndLocationString = "$datetimeString$locationString"
+        holder.tvDateAndLocation.text = dateAndLocationString
 
         // title & caption
         holder.tvPodcastTitle.text = currentItem.podcast?.title
@@ -93,6 +95,31 @@ class FeedAdapter(
             .load(currentItem.podcast?.images?.medium_url)
             .into(holder.ivMainFeedPicture)
 
+        // verified
+        if (currentItem.user.verified)
+            holder.ivVerifiedUser.visibility = View.VISIBLE
+        else
+            holder.ivVerifiedUser.visibility = View.GONE
+
+        // like
+        currentItem.podcast?.liked?.let {
+            if(it)
+                holder.ibtnLike.setImageResource(R.drawable.like_filled)
+            else
+                holder.ibtnLike.setImageResource(R.drawable.like)
+        } ?: run {
+            holder.ibtnLike.setImageResource(R.drawable.like)
+        }
+
+        // recast
+        currentItem.podcast?.recasted?.let {
+            if(it)
+                holder.ibtnRecasts.setImageResource(R.drawable.recast_filled)
+            else
+                holder.ibtnRecasts.setImageResource(R.drawable.recast)
+        } ?: run {
+            holder.ibtnRecasts.setImageResource(R.drawable.recast)
+        }
     }
 
 
@@ -110,6 +137,10 @@ class FeedAdapter(
 
         var ivUser: ImageView
         var ivMainFeedPicture: ImageView
+        var ivVerifiedUser: ImageView
+
+        var ibtnLike : ImageButton
+        var ibtnRecasts : ImageButton
 
 
         init {
@@ -126,6 +157,10 @@ class FeedAdapter(
 
             ivUser = itemView.findViewById(R.id.ivUserPicture)
             ivMainFeedPicture = itemView.findViewById(R.id.ivMainFeedPicture)
+            ivVerifiedUser = itemView.findViewById(R.id.ivVerifiedUser)
+
+            ibtnLike = itemView.findViewById(R.id.btnLikes)
+            ibtnRecasts = itemView.findViewById(R.id.btnRecasts)
         }
 
     }

@@ -64,7 +64,7 @@ data class NWPodcast(
     @Optional
     val saved: Boolean = false,
     @Optional
-    val sharing_url: String = "",
+    val sharing_url: String? = "",
     @Optional
     val tags: NWTagsArray = NWTagsArray(),
     @Optional
