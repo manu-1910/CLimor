@@ -14,7 +14,6 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.getColor
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat

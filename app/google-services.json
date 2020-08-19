@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:534016189071:android:356beef9ed2bc662a506fa",
+        "mobilesdk_app_id": "1:534016189071:android:902f7ca78731eb83a506fa",
         "android_client_info": {
-          "package_name": "io.square1.limor"
+          "package_name": "io.square1.limor.app.beta"
         }
       },
       "oauth_client": [
@@ -37,9 +37,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:534016189071:android:902f7ca78731eb83a506fa",
+        "mobilesdk_app_id": "1:534016189071:android:ef1388896841cd4aa506fa",
         "android_client_info": {
-          "package_name": "io.square1.limor.app.beta"
+          "package_name": "io.square1.limor.app.dev"
         }
       },
       "oauth_client": [
