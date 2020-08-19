@@ -332,14 +332,14 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     public void markerFocus(MarkerView marker) {
         if (isEditMode && !marker.getMarkerSet().isEditMarker()) {
             //TODO JJ New the app explote copying and pasting multiple markers, I add try/catch to avoid ANR and investigate later
-                marker.clearFocus();
+            marker.clearFocus();
         }
     }
 
 
     protected void addMarker(int startPos, int endPos, boolean isEditMarker, Integer color) {
 
-        //Only 1 marker is available at same time //TODO jj
+        //Only 1 marker is available at same time
         if (markerSets.size() >= 1 && isEditMarker == false) {
            return;
         }
@@ -355,7 +355,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
         startMarker.setListener(this);
         enableMarker(startMarker, !isEditMarker);
-
 
         MarkerView endMarker = new MarkerView(getActivity());
         endMarker.setType(MarkerView.END_MARKER);
@@ -377,7 +376,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             }
         });
         enableMarker(middleMarker, true);
-        enableMarker(startMarker, true); //TODO JJ new
+        enableMarker(startMarker, true); //This line is new added sq1
 
         newMarkerSet.setMiddleMarker(middleMarker);
         newMarkerSet.setMiddlePos(startPos + ((endPos - startPos) / 2));
@@ -406,7 +405,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         updateDisplay();
         if (markerSets.size() > 0) {
             //rlPreviewSection.setAlpha(1.0f);
-            rlPreviewSection.setAlpha(0.4f); //TODO JJ set alpha to 60% of visibility
+            rlPreviewSection.setAlpha(0.4f); //Set alpha to 60% of visibility
         }
     }
 
@@ -685,24 +684,17 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     protected synchronized void updateDisplay() {
         if (isPlaying) {
-            int now = (player.getCurrentPosition() + playStartOffset) * NEW_WIDTH;
-            int frames = waveformView.millisecsToPixels(now);
+            int now = player.getCurrentPosition() + playStartOffset;
+            int frames = waveformView.millisecsToPixels(now * NEW_WIDTH);
 
             if (waveformView != null) {
-                waveformView.setPlayback(frames); //TODO JJ
+                waveformView.setPlayback(frames);
             }
 
-            System.out.println("DISPLAY getNumFramesByZoomlevel is: " + waveformView.getNumFramesByZoomlevel());
-            System.out.println("DISPLAY now frames  is: " + frames);
-            System.out.println("DISPLAY width is: " + width);
-
-            setOffsetGoalNoUpdate(frames - width / 2); //TODO JJ no tocar, ésto hace que la línea del play se quede en el centro de la pantalla
-
-            int offsetDelta = offsetGoal - offset;  //TODO JJ new /20  Está OK no tocar
-            //System.out.println(String.format("offsetGoal: %5s  offset: %5s  offsetDelta: %5s", offsetGoal, offset, offsetDelta));
+            setOffsetGoalNoUpdate(frames - width / 2); //The offset is the responsible of scrolling velocity and keep the yellow play line inside the width of the screen
+            int offsetDelta = offsetGoal - offset;
 
             int CORRECTION = 10; //TODO JJ había un 10
-
             if (offsetDelta > CORRECTION) {
                 offsetDelta = offsetDelta / CORRECTION;
             } else if (offsetDelta > 0) {
@@ -716,7 +708,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             }
 
             offset += offsetDelta;
-
             enableDisableSeekButtons();
 
         } else {
@@ -728,44 +719,12 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             }
         }
 
-
         offsetGoal = offset;
-        calculateNewOffset();
-
-
-        System.out.println("LAST offsetGoal is: " + offsetGoal);
-
         updateMarkers();
         waveformView.setParameters(markerSets, offset);
         waveformView.invalidate();
-
-
     }
 
-    private void calculateNewOffset(){
-        if (waveformView.getZoomLevel() == 0){
-            offset = (offset / NEW_WIDTH);
-        }else if(waveformView.getZoomLevel() == 1){
-            offset = (offset / NEW_WIDTH) * 2;
-        }else if(waveformView.getZoomLevel() == 2){
-            offset = (offset / NEW_WIDTH) * 3;
-        }else if(waveformView.getZoomLevel() == 3){
-            offset = (offset / NEW_WIDTH) * 4;
-        }else if(waveformView.getZoomLevel() == 4){
-            offset = (offset / NEW_WIDTH) * 5;
-        }
-
-//        switch (waveformView.getZoomLevel()){
-//            case 0: offset = offset / NEW_WIDTH; System.out.println("zoomLevel=0, newOffset="+offset);
-//            case 1: offset = offset * 2; System.out.println("zoomLevel=1, newOffset="+offset);
-//            case 2: offset = offset * 3; System.out.println("zoomLevel=2, newOffset="+offset);
-//            case 3: offset = (offset / NEW_WIDTH) *4; System.out.println("zoomLevel=3, newOffset="+offset);
-//            case 4: offset = (offset / NEW_WIDTH) *5; System.out.println("zoomLevel=4, newOffset="+offset);
-//            default:
-//                System.out.println("Default case zoom level is"+waveformView.getZoomLevel());
-//        }
-
-    }
 
     private synchronized void updateMarkers() {
 
@@ -860,8 +819,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
     }
 
-
-
     /*
     * This function is the responsible to set the offsetGoal in the center of the screen
     * */
@@ -874,9 +831,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
         offsetGoal = offset;
 
-//        System.out.println("DISPLAY maxPos is: " + maxPos);
-//        System.out.println("DISPLAY offsetGoal is: " + offsetGoal);
-
         if (offsetGoal + middle > maxPos) {
             offsetGoal = maxPos - middle;
         }
@@ -886,9 +840,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
     protected int trap(int pos) {
-
-        //pos = pos/NEW_WIDTH; //TODO JJ 131020
-
         if (pos < 0) {
             return 0;
         }
@@ -903,7 +854,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             player.pause();
         }
         if (waveformView != null) {
-            //waveformView.setPlayback(-1); //TODO JJ Aquí no escondo la barra vertical amarilla del play
+            //waveformView.setPlayback(-1); //Do not hide the yellow play line when pause is clicked
         }
         isPlaying = false;
         enableDisableButtons();
@@ -1117,10 +1068,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
         for (MarkerSet markerSet : markerSets) {
             final String outPath = getActivity().getExternalCacheDir().getAbsolutePath() + "/limor_record" + markerSet.getId() + ".m4a";
-            //double startTime = waveformView.pixelsToSeconds(markerSet.getStartPos() / NEW_WIDTH); //TODO JJ 1310020 seems to be ok with time
-            //double endTime = waveformView.pixelsToSeconds(markerSet.getEndPos() / NEW_WIDTH);    //TODO JJ 1310020 seems to be ok with time
-            double startTime = waveformView.pixelsToSeconds(markerSet.getStartPos() / NEW_WIDTH); //TODO JJ 1310020 seems to be ok with time
-            double endTime = waveformView.pixelsToSeconds(markerSet.getEndPos() / NEW_WIDTH);    //TODO JJ 1310020 seems to be ok with time
+            double startTime = waveformView.pixelsToSeconds(markerSet.getStartPos() / NEW_WIDTH); //Seems to be ok with the time of the marker
+            double endTime = waveformView.pixelsToSeconds(markerSet.getEndPos() / NEW_WIDTH);    //Seems to be ok with the time of the marker
             final int startFrame = waveformView.secondsToFrames(startTime);
             final int endFrame = waveformView.secondsToFrames(endTime);
             final File outFile = new File(outPath);
