@@ -45,7 +45,9 @@ class AuthServiceImp @Inject constructor(private val serviceConfig: RemoteServic
     fun register(nwSignUpRequest: NWSignUpRequest): Single<NWSignUpResponse> {
         return service.registerBody(RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWSignUpRequest.serializer(), nwSignUpRequest)))
             .map { response -> response.parseSuccessResponse(NWSignUpResponse.serializer()) }
-            .doOnSuccess { success -> println("SUCCESS: $success") }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
             .doOnError{
                     error -> println("ERROR: $error")
             }

@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
+import com.google.firebase.FirebaseApp
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import io.square1.limor.App
@@ -39,7 +40,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
         app = applicationContext as App
 
         //Initialize Firebase Instance
-        //FirebaseApp.initializeApp(this)
+        FirebaseApp.initializeApp(this)
 
         //bindViewModel()
         setupNavigationController()
