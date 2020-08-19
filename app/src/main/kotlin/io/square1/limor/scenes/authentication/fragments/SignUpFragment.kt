@@ -127,7 +127,6 @@ class SignUpFragment : BaseFragment() {
             pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
 
-            // TODO autofollow on success fb
             if (it.code == 0) {
                 val mainIntent = Intent(context, MainActivity::class.java)
                 startActivity(mainIntent)
@@ -162,7 +161,7 @@ class SignUpFragment : BaseFragment() {
     }
 
     private fun autoFollowLimor() {
-        TODO("Not yet implemented")
+
     }
 
     private fun apiCallSignInWithFacebook() {

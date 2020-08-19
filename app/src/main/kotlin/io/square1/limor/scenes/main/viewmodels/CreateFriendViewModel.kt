@@ -12,20 +12,21 @@ import io.square1.limor.common.SessionManager
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.uimodels.*
-import io.square1.limor.usecases.FeedUseCase
+import io.square1.limor.usecases.CreateFriendUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class FeedViewModel @Inject constructor(private val feedUseCase: FeedUseCase, private val sessionManager: SessionManager) : BaseViewModel<FeedViewModel.Input, FeedViewModel.Output>() {
+class CreateFriendViewModel @Inject constructor(private val createFriendUseCase: CreateFriendUseCase, private val sessionManager: SessionManager) : BaseViewModel<CreateFriendViewModel.Input, CreateFriendViewModel.Output>() {
 
     private val compositeDispose = CompositeDisposable()
+    var idNewFriend = 0
 
     data class Input(
-        val getFeedTrigger: Observable<Unit>
+        val createFriendTrigger: Observable<Unit>
     )
 
     data class Output(
-        val response: LiveData<UIFeedResponse>,
+        val response: LiveData<UICreateFriendResponse>,
         val backgroundWorkingProgress: LiveData<Boolean>,
         val errorMessage: SingleLiveEvent<UIErrorResponse>
     )
@@ -33,13 +34,11 @@ class FeedViewModel @Inject constructor(private val feedUseCase: FeedUseCase, pr
     override fun transform(input: Input): Output {
         val errorTracker = SingleLiveEvent<UIErrorResponse>()
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
-        val response = MutableLiveData<UIFeedResponse>()
+        val response = MutableLiveData<UICreateFriendResponse>()
 
-        input.getFeedTrigger.subscribe({
-            feedUseCase.execute().subscribe({
+        input.createFriendTrigger.subscribe({
+            createFriendUseCase.execute(idNewFriend).subscribe({
                 response.value = it
-
-//                sessionManager.storeUser(it.data.user) // TODO Jose: esto no sé de qué va
 
             }, {
                 try {

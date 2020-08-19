@@ -1,6 +1,5 @@
 package io.square1.limor.scenes.main.adapters
 
-import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
 import android.text.SpannableString
@@ -20,18 +19,22 @@ import com.bumptech.glide.request.RequestOptions
 import io.square1.limor.R
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIFeedItem
+import org.jetbrains.anko.sdk23.listeners.onClick
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-class FeedItemViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
-    RecyclerView.ViewHolder(
-        inflater.inflate(
-            R.layout.fragment_feed_item_recycler_view,
-            parent,
-            false
-        )
-    ) {
+class FeedItemViewHolder(
+    inflater: LayoutInflater,
+    parent: ViewGroup,
+    private val feedClickListener: FeedAdapter.OnFeedClickListener
+) : RecyclerView.ViewHolder(
+    inflater.inflate(
+        R.layout.fragment_feed_item_recycler_view,
+        parent,
+        false
+    )
+) {
     var tvUserFullname: TextView
     var tvDateAndLocation: TextView
     var tvPodcastTitle: TextView
@@ -48,8 +51,13 @@ class FeedItemViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
     var ivMainFeedPicture: ImageView
     var ivVerifiedUser: ImageView
 
+    var ibtnListen: ImageButton
     var ibtnLike: ImageButton
     var ibtnRecasts: ImageButton
+    var ibtnComments: ImageButton
+    var ibtnMore: ImageButton
+    var ibtnSend: ImageButton
+    var ibtnPlay: ImageButton
 
     var clickableSpan: ClickableSpan = object : ClickableSpan() {
         override fun onClick(textView: View) {
@@ -58,8 +66,7 @@ class FeedItemViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
             val start: Int = s.getSpanStart(this)
             val end: Int = s.getSpanEnd(this)
             val clickedTag = s.subSequence(start, end).toString()
-
-//            onTagClicked(clickedTag)
+            feedClickListener.onHashtagClicked(clickedTag)
         }
 
         override fun updateDrawState(ds: TextPaint) {
@@ -86,14 +93,20 @@ class FeedItemViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
         ivMainFeedPicture = itemView.findViewById(R.id.ivMainFeedPicture)
         ivVerifiedUser = itemView.findViewById(R.id.ivVerifiedUser)
 
+        ibtnListen = itemView.findViewById(R.id.btnListens)
         ibtnLike = itemView.findViewById(R.id.btnLikes)
         ibtnRecasts = itemView.findViewById(R.id.btnRecasts)
+        ibtnComments = itemView.findViewById(R.id.btnComments)
+        ibtnMore = itemView.findViewById(R.id.btnMore)
+        ibtnSend = itemView.findViewById(R.id.btnSend)
+        ibtnPlay = itemView.findViewById(R.id.btnPlay)
     }
 
-    fun bind(currentItem: UIFeedItem) {
+    fun bind(currentItem: UIFeedItem, position: Int) {
         // fullname
         val fullname: String = currentItem.user.first_name + " " + currentItem.user.last_name
         tvUserFullname.text = fullname
+        tvUserFullname.onClick { feedClickListener.onUserClicked(currentItem, position) }
 
 
         // datetime and location
@@ -117,33 +130,45 @@ class FeedItemViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
         tvDateAndLocation.text = dateAndLocationString
 
         // title & caption
-        tvPodcastTitle.text = currentItem.podcast?.title
-        tvPodcastText.text = fillCaption(currentItem.podcast?.caption)
-
+        currentItem.podcast?.title?.let { tvPodcastTitle.text = it }
+        currentItem.podcast?.caption?.let { tvPodcastText.text = hightlightHashtags(it) }
         tvPodcastText.movementMethod = LinkMovementMethod.getInstance()
-        tvPodcastText.highlightColor = Color.RED
 
         // duration
-        val duration = currentItem.podcast?.audio?.duration
-        if (duration != null)
-            tvPodcastTime.text =
-                CommonsKt.calculateDurationMinutesAndSeconds(duration.toLong())
+        currentItem.podcast?.audio?.duration?.let { tvPodcastTime.text = CommonsKt.calculateDurationMinutesAndSeconds(it.toLong()) }
 
-        tvRecasts.text = currentItem.podcast?.number_of_recasts!!.toString()
-        tvLikes.text = currentItem.podcast?.number_of_likes!!.toString()
-        tvListens.text = currentItem.podcast?.number_of_listens!!.toString()
-        tvComments.text = currentItem.podcast?.number_of_comments!!.toString()
+        // recasts
+        currentItem.podcast?.number_of_recasts?.let { tvRecasts.text = it.toString() }
+        tvRecasts.onClick { feedClickListener.onRecastClicked(currentItem, position) }
+        ibtnRecasts.onClick { feedClickListener.onRecastClicked(currentItem, position) }
+
+        // likes
+        currentItem.podcast?.number_of_likes?.let { tvLikes.text = it.toString() }
+        tvLikes.onClick { feedClickListener.onLikeClicked(currentItem, position) }
+        ibtnLike.onClick { feedClickListener.onLikeClicked(currentItem, position) }
+
+        // listens
+        currentItem.podcast?.number_of_listens?.let { tvListens.text = it.toString() }
+        tvListens.onClick { feedClickListener.onListenClicked(currentItem, position) }
+        ibtnListen.onClick { feedClickListener.onListenClicked(currentItem, position) }
+
+        // comments
+        currentItem.podcast?.number_of_comments?.let { tvComments.text = it.toString() }
+        tvComments.onClick { feedClickListener.onCommentClicked(currentItem, position) }
+        ibtnComments.onClick { feedClickListener.onCommentClicked(currentItem, position) }
 
         // user picture
         Glide.with(itemView.context)
             .load(currentItem.user.images.small_url)
             .apply(RequestOptions.circleCropTransform())
             .into(ivUser)
+        ivUser.onClick { feedClickListener.onUserClicked(currentItem, position) }
 
         // main picture
         Glide.with(itemView.context)
             .load(currentItem.podcast?.images?.medium_url)
             .into(ivMainFeedPicture)
+        ivMainFeedPicture.onClick { feedClickListener.onItemClicked(currentItem, position) }
 
         // verified
         if (currentItem.user.verified)
@@ -175,13 +200,17 @@ class FeedItemViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
         } ?: run {
             ibtnRecasts.setImageResource(R.drawable.recast)
         }
+
+
+        ibtnMore.onClick { feedClickListener.onMoreClicked(currentItem, position) }
+        ibtnSend.onClick { feedClickListener.onSendClicked(currentItem, position) }
+        ibtnPlay.onClick { feedClickListener.onPlayClicked(currentItem, position) }
     }
 
 
-    private fun fillCaption(caption: String?): SpannableString? {
-        val hashtaggedString = SpannableString(caption)
-
+    private fun hightlightHashtags(caption: String?): SpannableString? {
         caption?.let {
+            val hashtaggedString = SpannableString(caption)
             val regex = "#[\\w]+"
 
             val pattern: Pattern = Pattern.compile(regex, Pattern.MULTILINE)
@@ -194,9 +223,9 @@ class FeedItemViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
                 hashtaggedString.setSpan(clickableSpan, startIndex, endIndex, 0)
                 println("Hemos encontrado el texto $textFound que empieza en $startIndex y acaba en $endIndex")
             }
-
+            return hashtaggedString
         }
-        return hashtaggedString
+        return SpannableString("")
     }
 
 }
