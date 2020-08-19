@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -74,7 +75,17 @@ class FeedFragment : BaseFragment() {
         feedAdapter = context?.let {
             FeedAdapter(
                 it,
-                feedItemsList
+                feedItemsList,
+                object : FeedAdapter.OnItemClickListener {
+                    override fun onItemClicked(item: UIFeedItem) {
+                        TODO("Not yet implemented")
+                    }
+                },
+                object : FeedAdapter.OnHashtagClickListener {
+                    override fun onHashtagClicked(hashtag: String) {
+                        Toast.makeText(context, "You clicked on $hashtag hashtag", Toast.LENGTH_SHORT).show()
+                    }
+                }
             )
         }
         rvFeed?.adapter = feedAdapter

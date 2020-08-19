@@ -209,6 +209,7 @@
     <string name="send">Send</string>
     <string name="podcast_time">Podcast time</string>
     <string name="verified">Verified</string>
+    <string name="recasted">Recasted</string>
 
 
 </resources>
