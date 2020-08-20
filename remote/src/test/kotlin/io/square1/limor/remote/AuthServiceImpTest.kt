@@ -17,9 +17,9 @@ class AuthServiceImpTest{
     /*private val testEmail = "juanjo@square1.io"
     private val testPassword = "123456789"*/
 
-    private val testEmail = "serpil@square1.io"
+    private val testEmail = "jose6@square1.io"
     private val testPassword = "123456"
-    private val testUsername = "serpil"
+    private val testUsername = "jose6"
 
 
     private val URL_DEVELOPMENT = "https://limor-api-development.herokuapp.com"

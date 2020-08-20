@@ -35,6 +35,7 @@ import io.square1.limor.scenes.authentication.viewmodels.MergeFacebookAccountVie
 import io.square1.limor.scenes.authentication.viewmodels.SignFBViewModel
 import io.square1.limor.scenes.authentication.viewmodels.SignUpViewModel
 import io.square1.limor.scenes.main.MainActivity
+import io.square1.limor.scenes.main.viewmodels.CreateFriendViewModel
 import io.square1.limor.uimodels.UISignUpUser
 import kotlinx.android.synthetic.main.component_edit_text.view.*
 import kotlinx.android.synthetic.main.fragment_sign_in.*
@@ -58,9 +59,12 @@ class SignUpFragment : BaseFragment() {
     private lateinit var viewModelSignInFB: SignFBViewModel
     private lateinit var viewModelMergeFacebookAccount: MergeFacebookAccountViewModel
 
+    private lateinit var viewModelCreateFriend : CreateFriendViewModel
+
     private val signUpTrigger = PublishSubject.create<Unit>()
     private val signUpFBLoginTrigger = PublishSubject.create<Unit>()
     private val mergeFacebookAccountTrigger = PublishSubject.create<Unit>()
+    private val createFriendTrigger = PublishSubject.create<Unit>()
 
     private var callbackManager: CallbackManager? = null
 
@@ -112,6 +116,11 @@ class SignUpFragment : BaseFragment() {
                 ViewModelProviders
                     .of(fragmentActivity, viewModelFactory)
                     .get(MergeFacebookAccountViewModel::class.java)
+
+            viewModelCreateFriend =
+                ViewModelProviders
+                    .of(fragmentActivity, viewModelFactory)
+                    .get(CreateFriendViewModel::class.java)
         }
     }
 
@@ -161,7 +170,48 @@ class SignUpFragment : BaseFragment() {
     }
 
     private fun autoFollowLimor() {
+        pbSignUp?.visibility = View.VISIBLE
+        val output = viewModelCreateFriend.transform(
+            CreateFriendViewModel.Input(
+                createFriendTrigger
+            )
+        )
 
+        output.response.observe(this, Observer {
+            pbSignUp?.visibility = View.GONE
+            view?.hideKeyboard()
+
+            if (it.code == 0) {
+                val mainIntent = Intent(context, MainActivity::class.java)
+                startActivity(mainIntent)
+                (activity as SignActivity).finish()
+                autoFollowLimor()
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            pbSignUp?.visibility = View.GONE
+            view?.hideKeyboard()
+            if (app!!.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (it.errorMessage!!.isNotEmpty()) {
+                    message.append(it.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                alert(message.toString()) {
+                    okButton { }
+                }.show()
+            } else {
+                alert(getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+        })
     }
 
     private fun apiCallSignInWithFacebook() {
@@ -185,7 +235,7 @@ class SignUpFragment : BaseFragment() {
 
 
             if(it.message == "Success"){
-                // TODO autofollow on success fb
+                autoFollowLimor()
                 proceedLogin()
             }else{
                 if (it.code == Constants.ERROR_CODE_FACEBOOK_USER_EXISTS) {

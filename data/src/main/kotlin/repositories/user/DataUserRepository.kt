@@ -24,6 +24,10 @@ class DataUserRepository @Inject constructor(private val remoteProvider: RemoteU
         return remoteProvider.feedShow()
     }
 
+    override fun feedShow(limit: Int, offset: Int): Single<FeedResponseEntity> {
+        return remoteProvider.feedShow(limit, offset)
+    }
+
     override fun createFriend(id : Int): Single<CreateFriendResponseEntity> {
         return remoteProvider.createFriend(id)
     }

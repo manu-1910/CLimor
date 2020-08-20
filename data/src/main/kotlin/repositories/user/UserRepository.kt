@@ -1,7 +1,5 @@
 package repositories.user
 
-
-import entities.request.DataCreateFriendRequest
 import entities.request.DataLogoutRequest
 import entities.response.CreateFriendResponseEntity
 import entities.response.ErrorResponseEntity
@@ -14,5 +12,6 @@ interface UserRepository {
     fun userMe(): Single<SignUpResponseEntity>
     fun logOut(dataLogoutRequest: DataLogoutRequest): Single<ErrorResponseEntity>
     fun feedShow(): Single<FeedResponseEntity>
+    fun feedShow(limit: Int, offset: Int): Single<FeedResponseEntity>
     fun createFriend(id : Int) : Single<CreateFriendResponseEntity>
 }

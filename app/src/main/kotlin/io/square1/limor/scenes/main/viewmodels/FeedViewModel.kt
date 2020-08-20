@@ -8,17 +8,21 @@ import io.reactivex.rxkotlin.addTo
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseViewModel
-import io.square1.limor.common.SessionManager
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import io.square1.limor.uimodels.*
+import io.square1.limor.uimodels.UIErrorData
+import io.square1.limor.uimodels.UIErrorResponse
+import io.square1.limor.uimodels.UIFeedResponse
 import io.square1.limor.usecases.FeedUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class FeedViewModel @Inject constructor(private val feedUseCase: FeedUseCase, private val sessionManager: SessionManager) : BaseViewModel<FeedViewModel.Input, FeedViewModel.Output>() {
+class FeedViewModel @Inject constructor(private val feedUseCase: FeedUseCase) : BaseViewModel<FeedViewModel.Input, FeedViewModel.Output>() {
 
     private val compositeDispose = CompositeDisposable()
+
+    var limit: Int = 10
+    var offset: Int = 0
 
     data class Input(
         val getFeedTrigger: Observable<Unit>
@@ -36,7 +40,7 @@ class FeedViewModel @Inject constructor(private val feedUseCase: FeedUseCase, pr
         val response = MutableLiveData<UIFeedResponse>()
 
         input.getFeedTrigger.subscribe({
-            feedUseCase.execute().subscribe({
+            feedUseCase.execute(limit, offset).subscribe({
                 response.value = it
 
 //                sessionManager.storeUser(it.data.user) // TODO Jose: esto no sé de qué va

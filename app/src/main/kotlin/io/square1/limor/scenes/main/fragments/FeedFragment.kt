@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
 import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
@@ -22,12 +23,12 @@ import io.square1.limor.common.SessionManager
 import io.square1.limor.scenes.main.adapters.FeedAdapter
 import io.square1.limor.scenes.main.viewmodels.FeedViewModel
 import io.square1.limor.uimodels.UIFeedItem
-import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.onRefresh
 import javax.inject.Inject
 
 
 class FeedFragment : BaseFragment() {
+
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -39,6 +40,20 @@ class FeedFragment : BaseFragment() {
     lateinit var sessionManager: SessionManager
 
     private val getFeedDataTrigger = PublishSubject.create<Unit>()
+
+
+
+    // infinite scroll variables
+    private val FEED_LIMIT_REQUEST = 2 // this number multiplied by 2 is because there is an error on the limit
+                                            // param in the back side that duplicates the amount of results,
+                                            // to keep it in mind we will multiply by 2. When it's fixed we'll remove it
+    private var currentItems: Int = 0
+    private var totalItems: Int = 0
+    private var isScrolling: Boolean = false
+    private var isLastPage: Boolean = false
+    private var scrollOutItem: Int = 0
+
+
 
     var app: App? = null
 
@@ -134,6 +149,32 @@ class FeedFragment : BaseFragment() {
             )
         }
         rvFeed?.adapter = feedAdapter
+        rvFeed?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
+                    isScrolling = true
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                currentItems = layoutManager.childCount
+                totalItems = layoutManager.itemCount
+
+                val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
+                if(firstVisibleItem >= 0) {
+                    scrollOutItem = firstVisibleItem
+                }
+
+                if(!isLastPage)
+                    if(isScrolling && currentItems + scrollOutItem == totalItems) {
+                        isScrolling = false
+                        // we have to recall the api to get new values
+                        setFeedViewModelVariables(feedItemsList.size)
+                        getFeedDataTrigger.onNext(Unit)
+                    }
+            }
+        })
         rvFeed?.setHasFixedSize(false)
         val divider = DividerItemDecoration(
             context,
@@ -155,8 +196,10 @@ class FeedFragment : BaseFragment() {
         output.response.observe(this, Observer {
 //            System.out.println("Hemos obtenido datos del feeddddddd")
 //            System.out.println("Hemos obtenido ${it.data.feed_items.size} items")
-            feedItemsList.clear()
-            feedItemsList.addAll(it.data.feed_items)
+            val newItems = it.data.feed_items
+            feedItemsList.addAll(newItems)
+            if(newItems.size < FEED_LIMIT_REQUEST)
+                isLastPage = true
             rvFeed?.adapter?.notifyDataSetChanged()
             hideSwipeToRefreshProgressBar()
         })
@@ -181,6 +224,7 @@ class FeedFragment : BaseFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(FeedViewModel::class.java)
         }
+        setFeedViewModelVariables()
     }
 
     override fun onResume() {
@@ -197,8 +241,20 @@ class FeedFragment : BaseFragment() {
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 20f)
         swipeRefreshLayout?.onRefresh {
-            getFeedDataTrigger.onNext(Unit)
+            reloadFeed()
         }
+    }
+
+    private fun reloadFeed() {
+        isLastPage = false
+        feedItemsList.clear()
+        setFeedViewModelVariables()
+        getFeedDataTrigger.onNext(Unit)
+    }
+
+    private fun setFeedViewModelVariables(newOffset : Int = 0) {
+        viewModelFeed.limit = FEED_LIMIT_REQUEST
+        viewModelFeed.offset = newOffset
     }
 
 }

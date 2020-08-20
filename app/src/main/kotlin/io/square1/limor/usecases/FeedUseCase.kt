@@ -13,8 +13,8 @@ class FeedUseCase @Inject constructor(
     private val postExecutionThread: PostExecutionThread,
     private val jobExecutor: JobExecutor
 ) {
-    fun execute(): Single<UIFeedResponse> {
-        return userRepository.feedShow()
+    fun execute(limit: Int, offset: Int): Single<UIFeedResponse> {
+        return userRepository.feedShow(limit, offset)
             ?.asUIModel()
             ?.observeOn(postExecutionThread.getScheduler())
             ?.subscribeOn(jobExecutor.getScheduler())!!
