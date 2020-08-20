@@ -43,4 +43,11 @@
         <item name="colorPrimaryDark">@color/colorAccentDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
+    <!-- SearchViewToolbar theme. -->
+    <style name="SearchViewToolbarTheme" parent="ThemeOverlay.MaterialComponents.Light">
+        <item name="android:editTextColor">@color/white</item>
+        <item name="android:textColorHint">@color/brandSecondary100</item>
+    </style>
+
 </resources>

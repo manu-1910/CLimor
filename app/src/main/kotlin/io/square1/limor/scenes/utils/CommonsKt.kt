@@ -2,6 +2,7 @@ package io.square1.limor.scenes.utils
 
 import android.os.Build
 import android.text.Editable
+import io.square1.limor.R
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream

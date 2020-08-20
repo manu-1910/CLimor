@@ -66,8 +66,8 @@ public class WaveformView extends View {
     protected Paint playbackLinePaint;
     protected Paint timeCodePaint;
     protected Paint timeCodePaintBlack;
-    protected Paint separatorLine; //TODO JJ
-    protected Paint borderLinePaintEdit; //TODO JJ
+    protected Paint separatorLine;
+    protected Paint borderLinePaintEdit;
 
     protected int[] lenByZoomLevel;
     protected float[] zoomFactorByZoomLevel;
@@ -108,7 +108,7 @@ public class WaveformView extends View {
 
         selectedLinePaint = new Paint();
         selectedLinePaint.setColor(getResources().getColor(R.color.white));
-        selectedLinePaint.setStrokeWidth(LINE_WIDTH); // set stroke width
+        selectedLinePaint.setStrokeWidth(LINE_WIDTH);         // set stroke width
         selectedLinePaint.setDither(true);                    // set the dither to true
         selectedLinePaint.setStyle(Paint.Style.STROKE);       // set to STOKE
         selectedLinePaint.setStrokeJoin(Paint.Join.ROUND);    // set the join to round you want
@@ -157,12 +157,12 @@ public class WaveformView extends View {
         timeCodePaint = new Paint();
         timeCodePaint.setTextSize(TEXT_SIZE_13);
         timeCodePaint.setAntiAlias(true);
-        timeCodePaint.setColor(getResources().getColor(R.color.brandSecondary100)); //Éste es el color de texto de la barra de tiempos
+        timeCodePaint.setColor(getResources().getColor(R.color.brandSecondary100)); //This is the text of the time topbar
 
         timeCodePaintBlack = new Paint();
         timeCodePaintBlack.setTextSize(TEXT_SIZE_13);
         timeCodePaintBlack.setAntiAlias(true);
-        timeCodePaintBlack.setColor(getResources().getColor(R.color.marker_time_text)); //Éste es el color del texto del tiempo cuando creas un Marker
+        timeCodePaintBlack.setColor(getResources().getColor(R.color.marker_time_text)); //This is the color of the time textview when you create a marker
 
 
         gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
@@ -267,9 +267,8 @@ public class WaveformView extends View {
                 int mSelectionEnd = (int)(markerSet.getEndPos() * factor);
                 markerSet.setEndPos(mSelectionEnd);
             }
-            int offsetCenter = offset + (int) (getMeasuredWidth() / factor); //This line is the responsible to maintain the play line in the middle of the waveform
+            int offsetCenter = offset + (int)(getMeasuredWidth() / factor); //This line is the responsible to maintain the play line in the middle of the waveform
             offsetCenter *= factor;
-            //System.out.println("offsetCenter zoomIn: " + offsetCenter);
             offset = offsetCenter - (int) (getMeasuredWidth() / factor);
             if (offset < 0) {
                 offset = 0;
@@ -296,7 +295,6 @@ public class WaveformView extends View {
             }
             int offsetCenter = (int) (offset + getMeasuredWidth() / factor);
             offsetCenter /= factor;
-            //System.out.println("offsetCenter zoomOut: " + offsetCenter);
             offset = offsetCenter - (int) (getMeasuredWidth() / factor);
             if (offset < 0) {
                 offset = 0;
@@ -328,7 +326,7 @@ public class WaveformView extends View {
     }
 
     public int millisecsToPixels(int msecs) {
-        double z = zoomFactorByZoomLevel[zoomLevel]; //TODO JJ original line
+        double z = zoomFactorByZoomLevel[zoomLevel];
         return (int) ((msecs * 1.0 * sampleRate * z) / (1000.0 * samplesPerFrame) + 0.5);
     }
 
@@ -357,14 +355,12 @@ public class WaveformView extends View {
         this.listener = listener;
     }
 
-
     public void recomputeHeights(float density) {
         this.density = density;
         timeCodePaint.setTextSize((int) (TEXT_SIZE_13 * density));
         timeCodePaintBlack.setTextSize((int) (TEXT_SIZE_13 * density));
         invalidate();
     }
-
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -391,18 +387,18 @@ public class WaveformView extends View {
             factor++;
         }
 
-
         //Waveform white bars
         int i = 0;
-        while (i < width) {
-            double h = (getScaledHeight(zoomFactorByZoomLevel[zoomLevel],  start + i) * getMeasuredHeight() / 2) * 0.5; // scale the wave here
+        int newWidth = width/NEW_WIDTH;  //Adjust the total width of the white bars of the waveform
+        int newOffset = start/20;   //Adjust the offset to paint only the lenght of the audio file
+        while (i < newWidth) {
+            double h = (getScaledHeight(zoomFactorByZoomLevel[zoomLevel],  newOffset + i) * getMeasuredHeight() / 2) * 0.5; // scale the wave here
             int height = (int)h;
 
             canvas.drawLine(i * NEW_WIDTH, ctr + height, i * NEW_WIDTH, ctr - height, selectedLinePaint);
 
             i++;
         }
-
 
         //Yellow play line
         int play = 0;
@@ -432,7 +428,6 @@ public class WaveformView extends View {
             j++;
         }
 
-
         // Draw borders of the selection and marker timestamps
         for (MarkerSet markerSet : markerSets) {
 
@@ -449,14 +444,16 @@ public class WaveformView extends View {
             if (!markerSet.isEditMarker()) {
                 float leftEnd = markerSet.getEndPos() + Commons.dpToPx(getContext(), 16);
                 float topEnd = measuredHeight - topOffset + Commons.dpToPx(getContext(), 16);
-                String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getEndPos()));
+                String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getEndPos() / NEW_WIDTH));
+                //String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getEndPos()));
                 canvas.drawText(timeCode, leftEnd, topEnd, timeCodePaintBlack);
             }
 
             // Left bottom timestamp (is always visible, for normal marker and for edit marker
             float leftStart = markerSet.getStartPos() - Commons.dpToPx(getContext(), 44);
             float topStart = measuredHeight - topOffset + Commons.dpToPx(getContext(), 16);
-            String timeCodeStart = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getStartPos()));
+            String timeCodeStart = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getStartPos() / NEW_WIDTH));
+            //String timeCodeStart = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getStartPos()));
             canvas.drawText(timeCodeStart, leftStart, topStart, timeCodePaintBlack);
         }
 
@@ -521,7 +518,7 @@ public class WaveformView extends View {
 
     // Called once when a new sound file is added
     protected void computeDoublesForAllZoomLevels() {
-        int numFrames = soundFile.getNumFrames();
+        int numFrames = soundFile.getNumFrames() * NEW_WIDTH;
 
         // Make sure the range is no more than 0 - 255
         float maxGain = 1.0f;
@@ -532,7 +529,7 @@ public class WaveformView extends View {
             }
         }
         scaleFactor = 1.0f;
-        if (maxGain > 255.0) {
+        if (maxGain > 255.0 ) {
             scaleFactor = 255 / maxGain;
         }
         // Build histogram of 256 bins and figure out the new scaled max
@@ -572,9 +569,6 @@ public class WaveformView extends View {
         numZoomLevels = 5;
         lenByZoomLevel = new int[5];
         zoomFactorByZoomLevel = new float[5];
-
-
-        numFrames = numFrames * NEW_WIDTH; //numframes = maxpos ó duration o maxlength o width //TODO JJ new line
 
         float ratio = getMeasuredWidth() / (float) numFrames;
 

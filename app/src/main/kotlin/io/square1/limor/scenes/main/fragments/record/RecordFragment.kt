@@ -37,6 +37,7 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.textColor
 import org.jetbrains.anko.uiThread
 import java.io.File
 import javax.inject.Inject
@@ -75,11 +76,7 @@ class RecordFragment : BaseFragment() {
     }
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_record, container, false)
 
@@ -155,7 +152,9 @@ class RecordFragment : BaseFragment() {
             draftViewModel.uiDraft = recordingItem!!
             insertDraftTrigger.onNext(Unit)
 
-            findNavController().navigate(R.id.action_record_fragment_to_record_drafts)
+            //findNavController().navigate(R.id.action_record_fragment_to_record_drafts)
+            activity?.finish()
+
             ad.dismiss()
         }
 
@@ -241,7 +240,8 @@ class RecordFragment : BaseFragment() {
             //Merge audios and delete all them except the Audio Merged
             if (filesArray.size == 1) {
                 var bundle = bundleOf("recordingItem" to recordingItem)
-                findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
+                //findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
+                findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
             }else{
                 doAsync {
                     val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".amr")
@@ -282,8 +282,11 @@ class RecordFragment : BaseFragment() {
             mRecorder = AMRAudioRecorder(recordingDirectory.absolutePath)
 
             // Disable next button
+            //nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
             nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
+            nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.white)
             nextButton.isEnabled = false
+            nextButton.visibility = View.GONE
         }
 
     }
@@ -333,8 +336,9 @@ class RecordFragment : BaseFragment() {
             }else{
                 doAsync {
                     val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".amr")
-                    recordingItem?.filePath = finalAudio.absolutePath
+
                     if(mergeAmrAudioFiles(filesArray, finalAudio.absolutePath)){
+                        recordingItem?.filePath = finalAudio.absolutePath
                         //Delete all files when they are merged
                         if(deleteFilesInArray(filesArray)){
                             filesArray.clear()
@@ -396,6 +400,7 @@ class RecordFragment : BaseFragment() {
             // Disable next button
             nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
             nextButton.isEnabled = false
+            nextButton.visibility = View.VISIBLE
 
             recordButton.background = ContextCompat.getDrawable(requireContext(), R.drawable.pause_red)
 
@@ -438,6 +443,7 @@ class RecordFragment : BaseFragment() {
         recordButton.background = ContextCompat.getDrawable(requireContext(), R.drawable.record_red)
 
         // Enable next button
+        nextButton.visibility = View.VISIBLE
         nextButton.background = requireContext().getDrawable(R.drawable.bg_round_yellow_ripple)
         nextButton.isEnabled = true
 
@@ -449,7 +455,6 @@ class RecordFragment : BaseFragment() {
         } else {
             mRecorder.stop()
 
-            //Add the file to the files array
             //Add the file to the files array
             getLastModified()?.let {
                 if(!filesArray.contains(it)){
@@ -490,7 +495,10 @@ class RecordFragment : BaseFragment() {
         } catch (e: Exception) {
         }
 
-        handler.removeCallbacks(updater);
+        try {
+            handler.removeCallbacks(updater)
+        } catch (e: Exception) {
+        }
 
         voiceGraph?.clearAnimation()
         voiceGraph?.clear()
@@ -548,6 +556,37 @@ class RecordFragment : BaseFragment() {
         }
         println("end---------------------------------------------")
     }
+
+
+//    //Set this screen blank and prepare to record again
+//    private fun reinitializeRecordScreen(){
+//        toast("Reinicia esta pantalla")
+//
+//        isRecording = false
+//        isFirstTapRecording = true
+//        timeWhenStopped = 0
+//        filesArray.clear()
+//        audioFile1 = ""
+//        audioFile2 = ""
+//        recordingItem = UIDraft()
+//
+//        try {
+//            mRecorder.stop()
+//            mRecorder.clear()
+//        } catch (e: Exception) {
+//        }
+//
+//        c_meter.stop()
+//
+////        try {
+////            handler.removeCallbacks(updater)
+////        } catch (e: Exception) {
+////        }
+//
+//        voiceGraph?.clearAnimation()
+//        voiceGraph?.clear()
+//
+//    }
 
 
 

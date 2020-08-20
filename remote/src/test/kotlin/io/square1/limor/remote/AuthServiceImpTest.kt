@@ -4,7 +4,7 @@ package io.square1.limor.remote
 import io.square1.limor.remote.entities.requests.NWSignUpRequest
 import io.square1.limor.remote.entities.requests.NWSignUpUser
 import io.square1.limor.remote.services.RemoteServiceConfig
-import io.square1.limor.remote.services.user.AuthServiceImp
+import io.square1.limor.remote.services.auth.AuthServiceImp
 import kotlinx.serialization.ImplicitReflectionSerializer
 import org.junit.Test
 
@@ -14,10 +14,10 @@ import org.junit.Test
 class AuthServiceImpTest{
     private lateinit var authservice: AuthServiceImp
     private val baseURL = "https://limor-api-staging.herokuapp.com/"
-    /*private val testEmail = "juanjo@square1.io"
-    private val testPassword = "123456789"*/
-    private val testEmail = "alfocea23@gmail.com"
-    private val testPassword = "123456"
+    private val testEmail = "juanjo@square1.io"
+    private val testPassword = "123456789"
+    /*private val testEmail = "alfocea23@gmail.com"
+    private val testPassword = "123456"*/
 
     private val testUsername = "juanjo"
 
@@ -30,7 +30,9 @@ class AuthServiceImpTest{
             baseUrl = baseURL,
             debug = true,
             client_id = "2711e12535ceb15773fe87dc691bcb8c26295bb1434f7d8f4912006dff6a189c",
-            client_secret = "af570a038fbb5e9eb7c5338068f57b5a22c119d5fd273909f38b1cf4f9acd996"
+            client_secret = "af570a038fbb5e9eb7c5338068f57b5a22c119d5fd273909f38b1cf4f9acd996",
+            token = "",
+            expiredIn = 0
         )
 
         authservice = AuthServiceImp(config)
@@ -48,7 +50,9 @@ class AuthServiceImpTest{
            baseUrl = baseURL,
            debug = true,
            client_id = "2711e12535ceb15773fe87dc691bcb8c26295bb1434f7d8f4912006dff6a189c",
-           client_secret = "af570a038fbb5e9eb7c5338068f57b5a22c119d5fd273909f38b1cf4f9acd996"
+           client_secret = "af570a038fbb5e9eb7c5338068f57b5a22c119d5fd273909f38b1cf4f9acd996",
+           token = "",
+           expiredIn = 0
        )
 
        authservice = AuthServiceImp(config)

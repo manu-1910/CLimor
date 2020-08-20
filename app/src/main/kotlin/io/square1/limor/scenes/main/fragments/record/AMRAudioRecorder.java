@@ -195,8 +195,8 @@ public class AMRAudioRecorder  {
 
         recorder.setOutputFile(filePath);
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_WB);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
 
 
     }

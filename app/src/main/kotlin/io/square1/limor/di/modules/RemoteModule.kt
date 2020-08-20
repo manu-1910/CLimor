@@ -7,12 +7,17 @@ import io.square1.limor.App
 import io.square1.limor.BuildConfig
 import io.square1.limor.common.SessionManager
 import io.square1.limor.remote.providers.RemoteAuthProviderImp
+import io.square1.limor.remote.providers.RemotePodcastProviderImp
+import io.square1.limor.remote.providers.RemoteSearchProviderImp
 import io.square1.limor.remote.providers.RemoteUserProviderImp
 import io.square1.limor.remote.services.RemoteServiceConfig
 import kotlinx.serialization.ImplicitReflectionSerializer
 import providers.remote.RemoteAuthProvider
+import providers.remote.RemotePodcastProvider
+import providers.remote.RemoteSearchProvider
 import providers.remote.RemoteUserProvider
 import javax.inject.Singleton
+import kotlin.math.absoluteValue
 
 @Module
 abstract class RemoteModule {
@@ -29,6 +34,11 @@ abstract class RemoteModule {
         } else {
             sessionManager.getStoredToken().toString()
         }
+        private val sessionTime = if (sessionManager.getStoredSessionTime()!!.absoluteValue < 0) {
+            0
+        } else {
+            sessionManager.getStoredSessionTime()
+        }
 
         @Provides
         @JvmStatic
@@ -38,7 +48,8 @@ abstract class RemoteModule {
             debug = BuildConfig.DEBUG,
             client_id = BuildConfig.CLIENT_ID,
             client_secret = BuildConfig.CLIENT_SECRET,
-            token = tokenId
+            token = tokenId,
+            expiredIn = sessionTime!!
         )
     }
 
@@ -49,5 +60,13 @@ abstract class RemoteModule {
     @ImplicitReflectionSerializer
     @Binds
     abstract fun bindRemoteUserProvider(remoteUserProviderImp: RemoteUserProviderImp): RemoteUserProvider
+
+    @ImplicitReflectionSerializer
+    @Binds
+    abstract fun bindRemotePodcastProvider(remotePodcastProviderImp: RemotePodcastProviderImp): RemotePodcastProvider
+
+    @ImplicitReflectionSerializer
+    @Binds
+    abstract fun bindRemoteSearchProvider(remoteSearchProviderImp: RemoteSearchProviderImp): RemoteSearchProvider
 
    }

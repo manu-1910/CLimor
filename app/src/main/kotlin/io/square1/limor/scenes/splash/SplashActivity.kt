@@ -20,6 +20,7 @@ class SplashActivity : BaseActivity() {
         if (!isFinishing) {
 
             if(!sessionManager.getStoredToken().isNullOrEmpty()){
+                //println("client_id es:" + sessionManager.getStoredUser().id)
                 var mainIntent: Intent = Intent(this, MainActivity::class.java)
                 startActivity(mainIntent)
                 this.finish()

@@ -3,7 +3,10 @@ package io.square1.limor.scenes.utils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.util.TypedValue;
+
+import androidx.annotation.Nullable;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
@@ -15,6 +18,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.coremedia.iso.boxes.Container;
+import com.google.gson.Gson;
 import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
@@ -39,7 +43,10 @@ import java.util.TimeZone;
 
 import io.square1.limor.R;
 import io.square1.limor.common.Constants;
+import io.square1.limor.uimodels.UIUser;
 import timber.log.Timber;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class Commons {
 
@@ -47,12 +54,30 @@ public class Commons {
     private static final long ONE_SECOND = 1000;
     private static final long ONE_MINUTE = ONE_SECOND * 60;
     private static final long ONE_HOUR = ONE_MINUTE * 60;
-    //public boolean isImageReadyForUpload;
+
+    public static final int IMAGE_TYPE_PROFILE = 0;
+    public static final int IMAGE_TYPE_PODCAST = 1;
+    public static final int AUDIO_TYPE_PODCAST = 2;
+    public static final int AUDIO_TYPE_COMMENT = 3;
+    public static final int IMAGE_TYPE_ATTACHMENT = 4;
+    public static final int IMAGE_TYPE_ATTACHMENT_VIDEO = 5;
+    public static final int AUDIO_TYPE_ATTACHMENT = 6;
 
     public interface AudioUploadCallback {
         void onSuccess(String audioUrl);
         void onError(String error);
     }
+
+    public interface ImageUploadCallback {
+        void onStateChanged(int id, TransferState state);
+        void onProgressChanged(int id, long bytesCurrent, long bytesTotal);
+        void onError(String error);
+        void onSuccess(String completeUrl);
+    }
+
+    private File imageFile;
+    private String imageUrl;
+    public boolean isImageReadyForUpload;
 
     public static Commons getInstance() {
         if (instance == null) {
@@ -258,5 +283,105 @@ public class Commons {
             }
         });
     }
+
+
+    public void uploadImage(Context context, final ImageUploadCallback imageUploadCallback, final int imageType) {
+
+        String imageUrlToUpload = imageUrl;
+        File imageFileToUpload = imageFile;
+
+        if (imageFileToUpload == null) {
+            imageUploadCallback.onError(context.getString(R.string.error_something_went_wrong));
+            return;
+        }
+        final String completeUrl = Constants.AWS_IMAGE_BASE_URL + imageUrlToUpload;
+        ObjectMetadata metadata = new ObjectMetadata();
+        if (imageType == IMAGE_TYPE_ATTACHMENT_VIDEO) {
+            metadata.setContentType("video/mp4");
+        } else {
+            metadata.setContentType("image/png");
+        }
+        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                context,
+                Constants.AWS_IDENTITY_POOL,
+                Regions.EU_WEST_1
+        );
+        final AmazonS3 s3 = new AmazonS3Client(credentialsProvider);
+        TransferUtility transferUtility = new TransferUtility(s3, context);
+        TransferObserver observer = transferUtility.upload(
+                Constants.AWS_BUCKET,
+                imageUrlToUpload,
+                imageFileToUpload,
+                metadata);
+
+        observer.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                if (state == TransferState.COMPLETED) {
+                    isImageReadyForUpload = false;
+                    imageUploadCallback.onSuccess(completeUrl);
+                }
+            }
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {}
+            @Override
+            public void onError(int id, Exception ex) {
+                imageUploadCallback.onError(ex.getLocalizedMessage());
+            }
+        });
+    }
+
+
+
+
+
+    public void handleImage(Context context, int imageType, File imageFile, @Nullable String email) {
+        long userId = 0;
+
+        SharedPreferences mPrefs = context.getSharedPreferences("app", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = mPrefs.getString("user_key", "");
+        UIUser userObj = gson.fromJson(json, UIUser.class);
+
+        try {
+            userId = userObj.getId();
+        } catch(Exception ex) {
+            // ignore
+        }
+        String timestamp = String.valueOf(new Random().nextInt((9999 - 1) + 1) + 1);
+        String fileName;
+        switch (imageType) {
+            case IMAGE_TYPE_PROFILE:
+                fileName = Constants.AWS_FILE_PROFILE_IMAGE_IDENTIFIER + "_" + email + "_" + timestamp;
+                imageUrl = Constants.AWS_FOLDER_PROFILE_IMAGE + ShoSha265.hash(fileName) + ".png";
+                this.imageFile = imageFile;
+                break;
+            case IMAGE_TYPE_PODCAST:
+                fileName = Constants.AWS_FILE_PODCAST_IMAGE_IDENTIFIER + timestamp;
+                imageUrl = Constants.AWS_FOLDER_PODCAST_IMAGE + ShoSha265.hash(fileName) + ".png";
+                this.imageFile = imageFile;
+                break;
+            case IMAGE_TYPE_ATTACHMENT:
+                fileName = Constants.AWS_FILE_MESSAGE_ATTACHMENT + "_" + timestamp + userId;
+                this.imageUrl = Constants.AWS_FOLDER_MESSAGE_ATTACHMENTS + Constants.AWS_FOLDER_IMAGE + ShoSha265.hash(fileName) + ".png";
+                this.imageFile = imageFile;
+                break;
+            case IMAGE_TYPE_ATTACHMENT_VIDEO:
+                fileName = Constants.AWS_FILE_MESSAGE_ATTACHMENT + "_" + timestamp + userId;
+                this.imageUrl = Constants.AWS_FOLDER_MESSAGE_ATTACHMENTS + Constants.AWS_FOLDER_VIDEO + ShoSha265.hash(fileName) + ".mp4";
+                this.imageFile = imageFile;
+                break;
+            case AUDIO_TYPE_ATTACHMENT:
+                fileName = Constants.AWS_FILE_MESSAGE_ATTACHMENT + "_" + timestamp + userId;
+                this.imageUrl = Constants.AWS_FOLDER_MESSAGE_ATTACHMENTS + Constants.AWS_FOLDER_AUDIO + ShoSha265.hash(fileName) + ".mp4";
+                this.imageFile = imageFile;
+                break;
+            default:
+        }
+        isImageReadyForUpload = true;
+    }
+
+
+
 
 }

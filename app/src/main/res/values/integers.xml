@@ -3,6 +3,7 @@
     <integer name="SPLASH_DELAY">2000</integer>
     <integer name="PASSWORD_MIN_LENGTH">6</integer>
     <integer name="MAX_PHOTOS">1</integer>
+    <integer name="REQUEST_CODE_LOGIN_FROM_PUBLISH">701</integer>
 
 
 </resources>

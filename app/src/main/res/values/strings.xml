@@ -70,6 +70,8 @@
     <string name="title_caption">Caption</string>
     <string name="title_hashtags">Hashtags</string>
     <string name="title_location">Location</string>
+    <string name="cast_published_ok_title">Published</string>
+    <string name="cast_published_ok_description">Your cast has been published successfully</string>
 
 
     <!-- Edit Screen -->
@@ -109,7 +111,7 @@
     <string name="edit_or_publish_prompt">Would you like to edit this recording or go straight to the Publish screen?</string>
     <string name="publish">Publish</string>
     <string name="paste_overlap_alert">You cannot paste this section on top of itself. Please select different area.</string>
-    <string name="how_to_edit_description">1: Tap top bar to drop a marker\n2: Mark the pieces you wish to keep\n3: Delete a marker by holding down top of it\n4: You can have multiple markers\n5: You can also delete, copy &amp; paste selected pieces of the cast</string>
+    <string name="how_to_edit_description">1: Tap top bar to drop the marker\n2: Mark the piece you wish to modify\n3: Delete a marker by long pressing top of it\n4: You can also preview, delete, copy &amp; paste selected piece of the cast by long pressing top of it</string>
     <string name="how_to_edit_title">How to Edit</string>
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
@@ -125,6 +127,8 @@
     <string name="empty_fields_prompt">Please make sure to fill all required fields.</string>
     <string name="invalid_email_prompt">Invalid Email</string>
     <string name="add_photo">Add Photo</string>
+    <string name="title_cannot_be_empty">Title can not be empty</string>
+    <string name="caption_cannot_be_empty">Caption can not be empty</string>
 
 
     <!-- Menu Marker -->
@@ -147,8 +151,8 @@
     <string name="draft_deleted">Draft deleted</string>
     <string name="draft_not_deleted">Draft NOT deleted</string>
     <string name="centre_not_deleted_error">There was an error deleting the draft</string>
-    <string name="draft_inserted">Draft inserted</string>
-    <string name="draft_not_inserted">Draft NOT inserted</string>
+    <string name="draft_inserted">Draft saved succesfully</string>
+    <string name="draft_not_inserted">There was an error saving your draft</string>
     <string name="draft_not_inserted_error">There was an error inserting the draft</string>
     <string name="draft_updated">Draft updated</string>
     <string name="draft_not_updated">Draft NOT updated</string>
@@ -183,6 +187,15 @@
     <string name="title_age">Age</string>
     <string name="title_gender">Gender</string>
     <string name="logout">Logout</string>
+
+
+    <!-- Hashtags and Locations fragment -->
+    <string name="search">Search</string>
+    <string name="description_delete">Delete description</string>
+    <string name="max_5_tags">You can select max 5 hashtags</string>
+    <string name="min_3_chars">You should type at least 3 characters</string>
+
+
 
 
 </resources>

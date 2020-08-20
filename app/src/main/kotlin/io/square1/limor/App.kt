@@ -52,7 +52,7 @@ class App : Application(), HasActivityInjector, HasServiceInjector {
         merlinsBeard = MerlinsBeard.Builder().build(this)
 
         // Obtain the FirebaseAnalytics instance.
-        //firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
         //Initialize Facebook SDK
         FacebookSdk.sdkInitialize(this)

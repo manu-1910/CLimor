@@ -1,7 +1,8 @@
 package io.square1.limor.scenes.main.adapters
 
 import android.content.Context
-import android.media.AudioManager
+import android.media.AudioAttributes
+
 import android.media.MediaPlayer
 import android.os.Handler
 import android.view.LayoutInflater
@@ -18,7 +19,6 @@ import io.square1.limor.uimodels.UIDraft
 import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk23.listeners.onClick
 import java.util.concurrent.TimeUnit
-
 
 
 class DraftAdapter(
@@ -47,7 +47,12 @@ class DraftAdapter(
 
         // Initializing MediaPlayer
         val mediaPlayer = MediaPlayer()
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+        //mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+        mediaPlayer.setAudioAttributes(
+            AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build()
+        )
         try {
             mediaPlayer.setDataSource(modelList.filePath)
             mediaPlayer.prepare() // might take long for buffering.

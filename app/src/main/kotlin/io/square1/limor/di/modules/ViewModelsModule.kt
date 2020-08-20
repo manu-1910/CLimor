@@ -8,9 +8,7 @@ import dagger.multibindings.IntoMap
 import io.square1.limor.common.ViewModelFactory
 import io.square1.limor.di.ViewModelKey
 import io.square1.limor.scenes.authentication.viewmodels.*
-import io.square1.limor.scenes.main.viewmodels.DraftViewModel
-import io.square1.limor.scenes.main.viewmodels.LogoutViewModel
-import io.square1.limor.scenes.main.viewmodels.ProfileViewModel
+import io.square1.limor.scenes.main.viewmodels.*
 
 
 @Module
@@ -57,4 +55,19 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(LogoutViewModel::class)
     abstract fun bindLogoutViewModel(logoutViewModel: LogoutViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PublishViewModel::class)
+    abstract fun bindPublishViewModel(publishViewModel: PublishViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(TagsViewModel::class)
+    abstract fun bindTagsViewModel(tagsViewModel: TagsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LocationsViewModel::class)
+    abstract fun bindLocationsViewModel(locationsViewModel: LocationsViewModel): ViewModel
 }
