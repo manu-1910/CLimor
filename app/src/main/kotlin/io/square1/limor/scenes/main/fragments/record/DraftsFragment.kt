@@ -201,7 +201,7 @@ class DraftsFragment : BaseFragment() {
 
                         try {
                             val originalFile = File(draftsLocalList[position].filePath)
-                            val destFile = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() +".aac")
+                            val destFile = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() +".amr")
                             copyFile(originalFile, destFile)
                         } catch (e: Exception) {
                             e.printStackTrace()

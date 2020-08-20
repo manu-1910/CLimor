@@ -62,6 +62,8 @@ public class SoundFile {
     private int[] mFrameLens;
     private int[] mFrameOffsets;
 
+    public static final int NEW_WIDTH = 20;
+
     // Progress listener interface.
     public interface ProgressListener {
         /**
@@ -362,9 +364,9 @@ public class SoundFile {
         if (mNumSamples % getSamplesPerFrame() != 0){
             mNumFrames++;
         }
-        mFrameGains = new int[mNumFrames];
-        mFrameLens = new int[mNumFrames];
-        mFrameOffsets = new int[mNumFrames];
+        mFrameGains = new int[mNumFrames * NEW_WIDTH];
+        mFrameLens = new int[mNumFrames * NEW_WIDTH];
+        mFrameOffsets = new int[mNumFrames * NEW_WIDTH];
 
         int j;
         int gain, value;

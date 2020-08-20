@@ -23,7 +23,8 @@ class PodcastServiceImpTest{
             debug = true,
             client_id = "2711e12535ceb15773fe87dc691bcb8c26295bb1434f7d8f4912006dff6a189c",
             client_secret = "af570a038fbb5e9eb7c5338068f57b5a22c119d5fd273909f38b1cf4f9acd996",
-            token = "Bearer 9b1b2517ba88187cc8e50a2f40446a0ff10200b9353ef356441c751553dc33ce"
+            token = "Bearer 9b1b2517ba88187cc8e50a2f40446a0ff10200b9353ef356441c751553dc33ce",
+            expiredIn = 0
         )
 
         podcastService = PodcastServiceImp(config)
@@ -34,9 +35,9 @@ class PodcastServiceImpTest{
                     "https://limor-platform-development.s3.amazonaws.com/podcast_comment_audio_direct_upload/audioFile_3180_1530517744075.m4a",
                     "https://limor-platform-development.s3.amazonaws.com/podcast_comment_audio_direct_upload/audioFile_3180_1530517744075.m4a",
                     100,
-                    1000,
-                    13000,
-                    0,
+                    1000.0,
+                    13000.0,
+                    0.0,
                     ArrayList<String>()
                 ),
                 NWMetaData(

@@ -143,10 +143,10 @@ class SignUpFragment : BaseFragment() {
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
                 val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
+                if (it.errorMessage!!.isNotEmpty() && it.errorMessage!!.isNotBlank()) {
                     message.append(it.errorMessage)
                 } else {
-                    message.append(R.string.some_error)
+                    message.append(getString(R.string.some_error))
                 }
                 alert(message.toString()) {
                     okButton { }

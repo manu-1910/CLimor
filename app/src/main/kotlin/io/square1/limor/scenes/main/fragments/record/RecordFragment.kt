@@ -14,7 +14,6 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.getColor
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -153,7 +152,9 @@ class RecordFragment : BaseFragment() {
             draftViewModel.uiDraft = recordingItem!!
             insertDraftTrigger.onNext(Unit)
 
-            findNavController().navigate(R.id.action_record_fragment_to_record_drafts)
+            //findNavController().navigate(R.id.action_record_fragment_to_record_drafts)
+            activity?.finish()
+
             ad.dismiss()
         }
 
@@ -243,7 +244,7 @@ class RecordFragment : BaseFragment() {
                 findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
             }else{
                 doAsync {
-                    val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".aac")
+                    val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".amr")
                     recordingItem?.filePath = finalAudio.absolutePath
                     if(mergeAmrAudioFiles(filesArray, finalAudio.absolutePath)){
                         //Delete all files when they are merged
@@ -334,7 +335,7 @@ class RecordFragment : BaseFragment() {
                 findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
             }else{
                 doAsync {
-                    val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".aac")
+                    val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".amr")
 
                     if(mergeAmrAudioFiles(filesArray, finalAudio.absolutePath)){
                         recordingItem?.filePath = finalAudio.absolutePath
@@ -555,6 +556,37 @@ class RecordFragment : BaseFragment() {
         }
         println("end---------------------------------------------")
     }
+
+
+//    //Set this screen blank and prepare to record again
+//    private fun reinitializeRecordScreen(){
+//        toast("Reinicia esta pantalla")
+//
+//        isRecording = false
+//        isFirstTapRecording = true
+//        timeWhenStopped = 0
+//        filesArray.clear()
+//        audioFile1 = ""
+//        audioFile2 = ""
+//        recordingItem = UIDraft()
+//
+//        try {
+//            mRecorder.stop()
+//            mRecorder.clear()
+//        } catch (e: Exception) {
+//        }
+//
+//        c_meter.stop()
+//
+////        try {
+////            handler.removeCallbacks(updater)
+////        } catch (e: Exception) {
+////        }
+//
+//        voiceGraph?.clearAnimation()
+//        voiceGraph?.clear()
+//
+//    }
 
 
 
