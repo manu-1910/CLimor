@@ -4,6 +4,7 @@ package io.square1.limor.remote
 import io.square1.limor.remote.entities.requests.*
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.podcast.PodcastServiceImp
+import io.square1.limor.remote.services.user.UserServiceImp
 import kotlinx.serialization.ImplicitReflectionSerializer
 import org.junit.Test
 
@@ -59,6 +60,27 @@ class PodcastServiceImpTest{
             it.message == "Success"
         }
 
+    }
+
+    @Test
+    fun should_like_podcast_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = baseURL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = "9b1b2517ba88187cc8e50a2f40446a0ff10200b9353ef356441c751553dc33ce",
+            expiredIn = 0
+        )
+
+        podcastService = PodcastServiceImp(config)
+
+        val idPodcast = 659
+
+        val response = podcastService.likePodcast(idPodcast)?.test()
+
+        response?.assertNoErrors()
+        response?.assertValue { it.message == "Success" }
     }
 
 

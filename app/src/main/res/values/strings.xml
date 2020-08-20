@@ -210,6 +210,7 @@
     <string name="podcast_time">Podcast time</string>
     <string name="verified">Verified</string>
     <string name="recasted">Recasted</string>
+    <string name="error_liking_podcast">There was an error liking this podcast, please try again</string>
 
 
 </resources>

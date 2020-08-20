@@ -144,8 +144,12 @@ class FeedItemViewHolder(
 
         // likes
         currentItem.podcast?.number_of_likes?.let { tvLikes.text = it.toString() }
-        tvLikes.onClick { feedClickListener.onLikeClicked(currentItem, position) }
-        ibtnLike.onClick { feedClickListener.onLikeClicked(currentItem, position) }
+        tvLikes.onClick {
+            feedClickListener.onLikeClicked(currentItem, position)
+        }
+        ibtnLike.onClick {
+            feedClickListener.onLikeClicked(currentItem, position)
+        }
 
         // listens
         currentItem.podcast?.number_of_listens?.let { tvListens.text = it.toString() }

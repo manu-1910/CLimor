@@ -80,4 +80,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(CreateFriendViewModel::class)
     abstract fun bindCreateFriendViewModel(createFriendViewModel: CreateFriendViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CreatePodcastLikeViewModel::class)
+    abstract fun bindCreatePodcastLikeViewModel(createPodcastLikeViewModel: CreatePodcastLikeViewModel): ViewModel
 }

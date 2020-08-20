@@ -16,11 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import io.reactivex.subjects.PublishSubject
-import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.SessionManager
 import io.square1.limor.scenes.main.adapters.FeedAdapter
+import io.square1.limor.scenes.main.viewmodels.CreatePodcastLikeViewModel
 import io.square1.limor.scenes.main.viewmodels.FeedViewModel
 import io.square1.limor.uimodels.UIFeedItem
 import org.jetbrains.anko.support.v4.onRefresh
@@ -33,20 +33,25 @@ class FeedFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private lateinit var viewModelFeed: FeedViewModel
-
-
     @Inject
     lateinit var sessionManager: SessionManager
 
-    private val getFeedDataTrigger = PublishSubject.create<Unit>()
 
+    // viewModels
+    private lateinit var viewModelFeed: FeedViewModel
+    private lateinit var viewModelCreatePodcastLike: CreatePodcastLikeViewModel
+
+
+    private val getFeedDataTrigger = PublishSubject.create<Unit>()
+    private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
 
 
     // infinite scroll variables
-    private val FEED_LIMIT_REQUEST = 2 // this number multiplied by 2 is because there is an error on the limit
-                                            // param in the back side that duplicates the amount of results,
-                                            // to keep it in mind we will multiply by 2. When it's fixed we'll remove it
+    private val FEED_LIMIT_REQUEST =
+        2 // this number multiplied by 2 is because there is an error on the limit
+
+    // param in the back side that duplicates the amount of results,
+    // to keep it in mind we will multiply by 2. When it's fixed we'll remove it
     private var currentItems: Int = 0
     private var totalItems: Int = 0
     private var isScrolling: Boolean = false
@@ -54,15 +59,16 @@ class FeedFragment : BaseFragment() {
     private var scrollOutItem: Int = 0
 
 
-
-    var app: App? = null
-
     var rootView: View? = null
 
+    // views
     var rvFeed: RecyclerView? = null
     var swipeRefreshLayout: SwipeRefreshLayout? = null
     var feedAdapter: FeedAdapter? = null
     var feedItemsList: ArrayList<UIFeedItem> = ArrayList()
+
+    // like variables
+    private var lastLikedItemPosition: Int = 0
 
 
     companion object {
@@ -79,11 +85,11 @@ class FeedFragment : BaseFragment() {
             rootView = inflater.inflate(R.layout.fragment_feed, container, false)
             rvFeed = rootView?.findViewById(R.id.rvFeed)
             swipeRefreshLayout = rootView?.findViewById(R.id.swipeRefreshLayout)
-            app = context?.applicationContext as App
 
             bindViewModel()
             configureAdapter()
             apiCallGetFeed()
+            apiCallCreateLike()
 
             getFeedDataTrigger.onNext(Unit)
         }
@@ -115,7 +121,20 @@ class FeedFragment : BaseFragment() {
                     }
 
                     override fun onLikeClicked(item: UIFeedItem, position: Int) {
-                        Toast.makeText(context, "You clicked on like", Toast.LENGTH_SHORT).show()
+                        item.podcast?.let { podcast ->
+                            changeIconLike(item, position, !podcast.liked)
+                            lastLikedItemPosition = position
+
+                            // if it wasn't liked, we have to like it
+                            if(!podcast.liked) {
+                                viewModelCreatePodcastLike.idPodcast = podcast.id
+                                createPodcastLikeDataTrigger.onNext(Unit)
+
+                                // if it was liked, we have to not like it
+                            } else {
+                                Toast.makeText(context, "TODO: cannot dislike yet", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
 
                     override fun onRecastClicked(item: UIFeedItem, position: Int) {
@@ -123,7 +142,11 @@ class FeedFragment : BaseFragment() {
                     }
 
                     override fun onHashtagClicked(hashtag: String) {
-                        Toast.makeText(context, "You clicked on $hashtag hashtag", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "You clicked on $hashtag hashtag",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     override fun onSendClicked(item: UIFeedItem, position: Int) {
@@ -162,12 +185,12 @@ class FeedFragment : BaseFragment() {
                 totalItems = layoutManager.itemCount
 
                 val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
-                if(firstVisibleItem >= 0) {
+                if (firstVisibleItem >= 0) {
                     scrollOutItem = firstVisibleItem
                 }
 
-                if(!isLastPage)
-                    if(isScrolling && currentItems + scrollOutItem == totalItems) {
+                if (!isLastPage)
+                    if (isScrolling && currentItems + scrollOutItem == totalItems) {
                         isScrolling = false
                         // we have to recall the api to get new values
                         setFeedViewModelVariables(feedItemsList.size)
@@ -185,6 +208,18 @@ class FeedFragment : BaseFragment() {
 
     }
 
+    private fun changeIconLike(item: UIFeedItem, position: Int, liked: Boolean) {
+        item.podcast?.let {podcast ->
+            if(liked) {
+                podcast.number_of_likes++
+            } else {
+                podcast.number_of_likes--
+            }
+            podcast.liked = liked
+            feedAdapter?.notifyItemChanged(position, item)
+        }
+    }
+
 
     private fun apiCallGetFeed() {
         val output = viewModelFeed.transform(
@@ -198,16 +233,34 @@ class FeedFragment : BaseFragment() {
 //            System.out.println("Hemos obtenido ${it.data.feed_items.size} items")
             val newItems = it.data.feed_items
             feedItemsList.addAll(newItems)
-            if(newItems.size < FEED_LIMIT_REQUEST)
+            if (newItems.size < FEED_LIMIT_REQUEST)
                 isLastPage = true
             rvFeed?.adapter?.notifyDataSetChanged()
             hideSwipeToRefreshProgressBar()
         })
     }
 
+    private fun apiCallCreateLike() {
+        val output = viewModelCreatePodcastLike.transform(
+            CreatePodcastLikeViewModel.Input(
+                createPodcastLikeDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                Toast.makeText(context, getString(R.string.error_liking_podcast), Toast.LENGTH_SHORT).show()
+                val item = feedItemsList[lastLikedItemPosition]
+                item.podcast?.let { podcast -> changeIconLike(item, lastLikedItemPosition, !podcast.liked) }
+            }
+        })
+    }
+
+
     private fun hideSwipeToRefreshProgressBar() {
         swipeRefreshLayout?.let {
-            if(it.isRefreshing) {
+            if (it.isRefreshing) {
                 swipeRefreshLayout?.isRefreshing = false
             }
         }
@@ -225,6 +278,12 @@ class FeedFragment : BaseFragment() {
                 .get(FeedViewModel::class.java)
         }
         setFeedViewModelVariables()
+
+        activity?.let { fragmentActivity ->
+            viewModelCreatePodcastLike = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreatePodcastLikeViewModel::class.java)
+        }
     }
 
     override fun onResume() {
@@ -252,7 +311,7 @@ class FeedFragment : BaseFragment() {
         getFeedDataTrigger.onNext(Unit)
     }
 
-    private fun setFeedViewModelVariables(newOffset : Int = 0) {
+    private fun setFeedViewModelVariables(newOffset: Int = 0) {
         viewModelFeed.limit = FEED_LIMIT_REQUEST
         viewModelFeed.offset = newOffset
     }
