@@ -200,7 +200,7 @@ class FeedFragment : BaseFragment() {
                     if (isScrolling && currentItems + scrollOutItem == totalItems) {
                         isScrolling = false
                         // we have to recall the api to get new values
-                        setFeedViewModelVariables(feedItemsList.size)
+                        setFeedViewModelVariables(feedItemsList.size - 1)
                         getFeedDataTrigger.onNext(Unit)
                     }
             }

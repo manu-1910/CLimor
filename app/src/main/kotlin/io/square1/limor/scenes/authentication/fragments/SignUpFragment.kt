@@ -96,6 +96,7 @@ class SignUpFragment : BaseFragment() {
         apiCall()
         apiCallSignInWithFacebook()
         apiCallMergeFacebookAccount()
+        initApiCallAutofollowLimor()
         setMessageWithClickableLink(tvTermsAndConditions)
         listeners()
     }
@@ -137,10 +138,12 @@ class SignUpFragment : BaseFragment() {
             view?.hideKeyboard()
 
             if (it.code == 0) {
-                val mainIntent = Intent(context, MainActivity::class.java)
-                startActivity(mainIntent)
-                (activity as SignActivity).finish()
-                autoFollowLimor()
+                viewModelCreateFriend.idNewFriend = Constants.LIMOR_ACCOUNT_ID
+                createFriendTrigger.onNext(Unit)
+
+//                val mainIntent = Intent(context, MainActivity::class.java)
+//                startActivity(mainIntent)
+//                (activity as SignActivity).finish()
             }
         })
 
@@ -169,8 +172,7 @@ class SignUpFragment : BaseFragment() {
         })
     }
 
-    private fun autoFollowLimor() {
-        pbSignUp?.visibility = View.VISIBLE
+    private fun initApiCallAutofollowLimor() {
         val output = viewModelCreateFriend.transform(
             CreateFriendViewModel.Input(
                 createFriendTrigger
@@ -178,15 +180,8 @@ class SignUpFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
-
-            if (it.code == 0) {
-                val mainIntent = Intent(context, MainActivity::class.java)
-                startActivity(mainIntent)
-                (activity as SignActivity).finish()
-                autoFollowLimor()
-            }
+            goToMainActivity()
         })
 
         output.backgroundWorkingProgress.observe(this, Observer {
@@ -194,23 +189,10 @@ class SignUpFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                alert(message.toString()) {
-                    okButton { }
-                }.show()
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
+
+            // TODO: maybe we should do some checks
+            goToMainActivity()
         })
     }
 
@@ -235,8 +217,9 @@ class SignUpFragment : BaseFragment() {
 
 
             if(it.message == "Success"){
-                autoFollowLimor()
-                proceedLogin()
+                viewModelCreateFriend.idNewFriend = Constants.LIMOR_ACCOUNT_ID
+                createFriendTrigger.onNext(Unit)
+                goToMainActivity()
             }else{
                 if (it.code == Constants.ERROR_CODE_FACEBOOK_USER_EXISTS) {
                     alert(it.message) {
@@ -291,8 +274,9 @@ class SignUpFragment : BaseFragment() {
             view?.hideKeyboard()
 
             if (it.message == "Success") {
-                autoFollowLimor()
-                proceedLogin()
+                viewModelCreateFriend.idNewFriend = Constants.LIMOR_ACCOUNT_ID
+                createFriendTrigger.onNext(Unit)
+                goToMainActivity()
             }
         })
 
@@ -527,7 +511,7 @@ class SignUpFragment : BaseFragment() {
         mergeFacebookAccountTrigger.onNext(Unit)
     }
 
-    private fun proceedLogin() {
+    private fun goToMainActivity() {
         //DataManager.getInstance().getUserInfoData(true, null)
 
         val mainIntent = Intent(context, MainActivity::class.java)
