@@ -162,6 +162,9 @@
     <string name="btnDone">Done</string>
     <string name="menu_delete_cast">Delete cast</string>
     <string name="menu_duplicate_cast">Duplicate cast</string>
+    <string name="menu_continue_recording_cast">Continue recording this cast</string>
+
+
 
 
     <!-- Facebook strings -->

@@ -13,6 +13,7 @@ import io.square1.limor.usecases.DraftDeleteRealmUseCase
 import io.square1.limor.usecases.DraftInsertRealmUseCase
 import io.square1.limor.usecases.DraftLoadRealmUseCase
 import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 
@@ -24,6 +25,9 @@ class DraftViewModel @Inject constructor(
 
     private val compositeDispose = CompositeDisposable()
     var uiDraft = UIDraft()
+    var mainAudioFilePath: String = ""
+    var filesArray: ArrayList<File> = ArrayList()
+    var continueRecording:Boolean = false
 
     /************************************
     INSERT A DRAFT INTO REALM

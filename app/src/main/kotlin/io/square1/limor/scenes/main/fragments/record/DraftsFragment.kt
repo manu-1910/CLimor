@@ -216,6 +216,43 @@ class DraftsFragment : BaseFragment() {
                         rvDrafts?.adapter?.notifyItemChanged(position)
                     }
                 },
+                object : DraftAdapter.OnContinueRecordingItemClickListener {
+                    override fun onContinueRecordingItemClick(item: UIDraft, position: Int) {
+
+                        draftViewModel.uiDraft = item
+                        draftViewModel.filesArray.add(File(item.filePath))
+                        draftViewModel.continueRecording = true
+
+                        try {
+                            findNavController().popBackStack()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+
+//                        pbDrafts?.visibility = View.VISIBLE
+//
+//                        var newItem = draftsLocalList[position]
+//                        newItem.id = System.currentTimeMillis()
+//                        newItem.title = getString(R.string.duplicated_draft)
+//                        newItem.caption = getDateTimeFormatted()
+//
+//                        try {
+//                            val originalFile = File(draftsLocalList[position].filePath)
+//                            val destFile = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() +".amr")
+//                            copyFile(originalFile, destFile)
+//                        } catch (e: Exception) {
+//                            e.printStackTrace()
+//                        }
+//
+//                        //Insert in Realm
+//                        draftViewModel.uiDraft = newItem
+//                        insertDraftsTrigger.onNext(Unit)
+//
+//                        //Add item to the list
+//                        draftsLocalList.add(newItem)
+//                        rvDrafts?.adapter?.notifyItemChanged(position)
+                    }
+                },
                 findNavController()
             )
         }
