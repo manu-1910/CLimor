@@ -70,4 +70,24 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(LocationsViewModel::class)
     abstract fun bindLocationsViewModel(locationsViewModel: LocationsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(FeedViewModel::class)
+    abstract fun bindFeedViewModel(feedViewModel: FeedViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CreateFriendViewModel::class)
+    abstract fun bindCreateFriendViewModel(createFriendViewModel: CreateFriendViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CreatePodcastLikeViewModel::class)
+    abstract fun bindCreatePodcastLikeViewModel(createPodcastLikeViewModel: CreatePodcastLikeViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DeletePodcastLikeViewModel::class)
+    abstract fun bindDeletePodcastLikeViewModel(deletePodcastLikeViewModel: DeletePodcastLikeViewModel): ViewModel
 }

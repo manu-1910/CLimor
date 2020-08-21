@@ -90,9 +90,55 @@ fun ImagesEntity.asUIModel(): UIImages {
 
 fun LinksEntity.asUIModel(): UILinks {
     return UILinks(
-        links
+        getAllUIWebsites(website),
+        getAllUIContents(content),
+        getAllUICaptions(caption)
     )
 }
 
+fun WebsiteEntity.asUIModel(): UIWebsite {
+    return UIWebsite(id, link, startIndex, endIndex)
+}
+
+fun ContentEntity.asUIModel(): UIContent {
+    return UIContent(id, link, startIndex, endIndex)
+}
+
+fun CaptionEntity.asUIModel(): UICaption {
+    return UICaption(id, link, startIndex, endIndex)
+}
+
+fun getAllUIWebsites(entityList: ArrayList<WebsiteEntity>?): ArrayList<UIWebsite> {
+    val uiList = ArrayList<UIWebsite>()
+    if (entityList != null) {
+        for (item in entityList) {
+            if (item != null)
+                uiList.add(item.asUIModel())
+        }
+    }
+    return uiList
+}
+
+fun getAllUIContents(entityList: ArrayList<ContentEntity>?): ArrayList<UIContent> {
+    val uiList = ArrayList<UIContent>()
+    if (entityList != null) {
+        for (item in entityList) {
+            if (item != null)
+                uiList.add(item.asUIModel())
+        }
+    }
+    return uiList
+}
+
+fun getAllUICaptions(entityList: ArrayList<CaptionEntity>?): ArrayList<UICaption> {
+    val uiList = ArrayList<UICaption>()
+    if (entityList != null) {
+        for (item in entityList) {
+            if (item != null)
+                uiList.add(item.asUIModel())
+        }
+    }
+    return uiList
+}
 
 

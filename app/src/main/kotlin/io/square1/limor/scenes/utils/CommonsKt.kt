@@ -2,12 +2,13 @@ package io.square1.limor.scenes.utils
 
 import android.os.Build
 import android.text.Editable
-import io.square1.limor.R
+import android.text.format.DateFormat
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.channels.FileChannel
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -15,9 +16,9 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-class CommonsKt{
+class CommonsKt {
 
-    companion object{
+    companion object {
 
         fun getDateTimeFormatted(): String {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -29,6 +30,12 @@ class CommonsKt{
                 val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm")
                 formatter.format(date)
             }
+        }
+
+        fun getDateTimeFormattedFromTimestamp(time: Long): String {
+            val cal = Calendar.getInstance(Locale.getDefault())
+            cal.timeInMillis = time * 1000
+            return DateFormat.format("dd/MM/yyyy HH:mm", cal).toString()
         }
 
 
@@ -66,6 +73,28 @@ class CommonsKt{
                 }
             }
             return finalDuration
+        }
+
+        fun calculateDurationMinutesAndSeconds(millis: Long) :String {
+            // if it's less than one minute
+            return if(millis < 60 * 1000) {
+                String.format("%ds", TimeUnit.MILLISECONDS.toSeconds(millis))
+
+                // if it's less than one hour
+            } else if(millis < 3600 * 1000){
+                String.format("%dm %ds",
+                    TimeUnit.MILLISECONDS.toMinutes(millis),
+                    TimeUnit.MILLISECONDS.toSeconds(millis) -
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)))
+
+                // if it's more than one hour
+            } else {
+                String.format("%dh %dm" /*%ds*/,
+                    TimeUnit.MILLISECONDS.toHours(millis),
+                    TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis))//,
+                    //TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+                )
+            }
         }
 
         fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)

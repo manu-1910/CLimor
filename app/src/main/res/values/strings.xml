@@ -172,7 +172,7 @@
 
 
 
-    <string name="error_403_forgot_password">You\'re request has been registered. If your email exists in our system, you\'ll receive an email to reset your password.</string>
+    <string name="error_403_forgot_password">Your request has been registered. If your email exists in our system, you\'ll receive an email to reset your password.</string>
     <string name="error_500_or_higher">Sorry, we couldn\'t process your request. Please, try again later.</string>
 
 
@@ -194,8 +194,23 @@
     <string name="description_delete">Delete description</string>
     <string name="max_5_tags">You can select max 5 hashtags</string>
     <string name="min_3_chars">You should type at least 3 characters</string>
+    <string name="sorry_there_are_no_podcasts_right_now">Sorry, there are no podcasts right now</string>
+    <string name="maybe_you_could_try_later">Maybe you could try later</string>
 
 
+    <!-- Feed fragment -->
+    <string name="user_picture">User picture</string>
+    <string name="podcast_picture">Podcast picture</string>
+    <string name="more">More</string>
+    <string name="listens">Listens</string>
+    <string name="comments">Comments</string>
+    <string name="likes">Likes</string>
+    <string name="recasts">Recasts</string>
+    <string name="send">Send</string>
+    <string name="podcast_time">Podcast time</string>
+    <string name="verified">Verified</string>
+    <string name="recasted">Recasted</string>
+    <string name="error_liking_podcast">There was an error liking this podcast, please try again</string>
 
 
 </resources>

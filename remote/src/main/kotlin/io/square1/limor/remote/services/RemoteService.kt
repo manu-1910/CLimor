@@ -81,7 +81,7 @@ abstract class RemoteService<T> constructor(c: Class<T>, private val config: Rem
                 .header("Accept-Language", "en")
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/json")
-                .header("X-API-VERSION", "2.1") //TODO JJ modify this to send real data from device
+                //.header("X-API-VERSION", "2.1") //TODO JJ modify this to send real data from device
                 .header("Platform", "android 6.0.1") //TODO JJ modify this to send real data from device
                 .header("OS", "android") //TODO JJ modify this to send real data from device
                 .header("AppVersion", "2.2.7") //TODO JJ modify this to send real data from device

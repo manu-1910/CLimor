@@ -20,7 +20,30 @@ data class AccessTokenEntity(
 
 
 data class LinksEntity(
-    val links: String
+    val website: ArrayList<WebsiteEntity>,
+    val content: ArrayList<ContentEntity>,
+    val caption: ArrayList<CaptionEntity>
+)
+
+data class WebsiteEntity(
+    val id: Int,
+    val link: String,
+    val startIndex: Int,
+    val endIndex: Int
+)
+
+data class ContentEntity(
+    val id: Int,
+    val link: String,
+    val startIndex: Int,
+    val endIndex: Int
+)
+
+data class CaptionEntity(
+    val id: Int,
+    val link: String,
+    val startIndex: Int,
+    val endIndex: Int
 )
 
 

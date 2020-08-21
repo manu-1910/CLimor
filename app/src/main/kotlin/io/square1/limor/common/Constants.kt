@@ -2,6 +2,7 @@ package io.square1.limor.common
 
 import io.square1.limor.BuildConfig
 
+
 class Constants{
 
 
@@ -9,6 +10,10 @@ class Constants{
         val TERMS_URL = "https://www.limor.ie/terms-and-conditions-of-use"
         val PRIVACY_URL = "https://www.limor.ie/privacy-policy"
         val SUPPORT_EMAIL = "support@limor.ie"
+
+        // Autofollow Limor
+        val LIMOR_ACCOUNT_ID: Int = BuildConfig.LIMOR_ACCOUNT_ID
+
 
         // Authorization
         val CLIENT_ID: String = BuildConfig.CLIENT_ID

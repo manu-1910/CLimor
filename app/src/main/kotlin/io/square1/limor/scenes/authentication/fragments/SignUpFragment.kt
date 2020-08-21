@@ -35,6 +35,7 @@ import io.square1.limor.scenes.authentication.viewmodels.MergeFacebookAccountVie
 import io.square1.limor.scenes.authentication.viewmodels.SignFBViewModel
 import io.square1.limor.scenes.authentication.viewmodels.SignUpViewModel
 import io.square1.limor.scenes.main.MainActivity
+import io.square1.limor.scenes.main.viewmodels.CreateFriendViewModel
 import io.square1.limor.uimodels.UISignUpUser
 import kotlinx.android.synthetic.main.component_edit_text.view.*
 import kotlinx.android.synthetic.main.fragment_sign_in.*
@@ -58,9 +59,12 @@ class SignUpFragment : BaseFragment() {
     private lateinit var viewModelSignInFB: SignFBViewModel
     private lateinit var viewModelMergeFacebookAccount: MergeFacebookAccountViewModel
 
+    private lateinit var viewModelCreateFriend : CreateFriendViewModel
+
     private val signUpTrigger = PublishSubject.create<Unit>()
     private val signUpFBLoginTrigger = PublishSubject.create<Unit>()
     private val mergeFacebookAccountTrigger = PublishSubject.create<Unit>()
+    private val createFriendTrigger = PublishSubject.create<Unit>()
 
     private var callbackManager: CallbackManager? = null
 
@@ -92,6 +96,7 @@ class SignUpFragment : BaseFragment() {
         apiCall()
         apiCallSignInWithFacebook()
         apiCallMergeFacebookAccount()
+        initApiCallAutofollowLimor()
         setMessageWithClickableLink(tvTermsAndConditions)
         listeners()
     }
@@ -112,6 +117,11 @@ class SignUpFragment : BaseFragment() {
                 ViewModelProviders
                     .of(fragmentActivity, viewModelFactory)
                     .get(MergeFacebookAccountViewModel::class.java)
+
+            viewModelCreateFriend =
+                ViewModelProviders
+                    .of(fragmentActivity, viewModelFactory)
+                    .get(CreateFriendViewModel::class.java)
         }
     }
 
@@ -128,9 +138,12 @@ class SignUpFragment : BaseFragment() {
             view?.hideKeyboard()
 
             if (it.code == 0) {
-                val mainIntent = Intent(context, MainActivity::class.java)
-                startActivity(mainIntent)
-                (activity as SignActivity).finish()
+                viewModelCreateFriend.idNewFriend = Constants.LIMOR_ACCOUNT_ID
+                createFriendTrigger.onNext(Unit)
+
+//                val mainIntent = Intent(context, MainActivity::class.java)
+//                startActivity(mainIntent)
+//                (activity as SignActivity).finish()
             }
         })
 
@@ -159,6 +172,30 @@ class SignUpFragment : BaseFragment() {
         })
     }
 
+    private fun initApiCallAutofollowLimor() {
+        val output = viewModelCreateFriend.transform(
+            CreateFriendViewModel.Input(
+                createFriendTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            view?.hideKeyboard()
+            goToMainActivity()
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            view?.hideKeyboard()
+
+            // TODO: maybe we should do some checks
+            goToMainActivity()
+        })
+    }
+
     private fun apiCallSignInWithFacebook() {
         val output = viewModelSignInFB.transform(
             SignFBViewModel.Input(
@@ -180,7 +217,9 @@ class SignUpFragment : BaseFragment() {
 
 
             if(it.message == "Success"){
-                proceedLogin()
+                viewModelCreateFriend.idNewFriend = Constants.LIMOR_ACCOUNT_ID
+                createFriendTrigger.onNext(Unit)
+                goToMainActivity()
             }else{
                 if (it.code == Constants.ERROR_CODE_FACEBOOK_USER_EXISTS) {
                     alert(it.message) {
@@ -235,7 +274,9 @@ class SignUpFragment : BaseFragment() {
             view?.hideKeyboard()
 
             if (it.message == "Success") {
-                proceedLogin()
+                viewModelCreateFriend.idNewFriend = Constants.LIMOR_ACCOUNT_ID
+                createFriendTrigger.onNext(Unit)
+                goToMainActivity()
             }
         })
 
@@ -470,7 +511,7 @@ class SignUpFragment : BaseFragment() {
         mergeFacebookAccountTrigger.onNext(Unit)
     }
 
-    private fun proceedLogin() {
+    private fun goToMainActivity() {
         //DataManager.getInstance().getUserInfoData(true, null)
 
         val mainIntent = Intent(context, MainActivity::class.java)

@@ -77,6 +77,9 @@ android {
 
             buildConfigField "boolean", "REPORT_CRASHES", "false"
             buildConfigField "String",  "ANALYTICS_TRACKING_ID", '"UA-123281132-1"'
+
+            buildConfigField "int", "LIMOR_ACCOUNT_ID", '12'
+
             minifyEnabled false
             debuggable true
             zipAlignEnabled true
@@ -98,6 +101,9 @@ android {
 
             buildConfigField "boolean", "REPORT_CRASHES", "false"
             buildConfigField "String",  "ANALYTICS_TRACKING_ID", '"UA-123275575-1"'
+
+            buildConfigField "int", "LIMOR_ACCOUNT_ID", '350'
+
             minifyEnabled false
             debuggable true
             zipAlignEnabled true
@@ -118,6 +124,9 @@ android {
 
             buildConfigField "boolean", "REPORT_CRASHES", "true"
             buildConfigField "String",  "ANALYTICS_TRACKING_ID", '"UA-123270039-1"'
+
+            buildConfigField "int", "LIMOR_ACCOUNT_ID", '12'
+
             minifyEnabled true
             debuggable true
             zipAlignEnabled true

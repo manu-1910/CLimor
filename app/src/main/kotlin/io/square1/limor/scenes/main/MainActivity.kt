@@ -62,6 +62,9 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
                 HomeFragment.TAG -> {
                     showHomeToolbar(getString(R.string.title_home))
                 }
+                FeedFragment.TAG -> {
+                    showHomeToolbar(getString(R.string.title_home))
+                }
                 DiscoverFragment.TAG -> {
                     showHomeToolbar(getString(R.string.title_discover))
                 }

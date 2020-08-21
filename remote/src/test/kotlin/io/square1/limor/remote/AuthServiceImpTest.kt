@@ -13,13 +13,30 @@ import org.junit.Test
 @ImplicitReflectionSerializer
 class AuthServiceImpTest{
     private lateinit var authservice: AuthServiceImp
-    private val baseURL = "https://limor-api-staging.herokuapp.com/"
+
     private val testEmail = "juanjo@square1.io"
     private val testPassword = "123456789"
-    /*private val testEmail = "alfocea23@gmail.com"
-    private val testPassword = "123456"*/
 
-    private val testUsername = "juanjo"
+//    private val testEmail = "jose6@square1.io"
+//    private val testPassword = "123456"
+    private val testUsername = "jose6"
+
+
+    private val URL_DEVELOPMENT = "https://limor-api-development.herokuapp.com"
+    private val URL_STAGING = "https://limor-api-staging.herokuapp.com"
+    private val CURRENT_URL = URL_STAGING
+
+    private val TOKEN_DEVELOPMENT = "9b1b2517ba88187cc8e50a2f40446a0ff10200b9353ef356441c751553dc33ce"
+    private val TOKEN_STAGING = "36bf82e596dc582796508c09d050484181fa51278eb6b0c2bdbfb269c98a3992"
+    private val CURRENT_TOKEN = TOKEN_STAGING
+
+    private val CLIENT_ID_DEVELOPMENT = "333ac452469f437fac9fe94de3dce1b6224ede744a38ceda1281cad7929319e3"
+    private val CLIENT_ID_STAGING = "2711e12535ceb15773fe87dc691bcb8c26295bb1434f7d8f4912006dff6a189c"
+    private val CURRENT_CLIENT_ID = CLIENT_ID_STAGING
+
+    private val CLIENT_SECRET_DEVELOPMENT = "0023dfe2893b107ae39f7106e9d4eddc715f1372053a8261ff8d539951c35cf1"
+    private val CLIENT_SECRET_STAGING = "af570a038fbb5e9eb7c5338068f57b5a22c119d5fd273909f38b1cf4f9acd996"
+    private val CURRENT_CLIENT_SECRET = CLIENT_SECRET_STAGING
 
 
 
@@ -27,12 +44,12 @@ class AuthServiceImpTest{
     fun should_do_login_successfully() {
 
         val config = RemoteServiceConfig(
-            baseUrl = baseURL,
+            baseUrl = CURRENT_URL,
             debug = true,
-            client_id = "2711e12535ceb15773fe87dc691bcb8c26295bb1434f7d8f4912006dff6a189c",
-            client_secret = "af570a038fbb5e9eb7c5338068f57b5a22c119d5fd273909f38b1cf4f9acd996",
+            client_id = CURRENT_CLIENT_ID,
+            client_secret = CURRENT_CLIENT_SECRET,
             token = "",
-            expiredIn = 0
+            expiredIn = 90000000000
         )
 
         authservice = AuthServiceImp(config)
@@ -47,12 +64,12 @@ class AuthServiceImpTest{
    fun should_do_sign_up_successfully() {
 
        val config = RemoteServiceConfig(
-           baseUrl = baseURL,
+           baseUrl = CURRENT_URL,
            debug = true,
-           client_id = "2711e12535ceb15773fe87dc691bcb8c26295bb1434f7d8f4912006dff6a189c",
-           client_secret = "af570a038fbb5e9eb7c5338068f57b5a22c119d5fd273909f38b1cf4f9acd996",
+           client_id = CURRENT_CLIENT_ID,
+           client_secret = CURRENT_CLIENT_SECRET,
            token = "",
-           expiredIn = 0
+           expiredIn = 90000000000
        )
 
        authservice = AuthServiceImp(config)
