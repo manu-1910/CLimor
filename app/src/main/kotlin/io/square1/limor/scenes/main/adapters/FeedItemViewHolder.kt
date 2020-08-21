@@ -20,9 +20,12 @@ import io.square1.limor.R
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIFeedItem
 import org.jetbrains.anko.sdk23.listeners.onClick
+import timber.log.Timber
+import java.lang.Exception
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import kotlin.collections.ArrayList
 
 class FeedItemViewHolder(
     inflater: LayoutInflater,
@@ -115,7 +118,12 @@ class FeedItemViewHolder(
         var locationString = ""
         if (lat != null && lng != null) {
             val geocoder = Geocoder(itemView.context, Locale.getDefault())
-            val addresses: List<Address> = geocoder.getFromLocation(lat, lng, 1)
+            var addresses: List<Address> = ArrayList()
+            try {
+                addresses = geocoder.getFromLocation(lat, lng, 1)
+            } catch (e : Exception) {
+                Timber.d("Couldn't get location from geocoder")
+            }
             if (addresses.isNotEmpty()) {
                 if (addresses[0].locality != null && addresses[0].countryName != null) {
                     val cityName: String = addresses[0].locality

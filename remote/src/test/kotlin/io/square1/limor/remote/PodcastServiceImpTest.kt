@@ -83,6 +83,27 @@ class PodcastServiceImpTest{
         response?.assertValue { it.message == "Success" }
     }
 
+    @Test
+    fun should_dislike_podcast_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = baseURL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = "9b1b2517ba88187cc8e50a2f40446a0ff10200b9353ef356441c751553dc33ce",
+            expiredIn = 0
+        )
+
+        podcastService = PodcastServiceImp(config)
+
+        val idPodcast = 659
+
+        val response = podcastService.dislikePodcast(idPodcast)?.test()
+
+        response?.assertNoErrors()
+        response?.assertValue { it.message == "Success" }
+    }
+
 
 }
 

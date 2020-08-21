@@ -21,6 +21,7 @@ import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.SessionManager
 import io.square1.limor.scenes.main.adapters.FeedAdapter
 import io.square1.limor.scenes.main.viewmodels.CreatePodcastLikeViewModel
+import io.square1.limor.scenes.main.viewmodels.DeletePodcastLikeViewModel
 import io.square1.limor.scenes.main.viewmodels.FeedViewModel
 import io.square1.limor.uimodels.UIFeedItem
 import org.jetbrains.anko.support.v4.onRefresh
@@ -28,6 +29,7 @@ import javax.inject.Inject
 
 
 class FeedFragment : BaseFragment() {
+
 
 
     @Inject
@@ -40,15 +42,16 @@ class FeedFragment : BaseFragment() {
     // viewModels
     private lateinit var viewModelFeed: FeedViewModel
     private lateinit var viewModelCreatePodcastLike: CreatePodcastLikeViewModel
+    private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
 
 
     private val getFeedDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
+    private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
 
 
     // infinite scroll variables
-    private val FEED_LIMIT_REQUEST =
-        2 // this number multiplied by 2 is because there is an error on the limit
+    private val FEED_LIMIT_REQUEST = 2 // this number multiplied by 2 is because there is an error on the limit
 
     // param in the back side that duplicates the amount of results,
     // to keep it in mind we will multiply by 2. When it's fixed we'll remove it
@@ -57,6 +60,8 @@ class FeedFragment : BaseFragment() {
     private var isScrolling: Boolean = false
     private var isLastPage: Boolean = false
     private var scrollOutItem: Int = 0
+    private var isReloading: Boolean = false
+
 
 
     var rootView: View? = null
@@ -88,8 +93,9 @@ class FeedFragment : BaseFragment() {
 
             bindViewModel()
             configureAdapter()
-            apiCallGetFeed()
-            apiCallCreateLike()
+            initApiCallGetFeed()
+            initApiCallCreateLike()
+            initApiCallDeleteLike()
 
             getFeedDataTrigger.onNext(Unit)
         }
@@ -122,17 +128,18 @@ class FeedFragment : BaseFragment() {
 
                     override fun onLikeClicked(item: UIFeedItem, position: Int) {
                         item.podcast?.let { podcast ->
-                            changeIconLike(item, position, !podcast.liked)
+                            changeItemLikeStatus(item, position, !podcast.liked) // careful, it will change an item to be from like to dislike and viceversa
                             lastLikedItemPosition = position
 
-                            // if it wasn't liked, we have to like it
-                            if(!podcast.liked) {
+                            // if now it's liked, let's call the api
+                            if(podcast.liked) {
                                 viewModelCreatePodcastLike.idPodcast = podcast.id
                                 createPodcastLikeDataTrigger.onNext(Unit)
 
-                                // if it was liked, we have to not like it
+                                // if now it's not liked, let's call the api
                             } else {
-                                Toast.makeText(context, "TODO: cannot dislike yet", Toast.LENGTH_SHORT).show()
+                                viewModelDeletePodcastLike.idPodcast = podcast.id
+                                deletePodcastLikeDataTrigger.onNext(Unit)
                             }
                         }
                     }
@@ -208,7 +215,7 @@ class FeedFragment : BaseFragment() {
 
     }
 
-    private fun changeIconLike(item: UIFeedItem, position: Int, liked: Boolean) {
+    private fun changeItemLikeStatus(item: UIFeedItem, position: Int, liked: Boolean) {
         item.podcast?.let {podcast ->
             if(liked) {
                 podcast.number_of_likes++
@@ -221,7 +228,7 @@ class FeedFragment : BaseFragment() {
     }
 
 
-    private fun apiCallGetFeed() {
+    private fun initApiCallGetFeed() {
         val output = viewModelFeed.transform(
             FeedViewModel.Input(
                 getFeedDataTrigger
@@ -232,15 +239,29 @@ class FeedFragment : BaseFragment() {
 //            System.out.println("Hemos obtenido datos del feeddddddd")
 //            System.out.println("Hemos obtenido ${it.data.feed_items.size} items")
             val newItems = it.data.feed_items
+
+            if (isReloading) {
+                feedItemsList.clear()
+                rvFeed?.recycledViewPool?.clear()
+                isReloading = false
+            }
+
             feedItemsList.addAll(newItems)
             if (newItems.size < FEED_LIMIT_REQUEST)
                 isLastPage = true
+
+
             rvFeed?.adapter?.notifyDataSetChanged()
             hideSwipeToRefreshProgressBar()
         })
+
+        output.errorMessage.observe(this, Observer {
+            hideSwipeToRefreshProgressBar()
+            Toast.makeText(context, "We couldn't get your feed, please, try again later", Toast.LENGTH_SHORT).show()
+        })
     }
 
-    private fun apiCallCreateLike() {
+    private fun initApiCallCreateLike() {
         val output = viewModelCreatePodcastLike.transform(
             CreatePodcastLikeViewModel.Input(
                 createPodcastLikeDataTrigger
@@ -250,11 +271,38 @@ class FeedFragment : BaseFragment() {
         output.response.observe(this, Observer { response ->
             val code = response.code
             if (code != 0) {
-                Toast.makeText(context, getString(R.string.error_liking_podcast), Toast.LENGTH_SHORT).show()
-                val item = feedItemsList[lastLikedItemPosition]
-                item.podcast?.let { podcast -> changeIconLike(item, lastLikedItemPosition, !podcast.liked) }
+                undoLike()
             }
         })
+
+        output.errorMessage.observe(this, Observer {
+            undoLike()
+        })
+    }
+
+    private fun initApiCallDeleteLike() {
+        val output = viewModelDeletePodcastLike.transform(
+            DeletePodcastLikeViewModel.Input(
+                deletePodcastLikeDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                undoLike()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            undoLike()
+        })
+    }
+
+    private fun undoLike() {
+        Toast.makeText(context, getString(R.string.error_liking_podcast), Toast.LENGTH_SHORT).show()
+        val item = feedItemsList[lastLikedItemPosition]
+        item.podcast?.let { podcast -> changeItemLikeStatus(item, lastLikedItemPosition, !podcast.liked) }
     }
 
 
@@ -284,6 +332,12 @@ class FeedFragment : BaseFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastLikeViewModel::class.java)
         }
+
+        activity?.let { fragmentActivity ->
+            viewModelDeletePodcastLike = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(DeletePodcastLikeViewModel::class.java)
+        }
     }
 
     override fun onResume() {
@@ -306,7 +360,7 @@ class FeedFragment : BaseFragment() {
 
     private fun reloadFeed() {
         isLastPage = false
-        feedItemsList.clear()
+        isReloading = true
         setFeedViewModelVariables()
         getFeedDataTrigger.onNext(Unit)
     }

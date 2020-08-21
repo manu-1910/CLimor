@@ -10,11 +10,11 @@ data class NWCreatePodcastLikeResponse(
     @Optional
     val message: String = "",
     @Optional
-    val data: NWPodcastDataLike? = NWPodcastDataLike()
+    val data: NWPodcastCreateLikeData? = NWPodcastCreateLikeData()
 )
 
 @Serializable
-data class NWPodcastDataLike(
+data class NWPodcastCreateLikeData(
     @Optional
     val like: NWPodcastLike? = NWPodcastLike()
 )

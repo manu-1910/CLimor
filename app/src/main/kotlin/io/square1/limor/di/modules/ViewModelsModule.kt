@@ -85,4 +85,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(CreatePodcastLikeViewModel::class)
     abstract fun bindCreatePodcastLikeViewModel(createPodcastLikeViewModel: CreatePodcastLikeViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DeletePodcastLikeViewModel::class)
+    abstract fun bindDeletePodcastLikeViewModel(deletePodcastLikeViewModel: DeletePodcastLikeViewModel): ViewModel
 }

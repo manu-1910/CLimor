@@ -19,8 +19,8 @@ fun CreatePodcastLikeResponseEntity.asUIModel(): UICreatePodcastLikeResponse {
 }
 
 
-fun DataPodcastLikeEntity.asUIModel(): UIDataPodcastLike {
-    return UIDataPodcastLike(
+fun CreatePodcastLikeData.asUIModel(): UICreatePodcastLikeData {
+    return UICreatePodcastLikeData(
         like?.asUIModel()
     )
 }

@@ -3,10 +3,10 @@ package io.square1.limor.uimodels
 data class UICreatePodcastLikeResponse (
     var code: Int,
     var message: String,
-    var data: UIDataPodcastLike?
+    var data: UICreatePodcastLikeData?
 )
 
-data class UIDataPodcastLike(
+data class UICreatePodcastLikeData(
     var like: UIPodcastLike?
 )
 

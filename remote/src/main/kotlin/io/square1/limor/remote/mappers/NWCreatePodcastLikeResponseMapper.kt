@@ -27,8 +27,8 @@ fun CreatePodcastLikeResponseEntity.asRemoteEntity(): NWCreatePodcastLikeRespons
     )
 }
 
-fun NWPodcastDataLike.asDataEntity(): DataPodcastLikeEntity {
-    return DataPodcastLikeEntity(
+fun NWPodcastCreateLikeData.asDataEntity(): CreatePodcastLikeData {
+    return CreatePodcastLikeData(
         like?.asDataEntity()
     )
 }
@@ -41,8 +41,8 @@ fun NWPodcastLike.asDataEntity(): PodcastLikeEntity {
 }
 
 
-fun DataPodcastLikeEntity.asRemoteEntity(): NWPodcastDataLike {
-    return NWPodcastDataLike(
+fun CreatePodcastLikeData.asRemoteEntity(): NWPodcastCreateLikeData {
+    return NWPodcastCreateLikeData(
         like?.asRemoteEntity()
     )
 }

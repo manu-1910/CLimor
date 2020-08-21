@@ -3,10 +3,10 @@ package entities.response
 data class CreatePodcastLikeResponseEntity(
     val code: Int,
     val message: String,
-    val data: DataPodcastLikeEntity?
+    val data: CreatePodcastLikeData?
 )
 
-data class DataPodcastLikeEntity (
+data class CreatePodcastLikeData (
     val like: PodcastLikeEntity?
 )
 
