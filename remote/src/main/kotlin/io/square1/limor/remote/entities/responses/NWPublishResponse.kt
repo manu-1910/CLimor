@@ -96,6 +96,26 @@ data class NWAudio(
 
 @Serializable
 class NWMentions(
+    @Optional
+    val mentions : NWContentMentionItemsArray = NWContentMentionItemsArray()
+)
+
+@Serializable
+class NWContentMentionItemsArray (
+    @Optional
+    val content : ArrayList<NWContentMentionItem> = ArrayList()
+)
+
+@Serializable
+class NWContentMentionItem(
+    @Optional
+    val user_id : Int = 0,
+    @Optional
+    val username : String = "",
+    @Optional
+    val start_index : Int = 0,
+    @Optional
+    val end_index : Int = 0
 )
 
 @Serializable

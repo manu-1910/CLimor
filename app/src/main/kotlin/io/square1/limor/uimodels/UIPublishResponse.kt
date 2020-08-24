@@ -54,5 +54,17 @@ data class UIPodcast(
 //)
 
 class UIMentions(
-): Serializable
+    val mentions: UIContentMentionItemsArray
+) : Serializable
+
+class UIContentMentionItemsArray (
+    val content : ArrayList<UIContentMentionItem>
+) : Serializable
+
+class UIContentMentionItem (
+    val user_id: Int,
+    val username: String,
+    val start_index: Int,
+    val end_index: Int
+) : Serializable
 

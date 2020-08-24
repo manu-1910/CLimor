@@ -76,8 +76,26 @@ fun AudioEntity.asUIModel(): UIAudio{
 
 fun MentionsEntity.asUIModel(): UIMentions {
     return UIMentions(
+        mentions.asUIModel()
     )
 }
+
+fun ContentMentionItemArray.asUIModel() : UIContentMentionItemsArray {
+    return UIContentMentionItemsArray(
+        getAllContentMentions(content)
+    )
+}
+
+fun ContentMentionItemEntity.asUIModel() : UIContentMentionItem {
+    return  UIContentMentionItem (
+        user_id,
+        username,
+        start_index,
+        end_index
+    )
+}
+
+
 
 
 fun TagsEntity.asUIModel(): UITags {
@@ -103,6 +121,17 @@ fun DataMetaData.asUIModel(): UIMetaData {
 
 fun getAllUITags(entityList: ArrayList<TagsEntity>?): ArrayList<UITags> {
     val uiList = ArrayList<UITags>()
+    if (entityList != null) {
+        for (item in entityList) {
+            if (item != null)
+                uiList.add(item.asUIModel())
+        }
+    }
+    return uiList
+}
+
+fun getAllContentMentions(entityList: ArrayList<ContentMentionItemEntity>?): ArrayList<UIContentMentionItem> {
+    val uiList = ArrayList<UIContentMentionItem>()
     if (entityList != null) {
         for (item in entityList) {
             if (item != null)

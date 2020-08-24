@@ -13,7 +13,7 @@ data class FeedsItemsEntityArray(
 
 data class FeedsItemsEntity(
     var id: String,
-    var podcast: PodcastEntity?, // caution, this is declared in another class and I don't know if I can reuse it
+    var podcast: PodcastEntity?,
     var user: UserEntity,
     var recasted: Boolean,
     var created_at: Int

@@ -72,7 +72,24 @@ fun NWAudio.asDataEntity(): AudioEntity {
 
 
 fun NWMentions.asDataEntity(): MentionsEntity {
-    return MentionsEntity()
+    return MentionsEntity(
+        mentions.asDataEntity()
+    )
+}
+
+fun NWContentMentionItemsArray.asDataEntity() : ContentMentionItemArray {
+    return ContentMentionItemArray(
+        getAllContentMentionEntities(content)
+    )
+}
+
+fun NWContentMentionItem.asDataEntity(): ContentMentionItemEntity {
+    return ContentMentionItemEntity(
+        user_id,
+        username,
+        start_index,
+        end_index
+    )
 }
 
 fun NWTags.asDataEntity(): TagsEntity {
@@ -87,6 +104,20 @@ fun NWTags.asDataEntity(): TagsEntity {
 
 fun getAllTagsEntities(nwList: ArrayList<NWTags>?): ArrayList<TagsEntity> {
     val entityList = ArrayList<TagsEntity>()
+    if (nwList != null) {
+        for (item in nwList) {
+            if (item != null)
+                entityList.add(item.asDataEntity())
+        }
+    }
+    return entityList
+}
+
+
+
+
+fun getAllContentMentionEntities(nwList: ArrayList<NWContentMentionItem>?): ArrayList<ContentMentionItemEntity> {
+    val entityList = ArrayList<ContentMentionItemEntity>()
     if (nwList != null) {
         for (item in nwList) {
             if (item != null)
