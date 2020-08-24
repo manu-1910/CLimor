@@ -20,6 +20,7 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.SessionManager
 import io.square1.limor.scenes.main.adapters.FeedAdapter
+import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
 import io.square1.limor.scenes.main.viewmodels.CreatePodcastLikeViewModel
 import io.square1.limor.scenes.main.viewmodels.DeletePodcastLikeViewModel
 import io.square1.limor.scenes.main.viewmodels.FeedViewModel
@@ -111,7 +112,10 @@ class FeedFragment : BaseFragment() {
                 feedItemsList,
                 object : FeedAdapter.OnFeedClickListener {
                     override fun onItemClicked(item: UIFeedItem, position: Int) {
-                        Toast.makeText(context, "You clicked on item", Toast.LENGTH_SHORT).show()
+                        val podcastDetailsIntent = Intent(context, PodcastDetailsActivity::class.java)
+                        podcastDetailsIntent.putExtra("model", item)
+                        startActivity(podcastDetailsIntent)
+//                        (activity as SignActivity).finish()
                     }
 
                     override fun onPlayClicked(item: UIFeedItem, position: Int) {

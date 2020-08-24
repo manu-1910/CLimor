@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/podcast_details_nav"
+    app:startDestination="@id/podcast_details_fragment">
+
+    <fragment
+        android:id="@+id/podcast_details_fragment"
+        android:name="io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsFragment"
+        android:label="PodcastDetailsFragment"
+        tools:layout="@layout/fragment_podcast_details">
+
+    </fragment>
+
+</navigation>

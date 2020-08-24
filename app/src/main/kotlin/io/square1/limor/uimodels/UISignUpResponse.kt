@@ -1,5 +1,7 @@
 package io.square1.limor.uimodels
 
+import java.io.Serializable
+
 
 data class UISignUpResponse(
     var code: Int,
@@ -23,28 +25,28 @@ data class UILinks(
     var website: ArrayList<UIWebsite>,
     var content: ArrayList<UIContent>,
     var caption: ArrayList<UICaption>
-)
+): Serializable
 
 data class UIWebsite (
     var id: Int,
     var link: String,
     var startIndex: Int,
     var endIndex: Int
-)
+) : Serializable
 
 data class UIContent (
     var id: Int,
     var link: String,
     var startIndex: Int,
     var endIndex: Int
-)
+) : Serializable
 
 data class UICaption (
     var id: Int,
     var link: String,
     var startIndex: Int,
     var endIndex: Int
-)
+) : Serializable
 
 
 data class UIImages(
@@ -52,7 +54,7 @@ data class UIImages(
     var medium_url: String,
     var original_url: String,
     var small_url: String
-)
+): Serializable
 
 
 data class UIUser(
@@ -84,4 +86,4 @@ data class UIUser(
     var username: String?,
     var verified: Boolean,
     var website: String?
-)
+): Serializable
