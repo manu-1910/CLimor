@@ -213,6 +213,7 @@
     <string name="error_liking_podcast">There was an error liking this podcast, please try again</string>
     <string name="title_podcast_details">Podcast details</string>
     <string name="logo">Logo</string>
+    <string name="reply">Reply</string>
 
 
 </resources>

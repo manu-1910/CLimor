@@ -31,13 +31,8 @@ import javax.inject.Inject
 
 class FeedFragment : BaseFragment() {
 
-
-
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    @Inject
-    lateinit var sessionManager: SessionManager
 
 
     // viewModels

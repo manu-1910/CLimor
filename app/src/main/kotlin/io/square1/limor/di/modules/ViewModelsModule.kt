@@ -90,4 +90,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(DeletePodcastLikeViewModel::class)
     abstract fun bindDeletePodcastLikeViewModel(deletePodcastLikeViewModel: DeletePodcastLikeViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(GetCommentsViewModel::class)
+    abstract fun bindGetCommentsViewModel(getCommentsViewModel: GetCommentsViewModel): ViewModel
 }
