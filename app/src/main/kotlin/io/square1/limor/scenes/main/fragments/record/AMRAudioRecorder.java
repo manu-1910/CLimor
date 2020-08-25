@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import io.square1.limor.scenes.utils.Commons;
+
 /**
  *
  * Android does not support pause and resume when recording amr audio,
@@ -136,7 +138,7 @@ public class AMRAudioRecorder  {
         }
 
         // Merge files
-        String mergedFilePath = this.fileDirectory + new Date().getTime() + ".amr";
+        String mergedFilePath = this.fileDirectory + new Date().getTime() + Commons.audioFileFormat;
         try {
             FileOutputStream fos = new FileOutputStream(mergedFilePath);
 
@@ -186,13 +188,13 @@ public class AMRAudioRecorder  {
             throw new IllegalArgumentException("[AMRAudioRecorder] audioFileDirectory is a not valid directory!");
         }
 
-        String filePath = directory.getAbsolutePath() + "/" + new Date().getTime() + ".amr";
+        String filePath = directory.getAbsolutePath() + "/" + new Date().getTime() + Commons.audioFileFormat;
         this.files.add(filePath);
 
         recorder.setOutputFile(filePath);
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
     }
 
     public int getMaxAmplitude(){

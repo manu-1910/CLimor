@@ -23,6 +23,7 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.scenes.main.adapters.DraftAdapter
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
+import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.copyFile
 import io.square1.limor.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import io.square1.limor.uimodels.UIDraft
@@ -201,7 +202,7 @@ class DraftsFragment : BaseFragment() {
 
                         try {
                             val originalFile = File(draftsLocalList[position].filePath)
-                            val destFile = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() +".amr")
+                            val destFile = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + CommonsKt.audioFileFormat)
                             copyFile(originalFile, destFile)
                         } catch (e: Exception) {
                             e.printStackTrace()

@@ -5,6 +5,8 @@ import android.content.*
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.googlecode.mp4parser.authoring.Movie
 import com.googlecode.mp4parser.authoring.Track
@@ -13,6 +15,7 @@ import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack
 import io.square1.limor.App
 import io.square1.limor.R
+import io.square1.limor.scenes.main.viewmodels.DraftViewModel
 import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.statemanager.Step
 import io.square1.limor.scenes.utils.waveform.MarkerSet
@@ -27,10 +30,14 @@ import java.io.File
 import java.io.IOException
 import java.io.RandomAccessFile
 import java.util.*
+import javax.inject.Inject
 
 
 class EditFragment : WaveformFragment() {
 
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private lateinit var draftViewModel: DraftViewModel
     private var recordingItem: UIDraft? = null
     private var initialFilePath: String? = null
     private var initialLength: Long = 0
@@ -56,7 +63,16 @@ class EditFragment : WaveformFragment() {
         ViewCompat.setTranslationZ(view, 40f);
 
         listeners()
+        bindViewModel()
         registerReceivers()
+    }
+
+    private fun bindViewModel() {
+        activity?.let {
+            draftViewModel = ViewModelProviders
+                .of(it, viewModelFactory)
+                .get(DraftViewModel::class.java)
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -562,6 +578,16 @@ class EditFragment : WaveformFragment() {
     }
 
     private fun updateRecordingItem() { //Update recording item in database  //TODO JJ
+        try {
+            draftViewModel.uiDraft = recordingItem!!
+            if (!draftViewModel.filesArray.contains(File(recordingItem?.filePath))){
+                draftViewModel.filesArray.add(File(recordingItem?.filePath))
+            }
+
+            draftViewModel.continueRecording = true
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun showAlertOK(context: Context?, title: String?, message: String?, listener: DialogInterface.OnClickListener?) {

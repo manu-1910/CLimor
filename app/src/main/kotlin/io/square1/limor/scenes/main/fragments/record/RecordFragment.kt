@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
+import android.media.AudioFormat
 import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
@@ -21,6 +22,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import com.github.squti.androidwaverecorder.WaveRecorder
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
@@ -28,6 +30,7 @@ import io.square1.limor.common.BaseFragment
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
 import io.square1.limor.scenes.utils.Commons.*
 import io.square1.limor.scenes.utils.CommonsKt
+import io.square1.limor.scenes.utils.CommonsKt.Companion.audioFileFormat
 import io.square1.limor.scenes.utils.VisualizerView
 import io.square1.limor.uimodels.UIDraft
 import kotlinx.android.synthetic.main.fragment_record.*
@@ -36,6 +39,7 @@ import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.support.v4.runOnUiThread
 import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.uiThread
@@ -59,12 +63,14 @@ class RecordFragment : BaseFragment() {
     private var handler = Handler()
     private lateinit var updater: Runnable
     private lateinit var mRecorder : AMRAudioRecorder
+    //private lateinit var mRecorder : WaveRecorder
     private val PERMISSION_ALL = 1
     private var PERMISSIONS = arrayOf(
         Manifest.permission.RECORD_AUDIO,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
     private val insertDraftTrigger = PublishSubject.create<Unit>()
+    private val deleteDraftTrigger = PublishSubject.create<Unit>()
     var app: App? = null
     var recordingItem: UIDraft? = null
 
@@ -99,6 +105,7 @@ class RecordFragment : BaseFragment() {
         audioSetup()
         listeners()
         insertDraft()
+        deleteDraft()
 
         //Check Permissions
         if (!hasPermissions(requireContext(), *PERMISSIONS)) {
@@ -230,6 +237,7 @@ class RecordFragment : BaseFragment() {
                     showSaveDraftAlert(view!!)
                 }
                 negativeButton(getString(R.string.alert_cancel_record_do_not_save)){
+                    deleteDraftInRealm(recordingItem!!)
                     activity?.finish()
                 }
             }.show()
@@ -250,9 +258,11 @@ class RecordFragment : BaseFragment() {
                 findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
             }else{
                 doAsync {
-                    val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".amr")
+                    val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
                     recordingItem?.filePath = finalAudio.absolutePath
                     if(mergeAmrAudioFiles(draftViewModel.filesArray, finalAudio.absolutePath)){
+                    //if(mergeWavAudioFiles(draftViewModel.filesArray, finalAudio.absolutePath)){
+
                         draftViewModel.filesArray.clear()
                         draftViewModel.filesArray.add(finalAudio)
 
@@ -286,7 +296,15 @@ class RecordFragment : BaseFragment() {
         if (recordingItem != null){
             changeToEditToolbar()
         }else{
+            //Setup audio recorder
+
             mRecorder = AMRAudioRecorder(recordingDirectory.absolutePath)
+
+            //mRecorder = WaveRecorder(recordingDirectory.absolutePath + "/"+System.currentTimeMillis() + CommonsKt.audioFileFormat)
+//            mRecorder.waveConfig.sampleRate = 44100
+//            mRecorder.waveConfig.channels = AudioFormat.CHANNEL_IN_STEREO
+//            mRecorder.waveConfig.audioEncoding = AudioFormat.ENCODING_PCM_8BIT
+//            mRecorder.noiseSuppressorActive = true
 
             // Disable next button
             //nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
@@ -307,6 +325,7 @@ class RecordFragment : BaseFragment() {
         }
 
         mRecorder = AMRAudioRecorder(recordingDirectory.absolutePath)
+        //mRecorder = WaveRecorder(recordingDirectory.absolutePath + "/"+System.currentTimeMillis() + CommonsKt.audioFileFormat)
     }
 
     private fun listeners(){
@@ -342,10 +361,11 @@ class RecordFragment : BaseFragment() {
                 findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
             }else{
                 doAsync {
-                    val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".amr")
+                    val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
                     recordingItem?.filePath = finalAudio.absolutePath
 
                     if(mergeAmrAudioFiles(draftViewModel.filesArray, finalAudio.absolutePath)){
+                    //if(mergeWavAudioFiles(draftViewModel.filesArray, finalAudio.absolutePath)){
 
                         //Delete all files when they are merged and add the new path to the single file merged
                         draftViewModel.filesArray.clear()
@@ -374,19 +394,31 @@ class RecordFragment : BaseFragment() {
             }
         }
 
+//        mRecorder.onAmplitudeListener = {
+//            if (it != 0) {
+//                if(isRecording){
+//                    runOnUiThread {
+//                        voiceGraph?.addAmplitude(it.toFloat())
+//                        voiceGraph?.invalidate() // refresh the Visualizer
+//                    }
+//
+//                }
+//            }
+//        }
+
         // Listener on amplitudes changes to update the Audio Visualizer
         updater = object : Runnable {
             override fun run() {
                 handler.postDelayed(this, 40)
-                val maxAmplitude: Int = mRecorder.maxAmplitude
-                if (maxAmplitude != 0) {
-                    if(isRecording){
-                        voiceGraph?.addAmplitude(maxAmplitude.toFloat())
-                        voiceGraph?.invalidate() // refresh the Visualizer
+                    if (mRecorder.maxAmplitude != 0) {
+                        if(isRecording){
+                            voiceGraph?.addAmplitude(mRecorder.maxAmplitude.toFloat())
+                            voiceGraph?.invalidate() // refresh the Visualizer
+                        }
                     }
                 }
             }
-        }
+
 
     }
 
@@ -479,10 +511,11 @@ class RecordFragment : BaseFragment() {
 
             //Add the file to the files array
 
-            val fileChosenPath = File(mRecorder.audioFilePath)
+            //val fileChosenPath = File(mRecorder.audioFilePath)
+            val fileChosenPath = getLastModified()
 
             if(!draftViewModel.filesArray.contains(fileChosenPath)){
-                draftViewModel.filesArray.add(fileChosenPath)
+                draftViewModel.filesArray.add(fileChosenPath!!.absoluteFile)
             }
 
             printFilesArray()
@@ -494,8 +527,8 @@ class RecordFragment : BaseFragment() {
             recordingItem?.caption = CommonsKt.getDateTimeFormatted()
             recordingItem?.length = c_meter.base
             recordingItem?.time = System.currentTimeMillis() / 1000
-            recordingItem?.filePath = fileChosenPath.absolutePath
-            recordingItem?.editedFilePath = fileChosenPath.absolutePath
+            recordingItem?.filePath = fileChosenPath!!.absolutePath
+            recordingItem?.editedFilePath = fileChosenPath!!.absolutePath
 
 
             insertDraftInRealm(recordingItem!!)
@@ -544,6 +577,31 @@ class RecordFragment : BaseFragment() {
                 toast(getString(R.string.draft_inserted))
             } else{
                 toast(getString(R.string.draft_not_inserted))
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            toast(getString(R.string.draft_not_inserted_error))
+        })
+    }
+
+
+    private fun deleteDraft() {
+        val output = draftViewModel.deleteDraftRealm(
+            DraftViewModel.InputDelete(
+                deleteDraftTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if (it) {
+                toast(getString(R.string.draft_deleted))
+            } else{
+                toast(getString(R.string.draft_not_deleted))
             }
         })
 
@@ -627,6 +685,13 @@ class RecordFragment : BaseFragment() {
         insertDraftTrigger.onNext(Unit)
     }
 
+
+    private fun deleteDraftInRealm(item: UIDraft){
+        draftViewModel.uiDraft = item
+
+        //Insert in Realm
+        deleteDraftTrigger.onNext(Unit)
+    }
 
 //    override fun onDetach() {
 //
