@@ -17,24 +17,13 @@ import javax.inject.Inject
 
 
 @ImplicitReflectionSerializer
-class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteServiceConfig) :
-    RemoteService<PodcastService>(PodcastService::class.java, serviceConfig) {
+class CommentServiceImp @Inject constructor(private val serviceConfig: RemoteServiceConfig) :
+    RemoteService<CommentService>(CommentService::class.java, serviceConfig) {
 
 
 
-    fun publishPodcast(nwPublishRequest: NWPublishRequest): Single<NWPublishResponse>? {
-        return service.publishPodcast(RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWPublishRequest.serializer(), nwPublishRequest)))
-            .map { response -> response.parseSuccessResponse(NWPublishResponse.serializer()) }
-            .doOnSuccess {
-                    success -> println("SUCCESS: $success")
-            }
-            .doOnError{
-                    error -> println("ERROR: $error")
-            }
-    }
-
-    fun likePodcast(id : Int): Single<NWCreatePodcastLikeResponse>? {
-        return service.likePodcast(id)
+    fun likeComment(id : Int): Single<NWCreatePodcastLikeResponse>? {
+        return service.likeComment(id)
             .map { response -> response.parseSuccessResponse(NWCreatePodcastLikeResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
@@ -44,22 +33,9 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
             }
     }
 
-    fun dislikePodcast(id : Int): Single<NWDeleteLikeResponse>? {
-        return service.dislikePodcast(id)
+    fun dislikeComment(id : Int): Single<NWDeleteLikeResponse>? {
+        return service.dislikeComment(id)
             .map { response -> response.parseSuccessResponse(NWDeleteLikeResponse.serializer()) }
-            .doOnSuccess {
-                    success -> println("SUCCESS: $success")
-            }
-            .doOnError{
-                    error -> println("ERROR: $error")
-            }
-    }
-
-    fun getComments(id : Int): Single<NWGetCommentsResponse>? {
-        return service.getComments(id)
-            .map {
-                    response -> response.parseSuccessResponse(NWGetCommentsResponse.serializer())
-            }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
             }

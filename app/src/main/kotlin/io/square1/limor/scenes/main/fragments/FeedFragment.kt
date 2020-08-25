@@ -18,7 +18,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
-import io.square1.limor.common.SessionManager
 import io.square1.limor.scenes.main.adapters.FeedAdapter
 import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
 import io.square1.limor.scenes.main.viewmodels.CreatePodcastLikeViewModel

@@ -2,7 +2,7 @@ package io.square1.limor.remote.providers
 
 import entities.request.DataPublishRequest
 import entities.response.CreatePodcastLikeResponseEntity
-import entities.response.DeletePodcastLikeResponseEntity
+import entities.response.DeleteLikeResponseEntity
 import entities.response.GetCommentsResponseEntity
 import entities.response.PublishResponseEntity
 import io.reactivex.Single
@@ -25,7 +25,7 @@ class RemotePodcastProviderImp @Inject constructor(private val provider: Podcast
         return provider.likePodcast(id)?.asDataEntity()
     }
 
-    override fun dislikePodcast(id : Int): Single<DeletePodcastLikeResponseEntity>? {
+    override fun dislikePodcast(id : Int): Single<DeleteLikeResponseEntity>? {
         return provider.dislikePodcast(id)?.asDataEntity()
     }
 

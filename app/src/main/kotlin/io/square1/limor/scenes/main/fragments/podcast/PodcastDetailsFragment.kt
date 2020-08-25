@@ -29,10 +29,14 @@ import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.scenes.main.adapters.CommentsAdapter
+import io.square1.limor.scenes.main.viewmodels.CreatePodcastLikeViewModel
+import io.square1.limor.scenes.main.viewmodels.DeleteCommentLikeViewModel
+import io.square1.limor.scenes.main.viewmodels.DeletePodcastLikeViewModel
 import io.square1.limor.scenes.main.viewmodels.GetCommentsViewModel
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIComment
 import io.square1.limor.uimodels.UIFeedItem
+import io.square1.limor.uimodels.UIPodcast
 import kotlinx.android.synthetic.main.fragment_podcast_details.*
 import kotlinx.android.synthetic.main.include_interactions_bar.*
 import kotlinx.android.synthetic.main.include_podcast_data.*
@@ -49,6 +53,7 @@ import kotlin.collections.ArrayList
 
 class PodcastDetailsFragment : BaseFragment() {
 
+    private var lastLikedItemPosition = 0
     private var totalItems = 0
     private var currentItems = 0
     private var scrollOutItem = 0
@@ -58,7 +63,13 @@ class PodcastDetailsFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var viewModelGetComments: GetCommentsViewModel
+    private lateinit var viewModelCreatePodcastLike: CreatePodcastLikeViewModel
+    private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
+    private lateinit var viewModelDeleteCommentLike: DeleteCommentLikeViewModel
     private val getCommentsDataTrigger = PublishSubject.create<Unit>()
+    private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
+    private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
+    private val deleteCommentLikeDataTrigger = PublishSubject.create<Unit>()
 
     private val commentItemsList = ArrayList<UIComment>()
 
@@ -70,24 +81,24 @@ class PodcastDetailsFragment : BaseFragment() {
     var uiFeedItem: UIFeedItem? = null
 
     var clickableSpan: ClickableSpan = object : ClickableSpan() {
-            override fun onClick(textView: View) {
-                val tv = textView as TextView
-                val s: Spanned = tv.text as Spanned
-                val start: Int = s.getSpanStart(this)
-                val end: Int = s.getSpanEnd(this)
-                val clickedTag = s.subSequence(start, end).toString()
-                onHashtagClicked(clickedTag)
-            }
-
-            override fun updateDrawState(ds: TextPaint) {
-                super.updateDrawState(ds)
-                ds.isUnderlineText = true
-            }
+        override fun onClick(textView: View) {
+            val tv = textView as TextView
+            val s: Spanned = tv.text as Spanned
+            val start: Int = s.getSpanStart(this)
+            val end: Int = s.getSpanEnd(this)
+            val clickedTag = s.subSequence(start, end).toString()
+            onHashtagClicked(clickedTag)
         }
+
+        override fun updateDrawState(ds: TextPaint) {
+            super.updateDrawState(ds)
+            ds.isUnderlineText = true
+        }
+    }
 
     private var isReloading = false
 
-    private var commentsAdapter : CommentsAdapter? = null
+    private var commentsAdapter: CommentsAdapter? = null
 
 
     companion object {
@@ -106,6 +117,102 @@ class PodcastDetailsFragment : BaseFragment() {
         }
         app = context?.applicationContext as App
         return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        ViewCompat.setTranslationZ(view, 1f)
+
+        val activity = activity as PodcastDetailsActivity?
+        uiFeedItem = activity?.uiFeedItem
+
+        bindViewModel()
+        initApiCallGetComments()
+        initApiCallCreatePodcastLike()
+        initApiCallDeletePodcastLike()
+        initApiCallDeleteCommentLike()
+        configureAdapter()
+        configureToolbar()
+        fillForm()
+
+        uiFeedItem?.podcast?.id?.let { viewModelGetComments.idPodcast = it }
+        getCommentsDataTrigger.onNext(Unit)
+
+        swipeRefreshLayout?.onRefresh { reloadComments() }
+    }
+
+    private fun initApiCallDeletePodcastLike() {
+        val output = viewModelDeletePodcastLike.transform(
+            DeletePodcastLikeViewModel.Input(
+                deletePodcastLikeDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                undoPodcastLike()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            undoPodcastLike()
+        })
+    }
+
+    private fun initApiCallCreatePodcastLike() {
+        val output = viewModelCreatePodcastLike.transform(
+            CreatePodcastLikeViewModel.Input(
+                createPodcastLikeDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                undoPodcastLike()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            undoPodcastLike()
+        })
+    }
+
+    private fun undoPodcastLike() {
+        Toast.makeText(context, getString(R.string.error_liking_podcast), Toast.LENGTH_SHORT).show()
+        uiFeedItem?.podcast?.let { podcast -> changeItemLikeStatus(podcast, !podcast.liked) }
+    }
+
+    private fun initApiCallDeleteCommentLike() {
+        val output = viewModelDeleteCommentLike.transform(
+            DeleteCommentLikeViewModel.Input(
+                deleteCommentLikeDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                undoLike()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            undoLike()
+        })
+    }
+
+    private fun undoLike() {
+        Toast.makeText(context, getString(R.string.error_liking_podcast), Toast.LENGTH_SHORT).show()
+        val item = commentItemsList[lastLikedItemPosition]
+        item.podcast?.let { podcast ->
+            changeItemLikeStatus(
+                item,
+                lastLikedItemPosition,
+                !podcast.liked
+            )
+        }
     }
 
     private fun initApiCallGetComments() {
@@ -137,7 +244,11 @@ class PodcastDetailsFragment : BaseFragment() {
 
         output.errorMessage.observe(this, Observer {
             hideSwipeToRefreshProgressBar()
-            Toast.makeText(context, "We couldn't get your feed, please, try again later", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                "We couldn't get your feed, please, try again later",
+                Toast.LENGTH_SHORT
+            ).show()
         })
     }
 
@@ -179,21 +290,23 @@ class PodcastDetailsFragment : BaseFragment() {
                     }
 
                     override fun onLikeClicked(item: UIComment, position: Int) {
-//                        item.podcast?.let { podcast ->
-//                            changeItemLikeStatus(item, position, !podcast.liked) // careful, it will change an item to be from like to dislike and viceversa
-//                            lastLikedItemPosition = position
-//
-//                            // if now it's liked, let's call the api
-//                            if(podcast.liked) {
-//                                viewModelCreatePodcastLike.idPodcast = podcast.id
-//                                createPodcastLikeDataTrigger.onNext(Unit)
-//
-//                                // if now it's not liked, let's call the api
-//                            } else {
-//                                viewModelDeletePodcastLike.idPodcast = podcast.id
-//                                deletePodcastLikeDataTrigger.onNext(Unit)
-//                            }
-//                        }
+                        changeItemLikeStatus(
+                            item,
+                            position,
+                            !item.liked
+                        ) // careful, it will change an item to be from like to dislike and viceversa
+                        lastLikedItemPosition = position
+
+                        // if now it's liked, let's call the api
+                        if (item.liked) {
+                            //viewModelCreatePodcastLike.idPodcast = podcast.id
+                            //createPodcastLikeDataTrigger.onNext(Unit)
+
+                            // if now it's not liked, let's call the api
+                        } else {
+                            viewModelDeleteCommentLike.idComment = item.id
+                            deleteCommentLikeDataTrigger.onNext(Unit)
+                        }
                         Toast.makeText(context, "You clicked on like", Toast.LENGTH_SHORT).show()
                     }
 
@@ -274,6 +387,27 @@ class PodcastDetailsFragment : BaseFragment() {
 
     }
 
+
+    private fun changeItemLikeStatus(item: UIComment, position: Int, liked: Boolean) {
+        if (liked) {
+            item.number_of_likes++
+        } else {
+            item.number_of_likes--
+        }
+        item.liked = liked
+        commentsAdapter?.notifyItemChanged(position, item)
+    }
+
+    private fun changeItemLikeStatus(podcast: UIPodcast, liked: Boolean) {
+        if (liked) {
+            podcast.number_of_likes++
+        } else {
+            podcast.number_of_likes--
+        }
+        podcast.liked = liked
+        fillFormLikePodcastData()
+    }
+
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
             viewModelGetComments = ViewModelProviders
@@ -282,25 +416,28 @@ class PodcastDetailsFragment : BaseFragment() {
         }
         viewModelGetComments.limit = FEED_LIMIT_REQUEST
         viewModelGetComments.offset = 0
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        ViewCompat.setTranslationZ(view, 1f)
 
-        val activity = activity as PodcastDetailsActivity?
-        uiFeedItem = activity?.uiFeedItem
+        activity?.let { fragmentActivity ->
+            viewModelCreatePodcastLike = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreatePodcastLikeViewModel::class.java)
+        }
+        uiFeedItem?.podcast?.id?.let { viewModelCreatePodcastLike.idPodcast = it }
 
-        bindViewModel()
-        initApiCallGetComments()
-        configureAdapter()
-        configureToolbar()
-        fillForm()
 
-        uiFeedItem?.podcast?.id?.let { viewModelGetComments.idPodcast = it }
-        getCommentsDataTrigger.onNext(Unit)
+        activity?.let { fragmentActivity ->
+            viewModelDeletePodcastLike = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(DeletePodcastLikeViewModel::class.java)
+        }
+        uiFeedItem?.podcast?.id?.let { viewModelDeletePodcastLike.idPodcast = it }
 
-        swipeRefreshLayout?.onRefresh { reloadComments() }
+        activity?.let { fragmentActivity ->
+            viewModelDeleteCommentLike = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(DeleteCommentLikeViewModel::class.java)
+        }
     }
 
     private fun reloadComments() {
@@ -364,9 +501,8 @@ class PodcastDetailsFragment : BaseFragment() {
         btnRecasts?.onClick { onRecastClicked() }
 
         // likes
-        uiFeedItem?.podcast?.number_of_likes?.let { tvLikes.text = it.toString() }
-        tvLikes?.onClick { onLikeClicked() }
-        btnLikes?.onClick { onLikeClicked() }
+        tvLikes?.onClick { onPodcastLikeClicked() }
+        btnLikes?.onClick { onPodcastLikeClicked() }
 
         // listens
         uiFeedItem?.podcast?.number_of_listens?.let { tvListens.text = it.toString() }
@@ -405,16 +541,6 @@ class PodcastDetailsFragment : BaseFragment() {
         }
 
 
-        // like
-        uiFeedItem?.podcast?.liked?.let {
-            if (it)
-                btnLikes?.setImageResource(R.drawable.like_filled)
-            else
-                btnLikes?.setImageResource(R.drawable.like)
-        } ?: run {
-            btnLikes?.setImageResource(R.drawable.like)
-        }
-
         // recast
         uiFeedItem?.podcast?.recasted?.let {
             if (it) {
@@ -434,6 +560,20 @@ class PodcastDetailsFragment : BaseFragment() {
         btnMore?.onClick { onMoreClicked() }
         btnSend?.onClick { onSendClicked() }
         btnPlay?.onClick { onPlayClicked() }
+
+        fillFormLikePodcastData()
+    }
+
+    private fun fillFormLikePodcastData() {
+        uiFeedItem?.podcast?.number_of_likes?.let { tvLikes.text = it.toString() }
+        uiFeedItem?.podcast?.liked?.let {
+            if (it)
+                btnLikes?.setImageResource(R.drawable.like_filled)
+            else
+                btnLikes?.setImageResource(R.drawable.like)
+        } ?: run {
+            btnLikes?.setImageResource(R.drawable.like)
+        }
     }
 
 
@@ -462,8 +602,24 @@ class PodcastDetailsFragment : BaseFragment() {
         Toast.makeText(context, "Listens clicked", Toast.LENGTH_SHORT).show()
     }
 
-    private fun onLikeClicked() {
-        Toast.makeText(context, "Likes clicked", Toast.LENGTH_SHORT).show()
+    private fun onPodcastLikeClicked() {
+        uiFeedItem?.podcast?.let { podcast ->
+            changeItemLikeStatus(podcast, !podcast.liked) // careful, it will change an item to be from like to dislike and viceversa
+
+
+            // if now it's liked, let's call the api
+            if (podcast.liked) {
+                viewModelCreatePodcastLike.idPodcast = podcast.id
+                createPodcastLikeDataTrigger.onNext(Unit)
+
+                // if now it's not liked, let's call the api
+            } else {
+                viewModelDeletePodcastLike.idPodcast = podcast.id
+                deletePodcastLikeDataTrigger.onNext(Unit)
+            }
+        }
+
+
     }
 
     private fun onRecastClicked() {

@@ -3,7 +3,7 @@ package repositories.podcast
 
 import entities.request.DataPublishRequest
 import entities.response.CreatePodcastLikeResponseEntity
-import entities.response.DeletePodcastLikeResponseEntity
+import entities.response.DeleteLikeResponseEntity
 import entities.response.GetCommentsResponseEntity
 import entities.response.PublishResponseEntity
 import io.reactivex.Single
@@ -22,7 +22,7 @@ class DataPodcastRepository @Inject constructor(private val remoteProvider: Remo
         return remoteProvider.likePodcast(id)
     }
 
-    override fun dislikePodcast(id: Int): Single<DeletePodcastLikeResponseEntity>? {
+    override fun dislikePodcast(id: Int): Single<DeleteLikeResponseEntity>? {
         return remoteProvider.dislikePodcast(id)
     }
 

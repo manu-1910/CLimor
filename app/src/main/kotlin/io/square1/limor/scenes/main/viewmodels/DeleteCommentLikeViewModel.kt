@@ -13,17 +13,18 @@ import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.uimodels.UIDeleteLikeResponse
 import io.square1.limor.uimodels.UIErrorData
 import io.square1.limor.uimodels.UIErrorResponse
-import io.square1.limor.usecases.DeletePodcastLikeUseCase
+import io.square1.limor.usecases.DeleteCommentLikeUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class DeletePodcastLikeViewModel @Inject constructor(private val deletePodcastLikeUseCase: DeletePodcastLikeUseCase) : BaseViewModel<DeletePodcastLikeViewModel.Input, DeletePodcastLikeViewModel.Output>() {
+class DeleteCommentLikeViewModel @Inject constructor(private val deleteCommentLikeUseCase: DeleteCommentLikeUseCase) :
+    BaseViewModel<DeleteCommentLikeViewModel.Input, DeleteCommentLikeViewModel.Output>() {
 
     private val compositeDispose = CompositeDisposable()
-    var idPodcast = 0
+    var idComment = 0
 
     data class Input(
-        val deletePodcastLikeTrigger: Observable<Unit>
+        val deleteCommentLikeTrigger: Observable<Unit>
     )
 
     data class Output(
@@ -37,18 +38,21 @@ class DeletePodcastLikeViewModel @Inject constructor(private val deletePodcastLi
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
         val response = MutableLiveData<UIDeleteLikeResponse>()
 
-        input.deletePodcastLikeTrigger.subscribe({
-            deletePodcastLikeUseCase.execute(idPodcast).subscribe({
+        input.deleteCommentLikeTrigger.subscribe({
+            deleteCommentLikeUseCase.execute(idComment).subscribe({
                 response.value = it
 
             }, {
                 try {
                     val error = it as HttpException
-                    val errorResponse: UIErrorResponse? = error.response()?.errorBody()?.parseSuccessResponse(
-                        UIErrorResponse.serializer())
+                    val errorResponse: UIErrorResponse? =
+                        error.response()?.errorBody()?.parseSuccessResponse(
+                            UIErrorResponse.serializer()
+                        )
                     errorTracker.postValue(errorResponse)
                 } catch (e: Exception) {
-                    val dataError = UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
+                    val dataError =
+                        UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
                     val errorResponse = UIErrorResponse(99, dataError.toString())
                     errorTracker.postValue(errorResponse)
                 }
