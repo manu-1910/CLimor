@@ -42,7 +42,7 @@ class GetCommentsViewModel @Inject constructor(private val getCommentsUseCase: G
         val response = MutableLiveData<UIGetCommentsResponse>()
 
         input.getFeedTrigger.subscribe({
-            getCommentsUseCase.execute(idPodcast).subscribe({
+            getCommentsUseCase.execute(idPodcast, limit, offset).subscribe({
                 response.value = it
             }, {
                 try {

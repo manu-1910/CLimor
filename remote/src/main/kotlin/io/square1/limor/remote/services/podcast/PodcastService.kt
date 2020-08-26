@@ -35,7 +35,9 @@ interface PodcastService {
 
     @GET(PODCAST_COMMENTS_PATH)
     fun getComments(
-        @Path("id") id : Int
+        @Path("id") id : Int,
+        @Query ("limit") limit : Int?,
+        @Query("offset") offset: Int?
     ): Single<ResponseBody>
 
 //

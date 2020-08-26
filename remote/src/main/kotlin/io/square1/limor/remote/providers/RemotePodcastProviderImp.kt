@@ -29,8 +29,8 @@ class RemotePodcastProviderImp @Inject constructor(private val provider: Podcast
         return provider.dislikePodcast(id)?.asDataEntity()
     }
 
-    override fun getComments(id: Int): Single<GetCommentsResponseEntity>? {
-        return provider.getComments(id)?.asDataEntity()
+    override fun getComments(id: Int, limit: Int, offset: Int): Single<GetCommentsResponseEntity>? {
+        return provider.getComments(id, limit, offset)?.asDataEntity()
     }
 
 }

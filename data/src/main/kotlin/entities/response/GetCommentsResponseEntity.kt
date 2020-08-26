@@ -14,7 +14,7 @@ data class CommentsEntityArray(
 data class CommentEntity(
     var id: Int,
     var user: UserEntity?,
-    var content: String,
+    var content: String?,
     var created_at: Int,
     var updated_at: Int,
     var mentions: MentionsEntity,

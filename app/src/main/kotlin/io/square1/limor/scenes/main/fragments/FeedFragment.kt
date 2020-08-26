@@ -30,6 +30,7 @@ import javax.inject.Inject
 
 class FeedFragment : BaseFragment() {
 
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -49,14 +50,9 @@ class FeedFragment : BaseFragment() {
     private val FEED_LIMIT_REQUEST = 2 // this number multiplied by 2 is because there is an error on the limit
 
     // param in the back side that duplicates the amount of results,
-    // to keep it in mind we will multiply by 2. When it's fixed we'll remove it
-    private var currentItems: Int = 0
-    private var totalItems: Int = 0
     private var isScrolling: Boolean = false
     private var isLastPage: Boolean = false
-    private var scrollOutItem: Int = 0
     private var isReloading: Boolean = false
-
 
 
     var rootView: View? = null
@@ -74,6 +70,7 @@ class FeedFragment : BaseFragment() {
     companion object {
         val TAG: String = FeedFragment::class.java.simpleName
         fun newInstance() = FeedFragment()
+        private const val OFFSET_INFINITE_SCROLL = 2
     }
 
     override fun onCreateView(
@@ -186,21 +183,26 @@ class FeedFragment : BaseFragment() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                currentItems = layoutManager.childCount
-                totalItems = layoutManager.itemCount
 
-                val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
-                if (firstVisibleItem >= 0) {
-                    scrollOutItem = firstVisibleItem
-                }
+                // if we scroll down...
+                if(dy > 0) {
 
-                if (!isLastPage)
-                    if (isScrolling && currentItems + scrollOutItem == totalItems) {
+                    // those are the items that we have already passed in the list, the items we already saw
+                    val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
+
+                    // this are the items that are currently showing on screen
+                    val visibleItemsCount = layoutManager.childCount
+
+                    // this are the total amount of items
+                    val totalItemsCount = layoutManager.itemCount
+
+                    // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
+                    if(isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
                         isScrolling = false
-                        // we have to recall the api to get new values
                         setFeedViewModelVariables(feedItemsList.size - 1)
                         getFeedDataTrigger.onNext(Unit)
                     }
+                }
             }
         })
         rvFeed?.setHasFixedSize(false)
@@ -245,7 +247,7 @@ class FeedFragment : BaseFragment() {
             }
 
             feedItemsList.addAll(newItems)
-            if (newItems.size < FEED_LIMIT_REQUEST)
+            if (newItems.size == 0)
                 isLastPage = true
 
 

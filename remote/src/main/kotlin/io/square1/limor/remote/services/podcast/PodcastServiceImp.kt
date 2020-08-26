@@ -55,8 +55,8 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
             }
     }
 
-    fun getComments(id : Int): Single<NWGetCommentsResponse>? {
-        return service.getComments(id)
+    fun getComments(id : Int, limit: Int, offset: Int): Single<NWGetCommentsResponse>? {
+        return service.getComments(id, limit, offset)
             .map {
                     response -> response.parseSuccessResponse(NWGetCommentsResponse.serializer())
             }

@@ -26,8 +26,8 @@ class DataPodcastRepository @Inject constructor(private val remoteProvider: Remo
         return remoteProvider.dislikePodcast(id)
     }
 
-    override fun getComments(id: Int): Single<GetCommentsResponseEntity>? {
-        return remoteProvider.getComments(id)
+    override fun getComments(id: Int, limit: Int, offset: Int): Single<GetCommentsResponseEntity>? {
+        return remoteProvider.getComments(id, limit, offset)
     }
 
 

@@ -12,5 +12,5 @@ interface RemotePodcastProvider {
     fun publishPodcast(dataPublishRequest: DataPublishRequest): Single<PublishResponseEntity>?
     fun likePodcast(id : Int): Single<CreatePodcastLikeResponseEntity>?
     fun dislikePodcast(id : Int): Single<DeleteLikeResponseEntity>?
-    fun getComments(id : Int): Single<GetCommentsResponseEntity>?
+    fun getComments(id : Int, limit: Int, offset: Int): Single<GetCommentsResponseEntity>?
 }

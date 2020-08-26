@@ -27,7 +27,7 @@ data class NWComment(
     @Optional
     val user: NWUser = NWUser(),
     @Optional
-    val content: String = "",
+    val content: String? = "",
     @Optional
     val created_at: Int = 0,
     @Optional

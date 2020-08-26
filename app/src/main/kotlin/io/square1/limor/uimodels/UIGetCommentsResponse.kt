@@ -16,7 +16,7 @@ data class UICommentsArray(
 data class UIComment(
     var id: Int,
     var user: UIUser?,
-    var content: String,
+    var content: String?,
     var created_at: Int,
     var updated_at: Int,
     var mentions: UIMentions,

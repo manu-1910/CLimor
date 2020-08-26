@@ -34,6 +34,7 @@ import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIComment
 import io.square1.limor.uimodels.UIFeedItem
 import io.square1.limor.uimodels.UIPodcast
+import kotlinx.android.synthetic.main.fragment_feed.*
 import kotlinx.android.synthetic.main.fragment_podcast_details.*
 import kotlinx.android.synthetic.main.include_interactions_bar.*
 import kotlinx.android.synthetic.main.include_podcast_data.*
@@ -51,9 +52,6 @@ import kotlin.collections.ArrayList
 class PodcastDetailsFragment : BaseFragment() {
 
     private var lastLikedItemPosition = 0
-    private var totalItems = 0
-    private var currentItems = 0
-    private var scrollOutItem = 0
     private var isScrolling = false
 
     @Inject
@@ -72,7 +70,6 @@ class PodcastDetailsFragment : BaseFragment() {
 
     private val commentItemsList = ArrayList<UIComment>()
 
-    private val FEED_LIMIT_REQUEST = 10
     private var isLastPage = false
     private var rootView: View? = null
     var app: App? = null
@@ -103,6 +100,8 @@ class PodcastDetailsFragment : BaseFragment() {
     companion object {
         val TAG: String = PodcastDetailsFragment::class.java.simpleName
         fun newInstance() = PodcastDetailsFragment()
+        private const val OFFSET_INFINITE_SCROLL = 2
+        private const val FEED_LIMIT_REQUEST = 10
     }
 
 
@@ -242,8 +241,6 @@ class PodcastDetailsFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-//            System.out.println("Hemos obtenido datos del feeddddddd")
-//            System.out.println("Hemos obtenido ${it.data.feed_items.size} items")
             val newItems = it.data.comments
 
             if (isReloading) {
@@ -253,9 +250,8 @@ class PodcastDetailsFragment : BaseFragment() {
             }
 
             commentItemsList.addAll(newItems)
-            if (newItems.size < FEED_LIMIT_REQUEST)
+            if (newItems.size == 0)
                 isLastPage = true
-
 
             rvComments?.adapter?.notifyDataSetChanged()
             hideSwipeToRefreshProgressBar()
@@ -377,25 +373,29 @@ class PodcastDetailsFragment : BaseFragment() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                currentItems = layoutManager.childCount
-                totalItems = layoutManager.itemCount
+                // if we scroll down...
+                if (dy > 0) {
 
-                val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
-                if (firstVisibleItem >= 0) {
-                    scrollOutItem = firstVisibleItem
-                }
+                    // those are the items that we have already passed in the list, the items we already saw
+                    val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
 
-                if (!isLastPage)
-                    if (isScrolling && currentItems + scrollOutItem == totalItems) {
+                    // this are the items that are currently showing on screen
+                    val visibleItemsCount = layoutManager.childCount
+
+                    // this are the total amount of items
+                    val totalItemsCount = layoutManager.itemCount
+
+                    // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
+                    if (isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
                         isScrolling = false
-                        // we have to recall the api to get new values
                         viewModelGetComments.offset = commentItemsList.size - 1
                         getCommentsDataTrigger.onNext(Unit)
                     }
+                }
             }
         })
         rvComments?.isNestedScrollingEnabled = true
-        rvComments?.setHasFixedSize(false)
+        rvComments?.setHasFixedSize(true)
         val divider = DividerItemDecoration(
             context,
             DividerItemDecoration.VERTICAL

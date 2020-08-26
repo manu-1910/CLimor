@@ -13,8 +13,8 @@ class GetCommentsUseCase @Inject constructor(
     private val postExecutionThread: PostExecutionThread,
     private val jobExecutor: JobExecutor
 ) {
-    fun execute(id: Int): Single<UIGetCommentsResponse> {
-        return podcastRepository.getComments(id)
+    fun execute(id: Int, limit: Int, offset: Int): Single<UIGetCommentsResponse> {
+        return podcastRepository.getComments(id, limit, offset)
             ?.asUIModel()
             ?.observeOn(postExecutionThread.getScheduler())
             ?.subscribeOn(jobExecutor.getScheduler())!!
