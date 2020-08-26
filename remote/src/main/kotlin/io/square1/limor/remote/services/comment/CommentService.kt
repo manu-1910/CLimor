@@ -1,4 +1,4 @@
-package io.square1.limor.remote.services.podcast
+package io.square1.limor.remote.services.comment
 
 import io.reactivex.Single
 import okhttp3.ResponseBody

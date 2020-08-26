@@ -93,6 +93,11 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(CreateCommentLikeViewModel::class)
+    abstract fun bindCreateCommentLikeViewModel(createCommentLikeViewModel: CreateCommentLikeViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(DeleteCommentLikeViewModel::class)
     abstract fun bindDeleteCommentLikeViewModel(deleteCommentLikeViewModel: DeleteCommentLikeViewModel): ViewModel
 

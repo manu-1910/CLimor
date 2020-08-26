@@ -29,10 +29,7 @@ import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.scenes.main.adapters.CommentsAdapter
-import io.square1.limor.scenes.main.viewmodels.CreatePodcastLikeViewModel
-import io.square1.limor.scenes.main.viewmodels.DeleteCommentLikeViewModel
-import io.square1.limor.scenes.main.viewmodels.DeletePodcastLikeViewModel
-import io.square1.limor.scenes.main.viewmodels.GetCommentsViewModel
+import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIComment
 import io.square1.limor.uimodels.UIFeedItem
@@ -65,10 +62,12 @@ class PodcastDetailsFragment : BaseFragment() {
     private lateinit var viewModelGetComments: GetCommentsViewModel
     private lateinit var viewModelCreatePodcastLike: CreatePodcastLikeViewModel
     private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
+    private lateinit var viewModelCreateCommentLike: CreateCommentLikeViewModel
     private lateinit var viewModelDeleteCommentLike: DeleteCommentLikeViewModel
     private val getCommentsDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
+    private val createCommentLikeDataTrigger = PublishSubject.create<Unit>()
     private val deleteCommentLikeDataTrigger = PublishSubject.create<Unit>()
 
     private val commentItemsList = ArrayList<UIComment>()
@@ -130,6 +129,7 @@ class PodcastDetailsFragment : BaseFragment() {
         initApiCallGetComments()
         initApiCallCreatePodcastLike()
         initApiCallDeletePodcastLike()
+        initApiCallCreateCommentLike()
         initApiCallDeleteCommentLike()
         configureAdapter()
         configureToolbar()
@@ -139,6 +139,25 @@ class PodcastDetailsFragment : BaseFragment() {
         getCommentsDataTrigger.onNext(Unit)
 
         swipeRefreshLayout?.onRefresh { reloadComments() }
+    }
+
+    private fun initApiCallCreateCommentLike() {
+        val output = viewModelCreateCommentLike.transform(
+            CreateCommentLikeViewModel.Input(
+                createCommentLikeDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                undoCommentLike()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            undoCommentLike()
+        })
     }
 
     private fun initApiCallDeletePodcastLike() {
@@ -194,16 +213,16 @@ class PodcastDetailsFragment : BaseFragment() {
         output.response.observe(this, Observer { response ->
             val code = response.code
             if (code != 0) {
-                undoLike()
+                undoCommentLike()
             }
         })
 
         output.errorMessage.observe(this, Observer {
-            undoLike()
+            undoCommentLike()
         })
     }
 
-    private fun undoLike() {
+    private fun undoCommentLike() {
         Toast.makeText(context, getString(R.string.error_liking_podcast), Toast.LENGTH_SHORT).show()
         val item = commentItemsList[lastLikedItemPosition]
         item.podcast?.let { podcast ->
@@ -299,15 +318,14 @@ class PodcastDetailsFragment : BaseFragment() {
 
                         // if now it's liked, let's call the api
                         if (item.liked) {
-                            //viewModelCreatePodcastLike.idPodcast = podcast.id
-                            //createPodcastLikeDataTrigger.onNext(Unit)
+                            viewModelCreateCommentLike.idComment = item.id
+                            createCommentLikeDataTrigger.onNext(Unit)
 
                             // if now it's not liked, let's call the api
                         } else {
                             viewModelDeleteCommentLike.idComment = item.id
                             deleteCommentLikeDataTrigger.onNext(Unit)
                         }
-                        Toast.makeText(context, "You clicked on like", Toast.LENGTH_SHORT).show()
                     }
 
                     override fun onRecastClicked(item: UIComment, position: Int) {
@@ -432,6 +450,12 @@ class PodcastDetailsFragment : BaseFragment() {
                 .get(DeletePodcastLikeViewModel::class.java)
         }
         uiFeedItem?.podcast?.id?.let { viewModelDeletePodcastLike.idPodcast = it }
+
+        activity?.let { fragmentActivity ->
+            viewModelCreateCommentLike = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreateCommentLikeViewModel::class.java)
+        }
 
         activity?.let { fragmentActivity ->
             viewModelDeleteCommentLike = ViewModelProviders
@@ -604,7 +628,10 @@ class PodcastDetailsFragment : BaseFragment() {
 
     private fun onPodcastLikeClicked() {
         uiFeedItem?.podcast?.let { podcast ->
-            changeItemLikeStatus(podcast, !podcast.liked) // careful, it will change an item to be from like to dislike and viceversa
+            changeItemLikeStatus(
+                podcast,
+                !podcast.liked
+            ) // careful, it will change an item to be from like to dislike and viceversa
 
 
             // if now it's liked, let's call the api

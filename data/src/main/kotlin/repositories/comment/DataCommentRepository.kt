@@ -1,7 +1,7 @@
 package repositories.comment
 
 
-import entities.response.CreatePodcastLikeResponseEntity
+import entities.response.CreateCommentLikeResponseEntity
 import entities.response.DeleteLikeResponseEntity
 import io.reactivex.Single
 import providers.remote.RemoteCommentProvider
@@ -12,7 +12,7 @@ class DataCommentRepository @Inject constructor(private val remoteProvider: Remo
     CommentRepository {
 
 
-    override fun likeComment(id: Int): Single<CreatePodcastLikeResponseEntity>? {
+    override fun likeComment(id: Int): Single<CreateCommentLikeResponseEntity>? {
         return remoteProvider.likeComment(id)
     }
 
