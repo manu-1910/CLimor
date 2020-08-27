@@ -1145,17 +1145,21 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected void updateUndoRedoButtons() {
         if (stepManager.canUndo()) {
             tvUndo.setEnabled(true);
-            tvUndo.setAlpha(1f);
+            //tvUndo.setAlpha(1f);
+            tvUndo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandPrimary500));
         } else {
             tvUndo.setEnabled(false);
-            tvUndo.setAlpha(0.5f);
+            //tvUndo.setAlpha(0.5f);
+            tvUndo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandSecondary100));
         }
         if (stepManager.canRedo()) {
             tvRedo.setEnabled(true);
-            tvRedo.setAlpha(1f);
+            //tvRedo.setAlpha(1f);
+            tvRedo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandPrimary500));
         } else {
             tvRedo.setEnabled(false);
-            tvRedo.setAlpha(0.5f);
+            //tvRedo.setAlpha(0.5f);
+            tvRedo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandSecondary100));
         }
     }
 

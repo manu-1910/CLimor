@@ -280,7 +280,7 @@ class RecordFragment : BaseFragment() {
                     recordingItem?.editedFilePath = draftViewModel.filesArray[0].absolutePath
                     insertDraftInRealm(recordingItem!!)
 
-                    mRecorder.clear()
+                    //mRecorder.clear() //TODO JJ 270820
 
                     val bundle = bundleOf("recordingItem" to recordingItem)
                     //findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
