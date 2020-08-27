@@ -27,6 +27,7 @@ class DraftAdapter(
     private val listener: DraftAdapter.OnItemClickListener,
     private val deleteListener: DraftAdapter.OnDeleteItemClickListener,
     private val duplicateListener: DraftAdapter.OnDuplicateItemClickListener,
+    private val continueRecordingListener: DraftAdapter.OnContinueRecordingItemClickListener,
     private val navController: NavController
 ) : RecyclerView.Adapter<DraftAdapter.ViewHolder>() {
     var inflator: LayoutInflater
@@ -192,13 +193,18 @@ class DraftAdapter(
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.menu_duplicate_cast -> {
-                        Toast.makeText(context, "duplicate cast", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(context, "duplicate cast", Toast.LENGTH_SHORT).show()
                         duplicateListener.onDuplicateItemClick(position)
                         true
                     }
                     R.id.menu_delete_cast -> {
-                        Toast.makeText(context, "delete cast", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(context, "delete cast", Toast.LENGTH_SHORT).show()
                         deleteListener.onDeleteItemClick(position)
+                        true
+                    }
+                    R.id.menu_continue_recording_cast -> {
+                        //Toast.makeText(context, "continue recording cast", Toast.LENGTH_SHORT).show()
+                        continueRecordingListener.onContinueRecordingItemClick(modelList, position)
                         true
                     }
                     else -> false
@@ -254,10 +260,6 @@ class DraftAdapter(
 
     }
 
-
-
-
-
     init {
         this.list = list
         inflator = LayoutInflater.from(context)
@@ -273,9 +275,18 @@ class DraftAdapter(
         fun onDeleteItemClick(position: Int)
     }
 
+
     interface OnDuplicateItemClickListener {
         fun onDuplicateItemClick(position: Int)
     }
+
+
+    interface OnContinueRecordingItemClickListener {
+        fun onContinueRecordingItemClick(item:UIDraft, position: Int)
+    }
+
+
+
 
 
 }

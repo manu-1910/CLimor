@@ -241,7 +241,6 @@ class PublishFragment : BaseFragment() {
     }
 
 
-
     private fun bindViewModel() {
         activity?.let {
             draftViewModel = ViewModelProviders
@@ -263,7 +262,6 @@ class PublishFragment : BaseFragment() {
     }
 
 
-
     private fun configureToolbar() {
 
         //Toolbar title
@@ -272,6 +270,20 @@ class PublishFragment : BaseFragment() {
         //Toolbar Left
         btnClose.onClick {
             addDataToRecordingItem()
+
+            try {
+                draftViewModel.uiDraft = recordingItem
+
+                draftViewModel.filesArray.clear()
+                if(!draftViewModel.filesArray.contains(File(recordingItem.filePath))){
+                    draftViewModel.filesArray.add(File(recordingItem.filePath))
+                }
+
+                draftViewModel.continueRecording = true
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
             findNavController().popBackStack()
         }
 
@@ -292,7 +304,8 @@ class PublishFragment : BaseFragment() {
 
         btnSaveDraft?.onClick {
             addDataToRecordingItem()
-            findNavController().navigate(R.id.action_record_publish_to_record_drafts)
+            //findNavController().navigate(R.id.action_record_publish_to_record_drafts)
+            activity?.finish()
         }
 
         btnPublishDraft?.onClick {
