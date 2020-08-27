@@ -578,9 +578,22 @@ class EditFragment : WaveformFragment() {
     }
 
     private fun updateRecordingItem() { //Update recording item in database  //TODO JJ
+//        try {
+//            draftViewModel.uiDraft = recordingItem!!
+//            if (!draftViewModel.filesArray.contains(File(recordingItem?.filePath))){
+//                draftViewModel.filesArray.add(File(recordingItem?.filePath))
+//            }
+//
+//            draftViewModel.continueRecording = true
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+
         try {
             draftViewModel.uiDraft = recordingItem!!
-            if (!draftViewModel.filesArray.contains(File(recordingItem?.filePath))){
+
+            draftViewModel.filesArray.clear()
+            if(!draftViewModel.filesArray.contains(File(recordingItem?.filePath))){
                 draftViewModel.filesArray.add(File(recordingItem?.filePath))
             }
 
@@ -597,6 +610,5 @@ class EditFragment : WaveformFragment() {
     private fun showAlertOkCancel(context: Context?, title: String?, message: String?, listener: DialogInterface.OnClickListener?) {
         Commons.showAlertCustomButtons(context, title, message, listener, context!!.getString(R.string.ok), null, context.getString(R.string.cancel))
     }
-
 
 }

@@ -19,7 +19,7 @@ class CommonsKt{
 
     companion object{
 
-        val audioFileFormat: String = ".wav"
+        val audioFileFormat: String = ".amr"
 
         fun getDateTimeFormatted(): String {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

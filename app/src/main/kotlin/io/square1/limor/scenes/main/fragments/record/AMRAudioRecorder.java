@@ -1,7 +1,5 @@
 package io.square1.limor.scenes.main.fragments.record;
 
-
-
 import android.media.MediaRecorder;
 
 import java.io.File;
@@ -138,7 +136,7 @@ public class AMRAudioRecorder  {
         }
 
         // Merge files
-        String mergedFilePath = this.fileDirectory + new Date().getTime() + Commons.audioFileFormat;
+        String mergedFilePath = this.fileDirectory + new Date().getTime() + ".amr";
         try {
             FileOutputStream fos = new FileOutputStream(mergedFilePath);
 
@@ -192,9 +190,9 @@ public class AMRAudioRecorder  {
         this.files.add(filePath);
 
         recorder.setOutputFile(filePath);
-        recorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
     }
 
     public int getMaxAmplitude(){
@@ -204,7 +202,26 @@ public class AMRAudioRecorder  {
             return 0;
         }
     }
+
+    public File getFileRecording(){
+        return new File(this.files.get(files.size() -1));
+    }
+
+    public String getFinalAudioPath(){
+        return this.finalAudioPath;
+    }
+
+
 }
+/*
+*  public int getMaxAmplitude(){
+        if (recorder != null){
+            return recorder.getMaxAmplitude();
+        }else{
+            return 0;
+        }
+    }
+* */
 
 //
 //import android.media.MediaRecorder;
