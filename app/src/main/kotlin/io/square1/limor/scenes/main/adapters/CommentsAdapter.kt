@@ -4,23 +4,27 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import io.square1.limor.scenes.main.fragments.podcast.CommentWithParent
 import io.square1.limor.uimodels.UIComment
+import io.square1.limor.uimodels.UIPodcast
 
 class CommentsAdapter(
-    var context: Context,
-    list: ArrayList<UIComment>,
+    context: Context,
+    private var list: ArrayList<CommentWithParent>,
+    private var podcast: UIPodcast,
     private val commentClickListener: OnCommentClickListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var inflator: LayoutInflater
-    var list: ArrayList<UIComment> = ArrayList()
+//    var list: ArrayList<CommentWithParent> = ArrayList()
+
 
     private fun onTagClicked(clickedTag: String) {
         commentClickListener.onHashtagClicked(clickedTag)
     }
 
     init {
-        this.list = list
+//        this.list = list
         inflator = LayoutInflater.from(context)
     }
 
@@ -38,7 +42,7 @@ class CommentsAdapter(
         val currentItem = list[position]
 
         val commentItemViewHolder : CommentItemViewHolder = holder as CommentItemViewHolder
-        commentItemViewHolder.bind(currentItem, position)
+        commentItemViewHolder.bind(currentItem, podcast, position)
     }
 
     interface OnCommentClickListener {

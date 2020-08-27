@@ -14,8 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import io.square1.limor.R
+import io.square1.limor.scenes.main.fragments.podcast.CommentWithParent
 import io.square1.limor.scenes.utils.CommonsKt
-import io.square1.limor.uimodels.UIComment
+import io.square1.limor.uimodels.UIPodcast
 import org.jetbrains.anko.sdk23.listeners.onClick
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -39,6 +40,7 @@ class CommentItemViewHolder(
     var tvLikes: TextView = itemView.findViewById(R.id.tvLikes)
     var tvRecasts: TextView = itemView.findViewById(R.id.tvRecasts)
     var tvCommentText: TextView = itemView.findViewById(R.id.tvCommentText)
+    var tvNameReplyingTo: TextView = itemView.findViewById(R.id.tvNameReplyingTo)
 
     var ivUser: ImageView = itemView.findViewById(R.id.ivUserPicture)
     var ivVerifiedUser: ImageView = itemView.findViewById(R.id.ivVerifiedUser)
@@ -50,7 +52,9 @@ class CommentItemViewHolder(
     var ibtnMore: ImageButton = itemView.findViewById(R.id.btnMore)
 
     var btnReply: TextView = itemView.findViewById(R.id.btnReply)
-
+    var barThreadUp: View = itemView.findViewById(R.id.barThreadUp)
+    var barThreadDown: View = itemView.findViewById(R.id.barThreadDown)
+    var layReplyingTo: View = itemView.findViewById(R.id.layReplying)
 
 
     var clickableSpan: ClickableSpan = object : ClickableSpan() {
@@ -70,56 +74,76 @@ class CommentItemViewHolder(
     }
 
 
-    fun bind(currentItem: UIComment, position: Int) {
+    fun bind(currentItem: CommentWithParent, podcastParent : UIPodcast, position: Int) {
         // fullname
-        val fullname: String = currentItem.user?.first_name + " " + currentItem.user?.last_name
+        val fullname: String = currentItem.comment.user?.first_name + " " + currentItem.comment.user?.last_name
         tvUserFullname.text = fullname
-        tvUserFullname.onClick { commentClickListener.onUserClicked(currentItem, position) }
+        tvUserFullname.onClick { commentClickListener.onUserClicked(currentItem.comment, position) }
+
+
+        // replying to
+        // if the parent is null, it means that its parent is the main podcast
+        if(currentItem.parent == null) {
+            val fullnameReply: String = " " + podcastParent.user.first_name + " " + podcastParent.user.last_name
+            tvNameReplyingTo.text = fullnameReply
+            barThreadUp.visibility = View.GONE
+            layReplyingTo.visibility = View.VISIBLE
+        } else {
+            barThreadUp.visibility = View.VISIBLE
+            layReplyingTo.visibility = View.GONE
+        }
+
+
+        if(currentItem.comment.comment_count > 0)
+            barThreadDown.visibility = View.VISIBLE
+        else
+            barThreadDown.visibility = View.GONE
+
 
 
         // datetime and location
         val datetimeString =
-            CommonsKt.getDateTimeFormattedFromTimestamp(currentItem.created_at.toLong())
+            CommonsKt.getDateTimeFormattedFromTimestamp(currentItem.comment.created_at.toLong())
         tvDateAndLocation.text = datetimeString
 
 
         // comment text
-        tvCommentText.text = hightlightHashtags(currentItem.content)
+        tvCommentText.text = hightlightHashtags(currentItem.comment.content)
 
 
         // recasts
-        currentItem.podcast?.number_of_recasts?.let { tvRecasts.text = it.toString() }
-        tvRecasts.onClick { commentClickListener.onRecastClicked(currentItem, position) }
-        ibtnRecasts.onClick { commentClickListener.onRecastClicked(currentItem, position) }
+        currentItem.comment.podcast?.number_of_recasts?.let { tvRecasts.text = it.toString() }
+        tvRecasts.onClick { commentClickListener.onRecastClicked(currentItem.comment, position) }
+        ibtnRecasts.onClick { commentClickListener.onRecastClicked(currentItem.comment, position) }
 
         // likes
-        currentItem.number_of_likes.let { tvLikes.text = it.toString() }
+        currentItem.comment.number_of_likes.let { tvLikes.text = it.toString() }
         tvLikes.onClick {
-            commentClickListener.onLikeClicked(currentItem, position)
+            commentClickListener.onLikeClicked(currentItem.comment, position)
         }
         ibtnLike.onClick {
-            commentClickListener.onLikeClicked(currentItem, position)
+            commentClickListener.onLikeClicked(currentItem.comment, position)
         }
 
         // listens
-        currentItem.number_of_listens.let { tvListens.text = it.toString() }
-        tvListens.onClick { commentClickListener.onListenClicked(currentItem, position) }
-        ibtnListen.onClick { commentClickListener.onListenClicked(currentItem, position) }
+        currentItem.comment.number_of_listens.let { tvListens.text = it.toString() }
+        tvListens.onClick { commentClickListener.onListenClicked(currentItem.comment, position) }
+        ibtnListen.onClick { commentClickListener.onListenClicked(currentItem.comment, position) }
 
         // comments
-        currentItem.comment_count.let { tvComments.text = it.toString() }
-        tvComments.onClick { commentClickListener.onCommentClicked(currentItem, position) }
-        ibtnComments.onClick { commentClickListener.onCommentClicked(currentItem, position) }
+        currentItem.comment.comment_count.let { tvComments.text = it.toString() }
+        tvComments.onClick { commentClickListener.onCommentClicked(currentItem.comment, position) }
+        ibtnComments.onClick { commentClickListener.onCommentClicked(currentItem.comment, position) }
 
         // user picture
         Glide.with(itemView.context)
-            .load(currentItem.user?.images?.small_url)
+            .load(currentItem.comment.user?.images?.small_url)
             .apply(RequestOptions.circleCropTransform())
             .into(ivUser)
-        ivUser.onClick { commentClickListener.onUserClicked(currentItem, position) }
+        ivUser.onClick { commentClickListener.onUserClicked(currentItem.comment, position) }
 
         // verified
-        currentItem.user?.verified?.let {
+        currentItem.comment.user?.verified?.let {
             if (it)
                 ivVerifiedUser.visibility = View.VISIBLE
             else
@@ -128,7 +152,7 @@ class CommentItemViewHolder(
 
 
         // like
-        currentItem.liked.let {
+        currentItem.comment.liked.let {
             if (it)
                 ibtnLike.setImageResource(R.drawable.like_filled)
             else
@@ -136,8 +160,8 @@ class CommentItemViewHolder(
         }
 
 
-        ibtnMore.onClick { commentClickListener.onMoreClicked(currentItem, position) }
-        btnReply.onClick { commentClickListener.onReplyClicked(currentItem, position) }
+        ibtnMore.onClick { commentClickListener.onMoreClicked(currentItem.comment, position) }
+        btnReply.onClick { commentClickListener.onReplyClicked(currentItem.comment, position) }
     }
 
 

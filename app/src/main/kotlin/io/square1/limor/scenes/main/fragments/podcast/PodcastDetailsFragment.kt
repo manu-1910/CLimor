@@ -49,6 +49,13 @@ import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
+enum class CommentParentType{PODCAST, COMMENT}
+
+//data class CommentWithParent(val comment : UIComment, val parentName : String, val parentId : Int, val parentType: CommentParentType)
+data class CommentWithParent(val comment : UIComment, val parent : UIComment?)
+
+
+
 class PodcastDetailsFragment : BaseFragment() {
 
     private var lastLikedItemPosition = 0
@@ -69,6 +76,7 @@ class PodcastDetailsFragment : BaseFragment() {
     private val deleteCommentLikeDataTrigger = PublishSubject.create<Unit>()
 
     private val commentItemsList = ArrayList<UIComment>()
+    private val commentWithParentsItemsList = ArrayList<CommentWithParent>()
 
     private var isLastPage = false
     private var rootView: View? = null
@@ -233,6 +241,7 @@ class PodcastDetailsFragment : BaseFragment() {
         }
     }
 
+
     private fun initApiCallGetComments() {
         val output = viewModelGetComments.transform(
             GetCommentsViewModel.Input(
@@ -242,16 +251,17 @@ class PodcastDetailsFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
             val newItems = it.data.comments
+            if (newItems.size == 0)
+                isLastPage = true
 
             if (isReloading) {
                 commentItemsList.clear()
+                commentWithParentsItemsList.clear()
                 rvComments?.recycledViewPool?.clear()
                 isReloading = false
             }
 
-            commentItemsList.addAll(newItems)
-            if (newItems.size == 0)
-                isLastPage = true
+            fillCommentsWithParentsListOneLevel(newItems)
 
             rvComments?.adapter?.notifyDataSetChanged()
             hideSwipeToRefreshProgressBar()
@@ -265,6 +275,44 @@ class PodcastDetailsFragment : BaseFragment() {
                 Toast.LENGTH_SHORT
             ).show()
         })
+    }
+
+
+    private fun fillCommentsWithParentsListAllLevels(newItems: ArrayList<UIComment>, parent: UIComment?) {
+        newItems.forEach { comment ->
+            commentWithParentsItemsList.add(CommentWithParent(comment, null))
+
+            if (comment.comments.size > 0) {
+                comment.comments.forEach{subComment ->
+                    fillCommentsWithParentsListAllLevels(comment.comments, comment)
+                }
+            }
+        }
+    }
+
+
+    private fun countAllComments(commentItemsList: ArrayList<UIComment>): Int {
+        var count = 0
+        commentItemsList.forEach { currentComment ->
+            if( currentComment.comments.size == 0) {
+                count++
+            } else {
+                count += countAllComments(currentComment.comments) + 1
+            }
+        }
+        return count
+    }
+
+    private fun fillCommentsWithParentsListOneLevel(newItems: ArrayList<UIComment>) {
+        newItems.forEach { comment ->
+            commentWithParentsItemsList.add(CommentWithParent(comment, null))
+
+            if (comment.comments.size > 0) {
+                comment.comments.forEach{subComment ->
+                    commentWithParentsItemsList.add(CommentWithParent(subComment, comment))
+                }
+            }
+        }
     }
 
     private fun hideSwipeToRefreshProgressBar() {
@@ -282,7 +330,8 @@ class PodcastDetailsFragment : BaseFragment() {
         commentsAdapter = context?.let {
             CommentsAdapter(
                 it,
-                commentItemsList,
+                commentWithParentsItemsList,
+                uiFeedItem!!.podcast!!,
                 object : CommentsAdapter.OnCommentClickListener {
                     override fun onItemClicked(item: UIComment, position: Int) {
 //                        val podcastDetailsIntent = Intent(context, PodcastDetailsActivity::class.java)
