@@ -347,7 +347,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     public void markerFocus(MarkerView marker) {
         if (isEditMode && !marker.getMarkerSet().isEditMarker()) {
             //TODO JJ New the app explote copying and pasting multiple markers, I add try/catch to avoid ANR and investigate later
-            marker.clearFocus();
+            //marker.clearFocus();
         }
     }
 
@@ -1010,6 +1010,13 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                         int xPlayPos = waveformView.millisecsToPixels(progress * NEW_WIDTH);
                         waveformView.setPlayback(xPlayPos);
                         updateDisplay();
+                    }
+                }else{
+                    if (player != null) { //TODO JJ THIS IS NEW, TEST IT with other marker options (copy, paste, delete, ...)
+                        seekBar.setProgress(progress);
+                        int xPlayPos = waveformView.millisecsToPixels(progress * NEW_WIDTH);
+                        waveformView.setPlayback(xPlayPos);
+                        tvTimePass.setText(Commons.getLengthFromEpochForPlayer(progress));
                     }
                 }
             }
