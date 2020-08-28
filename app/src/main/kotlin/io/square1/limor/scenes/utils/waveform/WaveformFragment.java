@@ -264,6 +264,16 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         touchInitialStartPos = marker.getMarkerSet().getStartPos();
         touchInitialMiddlePos = marker.getMarkerSet().getMiddlePos();
         touchInitialEndPos = marker.getMarkerSet().getEndPos();
+
+
+
+
+//        if (marker.getType() == MarkerView.MIDDLE_MARKER) { //TODO JJ NEW LINES
+//            showPopUpMenu(marker);
+//        }
+
+
+
     }
 
 
@@ -320,9 +330,14 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
         long elapsedMsec = System.currentTimeMillis() - markerTouchStartMsec;
 
-        if (elapsedMsec > 350 && marker.getType() == MarkerView.MIDDLE_MARKER && !isMovingTooMuch) {
+//        if (elapsedMsec > 350 && marker.getType() == MarkerView.MIDDLE_MARKER && !isMovingTooMuch) { //TODO JJ ORIGINAL LINES
+//            showPopUpMenu(marker);
+//        }
+
+        if (marker.getType() == MarkerView.MIDDLE_MARKER) { //TODO JJ NEW LINES
             showPopUpMenu(marker);
         }
+
         isMovingTooMuch = false;
         touchDragging = false;
     }
