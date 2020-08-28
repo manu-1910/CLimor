@@ -27,6 +27,7 @@ import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
+import io.square1.limor.common.Constants
 import io.square1.limor.scenes.main.adapters.CommentsAdapter
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.CommonsKt
@@ -456,6 +457,13 @@ class PodcastDetailsFragment : BaseFragment() {
                         viewModelGetCommentComments.offset = parent.comments.size
                         getCommentCommentsDataTrigger.onNext(Unit)
                     }
+
+                    override fun onShowLessClicked(parent: UIComment, lastChildPosition: Int) {
+                        val originalParentPosition = lastChildPosition - parent.comments.size
+                        removeExcessChildrenFromLists(parent, lastChildPosition)
+                        rvComments?.adapter?.notifyDataSetChanged()
+                        rvComments?.scrollToPosition(originalParentPosition)
+                    }
                 }
             )
         }
@@ -493,6 +501,18 @@ class PodcastDetailsFragment : BaseFragment() {
         })
         rvComments?.isNestedScrollingEnabled = true
         rvComments?.setHasFixedSize(true)
+    }
+
+    private fun removeExcessChildrenFromLists(
+        parent: UIComment,
+        lastChildPosition: Int
+    ) {
+        val originalParentPosition = lastChildPosition - parent.comments.size
+        val childsToRemove = parent.comments.size - Constants.MAX_API_COMMENTS_PER_COMMENT
+        for(i in 0 until childsToRemove) {
+            parent.comments.removeAt(Constants.MAX_API_COMMENTS_PER_COMMENT)
+            commentWithParentsItemsList.removeAt(originalParentPosition + Constants.MAX_API_COMMENTS_PER_COMMENT + 1)
+        }
     }
 
 
@@ -664,19 +684,19 @@ class PodcastDetailsFragment : BaseFragment() {
 
 
         // recast
-        uiFeedItem?.podcast?.recasted?.let {
-            if (it) {
-                btnRecasts?.setImageResource(R.drawable.recast_filled)
-                tvSomeoneRecasted.visibility = View.VISIBLE
-            } else {
-                btnRecasts?.setImageResource(R.drawable.recast)
-                tvSomeoneRecasted.visibility = View.GONE
-            }
-
-
-        } ?: run {
-            btnRecasts?.setImageResource(R.drawable.recast)
-        }
+//        uiFeedItem?.podcast?.recasted?.let {
+//            if (it) {
+//                btnRecasts?.setImageResource(R.drawable.recast_filled)
+//                tvSomeoneRecasted.visibility = View.VISIBLE
+//            } else {
+//                btnRecasts?.setImageResource(R.drawable.recast)
+//                tvSomeoneRecasted.visibility = View.GONE
+//            }
+//
+//
+//        } ?: run {
+//            btnRecasts?.setImageResource(R.drawable.recast)
+//        }
 
 
         btnMore?.onClick { onMoreClicked() }
