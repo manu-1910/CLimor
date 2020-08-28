@@ -215,7 +215,7 @@ class EditFragment : WaveformFragment() {
         }
         //AnalyticsManager.getInstance().recordEditEvent(AnalyticsManager.RecordingEditEventType.RECORDING_EDIT_COPY_PASTE);
         //addMarker(selectedMarker.getStartPos(), selectedMarker.getStartPos() + 2, true, null);    //TODO JJ esta es la original
-        addMarker(selectedMarker.startPos, selectedMarker.startPos, true, null) //TODO JJ
+        addMarker(selectedMarker.startPos, selectedMarker.startPos + 2, true, null) //TODO JJ
     }
 
     private fun deleteClick() {
@@ -251,13 +251,9 @@ class EditFragment : WaveformFragment() {
         Thread(Runnable {
             audioFilePaths = ArrayList()
             var copiedChunkPath: String? = null
-            val outPathCopied = Objects.requireNonNull(
-                Objects.requireNonNull(activity)!!.externalCacheDir
-            ).absolutePath + "/limor_record_chunk_copied.m4a"
-            val startFrameCopied =
-                waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.startPos / NEW_WIDTH)) //TODO JJ NEW 131020
-            val endFrameCopied =
-                waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.endPos / NEW_WIDTH)) //TODO JJ NEW 131020
+            val outPathCopied = Objects.requireNonNull(Objects.requireNonNull(activity)!!.externalCacheDir).absolutePath + "/limor_record_chunk_copied.m4a"
+            val startFrameCopied = waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.startPos / NEW_WIDTH)) //TODO JJ NEW 131020
+            val endFrameCopied = waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.endPos / NEW_WIDTH)) //TODO JJ NEW 131020
             val outFileCopied = File(outPathCopied)
             try {
                 soundFile.WriteFile(
@@ -271,13 +267,9 @@ class EditFragment : WaveformFragment() {
                 e.printStackTrace()
             }
             for (i in 0..1) {
-                val outPath = activity!!.externalCacheDir
-                    .absolutePath + "/limor_record_chunk_" + i + ".m4a"
-                val startTime =
-                    waveformView.pixelsToSeconds(if (i == 0) 0 else (editMarker.startPos / NEW_WIDTH) - 10)
-                val endTime = waveformView.pixelsToSeconds(
-                    if (i == 0) (editMarker.startPos / NEW_WIDTH) else waveformView.millisecsToPixels(player.duration - 10)
-                )
+                val outPath = activity!!.externalCacheDir.absolutePath + "/limor_record_chunk_" + i + ".m4a"
+                val startTime = waveformView.pixelsToSeconds(if (i == 0) 0 else (editMarker.startPos / NEW_WIDTH) - 10)
+                val endTime = waveformView.pixelsToSeconds(if (i == 0) (editMarker.startPos / NEW_WIDTH) else waveformView.millisecsToPixels(player.duration - 10))
                 val startFrame = waveformView.secondsToFrames(startTime)
                 val endFrame = waveformView.secondsToFrames(endTime)
                 val outFile = File(outPath)
@@ -292,8 +284,7 @@ class EditFragment : WaveformFragment() {
                     e.printStackTrace()
                 }
             }
-            fileName = activity!!.externalCacheDir
-                .absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
+            fileName = activity!!.externalCacheDir.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
             try {
                 val listMovies: MutableList<Movie> = ArrayList()
                 for (filename in audioFilePaths) {
@@ -342,15 +333,25 @@ class EditFragment : WaveformFragment() {
                                 iterator.remove()
                             } else if (markerSet.isEditMarker) {
                                 //Middle marker
-                                markerSet.middleMarker.visibility = View.GONE
+                                markerSet.middleMarker.visibility = View.GONE //TODO JJ HABÍA GONE
                                 markerSet.middleMarker = null
                                 //Start marker
-                                markerSet.startMarker.visibility = View.GONE
+                                markerSet.startMarker.visibility = View.GONE //TODO JJ HABÍA GONE
                                 markerSet.startMarker = null
                                 iterator.remove()
                             }
                         }
+
                     }
+
+
+
+
+                    //addMarker(firstMarkerSet.getStartPos(), secondMarkerSet.getEndPos(), false, null);
+                    //removeMarker(firstMarkerSet);
+
+
+
                     shouldReloadPreview = true
                     recordingItem!!.timeStamps = timeStamps
                     recordingItem!!.length = recordingItem!!.length!! + copiedLength
@@ -382,8 +383,7 @@ class EditFragment : WaveformFragment() {
         Thread(Runnable {
             audioFilePaths = ArrayList()
             for (i in 0..1) {
-                val outPath = activity!!.externalCacheDir
-                    .absolutePath + "/limor_record_chunk_" + i + ".m4a"
+                val outPath = activity!!.externalCacheDir.absolutePath + "/limor_record_chunk_" + i + ".m4a"
                 val startTime = waveformView.pixelsToSeconds(if (i == 0) 0 else (selectedMarker.endPos / NEW_WIDTH))
                 val endTime = waveformView.pixelsToSeconds(
                     if (i == 0) (selectedMarker.startPos / NEW_WIDTH) else waveformView.millisecsToPixels(
@@ -478,6 +478,7 @@ class EditFragment : WaveformFragment() {
         timeStamp.endSample = endPos
         timeStamp.duration = endPos - startPos
         timeStamps.add(timeStamp)
+
         markerSet.startMarker.visibility = View.GONE
         markerSet.startMarker = null
         markerSet.middleMarker.visibility = View.GONE

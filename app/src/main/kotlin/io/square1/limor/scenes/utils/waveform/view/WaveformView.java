@@ -388,7 +388,8 @@ public class WaveformView extends View {
         }
 
         //Waveform white bars
-        int i = 0;
+        int i = 0; //TODO JJ 270820
+        //int newWidth = width/NEW_WIDTH;  //Adjust the total width of the white bars of the waveform //TODO JJ 270820 original line
         int newWidth = width/NEW_WIDTH;  //Adjust the total width of the white bars of the waveform
         int newOffset = start/20;   //Adjust the offset to paint only the lenght of the audio file
         while (i < newWidth) {

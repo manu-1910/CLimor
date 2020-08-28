@@ -347,7 +347,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     public void markerFocus(MarkerView marker) {
         if (isEditMode && !marker.getMarkerSet().isEditMarker()) {
             //TODO JJ New the app explote copying and pasting multiple markers, I add try/catch to avoid ANR and investigate later
-            marker.clearFocus();
+            //marker.clearFocus();
         }
     }
 
@@ -1011,6 +1011,13 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                         waveformView.setPlayback(xPlayPos);
                         updateDisplay();
                     }
+                }else{
+                    if (player != null) { //TODO JJ THIS IS NEW, TEST IT with other marker options (copy, paste, delete, ...)
+                        seekBar.setProgress(progress);
+                        int xPlayPos = waveformView.millisecsToPixels(progress * NEW_WIDTH);
+                        waveformView.setPlayback(xPlayPos);
+                        tvTimePass.setText(Commons.getLengthFromEpochForPlayer(progress));
+                    }
                 }
             }
             @Override
@@ -1145,17 +1152,21 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected void updateUndoRedoButtons() {
         if (stepManager.canUndo()) {
             tvUndo.setEnabled(true);
-            tvUndo.setAlpha(1f);
+            //tvUndo.setAlpha(1f);
+            tvUndo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandPrimary500));
         } else {
             tvUndo.setEnabled(false);
-            tvUndo.setAlpha(0.5f);
+            //tvUndo.setAlpha(0.5f);
+            tvUndo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandSecondary100));
         }
         if (stepManager.canRedo()) {
             tvRedo.setEnabled(true);
-            tvRedo.setAlpha(1f);
+            //tvRedo.setAlpha(1f);
+            tvRedo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandPrimary500));
         } else {
             tvRedo.setEnabled(false);
-            tvRedo.setAlpha(0.5f);
+            //tvRedo.setAlpha(0.5f);
+            tvRedo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandSecondary100));
         }
     }
 
