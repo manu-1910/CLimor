@@ -9,7 +9,7 @@ import io.square1.limor.uimodels.UIComment
 import io.square1.limor.uimodels.UIPodcast
 
 class CommentsAdapter(
-    context: Context,
+    private val context: Context,
     private var list: ArrayList<CommentWithParent>,
     private var podcast: UIPodcast,
     private val commentClickListener: OnCommentClickListener
@@ -42,7 +42,7 @@ class CommentsAdapter(
         val currentItem = list[position]
 
         val commentItemViewHolder : CommentItemViewHolder = holder as CommentItemViewHolder
-        commentItemViewHolder.bind(currentItem, podcast, position)
+        commentItemViewHolder.bind(currentItem, podcast, context, position)
     }
 
     interface OnCommentClickListener {
@@ -57,5 +57,6 @@ class CommentsAdapter(
         fun onUserClicked(item : UIComment, position: Int)
         fun onMoreClicked(item : UIComment, position: Int)
         fun onReplyClicked(item: UIComment, position: Int)
+        fun onMoreRepliesClicked(parent: UIComment, position: Int)
     }
 }

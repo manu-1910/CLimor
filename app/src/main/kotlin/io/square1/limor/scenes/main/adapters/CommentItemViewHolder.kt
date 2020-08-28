@@ -1,5 +1,6 @@
 package io.square1.limor.scenes.main.adapters
 
+import android.content.Context
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextPaint
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import io.square1.limor.R
+import io.square1.limor.common.Constants.Companion.MAX_API_COMMENTS_PER_COMMENT
 import io.square1.limor.scenes.main.fragments.podcast.CommentWithParent
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIPodcast
@@ -41,6 +43,7 @@ class CommentItemViewHolder(
     var tvRecasts: TextView = itemView.findViewById(R.id.tvRecasts)
     var tvCommentText: TextView = itemView.findViewById(R.id.tvCommentText)
     var tvNameReplyingTo: TextView = itemView.findViewById(R.id.tvNameReplyingTo)
+    var tvMoreReplies: TextView = itemView.findViewById(R.id.tvMoreReplies)
 
     var ivUser: ImageView = itemView.findViewById(R.id.ivUserPicture)
     var ivVerifiedUser: ImageView = itemView.findViewById(R.id.ivVerifiedUser)
@@ -54,7 +57,9 @@ class CommentItemViewHolder(
     var btnReply: TextView = itemView.findViewById(R.id.btnReply)
     var barThreadUp: View = itemView.findViewById(R.id.barThreadUp)
     var barThreadDown: View = itemView.findViewById(R.id.barThreadDown)
+    var barDecorator: View = itemView.findViewById(R.id.barDecorator)
     var layReplyingTo: View = itemView.findViewById(R.id.layReplying)
+    var layMoreReplies: View = itemView.findViewById(R.id.layMoreReplies)
 
 
     var clickableSpan: ClickableSpan = object : ClickableSpan() {
@@ -74,7 +79,12 @@ class CommentItemViewHolder(
     }
 
 
-    fun bind(currentItem: CommentWithParent, podcastParent : UIPodcast, position: Int) {
+    fun bind(
+        currentItem: CommentWithParent,
+        podcastParent: UIPodcast,
+        context: Context,
+        position: Int
+    ) {
         // fullname
         val fullname: String = currentItem.comment.user?.first_name + " " + currentItem.comment.user?.last_name
         tvUserFullname.text = fullname
@@ -82,23 +92,54 @@ class CommentItemViewHolder(
 
 
         // replying to
-        // if the parent is null, it means that its parent is the main podcast
+        // if the parent is null, it means that we are a comment and that our parent is the main podcast
         if(currentItem.parent == null) {
+            // we have to write the name who we reply to
             val fullnameReply: String = " " + podcastParent.user.first_name + " " + podcastParent.user.last_name
             tvNameReplyingTo.text = fullnameReply
-            barThreadUp.visibility = View.GONE
             layReplyingTo.visibility = View.VISIBLE
+            layMoreReplies.visibility = View.GONE
+
+            // remove the upper bar
+            barThreadUp.visibility = View.GONE
+
+            // if we have children we'll draw the lower bar
+            if(currentItem.comment.comment_count > 0) {
+                barThreadDown.visibility = View.VISIBLE
+                barDecorator.visibility = View.GONE
+            } else {
+                barThreadDown.visibility = View.GONE
+                barDecorator.visibility = View.VISIBLE
+            }
+
+            // if the parent is not null, this means that we are a comment of a comment and that our parent is a comment
         } else {
             barThreadUp.visibility = View.VISIBLE
             layReplyingTo.visibility = View.GONE
+
+            // if we are NOT the last comment of our parent, then we have to draw the lower bar and remove the bar decorator
+            if(currentItem.parent.comments.last() != currentItem.comment) {
+                barThreadDown.visibility = View.VISIBLE
+                barDecorator.visibility = View.GONE
+                layMoreReplies.visibility = View.GONE
+
+                // if we ARE the last comment of our parent, then we have to remove the lower bar and draw the bar decorator
+            } else {
+                barThreadDown.visibility = View.GONE
+                barDecorator.visibility = View.VISIBLE
+
+                // if we are the last child and our parent has more comments than two, we have to show the more replies layout
+                if(currentItem.parent.comment_count > MAX_API_COMMENTS_PER_COMMENT) {
+                    layMoreReplies.visibility = View.VISIBLE
+                    val numberOfCommentsMore = currentItem.parent.comment_count - MAX_API_COMMENTS_PER_COMMENT
+                    val moreRepliesText = numberOfCommentsMore.toString() + " " + context.getString(R.string.more_replies)
+                    tvMoreReplies.text = moreRepliesText
+                    tvMoreReplies.onClick { commentClickListener.onMoreRepliesClicked(currentItem.parent, position) }
+                } else {
+                    layMoreReplies.visibility = View.GONE
+                }
+            }
         }
-
-
-        if(currentItem.comment.comment_count > 0)
-            barThreadDown.visibility = View.VISIBLE
-        else
-            barThreadDown.visibility = View.GONE
-
 
 
         // datetime and location

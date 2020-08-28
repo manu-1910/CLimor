@@ -19,7 +19,6 @@ import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -49,9 +48,7 @@ import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
-enum class CommentParentType{PODCAST, COMMENT}
 
-//data class CommentWithParent(val comment : UIComment, val parentName : String, val parentId : Int, val parentType: CommentParentType)
 data class CommentWithParent(val comment : UIComment, val parent : UIComment?)
 
 
@@ -75,7 +72,6 @@ class PodcastDetailsFragment : BaseFragment() {
     private val createCommentLikeDataTrigger = PublishSubject.create<Unit>()
     private val deleteCommentLikeDataTrigger = PublishSubject.create<Unit>()
 
-    private val commentItemsList = ArrayList<UIComment>()
     private val commentWithParentsItemsList = ArrayList<CommentWithParent>()
 
     private var isLastPage = false
@@ -231,10 +227,10 @@ class PodcastDetailsFragment : BaseFragment() {
 
     private fun undoCommentLike() {
         Toast.makeText(context, getString(R.string.error_liking_podcast), Toast.LENGTH_SHORT).show()
-        val item = commentItemsList[lastLikedItemPosition]
-        item.podcast?.let { podcast ->
+        val item = commentWithParentsItemsList[lastLikedItemPosition]
+        item.comment.podcast?.let { podcast ->
             changeItemLikeStatus(
-                item,
+                item.comment,
                 lastLikedItemPosition,
                 !podcast.liked
             )
@@ -255,7 +251,6 @@ class PodcastDetailsFragment : BaseFragment() {
                 isLastPage = true
 
             if (isReloading) {
-                commentItemsList.clear()
                 commentWithParentsItemsList.clear()
                 rvComments?.recycledViewPool?.clear()
                 isReloading = false
@@ -291,9 +286,9 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
 
-    private fun countAllComments(commentItemsList: ArrayList<UIComment>): Int {
+    private fun countAllComments(commentList: ArrayList<UIComment>): Int {
         var count = 0
-        commentItemsList.forEach { currentComment ->
+        commentList.forEach { currentComment ->
             if( currentComment.comments.size == 0) {
                 count++
             } else {
@@ -408,6 +403,10 @@ class PodcastDetailsFragment : BaseFragment() {
                     override fun onReplyClicked(item: UIComment, position: Int) {
                         Toast.makeText(context, "You clicked on reply", Toast.LENGTH_SHORT).show()
                     }
+
+                    override fun onMoreRepliesClicked(parent: UIComment, position: Int) {
+                        Toast.makeText(context, "You clicked on more replies", Toast.LENGTH_SHORT).show()
+                    }
                 }
             )
         }
@@ -437,7 +436,7 @@ class PodcastDetailsFragment : BaseFragment() {
                     // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
                     if (isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
                         isScrolling = false
-                        viewModelGetComments.offset = commentItemsList.size - 1
+                        viewModelGetComments.offset = commentWithParentsItemsList.size - 1
                         getCommentsDataTrigger.onNext(Unit)
                     }
                 }
@@ -445,13 +444,6 @@ class PodcastDetailsFragment : BaseFragment() {
         })
         rvComments?.isNestedScrollingEnabled = true
         rvComments?.setHasFixedSize(true)
-        val divider = DividerItemDecoration(
-            context,
-            DividerItemDecoration.VERTICAL
-        )
-        context?.getDrawable(R.drawable.divider_item_recyclerview)?.let { divider.setDrawable(it) }
-        rvComments?.addItemDecoration(divider)
-
     }
 
 

@@ -47,6 +47,8 @@ class Constants{
         const val AUDIO_TYPE_COMMENT = 3
         const val AUDIO_TYPE_ATTACHMENT = 6
 
+        const val MAX_API_COMMENTS_PER_COMMENT = 2
+
 
         // Errors
         private val ERROR_CODE_NO_AUTHENTICATED_USER: Int = 10

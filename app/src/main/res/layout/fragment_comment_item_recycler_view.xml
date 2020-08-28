@@ -7,7 +7,6 @@
     android:background="@color/brandSecondary400">
 
 
-
     <View
         android:id="@+id/barThreadUp"
         android:layout_width="1dp"
@@ -103,7 +102,6 @@
             android:layout_marginStart="58dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
             android:background="@color/transparent"
             android:gravity="center_vertical"
             android:orientation="horizontal">
@@ -134,5 +132,49 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <FrameLayout
+        android:background="@color/brandSecondary400"
+        android:id="@+id/layMoreReplies"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layParent">
+
+        <TextView
+            android:id="@+id/tvMoreReplies"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginTop="@dimen/marginMedium"
+            android:layout_marginBottom="@dimen/marginMedium"
+            android:text="2 More replies"
+            android:textColor="@color/brandPrimary500"
+            tools:ignore="HardcodedText" />
+    </FrameLayout>
+
+
+    <!-- This view isn't useless. It's necessary to keep the bottom margin under layParent when layMoreReplies is hidden -->
+    <FrameLayout
+        android:background="@color/transparent"
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layParent"/>
+
+    <View
+        android:id="@+id/barDecorator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/brandSecondary300"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layMoreReplies" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
