@@ -1,5 +1,7 @@
 package io.square1.limor.uimodels
 
+import java.io.Serializable
+
 
 data class UIPublishResponse(
     val code: Int,
@@ -38,7 +40,7 @@ data class UIPodcast(
     val title: String,
     val updated_at: Int,
     val user: UIUser
-)
+) : Serializable
 
 
 //data class UIAudio(
@@ -52,5 +54,17 @@ data class UIPodcast(
 //)
 
 class UIMentions(
-)
+    val mentions: UIContentMentionItemsArray
+) : Serializable
+
+class UIContentMentionItemsArray (
+    val content : ArrayList<UIContentMentionItem>
+) : Serializable
+
+class UIContentMentionItem (
+    val user_id: Int,
+    val username: String,
+    val start_index: Int,
+    val end_index: Int
+) : Serializable
 

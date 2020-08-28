@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/brandSecondary400">
+
+
+    <View
+        android:id="@+id/barThreadUp"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_alignTop="@id/layParent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="33dp"
+        android:layout_marginBottom="24dp"
+        android:background="@color/brandSecondary200"
+        app:layout_constraintBottom_toBottomOf="@id/userBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <View
+        android:id="@+id/barThreadDown"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="33dp"
+        android:layout_marginTop="32dp"
+        android:background="@color/brandSecondary200"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/userBar" />
+
+
+    <LinearLayout
+        android:id="@+id/layReplying"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/marginMedium"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tvReplyingTo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:text="@string/replying_to"
+            android:textColor="@color/brandSecondary100" />
+
+        <TextView
+            android:id="@+id/tvNameReplyingTo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="Ivan Magalhães"
+            android:textColor="@color/brandPrimary500"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+
+
+    <include
+        android:id="@+id/userBar"
+        layout="@layout/include_user_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/layReplying" />
+
+    <LinearLayout
+        android:id="@+id/layParent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/userBar">
+
+
+        <LinearLayout
+            android:id="@+id/layComment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="58dp"
+            android:layout_marginTop="@dimen/marginMedium"
+            android:layout_marginEnd="@dimen/marginMedium"
+            android:background="@color/transparent">
+
+            <TextView
+                android:id="@+id/tvCommentText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lorem ipsum dolor sit amet ale ahjafs lkasmd akf asdk mfklwna"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="58dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@color/transparent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+
+            <include layout="@layout/include_interactions_bar" />
+
+
+            <!-- this is just the gap between the left and right side -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+
+            <!-- send -->
+            <TextView
+                android:id="@+id/btnReply"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:background="@color/transparent"
+                android:fontFamily="@font/roboto_bold"
+                android:text="@string/reply"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:background="@color/brandSecondary400"
+        android:id="@+id/layMoreReplies"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layParent">
+
+        <TextView
+            android:id="@+id/tvMoreReplies"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginTop="@dimen/marginMedium"
+            android:layout_marginBottom="@dimen/marginMedium"
+            android:text="2 More replies"
+            android:textColor="@color/brandPrimary500"
+            tools:ignore="HardcodedText" />
+    </FrameLayout>
+
+
+    <!-- This view isn't useless. It's necessary to keep the bottom margin under layParent when layMoreReplies is hidden -->
+    <FrameLayout
+        android:background="@color/transparent"
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layParent"/>
+
+    <View
+        android:id="@+id/barDecorator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/brandSecondary300"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layMoreReplies" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,7 @@
 package io.square1.limor.uimodels
 
+import java.io.Serializable
+
 
 data class UIPublishRequest(
     var podcast: UIPodcastRequest?
@@ -18,7 +20,7 @@ data class UIAudio(
     var total_length: Double,
     var sample_rate: Double,
     var timestamps: ArrayList<String>
-)
+): Serializable
 
 data class UIMetaData(
     var title: String,

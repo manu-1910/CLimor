@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <!-- Listens -->
+    <ImageButton
+        android:id="@+id/btnListens"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:background="@color/transparent"
+        android:contentDescription="@string/listens"
+        android:scaleType="fitCenter"
+        android:src="@drawable/listens" />
+
+    <TextView
+        android:id="@+id/tvListens"
+        android:layout_width="16dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="4dp"
+        android:text="10"
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
+
+
+    <!-- Comments -->
+    <ImageButton
+        android:id="@+id/btnComments"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@color/transparent"
+        android:contentDescription="@string/comments"
+        android:scaleType="fitCenter"
+        android:src="@drawable/comments" />
+
+    <TextView
+        android:id="@+id/tvComments"
+        android:layout_width="16dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="4dp"
+        android:text="10"
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
+
+
+    <!-- Likes -->
+    <ImageButton
+        android:id="@+id/btnLikes"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@color/transparent"
+        android:contentDescription="@string/likes"
+        android:scaleType="fitCenter"
+        android:src="@drawable/like_filled" />
+
+    <TextView
+        android:id="@+id/tvLikes"
+        android:layout_width="16dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="4dp"
+        android:text="10"
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
+
+
+    <!-- Recasts -->
+    <ImageButton
+        android:id="@+id/btnRecasts"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@color/transparent"
+        android:contentDescription="@string/recasts"
+        android:scaleType="fitCenter"
+        android:src="@drawable/recast" />
+
+    <TextView
+        android:id="@+id/tvRecasts"
+        android:layout_width="16dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="4dp"
+        android:text="10"
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
+
+
+
+
+</LinearLayout>

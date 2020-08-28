@@ -107,7 +107,7 @@ class FeedItemViewHolder(
 
     fun bind(currentItem: UIFeedItem, position: Int) {
         // fullname
-        val fullname: String = currentItem.user.first_name + " " + currentItem.user.last_name
+        val fullname: String = currentItem.podcast?.user?.first_name + " " + currentItem.podcast?.user?.last_name
         tvUserFullname.text = fullname
         tvUserFullname.onClick { feedClickListener.onUserClicked(currentItem, position) }
 
@@ -171,7 +171,7 @@ class FeedItemViewHolder(
 
         // user picture
         Glide.with(itemView.context)
-            .load(currentItem.user.images.small_url)
+            .load(currentItem.podcast?.user?.images?.small_url)
             .apply(RequestOptions.circleCropTransform())
             .into(ivUser)
         ivUser.onClick { feedClickListener.onUserClicked(currentItem, position) }

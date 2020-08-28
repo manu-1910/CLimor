@@ -10,7 +10,7 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseViewModel
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import io.square1.limor.uimodels.UIDeletePodcastLikeResponse
+import io.square1.limor.uimodels.UIDeleteLikeResponse
 import io.square1.limor.uimodels.UIErrorData
 import io.square1.limor.uimodels.UIErrorResponse
 import io.square1.limor.usecases.DeletePodcastLikeUseCase
@@ -27,7 +27,7 @@ class DeletePodcastLikeViewModel @Inject constructor(private val deletePodcastLi
     )
 
     data class Output(
-        val response: LiveData<UIDeletePodcastLikeResponse>,
+        val response: LiveData<UIDeleteLikeResponse>,
         val backgroundWorkingProgress: LiveData<Boolean>,
         val errorMessage: SingleLiveEvent<UIErrorResponse>
     )
@@ -35,7 +35,7 @@ class DeletePodcastLikeViewModel @Inject constructor(private val deletePodcastLi
     override fun transform(input: Input): Output {
         val errorTracker = SingleLiveEvent<UIErrorResponse>()
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
-        val response = MutableLiveData<UIDeletePodcastLikeResponse>()
+        val response = MutableLiveData<UIDeleteLikeResponse>()
 
         input.deletePodcastLikeTrigger.subscribe({
             deletePodcastLikeUseCase.execute(idPodcast).subscribe({

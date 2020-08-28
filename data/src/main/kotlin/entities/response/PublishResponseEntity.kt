@@ -52,8 +52,21 @@ data class AudioEntity(
 )
 
 
-class MentionsEntity(
+class MentionsEntity (
+    var mentions : ContentMentionItemArray
 )
+
+class ContentMentionItemArray(
+    var content : ArrayList<ContentMentionItemEntity>
+)
+
+class ContentMentionItemEntity(
+    var user_id : Int,
+    var username: String,
+    var start_index: Int,
+    var end_index: Int
+)
+
 
 class TagsEntity(
     var id: Int,

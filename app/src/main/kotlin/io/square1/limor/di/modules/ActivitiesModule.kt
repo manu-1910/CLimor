@@ -2,12 +2,10 @@ package io.square1.limor.di.modules
 
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import io.square1.limor.di.modules.fragments.CommonFragmentsBuildersModule
-import io.square1.limor.di.modules.fragments.MainActivityFragmentsBuildersModule
-import io.square1.limor.di.modules.fragments.RecordActivityFragmentsBuildersModule
-import io.square1.limor.di.modules.fragments.SignActivityFragmentsBuildersModule
+import io.square1.limor.di.modules.fragments.*
 import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.MainActivity
+import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
 import io.square1.limor.scenes.main.fragments.record.RecordActivity
 import io.square1.limor.scenes.splash.SplashActivity
 
@@ -34,6 +32,12 @@ abstract class ActivitiesModule {
         (RecordActivityFragmentsBuildersModule::class)
     ])
     abstract fun contributeRecordActivityInjector(): RecordActivity
+
+
+    @ContributesAndroidInjector(modules = [
+        (PodcastDetailsActivityFragmentsBuildersModule::class)
+    ])
+    abstract fun contributePodcastDetailsActivityInjector(): PodcastDetailsActivity
 
 
 }

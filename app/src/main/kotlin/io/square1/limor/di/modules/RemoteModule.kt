@@ -6,16 +6,10 @@ import dagger.Provides
 import io.square1.limor.App
 import io.square1.limor.BuildConfig
 import io.square1.limor.common.SessionManager
-import io.square1.limor.remote.providers.RemoteAuthProviderImp
-import io.square1.limor.remote.providers.RemotePodcastProviderImp
-import io.square1.limor.remote.providers.RemoteSearchProviderImp
-import io.square1.limor.remote.providers.RemoteUserProviderImp
+import io.square1.limor.remote.providers.*
 import io.square1.limor.remote.services.RemoteServiceConfig
 import kotlinx.serialization.ImplicitReflectionSerializer
-import providers.remote.RemoteAuthProvider
-import providers.remote.RemotePodcastProvider
-import providers.remote.RemoteSearchProvider
-import providers.remote.RemoteUserProvider
+import providers.remote.*
 import javax.inject.Singleton
 import kotlin.math.absoluteValue
 
@@ -68,5 +62,9 @@ abstract class RemoteModule {
     @ImplicitReflectionSerializer
     @Binds
     abstract fun bindRemoteSearchProvider(remoteSearchProviderImp: RemoteSearchProviderImp): RemoteSearchProvider
+
+    @ImplicitReflectionSerializer
+    @Binds
+    abstract fun bindRemoteCommentProvider(remoteCommentProviderImp: RemoteCommentProviderImp): RemoteCommentProvider
 
    }
