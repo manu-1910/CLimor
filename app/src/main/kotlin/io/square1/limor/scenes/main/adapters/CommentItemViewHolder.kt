@@ -129,7 +129,7 @@ class CommentItemViewHolder(
                 barDecorator.visibility = View.VISIBLE
 
                 // if we are the last child and our parent has more comments than two, we have to show the more replies layout
-                if(currentItem.parent.comment_count > MAX_API_COMMENTS_PER_COMMENT) {
+                if(currentItem.parent.comment_count > currentItem.parent.comments.size) {
                     layMoreReplies.visibility = View.VISIBLE
                     val numberOfCommentsMore = currentItem.parent.comment_count - MAX_API_COMMENTS_PER_COMMENT
                     val moreRepliesText = numberOfCommentsMore.toString() + " " + context.getString(R.string.more_replies)

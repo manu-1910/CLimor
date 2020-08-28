@@ -55,18 +55,22 @@ data class CommentWithParent(val comment : UIComment, val parent : UIComment?)
 
 class PodcastDetailsFragment : BaseFragment() {
 
+    private var lastCommentRequestedRepliesPosition: Int = 0
+    private var lastCommentRequestedRepliesParent: UIComment? = null
     private var lastLikedItemPosition = 0
     private var isScrolling = false
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private lateinit var viewModelGetComments: GetCommentsViewModel
+    private lateinit var viewModelGetPodcastComments: GetPodcastCommentsViewModel
+    private lateinit var viewModelGetCommentComments: GetCommentCommentsViewModel
     private lateinit var viewModelCreatePodcastLike: CreatePodcastLikeViewModel
     private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
     private lateinit var viewModelCreateCommentLike: CreateCommentLikeViewModel
     private lateinit var viewModelDeleteCommentLike: DeleteCommentLikeViewModel
-    private val getCommentsDataTrigger = PublishSubject.create<Unit>()
+    private val getPodcastCommentsDataTrigger = PublishSubject.create<Unit>()
+    private val getCommentCommentsDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val createCommentLikeDataTrigger = PublishSubject.create<Unit>()
@@ -129,7 +133,8 @@ class PodcastDetailsFragment : BaseFragment() {
         uiFeedItem = activity?.uiFeedItem
 
         bindViewModel()
-        initApiCallGetComments()
+        initApiCallGetPodcastComments()
+        initApiCallGetCommentComments()
         initApiCallCreatePodcastLike()
         initApiCallDeletePodcastLike()
         initApiCallCreateCommentLike()
@@ -138,10 +143,50 @@ class PodcastDetailsFragment : BaseFragment() {
         configureToolbar()
         fillForm()
 
-        uiFeedItem?.podcast?.id?.let { viewModelGetComments.idPodcast = it }
-        getCommentsDataTrigger.onNext(Unit)
+        uiFeedItem?.podcast?.id?.let { viewModelGetPodcastComments.idPodcast = it }
+        getPodcastCommentsDataTrigger.onNext(Unit)
 
         swipeRefreshLayout?.onRefresh { reloadComments() }
+    }
+
+    private fun initApiCallGetCommentComments() {
+        val output = viewModelGetCommentComments.transform(
+            GetCommentCommentsViewModel.Input(
+                getCommentCommentsDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            val newItems = it.data.comments
+
+            // we add the new items to its parent
+            lastCommentRequestedRepliesParent?.let {parent ->
+                parent.comments.addAll(newItems)
+
+                // now we have to insert the new items in the global list
+                fillCommentsWithParentsListOneLevel(lastCommentRequestedRepliesPosition, newItems, parent)
+            }
+
+
+
+            rvComments?.adapter?.notifyDataSetChanged()
+            hideSwipeToRefreshProgressBar()
+        })
+
+        output.errorMessage.observe(this, Observer {
+            hideSwipeToRefreshProgressBar()
+            Toast.makeText(
+                context,
+                "We couldn't get your feed, please, try again later",
+                Toast.LENGTH_SHORT
+            ).show()
+        })
+    }
+
+    private fun fillCommentsWithParentsListOneLevel(position: Int, newItems: ArrayList<UIComment>, parent : UIComment) {
+        for (i in 0 until newItems.size) {
+            commentWithParentsItemsList.add(position + i + 1, CommentWithParent(newItems[i], parent))
+        }
     }
 
     private fun initApiCallCreateCommentLike() {
@@ -238,10 +283,10 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
 
-    private fun initApiCallGetComments() {
-        val output = viewModelGetComments.transform(
-            GetCommentsViewModel.Input(
-                getCommentsDataTrigger
+    private fun initApiCallGetPodcastComments() {
+        val output = viewModelGetPodcastComments.transform(
+            GetPodcastCommentsViewModel.Input(
+                getPodcastCommentsDataTrigger
             )
         )
 
@@ -405,7 +450,11 @@ class PodcastDetailsFragment : BaseFragment() {
                     }
 
                     override fun onMoreRepliesClicked(parent: UIComment, position: Int) {
-                        Toast.makeText(context, "You clicked on more replies", Toast.LENGTH_SHORT).show()
+                        lastCommentRequestedRepliesPosition = position
+                        lastCommentRequestedRepliesParent = parent
+                        viewModelGetCommentComments.idComment = parent.id
+                        viewModelGetCommentComments.offset = parent.comments.size
+                        getCommentCommentsDataTrigger.onNext(Unit)
                     }
                 }
             )
@@ -436,8 +485,8 @@ class PodcastDetailsFragment : BaseFragment() {
                     // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
                     if (isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
                         isScrolling = false
-                        viewModelGetComments.offset = commentWithParentsItemsList.size - 1
-                        getCommentsDataTrigger.onNext(Unit)
+                        viewModelGetPodcastComments.offset = commentWithParentsItemsList.size - 1
+                        getPodcastCommentsDataTrigger.onNext(Unit)
                     }
                 }
             }
@@ -469,12 +518,20 @@ class PodcastDetailsFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
-            viewModelGetComments = ViewModelProviders
+            viewModelGetPodcastComments = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
-                .get(GetCommentsViewModel::class.java)
+                .get(GetPodcastCommentsViewModel::class.java)
         }
-        viewModelGetComments.limit = FEED_LIMIT_REQUEST
-        viewModelGetComments.offset = 0
+        viewModelGetPodcastComments.limit = FEED_LIMIT_REQUEST
+        viewModelGetPodcastComments.offset = 0
+
+        activity?.let { fragmentActivity ->
+            viewModelGetCommentComments = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(GetCommentCommentsViewModel::class.java)
+        }
+        viewModelGetCommentComments.limit = FEED_LIMIT_REQUEST
+        viewModelGetCommentComments.offset = 0
 
 
         activity?.let { fragmentActivity ->
@@ -508,8 +565,8 @@ class PodcastDetailsFragment : BaseFragment() {
     private fun reloadComments() {
         isLastPage = false
         isReloading = true
-        viewModelGetComments.offset = 0
-        getCommentsDataTrigger.onNext(Unit)
+        viewModelGetPodcastComments.offset = 0
+        getPodcastCommentsDataTrigger.onNext(Unit)
     }
 
     private fun fillForm() {

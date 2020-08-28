@@ -119,7 +119,7 @@ class PodcastServiceImpTest{
 
         val idPodcast = 4
 
-        val response = podcastService.getComments(idPodcast)?.test()
+        val response = podcastService.getComments(idPodcast, 10, 0)?.test()
 
         response?.assertNoErrors()
         response?.assertValue { it.message == "Success" }
