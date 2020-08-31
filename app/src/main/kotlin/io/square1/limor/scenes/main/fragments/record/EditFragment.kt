@@ -95,7 +95,11 @@ class EditFragment : WaveformFragment() {
         if (recordingItem != null && recordingItem!!.timeStamps!!.size > 0) {
             for ((_, startSample, endSample) in recordingItem!!.timeStamps!!) {
                 if (startSample!! > 0 && endSample!! < player.duration) {
-                    addMarker(waveformView.millisecsToPixels(startSample), waveformView.millisecsToPixels(endSample), false, R.color.white)
+                    addMarker(
+                        waveformView.millisecsToPixels(startSample), waveformView.millisecsToPixels(
+                            endSample
+                        ), false, R.color.white
+                    )
                 }
             }
         }
@@ -251,9 +255,18 @@ class EditFragment : WaveformFragment() {
         Thread(Runnable {
             audioFilePaths = ArrayList()
             var copiedChunkPath: String? = null
-            val outPathCopied = Objects.requireNonNull(Objects.requireNonNull(activity)!!.externalCacheDir).absolutePath + "/limor_record_chunk_copied.m4a"
-            val startFrameCopied = waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.startPos / NEW_WIDTH)) //TODO JJ NEW 131020
-            val endFrameCopied = waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.endPos / NEW_WIDTH)) //TODO JJ NEW 131020
+            val outPathCopied =
+                Objects.requireNonNull(Objects.requireNonNull(activity)!!.externalCacheDir).absolutePath + "/limor_record_chunk_copied.m4a"
+            val startFrameCopied = waveformView.secondsToFrames(
+                waveformView.pixelsToSeconds(
+                    selectedMarker.startPos / NEW_WIDTH
+                )
+            ) //TODO JJ NEW 131020
+            val endFrameCopied = waveformView.secondsToFrames(
+                waveformView.pixelsToSeconds(
+                    selectedMarker.endPos / NEW_WIDTH
+                )
+            ) //TODO JJ NEW 131020
             val outFileCopied = File(outPathCopied)
             try {
                 soundFile.WriteFile(
@@ -267,9 +280,15 @@ class EditFragment : WaveformFragment() {
                 e.printStackTrace()
             }
             for (i in 0..1) {
-                val outPath = activity!!.externalCacheDir.absolutePath + "/limor_record_chunk_" + i + ".m4a"
-                val startTime = waveformView.pixelsToSeconds(if (i == 0) 0 else (editMarker.startPos / NEW_WIDTH) - 10)
-                val endTime = waveformView.pixelsToSeconds(if (i == 0) (editMarker.startPos / NEW_WIDTH) else waveformView.millisecsToPixels(player.duration - 10))
+                val outPath =
+                    activity!!.externalCacheDir.absolutePath + "/limor_record_chunk_" + i + ".m4a"
+                val startTime =
+                    waveformView.pixelsToSeconds(if (i == 0) 0 else (editMarker.startPos / NEW_WIDTH) - 10)
+                val endTime = waveformView.pixelsToSeconds(
+                    if (i == 0) (editMarker.startPos / NEW_WIDTH) else waveformView.millisecsToPixels(
+                        player.duration - 10
+                    )
+                )
                 val startFrame = waveformView.secondsToFrames(startTime)
                 val endFrame = waveformView.secondsToFrames(endTime)
                 val outFile = File(outPath)
@@ -284,7 +303,8 @@ class EditFragment : WaveformFragment() {
                     e.printStackTrace()
                 }
             }
-            fileName = activity!!.externalCacheDir.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
+            fileName =
+                activity!!.externalCacheDir.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
             try {
                 val listMovies: MutableList<Movie> = ArrayList()
                 for (filename in audioFilePaths) {
@@ -310,8 +330,10 @@ class EditFragment : WaveformFragment() {
                 //SHOUtils.deleteFiles(audioFilePaths); //TODO JJ Check this
                 audioFilePaths = ArrayList()
                 val copiedLength: Int
-                val startPosMilliseconds = waveformView.pixelsToMillisecs(selectedMarker.startPos / NEW_WIDTH)
-                val endPosMilliseconds = waveformView.pixelsToMillisecs(selectedMarker.endPos / NEW_WIDTH)
+                val startPosMilliseconds =
+                    waveformView.pixelsToMillisecs(selectedMarker.startPos / NEW_WIDTH)
+                val endPosMilliseconds =
+                    waveformView.pixelsToMillisecs(selectedMarker.endPos / NEW_WIDTH)
                 copiedLength = endPosMilliseconds - startPosMilliseconds
                 activity!!.runOnUiThread {
                     val timeStamps = ArrayList<UITimeStamp>()
@@ -322,21 +344,37 @@ class EditFragment : WaveformFragment() {
                             if (!markerSet.isEditMarker) {
                                 var startPosMillisecondsAdjusted: Int
                                 var endPosMillisecondsAdjusted: Int
-                                if (waveformView.pixelsToMillisecs(markerSet.startPos / NEW_WIDTH) < waveformView.pixelsToMillisecs(editMarker.startPos / NEW_WIDTH)) {
-                                    startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(markerSet.startPos / NEW_WIDTH)
-                                    endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(markerSet.endPos / NEW_WIDTH)
+                                if (waveformView.pixelsToMillisecs(markerSet.startPos / NEW_WIDTH) < waveformView.pixelsToMillisecs(
+                                        editMarker.startPos / NEW_WIDTH
+                                    )
+                                ) {
+                                    startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
+                                        markerSet.startPos / NEW_WIDTH
+                                    )
+                                    endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
+                                        markerSet.endPos / NEW_WIDTH
+                                    )
                                 } else {
-                                    startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(markerSet.startPos / NEW_WIDTH) + copiedLength
-                                    endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(markerSet.endPos / NEW_WIDTH) + copiedLength
+                                    startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
+                                        markerSet.startPos / NEW_WIDTH
+                                    ) + copiedLength
+                                    endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
+                                        markerSet.endPos / NEW_WIDTH
+                                    ) + copiedLength
                                 }
-                                handleTimeStamps(markerSet, timeStamps, startPosMillisecondsAdjusted, endPosMillisecondsAdjusted)
+                                handleTimeStamps(
+                                    markerSet,
+                                    timeStamps,
+                                    startPosMillisecondsAdjusted,
+                                    endPosMillisecondsAdjusted
+                                )
                                 iterator.remove()
                             } else if (markerSet.isEditMarker) {
                                 //Middle marker
-                                markerSet.middleMarker.visibility = View.GONE //TODO JJ HABÍA GONE
+                                markerSet.middleMarker.visibility = View.GONE
                                 markerSet.middleMarker = null
                                 //Start marker
-                                markerSet.startMarker.visibility = View.GONE //TODO JJ HABÍA GONE
+                                markerSet.startMarker.visibility = View.GONE
                                 markerSet.startMarker = null
                                 iterator.remove()
                             }
@@ -344,13 +382,8 @@ class EditFragment : WaveformFragment() {
 
                     }
 
-
-
-
                     //addMarker(firstMarkerSet.getStartPos(), secondMarkerSet.getEndPos(), false, null);
                     //removeMarker(firstMarkerSet);
-
-
 
                     shouldReloadPreview = true
                     recordingItem!!.timeStamps = timeStamps
@@ -363,13 +396,21 @@ class EditFragment : WaveformFragment() {
                     stepManager.resetRedoSteps()
                     isEditMode = false
                     editMarker = null
+
                 }
                 hasAnythingChanged = true
+
             } catch (ex: IOException) {
                 dismissProgress()
                 ex.printStackTrace()
             }
+
+            //This line will remain the original marker when it is copied and pasted
+            activity!!.runOnUiThread {
+                addMarker(selectedMarker.startPos, selectedMarker.endPos, false, null); //TODO JJ
+            }
         }).start()
+
     }
 
     protected fun deleteMarkedChunk() {
@@ -383,8 +424,10 @@ class EditFragment : WaveformFragment() {
         Thread(Runnable {
             audioFilePaths = ArrayList()
             for (i in 0..1) {
-                val outPath = activity!!.externalCacheDir.absolutePath + "/limor_record_chunk_" + i + ".m4a"
-                val startTime = waveformView.pixelsToSeconds(if (i == 0) 0 else (selectedMarker.endPos / NEW_WIDTH))
+                val outPath =
+                    activity!!.externalCacheDir.absolutePath + "/limor_record_chunk_" + i + ".m4a"
+                val startTime =
+                    waveformView.pixelsToSeconds(if (i == 0) 0 else (selectedMarker.endPos / NEW_WIDTH))
                 val endTime = waveformView.pixelsToSeconds(
                     if (i == 0) (selectedMarker.startPos / NEW_WIDTH) else waveformView.millisecsToPixels(
                         player.duration - 10
@@ -400,7 +443,8 @@ class EditFragment : WaveformFragment() {
                     e.printStackTrace()
                 }
             }
-            fileName = activity!!.externalCacheDir.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
+            fileName =
+                activity!!.externalCacheDir.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
             try {
                 val listMovies: MutableList<Movie> = ArrayList()
                 for (filename in audioFilePaths) {
@@ -426,8 +470,10 @@ class EditFragment : WaveformFragment() {
                 //SHOUtils.deleteFiles(audioFilePaths);
                 audioFilePaths = ArrayList()
                 val deletedLength: Int
-                val startPosMilliseconds = waveformView.pixelsToMillisecs(selectedMarker.startPos / NEW_WIDTH)
-                val endPosMilliseconds = waveformView.pixelsToMillisecs(selectedMarker.endPos / NEW_WIDTH)
+                val startPosMilliseconds =
+                    waveformView.pixelsToMillisecs(selectedMarker.startPos / NEW_WIDTH)
+                val endPosMilliseconds =
+                    waveformView.pixelsToMillisecs(selectedMarker.endPos / NEW_WIDTH)
                 deletedLength = endPosMilliseconds - startPosMilliseconds
                 activity!!.runOnUiThread {
                     removeMarker(selectedMarker)
@@ -441,13 +487,26 @@ class EditFragment : WaveformFragment() {
                                 var startPosMillisecondsAdjusted: Int
                                 var endPosMillisecondsAdjusted: Int
                                 if (waveformView.pixelsToMillisecs(markerSet.startPos / NEW_WIDTH) < startPosMilliseconds) {
-                                    startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(markerSet.startPos / NEW_WIDTH)
-                                    endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(markerSet.endPos / NEW_WIDTH)
+                                    startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
+                                        markerSet.startPos / NEW_WIDTH
+                                    )
+                                    endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
+                                        markerSet.endPos / NEW_WIDTH
+                                    )
                                 } else {
-                                    startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(markerSet.startPos / NEW_WIDTH) - deletedLength
-                                    endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(markerSet.endPos / NEW_WIDTH) - deletedLength
+                                    startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
+                                        markerSet.startPos / NEW_WIDTH
+                                    ) - deletedLength
+                                    endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
+                                        markerSet.endPos / NEW_WIDTH
+                                    ) - deletedLength
                                 }
-                                handleTimeStamps(markerSet, timeStamps, startPosMillisecondsAdjusted, endPosMillisecondsAdjusted)
+                                handleTimeStamps(
+                                    markerSet,
+                                    timeStamps,
+                                    startPosMillisecondsAdjusted,
+                                    endPosMillisecondsAdjusted
+                                )
                                 iterator.remove()
                                 shouldReloadPreview = true
                             }
@@ -472,12 +531,19 @@ class EditFragment : WaveformFragment() {
         }).start()
     }
 
-    private fun handleTimeStamps(markerSet: MarkerSet, timeStamps: ArrayList<UITimeStamp>, startPos: Int, endPos: Int) {
+    private fun handleTimeStamps(
+        markerSet: MarkerSet,
+        timeStamps: ArrayList<UITimeStamp>,
+        startPos: Int,
+        endPos: Int
+    ) {
         val timeStamp = UITimeStamp()
         timeStamp.duration = startPos
         timeStamp.endSample = endPos
         timeStamp.duration = endPos - startPos
         timeStamps.add(timeStamp)
+
+
 
         markerSet.startMarker.visibility = View.GONE
         markerSet.startMarker = null
@@ -485,6 +551,15 @@ class EditFragment : WaveformFragment() {
         markerSet.middleMarker = null
         markerSet.endMarker.visibility = View.GONE
         markerSet.endMarker = null
+
+        //addMarker(selectedMarker.startPos, selectedMarker.startPos + 2, true, null) //TODO JJ
+        //addMarker(startPos, endPos, false, null);//TODO JJ
+
+        //rlPreviewSection.setAlpha(1.0f);
+        //rlPreviewSection.alpha = 0.4f //Set alpha to 60% of visibility //TODO JJ
+
+
+        //updateDisplay(); //TODO JJ New
     }
 
     private fun registerReceivers() {
@@ -517,7 +592,12 @@ class EditFragment : WaveformFragment() {
     }
 
     private fun openHowToEdit() {
-        showAlertOK(activity, getString(R.string.how_to_edit_title), getString(R.string.how_to_edit_description), null)
+        showAlertOK(
+            activity,
+            getString(R.string.how_to_edit_title),
+            getString(R.string.how_to_edit_description),
+            null
+        )
     }
 
     private fun openPublishFragment() {
@@ -604,12 +684,40 @@ class EditFragment : WaveformFragment() {
         }
     }
 
-    private fun showAlertOK(context: Context?, title: String?, message: String?, listener: DialogInterface.OnClickListener?) {
-        Commons.showAlertCustomButtons(context, title, message, listener, context!!.getString(R.string.ok), null, null)
+    private fun showAlertOK(
+        context: Context?,
+        title: String?,
+        message: String?,
+        listener: DialogInterface.OnClickListener?
+    ) {
+        Commons.showAlertCustomButtons(
+            context,
+            title,
+            message,
+            listener,
+            context!!.getString(R.string.ok),
+            null,
+            null
+        )
     }
 
-    private fun showAlertOkCancel(context: Context?, title: String?, message: String?, listener: DialogInterface.OnClickListener?) {
-        Commons.showAlertCustomButtons(context, title, message, listener, context!!.getString(R.string.ok), null, context.getString(R.string.cancel))
+    private fun showAlertOkCancel(
+        context: Context?,
+        title: String?,
+        message: String?,
+        listener: DialogInterface.OnClickListener?
+    ) {
+        Commons.showAlertCustomButtons(
+            context,
+            title,
+            message,
+            listener,
+            context!!.getString(R.string.ok),
+            null,
+            context.getString(
+                R.string.cancel
+            )
+        )
     }
 
 }
