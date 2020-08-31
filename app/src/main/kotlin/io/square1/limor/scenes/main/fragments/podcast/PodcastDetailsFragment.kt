@@ -32,7 +32,6 @@ import io.square1.limor.scenes.main.adapters.CommentsAdapter
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIComment
-import io.square1.limor.uimodels.UIFeedItem
 import io.square1.limor.uimodels.UIPodcast
 import kotlinx.android.synthetic.main.fragment_feed.*
 import kotlinx.android.synthetic.main.fragment_podcast_details.*
@@ -43,6 +42,7 @@ import kotlinx.android.synthetic.main.toolbar_with_logo_and_back_icon.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.onRefresh
 import timber.log.Timber
+import java.io.Serializable
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -50,14 +50,14 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 
-data class CommentWithParent(val comment : UIComment, val parent : UIComment?)
+data class CommentWithParent(val comment : UIComment, val parent : CommentWithParent?) : Serializable
 
 
 
 class PodcastDetailsFragment : BaseFragment() {
 
     private var lastCommentRequestedRepliesPosition: Int = 0
-    private var lastCommentRequestedRepliesParent: UIComment? = null
+    private var lastCommentRequestedRepliesParent: CommentWithParent? = null
     private var lastLikedItemPosition = 0
     private var isScrolling = false
 
@@ -83,7 +83,8 @@ class PodcastDetailsFragment : BaseFragment() {
     private var rootView: View? = null
     var app: App? = null
 
-    var uiFeedItem: UIFeedItem? = null
+    var uiPodcast: UIPodcast? = null
+    var uiMainCommentWithParent: CommentWithParent? = null
 
     var clickableSpan: ClickableSpan = object : ClickableSpan() {
         override fun onClick(textView: View) {
@@ -130,8 +131,10 @@ class PodcastDetailsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         ViewCompat.setTranslationZ(view, 1f)
 
+
         val activity = activity as PodcastDetailsActivity?
-        uiFeedItem = activity?.uiFeedItem
+        // we get the main podcast we receive from the previous activity. It should be non null always
+        uiPodcast = activity?.uiPodcast
 
         bindViewModel()
         initApiCallGetPodcastComments()
@@ -144,11 +147,39 @@ class PodcastDetailsFragment : BaseFragment() {
         configureToolbar()
         fillForm()
 
-        uiFeedItem?.podcast?.id?.let { viewModelGetPodcastComments.idPodcast = it }
-        getPodcastCommentsDataTrigger.onNext(Unit)
+        // we get the possible comment clicked from the previous activity.
+        uiMainCommentWithParent = activity?.commentWithParent
+
+        // if it's not null, that means that we have to show the "comment of a comment" screen.
+        // If it's null this means that we have to show the "comment of a podcast" screen
+        uiMainCommentWithParent?.let {
+            addTopParents(it)
+            rvComments?.adapter?.notifyDataSetChanged()
+            app_bar_layout?.setExpanded(false);
+            rvComments?.scrollToPosition(commentWithParentsItemsList.size - 1)
+
+            // but if it is null, we have to get the podcast comments
+        } ?: run {
+            uiPodcast?.id?.let { viewModelGetPodcastComments.idPodcast = it }
+            getPodcastCommentsDataTrigger.onNext(Unit)
+        }
+
 
         swipeRefreshLayout?.onRefresh { reloadComments() }
     }
+
+    // this function builds the list hierarchy of the first items received in the activity
+    // I mean, if we receive a comment of a comment of a comment of a podcast..
+    // it will fill the first items in the commentWithParentsItemsList with these first items received
+    private fun addTopParents(mainCommentWithParent: CommentWithParent) {
+        var currentItem : CommentWithParent? = mainCommentWithParent
+        while (currentItem != null) {
+            commentWithParentsItemsList.add(currentItem)
+            currentItem = currentItem.parent
+        }
+        commentWithParentsItemsList.reverse()
+    }
+
 
     private fun initApiCallGetCommentComments() {
         val output = viewModelGetCommentComments.transform(
@@ -162,7 +193,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
             // we add the new items to its parent
             lastCommentRequestedRepliesParent?.let {parent ->
-                parent.comments.addAll(newItems)
+                parent.comment.comments.addAll(newItems)
 
                 // now we have to insert the new items in the global list
                 fillCommentsWithParentsListOneLevel(lastCommentRequestedRepliesPosition, newItems, parent)
@@ -184,7 +215,7 @@ class PodcastDetailsFragment : BaseFragment() {
         })
     }
 
-    private fun fillCommentsWithParentsListOneLevel(position: Int, newItems: ArrayList<UIComment>, parent : UIComment) {
+    private fun fillCommentsWithParentsListOneLevel(position: Int, newItems: ArrayList<UIComment>, parent: CommentWithParent) {
         for (i in 0 until newItems.size) {
             commentWithParentsItemsList.add(position + i + 1, CommentWithParent(newItems[i], parent))
         }
@@ -249,7 +280,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
     private fun undoPodcastLike() {
         Toast.makeText(context, getString(R.string.error_liking_podcast), Toast.LENGTH_SHORT).show()
-        uiFeedItem?.podcast?.let { podcast -> changeItemLikeStatus(podcast, !podcast.liked) }
+        uiPodcast?.let { podcast -> changeItemLikeStatus(podcast, !podcast.liked) }
     }
 
     private fun initApiCallDeleteCommentLike() {
@@ -350,7 +381,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
             if (comment.comments.size > 0) {
                 comment.comments.forEach{subComment ->
-                    commentWithParentsItemsList.add(CommentWithParent(subComment, comment))
+                    commentWithParentsItemsList.add(CommentWithParent(subComment, CommentWithParent(comment, null)))
                 }
             }
         }
@@ -372,13 +403,13 @@ class PodcastDetailsFragment : BaseFragment() {
             CommentsAdapter(
                 it,
                 commentWithParentsItemsList,
-                uiFeedItem!!.podcast!!,
+                uiPodcast!!,
                 object : CommentsAdapter.OnCommentClickListener {
-                    override fun onItemClicked(item: UIComment, position: Int) {
-//                        val podcastDetailsIntent = Intent(context, PodcastDetailsActivity::class.java)
-//                        podcastDetailsIntent.putExtra("model", item)
-//                        startActivity(podcastDetailsIntent)
-//                        (activity as SignActivity).finish()
+                    override fun onItemClicked(item: CommentWithParent, position: Int) {
+                        val podcastDetailsIntent = Intent(context, PodcastDetailsActivity::class.java)
+                        podcastDetailsIntent.putExtra("podcast", uiPodcast)
+                        podcastDetailsIntent.putExtra("model", item)
+                        startActivity(podcastDetailsIntent)
                         Toast.makeText(context, "You clicked on item", Toast.LENGTH_SHORT).show()
                     }
 
@@ -450,16 +481,16 @@ class PodcastDetailsFragment : BaseFragment() {
                         Toast.makeText(context, "You clicked on reply", Toast.LENGTH_SHORT).show()
                     }
 
-                    override fun onMoreRepliesClicked(parent: UIComment, position: Int) {
+                    override fun onMoreRepliesClicked(parent: CommentWithParent, position: Int) {
                         lastCommentRequestedRepliesPosition = position
                         lastCommentRequestedRepliesParent = parent
-                        viewModelGetCommentComments.idComment = parent.id
-                        viewModelGetCommentComments.offset = parent.comments.size
+                        viewModelGetCommentComments.idComment = parent.comment.id
+                        viewModelGetCommentComments.offset = parent.comment.comments.size
                         getCommentCommentsDataTrigger.onNext(Unit)
                     }
 
-                    override fun onShowLessClicked(parent: UIComment, lastChildPosition: Int) {
-                        val originalParentPosition = lastChildPosition - parent.comments.size
+                    override fun onShowLessClicked(parent: CommentWithParent, lastChildPosition: Int) {
+                        val originalParentPosition = lastChildPosition - parent.comment.comments.size
                         removeExcessChildrenFromLists(parent, lastChildPosition)
                         rvComments?.adapter?.notifyDataSetChanged()
                         rvComments?.scrollToPosition(originalParentPosition)
@@ -504,13 +535,13 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun removeExcessChildrenFromLists(
-        parent: UIComment,
+        parent: CommentWithParent,
         lastChildPosition: Int
     ) {
-        val originalParentPosition = lastChildPosition - parent.comments.size
-        val childsToRemove = parent.comments.size - Constants.MAX_API_COMMENTS_PER_COMMENT
+        val originalParentPosition = lastChildPosition - parent.comment.comments.size
+        val childsToRemove = parent.comment.comments.size - Constants.MAX_API_COMMENTS_PER_COMMENT
         for(i in 0 until childsToRemove) {
-            parent.comments.removeAt(Constants.MAX_API_COMMENTS_PER_COMMENT)
+            parent.comment.comments.removeAt(Constants.MAX_API_COMMENTS_PER_COMMENT)
             commentWithParentsItemsList.removeAt(originalParentPosition + Constants.MAX_API_COMMENTS_PER_COMMENT + 1)
         }
     }
@@ -559,7 +590,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastLikeViewModel::class.java)
         }
-        uiFeedItem?.podcast?.id?.let { viewModelCreatePodcastLike.idPodcast = it }
+        uiPodcast?.id?.let { viewModelCreatePodcastLike.idPodcast = it }
 
 
         activity?.let { fragmentActivity ->
@@ -567,7 +598,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastLikeViewModel::class.java)
         }
-        uiFeedItem?.podcast?.id?.let { viewModelDeletePodcastLike.idPodcast = it }
+        uiPodcast?.id?.let { viewModelDeletePodcastLike.idPodcast = it }
 
         activity?.let { fragmentActivity ->
             viewModelCreateCommentLike = ViewModelProviders
@@ -590,17 +621,17 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun fillForm() {
-        tvPodcastText?.text = uiFeedItem?.podcast?.caption
-        tvPodcastTitle?.text = uiFeedItem?.podcast?.title
+        tvPodcastText?.text = uiPodcast?.caption
+        tvPodcastTitle?.text = uiPodcast?.title
         val fullName =
-            uiFeedItem?.podcast?.user?.first_name + " " + uiFeedItem?.podcast?.user?.last_name
+            uiPodcast?.user?.first_name + " " + uiPodcast?.user?.last_name
         tvUserName?.text = fullName
         tvUserName.onClick { onUserClicked() }
 
 
         // datetime and location
-        val lat = uiFeedItem?.podcast?.latitude
-        val lng = uiFeedItem?.podcast?.longitude
+        val lat = uiPodcast?.latitude
+        val lng = uiPodcast?.longitude
         var locationString = ""
         if (lat != null && lng != null) {
             val geocoder = Geocoder(context, Locale.getDefault())
@@ -621,24 +652,24 @@ class PodcastDetailsFragment : BaseFragment() {
 
 
         var datetimeString = ""
-        uiFeedItem?.created_at?.let {
+        uiPodcast?.created_at?.let {
             datetimeString = CommonsKt.getDateTimeFormattedFromTimestamp(it.toLong())
         }
         val dateAndLocationString = "$datetimeString$locationString"
         tvTimeAndLocation?.text = dateAndLocationString
 
         // title & caption
-        uiFeedItem?.podcast?.title?.let { tvPodcastTitle.text = it }
-        uiFeedItem?.podcast?.caption?.let { tvPodcastText.text = hightlightHashtags(it) }
+        uiPodcast?.title?.let { tvPodcastTitle.text = it }
+        uiPodcast?.caption?.let { tvPodcastText.text = hightlightHashtags(it) }
         tvPodcastText?.movementMethod = LinkMovementMethod.getInstance()
 
         // duration
-        uiFeedItem?.podcast?.audio?.duration?.let {
+        uiPodcast?.audio?.duration?.let {
             tvPodcastTime?.text = CommonsKt.calculateDurationMinutesAndSeconds(it.toLong())
         }
 
         // recasts
-        uiFeedItem?.podcast?.number_of_recasts?.let { tvRecasts.text = it.toString() }
+        uiPodcast?.number_of_recasts?.let { tvRecasts.text = it.toString() }
         tvRecasts?.onClick { onRecastClicked() }
         btnRecasts?.onClick { onRecastClicked() }
 
@@ -647,33 +678,33 @@ class PodcastDetailsFragment : BaseFragment() {
         btnLikes?.onClick { onPodcastLikeClicked() }
 
         // listens
-        uiFeedItem?.podcast?.number_of_listens?.let { tvListens.text = it.toString() }
+        uiPodcast?.number_of_listens?.let { tvListens.text = it.toString() }
         tvListens?.onClick { onListensClicked() }
         btnListens?.onClick { onListensClicked() }
 
         // comments
-        uiFeedItem?.podcast?.number_of_comments?.let { tvComments.text = it.toString() }
+        uiPodcast?.number_of_comments?.let { tvComments.text = it.toString() }
         tvComments?.onClick { onCommentsClicked() }
         btnComments?.onClick { onCommentsClicked() }
 
         context?.let {
             // user picture
             Glide.with(it)
-                .load(uiFeedItem?.podcast?.user?.images?.small_url)
+                .load(uiPodcast?.user?.images?.small_url)
                 .apply(RequestOptions.circleCropTransform())
                 .into(ivUserPicture)
             ivUserPicture?.onClick { onUserClicked() }
 
             // main picture
             Glide.with(it)
-                .load(uiFeedItem?.podcast?.images?.medium_url)
+                .load(uiPodcast?.images?.medium_url)
                 .into(ivMainFeedPicture)
             ivMainFeedPicture.onClick { onItemClicked() }
         }
 
 
         // verified
-        uiFeedItem?.user?.verified?.let {
+        uiPodcast?.user?.verified?.let {
             if (it)
                 ivVerifiedUser.visibility = View.VISIBLE
             else
@@ -684,7 +715,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
 
         // recast
-//        uiFeedItem?.podcast?.recasted?.let {
+//        uiFeedItem?.recasted?.let {
 //            if (it) {
 //                btnRecasts?.setImageResource(R.drawable.recast_filled)
 //                tvSomeoneRecasted.visibility = View.VISIBLE
@@ -707,8 +738,8 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun fillFormLikePodcastData() {
-        uiFeedItem?.podcast?.number_of_likes?.let { tvLikes.text = it.toString() }
-        uiFeedItem?.podcast?.liked?.let {
+        uiPodcast?.number_of_likes?.let { tvLikes.text = it.toString() }
+        uiPodcast?.liked?.let {
             if (it)
                 btnLikes?.setImageResource(R.drawable.like_filled)
             else
@@ -745,7 +776,7 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun onPodcastLikeClicked() {
-        uiFeedItem?.podcast?.let { podcast ->
+        uiPodcast?.let { podcast ->
             changeItemLikeStatus(
                 podcast,
                 !podcast.liked

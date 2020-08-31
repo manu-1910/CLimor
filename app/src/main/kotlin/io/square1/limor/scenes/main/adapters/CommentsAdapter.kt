@@ -42,11 +42,12 @@ class CommentsAdapter(
         val currentItem = list[position]
 
         val commentItemViewHolder : CommentItemViewHolder = holder as CommentItemViewHolder
+
         commentItemViewHolder.bind(currentItem, podcast, context, position)
     }
 
     interface OnCommentClickListener {
-        fun onItemClicked(item : UIComment, position: Int)
+        fun onItemClicked(item : CommentWithParent, position: Int)
         fun onPlayClicked(item : UIComment, position: Int)
         fun onListenClicked(item : UIComment, position: Int)
         fun onCommentClicked(item : UIComment, position: Int)
@@ -57,7 +58,7 @@ class CommentsAdapter(
         fun onUserClicked(item : UIComment, position: Int)
         fun onMoreClicked(item : UIComment, position: Int)
         fun onReplyClicked(item: UIComment, position: Int)
-        fun onMoreRepliesClicked(parent: UIComment, position: Int)
-        fun onShowLessClicked(parent: UIComment, lastChildPosition: Int)
+        fun onMoreRepliesClicked(parent: CommentWithParent, position: Int)
+        fun onShowLessClicked(parent: CommentWithParent, lastChildPosition: Int)
     }
 }

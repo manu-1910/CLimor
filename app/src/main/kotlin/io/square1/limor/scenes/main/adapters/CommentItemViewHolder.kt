@@ -79,6 +79,7 @@ class CommentItemViewHolder(
     }
 
 
+
     fun bind(
         currentItem: CommentWithParent,
         podcastParent: UIPodcast,
@@ -118,7 +119,7 @@ class CommentItemViewHolder(
             layReplyingTo.visibility = View.GONE
 
             // if we are NOT the last comment of our parent, then we have to draw the lower bar and remove the bar decorator
-            if(currentItem.parent.comments.last() != currentItem.comment) {
+            if(currentItem.parent.comment.comments.last() != currentItem.comment) {
                 barThreadDown.visibility = View.VISIBLE
                 barDecorator.visibility = View.GONE
                 layMoreReplies.visibility = View.GONE
@@ -130,16 +131,16 @@ class CommentItemViewHolder(
 
                 // if we are the last child and our parent has more comments than the number of comments loaded, we have to show the more replies layout
                 // and
-                if(currentItem.parent.comment_count > currentItem.parent.comments.size) {
+                if(currentItem.parent.comment.comment_count > currentItem.parent.comment.comments.size) {
                     layMoreReplies.visibility = View.VISIBLE
-                    val numberOfCommentsMore = currentItem.parent.comment_count - MAX_API_COMMENTS_PER_COMMENT
+                    val numberOfCommentsMore = currentItem.parent.comment.comment_count - MAX_API_COMMENTS_PER_COMMENT
                     val moreRepliesText = numberOfCommentsMore.toString() + " " + context.getString(R.string.more_replies)
                     tvMoreReplies.text = moreRepliesText
                     tvMoreReplies.onClick { commentClickListener.onMoreRepliesClicked(currentItem.parent, position) }
 
                     // this means that we have to show the show less button. This means that we are showing all the comments of the parent and that the parent
                     // has more than the default api comment count
-                } else if(currentItem.parent.comment_count == currentItem.parent.comments.size && currentItem.parent.comment_count > MAX_API_COMMENTS_PER_COMMENT) {
+                } else if(currentItem.parent.comment.comment_count == currentItem.parent.comment.comments.size && currentItem.parent.comment.comment_count > MAX_API_COMMENTS_PER_COMMENT) {
                     layMoreReplies.visibility = View.VISIBLE
                     tvMoreReplies.text = context.getString(R.string.show_less)
                     tvMoreReplies.onClick { commentClickListener.onShowLessClicked(currentItem.parent, position) }
@@ -159,6 +160,7 @@ class CommentItemViewHolder(
 
         // comment text
         tvCommentText.text = hightlightHashtags(currentItem.comment.content)
+        tvCommentText.onClick { commentClickListener.onItemClicked(currentItem, position) }
 
 
         // recasts
