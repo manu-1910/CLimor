@@ -12,12 +12,6 @@ const val PODCAST_COMMENTS_PATH = "/api/v1/podcasts/{id}/comments"
 
 
 interface PodcastService {
-//    @POST(PUBLISH_PODCAST_PATH)
-//    fun publishPodcast(
-//        @QueryMap(encoded = true) publishRequest: RequestBody
-//    ): Single<ResponseBody>
-
-
     @POST(PUBLISH_PODCAST_PATH)
     fun publishPodcast(
         @Body publishRequest: RequestBody
@@ -39,10 +33,4 @@ interface PodcastService {
         @Query ("limit") limit : Int?,
         @Query("offset") offset: Int?
     ): Single<ResponseBody>
-
-//
-//    @POST(AUTH_MERGE_ACCOUNTS_PATH)
-//    fun mergeAccounts(
-//        @QueryMap(encoded = true) mergeFacebookAccountRequest: @JvmSuppressWildcards Map<String, @JvmSuppressWildcards Any>
-//    ): Single<ResponseBody>
 }

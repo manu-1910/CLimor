@@ -5,20 +5,20 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import io.square1.limor.common.BaseViewModel
 import io.square1.limor.App
 import io.square1.limor.R
-import io.square1.limor.common.BaseViewModel
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import io.square1.limor.uimodels.UIErrorData
 import io.square1.limor.uimodels.UIErrorResponse
+import io.square1.limor.uimodels.UIErrorData
 import io.square1.limor.uimodels.UIGetCommentsResponse
-import io.square1.limor.usecases.GetCommentsUseCase
+import io.square1.limor.usecases.GetPodcastCommentsUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class GetCommentsViewModel @Inject constructor(private val getCommentsUseCase: GetCommentsUseCase) :
-    BaseViewModel<GetCommentsViewModel.Input, GetCommentsViewModel.Output>() {
+class GetPodcastCommentsViewModel @Inject constructor(private val getPodcastCommentsUseCase: GetPodcastCommentsUseCase) :
+    BaseViewModel<GetPodcastCommentsViewModel.Input, GetPodcastCommentsViewModel.Output>() {
 
     private val compositeDispose = CompositeDisposable()
 
@@ -27,7 +27,7 @@ class GetCommentsViewModel @Inject constructor(private val getCommentsUseCase: G
     var offset: Int = 0
 
     data class Input(
-        val getFeedTrigger: Observable<Unit>
+        val getCommentTrigger: Observable<Unit>
     )
 
     data class Output(
@@ -41,8 +41,8 @@ class GetCommentsViewModel @Inject constructor(private val getCommentsUseCase: G
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
         val response = MutableLiveData<UIGetCommentsResponse>()
 
-        input.getFeedTrigger.subscribe({
-            getCommentsUseCase.execute(idPodcast, limit, offset).subscribe({
+        input.getCommentTrigger.subscribe({
+            getPodcastCommentsUseCase.execute(idPodcast, limit, offset).subscribe({
                 response.value = it
             }, {
                 try {

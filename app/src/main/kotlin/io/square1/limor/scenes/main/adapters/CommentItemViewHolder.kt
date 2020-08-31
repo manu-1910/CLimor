@@ -34,35 +34,35 @@ class CommentItemViewHolder(
         false
     )
 ) {
-    var tvUserFullname: TextView = itemView.findViewById(R.id.tvUserName)
-    var tvDateAndLocation: TextView = itemView.findViewById(R.id.tvTimeAndLocation)
+    private var tvUserFullname: TextView = itemView.findViewById(R.id.tvUserName)
+    private var tvDateAndLocation: TextView = itemView.findViewById(R.id.tvTimeAndLocation)
 
-    var tvListens: TextView = itemView.findViewById(R.id.tvListens)
-    var tvComments: TextView = itemView.findViewById(R.id.tvComments)
-    var tvLikes: TextView = itemView.findViewById(R.id.tvLikes)
-    var tvRecasts: TextView = itemView.findViewById(R.id.tvRecasts)
-    var tvCommentText: TextView = itemView.findViewById(R.id.tvCommentText)
-    var tvNameReplyingTo: TextView = itemView.findViewById(R.id.tvNameReplyingTo)
-    var tvMoreReplies: TextView = itemView.findViewById(R.id.tvMoreReplies)
+    private var tvListens: TextView = itemView.findViewById(R.id.tvListens)
+    private var tvComments: TextView = itemView.findViewById(R.id.tvComments)
+    private var tvLikes: TextView = itemView.findViewById(R.id.tvLikes)
+    private var tvRecasts: TextView = itemView.findViewById(R.id.tvRecasts)
+    private var tvCommentText: TextView = itemView.findViewById(R.id.tvCommentText)
+    private var tvNameReplyingTo: TextView = itemView.findViewById(R.id.tvNameReplyingTo)
+    private var tvMoreReplies: TextView = itemView.findViewById(R.id.tvMoreReplies)
 
-    var ivUser: ImageView = itemView.findViewById(R.id.ivUserPicture)
-    var ivVerifiedUser: ImageView = itemView.findViewById(R.id.ivVerifiedUser)
+    private var ivUser: ImageView = itemView.findViewById(R.id.ivUserPicture)
+    private var ivVerifiedUser: ImageView = itemView.findViewById(R.id.ivVerifiedUser)
 
-    var ibtnListen: ImageButton = itemView.findViewById(R.id.btnListens)
-    var ibtnLike: ImageButton = itemView.findViewById(R.id.btnLikes)
-    var ibtnRecasts: ImageButton = itemView.findViewById(R.id.btnRecasts)
-    var ibtnComments: ImageButton = itemView.findViewById(R.id.btnComments)
-    var ibtnMore: ImageButton = itemView.findViewById(R.id.btnMore)
+    private var ibtnListen: ImageButton = itemView.findViewById(R.id.btnListens)
+    private var ibtnLike: ImageButton = itemView.findViewById(R.id.btnLikes)
+    private var ibtnRecasts: ImageButton = itemView.findViewById(R.id.btnRecasts)
+    private var ibtnComments: ImageButton = itemView.findViewById(R.id.btnComments)
+    private var ibtnMore: ImageButton = itemView.findViewById(R.id.btnMore)
 
-    var btnReply: TextView = itemView.findViewById(R.id.btnReply)
-    var barThreadUp: View = itemView.findViewById(R.id.barThreadUp)
-    var barThreadDown: View = itemView.findViewById(R.id.barThreadDown)
-    var barDecorator: View = itemView.findViewById(R.id.barDecorator)
-    var layReplyingTo: View = itemView.findViewById(R.id.layReplying)
-    var layMoreReplies: View = itemView.findViewById(R.id.layMoreReplies)
+    private var btnReply: TextView = itemView.findViewById(R.id.btnReply)
+    private var barThreadUp: View = itemView.findViewById(R.id.barThreadUp)
+    private var barThreadDown: View = itemView.findViewById(R.id.barThreadDown)
+    private var barDecorator: View = itemView.findViewById(R.id.barDecorator)
+    private var layReplyingTo: View = itemView.findViewById(R.id.layReplying)
+    private var layMoreReplies: View = itemView.findViewById(R.id.layMoreReplies)
 
 
-    var clickableSpan: ClickableSpan = object : ClickableSpan() {
+    private var clickableSpan: ClickableSpan = object : ClickableSpan() {
         override fun onClick(textView: View) {
             val tv = textView as TextView
             val s: Spanned = tv.text as Spanned
@@ -128,13 +128,22 @@ class CommentItemViewHolder(
                 barThreadDown.visibility = View.GONE
                 barDecorator.visibility = View.VISIBLE
 
-                // if we are the last child and our parent has more comments than two, we have to show the more replies layout
-                if(currentItem.parent.comment_count > MAX_API_COMMENTS_PER_COMMENT) {
+                // if we are the last child and our parent has more comments than the number of comments loaded, we have to show the more replies layout
+                // and
+                if(currentItem.parent.comment_count > currentItem.parent.comments.size) {
                     layMoreReplies.visibility = View.VISIBLE
                     val numberOfCommentsMore = currentItem.parent.comment_count - MAX_API_COMMENTS_PER_COMMENT
                     val moreRepliesText = numberOfCommentsMore.toString() + " " + context.getString(R.string.more_replies)
                     tvMoreReplies.text = moreRepliesText
                     tvMoreReplies.onClick { commentClickListener.onMoreRepliesClicked(currentItem.parent, position) }
+
+                    // this means that we have to show the show less button. This means that we are showing all the comments of the parent and that the parent
+                    // has more than the default api comment count
+                } else if(currentItem.parent.comment_count == currentItem.parent.comments.size && currentItem.parent.comment_count > MAX_API_COMMENTS_PER_COMMENT) {
+                    layMoreReplies.visibility = View.VISIBLE
+                    tvMoreReplies.text = context.getString(R.string.show_less)
+                    tvMoreReplies.onClick { commentClickListener.onShowLessClicked(currentItem.parent, position) }
+
                 } else {
                     layMoreReplies.visibility = View.GONE
                 }
@@ -153,7 +162,7 @@ class CommentItemViewHolder(
 
 
         // recasts
-        currentItem.comment.podcast?.number_of_recasts?.let { tvRecasts.text = it.toString() }
+//        currentItem.comment.podcast?.number_of_recasts?.let { tvRecasts.text = it.toString() }
         tvRecasts.onClick { commentClickListener.onRecastClicked(currentItem.comment, position) }
         ibtnRecasts.onClick { commentClickListener.onRecastClicked(currentItem.comment, position) }
 

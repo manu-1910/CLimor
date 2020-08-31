@@ -222,6 +222,7 @@
     <string name="post">Post</string>
     <string name="replying_to">Replying to</string>
     <string name="more_replies">More replies</string>
+    <string name="show_less">Show less</string>
 
 
 </resources>

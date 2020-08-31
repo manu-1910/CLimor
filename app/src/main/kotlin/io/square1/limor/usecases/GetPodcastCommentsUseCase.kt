@@ -8,7 +8,7 @@ import io.square1.limor.uimodels.UIGetCommentsResponse
 import repositories.podcast.PodcastRepository
 import javax.inject.Inject
 
-class GetCommentsUseCase @Inject constructor(
+class GetPodcastCommentsUseCase @Inject constructor(
     private val podcastRepository: PodcastRepository,
     private val postExecutionThread: PostExecutionThread,
     private val jobExecutor: JobExecutor

@@ -58,5 +58,6 @@ class CommentsAdapter(
         fun onMoreClicked(item : UIComment, position: Int)
         fun onReplyClicked(item: UIComment, position: Int)
         fun onMoreRepliesClicked(parent: UIComment, position: Int)
+        fun onShowLessClicked(parent: UIComment, lastChildPosition: Int)
     }
 }
