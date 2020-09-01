@@ -178,6 +178,8 @@ class RecordFragment : BaseFragment() {
             //Inserting in Realm
             insertDraftInRealm(recordingItem!!)
 
+            toast(getString(R.string.draft_inserted))
+
             //findNavController().navigate(R.id.action_record_fragment_to_record_drafts)
             activity?.finish()
 
