@@ -165,6 +165,7 @@ class RecordFragment : BaseFragment() {
         val positiveButton= dialogLayout.findViewById<Button>(R.id.saveButton)
         val cancelButton = dialogLayout.findViewById<Button>(R.id.cancelButton)
         val editText  = dialogLayout.findViewById<EditText>(R.id.editText)
+        //editText.setSelection(editText.text.length)
         dialog.setView(dialogLayout)
         dialog.setCancelable(false)
         val ad: AlertDialog = dialog.show()
@@ -189,6 +190,7 @@ class RecordFragment : BaseFragment() {
 
         editText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
+
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -384,7 +386,10 @@ class RecordFragment : BaseFragment() {
 
                     val bundle = bundleOf("recordingItem" to recordingItem)
                     //findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
-                    findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
+                    findNavController().navigate(
+                        R.id.action_record_fragment_to_record_publish,
+                        bundle
+                    )
 
                 }
                 1 -> {
@@ -397,7 +402,10 @@ class RecordFragment : BaseFragment() {
 
                     val bundle = bundleOf("recordingItem" to recordingItem)
                     //findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
-                    findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
+                    findNavController().navigate(
+                        R.id.action_record_fragment_to_record_publish,
+                        bundle
+                    )
                 }
                 else -> {
                     doAsync {
