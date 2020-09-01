@@ -320,9 +320,9 @@ class DraftsFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
             if (it) {
-                toast(getString(R.string.draft_deleted))
+                //toast(getString(R.string.draft_deleted))
             } else {
-                toast(getString(R.string.draft_not_deleted))
+                //toast(getString(R.string.draft_not_deleted))
             }
         })
 
@@ -330,7 +330,7 @@ class DraftsFragment : BaseFragment() {
             trackBackgroudProgress(it)
         })
         output.errorMessage.observe(this, Observer {
-            Timber.e(getString(R.string.centre_not_deleted_error))
+            toast(getString(R.string.centre_not_deleted_error))
         })
     }
 
@@ -344,9 +344,9 @@ class DraftsFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
             if (it) {
-                toast(getString(R.string.draft_inserted))
+                //toast(getString(R.string.draft_inserted))
             } else{
-                toast(getString(R.string.draft_not_inserted))
+                //toast(getString(R.string.draft_not_inserted))
             }
         })
 

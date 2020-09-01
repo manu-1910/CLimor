@@ -691,9 +691,9 @@ class RecordFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
             if (it) {
-                toast(getString(R.string.draft_inserted))
+                //toast(getString(R.string.draft_inserted))
             } else {
-                toast(getString(R.string.draft_not_inserted))
+                //toast(getString(R.string.draft_not_inserted))
             }
         })
 
@@ -716,9 +716,9 @@ class RecordFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
             if (it) {
-                toast(getString(R.string.draft_deleted))
+                //toast(getString(R.string.draft_deleted))
             } else {
-                toast(getString(R.string.draft_not_deleted))
+                //toast(getString(R.string.draft_not_deleted))
             }
         })
 
