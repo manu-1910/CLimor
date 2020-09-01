@@ -61,6 +61,10 @@ class PodcastDetailsFragment : BaseFragment() {
     private var lastLikedItemPosition = 0
     private var isScrolling = false
 
+    // this variable will be true when we are showing the details of a podcast with the podcast comments
+    // it will be false when we are showing the details of a podcast but with the comments of a comment and its parents
+    private var podcastMode = false
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -83,7 +87,11 @@ class PodcastDetailsFragment : BaseFragment() {
     private var rootView: View? = null
     var app: App? = null
 
+    // this represents the main podcast of the screen, the postcast that we are seeing the details of
     var uiPodcast: UIPodcast? = null
+
+    // this represents the main comment of the screen, it will be null when we are in podcastMode
+    // and it will be the main comment when we are seeing the comments of this comment
     var uiMainCommentWithParent: CommentWithParent? = null
 
     var clickableSpan: ClickableSpan = object : ClickableSpan() {
@@ -143,9 +151,6 @@ class PodcastDetailsFragment : BaseFragment() {
         initApiCallDeletePodcastLike()
         initApiCallCreateCommentLike()
         initApiCallDeleteCommentLike()
-        configureAdapter()
-        configureToolbar()
-        fillForm()
 
         // we get the possible comment clicked from the previous activity.
         uiMainCommentWithParent = activity?.commentWithParent
@@ -153,16 +158,26 @@ class PodcastDetailsFragment : BaseFragment() {
         // if it's not null, that means that we have to show the "comment of a comment" screen.
         // If it's null this means that we have to show the "comment of a podcast" screen
         uiMainCommentWithParent?.let {
+            podcastMode = false
             addTopParents(it)
             rvComments?.adapter?.notifyDataSetChanged()
             app_bar_layout?.setExpanded(false);
             rvComments?.scrollToPosition(commentWithParentsItemsList.size - 1)
 
+            viewModelGetCommentComments.idComment = it.comment.id
+            getCommentCommentsDataTrigger.onNext(Unit)
+
             // but if it is null, we have to get the podcast comments
         } ?: run {
+            podcastMode = true
             uiPodcast?.id?.let { viewModelGetPodcastComments.idPodcast = it }
             getPodcastCommentsDataTrigger.onNext(Unit)
         }
+
+
+        configureAdapter()
+        configureToolbar()
+        fillForm()
 
 
         swipeRefreshLayout?.onRefresh { reloadComments() }
@@ -191,12 +206,37 @@ class PodcastDetailsFragment : BaseFragment() {
         output.response.observe(this, Observer {
             val newItems = it.data.comments
 
-            // we add the new items to its parent
-            lastCommentRequestedRepliesParent?.let {parent ->
-                parent.comment.comments.addAll(newItems)
+            // if we are in podcast mode, it means that the main publication is the podcast itself,
+            // so we have to fill just the lastCommentRequestedReplies because this call is being called
+            // from a "show more" button
+            if(podcastMode) {
 
-                // now we have to insert the new items in the global list
-                fillCommentsWithParentsListOneLevel(lastCommentRequestedRepliesPosition, newItems, parent)
+                // we add the new items to its parent
+                lastCommentRequestedRepliesParent?.let {parent ->
+                    parent.comment.comments.addAll(newItems)
+
+                    // now we have to insert the new items in the global list
+                    fillCommentsWithParentsListOneLevel(lastCommentRequestedRepliesPosition, newItems, parent)
+                }
+
+
+
+                // if we are not in podcast mode (so we are in comment of comment mode) then the main
+                // publication is the uiMainCommentWithParent. This means that we clicked in a specific
+                // comment and now we are in this activity and we want to see al the related comments
+                // of that specific comment. So we won't fill that item comments, instead we will fill
+                // the main list with the new items, so every new item will have its own comments.
+                // Yeah, I know it's tricky
+            } else {
+                newItems.forEach{ comment ->
+                    val auxComment = CommentWithParent(comment, uiMainCommentWithParent)
+                    commentWithParentsItemsList.add(auxComment)
+                    if(comment.comments.size > 0) {
+                        comment.comments.forEach{subcomment ->
+                            commentWithParentsItemsList.add(CommentWithParent(subcomment, auxComment))
+                        }
+                    }
+                }
             }
 
 
@@ -495,7 +535,9 @@ class PodcastDetailsFragment : BaseFragment() {
                         rvComments?.adapter?.notifyDataSetChanged()
                         rvComments?.scrollToPosition(originalParentPosition)
                     }
-                }
+                },
+                podcastMode,
+                uiMainCommentWithParent
             )
         }
 
@@ -524,8 +566,13 @@ class PodcastDetailsFragment : BaseFragment() {
                     // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
                     if (isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
                         isScrolling = false
-                        viewModelGetPodcastComments.offset = commentWithParentsItemsList.size - 1
-                        getPodcastCommentsDataTrigger.onNext(Unit)
+                        if(podcastMode) {
+                            viewModelGetPodcastComments.offset = commentWithParentsItemsList.size - 1
+                            getPodcastCommentsDataTrigger.onNext(Unit)
+                        } else {
+                            viewModelGetCommentComments.offset = commentWithParentsItemsList.size - 1
+                            getCommentCommentsDataTrigger.onNext(Unit)
+                        }
                     }
                 }
             }

@@ -220,7 +220,12 @@
     <string name="reply">Reply</string>
     <string name="leave_a_comment">Leave a comment...</string>
     <string name="post">Post</string>
-    <string name="replying_to">Replying to</string>
+    <string name="replying_to_name">%1$s</string>
+    <string name="replying_to_prefix">Replying to&#160;</string>
+    <plurals name="replying_to_sufix">
+        <item quantity="one">%1$s and 1 other</item>
+        <item quantity="other">%1$s and %2$d others</item>
+    </plurals>
     <string name="more_replies">More replies</string>
     <string name="show_less">Show less</string>
 

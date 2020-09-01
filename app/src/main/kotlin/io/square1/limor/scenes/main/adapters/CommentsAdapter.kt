@@ -12,20 +12,17 @@ class CommentsAdapter(
     private val context: Context,
     private var list: ArrayList<CommentWithParent>,
     private var podcast: UIPodcast,
-    private val commentClickListener: OnCommentClickListener
+    private val commentClickListener: OnCommentClickListener,
+    private val podcastMode: Boolean,
+    private val mainComment: CommentWithParent?
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var inflator: LayoutInflater
-//    var list: ArrayList<CommentWithParent> = ArrayList()
+    private var inflator: LayoutInflater = LayoutInflater.from(context)
+    private var mainCommentPosition = 0
 
-
-    private fun onTagClicked(clickedTag: String) {
-        commentClickListener.onHashtagClicked(clickedTag)
-    }
 
     init {
-//        this.list = list
-        inflator = LayoutInflater.from(context)
+        mainCommentPosition = list.indexOf(mainComment)
     }
 
 
@@ -43,7 +40,11 @@ class CommentsAdapter(
 
         val commentItemViewHolder : CommentItemViewHolder = holder as CommentItemViewHolder
 
-        commentItemViewHolder.bind(currentItem, podcast, context, position)
+        if(podcastMode) {
+            commentItemViewHolder.bindPodcastComment(currentItem, podcast, context, position)
+        } else {
+            commentItemViewHolder.bindCommentComment(currentItem, podcast, context, position, mainComment!!, mainCommentPosition)
+        }
     }
 
     interface OnCommentClickListener {
