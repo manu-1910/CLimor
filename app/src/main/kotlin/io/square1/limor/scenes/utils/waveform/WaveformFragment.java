@@ -127,7 +127,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     public static final int NEW_WIDTH = 20;
 
     private enum MenuOption {
-        Copy, Paste, Delete, Dismiss, Preview;
+        Copy, Paste, Delete, Dismiss, Preview, Cancel;
     }
 
     // endregion
@@ -457,7 +457,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         if (marker.getMarkerSet().isMiddleVisible() && marker.getMarkerSet().isEditMarker()){
             //If is the Paste marker I only will show the "paste" option menu
             menuView.setMenuItems(Arrays.asList(
-                    new OptionMenu(getString(R.string.menu_paste))
+                    new OptionMenu(getString(R.string.menu_paste)),
+                    new OptionMenu(getString(R.string.menu_cancel))
             ));
         }else{
             menuView.setMenuItems(Arrays.asList(
@@ -469,7 +470,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
 
         //menuView.setSites(PopupView.SITE_BOTTOM, PopupView.SITE_LEFT, PopupView.SITE_TOP, PopupView.SITE_RIGHT);
-        menuView.setSites( PopupView.SITE_TOP );
+        menuView.setSites( PopupView.SITE_BOTTOM );
 
         menuView.setOnMenuClickListener(new OptionMenuView.OnOptionMenuClickListener() {
             @Override
@@ -486,6 +487,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                         tvDelete.performClick();
                         break;
                     case Dismiss:
+                        removeMarker(marker.getMarkerSet());
+                        break;
+                    case Cancel:
                         removeMarker(marker.getMarkerSet());
                         break;
                     case Preview:

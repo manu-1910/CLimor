@@ -121,7 +121,7 @@ class RecordFragment : BaseFragment() {
         super.onResume()
 
         if (draftViewModel.continueRecording){
-            toast("Tap on record to continue recording the selected draft")
+            //toast("Tap on record to continue recording the selected draft")
             draftViewModel.continueRecording = false
             isFirstTapRecording = true
             resetAudioSetup()
@@ -624,7 +624,15 @@ class RecordFragment : BaseFragment() {
             isRecording = false
         } else {
             println("RECORD --> STOP")
-            val stopAndMergeOk = mRecorder.stop()
+
+            var stopAndMergeOk = false
+            try {
+                mRecorder.stop()
+                stopAndMergeOk = true
+            } catch (e: Exception) {
+                stopAndMergeOk = false
+                e.printStackTrace()
+            }
             //val fileChosenPath = File(mRecorder.audioFilePath)
             if(stopAndMergeOk){
                 //val fileChosen = getLastModified()
