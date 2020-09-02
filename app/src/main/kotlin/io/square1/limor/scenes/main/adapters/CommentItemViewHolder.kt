@@ -136,9 +136,11 @@ class CommentItemViewHolder(
         // user picture
         Glide.with(itemView.context)
             .load(currentItem.comment.user?.images?.small_url)
+            .placeholder(R.mipmap.ic_launcher_round)
             .apply(RequestOptions.circleCropTransform())
             .error(R.mipmap.ic_launcher_round)
             .into(ivUser)
+
 
         ivUser.onClick { commentClickListener.onUserClicked(currentItem.comment, position) }
 

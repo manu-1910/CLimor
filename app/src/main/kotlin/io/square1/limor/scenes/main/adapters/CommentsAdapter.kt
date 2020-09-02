@@ -13,17 +13,19 @@ class CommentsAdapter(
     private var list: ArrayList<CommentWithParent>,
     private var podcast: UIPodcast,
     private val commentClickListener: OnCommentClickListener,
-    private val podcastMode: Boolean,
+    var podcastMode: Boolean,
     private val mainComment: CommentWithParent?
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var inflator: LayoutInflater = LayoutInflater.from(context)
-    private var mainCommentPosition = 0
+    var mainCommentPosition = 0
 
 
     init {
         mainCommentPosition = list.indexOf(mainComment)
     }
+
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -36,10 +38,10 @@ class CommentsAdapter(
 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentItem = list[position]
 
         val commentItemViewHolder : CommentItemViewHolder = holder as CommentItemViewHolder
 
+        val currentItem = list[position]
         if(podcastMode) {
             commentItemViewHolder.bindPodcastComment(currentItem, podcast, context, position)
         } else {
