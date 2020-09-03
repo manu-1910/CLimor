@@ -23,8 +23,10 @@ import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
 import io.square1.limor.scenes.main.viewmodels.CreatePodcastLikeViewModel
 import io.square1.limor.scenes.main.viewmodels.DeletePodcastLikeViewModel
 import io.square1.limor.scenes.main.viewmodels.FeedViewModel
+import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIFeedItem
 import org.jetbrains.anko.support.v4.onRefresh
+import org.jetbrains.anko.support.v4.startService
 import javax.inject.Inject
 
 
@@ -111,6 +113,21 @@ class FeedFragment : BaseFragment() {
 
                     override fun onPlayClicked(item: UIFeedItem, position: Int) {
                         Toast.makeText(context, "You clicked on play", Toast.LENGTH_SHORT).show()
+
+                        item.podcast?.audio?.audio_url?.let { audioUrl ->
+
+                            val title = item.podcast?.title.toString()
+                            val id = item.podcast?.id
+
+                            if (id != null) {
+                                AudioService.newIntent(requireContext(), title,
+                                    audioUrl, id,  1L).also { intent ->
+                                    // This service will get converted to foreground service using the PlayerNotificationManager notification Id.
+                                    requireContext().startService(intent)
+                                }
+                            }
+                        }
+
                     }
 
                     override fun onListenClicked(item: UIFeedItem, position: Int) {
