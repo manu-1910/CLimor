@@ -61,7 +61,6 @@ class PodcastDetailsFragment : BaseFragment() {
     // this variable will be true when we are showing the details of a podcast with the podcast comments
     // it will be false when we are showing the details of a podcast but with the comments of a comment and its parents
     private var podcastMode = false
-    private var firstTimeReceivingComments = true
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -85,6 +84,8 @@ class PodcastDetailsFragment : BaseFragment() {
     private var rootView: View? = null
     var app: App? = null
 
+    private var firstTimePadding = true
+
     // this represents the main podcast of the screen, the postcast that we are seeing the details of
     var uiPodcast: UIPodcast? = null
 
@@ -92,6 +93,7 @@ class PodcastDetailsFragment : BaseFragment() {
     // and it will be the main comment when we are seeing the comments of this comment
     private var uiMainCommentWithParent: CommentWithParent? = null
 
+    // this is used to hightlight hashtags inside podcast
     private var clickableSpan: ClickableSpan = object : ClickableSpan() {
         override fun onClick(textView: View) {
             val tv = textView as TextView
@@ -166,32 +168,26 @@ class PodcastDetailsFragment : BaseFragment() {
             commentsAdapter?.mainCommentPosition = commentWithParentsItemsList.indexOf(it)
 
 
-            val dataObserver = object : RecyclerView.AdapterDataObserver() {
-                override fun onChanged() {
-                    if(firstTimeReceivingComments /*&& rvComments.childCount > 0*/) {
-//                        val y: Float = rvComments!!.y + rvComments!!.getChildAt(commentWithParentsItemsList.size - 1).y
-                        val y: Float = rvComments!!.y// + rvComments!!.getChildAt(rvComments.childCount - 1).y
-                        rvComments?.startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL, ViewCompat.TYPE_NON_TOUCH)
-//                        ObjectAnimator.ofInt(rvComments, "scrollY",  y.toInt()).setDuration(1).start();
-                        val llm = rvComments?.layoutManager as LinearLayoutManager
-                        llm.scrollToPositionWithOffset(commentWithParentsItemsList.size - 1, y.toInt())
-
-
-//                        rvComments?.smoothScrollBy(0, y.toInt())
-                        firstTimeReceivingComments = false
-//                        rvComments?.adapter?.notifyDataSetChanged()
-//                        commentsAdapter?.unregisterAdapterDataObserver(dataObserver)
-                    }
+            // this is the code that makes the mainComment be on top of the scroll
+            rvComments.viewTreeObserver.addOnGlobalLayoutListener {
+                if(firstTimePadding) {
+                    firstTimePadding = false
+                    context?.let { context -> rvComments?.setPadding(0,0,0, layParent!!.height - CommonsKt.dpToPx(128.0f, context)) } // TODO Jose, this last param should be the height of the last item, not hardcoded number
+                    rvComments?.requestLayout()
+                    val y: Float = rvComments!!.y
+                    rvComments?.startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL, ViewCompat.TYPE_NON_TOUCH)
+                    val llm = rvComments?.layoutManager as LinearLayoutManager
+                    llm.scrollToPositionWithOffset(commentWithParentsItemsList.size - 1, y.toInt())
                 }
             }
 
-
-            commentsAdapter?.registerAdapterDataObserver(dataObserver)
             app_bar_layout?.setExpanded(false)
-            rvComments?.adapter?.notifyDataSetChanged()
+
 
             viewModelGetCommentComments.idComment = it.comment.id
             getCommentCommentsDataTrigger.onNext(Unit)
+
+            rvComments?.adapter?.notifyDataSetChanged()
 
             // but if it is null, we have to get the podcast comments
         } ?: run {
@@ -485,7 +481,6 @@ class PodcastDetailsFragment : BaseFragment() {
                         podcastDetailsIntent.putExtra("podcast", uiPodcast)
                         podcastDetailsIntent.putExtra("model", item)
                         startActivity(podcastDetailsIntent)
-                        Toast.makeText(context, "You clicked on item", Toast.LENGTH_SHORT).show()
                     }
 
                     override fun onPlayClicked(item: UIComment, position: Int) {
