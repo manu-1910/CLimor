@@ -20,11 +20,15 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.scenes.main.adapters.FeedAdapter
 import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
+import io.square1.limor.scenes.main.fragments.podcast.PodcastsByTagActivity
 import io.square1.limor.scenes.main.viewmodels.CreatePodcastLikeViewModel
 import io.square1.limor.scenes.main.viewmodels.DeletePodcastLikeViewModel
+import io.square1.limor.scenes.main.viewmodels.FeedByTagViewModel
 import io.square1.limor.scenes.main.viewmodels.FeedViewModel
 import io.square1.limor.uimodels.UIFeedItem
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.support.v4.onRefresh
+import org.jetbrains.anko.uiThread
 import javax.inject.Inject
 
 
@@ -37,6 +41,7 @@ class FeedFragment : BaseFragment() {
 
     // viewModels
     private lateinit var viewModelFeed: FeedViewModel
+    private lateinit var viewModelFeedByTag: FeedByTagViewModel
     private lateinit var viewModelCreatePodcastLike: CreatePodcastLikeViewModel
     private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
 
@@ -47,7 +52,8 @@ class FeedFragment : BaseFragment() {
 
 
     // infinite scroll variables
-    private val FEED_LIMIT_REQUEST = 2 // this number multiplied by 2 is because there is an error on the limit
+    private val FEED_LIMIT_REQUEST =
+        2 // this number multiplied by 2 is because there is an error on the limit
 
     // param in the back side that duplicates the amount of results,
     private var isScrolling: Boolean = false
@@ -66,6 +72,8 @@ class FeedFragment : BaseFragment() {
     // like variables
     private var lastLikedItemPosition: Int = 0
 
+    private var hashTag: String = ""
+
 
     companion object {
         val TAG: String = FeedFragment::class.java.simpleName
@@ -82,6 +90,11 @@ class FeedFragment : BaseFragment() {
             rootView = inflater.inflate(R.layout.fragment_feed, container, false)
             rvFeed = rootView?.findViewById(R.id.rvFeed)
             swipeRefreshLayout = rootView?.findViewById(R.id.swipeRefreshLayout)
+
+            val bundle = requireActivity().intent?.extras
+            if (bundle != null && bundle.containsKey(PodcastsByTagActivity.BUNDLE_KEY_HASHTAG)) {
+                hashTag = bundle.getString(PodcastsByTagActivity.BUNDLE_KEY_HASHTAG)!!
+            }
 
             bindViewModel()
             configureAdapter()
@@ -123,11 +136,15 @@ class FeedFragment : BaseFragment() {
 
                     override fun onLikeClicked(item: UIFeedItem, position: Int) {
                         item.podcast?.let { podcast ->
-                            changeItemLikeStatus(item, position, !podcast.liked) // careful, it will change an item to be from like to dislike and viceversa
+                            changeItemLikeStatus(
+                                item,
+                                position,
+                                !podcast.liked
+                            ) // careful, it will change an item to be from like to dislike and viceversa
                             lastLikedItemPosition = position
 
                             // if now it's liked, let's call the api
-                            if(podcast.liked) {
+                            if (podcast.liked) {
                                 viewModelCreatePodcastLike.idPodcast = podcast.id
                                 createPodcastLikeDataTrigger.onNext(Unit)
 
@@ -144,11 +161,12 @@ class FeedFragment : BaseFragment() {
                     }
 
                     override fun onHashtagClicked(hashtag: String) {
-                        Toast.makeText(
-                            context,
-                            "You clicked on $hashtag hashtag",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        val podcastByTagIntent = Intent(context, PodcastsByTagActivity::class.java)
+                        podcastByTagIntent.putExtra(
+                            PodcastsByTagActivity.BUNDLE_KEY_HASHTAG,
+                            hashtag
+                        )
+                        startActivity(podcastByTagIntent)
                     }
 
                     override fun onSendClicked(item: UIFeedItem, position: Int) {
@@ -185,7 +203,7 @@ class FeedFragment : BaseFragment() {
                 super.onScrolled(recyclerView, dx, dy)
 
                 // if we scroll down...
-                if(dy > 0) {
+                if (dy > 0) {
 
                     // those are the items that we have already passed in the list, the items we already saw
                     val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
@@ -197,7 +215,7 @@ class FeedFragment : BaseFragment() {
                     val totalItemsCount = layoutManager.itemCount
 
                     // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
-                    if(isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
+                    if (isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
                         isScrolling = false
                         setFeedViewModelVariables(feedItemsList.size - 1)
                         getFeedDataTrigger.onNext(Unit)
@@ -216,8 +234,8 @@ class FeedFragment : BaseFragment() {
     }
 
     private fun changeItemLikeStatus(item: UIFeedItem, position: Int, liked: Boolean) {
-        item.podcast?.let {podcast ->
-            if(liked) {
+        item.podcast?.let { podcast ->
+            if (liked) {
                 podcast.number_of_likes++
             } else {
                 podcast.number_of_likes--
@@ -229,36 +247,102 @@ class FeedFragment : BaseFragment() {
 
 
     private fun initApiCallGetFeed() {
-        val output = viewModelFeed.transform(
-            FeedViewModel.Input(
-                getFeedDataTrigger
+
+        if (isHashTagFeed()) {
+            val output = viewModelFeedByTag.transform(
+                FeedByTagViewModel.Input(
+                    getFeedDataTrigger,
+                    hashTag
+                )
             )
-        )
 
-        output.response.observe(this, Observer {
-//            System.out.println("Hemos obtenido datos del feeddddddd")
-//            System.out.println("Hemos obtenido ${it.data.feed_items.size} items")
-            val newItems = it.data.feed_items
+            output.response.observe(this, Observer {
 
-            if (isReloading) {
-                feedItemsList.clear()
-                rvFeed?.recycledViewPool?.clear()
-                isReloading = false
+                doAsync {
+
+                    /*
+                        This is an attempt to reuse the same feed adapter for regular feedItems AND postCast by tag items
+                        PodCasts returned from the api do not have a unique id property as String.
+                        Currently, the id property of a UIFeedItem is not used, so a wrapper FeedItem is generated here, with the id
+                        Set to the Podcast id's string value.
+                     */
+
+                    val items = mutableListOf<UIFeedItem>()
+                    for (podcast in it.data.podcasts) {
+                        val item = UIFeedItem(
+                            podcast.id.toString(),
+                            podcast,
+                            podcast.user,
+                            false,
+                            podcast.created_at
+                        )
+                        items.add(item)
+                    }
+
+                    uiThread {
+                        handleNewFeedData(items)
+                    }
+                }
+
+            })
+
+            output.errorMessage.observe(this, Observer {
+                handleErrorState()
+            })
+
+
+        } else {
+            val output = viewModelFeed.transform(
+                FeedViewModel.Input(
+                    getFeedDataTrigger
+                )
+            )
+
+            output.response.observe(this, Observer {
+                val newItems = it.data.feed_items
+                handleNewFeedData(newItems)
+            })
+
+            output.errorMessage.observe(this, Observer {
+                handleErrorState()
+            })
+
+        }
+
+    }
+
+    private fun handleErrorState() {
+        hideSwipeToRefreshProgressBar()
+        Toast.makeText(
+            context,
+            "We couldn't get your feed, please, try again later",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    private fun handleNewFeedData(items: MutableList<UIFeedItem>) {
+
+        if (isHashTagFeed()) {
+            activity?.let { fragmentActivity ->
+                if (fragmentActivity is PodcastsByTagActivity) {
+                    fragmentActivity.hideLoadingSpinner()
+                }
             }
+        }
 
-            feedItemsList.addAll(newItems)
-            if (newItems.size == 0)
-                isLastPage = true
+        if (isReloading) {
+            feedItemsList.clear()
+            rvFeed?.recycledViewPool?.clear()
+            isReloading = false
+        }
+
+        feedItemsList.addAll(items)
+        if (items.size == 0)
+            isLastPage = true
 
 
-            rvFeed?.adapter?.notifyDataSetChanged()
-            hideSwipeToRefreshProgressBar()
-        })
-
-        output.errorMessage.observe(this, Observer {
-            hideSwipeToRefreshProgressBar()
-            Toast.makeText(context, "We couldn't get your feed, please, try again later", Toast.LENGTH_SHORT).show()
-        })
+        rvFeed?.adapter?.notifyDataSetChanged()
+        hideSwipeToRefreshProgressBar()
     }
 
     private fun initApiCallCreateLike() {
@@ -302,7 +386,13 @@ class FeedFragment : BaseFragment() {
     private fun undoLike() {
         Toast.makeText(context, getString(R.string.error_liking_podcast), Toast.LENGTH_SHORT).show()
         val item = feedItemsList[lastLikedItemPosition]
-        item.podcast?.let { podcast -> changeItemLikeStatus(item, lastLikedItemPosition, !podcast.liked) }
+        item.podcast?.let { podcast ->
+            changeItemLikeStatus(
+                item,
+                lastLikedItemPosition,
+                !podcast.liked
+            )
+        }
     }
 
 
@@ -325,6 +415,13 @@ class FeedFragment : BaseFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(FeedViewModel::class.java)
         }
+
+        activity?.let { fragmentActivity ->
+            viewModelFeedByTag = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(FeedByTagViewModel::class.java)
+        }
+
         setFeedViewModelVariables()
 
         activity?.let { fragmentActivity ->
@@ -368,6 +465,13 @@ class FeedFragment : BaseFragment() {
     private fun setFeedViewModelVariables(newOffset: Int = 0) {
         viewModelFeed.limit = FEED_LIMIT_REQUEST
         viewModelFeed.offset = newOffset
+
+        viewModelFeedByTag.limit = FEED_LIMIT_REQUEST
+        viewModelFeedByTag.offset = newOffset
+    }
+
+    private fun isHashTagFeed(): Boolean {
+        return hashTag.isNotEmpty()
     }
 
 }
