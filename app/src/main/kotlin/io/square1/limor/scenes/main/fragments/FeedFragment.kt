@@ -116,9 +116,8 @@ class FeedFragment : BaseFragment() {
                 feedItemsList,
                 object : FeedAdapter.OnFeedClickListener {
                     override fun onItemClicked(item: UIFeedItem, position: Int) {
-                        val podcastDetailsIntent =
-                            Intent(context, PodcastDetailsActivity::class.java)
-                        podcastDetailsIntent.putExtra("model", item)
+                        val podcastDetailsIntent = Intent(context, PodcastDetailsActivity::class.java)
+                        podcastDetailsIntent.putExtra("podcast", item.podcast)
                         startActivity(podcastDetailsIntent)
 //                        (activity as SignActivity).finish()
                     }

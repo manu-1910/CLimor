@@ -9,12 +9,15 @@ import dagger.android.support.HasSupportFragmentInjector
 import io.square1.limor.R
 import io.square1.limor.common.BaseActivity
 import io.square1.limor.uimodels.UIFeedItem
+import io.square1.limor.uimodels.UIPodcast
 import javax.inject.Inject
 
 
 class PodcastDetailsActivity : BaseActivity(), HasSupportFragmentInjector {
 
-    var uiFeedItem : UIFeedItem? = null
+    var commentWithParent : CommentWithParent? = null
+    var uiPodcast : UIPodcast? = null
+
 
     @Inject
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -34,7 +37,8 @@ class PodcastDetailsActivity : BaseActivity(), HasSupportFragmentInjector {
         setContentView(R.layout.activity_podcast_details)
 
         val bundle = intent?.extras
-        uiFeedItem = bundle?.get("model") as UIFeedItem?
+        uiPodcast = bundle?.get("podcast") as UIPodcast?
+        commentWithParent = bundle?.get("model") as CommentWithParent?
 
         setupNavigationController()
     }

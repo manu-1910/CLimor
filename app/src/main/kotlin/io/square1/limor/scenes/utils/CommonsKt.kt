@@ -1,14 +1,16 @@
 package io.square1.limor.scenes.utils
 
+import android.content.Context
+import android.content.res.Resources
 import android.os.Build
 import android.text.Editable
 import android.text.format.DateFormat
+import android.util.TypedValue
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.channels.FileChannel
-import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -97,6 +99,15 @@ class CommonsKt {
                     //TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
                 )
             }
+        }
+
+
+        fun dpToPx(dp : Float, context: Context) : Int {
+            return TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp,
+                context.resources.getDisplayMetrics()
+            ).toInt()
         }
 
         fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
