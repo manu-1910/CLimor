@@ -1,9 +1,6 @@
 package io.square1.limor.scenes.main.fragments.podcast
 
-import android.animation.ObjectAnimator
-import android.content.Context
 import android.content.Intent
-import android.database.DataSetObserver
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
@@ -36,7 +33,6 @@ import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIComment
 import io.square1.limor.uimodels.UIPodcast
-import kotlinx.android.synthetic.main.fragment_feed.*
 import kotlinx.android.synthetic.main.fragment_podcast_details.*
 import kotlinx.android.synthetic.main.include_interactions_bar.*
 import kotlinx.android.synthetic.main.include_podcast_data.*
@@ -160,6 +156,7 @@ class PodcastDetailsFragment : BaseFragment() {
         uiMainCommentWithParent = activity?.commentWithParent
         configureAdapter()
 
+        showProgressBar()
 
         // if it's not null, that means that we have to show the "comment of a comment" screen.
         // If it's null this means that we have to show the "comment of a podcast" screen
@@ -205,9 +202,6 @@ class PodcastDetailsFragment : BaseFragment() {
 
 
         fillForm()
-
-
-        swipeRefreshLayout?.onRefresh { reloadComments() }
     }
 
 
@@ -288,11 +282,11 @@ class PodcastDetailsFragment : BaseFragment() {
 
 
             rvComments?.adapter?.notifyDataSetChanged()
-            hideSwipeToRefreshProgressBar()
+            hideProgressBar()
         })
 
         output.errorMessage.observe(this, Observer {
-            hideSwipeToRefreshProgressBar()
+            hideProgressBar()
             Toast.makeText(
                 context,
                 "We couldn't get your feed, please, try again later",
@@ -444,11 +438,11 @@ class PodcastDetailsFragment : BaseFragment() {
             fillCommentList(newItems)
 
             rvComments?.adapter?.notifyDataSetChanged()
-            hideSwipeToRefreshProgressBar()
+            hideProgressBar()
         })
 
         output.errorMessage.observe(this, Observer {
-            hideSwipeToRefreshProgressBar()
+            hideProgressBar()
             Toast.makeText(
                 context,
                 "We couldn't get your feed, please, try again later",
@@ -470,14 +464,6 @@ class PodcastDetailsFragment : BaseFragment() {
                         )
                     )
                 }
-            }
-        }
-    }
-
-    private fun hideSwipeToRefreshProgressBar() {
-        swipeRefreshLayout?.let {
-            if (it.isRefreshing) {
-                swipeRefreshLayout?.isRefreshing = false
             }
         }
     }
@@ -570,6 +556,7 @@ class PodcastDetailsFragment : BaseFragment() {
                     }
 
                     override fun onMoreRepliesClicked(parent: CommentWithParent, position: Int) {
+                        showProgressBar()
                         lastCommentRequestedRepliesPosition = position
                         lastCommentRequestedRepliesParent = parent
                         viewModelGetCommentComments.idComment = parent.comment.id
@@ -714,12 +701,6 @@ class PodcastDetailsFragment : BaseFragment() {
         }
     }
 
-    private fun reloadComments() {
-        isLastPage = false
-        isReloading = true
-        viewModelGetPodcastComments.offset = 0
-        getPodcastCommentsDataTrigger.onNext(Unit)
-    }
 
     private fun fillForm() {
         tvPodcastText?.text = uiPodcast?.caption
@@ -921,6 +902,14 @@ class PodcastDetailsFragment : BaseFragment() {
         return SpannableString("")
     }
 
+
+    private fun showProgressBar() {
+        progressBar?.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar() {
+        progressBar?.visibility = View.GONE
+    }
 
     // region unused but maybe useful in the future
 //    private fun fillCommentsWithParentsListAllLevels(newItems: ArrayList<UIComment>, parent: UIComment?) {
