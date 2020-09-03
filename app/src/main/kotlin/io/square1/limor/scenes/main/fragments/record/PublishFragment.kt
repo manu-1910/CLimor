@@ -1,20 +1,28 @@
 package io.square1.limor.scenes.main.fragments.record
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.telephony.TelephonyManager
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -24,6 +32,8 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
@@ -50,8 +60,11 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
 import java.io.File
+import java.io.IOException
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 class PublishFragment : BaseFragment() {
@@ -89,11 +102,8 @@ class PublishFragment : BaseFragment() {
 
     private var etDraftTitle: EditText? = null
     private var etDraftCaption: EditText? = null
-    private var etDraftHashtags: TextView? = null
-    private var etDraftLocation: TextView? = null
-
-    private var lytHashtags: RelativeLayout? = null
-    private var lytLocation: RelativeLayout? = null
+    private var tvDraftCategory: TextView? = null
+    private var tvDraftLocation: TextView? = null
 
     private var podcastLocation: UILocations = UILocations("", 0.0, 0.0, false)
 
@@ -102,7 +112,7 @@ class PublishFragment : BaseFragment() {
 
     private var isPublished: Boolean = false
 
-
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     companion object {
         val TAG: String = PublishFragment::class.java.simpleName
@@ -110,7 +120,11 @@ class PublishFragment : BaseFragment() {
     }
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_publish, container, false)
 
@@ -128,11 +142,11 @@ class PublishFragment : BaseFragment() {
 
             etDraftTitle = rootView?.findViewById(R.id.etTitle)
             etDraftCaption = rootView?.findViewById(R.id.etCaption)
-            etDraftHashtags = rootView?.findViewById(R.id.etHashtags)
-            etDraftLocation = rootView?.findViewById(R.id.etLocation)
+            //etDraftHashtags = rootView?.findViewById(R.id.etHashtags)
+            //etDraftLocation = rootView?.findViewById(R.id.etLocation)
 
-            lytHashtags = rootView?.findViewById(R.id.lytHashtags)
-            lytLocation = rootView?.findViewById(R.id.lytLocation)
+            //lytHashtags = rootView?.findViewById(R.id.lytHashtags)
+            //lytLocation = rootView?.findViewById(R.id.lytLocation)
 
             mediaPlayer = MediaPlayer()
         }
@@ -156,21 +170,22 @@ class PublishFragment : BaseFragment() {
         loadExistingData()
         updateDraft()
         apiCallPublishPodcast()
+        getCityOfDevice()
     }
 
     override fun onResume() {
         super.onResume()
 
-        //Load selected hashtags
-        var hashtagListString: String = ""
-        for (tag in hashtagViewModel.localListTagsSelected){
-            hashtagListString = "#"+tag.text+", "
-        }
-        etDraftHashtags?.text = hashtagListString
+//        //Load selected hashtags
+//        var hashtagListString: String = ""
+//        for (tag in hashtagViewModel.localListTagsSelected){
+//            hashtagListString = "#"+tag.text+", "
+//        }
+//        etDraftHashtags?.text = hashtagListString
 
         //Load selected location
         podcastLocation = locationsViewModel.locationSelectedItem
-        etLocation.text = podcastLocation.address
+        //etLocation.text = podcastLocation.address
     }
 
 
@@ -218,15 +233,18 @@ class PublishFragment : BaseFragment() {
                     message.append(R.string.some_error)
                 }
 
-                if(it.code == 10){  //Session expired
+                if (it.code == 10) {  //Session expired
                     alert(message.toString()) {
                         okButton {
                             val intent = Intent(context, SignActivity::class.java)
                             //intent.putExtra(getString(R.string.otherActivityKey), true)
-                            startActivityForResult(intent, resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH))
+                            startActivityForResult(
+                                intent,
+                                resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
+                            )
                         }
                     }.show()
-                }else{
+                } else {
                     alert(message.toString()) {
                         okButton { }
                     }.show()
@@ -315,19 +333,13 @@ class PublishFragment : BaseFragment() {
             }
         }
 
-        lytHashtags?.setOnTouchListener(OnTouchListener { view, motionEvent -> // Show an alert dialog.
+        tvCategory?.onClick{
             findNavController().navigate(R.id.action_record_publish_to_record_hashtags)
-            // Return false, then android os will still process click event,
-            // if return true, the on click listener will never be triggered.
-            false
-        })
+        }
 
-        lytLocation?.setOnTouchListener(OnTouchListener { view, motionEvent -> // Show an alert dialog.
+        tvLocation?.onClick{
             findNavController().navigate(R.id.action_record_publish_to_record_locations)
-            // Return false, then android os will still process click event,
-            // if return true, the on click listener will never be triggered.
-            false
-        })
+        }
 
     }
 
@@ -349,7 +361,7 @@ class PublishFragment : BaseFragment() {
                 }
 
                 override fun onError(error: String?) {
-                    var error= error
+                    var error = error
                     println("Audio upload to AWS error: $error")
 
                 }
@@ -379,11 +391,12 @@ class PublishFragment : BaseFragment() {
                 }
 
                 override fun onError(error: String?) {
-                    var error= error
+                    var error = error
                     println("Image upload to AWS error: $error")
 
                 }
-            }, Commons.IMAGE_TYPE_ATTACHMENT)
+            }, Commons.IMAGE_TYPE_ATTACHMENT
+        )
     }
 
 
@@ -404,10 +417,12 @@ class PublishFragment : BaseFragment() {
                         timestamps = ArrayList() //recordingItem.timeStamps
                     ),
                     meta_data = UIMetaData(
-                        title =  etDraftTitle?.text.toString(),
+                        title = etDraftTitle?.text.toString(),
                         caption = etDraftCaption?.text.toString(),
-                        latitude = podcastLocation.latitude.takeIf { podcastLocation.latitude != 0.0 } ?:  0.0,
-                        longitude = podcastLocation.longitude.takeIf { podcastLocation.longitude != 0.0 } ?:  0.0,
+                        latitude = podcastLocation.latitude.takeIf { podcastLocation.latitude != 0.0 }
+                            ?: 0.0,
+                        longitude = podcastLocation.longitude.takeIf { podcastLocation.longitude != 0.0 }
+                            ?: 0.0,
                         image_url = imageUrlFinal.toString()
                     )
                 )
@@ -424,7 +439,11 @@ class PublishFragment : BaseFragment() {
 
     private fun loadExistingData(){
         if(!draftViewModel.uiDraft.title.toString().trim().isNullOrEmpty()){
-            etDraftTitle?.text = draftViewModel.uiDraft.title?.toEditable()
+
+            //val autosaveText = draftViewModel.uiDraft.title?.toEditable()
+            if(!draftViewModel.uiDraft.title.toString().trim().equals(getString(R.string.autosave))){
+                etDraftTitle?.text = draftViewModel.uiDraft.title?.toEditable()
+            }
         }
         if(!draftViewModel.uiDraft.caption.toString().trim().isNullOrEmpty()){
             etDraftCaption?.text = draftViewModel.uiDraft.caption?.toEditable()
@@ -498,8 +517,13 @@ class PublishFragment : BaseFragment() {
                 if (mediaPlayer != null && fromUser) {
                     mediaPlayer.seekTo(progress)
                 }
-                if(mediaPlayer.duration <= progress){
-                    btnPlayPause?.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.play))
+                if (mediaPlayer.duration <= progress) {
+                    btnPlayPause?.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            context!!,
+                            R.drawable.play
+                        )
+                    )
                 }
             }
 
@@ -513,7 +537,12 @@ class PublishFragment : BaseFragment() {
         btnPlayPause?.setOnClickListener {
             if (!mediaPlayer.isPlaying) {
                 mediaPlayer.start()
-                btnPlayPause?.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.pause))
+                btnPlayPause?.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        context!!,
+                        R.drawable.pause
+                    )
+                )
                 run = Runnable {
                     // Updateing SeekBar every 100 miliseconds
                     audioSeekbar?.progress = mediaPlayer.currentPosition
@@ -530,8 +559,13 @@ class PublishFragment : BaseFragment() {
                         } else {
                             if (seconds >= 60) {
                                 val sec = seconds - minutes * 60
-                                timePass?.text = String.format("%02d", minutes)+":"+String.format("%02d", seconds)
-                                timeDuration?.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
+                                timePass?.text = String.format("%02d", minutes)+":"+String.format(
+                                    "%02d",
+                                    seconds
+                                )
+                                timeDuration?.text = CommonsKt.calculateDurationMediaPlayer(
+                                    mediaPlayer.duration
+                                )
                             }
                         }
                     } else {
@@ -545,8 +579,13 @@ class PublishFragment : BaseFragment() {
                         } else {
                             if (seconds >= 60) {
                                 val sec = seconds - minutes * 60
-                                timePass?.text = String.format("%02d", minutes)+":"+String.format("%02d", seconds)
-                                timeDuration?.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
+                                timePass?.text = String.format("%02d", minutes)+":"+String.format(
+                                    "%02d",
+                                    seconds
+                                )
+                                timeDuration?.text = CommonsKt.calculateDurationMediaPlayer(
+                                    mediaPlayer.duration
+                                )
                             }
                         }
                     }
@@ -554,7 +593,12 @@ class PublishFragment : BaseFragment() {
                 run!!.run()
             } else {
                 mediaPlayer.pause()
-                btnPlayPause?.setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.play))
+                btnPlayPause?.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        context!!,
+                        R.drawable.play
+                    )
+                )
             }
         }
 
@@ -592,7 +636,12 @@ class PublishFragment : BaseFragment() {
                 draftViewModel.uiDraft.tempPhotoPath = filesSelected[0].path
 
                 var imageFile = File(filesSelected[0].path)
-                Commons.getInstance().handleImage(context, Commons.IMAGE_TYPE_PODCAST, imageFile, "podcast_photo")
+                Commons.getInstance().handleImage(
+                    context,
+                    Commons.IMAGE_TYPE_PODCAST,
+                    imageFile,
+                    "podcast_photo"
+                )
 
                 //Update recording item in Realm
                 updateDraftTrigger.onNext(Unit)
@@ -637,7 +686,7 @@ class PublishFragment : BaseFragment() {
         output.response.observe(this, Observer {
             if (it) {
                 toast(getString(R.string.draft_updated))
-            } else{
+            } else {
                 toast(getString(R.string.draft_not_updated))
             }
         })
@@ -680,5 +729,41 @@ class PublishFragment : BaseFragment() {
     }
 
 
+    private fun getCityOfDevice(){
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context!!)
+        if (ActivityCompat.checkSelfPermission(
+                context!!,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                context!!,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location : Location? ->
+                // Got last known location. In some rare situations this can be null.
+                //println("location es: " +location)
+                val geoCoder = Geocoder(context, Locale.getDefault()) //it is Geocoder
+                try {
+                    val address: List<Address> = geoCoder.getFromLocation(location!!.latitude, location.longitude, 1)
+                    locationsViewModel.uiLocationsRequest.term = address[0].locality
+                    //println("address is " + city)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                } catch (e: NullPointerException) {
+                    e.printStackTrace()
+                }
+            }
+    }
 }
 

@@ -634,12 +634,43 @@ class EditFragment : WaveformFragment() {
     }
 
     private fun restoreToInitialState() {
-        recordingItem!!.timeStamps = initialTimeStamps
-        recordingItem!!.length = initialLength
-        recordingItem!!.filePath = initialFilePath
+        //TODO JJ Esto había antes
+//        recordingItem!!.timeStamps = initialTimeStamps
+//        recordingItem!!.length = initialLength
+//        recordingItem!!.filePath = initialFilePath
+//        updateRecordingItem()
+//        activity!!.sendBroadcast(Intent(BROADCAST_UPDATE_DRAFTS))
+//        hasAnythingChanged = false
+//
+//        findNavController().popBackStack()
+
+        //TODO JJ Guardar los cambios realizados
+        handlePause()
+        handlePausePreview()
+        //DataManager.getInstance().setSkipRecordScreen(true);
+        val timeStamps = ArrayList<UITimeStamp>()
+        if (markerSets != null && markerSets.size > 0) {
+            for (markerSet in markerSets) {
+                if (!markerSet.isEditMarker) {
+                    val startPosMilliseconds = waveformView.pixelsToMillisecs(markerSet.startPos)
+                    val endPosMilliseconds = waveformView.pixelsToMillisecs(markerSet.endPos)
+                    val timeStamp = UITimeStamp()
+                    timeStamp.startSample = startPosMilliseconds
+                    timeStamp.endSample = endPosMilliseconds
+                    timeStamp.duration = endPosMilliseconds - startPosMilliseconds
+                    timeStamps.add(timeStamp)
+                }
+            }
+            saveNewFileFromMarkers(false)
+            recordingItem!!.filePath = editedWithMarkersFileName
+            recordingItem!!.editedFilePath = editedWithMarkersFileName
+        } else {
+            recordingItem!!.filePath = ""
+            recordingItem!!.editedFilePath = ""
+        }
+
+        recordingItem!!.timeStamps = timeStamps
         updateRecordingItem()
-        activity!!.sendBroadcast(Intent(BROADCAST_UPDATE_DRAFTS))
-        hasAnythingChanged = false
 
         findNavController().popBackStack()
     }

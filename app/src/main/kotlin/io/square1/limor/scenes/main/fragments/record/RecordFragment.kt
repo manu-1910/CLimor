@@ -67,7 +67,9 @@ class RecordFragment : BaseFragment() {
     private val PERMISSION_ALL = 1
     private var PERMISSIONS = arrayOf(
         Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
     )
     private val insertDraftTrigger = PublishSubject.create<Unit>()
     private val deleteDraftTrigger = PublishSubject.create<Unit>()
@@ -124,6 +126,17 @@ class RecordFragment : BaseFragment() {
             //toast("Tap on record to continue recording the selected draft")
             draftViewModel.continueRecording = false
             isFirstTapRecording = true
+
+            //timeWhenStopped = draftViewModel.durationOfLastAudio
+
+            //Put the seconds counter with the length of the draftitem
+            if (draftViewModel.durationOfLastAudio > 0){
+                c_meter.base = SystemClock.elapsedRealtime() - draftViewModel.durationOfLastAudio
+                timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
+                draftViewModel.durationOfLastAudio = 0
+            }
+
+
             resetAudioSetup()
             //recordingItem = draftViewModel.uiDraft
 
@@ -595,7 +608,10 @@ class RecordFragment : BaseFragment() {
             insertDraftInRealm(recordingItem!!)
 
             //Start timer
-            c_meter.base = SystemClock.elapsedRealtime() + timeWhenStopped
+            //if (c_meter.base <= 0){
+                c_meter.base = SystemClock.elapsedRealtime() + timeWhenStopped
+            //}
+
             c_meter.start()
 
             hideToolbarButtons()

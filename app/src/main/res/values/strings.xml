@@ -69,9 +69,12 @@
     <string name="title_title">Title</string>
     <string name="title_caption">Caption</string>
     <string name="title_hashtags">Hashtags</string>
+    <string name="title_category">Category</string>
     <string name="title_location">Location</string>
     <string name="cast_published_ok_title">Published</string>
     <string name="cast_published_ok_description">Your cast has been published successfully</string>
+    <string name="hint_caption">Write your caption, # use for hashtags ...</string>
+    <string name="hint_title">Title</string>
 
 
     <!-- Edit Screen -->

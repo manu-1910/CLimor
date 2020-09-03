@@ -186,6 +186,7 @@ dependencies {
     implementation deps.lifecycle.extensions
     implementation deps.lifecycle.reactive
     implementation deps.support.supportv4
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
     kapt deps.lifecycle.compiler
 
     // Kotlin
@@ -318,5 +319,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.4.4'
 
     implementation 'com.github.squti:Android-Wave-Recorder:1.4.0'
+
+    //Material chip
+    implementation 'com.robertlevonyan.view:MaterialChipView:2.0.4'
 
 }

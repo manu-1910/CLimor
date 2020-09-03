@@ -217,44 +217,63 @@ class DraftsFragment : BaseFragment() {
                         rvDrafts?.adapter?.notifyItemChanged(position)
                     }
                 },
-                object : DraftAdapter.OnContinueRecordingItemClickListener {
-                    override fun onContinueRecordingItemClick(item: UIDraft, position: Int) {
+                object : DraftAdapter.OnEditItemClickListener {
+                    override fun onEditItemClick(item: UIDraft) {
+                        pbDrafts?.visibility = View.VISIBLE
 
+                        //Go to record fragment to continue recording
                         draftViewModel.uiDraft = item
                         draftViewModel.filesArray.add(File(item.filePath))
                         draftViewModel.continueRecording = true
+                        draftViewModel.durationOfLastAudio = item.length!!
 
                         try {
+                            //navController.navigate(R.id.action_record_drafts_to_record_fragment)
                             findNavController().popBackStack()
                         } catch (e: Exception) {
-                            e.printStackTrace()
+                        e.printStackTrace()
                         }
-
-//                        pbDrafts?.visibility = View.VISIBLE
+                    }
+                }
+//                ,
+//                object : DraftAdapter.OnContinueRecordingItemClickListener {
+//                    override fun onContinueRecordingItemClick(item: UIDraft, position: Int) {
 //
-//                        var newItem = draftsLocalList[position]
-//                        newItem.id = System.currentTimeMillis()
-//                        newItem.title = getString(R.string.duplicated_draft)
-//                        newItem.caption = getDateTimeFormatted()
+//                        draftViewModel.uiDraft = item
+//                        draftViewModel.filesArray.add(File(item.filePath))
+//                        draftViewModel.continueRecording = true
 //
 //                        try {
-//                            val originalFile = File(draftsLocalList[position].filePath)
-//                            val destFile = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() +".amr")
-//                            copyFile(originalFile, destFile)
+//                            findNavController().popBackStack()
 //                        } catch (e: Exception) {
 //                            e.printStackTrace()
 //                        }
-//
-//                        //Insert in Realm
-//                        draftViewModel.uiDraft = newItem
-//                        insertDraftsTrigger.onNext(Unit)
-//
-//                        //Add item to the list
-//                        draftsLocalList.add(newItem)
-//                        rvDrafts?.adapter?.notifyItemChanged(position)
-                    }
-                },
-                findNavController()
+////**************************************************************************************************
+////                        pbDrafts?.visibility = View.VISIBLE
+////
+////                        var newItem = draftsLocalList[position]
+////                        newItem.id = System.currentTimeMillis()
+////                        newItem.title = getString(R.string.duplicated_draft)
+////                        newItem.caption = getDateTimeFormatted()
+////
+////                        try {
+////                            val originalFile = File(draftsLocalList[position].filePath)
+////                            val destFile = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() +".amr")
+////                            copyFile(originalFile, destFile)
+////                        } catch (e: Exception) {
+////                            e.printStackTrace()
+////                        }
+////
+////                        //Insert in Realm
+////                        draftViewModel.uiDraft = newItem
+////                        insertDraftsTrigger.onNext(Unit)
+////
+////                        //Add item to the list
+////                        draftsLocalList.add(newItem)
+////                        rvDrafts?.adapter?.notifyItemChanged(position)
+//                    }
+//               },
+                , findNavController()
             )
         }
         rvDrafts?.adapter = adapter
@@ -320,9 +339,9 @@ class DraftsFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
             if (it) {
-                //toast(getString(R.string.draft_deleted))
+                toast(getString(R.string.draft_deleted))
             } else {
-                //toast(getString(R.string.draft_not_deleted))
+                toast(getString(R.string.draft_not_deleted))
             }
         })
 
@@ -344,9 +363,9 @@ class DraftsFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
             if (it) {
-                //toast(getString(R.string.draft_inserted))
+                toast(getString(R.string.draft_inserted))
             } else{
-                //toast(getString(R.string.draft_not_inserted))
+                toast(getString(R.string.draft_not_inserted))
             }
         })
 
@@ -365,7 +384,6 @@ class DraftsFragment : BaseFragment() {
         pbDrafts?.visibility = View.VISIBLE
         getDraftsTrigger.onNext(Unit)
     }
-
 
 
 
