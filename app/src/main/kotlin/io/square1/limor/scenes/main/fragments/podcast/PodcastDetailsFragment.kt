@@ -39,7 +39,6 @@ import kotlinx.android.synthetic.main.include_podcast_data.*
 import kotlinx.android.synthetic.main.include_user_bar.*
 import kotlinx.android.synthetic.main.toolbar_with_logo_and_back_icon.*
 import org.jetbrains.anko.sdk23.listeners.onClick
-import org.jetbrains.anko.support.v4.onRefresh
 import timber.log.Timber
 import java.io.Serializable
 import java.util.*
@@ -169,22 +168,24 @@ class PodcastDetailsFragment : BaseFragment() {
 
             val dataObserver = object : RecyclerView.AdapterDataObserver() {
                 override fun onChanged() {
-                    if(firstTimeReceivingComments && rvComments.childCount > 0) {
+                    if(firstTimeReceivingComments /*&& rvComments.childCount > 0*/) {
 //                        val y: Float = rvComments!!.y + rvComments!!.getChildAt(commentWithParentsItemsList.size - 1).y
                         val y: Float = rvComments!!.y// + rvComments!!.getChildAt(rvComments.childCount - 1).y
                         rvComments?.startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL, ViewCompat.TYPE_NON_TOUCH)
 //                        ObjectAnimator.ofInt(rvComments, "scrollY",  y.toInt()).setDuration(1).start();
                         val llm = rvComments?.layoutManager as LinearLayoutManager
-                        llm.scrollToPositionWithOffset(rvComments.childCount - 1, y.toInt())
+                        llm.scrollToPositionWithOffset(commentWithParentsItemsList.size - 1, y.toInt())
 
 
 //                        rvComments?.smoothScrollBy(0, y.toInt())
                         firstTimeReceivingComments = false
-                        rvComments?.adapter?.notifyDataSetChanged()
+//                        rvComments?.adapter?.notifyDataSetChanged()
 //                        commentsAdapter?.unregisterAdapterDataObserver(dataObserver)
                     }
                 }
             }
+
+
             commentsAdapter?.registerAdapterDataObserver(dataObserver)
             app_bar_layout?.setExpanded(false)
             rvComments?.adapter?.notifyDataSetChanged()
@@ -577,6 +578,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 },
                 podcastMode,
                 uiMainCommentWithParent
+
             )
         }
 

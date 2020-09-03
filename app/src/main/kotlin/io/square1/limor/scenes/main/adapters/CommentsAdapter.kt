@@ -2,6 +2,7 @@ package io.square1.limor.scenes.main.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import io.square1.limor.scenes.main.fragments.podcast.CommentWithParent
@@ -19,6 +20,7 @@ class CommentsAdapter(
 
     private var inflator: LayoutInflater = LayoutInflater.from(context)
     var mainCommentPosition = 0
+    private lateinit var recyclerView: RecyclerView
 
 
     init {
@@ -26,6 +28,10 @@ class CommentsAdapter(
     }
 
 
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
+    }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
