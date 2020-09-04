@@ -69,9 +69,12 @@
     <string name="title_title">Title</string>
     <string name="title_caption">Caption</string>
     <string name="title_hashtags">Hashtags</string>
+    <string name="title_category">Category</string>
     <string name="title_location">Location</string>
     <string name="cast_published_ok_title">Published</string>
     <string name="cast_published_ok_description">Your cast has been published successfully</string>
+    <string name="hint_caption">Write your caption, # use for hashtags ...</string>
+    <string name="hint_title">Title</string>
 
 
     <!-- Edit Screen -->
@@ -134,6 +137,7 @@
     <!-- Menu Marker -->
     <string name="menu_copy">Copy</string>
     <string name="menu_paste">Paste</string>
+    <string name="menu_cancel">Cancel</string>
     <string name="menu_delete">Delete</string>
     <string name="menu_dismiss">Dismiss</string>
     <string name="menu_preview">Preview</string>
@@ -192,13 +196,15 @@
     <string name="logout">Logout</string>
 
 
-    <!-- Hashtags and Locations fragment -->
+    <!-- Categories and Locations fragment -->
     <string name="search">Search</string>
     <string name="description_delete">Delete description</string>
     <string name="max_5_tags">You can select max 5 hashtags</string>
     <string name="min_3_chars">You should type at least 3 characters</string>
     <string name="sorry_there_are_no_podcasts_right_now">Sorry, there are no podcasts right now</string>
     <string name="maybe_you_could_try_later">Maybe you could try later</string>
+    <string name="categories_title">Choose a category</string>
+    <string name="categories_description">Choose a category you would like to create your content under.</string>
 
 
     <!-- Feed fragment -->

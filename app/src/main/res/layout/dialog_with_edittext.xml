@@ -23,6 +23,7 @@
         android:layout_marginEnd="@dimen/marginMedium"
         android:layout_marginTop="@dimen/marginSmall"
         android:textColor="@color/black"
+        android:selectAllOnFocus="true"
         android:textSize="@dimen/textSizeNormal"
         android:fontFamily="@font/roboto"
         android:text="@string/save_draft_dialog_hint_name" />

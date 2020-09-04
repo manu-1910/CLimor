@@ -67,7 +67,9 @@ class RecordFragment : BaseFragment() {
     private val PERMISSION_ALL = 1
     private var PERMISSIONS = arrayOf(
         Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
     )
     private val insertDraftTrigger = PublishSubject.create<Unit>()
     private val deleteDraftTrigger = PublishSubject.create<Unit>()
@@ -121,9 +123,20 @@ class RecordFragment : BaseFragment() {
         super.onResume()
 
         if (draftViewModel.continueRecording){
-            toast("Tap on record to continue recording the selected draft")
+            //toast("Tap on record to continue recording the selected draft")
             draftViewModel.continueRecording = false
             isFirstTapRecording = true
+
+            //timeWhenStopped = draftViewModel.durationOfLastAudio
+
+            //Put the seconds counter with the length of the draftitem
+            if (draftViewModel.durationOfLastAudio > 0){
+                c_meter.base = SystemClock.elapsedRealtime() - draftViewModel.durationOfLastAudio
+                timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
+                draftViewModel.durationOfLastAudio = 0
+            }
+
+
             resetAudioSetup()
             //recordingItem = draftViewModel.uiDraft
 
@@ -165,6 +178,7 @@ class RecordFragment : BaseFragment() {
         val positiveButton= dialogLayout.findViewById<Button>(R.id.saveButton)
         val cancelButton = dialogLayout.findViewById<Button>(R.id.cancelButton)
         val editText  = dialogLayout.findViewById<EditText>(R.id.editText)
+        //editText.setSelection(editText.text.length)
         dialog.setView(dialogLayout)
         dialog.setCancelable(false)
         val ad: AlertDialog = dialog.show()
@@ -176,6 +190,8 @@ class RecordFragment : BaseFragment() {
 
             //Inserting in Realm
             insertDraftInRealm(recordingItem!!)
+
+            toast(getString(R.string.draft_inserted))
 
             //findNavController().navigate(R.id.action_record_fragment_to_record_drafts)
             activity?.finish()
@@ -189,6 +205,7 @@ class RecordFragment : BaseFragment() {
 
         editText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
+
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -372,28 +389,26 @@ class RecordFragment : BaseFragment() {
         // Next Button
         nextButton.onClick {
 
+
             isRecording = false
             stopAudio()
-
 
             //Merge audios and delete all them except the Audio Merged
             when (draftViewModel.filesArray.size) {
                 0 -> {
-
                     insertDraftInRealm(recordingItem!!)
 
                     val bundle = bundleOf("recordingItem" to recordingItem)
                     //findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
-                    findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
+                    findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
 
                 }
                 1 -> {
-
                     recordingItem?.filePath = draftViewModel.filesArray[0].absolutePath
                     recordingItem?.editedFilePath = draftViewModel.filesArray[0].absolutePath
                     insertDraftInRealm(recordingItem!!)
 
-                    mRecorder.clear()
+                    //mRecorder.clear() //TODO JJ 270820
 
                     val bundle = bundleOf("recordingItem" to recordingItem)
                     //findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
@@ -585,7 +600,10 @@ class RecordFragment : BaseFragment() {
             insertDraftInRealm(recordingItem!!)
 
             //Start timer
-            c_meter.base = SystemClock.elapsedRealtime() + timeWhenStopped
+            //if (c_meter.base <= 0){
+                c_meter.base = SystemClock.elapsedRealtime() + timeWhenStopped
+            //}
+
             c_meter.start()
 
             hideToolbarButtons()
@@ -614,7 +632,15 @@ class RecordFragment : BaseFragment() {
             isRecording = false
         } else {
             println("RECORD --> STOP")
-            val stopAndMergeOk = mRecorder.stop()
+
+            var stopAndMergeOk = false
+            try {
+                mRecorder.stop()
+                stopAndMergeOk = true
+            } catch (e: Exception) {
+                stopAndMergeOk = false
+                e.printStackTrace()
+            }
             //val fileChosenPath = File(mRecorder.audioFilePath)
             if(stopAndMergeOk){
                 //val fileChosen = getLastModified()
@@ -683,9 +709,9 @@ class RecordFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
             if (it) {
-                toast(getString(R.string.draft_inserted))
+                //toast(getString(R.string.draft_inserted))
             } else {
-                toast(getString(R.string.draft_not_inserted))
+                //toast(getString(R.string.draft_not_inserted))
             }
         })
 
@@ -708,9 +734,9 @@ class RecordFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
             if (it) {
-                toast(getString(R.string.draft_deleted))
+                //toast(getString(R.string.draft_deleted))
             } else {
-                toast(getString(R.string.draft_not_deleted))
+                //toast(getString(R.string.draft_not_deleted))
             }
         })
 

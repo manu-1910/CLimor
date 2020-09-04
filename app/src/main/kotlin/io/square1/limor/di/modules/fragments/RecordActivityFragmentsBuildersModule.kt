@@ -4,7 +4,6 @@ package io.square1.limor.di.modules.fragments
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import io.square1.limor.scenes.main.fragments.record.*
-import io.square1.limor.scenes.utils.waveform.WaveformFragment
 
 
 @Module
@@ -26,7 +25,7 @@ abstract class RecordActivityFragmentsBuildersModule {
     abstract fun contributeDraftsFragmentInjector(): DraftsFragment
 
     @ContributesAndroidInjector
-    abstract fun contributeHashtagsFragmentInjector(): HashtagsFragment
+    abstract fun contributeCategoriesFragmentInjector(): CategoriesFragment
 
     @ContributesAndroidInjector
     abstract fun contributeLocationsFragmentInjector(): LocationsFragment
