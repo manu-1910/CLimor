@@ -4,7 +4,6 @@ package io.square1.limor.remote
 import io.square1.limor.remote.entities.requests.*
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.podcast.PodcastServiceImp
-import io.square1.limor.remote.services.user.UserServiceImp
 import kotlinx.serialization.ImplicitReflectionSerializer
 import org.junit.Test
 
@@ -120,6 +119,34 @@ class PodcastServiceImpTest{
         val idPodcast = 4
 
         val response = podcastService.getComments(idPodcast, 10, 0)?.test()
+
+        response?.assertNoErrors()
+        response?.assertValue { it.message == "Success" }
+    }
+
+
+
+    @Test
+    fun should_create_comment_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = baseURL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = "4t6bOFXd3L89qqPLdXsBHtTOP4_-t_61Q2kl5R4dAdk",
+            expiredIn = 0
+        )
+
+        podcastService = PodcastServiceImp(config)
+
+        val idPodcast = 619
+        val request = NWCreateCommentRequest(
+            NWCommentRequest(
+                "Hi, I'm a new comment from the android client"
+            )
+        )
+
+        val response = podcastService.createComment(idPodcast, request).test()
 
         response?.assertNoErrors()
         response?.assertValue { it.message == "Success" }

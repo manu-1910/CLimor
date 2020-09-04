@@ -1,6 +1,8 @@
 package io.square1.limor.remote.services.comment
 
 import io.reactivex.Single
+import io.square1.limor.remote.entities.requests.NWCreateCommentRequest
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.http.*
 
@@ -23,9 +25,15 @@ interface CommentService {
 
     @GET(COMMENT_COMMENT_PATH)
     fun getComments(
-        @Path("id") id : Int,
-        @Query("limit") limit : Int?,
+        @Path("id") id: Int,
+        @Query("limit") limit: Int?,
         @Query("offset") offset: Int?
+    ): Single<ResponseBody>
+
+    @POST(COMMENT_COMMENT_PATH)
+    fun createComment(
+        @Path("id") idComment: Int,
+        @Body request: RequestBody
     ): Single<ResponseBody>
 
 }
