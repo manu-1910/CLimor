@@ -37,7 +37,8 @@ data class PodcastEntity(
     var tags: TagsArrayEntity,
     var title: String,
     var updated_at: Int,
-    var user: UserEntity
+    var user: UserEntity,
+    var categories: ArrayList<CategoryEntity>
 )
 
 
@@ -60,5 +61,14 @@ class TagsEntity(
     var text: String,
     var count: Int,
     var isSelected: Boolean
+)
+
+
+class CategoryEntity(
+    var id: Int,
+    var name: String,
+    var priority: Int,
+    var created_at: Long,
+    var updated_at: Long
 )
 

@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
     </style>
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -48,6 +49,17 @@
     <style name="SearchViewToolbarTheme" parent="ThemeOverlay.MaterialComponents.Light">
         <item name="android:editTextColor">@color/white</item>
         <item name="android:textColorHint">@color/brandSecondary100</item>
+    </style>
+
+    <!-- Chipview style-->
+    <style name="ChipStyle" parent="TextAppearance.AppCompat.Button">
+        <!-- Fake Roboto Medium. -->
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:letterSpacing">0.0892857143</item>
     </style>
 
 </resources>

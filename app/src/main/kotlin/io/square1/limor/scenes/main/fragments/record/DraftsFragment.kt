@@ -127,6 +127,7 @@ class DraftsFragment : BaseFragment() {
         }
 
         //Toolbar Right
+        btnEditToolbarUpdate?.visibility = View.VISIBLE
         btnEditToolbarUpdate?.text = getText(R.string.edit)
         btnEditToolbarUpdate?.onClick {
 

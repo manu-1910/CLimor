@@ -15,14 +15,12 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.telephony.TelephonyManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -45,7 +43,7 @@ import io.square1.limor.scenes.main.MainActivity
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
 import io.square1.limor.scenes.main.viewmodels.LocationsViewModel
 import io.square1.limor.scenes.main.viewmodels.PublishViewModel
-import io.square1.limor.scenes.main.viewmodels.TagsViewModel
+import io.square1.limor.scenes.main.viewmodels.CategoriesViewModel
 import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
@@ -74,7 +72,7 @@ class PublishFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var draftViewModel: DraftViewModel
     private lateinit var publishViewModel: PublishViewModel
-    private lateinit var hashtagViewModel: TagsViewModel
+    private lateinit var hashtagViewModel: CategoriesViewModel
     private lateinit var locationsViewModel: LocationsViewModel
 
 
@@ -152,6 +150,13 @@ class PublishFragment : BaseFragment() {
         }
         app = context?.applicationContext as App
         return rootView
+    }
+
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        recordingItem = UIDraft()
+        recordingItem = arguments!!["recordingItem"] as UIDraft
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -271,7 +276,7 @@ class PublishFragment : BaseFragment() {
 
             hashtagViewModel = ViewModelProviders
                 .of(it, viewModelFactory)
-                .get(TagsViewModel::class.java)
+                .get(CategoriesViewModel::class.java)
 
             locationsViewModel = ViewModelProviders
                 .of(it, viewModelFactory)
@@ -334,7 +339,7 @@ class PublishFragment : BaseFragment() {
         }
 
         tvCategory?.onClick{
-            findNavController().navigate(R.id.action_record_publish_to_record_hashtags)
+            findNavController().navigate(R.id.action_record_publish_to_record_categories)
         }
 
         tvLocation?.onClick{
@@ -438,20 +443,24 @@ class PublishFragment : BaseFragment() {
 
 
     private fun loadExistingData(){
-        if(!draftViewModel.uiDraft.title.toString().trim().isNullOrEmpty()){
+
+        //recordingItem
+
+
+        if(!recordingItem.title.toString().trim().isNullOrEmpty()){
 
             //val autosaveText = draftViewModel.uiDraft.title?.toEditable()
-            if(!draftViewModel.uiDraft.title.toString().trim().equals(getString(R.string.autosave))){
-                etDraftTitle?.text = draftViewModel.uiDraft.title?.toEditable()
+            if(!recordingItem.title.toString().trim().equals(getString(R.string.autosave))){
+                etDraftTitle?.text = recordingItem.title?.toEditable()
             }
         }
-        if(!draftViewModel.uiDraft.caption.toString().trim().isNullOrEmpty()){
-            etDraftCaption?.text = draftViewModel.uiDraft.caption?.toEditable()
+        if(!recordingItem.caption.toString().trim().isNullOrEmpty()){
+            etDraftCaption?.text = recordingItem.caption?.toEditable()
         }
-        if(!draftViewModel.uiDraft.tempPhotoPath.toString().trim().isNullOrEmpty()){
+        if(!recordingItem.tempPhotoPath.toString().trim().isNullOrEmpty()){
             //Glide.with(context!!).load(draftViewModel.uiDraft.tempPhotoPath).into(draftImage!!)
 
-            var imageFile = File(draftViewModel.uiDraft.tempPhotoPath)
+            var imageFile = File(recordingItem.tempPhotoPath)
             Glide.with(context!!).load(imageFile).into(draftImage!!)  // Uri of the picture
             lytImagePlaceholder?.visibility = View.GONE
             lytImage?.visibility = View.VISIBLE
@@ -464,8 +473,18 @@ class PublishFragment : BaseFragment() {
 
     private fun addDataToRecordingItem(){
         //Compose the local object
-        recordingItem.title = etDraftTitle?.text.toString()
-        recordingItem.caption = etDraftCaption?.text.toString()
+        if(!etDraftTitle?.text.toString().isNullOrEmpty()){
+            recordingItem.title = etDraftTitle?.text.toString()
+        }else{
+            recordingItem.title = getString(R.string.autosave)
+        }
+
+        if(!etDraftCaption?.text.toString().isNullOrEmpty()){
+            recordingItem.caption = etDraftCaption?.text.toString()
+        }else{
+            recordingItem.caption = "autosave caption"
+        }
+
         //recordingItem.hastags
         //recordingItem.location
         

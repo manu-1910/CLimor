@@ -60,8 +60,8 @@
           app:exitAnim="@anim/no_anim"
           app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha"/>
       <action
-          android:id="@+id/action_record_publish_to_record_hashtags"
-          app:destination="@id/record_hashtags"
+          android:id="@+id/action_record_publish_to_record_categories"
+          app:destination="@id/record_categories"
           app:enterAnim="@anim/push_up_in_enter_no_alpha"
           app:exitAnim="@anim/no_anim"
           app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha"/>
@@ -94,10 +94,10 @@
 
 
    <fragment
-       android:id="@+id/record_hashtags"
-       android:name="io.square1.limor.scenes.main.fragments.record.HashtagsFragment"
-       android:label="HashtagsFragment"
-       tools:layout="@layout/fragment_hashtags">
+       android:id="@+id/record_categories"
+       android:name="io.square1.limor.scenes.main.fragments.record.CategoriesFragment"
+       android:label="CategoriesFragment"
+       tools:layout="@layout/fragment_categories">
 
    </fragment>
 
