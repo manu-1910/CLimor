@@ -35,6 +35,7 @@ import com.google.android.exoplayer2.util.Util
 import io.square1.limor.BuildConfig
 import io.square1.limor.R
 import io.square1.limor.scenes.main.MainActivity
+import io.square1.limor.uimodels.UIPodcast
 import org.jetbrains.anko.runOnUiThread
 import timber.log.Timber
 import java.util.*
@@ -43,7 +44,7 @@ private const val PLAYBACK_CHANNEL_ID = "io.square1.limor.playback_channel"
 private const val MEDIA_SESSION_TAG = "io.square1.limor.audio"
 private const val PLAYBACK_NOTIFICATION_ID = 1
 private const val PLAYBACK_TIMER_DELAY = 1000L
-private const val ARG_PODCAST_ID = "ARG_PODCAST_ID"
+private const val ARG_PODCAST = "ARG_PODCAST"
 private const val ARG_URI = "ARG_URI"
 private const val ARG_TITLE = "ARG_TITLE"
 private const val ARG_START_POSITION = "ARG_START_POSITION"
@@ -65,11 +66,11 @@ class AudioService : Service() {
             context: Context,
             title: String,
             uriString: String,
-            id: Int,
+            podcast: UIPodcast,
             startPosition: Long
         ) =
             Intent(context, AudioService::class.java).apply {
-                putExtra(ARG_PODCAST_ID, id)
+                putExtra(ARG_PODCAST, podcast)
                 putExtra(ARG_TITLE, title)
                 putExtra(ARG_URI, Uri.parse(uriString))
                 putExtra(ARG_START_POSITION, startPosition)
@@ -90,7 +91,7 @@ class AudioService : Service() {
     private var mediaSession: MediaSessionCompat? = null
     private var mediaSessionConnector: MediaSessionConnector? = null
     private var podcastTitle: String? = null
-    var podcastId: Int? = null
+    var uiPodcast: UIPodcast? = null
 
     private val _playerStatusLiveData = MutableLiveData<PlayerStatus>()
     val playerStatusLiveData: LiveData<PlayerStatus>
@@ -105,8 +106,6 @@ class AudioService : Service() {
             .setContentType(C.CONTENT_TYPE_SPEECH)
             .build()
         exoPlayer.setAudioAttributes(audioAttributes, true)
-
-        // Monitor ExoPlayer events.
         exoPlayer.addListener(PlayerEventListener())
 
         // Setup notification and media session.
@@ -152,7 +151,7 @@ class AudioService : Service() {
                 }
 
                 override fun onNotificationCancelled(notificationId: Int) {
-                    _playerStatusLiveData.value = PlayerStatus.Cancelled(podcastId)
+                    _playerStatusLiveData.value = PlayerStatus.Cancelled(uiPodcast?.id)
 
                     stopSelf()
                 }
@@ -242,10 +241,9 @@ class AudioService : Service() {
 
     @MainThread
     private fun handleIntent(intent: Intent?) {
-        // Play
         intent?.let {
             intent.getParcelableExtra<Uri>(ARG_URI)?.also { uri ->
-                podcastId = intent.getIntExtra(ARG_PODCAST_ID, 0)
+                uiPodcast = intent.getSerializableExtra(ARG_PODCAST) as UIPodcast //intent.getSerializableExtra<UIPodcast>(ARG_PODCAST)//intent.getIntExtra(ARG_PODCAST, 0)
                 podcastTitle = intent.getStringExtra(ARG_TITLE)
                 val startPosition =
                     intent.getLongExtra(ARG_START_POSITION, C.POSITION_UNSET.toLong())
@@ -356,14 +354,14 @@ class AudioService : Service() {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             if (playbackState == Player.STATE_READY) {
                 if (exoPlayer.playWhenReady) {
-                    podcastId?.let { _playerStatusLiveData.value = PlayerStatus.Playing(it) }
+                    uiPodcast?.let { _playerStatusLiveData.value = PlayerStatus.Playing(it.id) }
                 } else {// Paused
-                    podcastId?.let { _playerStatusLiveData.value = PlayerStatus.Paused(it) }
+                    uiPodcast?.let { _playerStatusLiveData.value = PlayerStatus.Paused(it.id) }
                 }
             } else if (playbackState == Player.STATE_ENDED) {
-                podcastId?.let { _playerStatusLiveData.value = PlayerStatus.Ended(it) }
+                uiPodcast?.let { _playerStatusLiveData.value = PlayerStatus.Ended(it.id) }
             } else {
-                podcastId?.let { _playerStatusLiveData.value = PlayerStatus.Other(it) }
+                uiPodcast?.let { _playerStatusLiveData.value = PlayerStatus.Other(it.id) }
             }
 
             // Only monitor playback to record progress when playing.
@@ -375,7 +373,7 @@ class AudioService : Service() {
         }
 
         override fun onPlayerError(e: ExoPlaybackException?) {
-            podcastId?.let { _playerStatusLiveData.value = PlayerStatus.Error(it, e) }
+            uiPodcast?.let { _playerStatusLiveData.value = PlayerStatus.Error(it.id, e) }
         }
 
     }

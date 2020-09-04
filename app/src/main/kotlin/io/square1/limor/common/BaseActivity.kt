@@ -20,6 +20,7 @@ import io.square1.limor.R
 import io.square1.limor.service.AudioService
 import io.square1.limor.service.PlayerStatus
 import io.square1.limor.uimodels.UIFeedItem
+import io.square1.limor.uimodels.UIPodcast
 import kotlinx.android.synthetic.main.mini_player_view.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -34,7 +35,6 @@ abstract class BaseActivity : AppCompatActivity() {
     private var audioService: AudioService? = null
     private var miniPlayerView: RelativeLayout? = null
     private var playerStatus: PlayerStatus? = null
-    private var uiFeedItem: UIFeedItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,19 +72,19 @@ abstract class BaseActivity : AppCompatActivity() {
             })
 
             // Show player after config change.
-            val podcastId = audioService?.podcastId
-            if (podcastId != null) {
+            val podcast = audioService?.uiPodcast
+            if (podcast != null) {
                 setupMiniPlayerUi()
             }
         }
 
         private fun setupMiniPlayerUi() {
             miniPlayerView!!.visibility = View.VISIBLE
-            Glide.with(miniPlayerView!!.iv_audio).load(uiFeedItem!!.podcast?.images?.small_url)
+            Glide.with(miniPlayerView!!.iv_audio).load(audioService?.uiPodcast?.images?.small_url)
                 .centerCrop().into(miniPlayerView!!.iv_audio)
-            miniPlayerView!!.tv_audio_title.text = uiFeedItem!!.podcast?.caption
+            miniPlayerView!!.tv_audio_title.text = audioService?.uiPodcast?.caption
 
-            val durationMillis = uiFeedItem!!.podcast?.audio?.duration
+            val durationMillis = audioService?.uiPodcast?.audio?.duration
             val minutes = durationMillis!! / 1000 / 60
             val seconds = durationMillis / 1000 % 60
             val humanReadableDuration = String.format("%dm %ds", minutes, seconds)
@@ -128,7 +128,7 @@ abstract class BaseActivity : AppCompatActivity() {
                     is PlayerStatus.Ended -> {
                         setPlayerUiPaused()
                         audioService?.play(
-                            Uri.parse(uiFeedItem!!.podcast?.audio?.audio_url),
+                            Uri.parse(audioService?.uiPodcast?.audio?.audio_url),
                             1L,
                             1F
                         )
@@ -199,11 +199,9 @@ abstract class BaseActivity : AppCompatActivity() {
 
         audioService = null
         playerStatus = null
-        uiFeedItem = null
     }
 
-    fun showMiniPlayer(item: UIFeedItem) {
-        uiFeedItem = item
+    fun showMiniPlayer() {
         if (miniPlayerView != null) {
             bindToAudioService()
         }

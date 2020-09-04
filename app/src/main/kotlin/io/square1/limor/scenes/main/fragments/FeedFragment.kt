@@ -112,7 +112,6 @@ class FeedFragment : BaseFragment() {
                     }
 
                     override fun onPlayClicked(item: UIFeedItem, position: Int) {
-                        Toast.makeText(context, "You clicked on play", Toast.LENGTH_SHORT).show()
 
                         item.podcast?.audio?.audio_url?.let { audioUrl ->
 
@@ -121,11 +120,10 @@ class FeedFragment : BaseFragment() {
 
                             if (id != null) {
                                 AudioService.newIntent(requireContext(), title,
-                                    audioUrl, id,  1L).also { intent ->
-                                    // This service will get converted to foreground service using the PlayerNotificationManager notification Id.
+                                    audioUrl, item.podcast!!,  1L).also { intent ->
                                     requireContext().startService(intent)
                                     val activity = requireActivity() as BaseActivity
-                                    activity.showMiniPlayer(item)
+                                    activity.showMiniPlayer()
                                 }
                             }
                         }

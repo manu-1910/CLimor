@@ -6,9 +6,17 @@
     android:background="@color/colorPrimary"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <View
+        android:layout_width="match_parent"
+        android:id="@+id/top_divider"
+        android:layout_height="1dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/brandSecondary300"/>
+
     <FrameLayout
         android:layout_width="wrap_content"
         android:id="@+id/fl_play_pause"
+        android:layout_below="@+id/top_divider"
         android:layout_height="match_parent" >
 
         <ImageView
@@ -95,6 +103,12 @@
             android:src="@drawable/ic_close_black_24dp" />
 
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/brandSecondary300"/>
 
 
 </RelativeLayout>
