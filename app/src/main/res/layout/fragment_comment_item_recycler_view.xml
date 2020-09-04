@@ -47,14 +47,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="60dp"
-            android:text="@string/replying_to"
+            android:text="@string/replying_to_prefix"
             android:textColor="@color/brandSecondary100" />
 
         <TextView
             android:id="@+id/tvNameReplyingTo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
             android:text="Ivan Magalhães"
             android:textColor="@color/brandPrimary500"
             tools:ignore="HardcodedText" />

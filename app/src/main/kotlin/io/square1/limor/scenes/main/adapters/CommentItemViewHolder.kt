@@ -23,6 +23,7 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
+
 class CommentItemViewHolder(
     inflater: LayoutInflater,
     parent: ViewGroup,
@@ -78,77 +79,18 @@ class CommentItemViewHolder(
         }
     }
 
-
-    fun bind(
+    private fun fillCommonFields(
         currentItem: CommentWithParent,
-        podcastParent: UIPodcast,
-        context: Context,
         position: Int
     ) {
         // fullname
-        val fullname: String = currentItem.comment.user?.first_name + " " + currentItem.comment.user?.last_name
+        var firstName = ""
+        currentItem.comment.user?.first_name?.let { firstName = it }
+        var lastName = ""
+        currentItem.comment.user?.last_name?.let { lastName = it }
+        val fullname = "$firstName $lastName"
         tvUserFullname.text = fullname
         tvUserFullname.onClick { commentClickListener.onUserClicked(currentItem.comment, position) }
-
-
-        // replying to
-        // if the parent is null, it means that we are a comment and that our parent is the main podcast
-        if(currentItem.parent == null) {
-            // we have to write the name who we reply to
-            val fullnameReply: String = " " + podcastParent.user.first_name + " " + podcastParent.user.last_name
-            tvNameReplyingTo.text = fullnameReply
-            layReplyingTo.visibility = View.VISIBLE
-            layMoreReplies.visibility = View.GONE
-
-            // remove the upper bar
-            barThreadUp.visibility = View.GONE
-
-            // if we have children we'll draw the lower bar
-            if(currentItem.comment.comment_count > 0) {
-                barThreadDown.visibility = View.VISIBLE
-                barDecorator.visibility = View.GONE
-            } else {
-                barThreadDown.visibility = View.GONE
-                barDecorator.visibility = View.VISIBLE
-            }
-
-            // if the parent is not null, this means that we are a comment of a comment and that our parent is a comment
-        } else {
-            barThreadUp.visibility = View.VISIBLE
-            layReplyingTo.visibility = View.GONE
-
-            // if we are NOT the last comment of our parent, then we have to draw the lower bar and remove the bar decorator
-            if(currentItem.parent.comments.last() != currentItem.comment) {
-                barThreadDown.visibility = View.VISIBLE
-                barDecorator.visibility = View.GONE
-                layMoreReplies.visibility = View.GONE
-
-                // if we ARE the last comment of our parent, then we have to remove the lower bar and draw the bar decorator
-            } else {
-                barThreadDown.visibility = View.GONE
-                barDecorator.visibility = View.VISIBLE
-
-                // if we are the last child and our parent has more comments than the number of comments loaded, we have to show the more replies layout
-                // and
-                if(currentItem.parent.comment_count > currentItem.parent.comments.size) {
-                    layMoreReplies.visibility = View.VISIBLE
-                    val numberOfCommentsMore = currentItem.parent.comment_count - MAX_API_COMMENTS_PER_COMMENT
-                    val moreRepliesText = numberOfCommentsMore.toString() + " " + context.getString(R.string.more_replies)
-                    tvMoreReplies.text = moreRepliesText
-                    tvMoreReplies.onClick { commentClickListener.onMoreRepliesClicked(currentItem.parent, position) }
-
-                    // this means that we have to show the show less button. This means that we are showing all the comments of the parent and that the parent
-                    // has more than the default api comment count
-                } else if(currentItem.parent.comment_count == currentItem.parent.comments.size && currentItem.parent.comment_count > MAX_API_COMMENTS_PER_COMMENT) {
-                    layMoreReplies.visibility = View.VISIBLE
-                    tvMoreReplies.text = context.getString(R.string.show_less)
-                    tvMoreReplies.onClick { commentClickListener.onShowLessClicked(currentItem.parent, position) }
-
-                } else {
-                    layMoreReplies.visibility = View.GONE
-                }
-            }
-        }
 
 
         // datetime and location
@@ -159,10 +101,11 @@ class CommentItemViewHolder(
 
         // comment text
         tvCommentText.text = hightlightHashtags(currentItem.comment.content)
+        tvCommentText.onClick { commentClickListener.onItemClicked(currentItem, position) }
 
 
         // recasts
-//        currentItem.comment.podcast?.number_of_recasts?.let { tvRecasts.text = it.toString() }
+        // currentItem.comment.podcast?.number_of_recasts?.let { tvRecasts.text = it.toString() }
         tvRecasts.onClick { commentClickListener.onRecastClicked(currentItem.comment, position) }
         ibtnRecasts.onClick { commentClickListener.onRecastClicked(currentItem.comment, position) }
 
@@ -183,13 +126,22 @@ class CommentItemViewHolder(
         // comments
         currentItem.comment.comment_count.let { tvComments.text = it.toString() }
         tvComments.onClick { commentClickListener.onCommentClicked(currentItem.comment, position) }
-        ibtnComments.onClick { commentClickListener.onCommentClicked(currentItem.comment, position) }
+        ibtnComments.onClick {
+            commentClickListener.onCommentClicked(
+                currentItem.comment,
+                position
+            )
+        }
 
         // user picture
         Glide.with(itemView.context)
             .load(currentItem.comment.user?.images?.small_url)
+            .placeholder(R.mipmap.ic_launcher_round)
             .apply(RequestOptions.circleCropTransform())
+            .error(R.mipmap.ic_launcher_round)
             .into(ivUser)
+
+
         ivUser.onClick { commentClickListener.onUserClicked(currentItem.comment, position) }
 
         // verified
@@ -212,6 +164,220 @@ class CommentItemViewHolder(
 
         ibtnMore.onClick { commentClickListener.onMoreClicked(currentItem.comment, position) }
         btnReply.onClick { commentClickListener.onReplyClicked(currentItem.comment, position) }
+    }
+
+
+    fun bindPodcastComment(
+        currentItem: CommentWithParent,
+        podcastParent: UIPodcast,
+        context: Context,
+        position: Int
+    ) {
+        fillCommonFields(currentItem, position)
+        fillPodcastCommentMode(currentItem, podcastParent, context)
+    }
+
+    fun bindCommentComment(
+        currentItem: CommentWithParent,
+        podcastParent: UIPodcast,
+        context: Context,
+        position: Int,
+        mainComment: CommentWithParent,
+        mainCommentPosition: Int
+    ) {
+        fillCommonFields(currentItem, position)
+        fillCommentCommentMode(currentItem, podcastParent, context, position, mainComment, mainCommentPosition)
+    }
+
+    private fun fillCommentCommentMode(
+        currentItem: CommentWithParent,
+        podcastParent: UIPodcast,
+        context: Context,
+        position: Int,
+        mainComment: CommentWithParent?,
+        mainCommentPosition: Int
+    ) {
+
+        // we have to count this item's parents
+        var parentCount = 0
+        var auxComment = currentItem.parent
+        while(auxComment != null) {
+            parentCount++
+            auxComment = auxComment.parent
+        }
+
+        // and write who are we replying accordingly
+        var directParentFullname = ""
+        if(currentItem.parent == null) {
+            var firstName = ""
+            podcastParent.user.first_name?.let { firstName = it }
+            var lastName = ""
+            podcastParent.user.last_name?.let { lastName = it }
+            directParentFullname = "$firstName $lastName"
+        } else {
+            var firstName = ""
+            currentItem.parent.comment.user?.first_name?.let { firstName = it }
+            var lastName = ""
+            currentItem.parent.comment.user?.last_name?.let { lastName = it }
+            directParentFullname = "$firstName $lastName"
+        }
+        if(parentCount == 0) {
+            tvNameReplyingTo.text = String.format(
+                context.resources.getString(R.string.replying_to_name), directParentFullname)
+        } else {
+            tvNameReplyingTo.text = context.resources.getQuantityString(
+                R.plurals.replying_to_sufix, parentCount, directParentFullname, parentCount)
+        }
+
+
+        // if you are the main comment or one of the previous items
+        if(currentItem == mainComment || position < mainCommentPosition) {
+            barThreadUp.visibility = View.GONE
+            barThreadDown.visibility = View.GONE
+            layMoreReplies.visibility = View.GONE
+            layReplyingTo.visibility = View.VISIBLE
+            barDecorator.visibility = View.VISIBLE
+
+        } else {
+
+            // if the parent is the mainComment...
+            if (currentItem.parent == mainComment) {
+
+                barThreadUp.visibility = View.GONE
+                layMoreReplies.visibility = View.GONE
+
+                // if we have children we'll draw the lower bar
+                if (currentItem.comment.comment_count > 0) {
+                    barThreadDown.visibility = View.VISIBLE
+                    barDecorator.visibility = View.GONE
+                } else {
+                    barThreadDown.visibility = View.GONE
+                    barDecorator.visibility = View.VISIBLE
+                }
+
+                // if the parent is not the main comment, this means that we are a comment of a comment and that our parent is a comment
+            } else {
+                barThreadUp.visibility = View.VISIBLE
+                layReplyingTo.visibility = View.GONE
+
+                // if we are NOT the last comment of our parent, then we have to draw the lower bar and remove the bar decorator
+                if (currentItem.parent?.comment?.comments?.last() != currentItem.comment) {
+                    barThreadDown.visibility = View.VISIBLE
+                    barDecorator.visibility = View.GONE
+                    layMoreReplies.visibility = View.GONE
+
+                    // if we ARE the last comment of our parent, then we have to remove the lower bar and draw the bar decorator
+                } else {
+                    barThreadDown.visibility = View.GONE
+                    barDecorator.visibility = View.VISIBLE
+
+                    // if we are the last child and our parent has more comments than the number of comments loaded, we have to show the more replies layout
+                    // and
+                    if (currentItem.parent.comment.comment_count > currentItem.parent.comment.comments.size) {
+                        layMoreReplies.visibility = View.VISIBLE
+                        val numberOfCommentsMore =
+                            currentItem.parent.comment.comment_count - MAX_API_COMMENTS_PER_COMMENT
+                        val moreRepliesText =
+                            numberOfCommentsMore.toString() + " " + context.getString(R.string.more_replies)
+                        tvMoreReplies.text = moreRepliesText
+                        tvMoreReplies.onClick {
+                            commentClickListener.onMoreRepliesClicked(
+                                currentItem.parent,
+                                position
+                            )
+                        }
+
+                        // this means that we have to show the show less button. This means that we are showing all the comments of the parent and that the parent
+                        // has more than the default api comment count
+                    } else if (currentItem.parent.comment.comment_count == currentItem.parent.comment.comments.size && currentItem.parent.comment.comment_count > MAX_API_COMMENTS_PER_COMMENT) {
+                        layMoreReplies.visibility = View.VISIBLE
+                        tvMoreReplies.text = context.getString(R.string.show_less)
+                        tvMoreReplies.onClick {
+                            commentClickListener.onShowLessClicked(
+                                currentItem.parent,
+                                position
+                            )
+                        }
+
+                    } else {
+                        layMoreReplies.visibility = View.GONE
+                    }
+                }
+            }
+        }
+    }
+
+    private fun fillPodcastCommentMode(currentItem: CommentWithParent, podcastParent: UIPodcast, context: Context) {
+        // replying to
+        // if the parent is null, it means that we are a comment and that our parent is the main podcast
+        if (currentItem.parent == null) {
+            // we have to write the name who we reply to
+            val fullnameReply: String = podcastParent.user.first_name + " " + podcastParent.user.last_name
+            tvNameReplyingTo.text = fullnameReply
+            layReplyingTo.visibility = View.VISIBLE
+            layMoreReplies.visibility = View.GONE
+
+            // remove the upper bar
+            barThreadUp.visibility = View.GONE
+
+            // if we have children we'll draw the lower bar
+            if (currentItem.comment.comment_count > 0) {
+                barThreadDown.visibility = View.VISIBLE
+                barDecorator.visibility = View.GONE
+            } else {
+                barThreadDown.visibility = View.GONE
+                barDecorator.visibility = View.VISIBLE
+            }
+
+            // if the parent is not null, this means that we are a comment of a comment and that our parent is a comment
+        } else {
+            barThreadUp.visibility = View.VISIBLE
+            layReplyingTo.visibility = View.GONE
+
+            // if we are NOT the last comment of our parent, then we have to draw the lower bar and remove the bar decorator
+            if (currentItem.parent.comment.comments.last() != currentItem.comment) {
+                barThreadDown.visibility = View.VISIBLE
+                barDecorator.visibility = View.GONE
+                layMoreReplies.visibility = View.GONE
+
+                // if we ARE the last comment of our parent, then we have to remove the lower bar and draw the bar decorator
+            } else {
+                barThreadDown.visibility = View.GONE
+                barDecorator.visibility = View.VISIBLE
+
+                // if we are the last child and our parent has more comments than the number of comments loaded, we have to show the more replies layout
+                // and
+                if (currentItem.parent.comment.comment_count > currentItem.parent.comment.comments.size) {
+                    layMoreReplies.visibility = View.VISIBLE
+                    val numberOfCommentsMore =
+                        currentItem.parent.comment.comment_count - MAX_API_COMMENTS_PER_COMMENT
+                    val moreRepliesText =
+                        numberOfCommentsMore.toString() + " " + context.getString(R.string.more_replies)
+                    tvMoreReplies.text = moreRepliesText
+                    tvMoreReplies.onClick {
+                        commentClickListener.onMoreRepliesClicked(
+                            currentItem.parent,
+                            position
+                        )
+                    }
+
+                    // this means that we have to show the show less button. This means that we are showing all the comments of the parent and that the parent
+                    // has more than the default api comment count
+                } else if (currentItem.parent.comment.comment_count == currentItem.parent.comment.comments.size && currentItem.parent.comment.comment_count > MAX_API_COMMENTS_PER_COMMENT) {
+                    layMoreReplies.visibility = View.VISIBLE
+                    tvMoreReplies.text = context.getString(R.string.show_less)
+                    tvMoreReplies.onClick {
+                        commentClickListener.onShowLessClicked(
+                            currentItem.parent,
+                            position
+                        )
+                    }
+
+                } else {
+                    layMoreReplies.visibility = View.GONE
+                }
+            }
+        }
     }
 
 

@@ -32,17 +32,15 @@ import io.square1.limor.scenes.main.adapters.CommentsAdapter
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIComment
-import io.square1.limor.uimodels.UIFeedItem
 import io.square1.limor.uimodels.UIPodcast
-import kotlinx.android.synthetic.main.fragment_feed.*
 import kotlinx.android.synthetic.main.fragment_podcast_details.*
 import kotlinx.android.synthetic.main.include_interactions_bar.*
 import kotlinx.android.synthetic.main.include_podcast_data.*
 import kotlinx.android.synthetic.main.include_user_bar.*
 import kotlinx.android.synthetic.main.toolbar_with_logo_and_back_icon.*
 import org.jetbrains.anko.sdk23.listeners.onClick
-import org.jetbrains.anko.support.v4.onRefresh
 import timber.log.Timber
+import java.io.Serializable
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -50,16 +48,19 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 
-data class CommentWithParent(val comment : UIComment, val parent : UIComment?)
-
+data class CommentWithParent(val comment: UIComment, val parent: CommentWithParent?) : Serializable
 
 
 class PodcastDetailsFragment : BaseFragment() {
 
     private var lastCommentRequestedRepliesPosition: Int = 0
-    private var lastCommentRequestedRepliesParent: UIComment? = null
+    private var lastCommentRequestedRepliesParent: CommentWithParent? = null
     private var lastLikedItemPosition = 0
     private var isScrolling = false
+
+    // this variable will be true when we are showing the details of a podcast with the podcast comments
+    // it will be false when we are showing the details of a podcast but with the comments of a comment and its parents
+    private var podcastMode = false
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -83,9 +84,17 @@ class PodcastDetailsFragment : BaseFragment() {
     private var rootView: View? = null
     var app: App? = null
 
-    var uiFeedItem: UIFeedItem? = null
+    private var firstTimePadding = true
 
-    var clickableSpan: ClickableSpan = object : ClickableSpan() {
+    // this represents the main podcast of the screen, the postcast that we are seeing the details of
+    var uiPodcast: UIPodcast? = null
+
+    // this represents the main comment of the screen, it will be null when we are in podcastMode
+    // and it will be the main comment when we are seeing the comments of this comment
+    private var uiMainCommentWithParent: CommentWithParent? = null
+
+    // this is used to hightlight hashtags inside podcast
+    private var clickableSpan: ClickableSpan = object : ClickableSpan() {
         override fun onClick(textView: View) {
             val tv = textView as TextView
             val s: Spanned = tv.text as Spanned
@@ -130,8 +139,10 @@ class PodcastDetailsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         ViewCompat.setTranslationZ(view, 1f)
 
+
         val activity = activity as PodcastDetailsActivity?
-        uiFeedItem = activity?.uiFeedItem
+        // we get the main podcast we receive from the previous activity. It should be non null always
+        uiPodcast = activity?.uiPodcast
 
         bindViewModel()
         initApiCallGetPodcastComments()
@@ -140,15 +151,70 @@ class PodcastDetailsFragment : BaseFragment() {
         initApiCallDeletePodcastLike()
         initApiCallCreateCommentLike()
         initApiCallDeleteCommentLike()
-        configureAdapter()
         configureToolbar()
+
+        // we get the possible comment clicked from the previous activity.
+        uiMainCommentWithParent = activity?.commentWithParent
+        configureAdapter()
+
+        showProgressBar()
+
+        // if it's not null, that means that we have to show the "comment of a comment" screen.
+        // If it's null this means that we have to show the "comment of a podcast" screen
+        uiMainCommentWithParent?.let {
+            podcastMode = false
+            commentsAdapter?.podcastMode = podcastMode
+            addTopParents(it)
+            commentsAdapter?.mainCommentPosition = commentWithParentsItemsList.indexOf(it)
+
+
+            // this is the code that makes the mainComment be on top of the scroll
+            rvComments.viewTreeObserver.addOnGlobalLayoutListener {
+                if(firstTimePadding) {
+                    firstTimePadding = false
+                    context?.let { context -> rvComments?.setPadding(0,0,0, layParent!!.height - CommonsKt.dpToPx(128.0f, context)) } // TODO Jose, this last param should be the height of the last item, not hardcoded number
+                    rvComments?.requestLayout()
+                    val y: Float = rvComments!!.y
+                    rvComments?.startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL, ViewCompat.TYPE_NON_TOUCH)
+                    val llm = rvComments?.layoutManager as LinearLayoutManager
+                    llm.scrollToPositionWithOffset(commentWithParentsItemsList.size - 1, y.toInt())
+                }
+            }
+
+            app_bar_layout?.setExpanded(false)
+
+
+            viewModelGetCommentComments.idComment = it.comment.id
+            getCommentCommentsDataTrigger.onNext(Unit)
+
+            rvComments?.adapter?.notifyDataSetChanged()
+
+            // but if it is null, we have to get the podcast comments
+        } ?: run {
+            podcastMode = true
+            commentsAdapter?.podcastMode = podcastMode
+            uiPodcast?.id?.let { viewModelGetPodcastComments.idPodcast = it }
+            getPodcastCommentsDataTrigger.onNext(Unit)
+        }
+
+
         fillForm()
-
-        uiFeedItem?.podcast?.id?.let { viewModelGetPodcastComments.idPodcast = it }
-        getPodcastCommentsDataTrigger.onNext(Unit)
-
-        swipeRefreshLayout?.onRefresh { reloadComments() }
     }
+
+
+
+    // this function builds the list hierarchy of the first items received in the activity
+    // I mean, if we receive a comment of a comment of a comment of a podcast..
+    // it will fill the first items in the commentWithParentsItemsList with these first items received
+    private fun addTopParents(mainCommentWithParent: CommentWithParent) {
+        var currentItem: CommentWithParent? = mainCommentWithParent
+        while (currentItem != null) {
+            commentWithParentsItemsList.add(currentItem)
+            currentItem = currentItem.parent
+        }
+        commentWithParentsItemsList.reverse()
+    }
+
 
     private fun initApiCallGetCommentComments() {
         val output = viewModelGetCommentComments.transform(
@@ -160,22 +226,64 @@ class PodcastDetailsFragment : BaseFragment() {
         output.response.observe(this, Observer {
             val newItems = it.data.comments
 
-            // we add the new items to its parent
-            lastCommentRequestedRepliesParent?.let {parent ->
-                parent.comments.addAll(newItems)
+            // if we are in podcast mode, it means that the main publication is the podcast itself,
+            // so we have to fill just the lastCommentRequestedReplies because this call is being called
+            // from a "show more" button
+            if (podcastMode) {
 
-                // now we have to insert the new items in the global list
-                fillCommentsWithParentsListOneLevel(lastCommentRequestedRepliesPosition, newItems, parent)
+                // we add the new items to its parent
+                lastCommentRequestedRepliesParent?.let { parent ->
+                    parent.comment.comments.addAll(newItems)
+
+                    // now we have to insert the new items in the global list
+                    fillCommentListFromASpecificPosition(
+                        lastCommentRequestedRepliesPosition,
+                        newItems,
+                        parent
+                    )
+                }
+
+
+                // if we are not in podcast mode (so we are in comment of comment mode) then the main
+                // publication is the uiMainCommentWithParent. This means that we clicked in a specific
+                // comment and now we are in this activity and we want to see all the related comments
+                // of that specific comment
+            } else {
+
+                if (newItems.size > 0) {
+                    val firstItem = newItems[0]
+                    // if the comments we just received are comments of the mainComment, then we just add it to the list
+                    if (firstItem.owner_id == uiMainCommentWithParent?.comment?.id) {
+                        fillCommentListWithSpecificParent(newItems, uiMainCommentWithParent)
+
+
+                        // if they are not comments of the main comment, that means that these new comments
+                        // are children of a different comment, so we have to add these children to its
+                        // parent comment and then, add the childrens in their position in the main list
+                    } else {
+                        // we add the new items to its parent
+                        lastCommentRequestedRepliesParent?.let { parent ->
+                            parent.comment.comments.addAll(newItems)
+
+                            // now we have to insert the new items in the global list
+                            fillCommentListFromASpecificPosition(
+                                lastCommentRequestedRepliesPosition,
+                                newItems,
+                                parent
+                            )
+                        }
+                    }
+                }
             }
 
 
 
             rvComments?.adapter?.notifyDataSetChanged()
-            hideSwipeToRefreshProgressBar()
+            hideProgressBar()
         })
 
         output.errorMessage.observe(this, Observer {
-            hideSwipeToRefreshProgressBar()
+            hideProgressBar()
             Toast.makeText(
                 context,
                 "We couldn't get your feed, please, try again later",
@@ -184,9 +292,31 @@ class PodcastDetailsFragment : BaseFragment() {
         })
     }
 
-    private fun fillCommentsWithParentsListOneLevel(position: Int, newItems: ArrayList<UIComment>, parent : UIComment) {
+    private fun fillCommentListWithSpecificParent(
+        newItems: ArrayList<UIComment>,
+        parent: CommentWithParent?
+    ) {
+        newItems.forEach { comment ->
+            val auxComment = CommentWithParent(comment, parent)
+            commentWithParentsItemsList.add(auxComment)
+            if (comment.comments.size > 0) {
+                comment.comments.forEach { subcomment ->
+                    commentWithParentsItemsList.add(CommentWithParent(subcomment, auxComment))
+                }
+            }
+        }
+    }
+
+    private fun fillCommentListFromASpecificPosition(
+        position: Int,
+        newItems: ArrayList<UIComment>,
+        parent: CommentWithParent
+    ) {
         for (i in 0 until newItems.size) {
-            commentWithParentsItemsList.add(position + i + 1, CommentWithParent(newItems[i], parent))
+            commentWithParentsItemsList.add(
+                position + i + 1,
+                CommentWithParent(newItems[i], parent)
+            )
         }
     }
 
@@ -249,7 +379,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
     private fun undoPodcastLike() {
         Toast.makeText(context, getString(R.string.error_liking_podcast), Toast.LENGTH_SHORT).show()
-        uiFeedItem?.podcast?.let { podcast -> changeItemLikeStatus(podcast, !podcast.liked) }
+        uiPodcast?.let { podcast -> changeItemLikeStatus(podcast, !podcast.liked) }
     }
 
     private fun initApiCallDeleteCommentLike() {
@@ -302,14 +432,14 @@ class PodcastDetailsFragment : BaseFragment() {
                 isReloading = false
             }
 
-            fillCommentsWithParentsListOneLevel(newItems)
+            fillCommentList(newItems)
 
             rvComments?.adapter?.notifyDataSetChanged()
-            hideSwipeToRefreshProgressBar()
+            hideProgressBar()
         })
 
         output.errorMessage.observe(this, Observer {
-            hideSwipeToRefreshProgressBar()
+            hideProgressBar()
             Toast.makeText(
                 context,
                 "We couldn't get your feed, please, try again later",
@@ -318,48 +448,19 @@ class PodcastDetailsFragment : BaseFragment() {
         })
     }
 
-
-    private fun fillCommentsWithParentsListAllLevels(newItems: ArrayList<UIComment>, parent: UIComment?) {
+    private fun fillCommentList(newItems: ArrayList<UIComment>) {
         newItems.forEach { comment ->
             commentWithParentsItemsList.add(CommentWithParent(comment, null))
 
             if (comment.comments.size > 0) {
-                comment.comments.forEach{subComment ->
-                    fillCommentsWithParentsListAllLevels(comment.comments, comment)
+                comment.comments.forEach { subComment ->
+                    commentWithParentsItemsList.add(
+                        CommentWithParent(
+                            subComment,
+                            CommentWithParent(comment, null)
+                        )
+                    )
                 }
-            }
-        }
-    }
-
-
-    private fun countAllComments(commentList: ArrayList<UIComment>): Int {
-        var count = 0
-        commentList.forEach { currentComment ->
-            if( currentComment.comments.size == 0) {
-                count++
-            } else {
-                count += countAllComments(currentComment.comments) + 1
-            }
-        }
-        return count
-    }
-
-    private fun fillCommentsWithParentsListOneLevel(newItems: ArrayList<UIComment>) {
-        newItems.forEach { comment ->
-            commentWithParentsItemsList.add(CommentWithParent(comment, null))
-
-            if (comment.comments.size > 0) {
-                comment.comments.forEach{subComment ->
-                    commentWithParentsItemsList.add(CommentWithParent(subComment, comment))
-                }
-            }
-        }
-    }
-
-    private fun hideSwipeToRefreshProgressBar() {
-        swipeRefreshLayout?.let {
-            if (it.isRefreshing) {
-                swipeRefreshLayout?.isRefreshing = false
             }
         }
     }
@@ -372,14 +473,14 @@ class PodcastDetailsFragment : BaseFragment() {
             CommentsAdapter(
                 it,
                 commentWithParentsItemsList,
-                uiFeedItem!!.podcast!!,
+                uiPodcast!!,
                 object : CommentsAdapter.OnCommentClickListener {
-                    override fun onItemClicked(item: UIComment, position: Int) {
-//                        val podcastDetailsIntent = Intent(context, PodcastDetailsActivity::class.java)
-//                        podcastDetailsIntent.putExtra("model", item)
-//                        startActivity(podcastDetailsIntent)
-//                        (activity as SignActivity).finish()
-                        Toast.makeText(context, "You clicked on item", Toast.LENGTH_SHORT).show()
+                    override fun onItemClicked(item: CommentWithParent, position: Int) {
+                        val podcastDetailsIntent =
+                            Intent(context, PodcastDetailsActivity::class.java)
+                        podcastDetailsIntent.putExtra("podcast", uiPodcast)
+                        podcastDetailsIntent.putExtra("model", item)
+                        startActivity(podcastDetailsIntent)
                     }
 
                     override fun onPlayClicked(item: UIComment, position: Int) {
@@ -450,21 +551,29 @@ class PodcastDetailsFragment : BaseFragment() {
                         Toast.makeText(context, "You clicked on reply", Toast.LENGTH_SHORT).show()
                     }
 
-                    override fun onMoreRepliesClicked(parent: UIComment, position: Int) {
+                    override fun onMoreRepliesClicked(parent: CommentWithParent, position: Int) {
+                        showProgressBar()
                         lastCommentRequestedRepliesPosition = position
                         lastCommentRequestedRepliesParent = parent
-                        viewModelGetCommentComments.idComment = parent.id
-                        viewModelGetCommentComments.offset = parent.comments.size
+                        viewModelGetCommentComments.idComment = parent.comment.id
+                        viewModelGetCommentComments.offset = parent.comment.comments.size
                         getCommentCommentsDataTrigger.onNext(Unit)
                     }
 
-                    override fun onShowLessClicked(parent: UIComment, lastChildPosition: Int) {
-                        val originalParentPosition = lastChildPosition - parent.comments.size
+                    override fun onShowLessClicked(
+                        parent: CommentWithParent,
+                        lastChildPosition: Int
+                    ) {
+                        val originalParentPosition =
+                            lastChildPosition - parent.comment.comments.size
                         removeExcessChildrenFromLists(parent, lastChildPosition)
                         rvComments?.adapter?.notifyDataSetChanged()
                         rvComments?.scrollToPosition(originalParentPosition)
                     }
-                }
+                },
+                podcastMode,
+                uiMainCommentWithParent
+
             )
         }
 
@@ -493,8 +602,15 @@ class PodcastDetailsFragment : BaseFragment() {
                     // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
                     if (isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
                         isScrolling = false
-                        viewModelGetPodcastComments.offset = commentWithParentsItemsList.size - 1
-                        getPodcastCommentsDataTrigger.onNext(Unit)
+                        if (podcastMode) {
+                            viewModelGetPodcastComments.offset =
+                                commentWithParentsItemsList.size - 1
+                            getPodcastCommentsDataTrigger.onNext(Unit)
+                        } else {
+                            viewModelGetCommentComments.offset =
+                                commentWithParentsItemsList.size - 1
+                            getCommentCommentsDataTrigger.onNext(Unit)
+                        }
                     }
                 }
             }
@@ -504,13 +620,13 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun removeExcessChildrenFromLists(
-        parent: UIComment,
+        parent: CommentWithParent,
         lastChildPosition: Int
     ) {
-        val originalParentPosition = lastChildPosition - parent.comments.size
-        val childsToRemove = parent.comments.size - Constants.MAX_API_COMMENTS_PER_COMMENT
-        for(i in 0 until childsToRemove) {
-            parent.comments.removeAt(Constants.MAX_API_COMMENTS_PER_COMMENT)
+        val originalParentPosition = lastChildPosition - parent.comment.comments.size
+        val childsToRemove = parent.comment.comments.size - Constants.MAX_API_COMMENTS_PER_COMMENT
+        for (i in 0 until childsToRemove) {
+            parent.comment.comments.removeAt(Constants.MAX_API_COMMENTS_PER_COMMENT)
             commentWithParentsItemsList.removeAt(originalParentPosition + Constants.MAX_API_COMMENTS_PER_COMMENT + 1)
         }
     }
@@ -559,7 +675,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastLikeViewModel::class.java)
         }
-        uiFeedItem?.podcast?.id?.let { viewModelCreatePodcastLike.idPodcast = it }
+        uiPodcast?.id?.let { viewModelCreatePodcastLike.idPodcast = it }
 
 
         activity?.let { fragmentActivity ->
@@ -567,7 +683,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastLikeViewModel::class.java)
         }
-        uiFeedItem?.podcast?.id?.let { viewModelDeletePodcastLike.idPodcast = it }
+        uiPodcast?.id?.let { viewModelDeletePodcastLike.idPodcast = it }
 
         activity?.let { fragmentActivity ->
             viewModelCreateCommentLike = ViewModelProviders
@@ -582,25 +698,19 @@ class PodcastDetailsFragment : BaseFragment() {
         }
     }
 
-    private fun reloadComments() {
-        isLastPage = false
-        isReloading = true
-        viewModelGetPodcastComments.offset = 0
-        getPodcastCommentsDataTrigger.onNext(Unit)
-    }
 
     private fun fillForm() {
-        tvPodcastText?.text = uiFeedItem?.podcast?.caption
-        tvPodcastTitle?.text = uiFeedItem?.podcast?.title
+        tvPodcastText?.text = uiPodcast?.caption
+        tvPodcastTitle?.text = uiPodcast?.title
         val fullName =
-            uiFeedItem?.podcast?.user?.first_name + " " + uiFeedItem?.podcast?.user?.last_name
+            uiPodcast?.user?.first_name + " " + uiPodcast?.user?.last_name
         tvUserName?.text = fullName
         tvUserName.onClick { onUserClicked() }
 
 
         // datetime and location
-        val lat = uiFeedItem?.podcast?.latitude
-        val lng = uiFeedItem?.podcast?.longitude
+        val lat = uiPodcast?.latitude
+        val lng = uiPodcast?.longitude
         var locationString = ""
         if (lat != null && lng != null) {
             val geocoder = Geocoder(context, Locale.getDefault())
@@ -621,24 +731,24 @@ class PodcastDetailsFragment : BaseFragment() {
 
 
         var datetimeString = ""
-        uiFeedItem?.created_at?.let {
+        uiPodcast?.created_at?.let {
             datetimeString = CommonsKt.getDateTimeFormattedFromTimestamp(it.toLong())
         }
         val dateAndLocationString = "$datetimeString$locationString"
         tvTimeAndLocation?.text = dateAndLocationString
 
         // title & caption
-        uiFeedItem?.podcast?.title?.let { tvPodcastTitle.text = it }
-        uiFeedItem?.podcast?.caption?.let { tvPodcastText.text = hightlightHashtags(it) }
+        uiPodcast?.title?.let { tvPodcastTitle.text = it }
+        uiPodcast?.caption?.let { tvPodcastText.text = hightlightHashtags(it) }
         tvPodcastText?.movementMethod = LinkMovementMethod.getInstance()
 
         // duration
-        uiFeedItem?.podcast?.audio?.duration?.let {
+        uiPodcast?.audio?.duration?.let {
             tvPodcastTime?.text = CommonsKt.calculateDurationMinutesAndSeconds(it.toLong())
         }
 
         // recasts
-        uiFeedItem?.podcast?.number_of_recasts?.let { tvRecasts.text = it.toString() }
+        uiPodcast?.number_of_recasts?.let { tvRecasts.text = it.toString() }
         tvRecasts?.onClick { onRecastClicked() }
         btnRecasts?.onClick { onRecastClicked() }
 
@@ -647,33 +757,33 @@ class PodcastDetailsFragment : BaseFragment() {
         btnLikes?.onClick { onPodcastLikeClicked() }
 
         // listens
-        uiFeedItem?.podcast?.number_of_listens?.let { tvListens.text = it.toString() }
+        uiPodcast?.number_of_listens?.let { tvListens.text = it.toString() }
         tvListens?.onClick { onListensClicked() }
         btnListens?.onClick { onListensClicked() }
 
         // comments
-        uiFeedItem?.podcast?.number_of_comments?.let { tvComments.text = it.toString() }
+        uiPodcast?.number_of_comments?.let { tvComments.text = it.toString() }
         tvComments?.onClick { onCommentsClicked() }
         btnComments?.onClick { onCommentsClicked() }
 
         context?.let {
             // user picture
             Glide.with(it)
-                .load(uiFeedItem?.podcast?.user?.images?.small_url)
+                .load(uiPodcast?.user?.images?.small_url)
                 .apply(RequestOptions.circleCropTransform())
                 .into(ivUserPicture)
             ivUserPicture?.onClick { onUserClicked() }
 
             // main picture
             Glide.with(it)
-                .load(uiFeedItem?.podcast?.images?.medium_url)
+                .load(uiPodcast?.images?.medium_url)
                 .into(ivMainFeedPicture)
             ivMainFeedPicture.onClick { onItemClicked() }
         }
 
 
         // verified
-        uiFeedItem?.user?.verified?.let {
+        uiPodcast?.user?.verified?.let {
             if (it)
                 ivVerifiedUser.visibility = View.VISIBLE
             else
@@ -681,22 +791,6 @@ class PodcastDetailsFragment : BaseFragment() {
         } ?: run {
             ivVerifiedUser.visibility = View.GONE
         }
-
-
-        // recast
-//        uiFeedItem?.podcast?.recasted?.let {
-//            if (it) {
-//                btnRecasts?.setImageResource(R.drawable.recast_filled)
-//                tvSomeoneRecasted.visibility = View.VISIBLE
-//            } else {
-//                btnRecasts?.setImageResource(R.drawable.recast)
-//                tvSomeoneRecasted.visibility = View.GONE
-//            }
-//
-//
-//        } ?: run {
-//            btnRecasts?.setImageResource(R.drawable.recast)
-//        }
 
 
         btnMore?.onClick { onMoreClicked() }
@@ -707,8 +801,8 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun fillFormLikePodcastData() {
-        uiFeedItem?.podcast?.number_of_likes?.let { tvLikes.text = it.toString() }
-        uiFeedItem?.podcast?.liked?.let {
+        uiPodcast?.number_of_likes?.let { tvLikes.text = it.toString() }
+        uiPodcast?.liked?.let {
             if (it)
                 btnLikes?.setImageResource(R.drawable.like_filled)
             else
@@ -745,7 +839,7 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun onPodcastLikeClicked() {
-        uiFeedItem?.podcast?.let { podcast ->
+        uiPodcast?.let { podcast ->
             changeItemLikeStatus(
                 podcast,
                 !podcast.liked
@@ -805,5 +899,39 @@ class PodcastDetailsFragment : BaseFragment() {
         return SpannableString("")
     }
 
+
+    private fun showProgressBar() {
+        progressBar?.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar() {
+        progressBar?.visibility = View.GONE
+    }
+
+    // region unused but maybe useful in the future
+//    private fun fillCommentsWithParentsListAllLevels(newItems: ArrayList<UIComment>, parent: UIComment?) {
+//        newItems.forEach { comment ->
+//            commentWithParentsItemsList.add(CommentWithParent(comment, null))
+//
+//            if (comment.comments.size > 0) {
+//                comment.comments.forEach{subComment ->
+//                    fillCommentsWithParentsListAllLevels(comment.comments, comment)
+//                }
+//            }
+//        }
+//    }
+//
+//    private fun countAllComments(commentList: ArrayList<UIComment>): Int {
+//        var count = 0
+//        commentList.forEach { currentComment ->
+//            if( currentComment.comments.size == 0) {
+//                count++
+//            } else {
+//                count += countAllComments(currentComment.comments) + 1
+//            }
+//        }
+//        return count
+//    }
+    // endregion
 
 }

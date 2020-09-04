@@ -78,6 +78,11 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(FeedByTagViewModel::class)
+    abstract fun bindFeedByTagViewModel(feedByTagViewModel: FeedByTagViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(CreateFriendViewModel::class)
     abstract fun bindCreateFriendViewModel(createFriendViewModel: CreateFriendViewModel): ViewModel
 
