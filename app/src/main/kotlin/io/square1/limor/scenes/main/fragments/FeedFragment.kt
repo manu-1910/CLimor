@@ -27,7 +27,6 @@ import io.square1.limor.scenes.main.viewmodels.FeedViewModel
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIFeedItem
 import org.jetbrains.anko.support.v4.onRefresh
-import org.jetbrains.anko.support.v4.startService
 import javax.inject.Inject
 
 
@@ -126,7 +125,7 @@ class FeedFragment : BaseFragment() {
                                     // This service will get converted to foreground service using the PlayerNotificationManager notification Id.
                                     requireContext().startService(intent)
                                     val activity = requireActivity() as BaseActivity
-                                    activity.showExoPlayerControls()
+                                    activity.showMiniPlayer(item)
                                 }
                             }
                         }

@@ -5,30 +5,36 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
+import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.exoplayer2.ui.PlayerControlView
+import com.bumptech.glide.Glide
 import dagger.android.AndroidInjection
 import io.square1.limor.R
 import io.square1.limor.service.AudioService
 import io.square1.limor.service.PlayerStatus
+import io.square1.limor.uimodels.UIFeedItem
+import kotlinx.android.synthetic.main.mini_player_view.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.okButton
-import timber.log.Timber
+import org.jetbrains.anko.sdk23.listeners.onClick
 import javax.inject.Inject
-
 
 abstract class BaseActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private var audioService: AudioService? = null
-    private var playerControlView: PlayerControlView? = null
+    private var miniPlayerView: RelativeLayout? = null
+    private var playerStatus: PlayerStatus? = null
+    private var uiFeedItem: UIFeedItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,30 +42,53 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     private val connection = object : ServiceConnection {
+
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as AudioService.AudioServiceBinder
             audioService = binder.service
 
-            // Attach the ExoPlayer to the PlayerView.
-            playerControlView!!.player = binder.exoPlayer
+            //playerControlView!!.player = binder.exoPlayer
 
-            // Pass player updates to interested observers.
             audioService?.playerStatusLiveData?.observe(this@BaseActivity, Observer {
 
-//                _playerStatusLiveData.value = it
-//                playerOverlayPlayMaterialButton.isSelected = it is PlayerStatus.Playing
+                playerStatus = it
 
-                if (it is PlayerStatus.Cancelled) {
-                    playerControlView!!.visibility = View.GONE
-                    stopAudioService()
+                when (playerStatus) {
+                    is PlayerStatus.Cancelled -> {
+                        miniPlayerView!!.visibility = View.GONE
+                        stopAudioService()
+                    }
+                    is PlayerStatus.Playing -> {
+                        setPlayerUiPlaying()
+                    }
+                    is PlayerStatus.Paused -> {
+                        setPlayerUiPaused()
+                    }
+                    is PlayerStatus.Ended -> {
+                        setPlayerUiPaused()
+                    }
                 }
+
             })
 
             // Show player after config change.
             val podcastId = audioService?.podcastId
             if (podcastId != null) {
-                playerControlView!!.visibility = View.VISIBLE
+                setupMiniPlayerUi()
             }
+        }
+
+        private fun setupMiniPlayerUi() {
+            miniPlayerView!!.visibility = View.VISIBLE
+            Glide.with(miniPlayerView!!.iv_audio).load(uiFeedItem!!.podcast?.images?.small_url)
+                .centerCrop().into(miniPlayerView!!.iv_audio)
+            miniPlayerView!!.tv_audio_title.text = uiFeedItem!!.podcast?.caption
+
+            val durationMillis = uiFeedItem!!.podcast?.audio?.duration
+            val minutes = durationMillis!! / 1000 / 60
+            val seconds = durationMillis / 1000 % 60
+            val humanReadableDuration = String.format("%dm %ds", minutes, seconds)
+            miniPlayerView!!.tv_duration.text = humanReadableDuration
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -70,17 +99,64 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        playerControlView = findViewById(R.id.player_control_view)
-        Timber.e("baz")
+        miniPlayerView = findViewById(R.id.rl_mini_player_view)
+
         // Show the player, if the audio service is already running.
-        if(playerControlView != null){
+        if (miniPlayerView != null) {
             if (isServiceRunning(AudioService::class.java)) {
                 bindToAudioService()
             } else {
-                playerControlView!!.visibility = View.GONE
+                miniPlayerView!!.visibility = View.GONE
+            }
+
+            miniPlayerView!!.ll_close.onClick {
+                stopAudioService()
+                miniPlayerView!!.visibility = View.GONE
+            }
+
+            miniPlayerView!!.iv_play_pause.onClick {
+
+                when (playerStatus) {
+                    is PlayerStatus.Playing -> {
+                        audioService?.pause()
+                        setPlayerUiPaused()
+                    }
+                    is PlayerStatus.Paused -> {
+                        audioService?.resume()
+                        setPlayerUiPlaying()
+                    }
+                    is PlayerStatus.Ended -> {
+                        setPlayerUiPaused()
+                        audioService?.play(
+                            Uri.parse(uiFeedItem!!.podcast?.audio?.audio_url),
+                            1L,
+                            1F
+                        )
+                    }
+                }
+
+
             }
         }
 
+    }
+
+    private fun setPlayerUiPlaying() {
+        miniPlayerView!!.iv_play_pause.setImageDrawable(
+            ContextCompat.getDrawable(
+                this,
+                R.drawable.pause
+            )
+        )
+    }
+
+    private fun setPlayerUiPaused() {
+        miniPlayerView!!.iv_play_pause.setImageDrawable(
+            ContextCompat.getDrawable(
+                this,
+                R.drawable.play
+            )
+        )
     }
 
     @SuppressWarnings("deprecation")
@@ -96,7 +172,6 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onStop() {
         unbindAudioService()
-
         super.onStop()
     }
 
@@ -110,9 +185,8 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     private fun unbindAudioService() {
-        if (playerControlView != null && audioService != null) {
+        if (miniPlayerView != null && audioService != null) {
             unbindService(connection)
-
             audioService = null
         }
     }
@@ -124,10 +198,13 @@ abstract class BaseActivity : AppCompatActivity() {
         stopService(Intent(this, AudioService::class.java))
 
         audioService = null
+        playerStatus = null
+        uiFeedItem = null
     }
 
-    fun showExoPlayerControls(){
-        if(playerControlView != null){
+    fun showMiniPlayer(item: UIFeedItem) {
+        uiFeedItem = item
+        if (miniPlayerView != null) {
             bindToAudioService()
         }
     }

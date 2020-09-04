@@ -323,7 +323,7 @@ class AudioService : Service() {
     }
 
     @MainThread
-    private fun cancelPlaybackMonitor() {
+    fun cancelPlaybackMonitor() {
         saveLastListeningPosition()
 
         playbackTimer?.cancel()
