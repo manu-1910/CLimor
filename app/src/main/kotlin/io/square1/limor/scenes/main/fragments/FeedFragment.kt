@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.R
+import io.square1.limor.common.BaseActivity
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.scenes.main.adapters.FeedAdapter
 import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
@@ -124,6 +125,8 @@ class FeedFragment : BaseFragment() {
                                     audioUrl, id,  1L).also { intent ->
                                     // This service will get converted to foreground service using the PlayerNotificationManager notification Id.
                                     requireContext().startService(intent)
+                                    val activity = requireActivity() as BaseActivity
+                                    activity.showExoPlayerControls()
                                 }
                             }
                         }

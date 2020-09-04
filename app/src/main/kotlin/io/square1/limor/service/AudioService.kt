@@ -75,6 +75,12 @@ class AudioService : Service() {
                 putExtra(ARG_START_POSITION, startPosition)
             }
 
+        @MainThread
+        fun newIntent(
+            context: Context
+        ) =
+            Intent(context, AudioService::class.java)
+
     }
 
     private lateinit var exoPlayer: SimpleExoPlayer
@@ -84,7 +90,7 @@ class AudioService : Service() {
     private var mediaSession: MediaSessionCompat? = null
     private var mediaSessionConnector: MediaSessionConnector? = null
     private var podcastTitle: String? = null
-    private var podcastId: Int? = null
+    var podcastId: Int? = null
 
     private val _playerStatusLiveData = MutableLiveData<PlayerStatus>()
     val playerStatusLiveData: LiveData<PlayerStatus>
