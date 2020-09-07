@@ -168,6 +168,7 @@ class PodcastDetailsFragment : BaseFragment() {
         // we get the main podcast we receive from the previous activity. It should be non null always
         uiPodcast = activity?.uiPodcast
 
+
         bindViewModel()
         initApiCallGetPodcastComments()
         initApiCallGetCommentComments()
@@ -234,6 +235,10 @@ class PodcastDetailsFragment : BaseFragment() {
 
         fillForm()
         initListeners()
+        activity?.startCommenting?.let {
+            if(it)
+                openCommentBarTextAndFocusIt()
+        }
     }
 
     private fun initApiCallCreateComment() {
@@ -286,11 +291,24 @@ class PodcastDetailsFragment : BaseFragment() {
 
     private fun addNewCommentToList(commentCreated: UIComment) {
         if(podcastMode) {
+            uiPodcast?.number_of_comments = uiPodcast?.number_of_comments!!.inc()
+            tvComments.text = uiPodcast?.number_of_comments.toString()
             commentWithParentsItemsList.add(CommentWithParent(commentCreated, null))
         } else {
+            uiPodcast?.number_of_comments = uiPodcast?.number_of_comments!!.inc()
+            tvComments.text = uiPodcast?.number_of_comments.toString()
+
+            // let's recalculate number of comments
+            var parent = uiMainCommentWithParent?.parent
+            while(parent != null) {
+                parent.comment.comment_count = parent.comment.comment_count.inc()
+                parent = parent.parent
+            }
+            uiMainCommentWithParent?.comment?.comment_count = uiMainCommentWithParent?.comment?.comment_count!!.inc()
             commentWithParentsItemsList.add(CommentWithParent(commentCreated, uiMainCommentWithParent))
         }
-        commentsAdapter?.notifyItemInserted(commentWithParentsItemsList.size - 1)
+        app_bar_layout?.setExpanded(false)
+        commentsAdapter?.notifyDataSetChanged()
         rvComments?.scrollToPosition(commentWithParentsItemsList.size - 1)
     }
 
@@ -396,6 +414,16 @@ class PodcastDetailsFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
             val newItems = it.data.comments
+
+            app_bar_layout?.setExpanded(false)
+
+            if (isReloading) {
+                commentWithParentsItemsList.clear()
+                rvComments?.recycledViewPool?.clear()
+                isReloading = false
+                rvComments?.scrollToPosition(commentWithParentsItemsList.indexOf(uiMainCommentWithParent))
+            }
+
 
             // if we are in podcast mode, it means that the main publication is the podcast itself,
             // so we have to fill just the lastCommentRequestedReplies because this call is being called
@@ -594,6 +622,8 @@ class PodcastDetailsFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
             val newItems = it.data.comments
+            app_bar_layout?.setExpanded(false)
+
             if (newItems.size == 0)
                 isLastPage = true
 
@@ -601,6 +631,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 commentWithParentsItemsList.clear()
                 rvComments?.recycledViewPool?.clear()
                 isReloading = false
+                rvComments?.scrollToPosition(0)
             }
 
             fillCommentList(newItems)
@@ -651,7 +682,7 @@ class PodcastDetailsFragment : BaseFragment() {
                             Intent(context, PodcastDetailsActivity::class.java)
                         podcastDetailsIntent.putExtra("podcast", uiPodcast)
                         podcastDetailsIntent.putExtra("model", item)
-                        startActivity(podcastDetailsIntent)
+                        startActivityForResult(podcastDetailsIntent, 0)
                     }
 
                     override fun onPlayClicked(item: UIComment, position: Int) {
@@ -662,8 +693,13 @@ class PodcastDetailsFragment : BaseFragment() {
                         Toast.makeText(context, "You clicked on listen", Toast.LENGTH_SHORT).show()
                     }
 
-                    override fun onCommentClicked(item: UIComment, position: Int) {
-                        Toast.makeText(context, "You clicked on comment", Toast.LENGTH_SHORT).show()
+                    override fun onCommentClicked(item: CommentWithParent, position: Int) {
+                        val podcastDetailsIntent =
+                            Intent(context, PodcastDetailsActivity::class.java)
+                        podcastDetailsIntent.putExtra("podcast", uiPodcast)
+                        podcastDetailsIntent.putExtra("model", item)
+                        podcastDetailsIntent.putExtra("commenting", true)
+                        startActivityForResult(podcastDetailsIntent, 0)
                     }
 
                     override fun onLikeClicked(item: UIComment, position: Int) {
@@ -1017,7 +1053,7 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun onPodcastCommentClicked() {
-        Toast.makeText(context, "You clicked on podcast comment", Toast.LENGTH_SHORT).show()
+        openCommentBarTextAndFocusIt()
     }
 
     private fun onListensClicked() {
@@ -1094,29 +1130,25 @@ class PodcastDetailsFragment : BaseFragment() {
         progressBar?.visibility = View.GONE
     }
 
-    // region unused but maybe useful in the future
-//    private fun fillCommentsWithParentsListAllLevels(newItems: ArrayList<UIComment>, parent: UIComment?) {
-//        newItems.forEach { comment ->
-//            commentWithParentsItemsList.add(CommentWithParent(comment, null))
-//
-//            if (comment.comments.size > 0) {
-//                comment.comments.forEach{subComment ->
-//                    fillCommentsWithParentsListAllLevels(comment.comments, comment)
-//                }
-//            }
-//        }
-//    }
-//
-//    private fun countAllComments(commentList: ArrayList<UIComment>): Int {
-//        var count = 0
-//        commentList.forEach { currentComment ->
-//            if( currentComment.comments.size == 0) {
-//                count++
-//            } else {
-//                count += countAllComments(currentComment.comments) + 1
-//            }
-//        }
-//        return count
-//    }
-    // endregion
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+//        reloadComments()
+    }
+
+
+    private fun reloadComments() {
+        showProgressBar()
+        app_bar_layout?.setExpanded(true)
+        isLastPage = false
+        isReloading = true
+        commentWithParentsItemsList.clear()
+        commentsAdapter?.notifyDataSetChanged()
+        if(podcastMode) {
+            viewModelGetPodcastComments.offset = 0
+            getPodcastCommentsDataTrigger.onNext(Unit)
+        } else {
+            viewModelGetCommentComments.offset = 0
+            getCommentCommentsDataTrigger.onNext(Unit)
+        }
+    }
 }

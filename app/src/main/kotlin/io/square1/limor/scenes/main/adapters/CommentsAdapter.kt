@@ -2,7 +2,6 @@ package io.square1.limor.scenes.main.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import io.square1.limor.scenes.main.fragments.podcast.CommentWithParent
@@ -59,7 +58,7 @@ class CommentsAdapter(
         fun onItemClicked(item : CommentWithParent, position: Int)
         fun onPlayClicked(item : UIComment, position: Int)
         fun onListenClicked(item : UIComment, position: Int)
-        fun onCommentClicked(item : UIComment, position: Int)
+        fun onCommentClicked(item: CommentWithParent, position: Int)
         fun onLikeClicked(item : UIComment, position: Int)
         fun onRecastClicked(item : UIComment, position: Int)
         fun onHashtagClicked(hashtag : String)
