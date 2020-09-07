@@ -234,6 +234,6 @@
     </plurals>
     <string name="more_replies">More replies</string>
     <string name="show_less">Show less</string>
-
+    <string name="audio_player_error_msg">There was an error encountered playing this audio, please try again.</string>
 
 </resources>

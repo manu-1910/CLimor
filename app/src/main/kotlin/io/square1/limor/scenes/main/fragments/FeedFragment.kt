@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.R
+import io.square1.limor.common.BaseActivity
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.scenes.main.adapters.FeedAdapter
 import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
@@ -25,6 +26,7 @@ import io.square1.limor.scenes.main.viewmodels.CreatePodcastLikeViewModel
 import io.square1.limor.scenes.main.viewmodels.DeletePodcastLikeViewModel
 import io.square1.limor.scenes.main.viewmodels.FeedByTagViewModel
 import io.square1.limor.scenes.main.viewmodels.FeedViewModel
+import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIFeedItem
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.support.v4.onRefresh
@@ -123,7 +125,18 @@ class FeedFragment : BaseFragment() {
                     }
 
                     override fun onPlayClicked(item: UIFeedItem, position: Int) {
-                        Toast.makeText(context, "You clicked on play", Toast.LENGTH_SHORT).show()
+
+                        item.podcast?.audio?.audio_url?.let { _ ->
+
+                            AudioService.newIntent(requireContext(), item.podcast!!, 1L)
+                                .also { intent ->
+                                    requireContext().startService(intent)
+                                    val activity = requireActivity() as BaseActivity
+                                    activity.showMiniPlayer()
+                                }
+
+                        }
+
                     }
 
                     override fun onListenClicked(item: UIFeedItem, position: Int) {

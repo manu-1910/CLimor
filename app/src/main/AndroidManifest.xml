@@ -108,6 +108,10 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name="io.square1.limor.service.AudioService"
+            android:exported="false" />
+
     </application>
 
 </manifest>

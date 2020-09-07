@@ -104,4 +104,7 @@
     <color name="type_bkgnd_music">#88000000</color>
     <color name="type_bkgnd_unsupported">#88cccccc</color>
 
+    <!--Audio Player Colors-->
+    <color name="miniplayer_transparent_overlay">#4D000000</color>
+
 </resources>

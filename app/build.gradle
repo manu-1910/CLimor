@@ -320,6 +320,12 @@ dependencies {
 
     implementation 'com.github.squti:Android-Wave-Recorder:1.4.0'
 
+
+    // Audio
+    implementation "com.google.android.exoplayer:exoplayer-core:2.10.1"
+    implementation "com.google.android.exoplayer:exoplayer-ui:2.10.1"
+    implementation "com.google.android.exoplayer:extension-mediasession:2.10.1"
+
     //Material chip
     implementation 'com.robertlevonyan.view:MaterialChipView:2.0.4'
 
