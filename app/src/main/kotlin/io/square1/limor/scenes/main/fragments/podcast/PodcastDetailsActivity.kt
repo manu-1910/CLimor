@@ -15,6 +15,7 @@ import javax.inject.Inject
 
 class PodcastDetailsActivity : BaseActivity(), HasSupportFragmentInjector {
 
+    var startCommenting: Boolean? = false
     var commentWithParent : CommentWithParent? = null
     var uiPodcast : UIPodcast? = null
 
@@ -39,6 +40,7 @@ class PodcastDetailsActivity : BaseActivity(), HasSupportFragmentInjector {
         val bundle = intent?.extras
         uiPodcast = bundle?.get("podcast") as UIPodcast?
         commentWithParent = bundle?.get("model") as CommentWithParent?
+        startCommenting = bundle?.get("commenting") as Boolean?
 
         setupNavigationController()
     }

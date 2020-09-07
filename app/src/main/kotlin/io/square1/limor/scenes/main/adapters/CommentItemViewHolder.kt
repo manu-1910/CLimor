@@ -125,10 +125,10 @@ class CommentItemViewHolder(
 
         // comments
         currentItem.comment.comment_count.let { tvComments.text = it.toString() }
-        tvComments.onClick { commentClickListener.onCommentClicked(currentItem.comment, position) }
+        tvComments.onClick { commentClickListener.onCommentClicked(currentItem, position) }
         ibtnComments.onClick {
             commentClickListener.onCommentClicked(
-                currentItem.comment,
+                currentItem,
                 position
             )
         }

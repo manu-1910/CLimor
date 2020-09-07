@@ -235,5 +235,10 @@
     <string name="more_replies">More replies</string>
     <string name="show_less">Show less</string>
     <string name="audio_player_error_msg">There was an error encountered playing this audio, please try again.</string>
+    <string name="couldnt_get_feed">We couldn\'t get your feed, please, try again later</string>
+    <string name="couldnt_get_comments">We couldn\'t get comments, please, try again later</string>
+    <string name="couldnt_send_comment">We couldn\'t send your comment, try again later</string>
+    <string name="this_field_cant_be_empty">This field cannot be empty</string>
+    <string name="error_initializing_data">There was an error initializing some data</string>
 
 </resources>

@@ -1,10 +1,13 @@
 package io.square1.limor.remote.providers
 
+import entities.request.DataCreateCommentRequest
 import entities.response.CreateCommentLikeResponseEntity
+import entities.response.CreateCommentResponseEntity
 import entities.response.DeleteLikeResponseEntity
 import entities.response.GetCommentsResponseEntity
 import io.reactivex.Single
 import io.square1.limor.remote.mappers.asDataEntity
+import io.square1.limor.remote.mappers.asRemoteEntity
 import io.square1.limor.remote.services.comment.CommentServiceImp
 import kotlinx.serialization.ImplicitReflectionSerializer
 import providers.remote.RemoteCommentProvider
@@ -13,6 +16,12 @@ import javax.inject.Inject
 @ImplicitReflectionSerializer
 class RemoteCommentProviderImp @Inject constructor(private val provider: CommentServiceImp) :
     RemoteCommentProvider {
+    override fun createComment(
+        idComment: Int,
+        request: DataCreateCommentRequest
+    ): Single<CreateCommentResponseEntity>? {
+        return provider.createComment(idComment, request.asRemoteEntity()).asDataEntity()
+    }
 
 
     override fun likeComment(id: Int): Single<CreateCommentLikeResponseEntity>? {

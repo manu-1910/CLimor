@@ -1,11 +1,9 @@
 package io.square1.limor.remote.services.podcast
 
 import io.reactivex.Single
+import io.square1.limor.remote.entities.requests.NWCreateCommentRequest
 import io.square1.limor.remote.entities.requests.NWPublishRequest
-import io.square1.limor.remote.entities.responses.NWCreatePodcastLikeResponse
-import io.square1.limor.remote.entities.responses.NWDeleteLikeResponse
-import io.square1.limor.remote.entities.responses.NWGetCommentsResponse
-import io.square1.limor.remote.entities.responses.NWPublishResponse
+import io.square1.limor.remote.entities.responses.*
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
 import io.square1.limor.remote.services.RemoteServiceConfig
@@ -59,6 +57,22 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
         return service.getComments(id, limit, offset)
             .map {
                     response -> response.parseSuccessResponse(NWGetCommentsResponse.serializer())
+            }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
+    fun createComment(
+        idPodcast: Int,
+        request: NWCreateCommentRequest
+    ): Single<NWCreateCommentResponse> {
+        return service.createComment(idPodcast, RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWCreateCommentRequest.serializer(), request)))
+            .map {
+                    response -> response.parseSuccessResponse(NWCreateCommentResponse.serializer())
             }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")

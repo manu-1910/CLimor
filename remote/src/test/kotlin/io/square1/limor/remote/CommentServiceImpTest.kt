@@ -1,6 +1,8 @@
 package io.square1.limor.remote
 
 
+import io.square1.limor.remote.entities.requests.NWCommentRequest
+import io.square1.limor.remote.entities.requests.NWCreateCommentRequest
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.comment.CommentServiceImp
 import kotlinx.serialization.ImplicitReflectionSerializer
@@ -71,6 +73,32 @@ class CommentServiceImpTest{
         val idComment = 1552
 
         val response = commentService.getComments(idComment, 10, 0)?.test()
+
+        response?.assertNoErrors()
+        response?.assertValue { it.message == "Success" }
+    }
+
+    @Test
+    fun should_create_comment_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = baseURL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = "4t6bOFXd3L89qqPLdXsBHtTOP4_-t_61Q2kl5R4dAdk",
+            expiredIn = 0
+        )
+
+        commentService = CommentServiceImp(config)
+
+        val idComment = 1552
+        val request = NWCreateCommentRequest(
+            NWCommentRequest(
+                "Hi, I'm a new comment from the android client"
+            )
+        )
+
+        val response = commentService.createComment(idComment, request).test()
 
         response?.assertNoErrors()
         response?.assertValue { it.message == "Success" }

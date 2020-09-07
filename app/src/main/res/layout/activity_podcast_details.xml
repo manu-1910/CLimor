@@ -11,16 +11,18 @@
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/mini_player_view"
+        android:layout_above="@+id/rl_mini_player_view"
         app:defaultNavHost="true"
         app:navGraph="@navigation/podcast_details_nav">
 
     </fragment>
 
     <include layout="@layout/mini_player_view"
+        android:id="@+id/rl_mini_player_view"
         android:layout_width="match_parent"
         android:layout_height="@dimen/miniPlayerHeight"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"/>
 
     <!--
     <com.google.android.exoplayer2.ui.PlayerControlView

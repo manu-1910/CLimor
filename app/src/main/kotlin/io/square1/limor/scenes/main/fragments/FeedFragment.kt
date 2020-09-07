@@ -121,7 +121,6 @@ class FeedFragment : BaseFragment() {
                         val podcastDetailsIntent = Intent(context, PodcastDetailsActivity::class.java)
                         podcastDetailsIntent.putExtra("podcast", item.podcast)
                         startActivity(podcastDetailsIntent)
-//                        (activity as SignActivity).finish()
                     }
 
                     override fun onPlayClicked(item: UIFeedItem, position: Int) {
@@ -144,7 +143,11 @@ class FeedFragment : BaseFragment() {
                     }
 
                     override fun onCommentClicked(item: UIFeedItem, position: Int) {
-                        Toast.makeText(context, "You clicked on comment", Toast.LENGTH_SHORT).show()
+                        val podcastDetailsIntent =
+                            Intent(context, PodcastDetailsActivity::class.java)
+                        podcastDetailsIntent.putExtra("podcast", item.podcast)
+                        podcastDetailsIntent.putExtra("commenting", true)
+                        startActivity(podcastDetailsIntent)
                     }
 
                     override fun onLikeClicked(item: UIFeedItem, position: Int) {
