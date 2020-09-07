@@ -8,15 +8,16 @@ import io.reactivex.rxkotlin.addTo
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseViewModel
-import io.square1.limor.common.SessionManager
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import io.square1.limor.uimodels.*
+import io.square1.limor.uimodels.UICreateFriendResponse
+import io.square1.limor.uimodels.UIErrorData
+import io.square1.limor.uimodels.UIErrorResponse
 import io.square1.limor.usecases.CreateFriendUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class CreateFriendViewModel @Inject constructor(private val createFriendUseCase: CreateFriendUseCase, private val sessionManager: SessionManager) : BaseViewModel<CreateFriendViewModel.Input, CreateFriendViewModel.Output>() {
+class CreateFriendViewModel @Inject constructor(private val createFriendUseCase: CreateFriendUseCase) : BaseViewModel<CreateFriendViewModel.Input, CreateFriendViewModel.Output>() {
 
     private val compositeDispose = CompositeDisposable()
     var idNewFriend = 0

@@ -28,10 +28,15 @@ import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.Constants
+import io.square1.limor.common.SessionManager
+import io.square1.limor.extensions.hideKeyboard
+import io.square1.limor.extensions.showKeyboard
 import io.square1.limor.scenes.main.adapters.CommentsAdapter
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIComment
+import io.square1.limor.uimodels.UICommentRequest
+import io.square1.limor.uimodels.UICreateCommentRequest
 import io.square1.limor.uimodels.UIPodcast
 import kotlinx.android.synthetic.main.fragment_podcast_details.*
 import kotlinx.android.synthetic.main.include_interactions_bar.*
@@ -48,7 +53,17 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 
-data class CommentWithParent(val comment: UIComment, val parent: CommentWithParent?) : Serializable
+data class CommentWithParent(val comment: UIComment, val parent: CommentWithParent?) : Serializable {
+    fun getParentCount() : Int {
+        var parentCount = 0
+        var auxComment = parent
+        while (auxComment != null) {
+            parentCount++
+            auxComment = auxComment.parent
+        }
+        return parentCount
+    }
+}
 
 
 class PodcastDetailsFragment : BaseFragment() {
@@ -71,12 +86,16 @@ class PodcastDetailsFragment : BaseFragment() {
     private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
     private lateinit var viewModelCreateCommentLike: CreateCommentLikeViewModel
     private lateinit var viewModelDeleteCommentLike: DeleteCommentLikeViewModel
+    private lateinit var viewModelCreatePodcastComment: CreatePodcastCommentViewModel
+    private lateinit var viewModelCreateCommentComment: CreateCommentCommentViewModel
     private val getPodcastCommentsDataTrigger = PublishSubject.create<Unit>()
     private val getCommentCommentsDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val createCommentLikeDataTrigger = PublishSubject.create<Unit>()
     private val deleteCommentLikeDataTrigger = PublishSubject.create<Unit>()
+    private val createPodcastCommentDataTrigger = PublishSubject.create<Unit>()
+    private val createCommentCommentDataTrigger = PublishSubject.create<Unit>()
 
     private val commentWithParentsItemsList = ArrayList<CommentWithParent>()
 
@@ -92,6 +111,11 @@ class PodcastDetailsFragment : BaseFragment() {
     // this represents the main comment of the screen, it will be null when we are in podcastMode
     // and it will be the main comment when we are seeing the comments of this comment
     private var uiMainCommentWithParent: CommentWithParent? = null
+
+
+
+    @Inject
+    lateinit var sessionManager : SessionManager
 
     // this is used to hightlight hashtags inside podcast
     private var clickableSpan: ClickableSpan = object : ClickableSpan() {
@@ -151,6 +175,7 @@ class PodcastDetailsFragment : BaseFragment() {
         initApiCallDeletePodcastLike()
         initApiCallCreateCommentLike()
         initApiCallDeleteCommentLike()
+        initApiCallCreateComment()
         configureToolbar()
 
         // we get the possible comment clicked from the previous activity.
@@ -170,12 +195,22 @@ class PodcastDetailsFragment : BaseFragment() {
 
             // this is the code that makes the mainComment be on top of the scroll
             rvComments.viewTreeObserver.addOnGlobalLayoutListener {
-                if(firstTimePadding) {
+                if (firstTimePadding) {
                     firstTimePadding = false
-                    context?.let { context -> rvComments?.setPadding(0,0,0, layParent!!.height - CommonsKt.dpToPx(128.0f, context)) } // TODO Jose, this last param should be the height of the last item, not hardcoded number
+                    context?.let { context ->
+                        rvComments?.setPadding(
+                            0,
+                            0,
+                            0,
+                            layParent!!.height - CommonsKt.dpToPx(128.0f, context)
+                        )
+                    } // TODO Jose, this last param should be the height of the last item, not hardcoded number
                     rvComments?.requestLayout()
                     val y: Float = rvComments!!.y
-                    rvComments?.startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL, ViewCompat.TYPE_NON_TOUCH)
+                    rvComments?.startNestedScroll(
+                        ViewCompat.SCROLL_AXIS_VERTICAL,
+                        ViewCompat.TYPE_NON_TOUCH
+                    )
                     val llm = rvComments?.layoutManager as LinearLayoutManager
                     llm.scrollToPositionWithOffset(commentWithParentsItemsList.size - 1, y.toInt())
                 }
@@ -197,10 +232,146 @@ class PodcastDetailsFragment : BaseFragment() {
             getPodcastCommentsDataTrigger.onNext(Unit)
         }
 
-
         fillForm()
+        initListeners()
     }
 
+    private fun initApiCallCreateComment() {
+        val outputComment = viewModelCreateCommentComment.transform(
+            CreateCommentCommentViewModel.Input(
+                createCommentCommentDataTrigger
+            )
+        )
+
+        val outputPodcast = viewModelCreatePodcastComment.transform(
+            CreatePodcastCommentViewModel.Input(
+                createPodcastCommentDataTrigger
+            )
+        )
+
+        outputComment.response.observe(this, Observer {
+            it.data?.comment?.let { newComment ->
+                addNewCommentToList(newComment)
+            }
+            hideProgressBar()
+            hideCommentBar()
+
+        })
+
+        outputPodcast.response.observe(this, Observer {
+            it.data?.comment?.let { newComment ->
+                addNewCommentToList(newComment)
+            }
+            hideProgressBar()
+            hideCommentBar()
+        })
+
+        outputComment.errorMessage.observe(this, Observer {
+            hideProgressBar()
+            Toast.makeText(
+                context,
+                getString(R.string.couldnt_send_comment),
+                Toast.LENGTH_SHORT
+            ).show()
+        })
+    }
+
+    private fun hideCommentBar() {
+        view?.hideKeyboard()
+        commentBarUpperSide?.visibility = View.GONE
+        etCommentUp?.setText("")
+        etCommentDown?.visibility = View.VISIBLE
+    }
+
+
+    private fun addNewCommentToList(commentCreated: UIComment) {
+        if(podcastMode) {
+            commentWithParentsItemsList.add(CommentWithParent(commentCreated, null))
+        } else {
+            commentWithParentsItemsList.add(CommentWithParent(commentCreated, uiMainCommentWithParent))
+        }
+        commentsAdapter?.notifyItemInserted(commentWithParentsItemsList.size - 1)
+        rvComments?.scrollToPosition(commentWithParentsItemsList.size - 1)
+    }
+
+    private fun initListeners() {
+        etCommentDown.onFocusChangeListener =
+            View.OnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    openCommentBarTextAndFocusIt()
+                }
+            }
+
+        etCommentUp.onFocusChangeListener =
+            View.OnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {
+                    commentBarUpperSide.visibility = View.GONE
+                }
+            }
+
+        btnPost.onClick {
+            etCommentUp?.text?.let {
+                if(it.isNotEmpty()) {
+                    val request = UICreateCommentRequest(UICommentRequest(it.toString(), 0, null))
+                    if(podcastMode) {
+                        viewModelCreatePodcastComment.idPodcast = uiPodcast!!.id
+                        viewModelCreatePodcastComment.uiCreateCommentRequest = request
+                        createPodcastCommentDataTrigger.onNext(Unit)
+                    } else {
+                        viewModelCreateCommentComment.idComment = uiMainCommentWithParent!!.comment.id
+                        viewModelCreateCommentComment.uiCreateCommentRequest = request
+                        createCommentCommentDataTrigger.onNext(Unit)
+                    }
+                } else {
+                    etCommentUp?.setError(getString(R.string.this_field_cant_be_empty))
+                }
+            }
+        }
+    }
+
+    private fun openCommentBarTextAndFocusIt() {
+        view?.showKeyboard()
+        etCommentDown.visibility = View.GONE
+        etCommentUp.requestFocus()
+        commentBarUpperSide.visibility = View.VISIBLE
+
+        val loggedUser = sessionManager.getStoredUser()
+        loggedUser?.let {
+            Glide.with(context!!)
+                .load(it.images.small_url)
+                .placeholder(R.mipmap.ic_launcher_round)
+                .apply(RequestOptions.circleCropTransform())
+                .error(R.mipmap.ic_launcher_round)
+                .into(ivUserCommentingPicture)
+        }
+
+
+
+
+        if (podcastMode) {
+            tvReplyingToCommentBar?.text = tvUserName.text
+        } else {
+            var firstName = ""
+            uiMainCommentWithParent?.comment?.user?.first_name?.let { firstName = it }
+            var lastName = ""
+            uiMainCommentWithParent?.comment?.user?.last_name?.let { lastName = it }
+            val directParentFullname = "$firstName $lastName"
+
+            val parentCount = uiMainCommentWithParent!!.getParentCount() + 1
+            if (parentCount == 0) {
+                tvReplyingToCommentBar.text =
+                    context?.resources?.getString(R.string.replying_to_name)?.let {
+                        String.format(
+                            it, directParentFullname
+                        )
+                    }
+            } else {
+                tvReplyingToCommentBar.text = context?.resources?.getQuantityString(
+                    R.plurals.replying_to_sufix, parentCount, directParentFullname, parentCount
+                )
+            }
+        }
+    }
 
 
     // this function builds the list hierarchy of the first items received in the activity
@@ -286,7 +457,7 @@ class PodcastDetailsFragment : BaseFragment() {
             hideProgressBar()
             Toast.makeText(
                 context,
-                "We couldn't get your feed, please, try again later",
+                getString(R.string.couldnt_get_feed),
                 Toast.LENGTH_SHORT
             ).show()
         })
@@ -442,7 +613,7 @@ class PodcastDetailsFragment : BaseFragment() {
             hideProgressBar()
             Toast.makeText(
                 context,
-                "We couldn't get your feed, please, try again later",
+                getString(R.string.couldnt_get_comments),
                 Toast.LENGTH_SHORT
             ).show()
         })
@@ -696,15 +867,30 @@ class PodcastDetailsFragment : BaseFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(DeleteCommentLikeViewModel::class.java)
         }
+
+        activity?.let { fragmentActivity ->
+            viewModelCreateCommentComment = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreateCommentCommentViewModel::class.java)
+        }
+
+        activity?.let { fragmentActivity ->
+            viewModelCreatePodcastComment = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreatePodcastCommentViewModel::class.java)
+        }
     }
 
 
     private fun fillForm() {
         tvPodcastText?.text = uiPodcast?.caption
         tvPodcastTitle?.text = uiPodcast?.title
-        val fullName =
-            uiPodcast?.user?.first_name + " " + uiPodcast?.user?.last_name
-        tvUserName?.text = fullName
+        var firstName = ""
+        uiPodcast?.user?.first_name?.let { firstName = it }
+        var lastName = ""
+        uiPodcast?.user?.last_name?.let { lastName = it }
+        val fullname = "$firstName $lastName"
+        tvUserName?.text = fullname
         tvUserName.onClick { onUserClicked() }
 
 
@@ -763,8 +949,8 @@ class PodcastDetailsFragment : BaseFragment() {
 
         // comments
         uiPodcast?.number_of_comments?.let { tvComments.text = it.toString() }
-        tvComments?.onClick { onCommentsClicked() }
-        btnComments?.onClick { onCommentsClicked() }
+        tvComments?.onClick { onPodcastCommentClicked() }
+        btnComments?.onClick { onPodcastCommentClicked() }
 
         context?.let {
             // user picture
@@ -830,8 +1016,8 @@ class PodcastDetailsFragment : BaseFragment() {
         Toast.makeText(context, "Item clicked", Toast.LENGTH_SHORT).show()
     }
 
-    private fun onCommentsClicked() {
-        Toast.makeText(context, "Comments clicked", Toast.LENGTH_SHORT).show()
+    private fun onPodcastCommentClicked() {
+        Toast.makeText(context, "You clicked on podcast comment", Toast.LENGTH_SHORT).show()
     }
 
     private fun onListensClicked() {
@@ -933,5 +1119,4 @@ class PodcastDetailsFragment : BaseFragment() {
 //        return count
 //    }
     // endregion
-
 }
