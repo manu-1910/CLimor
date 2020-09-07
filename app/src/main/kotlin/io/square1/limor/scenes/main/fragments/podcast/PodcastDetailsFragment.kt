@@ -262,7 +262,6 @@ class PodcastDetailsFragment : BaseFragment() {
             }
             hideProgressBar()
             hideCommentBar()
-
         })
 
         outputPodcast.response.observe(this, Observer {
@@ -417,7 +416,7 @@ class PodcastDetailsFragment : BaseFragment() {
         output.response.observe(this, Observer {
             val newItems = it.data.comments
 
-            app_bar_layout?.setExpanded(false)
+//            app_bar_layout?.setExpanded(false)
 
             if (isReloading) {
                 commentWithParentsItemsList.clear()
@@ -624,7 +623,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
             val newItems = it.data.comments
-            app_bar_layout?.setExpanded(false)
+//            app_bar_layout?.setExpanded(false)
 
             if (newItems.size == 0)
                 isLastPage = true
