@@ -39,7 +39,8 @@ data class UIPodcast(
     val tags: UITagsArray,
     val title: String,
     val updated_at: Int,
-    val user: UIUser
+    val user: UIUser,
+    val categories: ArrayList<UICategory>
 ) : Serializable
 
 

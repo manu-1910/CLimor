@@ -65,6 +65,10 @@ abstract class RemoteModule {
 
     @ImplicitReflectionSerializer
     @Binds
+    abstract fun bindRemoteCategoriesProvider(remoteCategoriesProviderImp: RemoteCategoriesProviderImp): RemoteCategoriesProvider
+
+    @ImplicitReflectionSerializer
+    @Binds
     abstract fun bindRemoteCommentProvider(remoteCommentProviderImp: RemoteCommentProviderImp): RemoteCommentProvider
 
    }

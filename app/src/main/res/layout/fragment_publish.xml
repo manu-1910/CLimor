@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/brandSecondary400">
+
+<androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
 
 
     <LinearLayout
@@ -17,61 +23,64 @@
             layout="@layout/toolbar_with_back_arrow_icon"/>
 
         <RelativeLayout
-            android:id="@+id/lytImagePlaceHolder"
-            android:layout_marginTop="@dimen/marginSmall"
-            android:layout_marginBottom="@dimen/marginSmall"
-            android:layout_width="match_parent"
+            android:id="@+id/lytImageAndTitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="visible">
 
-            <ImageView
-                android:id="@+id/ivDraftImage"
-                android:layout_centerInParent="true"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/add"
-                android:translationZ="4dp"/>
-
-            <ImageView
-                android:id="@+id/placeHolder"
-                android:layout_centerInParent="true"
-                android:layout_width="119dp"
-                android:layout_height="119dp"
-                android:src="@drawable/publish_placeholder"/>
-
-            <TextView
-                android:id="@+id/tvChoosePhoto"
+            <RelativeLayout
+                android:id="@+id/lytImage"
+                android:layout_margin="@dimen/marginMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/marginAlmostLarge"
-                android:textColor="@color/brandPrimary500"
-                android:textSize="@dimen/textSizeVerySmall"
-                android:fontFamily="@font/roboto_medium"
-                android:layout_centerHorizontal="true"
-                android:text="@string/choose_a_photo"
-                android:layout_below="@+id/placeHolder"/>
+                android:visibility="gone">
 
+                <ImageView
+                    android:id="@+id/ivDraft"
+                    android:layout_width="119dp"
+                    android:layout_height="119dp"
+                    android:src="@drawable/publish_placeholder"
+                    android:scaleType="fitXY"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/lytImagePlaceHolder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/marginMedium"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/ivDraftImage"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/add"
+                    android:layout_centerInParent="true"
+                    android:translationZ="4dp"/>
+
+                <ImageView
+                    android:id="@+id/placeHolder"
+                    android:layout_centerInParent="true"
+                    android:layout_width="119dp"
+                    android:layout_height="119dp"
+                    android:src="@drawable/publish_placeholder"/>
+            </RelativeLayout>
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/etTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="151dp"
+                android:layout_marginTop="@dimen/marginMedium"
+                android:layout_marginBottom="@dimen/marginMedium"
+                android:layout_marginEnd="@dimen/marginMedium"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSizeNormal"
+                android:fontFamily="@font/roboto"
+                android:hint="@string/hint_title"
+                android:textColorHint="@color/brandSecondary100"
+                app:backgroundTint="@color/transparent"/>
         </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/lytImage"
-            android:layout_marginTop="@dimen/marginSmall"
-            android:layout_marginBottom="@dimen/marginSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/ivDraft"
-                android:layout_centerInParent="true"
-                android:layout_width="119dp"
-                android:layout_height="119dp"
-                android:src="@drawable/publish_placeholder"/>
-
-        </RelativeLayout>
-
-
-
 
         <View
             android:layout_marginTop="@dimen/marginSmall"
@@ -79,145 +88,71 @@
             android:layout_height="1dp"
             android:background="@color/brandSecondary300"/>
 
-
         <LinearLayout
             android:id="@+id/lytForm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <RelativeLayout
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/etCaption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium">
+                android:layout_gravity="top"
 
-                <TextView
-                    android:id="@+id/tvTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/title_title"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"/>
+                android:layout_margin="@dimen/marginMedium"
+                android:fontFamily="@font/roboto"
+                android:foregroundGravity="top"
+                android:gravity="top"
+                android:hint="@string/hint_caption"
+                android:lines="3"
+                android:textColor="@color/white"
+                android:textColorHint="@color/brandSecondary100"
+                android:textSize="@dimen/textSizeNormal"
+                app:backgroundTint="@color/transparent" />
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/etTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginVeryHuge"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:hint="@string/title_title"
-                    android:layout_alignParentEnd="true"/>
-            </RelativeLayout>
+            <View
+                android:layout_marginTop="@dimen/marginSmall"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
 
-            <RelativeLayout
+            <TextView
+                android:id="@+id/tvCategory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium">
+                android:layout_margin="@dimen/marginMedium"
+                android:drawableEnd="@drawable/chevron_right"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSizeNormal"
+                android:fontFamily="@font/roboto"
+                android:text="@string/title_category"/>
 
-                <TextView
-                    android:id="@+id/tvCaption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/title_caption"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"/>
+            <View
+                android:layout_marginTop="@dimen/marginSmall"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/etCaption"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginVeryHuge"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:lines="3"
-                    android:hint="@string/title_caption"
-                    android:layout_alignParentEnd="true"/>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/lytHashtags"
+            <TextView
+                android:id="@+id/tvLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium"
-                android:focusableInTouchMode="true">
+                android:layout_margin="@dimen/marginMedium"
+                android:drawableEnd="@drawable/chevron_right"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSizeNormal"
+                android:fontFamily="@font/roboto"
+                android:text="@string/title_location" />
 
-                <TextView
-                    android:id="@+id/tvHashtags"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/title_hashtags"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"/>
-
-                <TextView
-                    android:id="@+id/etHashtags"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/title_hashtags"
-                    android:background="?attr/editTextBackground"
-                    android:gravity="center_vertical"
-                    android:textAppearance="?android:attr/textAppearanceMediumInverse"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginStart="@dimen/marginVeryHuge"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:focusableInTouchMode="false"/>
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/lytLocation"
+            <View
+                android:layout_marginTop="@dimen/marginSmall"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium"
-                android:focusableInTouchMode="true">
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
 
-                <TextView
-                    android:id="@+id/tvLocation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/title_location"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"/>
 
-                <TextView
-                    android:id="@+id/etLocation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/title_location"
-                    android:background="?attr/editTextBackground"
-                    android:gravity="center_vertical"
-                    android:textAppearance="?android:attr/textAppearanceMediumInverse"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginStart="@dimen/marginVeryHuge"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:focusableInTouchMode="false" />
-
-            </RelativeLayout>
         </LinearLayout>
-
 
         <LinearLayout
             android:id="@+id/lytPlayer"
@@ -357,5 +292,5 @@
         </LinearLayout>
 
     </LinearLayout>
-
-</ScrollView>
+</androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

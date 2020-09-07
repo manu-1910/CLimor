@@ -26,6 +26,7 @@ import com.bumptech.glide.request.RequestOptions
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
+import io.square1.limor.common.BaseActivity
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.Constants
 import io.square1.limor.common.SessionManager
@@ -34,6 +35,7 @@ import io.square1.limor.extensions.showKeyboard
 import io.square1.limor.scenes.main.adapters.CommentsAdapter
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.CommonsKt
+import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIComment
 import io.square1.limor.uimodels.UICommentRequest
 import io.square1.limor.uimodels.UICreateCommentRequest
@@ -1037,7 +1039,16 @@ class PodcastDetailsFragment : BaseFragment() {
 
     // region listeners
     private fun onPlayClicked() {
-        Toast.makeText(context, "Play clicked", Toast.LENGTH_SHORT).show()
+        uiPodcast?.audio?.audio_url?.let { _ ->
+
+            AudioService.newIntent(requireContext(), uiPodcast!!, 1L)
+                .also { intent ->
+                    requireContext().startService(intent)
+                    val activity = requireActivity() as BaseActivity
+                    activity.showMiniPlayer()
+                }
+
+        }
     }
 
     private fun onSendClicked() {
@@ -1096,7 +1107,12 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun onHashtagClicked(clickedTag: String) {
-        Toast.makeText(context, "User clicked hashtag $clickedTag", Toast.LENGTH_SHORT).show()
+        val podcastByTagIntent = Intent(context, PodcastsByTagActivity::class.java)
+        podcastByTagIntent.putExtra(
+            PodcastsByTagActivity.BUNDLE_KEY_HASHTAG,
+            clickedTag
+        )
+        startActivity(podcastByTagIntent)
     }
     // endregion listeners
 

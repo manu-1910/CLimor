@@ -72,7 +72,9 @@ data class NWPodcast(
     @Optional
     val updated_at: Int = 0,
     @Optional
-    val user: NWUser = NWUser()
+    val user: NWUser = NWUser(),
+    @Optional
+    val categories: ArrayList<NWCategory> = ArrayList()
 )
 
 
@@ -128,4 +130,19 @@ class NWTags(
     val count: Int = 0,
     @Optional
     val isSelected: Boolean = false
+)
+
+
+@Serializable
+class NWCategory(
+    @Optional
+    val id: Int = 0,
+    @Optional
+    val name: String = "",
+    @Optional
+    val priority: Int = 0,
+    @Optional
+    val created_at: Long = 0,
+    @Optional
+    val updated_at: Long = 0
 )

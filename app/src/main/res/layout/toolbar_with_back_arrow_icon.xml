@@ -44,11 +44,11 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="@dimen/marginSmall"
             android:fontFamily="@font/roboto"
-            android:textColor="@color/brandPrimary500"
-            android:textSize="@dimen/textSizeNormal"
             android:gravity="center_vertical"
             android:textAllCaps="false"
-            android:visibility="visible"/>
+            android:textColor="@color/brandPrimary500"
+            android:textSize="@dimen/textSizeNormal"
+            android:visibility="gone" />
 
     </RelativeLayout>
 </androidx.appcompat.widget.Toolbar>

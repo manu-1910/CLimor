@@ -135,6 +135,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.navigation_record -> {
+                    stopAudioService()
                     navController.navigate(R.id.navigation_record)
                     return@setOnNavigationItemSelectedListener false
                 }

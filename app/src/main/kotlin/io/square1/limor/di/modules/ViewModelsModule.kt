@@ -63,8 +63,8 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(TagsViewModel::class)
-    abstract fun bindTagsViewModel(tagsViewModel: TagsViewModel): ViewModel
+    @ViewModelKey(CategoriesViewModel::class)
+    abstract fun bindCategoriesViewModel(categoriesViewModel: CategoriesViewModel): ViewModel
 
     @Binds
     @IntoMap

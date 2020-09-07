@@ -75,6 +75,7 @@ class LocationsFragment : BaseFragment() {
         configureToolbar()
         apiCallSearchTags()
         setupRecycler(listLocations)
+        searchLocations("") //First search with the location obtained in PublishFragment if exists
     }
 
 
@@ -133,7 +134,9 @@ class LocationsFragment : BaseFragment() {
 
     private fun searchLocations(term: String){
         //Make api call
-        locationsViewModel.uiLocationsRequest.term = term
+        if (!term.isNullOrEmpty()){
+            locationsViewModel.uiLocationsRequest.term = term
+        }
         locationsTrigger.onNext(Unit)
     }
 

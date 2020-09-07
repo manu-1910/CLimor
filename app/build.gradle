@@ -21,8 +21,8 @@ android {
         targetSdkVersion build_versions.target_sdk
 
         applicationId globalConfiguration.androidApplicationId
-        versionCode 4
-        versionName "0.0.4"
+        versionCode 5
+        versionName "0.0.5"
 
         testInstrumentationRunner globalConfiguration.testInstrumentationRunner
         testApplicationId globalConfiguration.testApplicationId
@@ -186,6 +186,7 @@ dependencies {
     implementation deps.lifecycle.extensions
     implementation deps.lifecycle.reactive
     implementation deps.support.supportv4
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
     kapt deps.lifecycle.compiler
 
     // Kotlin
@@ -318,5 +319,14 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.4.4'
 
     implementation 'com.github.squti:Android-Wave-Recorder:1.4.0'
+
+
+    // Audio
+    implementation "com.google.android.exoplayer:exoplayer-core:2.10.1"
+    implementation "com.google.android.exoplayer:exoplayer-ui:2.10.1"
+    implementation "com.google.android.exoplayer:extension-mediasession:2.10.1"
+
+    //Material chip
+    implementation 'com.robertlevonyan.view:MaterialChipView:2.0.4'
 
 }
