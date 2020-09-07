@@ -56,7 +56,8 @@ fun PodcastEntity.asUIModel(): UIPodcast {
         tags.asUIModel(),
         title,
         updated_at,
-        user.asUIModel()
+        user.asUIModel(),
+        getAllUICategory(categories)
     )
 }
 
@@ -107,6 +108,16 @@ fun TagsEntity.asUIModel(): UITags {
     )
 }
 
+fun CategoryEntity.asUIModel(): UICategory {
+    return UICategory(
+        id,
+        name,
+        priority,
+        created_at,
+        updated_at
+    )
+}
+
 
 fun DataMetaData.asUIModel(): UIMetaData {
     return UIMetaData(
@@ -121,6 +132,17 @@ fun DataMetaData.asUIModel(): UIMetaData {
 
 fun getAllUITags(entityList: ArrayList<TagsEntity>?): ArrayList<UITags> {
     val uiList = ArrayList<UITags>()
+    if (entityList != null) {
+        for (item in entityList) {
+            if (item != null)
+                uiList.add(item.asUIModel())
+        }
+    }
+    return uiList
+}
+
+fun getAllUICategory(entityList: ArrayList<CategoryEntity>?): ArrayList<UICategory> {
+    val uiList = ArrayList<UICategory>()
     if (entityList != null) {
         for (item in entityList) {
             if (item != null)

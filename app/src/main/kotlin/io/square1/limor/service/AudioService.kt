@@ -1,6 +1,5 @@
 package io.square1.limor.service
 
-
 import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
@@ -45,8 +44,6 @@ private const val MEDIA_SESSION_TAG = "io.square1.limor.audio"
 private const val PLAYBACK_NOTIFICATION_ID = 1
 private const val PLAYBACK_TIMER_DELAY = 1000L
 private const val ARG_PODCAST = "ARG_PODCAST"
-private const val ARG_URI = "ARG_URI"
-private const val ARG_TITLE = "ARG_TITLE"
 private const val ARG_START_POSITION = "ARG_START_POSITION"
 
 class AudioService : Service() {
@@ -64,15 +61,11 @@ class AudioService : Service() {
         @MainThread
         fun newIntent(
             context: Context,
-            title: String,
-            uriString: String,
             podcast: UIPodcast,
             startPosition: Long
         ) =
             Intent(context, AudioService::class.java).apply {
                 putExtra(ARG_PODCAST, podcast)
-                putExtra(ARG_TITLE, title)
-                putExtra(ARG_URI, Uri.parse(uriString))
                 putExtra(ARG_START_POSITION, startPosition)
             }
 
@@ -90,7 +83,7 @@ class AudioService : Service() {
     private var playerNotificationManager: PlayerNotificationManager? = null
     private var mediaSession: MediaSessionCompat? = null
     private var mediaSessionConnector: MediaSessionConnector? = null
-    private var podcastTitle: String? = null
+
     var uiPodcast: UIPodcast? = null
 
     private val _playerStatusLiveData = MutableLiveData<PlayerStatus>()
@@ -117,7 +110,7 @@ class AudioService : Service() {
             PLAYBACK_NOTIFICATION_ID,
             object : PlayerNotificationManager.MediaDescriptionAdapter {
                 override fun getCurrentContentTitle(player: Player): String {
-                    return podcastTitle ?: "..."
+                    return uiPodcast?.title ?: "..."
                 }
 
                 @Nullable
@@ -203,7 +196,7 @@ class AudioService : Service() {
                         putParcelable(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, bitmap)
                     }
 
-                    val title = podcastTitle ?: "..."
+                    val title = uiPodcast?.title ?: "..."
 
                     return MediaDescriptionCompat.Builder()
                         .setIconBitmap(bitmap)
@@ -242,23 +235,26 @@ class AudioService : Service() {
     @MainThread
     private fun handleIntent(intent: Intent?) {
         intent?.let {
-            intent.getParcelableExtra<Uri>(ARG_URI)?.also { uri ->
-                uiPodcast = intent.getSerializableExtra(ARG_PODCAST) as UIPodcast //intent.getSerializableExtra<UIPodcast>(ARG_PODCAST)//intent.getIntExtra(ARG_PODCAST, 0)
-                podcastTitle = intent.getStringExtra(ARG_TITLE)
+            if (intent.hasExtra(ARG_PODCAST)) {
+                uiPodcast = intent.getSerializableExtra(ARG_PODCAST) as UIPodcast
                 val startPosition =
                     intent.getLongExtra(ARG_START_POSITION, C.POSITION_UNSET.toLong())
                 val playbackSpeed = 1f
 
-                play(uri, startPosition, playbackSpeed)
-            } ?: Timber.w("Playback uri was not set")
-        }
+                play(uiPodcast?.audio?.audio_url, startPosition, playbackSpeed)
+
+                Timber.w("AudioService - Playing podcast id %d", uiPodcast?.id)
+            }
+
+        } ?: Timber.w("AudioService - Podcast was not set.")
+
     }
 
     @MainThread
-    fun play(uri: Uri, startPosition: Long, playbackSpeed: Float? = null) {
+    fun play(uri: String?, startPosition: Long, playbackSpeed: Float? = null) {
         val userAgent = Util.getUserAgent(applicationContext, BuildConfig.APPLICATION_ID)
         val mediaSource = ExtractorMediaSource(
-            uri,
+            Uri.parse(uri),
             DefaultDataSourceFactory(applicationContext, userAgent),
             DefaultExtractorsFactory(),
             null,

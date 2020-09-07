@@ -63,8 +63,8 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(TagsViewModel::class)
-    abstract fun bindTagsViewModel(tagsViewModel: TagsViewModel): ViewModel
+    @ViewModelKey(CategoriesViewModel::class)
+    abstract fun bindCategoriesViewModel(categoriesViewModel: CategoriesViewModel): ViewModel
 
     @Binds
     @IntoMap
@@ -75,6 +75,11 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(FeedViewModel::class)
     abstract fun bindFeedViewModel(feedViewModel: FeedViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(FeedByTagViewModel::class)
+    abstract fun bindFeedByTagViewModel(feedByTagViewModel: FeedByTagViewModel): ViewModel
 
     @Binds
     @IntoMap

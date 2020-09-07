@@ -2,6 +2,7 @@ package io.square1.limor.scenes.main.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import io.square1.limor.scenes.main.fragments.podcast.CommentWithParent
@@ -12,20 +13,24 @@ class CommentsAdapter(
     private val context: Context,
     private var list: ArrayList<CommentWithParent>,
     private var podcast: UIPodcast,
-    private val commentClickListener: OnCommentClickListener
+    private val commentClickListener: OnCommentClickListener,
+    var podcastMode: Boolean,
+    private val mainComment: CommentWithParent?
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var inflator: LayoutInflater
-//    var list: ArrayList<CommentWithParent> = ArrayList()
+    private var inflator: LayoutInflater = LayoutInflater.from(context)
+    var mainCommentPosition = 0
+    private lateinit var recyclerView: RecyclerView
 
-
-    private fun onTagClicked(clickedTag: String) {
-        commentClickListener.onHashtagClicked(clickedTag)
-    }
 
     init {
-//        this.list = list
-        inflator = LayoutInflater.from(context)
+        mainCommentPosition = list.indexOf(mainComment)
+    }
+
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
     }
 
 
@@ -39,14 +44,19 @@ class CommentsAdapter(
 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val currentItem = list[position]
 
         val commentItemViewHolder : CommentItemViewHolder = holder as CommentItemViewHolder
-        commentItemViewHolder.bind(currentItem, podcast, context, position)
+
+        val currentItem = list[position]
+        if(podcastMode) {
+            commentItemViewHolder.bindPodcastComment(currentItem, podcast, context, position)
+        } else {
+            commentItemViewHolder.bindCommentComment(currentItem, podcast, context, position, mainComment!!, mainCommentPosition)
+        }
     }
 
     interface OnCommentClickListener {
-        fun onItemClicked(item : UIComment, position: Int)
+        fun onItemClicked(item : CommentWithParent, position: Int)
         fun onPlayClicked(item : UIComment, position: Int)
         fun onListenClicked(item : UIComment, position: Int)
         fun onCommentClicked(item : UIComment, position: Int)
@@ -57,7 +67,7 @@ class CommentsAdapter(
         fun onUserClicked(item : UIComment, position: Int)
         fun onMoreClicked(item : UIComment, position: Int)
         fun onReplyClicked(item: UIComment, position: Int)
-        fun onMoreRepliesClicked(parent: UIComment, position: Int)
-        fun onShowLessClicked(parent: UIComment, lastChildPosition: Int)
+        fun onMoreRepliesClicked(parent: CommentWithParent, position: Int)
+        fun onShowLessClicked(parent: CommentWithParent, lastChildPosition: Int)
     }
 }

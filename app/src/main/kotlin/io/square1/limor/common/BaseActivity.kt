@@ -5,7 +5,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
@@ -19,19 +18,19 @@ import dagger.android.AndroidInjection
 import io.square1.limor.R
 import io.square1.limor.service.AudioService
 import io.square1.limor.service.PlayerStatus
-import io.square1.limor.uimodels.UIFeedItem
-import io.square1.limor.uimodels.UIPodcast
 import kotlinx.android.synthetic.main.mini_player_view.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.toast
 import javax.inject.Inject
 
 abstract class BaseActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
+    // For the AudioService
     private var audioService: AudioService? = null
     private var miniPlayerView: RelativeLayout? = null
     private var playerStatus: PlayerStatus? = null
@@ -59,6 +58,11 @@ abstract class BaseActivity : AppCompatActivity() {
                         stopAudioService()
                     }
                     is PlayerStatus.Playing -> {
+                        if (miniPlayerView!!.tag != audioService?.uiPodcast?.id) {
+                            miniPlayerView!!.tag = audioService?.uiPodcast?.id
+                            setupMiniPlayerUi()
+                        }
+
                         setPlayerUiPlaying()
                     }
                     is PlayerStatus.Paused -> {
@@ -66,6 +70,9 @@ abstract class BaseActivity : AppCompatActivity() {
                     }
                     is PlayerStatus.Ended -> {
                         setPlayerUiPaused()
+                    }
+                    is PlayerStatus.Error -> {
+                        toast(getString(R.string.audio_player_error_msg))
                     }
                 }
 
@@ -78,7 +85,13 @@ abstract class BaseActivity : AppCompatActivity() {
             }
         }
 
-        private fun setupMiniPlayerUi() {
+        override fun onServiceDisconnected(name: ComponentName?) {
+            audioService = null
+        }
+    }
+
+    private fun setupMiniPlayerUi() {
+        try {
             miniPlayerView!!.visibility = View.VISIBLE
             Glide.with(miniPlayerView!!.iv_audio).load(audioService?.uiPodcast?.images?.small_url)
                 .centerCrop().into(miniPlayerView!!.iv_audio)
@@ -89,11 +102,10 @@ abstract class BaseActivity : AppCompatActivity() {
             val seconds = durationMillis / 1000 % 60
             val humanReadableDuration = String.format("%dm %ds", minutes, seconds)
             miniPlayerView!!.tv_duration.text = humanReadableDuration
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
 
-        override fun onServiceDisconnected(name: ComponentName?) {
-            audioService = null
-        }
     }
 
     override fun onStart() {
@@ -101,7 +113,6 @@ abstract class BaseActivity : AppCompatActivity() {
 
         miniPlayerView = findViewById(R.id.rl_mini_player_view)
 
-        // Show the player, if the audio service is already running.
         if (miniPlayerView != null) {
             if (isServiceRunning(AudioService::class.java)) {
                 bindToAudioService()
@@ -109,9 +120,13 @@ abstract class BaseActivity : AppCompatActivity() {
                 miniPlayerView!!.visibility = View.GONE
             }
 
-            miniPlayerView!!.ll_close.onClick {
+            miniPlayerView!!.iv_close.onClick {
                 stopAudioService()
                 miniPlayerView!!.visibility = View.GONE
+            }
+
+            miniPlayerView!!.iv_comments.onClick {
+                toast("You clicked on comments")
             }
 
             miniPlayerView!!.iv_play_pause.onClick {
@@ -128,14 +143,17 @@ abstract class BaseActivity : AppCompatActivity() {
                     is PlayerStatus.Ended -> {
                         setPlayerUiPaused()
                         audioService?.play(
-                            Uri.parse(audioService?.uiPodcast?.audio?.audio_url),
+                            audioService?.uiPodcast?.audio?.audio_url,
                             1L,
                             1F
                         )
                     }
                 }
 
+            }
 
+            miniPlayerView!!.fl_launch_maximised_player.onClick {
+                toast("TODO Launching full screen player...")
             }
         }
 
@@ -181,6 +199,8 @@ abstract class BaseActivity : AppCompatActivity() {
             AudioService.newIntent(this).also { intent ->
                 bindService(intent, connection, Context.BIND_AUTO_CREATE)
             }
+        } else {
+            setupMiniPlayerUi()
         }
     }
 
@@ -191,7 +211,7 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
-    private fun stopAudioService() {
+    fun stopAudioService() {
         audioService?.pause()
 
         unbindAudioService()

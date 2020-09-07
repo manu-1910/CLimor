@@ -22,7 +22,6 @@ fun NWTagsResponse.asDataEntity(): TagsResponseEntity{
 }
 
 
-
 fun NWTagsArray.asDataEntity(): TagsArrayEntity{
     return TagsArrayEntity(
         getAllTagsEntities(tags)

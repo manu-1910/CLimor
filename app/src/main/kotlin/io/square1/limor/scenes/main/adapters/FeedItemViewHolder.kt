@@ -107,7 +107,11 @@ class FeedItemViewHolder(
 
     fun bind(currentItem: UIFeedItem, position: Int) {
         // fullname
-        val fullname: String = currentItem.podcast?.user?.first_name + " " + currentItem.podcast?.user?.last_name
+        var firstName = ""
+        currentItem.podcast?.user?.first_name?.let { firstName = it }
+        var lastName = ""
+        currentItem.podcast?.user?.last_name?.let { lastName = it }
+        val fullname = "$firstName $lastName"
         tvUserFullname.text = fullname
         tvUserFullname.onClick { feedClickListener.onUserClicked(currentItem, position) }
 

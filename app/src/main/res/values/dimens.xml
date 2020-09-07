@@ -39,4 +39,6 @@
     <dimen name="iconSizeTiny">4dp</dimen>
 
     <dimen name="buttonElevation">4dp</dimen>
+
+    <dimen name="miniPlayerHeight">80dp</dimen>
 </resources>

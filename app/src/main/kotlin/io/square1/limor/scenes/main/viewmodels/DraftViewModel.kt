@@ -28,6 +28,7 @@ class DraftViewModel @Inject constructor(
     var mainAudioFilePath: String = ""
     var filesArray: ArrayList<File> = ArrayList()
     var continueRecording:Boolean = false
+    var durationOfLastAudio: Long = 0
 
     /************************************
     INSERT A DRAFT INTO REALM

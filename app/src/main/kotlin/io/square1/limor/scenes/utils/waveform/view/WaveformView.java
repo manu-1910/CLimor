@@ -392,10 +392,11 @@ public class WaveformView extends View {
         //int newWidth = width/NEW_WIDTH;  //Adjust the total width of the white bars of the waveform //TODO JJ 270820 original line
         int newWidth = width/NEW_WIDTH;  //Adjust the total width of the white bars of the waveform
         int newOffset = start/20;   //Adjust the offset to paint only the lenght of the audio file
+
         while (i < newWidth) {
+
             double h = (getScaledHeight(zoomFactorByZoomLevel[zoomLevel],  newOffset + i) * getMeasuredHeight() / 2) * 0.5; // scale the wave here
             int height = (int)h;
-
             canvas.drawLine(i * NEW_WIDTH, ctr + height, i * NEW_WIDTH, ctr - height, selectedLinePaint);
 
             i++;
