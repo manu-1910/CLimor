@@ -62,21 +62,7 @@ class FeedItemViewHolder(
     var ibtnSend: ImageButton
     var ibtnPlay: ImageButton
 
-    var clickableSpan: ClickableSpan = object : ClickableSpan() {
-        override fun onClick(textView: View) {
-            val tv = textView as TextView
-            val s: Spanned = tv.text as Spanned
-            val start: Int = s.getSpanStart(this)
-            val end: Int = s.getSpanEnd(this)
-            val clickedTag = s.subSequence(start, end).toString()
-            feedClickListener.onHashtagClicked(clickedTag)
-        }
 
-        override fun updateDrawState(ds: TextPaint) {
-            super.updateDrawState(ds)
-            ds.isUnderlineText = true
-        }
-    }
 
 
     init {
@@ -236,6 +222,21 @@ class FeedItemViewHolder(
                 val textFound = matcher.group(0)
                 val startIndex = matcher.start(0)
                 val endIndex = matcher.end(0)
+                val clickableSpan: ClickableSpan = object : ClickableSpan() {
+                    override fun onClick(textView: View) {
+                        val tv = textView as TextView
+                        val s: Spanned = tv.text as Spanned
+                        val start: Int = s.getSpanStart(this)
+                        val end: Int = s.getSpanEnd(this)
+                        val clickedTag = s.subSequence(start, end).toString()
+                        feedClickListener.onHashtagClicked(clickedTag)
+                    }
+
+                    override fun updateDrawState(ds: TextPaint) {
+                        super.updateDrawState(ds)
+                        ds.isUnderlineText = true
+                    }
+                }
                 hashtaggedString.setSpan(clickableSpan, startIndex, endIndex, 0)
                 println("Hemos encontrado el texto $textFound que empieza en $startIndex y acaba en $endIndex")
             }
