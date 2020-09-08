@@ -7,6 +7,7 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/tvTitleEmptyScenario"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/marginMedium"
@@ -15,10 +16,12 @@
         android:layout_marginBottom="@dimen/marginSmall"
         android:gravity="center"
         android:text="@string/sorry_there_are_no_podcasts_right_now"
+        android:textColor="@color/brandSecondary100"
         android:textSize="@dimen/textSizeLarge"
         android:textStyle="bold" />
 
     <TextView
+        android:id="@+id/tvCaptionEmptyScenario"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/marginMedium"
@@ -26,6 +29,7 @@
         android:layout_marginEnd="@dimen/marginMedium"
         android:layout_marginBottom="@dimen/marginMedium"
         android:gravity="center"
+        android:textColor="@color/brandSecondary100"
         android:text="@string/maybe_you_could_try_later" />
 
 </LinearLayout>

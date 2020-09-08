@@ -25,6 +25,8 @@ import io.square1.limor.scenes.main.viewmodels.ProfileViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_podcast_details.*
 import kotlinx.android.synthetic.main.toolbar_default.*
+import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
+import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.toast
 import javax.inject.Inject
@@ -156,6 +158,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
 
     private fun showHomeToolbar(toolbarTitle: String) {
+        btnClose?.visibility = View.GONE
         when (toolbarTitle) {
             getString(R.string.title_home) -> {
                 //viewModel.unreadCountCentres = 0

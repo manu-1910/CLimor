@@ -1,9 +1,11 @@
 package io.square1.limor.scenes.main.adapters
 
 import android.content.Context
+import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextPaint
+import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.LayoutInflater
 import android.view.View
@@ -63,21 +65,6 @@ class CommentItemViewHolder(
     private var layMoreReplies: View = itemView.findViewById(R.id.layMoreReplies)
 
 
-    private var clickableSpan: ClickableSpan = object : ClickableSpan() {
-        override fun onClick(textView: View) {
-            val tv = textView as TextView
-            val s: Spanned = tv.text as Spanned
-            val start: Int = s.getSpanStart(this)
-            val end: Int = s.getSpanEnd(this)
-            val clickedTag = s.subSequence(start, end).toString()
-            commentClickListener.onHashtagClicked(clickedTag)
-        }
-
-        override fun updateDrawState(ds: TextPaint) {
-            super.updateDrawState(ds)
-            ds.isUnderlineText = true
-        }
-    }
 
     private fun fillCommonFields(
         currentItem: CommentWithParent,
@@ -101,6 +88,7 @@ class CommentItemViewHolder(
 
         // comment text
         tvCommentText.text = hightlightHashtags(currentItem.comment.content)
+        tvCommentText.movementMethod = LinkMovementMethod.getInstance()
         tvCommentText.onClick { commentClickListener.onItemClicked(currentItem, position) }
 
 
@@ -174,7 +162,7 @@ class CommentItemViewHolder(
         position: Int
     ) {
         fillCommonFields(currentItem, position)
-        fillPodcastCommentMode(currentItem, podcastParent, context)
+        fillPodcastCommentMode(currentItem, podcastParent, context, position)
     }
 
     fun bindCommentComment(
@@ -207,7 +195,7 @@ class CommentItemViewHolder(
         }
 
         // and write who are we replying accordingly
-        var directParentFullname = ""
+        val directParentFullname: String
         if(currentItem.parent == null) {
             var firstName = ""
             podcastParent.user.first_name?.let { firstName = it }
@@ -307,7 +295,12 @@ class CommentItemViewHolder(
         }
     }
 
-    private fun fillPodcastCommentMode(currentItem: CommentWithParent, podcastParent: UIPodcast, context: Context) {
+    private fun fillPodcastCommentMode(
+        currentItem: CommentWithParent,
+        podcastParent: UIPodcast,
+        context: Context,
+        position: Int
+    ) {
         // replying to
         // if the parent is null, it means that we are a comment and that our parent is the main podcast
         if (currentItem.parent == null) {
@@ -393,7 +386,24 @@ class CommentItemViewHolder(
                 val textFound = matcher.group(0)
                 val startIndex = matcher.start(0)
                 val endIndex = matcher.end(0)
-                hashtaggedString.setSpan(clickableSpan, startIndex, endIndex, 0)
+                val clickableSpan: ClickableSpan = object : ClickableSpan() {
+                    override fun onClick(textView: View) {
+                        val tv = textView as TextView
+                        val s: Spanned = tv.text as Spanned
+                        val start: Int = s.getSpanStart(this)
+                        val end: Int = s.getSpanEnd(this)
+                        val clickedTag = s.subSequence(start, end).toString()
+                        commentClickListener.onHashtagClicked(clickedTag)
+                    }
+
+                    override fun updateDrawState(ds: TextPaint) {
+                        super.updateDrawState(ds)
+                        ds.isUnderlineText = true
+                    }
+                }
+
+
+                hashtaggedString.setSpan(clickableSpan, startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                 println("Hemos encontrado el texto $textFound que empieza en $startIndex y acaba en $endIndex")
             }
             return hashtaggedString
