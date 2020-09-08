@@ -1,11 +1,11 @@
 package entities.response
 
-data class DeleteLikeResponseEntity(
+data class DeleteResponseEntity(
     val code: Int,
     val message: String,
-    val data: DeleteLikeData?
+    val data: DeleteData?
 )
 
-data class DeleteLikeData (
+data class DeleteData (
     val destroyed: Boolean?
 )

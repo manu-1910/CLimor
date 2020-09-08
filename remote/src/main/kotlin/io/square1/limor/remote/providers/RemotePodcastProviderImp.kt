@@ -23,8 +23,16 @@ class RemotePodcastProviderImp @Inject constructor(private val provider: Podcast
         return provider.likePodcast(id)?.asDataEntity()
     }
 
-    override fun dislikePodcast(id : Int): Single<DeleteLikeResponseEntity>? {
+    override fun dislikePodcast(id : Int): Single<DeleteResponseEntity>? {
         return provider.dislikePodcast(id)?.asDataEntity()
+    }
+
+    override fun recastPodcast(idPodcast : Int): Single<CreatePodcastRecastResponseEntity>? {
+        return provider.recastPodcast(idPodcast)?.asDataEntity()
+    }
+
+    override fun deleteRecast(idPodcast: Int): Single<DeleteResponseEntity>? {
+        return provider.deleteRecast(idPodcast)?.asDataEntity()
     }
 
     override fun createComment(
@@ -37,6 +45,8 @@ class RemotePodcastProviderImp @Inject constructor(private val provider: Podcast
     override fun getComments(id: Int, limit: Int, offset: Int): Single<GetCommentsResponseEntity>? {
         return provider.getComments(id, limit, offset)?.asDataEntity()
     }
+
+
 
 }
 

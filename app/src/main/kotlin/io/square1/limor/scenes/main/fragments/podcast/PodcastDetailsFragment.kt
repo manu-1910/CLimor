@@ -88,6 +88,8 @@ class PodcastDetailsFragment : BaseFragment() {
     private lateinit var viewModelGetCommentComments: GetCommentCommentsViewModel
     private lateinit var viewModelCreatePodcastLike: CreatePodcastLikeViewModel
     private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
+    private lateinit var viewModelCreatePodcastRecast: CreatePodcastRecastViewModel
+    private lateinit var viewModelDeletePodcastRecast: DeletePodcastRecastViewModel
     private lateinit var viewModelCreateCommentLike: CreateCommentLikeViewModel
     private lateinit var viewModelDeleteCommentLike: DeleteCommentLikeViewModel
     private lateinit var viewModelCreatePodcastComment: CreatePodcastCommentViewModel
@@ -96,6 +98,8 @@ class PodcastDetailsFragment : BaseFragment() {
     private val getCommentCommentsDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
+    private val createPodcastRecastDataTrigger = PublishSubject.create<Unit>()
+    private val deletePodcastRecastDataTrigger = PublishSubject.create<Unit>()
     private val createCommentLikeDataTrigger = PublishSubject.create<Unit>()
     private val deleteCommentLikeDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastCommentDataTrigger = PublishSubject.create<Unit>()
@@ -165,6 +169,8 @@ class PodcastDetailsFragment : BaseFragment() {
         initApiCallGetCommentComments()
         initApiCallCreatePodcastLike()
         initApiCallDeletePodcastLike()
+        initApiCallCreatePodcastRecast()
+        initApiCallDeletePodcastRecast()
         initApiCallCreateCommentLike()
         initApiCallDeleteCommentLike()
         initApiCallCreateComment()
@@ -231,6 +237,59 @@ class PodcastDetailsFragment : BaseFragment() {
             if(it)
                 openCommentBarTextAndFocusIt()
         }
+    }
+
+    private fun initApiCallDeletePodcastRecast() {
+        val output = viewModelDeletePodcastRecast.transform(
+            DeletePodcastRecastViewModel.Input(
+                deletePodcastRecastDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                undoPodcastRecast()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            undoPodcastRecast()
+        })
+    }
+
+    private fun undoPodcastRecast() {
+        Toast.makeText(context, getString(R.string.error_liking_podcast), Toast.LENGTH_SHORT).show()
+        uiPodcast?.let { podcast -> changeItemRecastStatus(podcast, !podcast.recasted) }
+    }
+
+    private fun changeItemRecastStatus(podcast: UIPodcast, recasted: Boolean) {
+        if (recasted) {
+            podcast.number_of_recasts++
+        } else {
+            podcast.number_of_recasts--
+        }
+        podcast.recasted = recasted
+        fillFormRecastPodcastData()
+    }
+
+    private fun initApiCallCreatePodcastRecast() {
+        val output = viewModelCreatePodcastRecast.transform(
+            CreatePodcastRecastViewModel.Input(
+                createPodcastRecastDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                undoPodcastRecast()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            undoPodcastRecast()
+        })
     }
 
     private fun initEmptyScenario() {
@@ -914,6 +973,22 @@ class PodcastDetailsFragment : BaseFragment() {
         }
         uiPodcast?.id?.let { viewModelDeletePodcastLike.idPodcast = it }
 
+
+        activity?.let { fragmentActivity ->
+            viewModelCreatePodcastRecast = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreatePodcastRecastViewModel::class.java)
+        }
+        uiPodcast?.id?.let { viewModelCreatePodcastRecast.idPodcast = it }
+
+
+        activity?.let { fragmentActivity ->
+            viewModelDeletePodcastRecast = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(DeletePodcastRecastViewModel::class.java)
+        }
+        uiPodcast?.id?.let { viewModelDeletePodcastRecast.idPodcast = it }
+
         activity?.let { fragmentActivity ->
             viewModelCreateCommentLike = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
@@ -992,9 +1067,9 @@ class PodcastDetailsFragment : BaseFragment() {
         }
 
         // recasts
-        uiPodcast?.number_of_recasts?.let { tvRecasts.text = it.toString() }
-        tvRecasts?.onClick { onRecastClicked() }
-        btnRecasts?.onClick { onRecastClicked() }
+        tvRecasts?.onClick { onPodcastRecastClicked() }
+        btnRecasts?.onClick { onPodcastRecastClicked() }
+        fillFormRecastPodcastData()
 
         // likes
         tvLikes?.onClick { onPodcastLikeClicked() }
@@ -1042,6 +1117,18 @@ class PodcastDetailsFragment : BaseFragment() {
         btnPlay?.onClick { onPlayClicked() }
 
         fillFormLikePodcastData()
+    }
+
+    private fun fillFormRecastPodcastData() {
+        uiPodcast?.number_of_recasts?.let { tvRecasts.text = it.toString() }
+        uiPodcast?.recasted?.let {
+            if (it)
+                btnRecasts?.setImageResource(R.drawable.recast_filled)
+            else
+                btnRecasts?.setImageResource(R.drawable.recast)
+        } ?: run {
+            btnRecasts?.setImageResource(R.drawable.recast)
+        }
     }
 
     private fun fillFormLikePodcastData() {
@@ -1110,12 +1197,27 @@ class PodcastDetailsFragment : BaseFragment() {
                 deletePodcastLikeDataTrigger.onNext(Unit)
             }
         }
-
-
     }
 
-    private fun onRecastClicked() {
-        Toast.makeText(context, "Recasts clicked", Toast.LENGTH_SHORT).show()
+    private fun onPodcastRecastClicked() {
+        uiPodcast?.let { podcast ->
+            changeItemRecastStatus(
+                podcast,
+                !podcast.recasted
+            ) // careful, it will change an item to be from recasted to not recasted and viceversa
+
+
+            // if now it's recasted, let's call the api
+            if (podcast.recasted) {
+                viewModelCreatePodcastRecast.idPodcast = podcast.id
+                createPodcastRecastDataTrigger.onNext(Unit)
+
+                // if now it's not recasted, let's call the api
+            } else {
+                viewModelDeletePodcastRecast.idPodcast = podcast.id
+                deletePodcastRecastDataTrigger.onNext(Unit)
+            }
+        }
     }
 
     private fun onUserClicked() {

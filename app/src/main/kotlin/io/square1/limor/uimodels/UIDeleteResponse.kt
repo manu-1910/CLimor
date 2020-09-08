@@ -1,11 +1,11 @@
 package io.square1.limor.uimodels
 
-data class UIDeleteLikeResponse (
+data class UIDeleteResponse (
     var code: Int,
     var message: String,
-    var data: UIDeleteLikeData?
+    var data: UIDeleteData?
 )
 
-data class UIDeleteLikeData(
+data class UIDeleteData(
     var destroyed: Boolean?
 )

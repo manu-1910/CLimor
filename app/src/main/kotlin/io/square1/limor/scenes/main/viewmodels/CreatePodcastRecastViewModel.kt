@@ -10,25 +10,24 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseViewModel
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import io.square1.limor.uimodels.UIDeleteResponse
+import io.square1.limor.uimodels.UICreatePodcastRecastResponse
 import io.square1.limor.uimodels.UIErrorData
 import io.square1.limor.uimodels.UIErrorResponse
-import io.square1.limor.usecases.DeleteCommentLikeUseCase
+import io.square1.limor.usecases.CreatePodcastRecastUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class DeleteCommentLikeViewModel @Inject constructor(private val deleteCommentLikeUseCase: DeleteCommentLikeUseCase) :
-    BaseViewModel<DeleteCommentLikeViewModel.Input, DeleteCommentLikeViewModel.Output>() {
+class CreatePodcastRecastViewModel @Inject constructor(private val createPodcastRecastUseCase: CreatePodcastRecastUseCase) : BaseViewModel<CreatePodcastRecastViewModel.Input, CreatePodcastRecastViewModel.Output>() {
 
     private val compositeDispose = CompositeDisposable()
-    var idComment = 0
+    var idPodcast = 0
 
     data class Input(
-        val deleteCommentLikeTrigger: Observable<Unit>
+        val createPodcastRecastTrigger: Observable<Unit>
     )
 
     data class Output(
-        val response: LiveData<UIDeleteResponse>,
+        val response: LiveData<UICreatePodcastRecastResponse>,
         val backgroundWorkingProgress: LiveData<Boolean>,
         val errorMessage: SingleLiveEvent<UIErrorResponse>
     )
@@ -36,23 +35,20 @@ class DeleteCommentLikeViewModel @Inject constructor(private val deleteCommentLi
     override fun transform(input: Input): Output {
         val errorTracker = SingleLiveEvent<UIErrorResponse>()
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
-        val response = MutableLiveData<UIDeleteResponse>()
+        val response = MutableLiveData<UICreatePodcastRecastResponse>()
 
-        input.deleteCommentLikeTrigger.subscribe({
-            deleteCommentLikeUseCase.execute(idComment).subscribe({
+        input.createPodcastRecastTrigger.subscribe({
+            createPodcastRecastUseCase.execute(idPodcast).subscribe({
                 response.value = it
 
             }, {
                 try {
                     val error = it as HttpException
-                    val errorResponse: UIErrorResponse? =
-                        error.response()?.errorBody()?.parseSuccessResponse(
-                            UIErrorResponse.serializer()
-                        )
+                    val errorResponse: UIErrorResponse? = error.response().errorBody()?.parseSuccessResponse(
+                        UIErrorResponse.serializer())
                     errorTracker.postValue(errorResponse)
                 } catch (e: Exception) {
-                    val dataError =
-                        UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
+                    val dataError = UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
                     val errorResponse = UIErrorResponse(99, dataError.toString())
                     errorTracker.postValue(errorResponse)
                 }
