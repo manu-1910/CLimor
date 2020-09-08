@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.appbar.AppBarLayout
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
@@ -158,6 +159,8 @@ class PodcastDetailsFragment : BaseFragment() {
 
 
         bindViewModel()
+        initEmptyScenario()
+        showEmptyScenario()
         initApiCallGetPodcastComments()
         initApiCallGetCommentComments()
         initApiCallCreatePodcastLike()
@@ -178,6 +181,7 @@ class PodcastDetailsFragment : BaseFragment() {
         uiMainCommentWithParent?.let {
             podcastMode = false
             commentsAdapter?.podcastMode = podcastMode
+            hideEmptyScenario()
             addTopParents(it)
             commentsAdapter?.mainCommentPosition = commentWithParentsItemsList.indexOf(it)
 
@@ -227,6 +231,30 @@ class PodcastDetailsFragment : BaseFragment() {
             if(it)
                 openCommentBarTextAndFocusIt()
         }
+    }
+
+    private fun initEmptyScenario() {
+        tvTitleEmptyScenario?.text = getString(R.string.no_comments_yet)
+        tvCaptionEmptyScenario?.text = getString(R.string.when_comments_ready_will_appear_here)
+    }
+
+    private fun showEmptyScenario() {
+//        layEmptyScenario?.visibility = View.VISIBLE
+        app_bar_layout?.setExpanded(true)
+        rvComments?.visibility = View.GONE
+
+        val lp = collapsingToolbar.layoutParams as AppBarLayout.LayoutParams
+        lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
+        collapsingToolbar.layoutParams = lp
+    }
+
+    private fun hideEmptyScenario() {
+        layEmptyScenario?.visibility = View.GONE
+        rvComments?.visibility = View.VISIBLE
+
+        val lp = collapsingToolbar.layoutParams as AppBarLayout.LayoutParams
+        lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+        collapsingToolbar.layoutParams = lp
     }
 
     private fun initApiCallCreateComment() {
@@ -295,6 +323,7 @@ class PodcastDetailsFragment : BaseFragment() {
             commentWithParentsItemsList.add(CommentWithParent(commentCreated, uiMainCommentWithParent))
         }
         app_bar_layout?.setExpanded(false)
+        hideEmptyScenario()
         commentsAdapter?.notifyDataSetChanged()
         rvComments?.scrollToPosition(commentWithParentsItemsList.size - 1)
     }
@@ -402,7 +431,10 @@ class PodcastDetailsFragment : BaseFragment() {
         output.response.observe(this, Observer {
             val newItems = it.data.comments
 
-//            app_bar_layout?.setExpanded(false)
+
+            if(newItems.size > 0)
+                hideEmptyScenario()
+
 
             if (isReloading) {
                 commentWithParentsItemsList.clear()
@@ -609,7 +641,9 @@ class PodcastDetailsFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
             val newItems = it.data.comments
-//            app_bar_layout?.setExpanded(false)
+
+            if(newItems.size > 0)
+                hideEmptyScenario()
 
             if (newItems.size == 0)
                 isLastPage = true
@@ -1155,6 +1189,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
 
     private fun reloadComments() {
+        showEmptyScenario()
         showProgressBar()
         app_bar_layout?.setExpanded(true)
         isLastPage = false

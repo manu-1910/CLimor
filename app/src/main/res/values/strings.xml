@@ -240,5 +240,7 @@
     <string name="couldnt_send_comment">We couldn\'t send your comment, try again later</string>
     <string name="this_field_cant_be_empty">This field cannot be empty</string>
     <string name="error_initializing_data">There was an error initializing some data</string>
+    <string name="no_comments_yet">There are no comments yet</string>
+    <string name="when_comments_ready_will_appear_here">When comments are ready they will appear here</string>
 
 </resources>

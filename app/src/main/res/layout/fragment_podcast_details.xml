@@ -30,6 +30,7 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/collapsingToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
@@ -49,7 +50,44 @@
             android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:scrollbars="vertical"
+            android:visibility="gone"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+
+        <LinearLayout
+            android:id="@+id/layEmptyScenario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <TextView
+                android:id="@+id/tvTitleEmptyScenario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/marginMedium"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:layout_marginEnd="@dimen/marginMedium"
+                android:gravity="center"
+                android:text="@string/sorry_there_are_no_podcasts_right_now"
+                android:textColor="@color/brandSecondary100"
+                android:textSize="@dimen/textSizeLarge"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvCaptionEmptyScenario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:layout_marginEnd="@dimen/marginMedium"
+                android:layout_marginBottom="@dimen/marginMedium"
+                android:gravity="center"
+                android:textColor="@color/brandSecondary100"
+                android:text="@string/maybe_you_could_try_later" />
+
+        </LinearLayout>
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
