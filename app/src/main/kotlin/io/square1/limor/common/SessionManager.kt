@@ -48,7 +48,7 @@ class SessionManager @Inject constructor(context: Context) {
     }
 
 
-    fun getStoredUser(): UIUser{
+    fun getStoredUser(): UIUser? {
         return Gson().fromJson(preferences.getString(userKey, ""), UIUser::class.java )
     }
 

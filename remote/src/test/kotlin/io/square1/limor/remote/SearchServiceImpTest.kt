@@ -26,7 +26,7 @@ class SearchServiceImpTest {
         searchService = SearchServiceImp(config)
 
         val tag = "test"
-        val response = searchService.podcastsByTag(tag)?.test()
+        val response = searchService.podcastsByTag(0, 10, tag)?.test()
 
         response?.assertNoErrors()
         response?.assertValue { it.message == "Success" }

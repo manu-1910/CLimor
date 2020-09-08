@@ -28,7 +28,7 @@ data class UIPodcast(
     val listened: Boolean,
     val longitude: Double?,
     val mentions: UIMentions,
-    val number_of_comments: Int,
+    var number_of_comments: Int,
     var number_of_likes: Int,
     val number_of_listens: Int,
     val number_of_recasts: Int,

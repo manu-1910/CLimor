@@ -1,7 +1,9 @@
 package io.square1.limor.remote.services.podcast
 
 import io.reactivex.Single
+import io.square1.limor.remote.entities.requests.NWCreateCommentRequest
 import okhttp3.RequestBody
+import okhttp3.Response
 import okhttp3.ResponseBody
 import retrofit2.http.*
 
@@ -19,18 +21,24 @@ interface PodcastService {
 
     @POST(PODCAST_LIKE_PATH)
     fun likePodcast(
-        @Path("id") id : Int
+        @Path("id") id: Int
     ): Single<ResponseBody>
 
     @DELETE(PODCAST_LIKE_PATH)
     fun dislikePodcast(
-        @Path("id") id : Int
+        @Path("id") id: Int
     ): Single<ResponseBody>
 
     @GET(PODCAST_COMMENTS_PATH)
     fun getComments(
-        @Path("id") id : Int,
-        @Query ("limit") limit : Int?,
+        @Path("id") id: Int,
+        @Query("limit") limit: Int?,
         @Query("offset") offset: Int?
+    ): Single<ResponseBody>
+
+    @POST(PODCAST_COMMENTS_PATH)
+    fun createComment(
+        @Path("id") idPodcast: Int,
+        @Body request: RequestBody
     ): Single<ResponseBody>
 }
