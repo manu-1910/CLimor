@@ -5,13 +5,13 @@ import io.reactivex.Single
 import io.square1.limor.uimodels.*
 
 
-fun Single<DeleteLikeResponseEntity>.asUIModel(): Single<UIDeleteLikeResponse> {
+fun Single<DeleteResponseEntity>.asUIModel(): Single<UIDeleteResponse> {
     return this.map { it.asUIModel() }
 }
 
 
-fun DeleteLikeResponseEntity.asUIModel(): UIDeleteLikeResponse {
-    return UIDeleteLikeResponse(
+fun DeleteResponseEntity.asUIModel(): UIDeleteResponse {
+    return UIDeleteResponse(
         code,
         message,
         data?.asUIModel()
@@ -19,8 +19,8 @@ fun DeleteLikeResponseEntity.asUIModel(): UIDeleteLikeResponse {
 }
 
 
-fun DeleteLikeData.asUIModel(): UIDeleteLikeData {
-    return UIDeleteLikeData(
+fun DeleteData.asUIModel(): UIDeleteData {
+    return UIDeleteData(
         destroyed
     )
 }

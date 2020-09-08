@@ -9,13 +9,13 @@ import repositories.podcast.PodcastRepository
 import javax.inject.Inject
 
 
-class DeletePodcastLikeUseCase @Inject constructor(
+class DeletePodcastRecastUseCase @Inject constructor(
     private val podcastRepository: PodcastRepository,
     private val postExecutionThread: PostExecutionThread,
     private val jobExecutor: JobExecutor
 ) {
     fun execute(id : Int): Single<UIDeleteResponse> {
-        return podcastRepository.dislikePodcast(id)
+        return podcastRepository.deleteRecast(id)
             ?.asUIModel()
             ?.observeOn(postExecutionThread.getScheduler())
             ?.subscribeOn(jobExecutor.getScheduler())!!

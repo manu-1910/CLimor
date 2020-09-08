@@ -4,7 +4,7 @@ package repositories.comment
 import entities.request.DataCreateCommentRequest
 import entities.response.CreateCommentLikeResponseEntity
 import entities.response.CreateCommentResponseEntity
-import entities.response.DeleteLikeResponseEntity
+import entities.response.DeleteResponseEntity
 import entities.response.GetCommentsResponseEntity
 import io.reactivex.Single
 import providers.remote.RemoteCommentProvider
@@ -19,7 +19,7 @@ class DataCommentRepository @Inject constructor(private val remoteProvider: Remo
         return remoteProvider.likeComment(id)
     }
 
-    override fun dislikeComment(id: Int): Single<DeleteLikeResponseEntity>? {
+    override fun dislikeComment(id: Int): Single<DeleteResponseEntity>? {
         return remoteProvider.dislikeComment(id)
     }
 

@@ -20,8 +20,16 @@ class DataPodcastRepository @Inject constructor(private val remoteProvider: Remo
         return remoteProvider.likePodcast(id)
     }
 
-    override fun dislikePodcast(id: Int): Single<DeleteLikeResponseEntity>? {
+    override fun dislikePodcast(id: Int): Single<DeleteResponseEntity>? {
         return remoteProvider.dislikePodcast(id)
+    }
+
+    override fun recastPodcast(idPodcast: Int): Single<CreatePodcastRecastResponseEntity>? {
+        return remoteProvider.recastPodcast(idPodcast)
+    }
+
+    override fun deleteRecast(idPodcast: Int): Single<DeleteResponseEntity>? {
+        return remoteProvider.deleteRecast(idPodcast)
     }
 
     override fun createComment(

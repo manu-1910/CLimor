@@ -10,7 +10,7 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseViewModel
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import io.square1.limor.uimodels.UIDeleteLikeResponse
+import io.square1.limor.uimodels.UIDeleteResponse
 import io.square1.limor.uimodels.UIErrorData
 import io.square1.limor.uimodels.UIErrorResponse
 import io.square1.limor.usecases.DeleteCommentLikeUseCase
@@ -28,7 +28,7 @@ class DeleteCommentLikeViewModel @Inject constructor(private val deleteCommentLi
     )
 
     data class Output(
-        val response: LiveData<UIDeleteLikeResponse>,
+        val response: LiveData<UIDeleteResponse>,
         val backgroundWorkingProgress: LiveData<Boolean>,
         val errorMessage: SingleLiveEvent<UIErrorResponse>
     )
@@ -36,7 +36,7 @@ class DeleteCommentLikeViewModel @Inject constructor(private val deleteCommentLi
     override fun transform(input: Input): Output {
         val errorTracker = SingleLiveEvent<UIErrorResponse>()
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
-        val response = MutableLiveData<UIDeleteLikeResponse>()
+        val response = MutableLiveData<UIDeleteResponse>()
 
         input.deleteCommentLikeTrigger.subscribe({
             deleteCommentLikeUseCase.execute(idComment).subscribe({
