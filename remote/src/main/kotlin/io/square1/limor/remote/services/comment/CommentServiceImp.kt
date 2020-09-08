@@ -2,10 +2,9 @@ package io.square1.limor.remote.services.comment
 
 import io.reactivex.Single
 import io.square1.limor.remote.entities.requests.NWCreateCommentRequest
-import io.square1.limor.remote.entities.requests.NWPublishRequest
 import io.square1.limor.remote.entities.responses.NWCreateCommentLikeResponse
 import io.square1.limor.remote.entities.responses.NWCreateCommentResponse
-import io.square1.limor.remote.entities.responses.NWDeleteLikeResponse
+import io.square1.limor.remote.entities.responses.NWDeleteResponse
 import io.square1.limor.remote.entities.responses.NWGetCommentsResponse
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
@@ -33,9 +32,9 @@ class CommentServiceImp @Inject constructor(private val serviceConfig: RemoteSer
             }
     }
 
-    fun dislikeComment(id: Int): Single<NWDeleteLikeResponse>? {
+    fun dislikeComment(id: Int): Single<NWDeleteResponse>? {
         return service.dislikeComment(id)
-            .map { response -> response.parseSuccessResponse(NWDeleteLikeResponse.serializer()) }
+            .map { response -> response.parseSuccessResponse(NWDeleteResponse.serializer()) }
             .doOnSuccess { success ->
                 println("SUCCESS: $success")
             }

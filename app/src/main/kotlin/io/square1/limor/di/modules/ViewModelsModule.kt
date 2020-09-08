@@ -98,6 +98,16 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(CreatePodcastRecastViewModel::class)
+    abstract fun bindCreatePodcastRecastViewModel(createPodcastRecastViewModel: CreatePodcastRecastViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DeletePodcastRecastViewModel::class)
+    abstract fun bindDeletePodcastRecastViewModel(deletePodcastRecastViewModel: DeletePodcastRecastViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(CreateCommentLikeViewModel::class)
     abstract fun bindCreateCommentLikeViewModel(createCommentLikeViewModel: CreateCommentLikeViewModel): ViewModel
 

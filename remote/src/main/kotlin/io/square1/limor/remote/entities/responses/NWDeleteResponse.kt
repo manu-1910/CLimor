@@ -4,17 +4,17 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NWDeleteLikeResponse(
+data class NWDeleteResponse(
     @Optional
     val code: Int = 0,
     @Optional
     val message: String = "",
     @Optional
-    val data: NWDeleteLikeData? = NWDeleteLikeData()
+    val data: NWDeleteData? = NWDeleteData()
 )
 
 @Serializable
-data class NWDeleteLikeData(
+data class NWDeleteData(
     @Optional
     val destroyed : Boolean? = false
 )

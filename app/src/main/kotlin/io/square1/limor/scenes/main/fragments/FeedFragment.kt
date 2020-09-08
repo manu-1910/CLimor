@@ -19,13 +19,11 @@ import io.reactivex.subjects.PublishSubject
 import io.square1.limor.R
 import io.square1.limor.common.BaseActivity
 import io.square1.limor.common.BaseFragment
+import io.square1.limor.common.SessionManager
 import io.square1.limor.scenes.main.adapters.FeedAdapter
 import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
 import io.square1.limor.scenes.main.fragments.podcast.PodcastsByTagActivity
-import io.square1.limor.scenes.main.viewmodels.CreatePodcastLikeViewModel
-import io.square1.limor.scenes.main.viewmodels.DeletePodcastLikeViewModel
-import io.square1.limor.scenes.main.viewmodels.FeedByTagViewModel
-import io.square1.limor.scenes.main.viewmodels.FeedViewModel
+import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIFeedItem
 import org.jetbrains.anko.doAsync
@@ -40,39 +38,43 @@ class FeedFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
+    @Inject
+    lateinit var sessionManager: SessionManager
 
     // viewModels
     private lateinit var viewModelFeed: FeedViewModel
+
+
     private lateinit var viewModelFeedByTag: FeedByTagViewModel
     private lateinit var viewModelCreatePodcastLike: CreatePodcastLikeViewModel
     private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
-
-
+    private lateinit var viewModelCreatePodcastRecast: CreatePodcastRecastViewModel
+    private lateinit var viewModelDeletePodcastRecast: DeletePodcastRecastViewModel
     private val getFeedDataTrigger = PublishSubject.create<Unit>()
+
+
     private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
-
+    private val createPodcastRecastDataTrigger = PublishSubject.create<Unit>()
+    private val deletePodcastRecastDataTrigger = PublishSubject.create<Unit>()
 
     // infinite scroll variables
-    private val FEED_LIMIT_REQUEST =
-        2 // this number multiplied by 2 is because there is an error on the limit
-
-    // param in the back side that duplicates the amount of results,
     private var isScrolling: Boolean = false
     private var isLastPage: Boolean = false
     private var isReloading: Boolean = false
+    private var rootView: View? = null
 
-
-    var rootView: View? = null
 
     // views
-    var rvFeed: RecyclerView? = null
-    var swipeRefreshLayout: SwipeRefreshLayout? = null
-    var feedAdapter: FeedAdapter? = null
-    var feedItemsList: ArrayList<UIFeedItem> = ArrayList()
+    private var rvFeed: RecyclerView? = null
+
+    private var swipeRefreshLayout: SwipeRefreshLayout? = null
+    private var feedAdapter: FeedAdapter? = null
+    var feedItemsList = ArrayList<UIFeedItem>()
 
     // like variables
     private var lastLikedItemPosition: Int = 0
+    private var lastRecastedItemPosition: Int = 0
 
     private var hashTag: String = ""
 
@@ -81,6 +83,9 @@ class FeedFragment : BaseFragment() {
         val TAG: String = FeedFragment::class.java.simpleName
         fun newInstance() = FeedFragment()
         private const val OFFSET_INFINITE_SCROLL = 2
+        private const val FEED_LIMIT_REQUEST = 2 // this number multiplied by 2 is because there is
+                                                 // an error on the limit param in the back side
+                                                 // that duplicates the amount of results,
     }
 
     override fun onCreateView(
@@ -103,10 +108,62 @@ class FeedFragment : BaseFragment() {
             initApiCallGetFeed()
             initApiCallCreateLike()
             initApiCallDeleteLike()
+            initApiCallCreateRecast()
+            initApiCallDeleteRecast()
 
             getFeedDataTrigger.onNext(Unit)
         }
         return rootView
+    }
+
+    private fun initApiCallDeleteRecast() {
+        val output = viewModelDeletePodcastRecast.transform(
+            DeletePodcastRecastViewModel.Input(
+                deletePodcastRecastDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                undoRecast()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            undoRecast()
+        })
+    }
+
+    private fun undoRecast() {
+        Toast.makeText(context, getString(R.string.error_recasting_podcast), Toast.LENGTH_SHORT).show()
+        val item = feedItemsList[lastRecastedItemPosition]
+        item.podcast?.let { podcast ->
+            changeItemRecastStatus(
+                item,
+                lastLikedItemPosition,
+                !podcast.liked
+            )
+        }
+    }
+
+    private fun initApiCallCreateRecast() {
+        val output = viewModelCreatePodcastRecast.transform(
+            CreatePodcastRecastViewModel.Input(
+                createPodcastRecastDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                undoRecast()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            undoRecast()
+        })
     }
 
     private fun configureAdapter() {
@@ -173,7 +230,25 @@ class FeedFragment : BaseFragment() {
                     }
 
                     override fun onRecastClicked(item: UIFeedItem, position: Int) {
-                        Toast.makeText(context, "You clicked on recast", Toast.LENGTH_SHORT).show()
+                        item.podcast?.let { podcast ->
+                            changeItemRecastStatus(
+                                item,
+                                position,
+                                !podcast.recasted
+                            ) // careful, it will change an item to be from like to dislike and viceversa
+                            lastRecastedItemPosition = position
+
+                            // if now it's liked, let's call the api
+                            if (podcast.recasted) {
+                                viewModelCreatePodcastRecast.idPodcast = podcast.id
+                                createPodcastRecastDataTrigger.onNext(Unit)
+
+                                // if now it's not liked, let's call the api
+                            } else {
+                                viewModelDeletePodcastRecast.idPodcast = podcast.id
+                                deletePodcastRecastDataTrigger.onNext(Unit)
+                            }
+                        }
                     }
 
                     override fun onHashtagClicked(hashtag: String) {
@@ -204,7 +279,8 @@ class FeedFragment : BaseFragment() {
                     override fun onMoreClicked(item: UIFeedItem, position: Int) {
                         Toast.makeText(context, "You clicked on more", Toast.LENGTH_SHORT).show()
                     }
-                }
+                },
+                sessionManager
             )
         }
         rvFeed?.adapter = feedAdapter
@@ -257,6 +333,18 @@ class FeedFragment : BaseFragment() {
                 podcast.number_of_likes--
             }
             podcast.liked = liked
+            feedAdapter?.notifyItemChanged(position, item)
+        }
+    }
+
+    private fun changeItemRecastStatus(item: UIFeedItem, position: Int, recasted: Boolean) {
+        item.podcast?.let { podcast ->
+            if (recasted) {
+                podcast.number_of_recasts++
+            } else {
+                podcast.number_of_recasts--
+            }
+            item.podcast?.recasted = recasted
             feedAdapter?.notifyItemChanged(position, item)
         }
     }
@@ -420,10 +508,6 @@ class FeedFragment : BaseFragment() {
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-    }
-
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
@@ -451,14 +535,18 @@ class FeedFragment : BaseFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastLikeViewModel::class.java)
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
-    }
+        activity?.let { fragmentActivity ->
+            viewModelCreatePodcastRecast = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreatePodcastRecastViewModel::class.java)
+        }
 
-    override fun onPause() {
-        super.onPause()
+        activity?.let { fragmentActivity ->
+            viewModelDeletePodcastRecast = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(DeletePodcastRecastViewModel::class.java)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
