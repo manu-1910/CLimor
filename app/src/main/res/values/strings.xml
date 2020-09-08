@@ -242,5 +242,7 @@
     <string name="error_initializing_data">There was an error initializing some data</string>
     <string name="no_comments_yet">There are no comments yet</string>
     <string name="when_comments_ready_will_appear_here">When comments are ready they will appear here</string>
+    <string name="you">You</string>
+    <string name="share">Share</string>
 
 </resources>
