@@ -16,6 +16,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import dagger.android.AndroidInjection
 import io.square1.limor.R
+import io.square1.limor.scenes.main.fragments.player.AudioPlayerActivity
+import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
 import io.square1.limor.service.AudioService
 import io.square1.limor.service.PlayerStatus
 import kotlinx.android.synthetic.main.mini_player_view.view.*
@@ -46,11 +48,10 @@ abstract class BaseActivity : AppCompatActivity() {
             val binder = service as AudioService.AudioServiceBinder
             audioService = binder.service
 
-            //playerControlView!!.player = binder.exoPlayer
-
             audioService?.playerStatusLiveData?.observe(this@BaseActivity, Observer {
 
                 playerStatus = it
+
 
                 when (playerStatus) {
                     is PlayerStatus.Cancelled -> {
@@ -126,7 +127,11 @@ abstract class BaseActivity : AppCompatActivity() {
             }
 
             miniPlayerView!!.iv_comments.onClick {
-                toast("You clicked on comments")
+                val podcastDetailsIntent =
+                    Intent(it?.context, PodcastDetailsActivity::class.java)
+                podcastDetailsIntent.putExtra("podcast", audioService?.uiPodcast)
+                podcastDetailsIntent.putExtra("commenting", true)
+                startActivity(podcastDetailsIntent)
             }
 
             miniPlayerView!!.iv_play_pause.onClick {
@@ -153,7 +158,14 @@ abstract class BaseActivity : AppCompatActivity() {
             }
 
             miniPlayerView!!.fl_launch_maximised_player.onClick {
-                toast("TODO Launching full screen player...")
+
+                val audioPlayerIntent = Intent(this, AudioPlayerActivity::class.java)
+                audioPlayerIntent.putExtra(
+                    AudioPlayerActivity.BUNDLE_KEY_PODCAST,
+                    audioService?.uiPodcast
+                )
+                startActivity(audioPlayerIntent)
+                overridePendingTransition(R.anim.push_up_in_enter_no_alpha, 0)
             }
         }
 

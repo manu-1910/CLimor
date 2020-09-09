@@ -13,7 +13,7 @@
         android:id="@+id/mainContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/mini_player_view"
+        android:layout_above="@+id/rl_mini_player_view"
         android:layout_below="@+id/toolbar"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -36,6 +36,7 @@
         app:show_timeout="0" /> -->
 
     <include layout="@layout/mini_player_view"
+        android:id="@+id/rl_mini_player_view"
         android:layout_width="match_parent"
         android:layout_height="@dimen/miniPlayerHeight"
         android:layout_above="@+id/bottom_navigation_view" />
