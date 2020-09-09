@@ -10,6 +10,7 @@ import io.square1.limor.uimodels.UIFeedItem
 class FeedAdapter(
     var context: Context,
     list: ArrayList<UIFeedItem>,
+    private val showPlayButton: Boolean,
     private val feedClickListener: OnFeedClickListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -39,7 +40,7 @@ class FeedAdapter(
         val currentItem = list[position]
 
         val feedItemViewHolder : FeedItemViewHolder = holder as FeedItemViewHolder
-        feedItemViewHolder.bind(currentItem, position)
+        feedItemViewHolder.bind(currentItem, position, showPlayButton)
     }
 
     interface OnFeedClickListener {

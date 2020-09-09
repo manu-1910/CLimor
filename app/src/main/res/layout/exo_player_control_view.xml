@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:background="@color/colorPrimary"
+    android:orientation="vertical"
     tools:layout_height="130dp">
+
+    <View
+        android:id="@+id/top_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/brandSecondary300" />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_marginBottom="6dp"
-        android:layout_height="wrap_content">
-
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp">
 
         <ImageView
             android:id="@+id/iv_bookmark"
@@ -34,12 +41,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="8dp"
+                app:buffered_color="@color/brandSecondary100"
+                app:scrubber_drawable="@drawable/ic_thumb_seekbar_large" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
+                android:layout_marginTop="6dp"
                 android:layout_marginEnd="4dp">
 
                 <TextView
@@ -48,8 +58,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:includeFontPadding="false"
-                    android:lineSpacingExtra="5sp"
                     android:letterSpacing="-0.01"
+                    android:lineSpacingExtra="5sp"
                     android:paddingLeft="4dp"
                     android:paddingRight="4dp"
                     android:textColor="@color/brandSecondary100"
@@ -63,8 +73,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:includeFontPadding="false"
-                    android:lineSpacingExtra="5sp"
                     android:letterSpacing="-0.01"
+                    android:lineSpacingExtra="5sp"
                     android:paddingLeft="4dp"
                     android:paddingRight="4dp"
                     android:textColor="@color/brandSecondary100"
@@ -80,45 +90,50 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp">
 
         <ImageButton
-            android:id="@+id/exo_prev"
+            android:id="@+id/exo_prev_hidden"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
+            android:background="@null"
             android:paddingStart="26dp"
             android:paddingTop="16dp"
-            android:src="@drawable/ic_previous_24dp_x_32dp" />
+            android:src="@drawable/ic_previous_24dp_x_32dp"
+            android:visibility="invisible" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/exo_prev"
             android:layout_toLeftOf="@+id/fl_play_pause"
+            android:layout_toRightOf="@+id/exo_prev_hidden"
             android:gravity="center_horizontal"
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/exo_rew"
+                android:id="@+id/exo_rew_limor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@null"
                 android:padding="8dp"
                 android:src="@drawable/rewind" />
 
         </LinearLayout>
 
         <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_centerInParent="true"
             android:id="@+id/fl_play_pause"
-            android:layout_height="wrap_content" >
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true">
 
             <ImageButton
                 android:id="@+id/exo_play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@null"
                 android:padding="8dp"
                 android:src="@drawable/play" />
 
@@ -126,39 +141,43 @@
                 android:id="@+id/exo_pause"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@null"
                 android:padding="8dp"
-                android:src="@drawable/pause" />
+                android:src="@drawable/pause"
+                android:visibility="invisible" />
 
         </FrameLayout>
-
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/exo_next_hidden"
             android:layout_toRightOf="@+id/fl_play_pause"
-            android:layout_toLeftOf="@+id/exo_next"
             android:gravity="center_horizontal"
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/exo_ffwd"
+                android:id="@+id/exo_ffwd_limor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@null"
                 android:padding="8dp"
                 android:src="@drawable/forward" />
 
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/exo_next"
+            android:id="@+id/exo_next_hidden"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:paddingEnd="16dp"
+            android:background="@null"
             android:paddingTop="16dp"
-            android:src="@drawable/ic_next_24dp_x_32dp" />
+            android:paddingEnd="16dp"
+            android:src="@drawable/ic_next_24dp_x_32dp"
+            android:visibility="invisible" />
 
     </RelativeLayout>
 

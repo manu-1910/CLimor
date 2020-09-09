@@ -43,6 +43,7 @@ private const val PLAYBACK_CHANNEL_ID = "io.square1.limor.playback_channel"
 private const val MEDIA_SESSION_TAG = "io.square1.limor.audio"
 private const val PLAYBACK_NOTIFICATION_ID = 1
 private const val PLAYBACK_TIMER_DELAY = 1000L
+private const val PLAYBACK_SKIP_INCREMENTS = 30000L
 private const val ARG_PODCAST = "ARG_PODCAST"
 private const val ARG_START_POSITION = "ARG_START_POSITION"
 
@@ -170,9 +171,8 @@ class AudioService : Service() {
             // Add stop action.
             setUseStopAction(true)
 
-            val incrementMs = 30000L
-            setFastForwardIncrementMs(incrementMs)
-            setRewindIncrementMs(incrementMs)
+            setFastForwardIncrementMs(PLAYBACK_SKIP_INCREMENTS)
+            setRewindIncrementMs(PLAYBACK_SKIP_INCREMENTS)
 
             setPlayer(exoPlayer)
         }
@@ -372,6 +372,18 @@ class AudioService : Service() {
             uiPodcast?.let { _playerStatusLiveData.value = PlayerStatus.Error(it.id, e) }
         }
 
+    }
+
+    fun forward() {
+        if (exoPlayer.currentPosition + PLAYBACK_SKIP_INCREMENTS < exoPlayer.duration) {
+            exoPlayer.seekTo(exoPlayer.currentPosition + PLAYBACK_SKIP_INCREMENTS)
+        }
+    }
+
+    fun rewind() {
+        if (exoPlayer.currentPosition - PLAYBACK_SKIP_INCREMENTS > 0) {
+            exoPlayer.seekTo(exoPlayer.currentPosition - PLAYBACK_SKIP_INCREMENTS)
+        }
     }
 
 }

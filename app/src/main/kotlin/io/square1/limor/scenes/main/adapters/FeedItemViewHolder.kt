@@ -91,7 +91,7 @@ class FeedItemViewHolder(
         ibtnPlay = itemView.findViewById(R.id.btnPlay)
     }
 
-    fun bind(currentItem: UIFeedItem, position: Int) {
+    fun bind(currentItem: UIFeedItem, position: Int, showPlayButton: Boolean) {
         // fullname
         var firstName = ""
         currentItem.podcast?.user?.first_name?.let { firstName = it }
@@ -206,7 +206,12 @@ class FeedItemViewHolder(
 
         ibtnMore.onClick { feedClickListener.onMoreClicked(currentItem, position) }
         ibtnSend.onClick { feedClickListener.onSendClicked(currentItem, position) }
-        ibtnPlay.onClick { feedClickListener.onPlayClicked(currentItem, position) }
+
+        if(showPlayButton){
+            ibtnPlay.onClick { feedClickListener.onPlayClicked(currentItem, position) }
+        }else{
+            ibtnPlay.visibility = View.GONE
+        }
     }
 
 
