@@ -13,16 +13,12 @@ class FeedAdapter(
     var context: Context,
     list: ArrayList<UIFeedItem>,
     private val feedClickListener: OnFeedClickListener,
-    private val sessionManager: SessionManager
+    sessionManager: SessionManager
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val userLogged : UIUser?
     private var inflator: LayoutInflater
     var list: ArrayList<UIFeedItem> = ArrayList()
-
-    private fun onTagClicked(clickedTag: String) {
-        feedClickListener.onHashtagClicked(clickedTag)
-    }
 
     init {
         this.list = list
