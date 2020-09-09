@@ -15,6 +15,7 @@ import io.reactivex.subjects.PublishSubject
 import io.square1.limor.R
 import io.square1.limor.common.BaseActivity
 import io.square1.limor.common.BaseFragment
+import io.square1.limor.common.SessionManager
 import io.square1.limor.scenes.main.adapters.FeedAdapter
 import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
 import io.square1.limor.scenes.main.fragments.podcast.PodcastsByTagActivity
@@ -31,6 +32,9 @@ class AudioPlayerFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    @Inject
+    lateinit var sessionManager: SessionManager
 
     // viewModels
     private lateinit var viewModelFeed: FeedViewModel
@@ -100,7 +104,6 @@ class AudioPlayerFragment : BaseFragment() {
             FeedAdapter(
                 it,
                 feedItemsList,
-                false,
                 object : FeedAdapter.OnFeedClickListener {
                     override fun onItemClicked(item: UIFeedItem, position: Int) {
                         val podcastDetailsIntent =
@@ -195,7 +198,9 @@ class AudioPlayerFragment : BaseFragment() {
                     override fun onMoreClicked(item: UIFeedItem, position: Int) {
                         Toast.makeText(context, "You clicked on more", Toast.LENGTH_SHORT).show()
                     }
-                }
+                },
+                sessionManager,
+                false
             )
         }
         rvFeed?.adapter = feedAdapter

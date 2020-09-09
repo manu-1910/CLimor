@@ -4,13 +4,13 @@ import entities.response.*
 import io.reactivex.Single
 import io.square1.limor.remote.entities.responses.*
 
-fun Single<NWDeleteLikeResponse>.asDataEntity(): Single<DeleteLikeResponseEntity> {
+fun Single<NWDeleteResponse>.asDataEntity(): Single<DeleteResponseEntity> {
     return this.map { it.asDataEntity() }
 }
 
 
-fun NWDeleteLikeResponse.asDataEntity(): DeleteLikeResponseEntity {
-    return DeleteLikeResponseEntity(
+fun NWDeleteResponse.asDataEntity(): DeleteResponseEntity {
+    return DeleteResponseEntity(
         code,
         message,
         data?.asDataEntity()
@@ -18,23 +18,23 @@ fun NWDeleteLikeResponse.asDataEntity(): DeleteLikeResponseEntity {
 }
 
 
-fun DeleteLikeResponseEntity.asRemoteEntity(): NWDeleteLikeResponse {
-    return NWDeleteLikeResponse(
+fun DeleteResponseEntity.asRemoteEntity(): NWDeleteResponse {
+    return NWDeleteResponse(
         code,
         message,
         data?.asRemoteEntity()
     )
 }
 
-fun NWDeleteLikeData.asDataEntity(): DeleteLikeData {
-    return DeleteLikeData(
+fun NWDeleteData.asDataEntity(): DeleteData {
+    return DeleteData(
         destroyed
     )
 }
 
 
-fun DeleteLikeData.asRemoteEntity(): NWDeleteLikeData {
-    return NWDeleteLikeData(
+fun DeleteData.asRemoteEntity(): NWDeleteData {
+    return NWDeleteData(
         destroyed
     )
 }

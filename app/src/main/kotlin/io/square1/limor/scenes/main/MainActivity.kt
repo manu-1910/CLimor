@@ -20,10 +20,8 @@ import io.square1.limor.common.BaseActivity
 import io.square1.limor.common.SessionManager
 import io.square1.limor.scenes.main.fragments.*
 import io.square1.limor.scenes.main.fragments.record.RecordActivity
-import io.square1.limor.scenes.main.viewmodels.GetPodcastCommentsViewModel
 import io.square1.limor.scenes.main.viewmodels.ProfileViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_podcast_details.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
@@ -154,6 +152,9 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
             }
         }
     }
+
+
+
 
 
 

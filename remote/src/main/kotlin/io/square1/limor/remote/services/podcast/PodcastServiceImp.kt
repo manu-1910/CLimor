@@ -42,9 +42,31 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
             }
     }
 
-    fun dislikePodcast(id : Int): Single<NWDeleteLikeResponse>? {
+    fun dislikePodcast(id : Int): Single<NWDeleteResponse>? {
         return service.dislikePodcast(id)
-            .map { response -> response.parseSuccessResponse(NWDeleteLikeResponse.serializer()) }
+            .map { response -> response.parseSuccessResponse(NWDeleteResponse.serializer()) }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
+    fun recastPodcast(id : Int): Single<NWCreatePodcastRecastResponse>? {
+        return service.recastPodcast(id)
+            .map { response -> response.parseSuccessResponse(NWCreatePodcastRecastResponse.serializer()) }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
+    fun deleteRecast(id : Int): Single<NWDeleteResponse>? {
+        return service.deleteRecast(id)
+            .map { response -> response.parseSuccessResponse(NWDeleteResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
             }
@@ -81,18 +103,5 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
                     error -> println("ERROR: $error")
             }
     }
-
-
-//    fun forgotPassword(NWForgotPasswordRequest: NWForgotPasswordRequest): Completable {
-//        return service.forgotPassword(Mapper.map(NWForgotPasswordRequest))
-//            .doOnSuccess { println("SUCCESS: $it") }
-//            .doOnError { println("error: $it") }
-//            .ignoreElement()
-//    }
-
-
-
-
-
 
 }

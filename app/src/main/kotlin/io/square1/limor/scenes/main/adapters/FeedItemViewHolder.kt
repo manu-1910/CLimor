@@ -1,5 +1,6 @@
 package io.square1.limor.scenes.main.adapters
 
+import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.text.SpannableString
@@ -19,6 +20,7 @@ import com.bumptech.glide.request.RequestOptions
 import io.square1.limor.R
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIFeedItem
+import io.square1.limor.uimodels.UIUser
 import org.jetbrains.anko.sdk23.listeners.onClick
 import timber.log.Timber
 import java.lang.Exception
@@ -30,7 +32,9 @@ import kotlin.collections.ArrayList
 class FeedItemViewHolder(
     inflater: LayoutInflater,
     parent: ViewGroup,
-    private val feedClickListener: FeedAdapter.OnFeedClickListener
+    private val feedClickListener: FeedAdapter.OnFeedClickListener,
+    private val userLogged: UIUser?,
+    private val context: Context
 ) : RecyclerView.ViewHolder(
     inflater.inflate(
         R.layout.fragment_feed_item_recycler_view,
@@ -38,58 +42,30 @@ class FeedItemViewHolder(
         false
     )
 ) {
-    var tvUserFullname: TextView
-    var tvDateAndLocation: TextView
-    var tvPodcastTitle: TextView
-    var tvPodcastText: TextView
-    var tvPodcastTime: TextView
-    var tvSomeoneRecasted: TextView
+    private var tvUserFullname: TextView = itemView.findViewById(R.id.tvUserName)
+    private var tvDateAndLocation: TextView = itemView.findViewById(R.id.tvTimeAndLocation)
+    private var tvPodcastTitle: TextView = itemView.findViewById(R.id.tvPodcastTitle)
+    private var tvPodcastText: TextView = itemView.findViewById(R.id.tvPodcastText)
+    private var tvPodcastTime: TextView = itemView.findViewById(R.id.tvPodcastTime)
+    private var tvSomeoneRecasted: TextView = itemView.findViewById(R.id.tvSomeoneRecasted)
 
-    var tvListens: TextView
-    var tvComments: TextView
-    var tvLikes: TextView
-    var tvRecasts: TextView
+    private var tvListens: TextView = itemView.findViewById(R.id.tvListens)
+    private var tvComments: TextView = itemView.findViewById(R.id.tvComments)
+    private var tvLikes: TextView = itemView.findViewById(R.id.tvLikes)
+    private var tvRecasts: TextView = itemView.findViewById(R.id.tvRecasts)
 
-    var ivUser: ImageView
-    var ivMainFeedPicture: ImageView
-    var ivVerifiedUser: ImageView
+    private var ivUser: ImageView = itemView.findViewById(R.id.ivUserPicture)
+    private var ivMainFeedPicture: ImageView = itemView.findViewById(R.id.ivMainFeedPicture)
+    private var ivVerifiedUser: ImageView = itemView.findViewById(R.id.ivVerifiedUser)
 
-    var ibtnListen: ImageButton
-    var ibtnLike: ImageButton
-    var ibtnRecasts: ImageButton
-    var ibtnComments: ImageButton
-    var ibtnMore: ImageButton
-    var ibtnSend: ImageButton
-    var ibtnPlay: ImageButton
+    private var ibtnListen: ImageButton = itemView.findViewById(R.id.btnListens)
+    private var ibtnLike: ImageButton = itemView.findViewById(R.id.btnLikes)
+    private var ibtnRecasts: ImageButton = itemView.findViewById(R.id.btnRecasts)
+    private var ibtnComments: ImageButton = itemView.findViewById(R.id.btnComments)
+    private var ibtnMore: ImageButton = itemView.findViewById(R.id.btnMore)
+    private var ibtnSend: ImageButton = itemView.findViewById(R.id.btnSend)
+    private var ibtnPlay: ImageButton = itemView.findViewById(R.id.btnPlay)
 
-
-
-
-    init {
-        tvUserFullname = itemView.findViewById(R.id.tvUserName)
-        tvDateAndLocation = itemView.findViewById(R.id.tvTimeAndLocation)
-        tvPodcastTitle = itemView.findViewById(R.id.tvPodcastTitle)
-        tvPodcastText = itemView.findViewById(R.id.tvPodcastText)
-        tvPodcastTime = itemView.findViewById(R.id.tvPodcastTime)
-        tvSomeoneRecasted = itemView.findViewById(R.id.tvSomeoneRecasted)
-
-        tvListens = itemView.findViewById(R.id.tvListens)
-        tvComments = itemView.findViewById(R.id.tvComments)
-        tvLikes = itemView.findViewById(R.id.tvLikes)
-        tvRecasts = itemView.findViewById(R.id.tvRecasts)
-
-        ivUser = itemView.findViewById(R.id.ivUserPicture)
-        ivMainFeedPicture = itemView.findViewById(R.id.ivMainFeedPicture)
-        ivVerifiedUser = itemView.findViewById(R.id.ivVerifiedUser)
-
-        ibtnListen = itemView.findViewById(R.id.btnListens)
-        ibtnLike = itemView.findViewById(R.id.btnLikes)
-        ibtnRecasts = itemView.findViewById(R.id.btnRecasts)
-        ibtnComments = itemView.findViewById(R.id.btnComments)
-        ibtnMore = itemView.findViewById(R.id.btnMore)
-        ibtnSend = itemView.findViewById(R.id.btnSend)
-        ibtnPlay = itemView.findViewById(R.id.btnPlay)
-    }
 
     fun bind(currentItem: UIFeedItem, position: Int, showPlayButton: Boolean) {
         // fullname
@@ -111,7 +87,7 @@ class FeedItemViewHolder(
             var addresses: List<Address> = ArrayList()
             try {
                 addresses = geocoder.getFromLocation(lat, lng, 1)
-            } catch (e : Exception) {
+            } catch (e: Exception) {
                 Timber.d("Couldn't get location from geocoder")
             }
             if (addresses.isNotEmpty()) {
@@ -133,7 +109,9 @@ class FeedItemViewHolder(
         tvPodcastText.movementMethod = LinkMovementMethod.getInstance()
 
         // duration
-        currentItem.podcast?.audio?.duration?.let { tvPodcastTime.text = CommonsKt.calculateDurationMinutesAndSeconds(it.toLong()) }
+        currentItem.podcast?.audio?.duration?.let {
+            tvPodcastTime.text = CommonsKt.calculateDurationMinutesAndSeconds(it.toLong())
+        }
 
         // recasts
         currentItem.podcast?.number_of_recasts?.let { tvRecasts.text = it.toString() }
@@ -188,19 +166,40 @@ class FeedItemViewHolder(
             ibtnLike.setImageResource(R.drawable.like)
         }
 
-        // recast
+        // my own recast
         currentItem.podcast?.recasted?.let {
-            if (it) {
+            if(it) {
                 ibtnRecasts.setImageResource(R.drawable.recast_filled)
-                tvSomeoneRecasted.visibility = View.VISIBLE
             } else {
                 ibtnRecasts.setImageResource(R.drawable.recast)
+            }
+        } ?: run {
+            ibtnRecasts.setImageResource(R.drawable.recast)
+        }
+
+        // someone recasted
+        currentItem.recasted.let {
+            if (it) {
+                val userRecasted = currentItem.user
+                userLogged?.id?.let { userLoggedId ->
+                    tvSomeoneRecasted.visibility = View.VISIBLE
+
+                    val fullnameRecasted = if (userRecasted.id == userLoggedId)
+                        context.getString(R.string.you)
+                    else
+                        userRecasted.first_name + " " + userRecasted.last_name
+
+                    tvSomeoneRecasted.text = String.format(
+                        context.resources.getString(R.string.someone_recasted), fullnameRecasted
+                    )
+                }
+
+            } else {
                 tvSomeoneRecasted.visibility = View.GONE
             }
 
-
         } ?: run {
-            ibtnRecasts.setImageResource(R.drawable.recast)
+            tvSomeoneRecasted.visibility = View.GONE
         }
 
 

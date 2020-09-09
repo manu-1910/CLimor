@@ -4,16 +4,20 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import io.square1.limor.common.SessionManager
 import io.square1.limor.uimodels.UIFeedItem
+import io.square1.limor.uimodels.UIUser
 
 
 class FeedAdapter(
     var context: Context,
     list: ArrayList<UIFeedItem>,
-    private val showPlayButton: Boolean,
-    private val feedClickListener: OnFeedClickListener
+    private val feedClickListener: OnFeedClickListener,
+    private val sessionManager: SessionManager,
+    private val showPlayButton: Boolean
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    private val userLogged : UIUser?
     private var inflator: LayoutInflater
     var list: ArrayList<UIFeedItem> = ArrayList()
 
@@ -24,11 +28,12 @@ class FeedAdapter(
     init {
         this.list = list
         inflator = LayoutInflater.from(context)
+        userLogged = sessionManager.getStoredUser()
     }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return FeedItemViewHolder(inflator, parent, feedClickListener)
+        return FeedItemViewHolder(inflator, parent, feedClickListener, userLogged, context)
     }
 
     override fun getItemCount(): Int {
