@@ -2,10 +2,9 @@ package io.square1.limor.scenes.main.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AbsListView
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
@@ -28,6 +27,7 @@ import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIFeedItem
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.support.v4.onRefresh
+import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
 import javax.inject.Inject
 
@@ -271,23 +271,19 @@ class FeedFragment : BaseFragment() {
                     }
 
                     override fun onSendClicked(item: UIFeedItem, position: Int) {
-                        Toast.makeText(context, "You clicked on share", Toast.LENGTH_SHORT).show()
-                        val sendIntent: Intent = Intent().apply {
-                            action = Intent.ACTION_SEND
-                            putExtra(Intent.EXTRA_TEXT, "This is my text to send.")
-                            type = "text/plain"
-                        }
-
-                        val shareIntent = Intent.createChooser(sendIntent, null)
-                        startActivity(shareIntent)
+                        Toast.makeText(context, "You clicked on send", Toast.LENGTH_SHORT).show()
                     }
 
                     override fun onUserClicked(item: UIFeedItem, position: Int) {
                         Toast.makeText(context, "You clicked on user", Toast.LENGTH_SHORT).show()
                     }
 
-                    override fun onMoreClicked(item: UIFeedItem, position: Int) {
-                        Toast.makeText(context, "You clicked on more", Toast.LENGTH_SHORT).show()
+                    override fun onMoreClicked(
+                        item: UIFeedItem,
+                        position: Int,
+                        view: View
+                    ) {
+                        showPopupMenu(view, item)
                     }
                 },
                 sessionManager,
@@ -334,6 +330,41 @@ class FeedFragment : BaseFragment() {
         context?.getDrawable(R.drawable.divider_item_recyclerview)?.let { divider.setDrawable(it) }
         rvFeed?.addItemDecoration(divider)
 
+    }
+
+    private fun showPopupMenu(
+        view: View?,
+        item: UIFeedItem
+    ) {
+        val popup = PopupMenu(context, view, Gravity.TOP)
+        val inflater: MenuInflater = popup.menuInflater
+        inflater.inflate(R.menu.menu_popup_podcast, popup.menu)
+
+
+        //set menu item click listener here
+        popup.setOnMenuItemClickListener {menuItem ->
+            when(menuItem.itemId) {
+                R.id.menu_share -> onShareClicked(item)
+            }
+            true
+        }
+        popup.show()
+    }
+
+    private fun onShareClicked(item: UIFeedItem) {
+        item.podcast?.sharing_url?.let {url ->
+            val text = getString(R.string.check_out_this_cast)
+            val finalText = "$text $url"
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, finalText)
+                type = "text/plain"
+            }
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(shareIntent)
+        } ?: run {
+            toast(getString(R.string.error_retrieving_sharing_url))
+        }
     }
 
     private fun changeItemLikeStatus(item: UIFeedItem, position: Int, liked: Boolean) {
