@@ -290,7 +290,8 @@ class FeedFragment : BaseFragment() {
                         Toast.makeText(context, "You clicked on more", Toast.LENGTH_SHORT).show()
                     }
                 },
-                sessionManager
+                sessionManager,
+                true
             )
         }
         rvFeed?.adapter = feedAdapter

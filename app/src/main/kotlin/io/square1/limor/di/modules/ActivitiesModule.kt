@@ -5,6 +5,7 @@ import dagger.android.ContributesAndroidInjector
 import io.square1.limor.di.modules.fragments.*
 import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.MainActivity
+import io.square1.limor.scenes.main.fragments.player.AudioPlayerActivity
 import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
 import io.square1.limor.scenes.main.fragments.podcast.PodcastsByTagActivity
 import io.square1.limor.scenes.main.fragments.record.RecordActivity
@@ -44,5 +45,10 @@ abstract class ActivitiesModule {
         (PodcastsByTagActivityFragmentsBuildersModule::class)
     ])
     abstract fun contributePodcastsByTagActivityInjector(): PodcastsByTagActivity
+
+    @ContributesAndroidInjector(modules = [
+        (AudioPlayerActivityFragmentsBuildersModule::class)
+    ])
+    abstract fun contributeAudioPlayerActivityInjector(): AudioPlayerActivity
 
 }

@@ -13,7 +13,8 @@ class FeedAdapter(
     var context: Context,
     list: ArrayList<UIFeedItem>,
     private val feedClickListener: OnFeedClickListener,
-    sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val showPlayButton: Boolean
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val userLogged : UIUser?
@@ -40,7 +41,7 @@ class FeedAdapter(
         val currentItem = list[position]
 
         val feedItemViewHolder : FeedItemViewHolder = holder as FeedItemViewHolder
-        feedItemViewHolder.bind(currentItem, position)
+        feedItemViewHolder.bind(currentItem, position, showPlayButton)
     }
 
     interface OnFeedClickListener {
