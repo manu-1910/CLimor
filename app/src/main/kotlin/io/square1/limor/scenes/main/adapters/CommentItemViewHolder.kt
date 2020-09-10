@@ -47,6 +47,8 @@ class CommentItemViewHolder(
     private var tvCommentText: TextView = itemView.findViewById(R.id.tvCommentText)
     private var tvNameReplyingTo: TextView = itemView.findViewById(R.id.tvNameReplyingTo)
     private var tvMoreReplies: TextView = itemView.findViewById(R.id.tvMoreReplies)
+    private var tvCurrentTime: TextView = itemView.findViewById(R.id.tvCurrentTime)
+    private var tvTotalTime: TextView = itemView.findViewById(R.id.tvTotalTime)
 
     private var ivUser: ImageView = itemView.findViewById(R.id.ivUserPicture)
     private var ivVerifiedUser: ImageView = itemView.findViewById(R.id.ivVerifiedUser)
@@ -56,6 +58,7 @@ class CommentItemViewHolder(
     private var ibtnRecasts: ImageButton = itemView.findViewById(R.id.btnRecasts)
     private var ibtnComments: ImageButton = itemView.findViewById(R.id.btnComments)
     private var ibtnMore: ImageButton = itemView.findViewById(R.id.btnMore)
+    private var ibtnPlay: ImageButton = itemView.findViewById(R.id.btnPlayComment)
 
     private var btnReply: TextView = itemView.findViewById(R.id.btnReply)
     private var barThreadUp: View = itemView.findViewById(R.id.barThreadUp)
@@ -63,6 +66,9 @@ class CommentItemViewHolder(
     private var barDecorator: View = itemView.findViewById(R.id.barDecorator)
     private var layReplyingTo: View = itemView.findViewById(R.id.layReplying)
     private var layMoreReplies: View = itemView.findViewById(R.id.layMoreReplies)
+    private var layPlayer: View = itemView.findViewById(R.id.layPlayer)
+
+    private var seekBar: View = itemView.findViewById(R.id.seekBar)
 
 
 
@@ -147,6 +153,17 @@ class CommentItemViewHolder(
                 ibtnLike.setImageResource(R.drawable.like_filled)
             else
                 ibtnLike.setImageResource(R.drawable.like)
+        }
+
+        // player
+        if(currentItem.comment.type == "audio") {
+            val duration = currentItem.comment.audio.duration
+            val audioUrl = currentItem.comment.audio.url
+            if(duration != null && audioUrl != null) {
+                layPlayer.visibility = View.VISIBLE
+            }
+        } else {
+            layPlayer.visibility = View.GONE
         }
 
 
