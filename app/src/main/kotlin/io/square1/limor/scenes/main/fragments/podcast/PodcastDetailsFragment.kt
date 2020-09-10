@@ -13,11 +13,9 @@ import android.os.Handler
 import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AbsListView
+import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -55,6 +53,7 @@ import kotlinx.android.synthetic.main.include_podcast_data.*
 import kotlinx.android.synthetic.main.include_user_bar.*
 import kotlinx.android.synthetic.main.toolbar_with_logo_and_back_icon.*
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.support.v4.toast
 import timber.log.Timber
 import java.io.File
 import java.io.Serializable
@@ -1337,7 +1336,7 @@ class PodcastDetailsFragment : BaseFragment() {
         }
 
 
-        btnMore?.onClick { onMoreClicked() }
+        btnMore?.onClick { onPodcastMoreClicked() }
         btnSend?.onClick { onSendClicked() }
         btnPlay?.onClick { onPlayClicked() }
 
@@ -1387,8 +1386,40 @@ class PodcastDetailsFragment : BaseFragment() {
         Toast.makeText(context, "Send clicked", Toast.LENGTH_SHORT).show()
     }
 
-    private fun onMoreClicked() {
-        Toast.makeText(context, "More clicked", Toast.LENGTH_SHORT).show()
+    private fun onPodcastMoreClicked() {
+        showPodcastMorePopupMenu()
+    }
+
+    private fun showPodcastMorePopupMenu() {
+        val popup = PopupMenu(context, btnMore, Gravity.TOP)
+        val inflater: MenuInflater = popup.menuInflater
+        inflater.inflate(R.menu.menu_popup_podcast, popup.menu)
+
+
+        //set menu item click listener here
+        popup.setOnMenuItemClickListener {menuItem ->
+            when(menuItem.itemId) {
+                R.id.menu_share -> onSharePodcastClicked()
+            }
+            true
+        }
+        popup.show()
+    }
+
+    private fun onSharePodcastClicked() {
+        uiPodcast?.sharing_url?.let {url ->
+            val text = getString(R.string.check_out_this_cast)
+            val finalText = "$text $url"
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, finalText)
+                type = "text/plain"
+            }
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(shareIntent)
+        } ?: run {
+            toast(getString(R.string.error_retrieving_sharing_url))
+        }
     }
 
     private fun onItemClicked() {

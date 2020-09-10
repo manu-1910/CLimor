@@ -195,7 +195,11 @@ class AudioPlayerFragment : BaseFragment() {
                         Toast.makeText(context, "You clicked on user", Toast.LENGTH_SHORT).show()
                     }
 
-                    override fun onMoreClicked(item: UIFeedItem, position: Int) {
+                    override fun onMoreClicked(
+                        item: UIFeedItem,
+                        position: Int,
+                        view: View
+                    ) {
                         Toast.makeText(context, "You clicked on more", Toast.LENGTH_SHORT).show()
                     }
                 },

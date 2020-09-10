@@ -27,6 +27,7 @@ import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIFeedItem
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.support.v4.onRefresh
+import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
 import javax.inject.Inject
 
@@ -277,7 +278,11 @@ class FeedFragment : BaseFragment() {
                         Toast.makeText(context, "You clicked on user", Toast.LENGTH_SHORT).show()
                     }
 
-                    override fun onMoreClicked(item: UIFeedItem, position: Int) {
+                    override fun onMoreClicked(
+                        item: UIFeedItem,
+                        position: Int,
+                        view: View
+                    ) {
                         showPopupMenu(view, item)
                     }
                 },
@@ -331,7 +336,7 @@ class FeedFragment : BaseFragment() {
         view: View?,
         item: UIFeedItem
     ) {
-        val popup = PopupMenu(context, view, Gravity.END)
+        val popup = PopupMenu(context, view, Gravity.TOP)
         val inflater: MenuInflater = popup.menuInflater
         inflater.inflate(R.menu.menu_popup_podcast, popup.menu)
 
@@ -347,15 +352,19 @@ class FeedFragment : BaseFragment() {
     }
 
     private fun onShareClicked(item: UIFeedItem) {
-        val shareUrl = item.podcast?.sharing_url
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, "This is my text to send.")
-            type = "text/plain"
+        item.podcast?.sharing_url?.let {url ->
+            val text = getString(R.string.check_out_this_cast)
+            val finalText = "$text $url"
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, finalText)
+                type = "text/plain"
+            }
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(shareIntent)
+        } ?: run {
+            toast(getString(R.string.error_retrieving_sharing_url))
         }
-
-        val shareIntent = Intent.createChooser(sendIntent, null)
-        startActivity(shareIntent)
     }
 
     private fun changeItemLikeStatus(item: UIFeedItem, position: Int, liked: Boolean) {
