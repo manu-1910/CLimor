@@ -14,30 +14,29 @@ class SimpleRecorder(private val folderPath: String) {
     private var recorder = MediaRecorder()
     private var player = MediaPlayer()
     private var lastFileName = ""
-    var maxAmplitude = recorder.maxAmplitude
     var isPlaying = false
     var isReleased = true
-    var isPaused = !isPlaying && player.currentPosition > 1
+    var isPaused = !isPlaying && !isReleased
 
     fun startRecording() {
+        Timber.d("Inside startRecording")
         val directory = File(folderPath)
         require(!(!directory.exists() || !directory.isDirectory)) { "[AMRAudioRecorder] audioFileDirectory is a not valid directory!" }
 
         lastFileName = directory.absolutePath + "/" + Date().time + Commons.audioFileFormat
-        recorder = MediaRecorder().apply {
-            setAudioSource(MediaRecorder.AudioSource.MIC)
-            setOutputFormat(MediaRecorder.OutputFormat.AMR_NB)
-            setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-            setOutputFile(lastFileName)
-
-            try {
-                prepare()
-            } catch (e: IOException) {
-                Timber.e("prepare() failed")
-            }
-
-            start()
+        recorder = MediaRecorder()
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB)
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+        recorder.setOutputFile(lastFileName)
+        try {
+            recorder.prepare()
+        } catch (e: IOException) {
+            Timber.d("Media recorder prepare failed")
         }
+
+        Timber.d("Inside startRecording just before start")
+        recorder.start()
     }
 
     fun stopRecording(): String {
@@ -49,7 +48,8 @@ class SimpleRecorder(private val folderPath: String) {
     }
 
 
-    fun startPlaying(fileName : String, completionListener: MediaPlayer.OnCompletionListener) {
+    fun startPlaying(fileName: String, completionListener: MediaPlayer.OnCompletionListener) {
+        Timber.d("Inside startPlaying")
         player = MediaPlayer().apply {
             try {
                 setDataSource(fileName)
@@ -61,7 +61,7 @@ class SimpleRecorder(private val folderPath: String) {
                 Timber.e("prepare() failed")
             }
         }
-        player.setOnCompletionListener{
+        player.setOnCompletionListener {
             isPlaying = false
             completionListener.onCompletion(it)
         }
@@ -81,6 +81,14 @@ class SimpleRecorder(private val folderPath: String) {
         player.release()
         isReleased = true
         isPlaying = false
+    }
+
+    fun getMaxAmplitude() : Int {
+        return recorder.maxAmplitude
+    }
+
+    fun clear() {
+        stopPlaying()
     }
 
 }

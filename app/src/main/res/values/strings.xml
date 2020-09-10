@@ -245,5 +245,6 @@
     <string name="no_comments_yet">There are no comments yet</string>
     <string name="when_comments_ready_will_appear_here">When comments are ready they will appear here</string>
     <string name="you">You</string>
+    <string name="delete">Delete</string>
 
 </resources>

@@ -10,10 +10,7 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.TextPaint
+import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.LayoutInflater
@@ -24,6 +21,7 @@ import android.widget.AbsListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -430,6 +428,20 @@ class PodcastDetailsFragment : BaseFragment() {
                 }
             }
 
+        etCommentUp.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if(etCommentUp.text.isNotEmpty()) {
+                    btnPost.setTextColor(ContextCompat.getColor(context!!, R.color.brandPrimary500))
+                } else {
+                    btnPost.setTextColor(ContextCompat.getColor(context!!, R.color.brandSecondary100))
+                }
+            }
+        })
+
         btnPost.onClick {
             etCommentUp?.text?.let {
                 if(it.isNotEmpty()) {
@@ -449,6 +461,17 @@ class PodcastDetailsFragment : BaseFragment() {
             }
         }
 
+        btnTrash.onClick {
+            currentCommentRecorded = null
+            mRecorder.clear()
+            visualizerComment.clear()
+            visualizerComment.invalidate()
+            btnRecord.setImageResource(R.drawable.record)
+            btnPlayComment.visibility = View.GONE
+            btnRecord.visibility = View.VISIBLE
+            btnTrash.visibility = View.GONE
+        }
+
         btnRecord.setOnTouchListener { view, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 if(!isCommentBarOpen())
@@ -457,11 +480,9 @@ class PodcastDetailsFragment : BaseFragment() {
                 btnRecord.setImageResource(R.drawable.record_red)
                 audioSetup()
                 recordAudio()
-                toast("Down")
-            } else {
+            } else if(event.action == MotionEvent.ACTION_UP) {
                 stopAudio()
                 btnRecord.setImageResource(R.drawable.record)
-                toast("Up")
                 view.performClick()
             }
             true
@@ -469,13 +490,12 @@ class PodcastDetailsFragment : BaseFragment() {
 
         updater = object : Runnable {
             override fun run() {
-                handlerRecordingComment.postDelayed(this, 40)
-                val maxAmplitude: Int = mRecorder.maxAmplitude
-                if (maxAmplitude != 0) {
-                    if(isRecording){
-                        visualizerComment?.addAmplitude(maxAmplitude.toFloat())
-                        visualizerComment?.invalidate() // refresh the Visualizer
-                    }
+                Timber.d("Inside updaterRunnable")
+                handlerRecordingComment.postDelayed(this, 150)
+                if(isRecording) {
+                    val maxAmplitude: Int = mRecorder.getMaxAmplitude()
+                    visualizerComment?.addAmplitude(maxAmplitude.toFloat())
+                    visualizerComment?.invalidate() // refresh the Visualizer
                 }
             }
         }
@@ -533,7 +553,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 e.printStackTrace()
             }
         }else{
-
+            visualizerComment?.visibility = View.VISIBLE
             isRecording = true
             println("RECORD --> START")
             mRecorder.startRecording()
@@ -544,10 +564,13 @@ class PodcastDetailsFragment : BaseFragment() {
 
     private fun stopAudio() {
         isRecording = false
+        handlerRecordingComment.removeCallbacks(updater)
         val filenameRecorded = mRecorder.stopRecording()
         currentCommentRecorded = File(filenameRecorded)
         if(currentCommentRecorded!!.isFile && currentCommentRecorded!!.exists()) {
             showPlayButton()
+            btnTrash?.visibility = View.VISIBLE
+            visualizerComment.invalidate()
         }
     }
 
