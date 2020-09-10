@@ -42,6 +42,7 @@ import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.extensions.showKeyboard
 import io.square1.limor.scenes.main.adapters.CommentsAdapter
 import io.square1.limor.scenes.main.viewmodels.*
+import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIComment
@@ -54,7 +55,6 @@ import kotlinx.android.synthetic.main.include_podcast_data.*
 import kotlinx.android.synthetic.main.include_user_bar.*
 import kotlinx.android.synthetic.main.toolbar_with_logo_and_back_icon.*
 import org.jetbrains.anko.sdk23.listeners.onClick
-import org.jetbrains.anko.support.v4.toast
 import timber.log.Timber
 import java.io.File
 import java.io.Serializable
@@ -80,7 +80,9 @@ data class CommentWithParent(val comment: UIComment, val parent: CommentWithPare
 
 class PodcastDetailsFragment : BaseFragment() {
 
-    private var currentCommentRecorded: File? = null
+    private var currentCommentRequest: UICreateCommentRequest? = null
+    private var currentCommentRecordedDuration: Int = -1
+    private var currentCommentRecordedFile: File? = null
     private var isRecording = false
     private val handlerRecordingComment = Handler()
     private lateinit var updater: Runnable
@@ -204,6 +206,7 @@ class PodcastDetailsFragment : BaseFragment() {
         showProgressBar()
 
         initPodcastOrCommentMode()
+        audioSetup()
 
         fillForm()
         initListeners()
@@ -218,6 +221,7 @@ class PodcastDetailsFragment : BaseFragment() {
         // If it's null this means that we have to show the "comment of a podcast" screen
         uiMainCommentWithParent?.let {
             podcastMode = false
+            viewModelCreateCommentComment.idComment = it.comment.id
             commentsAdapter?.podcastMode = podcastMode
             hideEmptyScenario()
             addTopParents(it)
@@ -258,6 +262,7 @@ class PodcastDetailsFragment : BaseFragment() {
             // but if it is null, we have to get the podcast comments
         } ?: run {
             podcastMode = true
+            uiPodcast?.id?.let { idPodcast -> viewModelCreatePodcastComment.idPodcast = idPodcast }
             commentsAdapter?.podcastMode = podcastMode
             uiPodcast?.id?.let { viewModelGetPodcastComments.idPodcast = it }
             getPodcastCommentsDataTrigger.onNext(Unit)
@@ -358,6 +363,7 @@ class PodcastDetailsFragment : BaseFragment() {
             it.data?.comment?.let { newComment ->
                 addNewCommentToList(newComment)
             }
+            deleteCurrentCommentAudioAndResetBar()
             hideProgressBar()
             hideCommentBar()
         })
@@ -366,6 +372,7 @@ class PodcastDetailsFragment : BaseFragment() {
             it.data?.comment?.let { newComment ->
                 addNewCommentToList(newComment)
             }
+            deleteCurrentCommentAudioAndResetBar()
             hideProgressBar()
             hideCommentBar()
         })
@@ -443,33 +450,26 @@ class PodcastDetailsFragment : BaseFragment() {
         })
 
         btnPost.onClick {
-            etCommentUp?.text?.let {
-                if(it.isNotEmpty()) {
-                    val request = UICreateCommentRequest(UICommentRequest(it.toString(), 0, null))
-                    if(podcastMode) {
-                        viewModelCreatePodcastComment.idPodcast = uiPodcast!!.id
-                        viewModelCreatePodcastComment.uiCreateCommentRequest = request
-                        createPodcastCommentDataTrigger.onNext(Unit)
-                    } else {
-                        viewModelCreateCommentComment.idComment = uiMainCommentWithParent!!.comment.id
-                        viewModelCreateCommentComment.uiCreateCommentRequest = request
-                        createCommentCommentDataTrigger.onNext(Unit)
-                    }
+            var commentText = ""
+            etCommentUp?.text?.let { text -> commentText = text.toString() }
+
+            if(commentText.isNotEmpty()) {
+                currentCommentRequest = UICreateCommentRequest(UICommentRequest(commentText, 0, null))
+                if(currentCommentRecordedFile == null) {
+                    publishTextComment()
                 } else {
-                    etCommentUp?.setError(getString(R.string.this_field_cant_be_empty))
+                    publishAudioComment()
                 }
+
+
+            } else {
+                etCommentUp?.error = getString(R.string.this_field_cant_be_empty)
             }
+
         }
 
         btnTrash.onClick {
-            currentCommentRecorded = null
-            mRecorder.clear()
-            visualizerComment.clear()
-            visualizerComment.invalidate()
-            btnRecord.setImageResource(R.drawable.record)
-            btnPlayComment.visibility = View.GONE
-            btnRecord.visibility = View.VISIBLE
-            btnTrash.visibility = View.GONE
+            deleteCurrentCommentAudioAndResetBar()
         }
 
         btnRecord.setOnTouchListener { view, event ->
@@ -512,13 +512,36 @@ class PodcastDetailsFragment : BaseFragment() {
 
                 // it doesn't have a file loaded
             } else {
-                currentCommentRecorded?.let {
+                currentCommentRecordedFile?.let {
                     if(it.exists() && it.isFile) {
                         btnPlayComment.setImageResource(R.drawable.pause)
                         mRecorder.startPlaying(it.absolutePath, MediaPlayer.OnCompletionListener { onPlayingCommentFinished() })
                     }
                 }
             }
+        }
+    }
+
+    private fun deleteCurrentCommentAudioAndResetBar() {
+        currentCommentRecordedFile = null
+        mRecorder.clear()
+        currentCommentRecordedDuration = -1
+        currentCommentRecordedFile = null
+        visualizerComment.clear()
+        visualizerComment.invalidate()
+        btnRecord.setImageResource(R.drawable.record)
+        btnPlayComment.visibility = View.GONE
+        btnRecord.visibility = View.VISIBLE
+        btnTrash.visibility = View.GONE
+    }
+
+    private fun publishTextComment() {
+        if(podcastMode) {
+            viewModelCreatePodcastComment.uiCreateCommentRequest = currentCommentRequest!!
+            createPodcastCommentDataTrigger.onNext(Unit)
+        } else {
+            viewModelCreateCommentComment.uiCreateCommentRequest = currentCommentRequest!!
+            createCommentCommentDataTrigger.onNext(Unit)
         }
     }
 
@@ -565,14 +588,45 @@ class PodcastDetailsFragment : BaseFragment() {
     private fun stopAudio() {
         isRecording = false
         handlerRecordingComment.removeCallbacks(updater)
-        val filenameRecorded = mRecorder.stopRecording()
-        currentCommentRecorded = File(filenameRecorded)
-        if(currentCommentRecorded!!.isFile && currentCommentRecorded!!.exists()) {
+        val filenameAndAudio = mRecorder.stopRecording()
+        val filenameRecorded = filenameAndAudio.first
+        currentCommentRecordedDuration = filenameAndAudio.second
+        currentCommentRecordedFile = File(filenameRecorded)
+        if(currentCommentRecordedFile!!.isFile && currentCommentRecordedFile!!.exists()) {
             showPlayButton()
             btnTrash?.visibility = View.VISIBLE
             visualizerComment.invalidate()
         }
     }
+
+    private fun publishAudioComment() {
+
+        //Upload audio file to AWS
+        Commons.getInstance().uploadAudio(
+            context,
+            currentCommentRecordedFile,
+            Constants.AUDIO_TYPE_COMMENT,
+            object : Commons.AudioUploadCallback {
+                override fun onSuccess(audioUrl: String?) {
+                    Timber.d("Audio uploaded to AWS successfully")
+                    currentCommentRequest?.comment?.audio_url = audioUrl
+                    currentCommentRequest?.comment?.duration = currentCommentRecordedDuration
+                    if(podcastMode) {
+                        viewModelCreatePodcastComment.uiCreateCommentRequest = currentCommentRequest!!
+                        createPodcastCommentDataTrigger.onNext(Unit)
+                    } else {
+                        viewModelCreateCommentComment.uiCreateCommentRequest = currentCommentRequest!!
+                        createCommentCommentDataTrigger.onNext(Unit)
+                    }
+                }
+
+                override fun onError(error: String?) {
+                    Timber.d("Audio upload to AWS error: $error")
+                }
+            })
+    }
+
+
 
     private fun showPlayButton() {
         btnRecord?.visibility = View.INVISIBLE
@@ -1169,6 +1223,8 @@ class PodcastDetailsFragment : BaseFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(DeleteCommentLikeViewModel::class.java)
         }
+
+
 
         activity?.let { fragmentActivity ->
             viewModelCreateCommentComment = ViewModelProviders

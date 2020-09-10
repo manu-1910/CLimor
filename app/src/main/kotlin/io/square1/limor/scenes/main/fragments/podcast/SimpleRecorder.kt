@@ -1,5 +1,6 @@
 package io.square1.limor.scenes.main.fragments.podcast
 
+import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import io.square1.limor.scenes.utils.Commons
@@ -39,12 +40,17 @@ class SimpleRecorder(private val folderPath: String) {
         recorder.start()
     }
 
-    fun stopRecording(): String {
-        recorder.apply {
-            stop()
-            release()
-        }
-        return lastFileName
+    fun stopRecording(): Pair<String, Int> {
+        recorder.stop()
+        recorder.release()
+
+        val mmr = MediaMetadataRetriever()
+        mmr.setDataSource(lastFileName)
+        val durationStr =
+            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+        val duration = durationStr.toInt() / 1000
+
+        return Pair(lastFileName, duration)
     }
 
 
@@ -78,6 +84,7 @@ class SimpleRecorder(private val folderPath: String) {
     }
 
     fun stopPlaying() {
+
         player.release()
         isReleased = true
         isPlaying = false
