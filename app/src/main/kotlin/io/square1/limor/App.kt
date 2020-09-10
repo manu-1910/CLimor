@@ -17,6 +17,7 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.square1.limor.di.AppInjector
 import io.square1.limor.di.components.AppComponent
+import timber.log.Timber
 import javax.inject.Inject
 
 class App : Application(), HasActivityInjector, HasServiceInjector {
@@ -56,6 +57,10 @@ class App : Application(), HasActivityInjector, HasServiceInjector {
 
         //Initialize Facebook SDK
         FacebookSdk.sdkInitialize(this)
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
     }
 
     private fun initRealm(): Realm? {

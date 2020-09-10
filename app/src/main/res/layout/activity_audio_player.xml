@@ -9,20 +9,11 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar_with_back_arrow_icon" />
+        layout="@layout/toolbar_with_logo_and_back_icon" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <fragment
-            android:id="@+id/navigation_host_fragment_podcasts_by_tag"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/rl_mini_player_view"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/podcasts_by_tag_nav" />
 
         <ProgressBar
             android:id="@+id/pb_loading"
@@ -30,12 +21,23 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true" />
 
-        <include layout="@layout/mini_player_view"
-            android:id="@+id/rl_mini_player_view"
-            android:layout_alignParentBottom="true"
+        <fragment
+            android:id="@+id/navigation_host_fragment_audio_player"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/miniPlayerHeight"
-            android:visibility="gone"/>
+            android:layout_height="match_parent"
+            android:layout_above="@+id/player_control_view"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/audio_player_nav" />
+
+        <com.google.android.exoplayer2.ui.PlayerControlView
+            android:id="@+id/player_control_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            app:hide_on_touch="false"
+            app:show_timeout="0" />
+
 
     </RelativeLayout>
 
