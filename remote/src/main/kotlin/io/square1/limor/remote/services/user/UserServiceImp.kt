@@ -4,10 +4,7 @@ package io.square1.limor.remote.services.user
 import io.reactivex.Single
 import io.square1.limor.remote.entities.requests.NWCreateFriendRequest
 import io.square1.limor.remote.entities.requests.NWLogoutRequest
-import io.square1.limor.remote.entities.responses.NWCreateFriendResponse
-import io.square1.limor.remote.entities.responses.NWErrorResponse
-import io.square1.limor.remote.entities.responses.NWFeedResponse
-import io.square1.limor.remote.entities.responses.NWSignUpResponse
+import io.square1.limor.remote.entities.responses.*
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
 import io.square1.limor.remote.services.RemoteServiceConfig
@@ -87,6 +84,21 @@ class UserServiceImp @Inject constructor(private val serviceConfig: RemoteServic
             }
             .doOnError { error ->
                 println("ERROR: $error")
+            }
+    }
+
+    fun getNotifications(limit: Int?, offset: Int?): Single<NWNotificationsResponse> {
+        return service.getNotifications(limit, offset)
+            .map { response -> response.parseSuccessResponse(NWNotificationsResponse.serializer()) }
+            .doOnSuccess { response ->
+                run {
+                    println("SUCCESS: $response")
+                }
+            }
+            .doOnError { error ->
+                run {
+                    println("ERROR: $error")
+                }
             }
     }
 

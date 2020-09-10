@@ -11,6 +11,7 @@ const val USER_ME_PATH = "/api/v1/users/me"
 const val LOG_OUT_PATH = "/oauth/revoke"
 const val SHOW_FEED_PATH = "/api/v1/users/feed"
 const val CREATE_FRIEND_PATH = "/api/v1/users/{id}/friends"
+const val NOTIFICATIONS_PATH = "/api/v1/users/notifications"
 
 
 interface UserService {
@@ -33,5 +34,8 @@ interface UserService {
 
     @POST(CREATE_FRIEND_PATH)
     fun createFriend(@Path("id") id : Int): Single<ResponseBody>
+
+    @GET(NOTIFICATIONS_PATH)
+    fun getNotifications(@Query ("limit") limit : Int?, @Query("offset") offset : Int?): Single<ResponseBody>
 
 }
