@@ -1,21 +1,27 @@
 package io.square1.limor.scenes.main.fragments.podcast
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
+import android.media.MediaPlayer
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.TextPaint
+import android.os.Environment
+import android.os.Handler
+import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -36,6 +42,7 @@ import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.extensions.showKeyboard
 import io.square1.limor.scenes.main.adapters.CommentsAdapter
 import io.square1.limor.scenes.main.viewmodels.*
+import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIComment
@@ -49,6 +56,7 @@ import kotlinx.android.synthetic.main.include_user_bar.*
 import kotlinx.android.synthetic.main.toolbar_with_logo_and_back_icon.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import timber.log.Timber
+import java.io.File
 import java.io.Serializable
 import java.util.*
 import java.util.regex.Matcher
@@ -72,6 +80,14 @@ data class CommentWithParent(val comment: UIComment, val parent: CommentWithPare
 
 class PodcastDetailsFragment : BaseFragment() {
 
+    private var currentCommentRequest: UICreateCommentRequest? = null
+    private var currentCommentRecordedDuration: Int = -1
+    private var currentCommentRecordedFile: File? = null
+    private var isRecording = false
+    private val handlerRecordingComment = Handler()
+    private lateinit var updater: Runnable
+
+    private lateinit var mRecorder: SimpleRecorder
     private var lastCommentRequestedRepliesPosition: Int = 0
     private var lastCommentRequestedRepliesParent: CommentWithParent? = null
     private var lastLikedItemPosition = 0
@@ -137,6 +153,13 @@ class PodcastDetailsFragment : BaseFragment() {
         fun newInstance() = PodcastDetailsFragment()
         private const val OFFSET_INFINITE_SCROLL = 2
         private const val FEED_LIMIT_REQUEST = 10
+        private val PERMISSIONS = arrayOf(
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+        private const val PERMISSION_ALL = 1
     }
 
 
@@ -182,10 +205,23 @@ class PodcastDetailsFragment : BaseFragment() {
 
         showProgressBar()
 
+        initPodcastOrCommentMode()
+        audioSetup()
+
+        fillForm()
+        initListeners()
+        activity?.startCommenting?.let {
+            if(it)
+                openCommentBarTextAndFocusIt()
+        }
+    }
+
+    private fun initPodcastOrCommentMode() {
         // if it's not null, that means that we have to show the "comment of a comment" screen.
         // If it's null this means that we have to show the "comment of a podcast" screen
         uiMainCommentWithParent?.let {
             podcastMode = false
+            viewModelCreateCommentComment.idComment = it.comment.id
             commentsAdapter?.podcastMode = podcastMode
             hideEmptyScenario()
             addTopParents(it)
@@ -226,16 +262,10 @@ class PodcastDetailsFragment : BaseFragment() {
             // but if it is null, we have to get the podcast comments
         } ?: run {
             podcastMode = true
+            uiPodcast?.id?.let { idPodcast -> viewModelCreatePodcastComment.idPodcast = idPodcast }
             commentsAdapter?.podcastMode = podcastMode
             uiPodcast?.id?.let { viewModelGetPodcastComments.idPodcast = it }
             getPodcastCommentsDataTrigger.onNext(Unit)
-        }
-
-        fillForm()
-        initListeners()
-        activity?.startCommenting?.let {
-            if(it)
-                openCommentBarTextAndFocusIt()
         }
     }
 
@@ -333,6 +363,7 @@ class PodcastDetailsFragment : BaseFragment() {
             it.data?.comment?.let { newComment ->
                 addNewCommentToList(newComment)
             }
+            deleteCurrentCommentAudioAndResetBar()
             hideProgressBar()
             hideCommentBar()
         })
@@ -341,6 +372,7 @@ class PodcastDetailsFragment : BaseFragment() {
             it.data?.comment?.let { newComment ->
                 addNewCommentToList(newComment)
             }
+            deleteCurrentCommentAudioAndResetBar()
             hideProgressBar()
             hideCommentBar()
         })
@@ -360,6 +392,7 @@ class PodcastDetailsFragment : BaseFragment() {
         commentBarUpperSide?.visibility = View.GONE
         etCommentUp?.setText("")
         etCommentDown?.visibility = View.VISIBLE
+        visualizerComment?.visibility = View.GONE
     }
 
 
@@ -402,24 +435,212 @@ class PodcastDetailsFragment : BaseFragment() {
                 }
             }
 
-        btnPost.onClick {
-            etCommentUp?.text?.let {
-                if(it.isNotEmpty()) {
-                    val request = UICreateCommentRequest(UICommentRequest(it.toString(), 0, null))
-                    if(podcastMode) {
-                        viewModelCreatePodcastComment.idPodcast = uiPodcast!!.id
-                        viewModelCreatePodcastComment.uiCreateCommentRequest = request
-                        createPodcastCommentDataTrigger.onNext(Unit)
-                    } else {
-                        viewModelCreateCommentComment.idComment = uiMainCommentWithParent!!.comment.id
-                        viewModelCreateCommentComment.uiCreateCommentRequest = request
-                        createCommentCommentDataTrigger.onNext(Unit)
-                    }
+        etCommentUp.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if(etCommentUp.text.isNotEmpty()) {
+                    btnPost.setTextColor(ContextCompat.getColor(context!!, R.color.brandPrimary500))
                 } else {
-                    etCommentUp?.setError(getString(R.string.this_field_cant_be_empty))
+                    btnPost.setTextColor(ContextCompat.getColor(context!!, R.color.brandSecondary100))
+                }
+            }
+        })
+
+        btnPost.onClick {
+            var commentText = ""
+            etCommentUp?.text?.let { text -> commentText = text.toString() }
+
+            if(commentText.isNotEmpty()) {
+                currentCommentRequest = UICreateCommentRequest(UICommentRequest(commentText, 0, null))
+                if(currentCommentRecordedFile == null) {
+                    publishTextComment()
+                } else {
+                    publishAudioComment()
+                }
+
+
+            } else {
+                etCommentUp?.error = getString(R.string.this_field_cant_be_empty)
+            }
+
+        }
+
+        btnTrash.onClick {
+            deleteCurrentCommentAudioAndResetBar()
+        }
+
+        btnRecord.setOnTouchListener { view, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                if(!isCommentBarOpen())
+                    openCommentBarTextAndFocusIt()
+
+                btnRecord.setImageResource(R.drawable.record_red)
+                audioSetup()
+                recordAudio()
+            } else if(event.action == MotionEvent.ACTION_UP) {
+                stopAudio()
+                btnRecord.setImageResource(R.drawable.record)
+                view.performClick()
+            }
+            true
+        }
+
+        updater = object : Runnable {
+            override fun run() {
+                Timber.d("Inside updaterRunnable")
+                handlerRecordingComment.postDelayed(this, 150)
+                if(isRecording) {
+                    val maxAmplitude: Int = mRecorder.getMaxAmplitude()
+                    visualizerComment?.addAmplitude(maxAmplitude.toFloat())
+                    visualizerComment?.invalidate() // refresh the Visualizer
                 }
             }
         }
+
+        btnPlayComment.onClick {
+            if(mRecorder.isPlaying) {
+                btnPlayComment.setImageResource(R.drawable.play)
+                mRecorder.pausePlaying()
+
+                // this means that it has a file loaded but it's not currently playing
+            } else if (!mRecorder.isReleased) {
+                btnPlayComment.setImageResource(R.drawable.pause)
+                mRecorder.resumePlaying()
+
+                // it doesn't have a file loaded
+            } else {
+                currentCommentRecordedFile?.let {
+                    if(it.exists() && it.isFile) {
+                        btnPlayComment.setImageResource(R.drawable.pause)
+                        mRecorder.startPlaying(it.absolutePath, MediaPlayer.OnCompletionListener { onPlayingCommentFinished() })
+                    }
+                }
+            }
+        }
+    }
+
+    private fun deleteCurrentCommentAudioAndResetBar() {
+        currentCommentRecordedFile = null
+        mRecorder.clear()
+        currentCommentRecordedDuration = -1
+        currentCommentRecordedFile = null
+        visualizerComment.clear()
+        visualizerComment.invalidate()
+        btnRecord.setImageResource(R.drawable.record)
+        btnPlayComment.visibility = View.GONE
+        btnRecord.visibility = View.VISIBLE
+        btnTrash.visibility = View.GONE
+    }
+
+    private fun publishTextComment() {
+        if(podcastMode) {
+            viewModelCreatePodcastComment.uiCreateCommentRequest = currentCommentRequest!!
+            createPodcastCommentDataTrigger.onNext(Unit)
+        } else {
+            viewModelCreateCommentComment.uiCreateCommentRequest = currentCommentRequest!!
+            createCommentCommentDataTrigger.onNext(Unit)
+        }
+    }
+
+    private fun onPlayingCommentFinished() {
+        btnPlayComment.setImageResource(R.drawable.play)
+    }
+
+    private fun hasPermissions(context: Context, vararg permissions: String): Boolean = permissions.all {
+        ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun audioSetup() {
+
+        // Note: this is not the audio file name, it's a directory.
+        val recordingDirectory = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/")
+        if(!recordingDirectory.exists()){
+            recordingDirectory.mkdir()
+        }
+
+        mRecorder = SimpleRecorder(recordingDirectory.absolutePath)
+    }
+
+    private fun recordAudio() {
+
+        //Check if all permissions are granted, if not, request again
+        if (!hasPermissions(requireContext(), *PERMISSIONS)) {
+            try {
+                ActivityCompat.requestPermissions(requireActivity(),
+                    PERMISSIONS, PERMISSION_ALL
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }else{
+            visualizerComment?.visibility = View.VISIBLE
+            isRecording = true
+            println("RECORD --> START")
+            mRecorder.startRecording()
+            handlerRecordingComment.post(updater)
+        }
+    }
+
+
+    private fun stopAudio() {
+        isRecording = false
+        handlerRecordingComment.removeCallbacks(updater)
+        val filenameAndAudio = mRecorder.stopRecording()
+        val filenameRecorded = filenameAndAudio.first
+        currentCommentRecordedDuration = filenameAndAudio.second
+        currentCommentRecordedFile = File(filenameRecorded)
+        if(currentCommentRecordedFile!!.isFile && currentCommentRecordedFile!!.exists()) {
+            showPlayButton()
+            btnTrash?.visibility = View.VISIBLE
+            visualizerComment.invalidate()
+        }
+    }
+
+    private fun publishAudioComment() {
+
+        //Upload audio file to AWS
+        Commons.getInstance().uploadAudio(
+            context,
+            currentCommentRecordedFile,
+            Constants.AUDIO_TYPE_COMMENT,
+            object : Commons.AudioUploadCallback {
+                override fun onSuccess(audioUrl: String?) {
+                    Timber.d("Audio uploaded to AWS successfully")
+                    currentCommentRequest?.comment?.audio_url = audioUrl
+                    currentCommentRequest?.comment?.duration = currentCommentRecordedDuration
+                    if(podcastMode) {
+                        viewModelCreatePodcastComment.uiCreateCommentRequest = currentCommentRequest!!
+                        createPodcastCommentDataTrigger.onNext(Unit)
+                    } else {
+                        viewModelCreateCommentComment.uiCreateCommentRequest = currentCommentRequest!!
+                        createCommentCommentDataTrigger.onNext(Unit)
+                    }
+                }
+
+                override fun onError(error: String?) {
+                    Timber.d("Audio upload to AWS error: $error")
+                }
+            })
+    }
+
+
+
+    private fun showPlayButton() {
+        btnRecord?.visibility = View.INVISIBLE
+        btnPlayComment?.visibility = View.VISIBLE
+    }
+
+    private fun showRecordButton() {
+        btnRecord?.visibility = View.VISIBLE
+        btnPlayComment?.visibility = View.INVISIBLE
+    }
+
+
+    private fun isCommentBarOpen() : Boolean {
+        return commentBarUpperSide.visibility == View.VISIBLE
     }
 
     private fun openCommentBarTextAndFocusIt() {
@@ -427,6 +648,8 @@ class PodcastDetailsFragment : BaseFragment() {
         etCommentDown.visibility = View.GONE
         etCommentUp.requestFocus()
         commentBarUpperSide.visibility = View.VISIBLE
+        etCommentDown.visibility = View.GONE
+        visualizerComment.visibility = View.VISIBLE
 
         val loggedUser = sessionManager.getStoredUser()
         loggedUser?.let {
@@ -1000,6 +1223,8 @@ class PodcastDetailsFragment : BaseFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(DeleteCommentLikeViewModel::class.java)
         }
+
+
 
         activity?.let { fragmentActivity ->
             viewModelCreateCommentComment = ViewModelProviders

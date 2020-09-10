@@ -116,6 +116,16 @@ class FeedFragment : BaseFragment() {
         return rootView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        //Setup animation transition
+        ViewCompat.setTranslationZ(view, 20f)
+        swipeRefreshLayout?.onRefresh {
+            reloadFeed()
+        }
+    }
+
     private fun initApiCallDeleteRecast() {
         val output = viewModelDeletePodcastRecast.transform(
             DeletePodcastRecastViewModel.Input(
@@ -550,15 +560,6 @@ class FeedFragment : BaseFragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        //Setup animation transition
-        ViewCompat.setTranslationZ(view, 20f)
-        swipeRefreshLayout?.onRefresh {
-            reloadFeed()
-        }
-    }
 
     private fun reloadFeed() {
         isLastPage = false

@@ -42,7 +42,26 @@ public class VisualizerView extends View {
         //We paint 1 bar and set the margin of other bar, so, our width of the canvas will be width/2 because we need the double of space
         width = w / 2; // new width of this View
         height = h; // new height of this View
-        amplitudes = new ArrayList<Float>(width / LINE_WIDTH);
+
+        // we will calculate the new capacity because from now on, there won't fit the same ammount of items than before
+        int newCapacity = width / LINE_WIDTH;
+        // we create an auxList that will help us handle what to do with the previous items
+        List<Float> newList = new ArrayList<>(newCapacity);
+
+        // if now view is larger and therefore, now we can fit more items, we'll put all the items
+        // in the aux list
+        if(amplitudes != null && newCapacity > amplitudes.size()) {
+            newList.addAll(amplitudes);
+
+            // if previous list is not null and has more items than the amount we can fit now
+            // then we'll have to truncate the previous list
+        } else if(amplitudes != null) {
+            int difference = amplitudes.size() - newCapacity;
+            newList.addAll(amplitudes.subList(difference, amplitudes.size() - 1));
+        }
+
+        // and now let's assign that aux list to our original list
+        amplitudes = newList;
     }
 
 

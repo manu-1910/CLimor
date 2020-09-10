@@ -223,14 +223,29 @@
                 android:background="@color/transparent"
                 android:contentDescription="@string/title_record"
                 android:scaleType="centerCrop"
+                android:visibility="visible"
                 android:src="@drawable/record" />
+
+            <ImageButton
+                android:id="@+id/btnPlayComment"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/marginAlmostLarge"
+                android:layout_marginEnd="@dimen/marginMedium"
+                android:background="@color/transparent"
+                android:contentDescription="@string/title_record"
+                android:scaleType="centerCrop"
+                android:visibility="invisible"
+                android:src="@drawable/play" />
 
             <FrameLayout
                 android:id="@+id/layETCommentHolderDown"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/marginSmall"
-                android:layout_toStartOf="@id/btnPost"
+                android:layout_toStartOf="@id/btnTrash"
                 android:layout_toEndOf="@id/btnRecord">
 
                 <EditText
@@ -243,9 +258,27 @@
                     android:importantForAutofill="no"
                     android:inputType="text"
                     android:textColor="@color/white"
-                    android:textColorHint="@color/brandSecondary100" />
+                    android:textColorHint="@color/brandSecondary100"
+                    android:visibility="visible"/>
+
+                <io.square1.limor.scenes.utils.VisualizerView
+                    android:id="@+id/visualizerComment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"/>
+
             </FrameLayout>
 
+            <ImageButton
+                android:id="@+id/btnTrash"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@id/btnPost"
+                android:background="@color/transparent"
+                android:contentDescription="@string/delete"
+                android:src="@drawable/delete"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/btnPost"

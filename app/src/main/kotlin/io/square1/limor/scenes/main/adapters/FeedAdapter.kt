@@ -21,10 +21,6 @@ class FeedAdapter(
     private var inflator: LayoutInflater
     var list: ArrayList<UIFeedItem> = ArrayList()
 
-    private fun onTagClicked(clickedTag: String) {
-        feedClickListener.onHashtagClicked(clickedTag)
-    }
-
     init {
         this.list = list
         inflator = LayoutInflater.from(context)
