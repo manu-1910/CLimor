@@ -580,4 +580,8 @@ class FeedFragment : BaseFragment() {
         return hashTag.isNotEmpty()
     }
 
+    fun scrollToTop() {
+        rvFeed?.scrollToPosition(0)
+    }
+
 }
