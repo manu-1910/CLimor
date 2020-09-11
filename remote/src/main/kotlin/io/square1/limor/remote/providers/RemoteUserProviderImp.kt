@@ -2,10 +2,7 @@ package io.square1.limor.remote.providers
 
 
 import entities.request.DataLogoutRequest
-import entities.response.CreateFriendResponseEntity
-import entities.response.ErrorResponseEntity
-import entities.response.FeedResponseEntity
-import entities.response.SignUpResponseEntity
+import entities.response.*
 import io.reactivex.Single
 import io.square1.limor.remote.mappers.asDataEntity
 import io.square1.limor.remote.mappers.asRemoteEntity
@@ -36,6 +33,10 @@ class RemoteUserProviderImp @Inject constructor(private val provider: UserServic
 
     override fun createFriend(id : Int): Single<CreateFriendResponseEntity> {
         return provider.createFriend(id).asDataEntity()
+    }
+
+    override fun getNotifications(limit: Int, offset: Int): Single<NotificationsResponseEntity> {
+        return provider.getNotifications(limit, offset).asDataEntity()
     }
 }
 
