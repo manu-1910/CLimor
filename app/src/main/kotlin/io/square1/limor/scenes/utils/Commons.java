@@ -78,6 +78,11 @@ public class Commons {
         void onError(String error);
     }
 
+    public interface AudioDownloadCallback {
+        void onSuccess(File downloadedFile);
+        void onError(String error);
+    }
+
     public interface ImageUploadCallback {
         void onStateChanged(int id, TransferState state);
         void onProgressChanged(int id, long bytesCurrent, long bytesTotal);
@@ -437,6 +442,47 @@ public class Commons {
             }
         });
     }
+
+
+    // not working, it should be deleted in the future
+//    public void downloadAudio(Context context, String url, String destinationPath, final AudioDownloadCallback callback) {
+//        if (url == null || url.equals("")) {
+//            callback.onError(context.getString(R.string.error_something_went_wrong));
+//            return;
+//        }
+//
+//
+//        String fileName = url.substring(url.lastIndexOf("/") + 1);
+//        String finalPath = destinationPath + "/" + fileName;
+//        File destinationFile = new File(finalPath);
+//        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+//                context,
+//                Constants.AWS_IDENTITY_POOL,
+//                Regions.EU_WEST_1
+//        );
+//        final AmazonS3 s3 = new AmazonS3Client(credentialsProvider);
+//        TransferUtility transferUtility = TransferUtility.builder().s3Client(s3).context(context).build();
+//        transferUtility.download(
+//                Constants.AWS_BUCKET,
+//                url,
+//                destinationFile,
+//                new TransferListener() {
+//                    @Override
+//                    public void onStateChanged(int id, TransferState state) {
+//                        if (state == TransferState.COMPLETED) {
+//                            callback.onSuccess(destinationFile);
+//                        }
+//                    }
+//                    @Override
+//                    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+//                        Timber.d("AWS Download: id["+id+"] bytesCurrent["+bytesCurrent+"] bytesTotal["+bytesTotal+"]");
+//                    }
+//                    @Override
+//                    public void onError(int id, Exception ex) {
+//                        callback.onError(ex.getLocalizedMessage());
+//                    }
+//                });
+//    }
 
 
     public void uploadImage(Context context, final ImageUploadCallback imageUploadCallback, final int imageType) {

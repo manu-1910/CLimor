@@ -17,9 +17,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -135,6 +133,8 @@ class PodcastDetailsFragment : BaseFragment() {
     // this represents the main comment of the screen, it will be null when we are in podcastMode
     // and it will be the main comment when we are seeing the comments of this comment
     private var uiMainCommentWithParent: CommentWithParent? = null
+
+    private var audioCommentPlayerController: AudioCommentPlayerController? = null
 
 
 
@@ -988,8 +988,19 @@ class PodcastDetailsFragment : BaseFragment() {
                         startActivityForResult(podcastDetailsIntent, 0)
                     }
 
-                    override fun onPlayClicked(item: UIComment, position: Int) {
-                        Toast.makeText(context, "You clicked on play", Toast.LENGTH_SHORT).show()
+                    override fun onPlayClicked(
+                        item: CommentWithParent,
+                        position: Int,
+                        seekBar: SeekBar,
+                        ibtnPlay: ImageButton,
+                        tvCurrentTime: TextView,
+                        tvTotalTime: TextView
+                    ) {
+                        if (audioCommentPlayerController != null && audioCommentPlayerController?.comment == item.comment){
+                            audioCommentPlayerController?.onPlayClicked()
+                        } else {
+                            audioCommentPlayerController = AudioCommentPlayerController(item.comment, seekBar, ibtnPlay, tvCurrentTime, tvTotalTime, context!!)
+                        }
                     }
 
                     override fun onListenClicked(item: UIComment, position: Int) {
@@ -1080,6 +1091,18 @@ class PodcastDetailsFragment : BaseFragment() {
                         removeExcessChildrenFromLists(parent, lastChildPosition)
                         rvComments?.adapter?.notifyDataSetChanged()
                         rvComments?.scrollToPosition(originalParentPosition)
+                    }
+
+                    override fun onSeekProgressChanged(
+                        seekBar: SeekBar?,
+                        progress: Int,
+                        fromUser: Boolean,
+                        currentItem: CommentWithParent,
+                        position: Int
+                    ) {
+                        if(fromUser && audioCommentPlayerController?.comment == currentItem.comment) {
+                            audioCommentPlayerController?.onSeekProgressChanged(progress)
+                        }
                     }
                 },
                 podcastMode,

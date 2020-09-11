@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -37,6 +38,9 @@ class CommentItemViewHolder(
         false
     )
 ) {
+
+
+
     private var tvUserFullname: TextView = itemView.findViewById(R.id.tvUserName)
     private var tvDateAndLocation: TextView = itemView.findViewById(R.id.tvTimeAndLocation)
 
@@ -68,7 +72,7 @@ class CommentItemViewHolder(
     private var layMoreReplies: View = itemView.findViewById(R.id.layMoreReplies)
     private var layPlayer: View = itemView.findViewById(R.id.layPlayer)
 
-    private var seekBar: View = itemView.findViewById(R.id.seekBar)
+    private var seekBar: SeekBar = itemView.findViewById(R.id.seekBar)
 
 
 
@@ -160,15 +164,35 @@ class CommentItemViewHolder(
             val duration = currentItem.comment.audio.duration
             val audioUrl = currentItem.comment.audio.url
             if(duration != null && audioUrl != null) {
-                layPlayer.visibility = View.VISIBLE
+                showPlayer(currentItem, position)
+            } else {
+                layPlayer.visibility = View.GONE
             }
         } else {
             layPlayer.visibility = View.GONE
         }
 
 
+
+
         ibtnMore.onClick { commentClickListener.onMoreClicked(currentItem.comment, position) }
         btnReply.onClick { commentClickListener.onReplyClicked(currentItem.comment, position) }
+    }
+
+    private fun showPlayer(currentItem: CommentWithParent, position: Int) {
+        layPlayer.visibility = View.VISIBLE
+        seekBar.setOnSeekBarChangeListener (object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                commentClickListener.onSeekProgressChanged(seekBar, progress, fromUser, currentItem, position)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+
+        })
+
+        ibtnPlay.onClick { commentClickListener.onPlayClicked(currentItem, position, seekBar, ibtnPlay, tvCurrentTime, tvTotalTime) }
     }
 
 
