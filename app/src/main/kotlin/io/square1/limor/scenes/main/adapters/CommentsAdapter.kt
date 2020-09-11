@@ -63,9 +63,7 @@ class CommentsAdapter(
             item: CommentWithParent,
             position: Int,
             seekBar: SeekBar,
-            ibtnPlay: ImageButton,
-            tvCurrentTime: TextView,
-            tvTotalTime: TextView
+            ibtnPlay: ImageButton
         )
         fun onListenClicked(item : UIComment, position: Int)
         fun onCommentClicked(item: CommentWithParent, position: Int)

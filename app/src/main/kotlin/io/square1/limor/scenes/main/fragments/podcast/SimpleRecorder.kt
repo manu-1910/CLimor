@@ -73,6 +73,10 @@ class SimpleRecorder(private val folderPath: String) {
         }
     }
 
+    fun getCurrentPosition() : Int {
+        return player.currentPosition
+    }
+
     fun resumePlaying() {
         isPlaying = true
         player.start()
@@ -96,6 +100,10 @@ class SimpleRecorder(private val folderPath: String) {
 
     fun clear() {
         stopPlaying()
+    }
+
+    fun moveToPosition(progress: Int) {
+        player.seekTo(progress)
     }
 
 }

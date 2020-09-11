@@ -633,11 +633,6 @@ class PodcastDetailsFragment : BaseFragment() {
         btnPlayComment?.visibility = View.VISIBLE
     }
 
-    private fun showRecordButton() {
-        btnRecord?.visibility = View.VISIBLE
-        btnPlayComment?.visibility = View.INVISIBLE
-    }
-
 
     private fun isCommentBarOpen() : Boolean {
         return commentBarUpperSide.visibility == View.VISIBLE
@@ -992,14 +987,12 @@ class PodcastDetailsFragment : BaseFragment() {
                         item: CommentWithParent,
                         position: Int,
                         seekBar: SeekBar,
-                        ibtnPlay: ImageButton,
-                        tvCurrentTime: TextView,
-                        tvTotalTime: TextView
+                        ibtnPlay: ImageButton
                     ) {
                         if (audioCommentPlayerController != null && audioCommentPlayerController?.comment == item.comment){
                             audioCommentPlayerController?.onPlayClicked()
                         } else {
-                            audioCommentPlayerController = AudioCommentPlayerController(item.comment, seekBar, ibtnPlay, tvCurrentTime, tvTotalTime, context!!)
+                            audioCommentPlayerController = AudioCommentPlayerController(item.comment, seekBar, ibtnPlay)
                         }
                     }
 
