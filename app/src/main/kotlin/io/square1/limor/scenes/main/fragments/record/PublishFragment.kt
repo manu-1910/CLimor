@@ -381,14 +381,14 @@ class PublishFragment : BaseFragment() {
                     val job1 = launch(myContext) {
                         println("Llamo a publish image")
                         publishPodcastImage()
-                        delay(5000)
+                        delay(1000)
                     }
                     job1.join()
 
                     val job2 = launch(myContext) {
                         println("Llamo a publish audio")
                         publishPodcastAudio()
-                        delay(5000)
+                        delay(1000)
                     }
                     job2.join()
 
