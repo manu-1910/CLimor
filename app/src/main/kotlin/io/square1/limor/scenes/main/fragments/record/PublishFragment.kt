@@ -5,10 +5,8 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
@@ -18,8 +16,6 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.text.*
-import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,15 +27,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
-import com.google.android.gms.common.util.Strings
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.hendraanggrian.appcompat.widget.Hashtag
+import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
+import com.hendraanggrian.appcompat.widget.SocialView
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
@@ -48,7 +44,7 @@ import io.square1.limor.common.Constants
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.MainActivity
-import io.square1.limor.scenes.main.fragments.record.adapters.TagsAdapter
+import io.square1.limor.scenes.main.fragments.record.adapters.HashtagAdapter
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
@@ -59,24 +55,21 @@ import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.uiThread
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
-import java.io.OutputStream
 import java.util.*
 import java.util.concurrent.TimeUnit
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 
 class PublishFragment : BaseFragment() {
-
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -85,7 +78,6 @@ class PublishFragment : BaseFragment() {
     private lateinit var categoriesViewModel: CategoriesViewModel
     private lateinit var locationsViewModel: LocationsViewModel
     private lateinit var tagsViewModel: TagsViewModel
-
 
     lateinit var recordingItem : UIDraft
     private lateinit var mediaPlayer: MediaPlayer
@@ -110,28 +102,21 @@ class PublishFragment : BaseFragment() {
     private var btnSaveDraft: Button? = null
     private var btnPublishDraft: Button? = null
 
+    //Form vars
     private var etDraftTitle: EditText? = null
-    private var etDraftCaption: MultiAutoCompleteTextView? = null
+    private var etDraftCaption: SocialAutoCompleteTextView? = null
     private var tvDraftCategory: TextView? = null
     private var tvDraftLocation: TextView? = null
-
     private var podcastLocation: UILocations = UILocations("", 0.0, 0.0, false)
-
     private var imageUrlFinal: String? = ""
     private var audioUrlFinal: String? = ""
-
     private var isPublished: Boolean = false
-
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-
     private val GALLERY_ACTIVITY_CODE = 200
     private val RESULT_CROP = 400
-
-    private var rvTags: RecyclerView? = null
     private var listTags = ArrayList<UITags>()
-    private var listTagsString = ArrayList<String>()
-    private var lytRvTags: LinearLayout? = null
-    private var clickedInTagRecycler: Boolean = false
+    private var listTagsString: ArrayAdapter<Hashtag>? = null
+
 
     companion object {
         val TAG: String = PublishFragment::class.java.simpleName
@@ -158,17 +143,8 @@ class PublishFragment : BaseFragment() {
             lytImage = rootView?.findViewById(R.id.lytImage)
             btnSaveDraft = rootView?.findViewById(R.id.btnSaveAsDraft)
             btnPublishDraft = rootView?.findViewById(R.id.btnPublish)
-
             etDraftTitle = rootView?.findViewById(R.id.etTitle)
             etDraftCaption = rootView?.findViewById(R.id.etCaption)
-            //etDraftHashtags = rootView?.findViewById(R.id.etHashtags)
-            //etDraftLocation = rootView?.findViewById(R.id.etLocation)
-
-            //lytHashtags = rootView?.findViewById(R.id.lytHashtags)
-            //lytLocation = rootView?.findViewById(R.id.lytLocation)
-
-            rvTags = rootView?.findViewById(R.id.rvTags)
-            lytRvTags = rootView?.findViewById(R.id.lytRvTags)
 
             mediaPlayer = MediaPlayer()
         }
@@ -201,12 +177,7 @@ class PublishFragment : BaseFragment() {
         apiCallPublishPodcast()
         getCityOfDevice()
         apiCallHashTags()
-        //setupRecycler(listTags)
         multiCompleteText()
-        //setMessageWithClickableLink(etDraftCaption!!)
-
-        //TextWatcher to manage hashtags when user type '#'
-        etDraftCaption?.addTextChangedListener(filterTextWatcher)
     }
 
     override fun onResume() {
@@ -395,60 +366,6 @@ class PublishFragment : BaseFragment() {
 
 
 
-    }
-
-
-    private val filterTextWatcher: TextWatcher = object : TextWatcher {
-        override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
-            val layout: Layout = etDraftCaption!!.layout
-            val pos: Int = etDraftCaption!!.selectionStart
-            val line = layout.getLineForOffset(pos)
-            val baseline = layout.getLineBaseline(line)
-
-            val bottom: Int = etDraftCaption!!.height
-
-            //etDraftCaption!!.dropDownVerticalOffset = baseline - bottom
-            etDraftCaption!!.showDropDown()
-            etDraftCaption!!.requestFocus()
-        }
-
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            val textSpan: Spannable? = s.toString().toEditable()
-            val pattern: Pattern = Pattern.compile("#[\\w]+")
-            val matcher: Matcher = pattern.matcher(textSpan)
-            while (matcher.find()) {
-                val start = matcher.start()
-                val end = matcher.end()
-                val tagToSearch = textSpan?.substring(start, end).toString()
-                callToTagsApiAndShowRecyclerView(tagToSearch)
-//                    etDraftCaption?.requestFocus()
-            }
-        }
-
-        override fun afterTextChanged(s: Editable?) {
-
-                val textSpan: Spannable? = s
-                val pattern: Pattern = Pattern.compile("#[\\w]+")
-                val matcher: Matcher = pattern.matcher(textSpan)
-                while (matcher.find()) {
-                    val start = matcher.start()
-                    val end = matcher.end()
-                    textSpan?.setSpan(
-                        ForegroundColorSpan(resources.getColor(R.color.brandPrimary500)),
-                        start,
-                        end,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-
-
-                    //val tagToSearch = textSpan?.substring(start, end).toString()
-                    //callToTagsApiAndShowRecyclerView(tagToSearch)
-//                    etDraftCaption?.requestFocus()
-                }
-
-
-            //lytRvTags?.visibility = View.GONE
-        }
     }
 
 
@@ -876,29 +793,6 @@ class PublishFragment : BaseFragment() {
         }
     }
 
-    // Method to save an bitmap to a file
-    private fun bitmapToFile(bitmap: Bitmap): Uri {
-        // Get the context wrapper
-        val wrapper = ContextWrapper(context)
-
-        // Initialize a new file instance to save bitmap object
-        var file = wrapper.getDir("Images", Context.MODE_PRIVATE)
-        file = File(file, "${UUID.randomUUID()}.jpg")
-
-        try{
-            // Compress the bitmap and save in jpg format
-            val stream: OutputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-            stream.flush()
-            stream.close()
-        }catch (e: IOException){
-            e.printStackTrace()
-        }
-
-        // Return the saved bitmap uri
-        return Uri.parse(file.absolutePath)
-    }
-
 
     private fun updateDraft() {
         val output = draftViewModel.insertDraftRealm(
@@ -998,7 +892,6 @@ class PublishFragment : BaseFragment() {
     private fun callToTagsApiAndShowRecyclerView(tag: String){
         tagsViewModel.tagToSearch = tag
         getTagsTrigger.onNext(Unit)
-        //etDraftCaption?.requestFocus()
     }
 
 
@@ -1010,27 +903,21 @@ class PublishFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
-            view?.hideKeyboard()
-
-            if (it.code == 0) { //Publish Ok
-                //lytRvTags?.visibility = View.VISIBLE
+            if (it.code == 0) {
                 if (it.data.tags.size > 0) {
-                    //hidePlaceHolder()
-                    listTags.clear()
-                    listTagsString.clear()
-                    listTags.addAll(it.data.tags)
-                    for (item in listTags) {
-                        listTagsString.add(item.text)
+                    listTagsString?.clear()
+                    doAsync {
+                        listTags.clear()
+                        listTags.addAll(it.data.tags)
+
+                        uiThread {
+                            for (item in listTags) {
+                                listTagsString?.add(Hashtag(item.text))
+                            }
+                        }
                     }
-                    //setupRecycler(listTags)
-                    //rvTags?.adapter?.notifyDataSetChanged()
-                } else {
-                    //showPlaceHolder()
                 }
 
-            } else {
-                lytRvTags?.visibility = View.GONE
             }
         })
 
@@ -1039,121 +926,52 @@ class PublishFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
-            view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
-
                 val message: StringBuilder = StringBuilder()
                 if (it.errorMessage!!.isNotEmpty()) {
                     message.append(it.errorMessage)
                 } else {
                     message.append(R.string.some_error)
                 }
-
-                if (it.code == 10) {  //Session expired
-                    alert(message.toString()) {
-                        okButton {
-                            val intent = Intent(context, SignActivity::class.java)
-                            //intent.putExtra(getString(R.string.otherActivityKey), true)
-                            startActivityForResult(
-                                intent,
-                                resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
-                            )
-                        }
-                    }.show()
-                } else {
-                    alert(message.toString()) {
-                        okButton { }
-                    }.show()
-                }
-
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
+                println("Error getting the hashtags $message")
             }
         })
     }
-
-
-    private fun setupRecycler(tagList: ArrayList<UITags>) {
-        rvTags?.layoutManager = LinearLayoutManager(context)
-        rvTags?.adapter = TagsAdapter(
-            tagList,
-            object : TagsAdapter.OnItemClickListener {
-                override fun onItemClick(item: UITags) {
-                }
-            })
-        //etDraftCaption = findViewById(R.id.category) as AutoCompleteTextView
-
-        //etDraftCaption!!.setAdapter(adapter)
-        //etDraftCaption!!.onItemClickListener = onItemClickListener
-    }
-
 
 
     private fun multiCompleteText(){
-        //val inputEditText = dialog.findViewById(R.id.MyEditText) as MultiAutoCompleteTextView
-
-        //val COUNTRIES = arrayOf("Belgium", "France", "Italy", "Germany", "Spain")
-        val adapter = ArrayAdapter<String>(
-            context,
-            android.R.layout.simple_spinner_dropdown_item,
-            listTagsString
-        )
-
-        etDraftCaption!!.threshold = 1 //Set number of characters before the dropdown should be shown
-        etDraftCaption!!.setAdapter(adapter)
-
-        //Create a new Tokenizer which will get text after '#' and terminate on ' '
-        etDraftCaption!!.setTokenizer(object : MultiAutoCompleteTextView.Tokenizer {
-            override fun terminateToken(text: CharSequence): CharSequence? {
-                var i = text.length
-                while (i > 0 && text[i - 1] == ' ') {
-                    i--
-                }
-                return if (i > 0 && text[i - 1] == ' ') {
-                    text
-                } else {
-                    if (text is Spanned) {
-                        val sp = SpannableString("$text ")
-                        TextUtils.copySpansFrom(
-                            text as Spanned, 0, text.length,
-                            Any::class.java, sp, 0
-                        )
-                        sp
-                    } else {
-                        "$text "
-                    }
-                }
-            }
-
-            override fun findTokenStart(text: CharSequence, cursor: Int): Int {
-                var i = cursor
-                while (i > 0 && text[i - 1] != '#') {
-                    i--
-                }
-
-                //Check if token really started with @, else we don't have a valid token
-                return if (i < 1 || text[i - 1] != '#') {
-                    cursor
-                } else i
-            }
-
-            override fun findTokenEnd(text: CharSequence, cursor: Int): Int {
-                var i = cursor
-                val len = text.length
-                while (i < len) {
-                    if (text[i] == ' ') {
-                        return i
-                    } else {
-                        i++
-                    }
-                }
-                return len
-            }
-        })
+        listTagsString = HashtagAdapter(context!!)
+        etDraftCaption?.isMentionEnabled = false
+        etDraftCaption?.hashtagColor = ContextCompat.getColor(context!!, R.color.brandPrimary500)
+        etDraftCaption?.hashtagAdapter = listTagsString
+        etDraftCaption?.setHashtagTextChangedListener { view, text ->
+            println("setHashtagTextChangedListener -> $text")
+            callToTagsApiAndShowRecyclerView(text.toString())
+        }
     }
+
+
+//    class HashtagAdapter(context: Context) : HashtagArrayAdapter<Hashtag>(context, R.layout.tag_item) {
+//
+//        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+//            val holder: ViewHolder
+//            var view = convertView
+//            when (view) {
+//                null -> {
+//                    view = LayoutInflater.from(context).inflate(R.layout.tag_item, parent, false)
+//                    holder = ViewHolder(view!!)
+//                    view.tag = holder
+//                }
+//                else -> holder = view.tag as ViewHolder
+//            }
+//            getItem(position)?.let { model -> holder.textView.text = model.id }
+//            return view
+//        }
+//
+//        private class ViewHolder(view: View) {
+//            val textView: TextView = view.findViewById(R.id.text1)
+//        }
+//    }
 
 }
 

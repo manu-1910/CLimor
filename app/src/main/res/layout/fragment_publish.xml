@@ -11,8 +11,6 @@
     android:layout_height="match_parent"
     android:fillViewport="true">
 
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -94,10 +92,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <MultiAutoCompleteTextView
+            <com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
                 android:id="@+id/etCaption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.EditText"
                 android:layout_gravity="top"
                 android:layout_margin="@dimen/marginMedium"
                 android:fontFamily="@font/roboto"
@@ -108,33 +107,15 @@
                 android:textColor="@color/white"
                 android:textColorHint="@color/brandSecondary100"
                 android:textSize="@dimen/textSizeNormal"
-                app:backgroundTint="@color/transparent" />
+                app:hyperlinkColor="@color/brandPrimary500"
+                app:backgroundTint="@color/transparent"
+                app:socialFlags="hashtag" />
 
             <View
                 android:layout_marginTop="@dimen/marginSmall"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/brandSecondary300"/>
-
-            <LinearLayout
-                android:id="@+id/lytRvTags"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvTags"
-                    android:layout_width="match_parent"
-                    android:layout_height="150dp" />
-
-                <View
-                    android:layout_marginTop="@dimen/marginSmall"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/brandSecondary300"/>
-
-            </LinearLayout>
 
             <RelativeLayout
                 android:id="@+id/lytTvCategory"
