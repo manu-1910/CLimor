@@ -54,56 +54,61 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 
-        <LinearLayout
-            android:id="@+id/layEmptyScenario"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical"
-            android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <TextView
-                android:id="@+id/tvTitleEmptyScenario"
+            <LinearLayout
+                android:id="@+id/layEmptyScenario"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvTitleEmptyScenario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/marginMedium"
+                    android:layout_marginStart="@dimen/marginMedium"
+                    android:layout_marginEnd="@dimen/marginMedium"
+                    android:gravity="center"
+                    android:text="@string/sorry_there_are_no_podcasts_right_now"
+                    android:textColor="@color/brandSecondary100"
+                    android:textSize="@dimen/textSizeLarge"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvCaptionEmptyScenario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/marginMedium"
+                    android:layout_marginEnd="@dimen/marginMedium"
+                    android:layout_marginBottom="@dimen/marginMedium"
+                    android:gravity="center"
+                    android:textColor="@color/brandSecondary100"
+                    android:text="@string/maybe_you_could_try_later" />
+
+            </LinearLayout>
+
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:theme="@style/ProgressBarTheme"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/marginMedium"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium"
-                android:gravity="center"
-                android:text="@string/sorry_there_are_no_podcasts_right_now"
-                android:textColor="@color/brandSecondary100"
-                android:textSize="@dimen/textSizeLarge"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvCaptionEmptyScenario"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium"
-                android:layout_marginBottom="@dimen/marginMedium"
-                android:gravity="center"
-                android:textColor="@color/brandSecondary100"
-                android:text="@string/maybe_you_could_try_later" />
-
-        </LinearLayout>
+                android:visibility="visible" />
+        </RelativeLayout>
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:theme="@style/ProgressBarTheme"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/layParent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
 
     <LinearLayout

@@ -3,6 +3,9 @@ package io.square1.limor.scenes.main.adapters
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.SeekBar
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import io.square1.limor.scenes.main.fragments.podcast.CommentWithParent
 import io.square1.limor.uimodels.UIComment
@@ -56,7 +59,12 @@ class CommentsAdapter(
 
     interface OnCommentClickListener {
         fun onItemClicked(item : CommentWithParent, position: Int)
-        fun onPlayClicked(item : UIComment, position: Int)
+        fun onPlayClicked(
+            item: CommentWithParent,
+            position: Int,
+            seekBar: SeekBar,
+            ibtnPlay: ImageButton
+        )
         fun onListenClicked(item : UIComment, position: Int)
         fun onCommentClicked(item: CommentWithParent, position: Int)
         fun onLikeClicked(item : UIComment, position: Int)
@@ -68,5 +76,12 @@ class CommentsAdapter(
         fun onReplyClicked(item: UIComment, position: Int)
         fun onMoreRepliesClicked(parent: CommentWithParent, position: Int)
         fun onShowLessClicked(parent: CommentWithParent, lastChildPosition: Int)
+        fun onSeekProgressChanged(
+            seekBar: SeekBar?,
+            progress: Int,
+            fromUser: Boolean,
+            currentItem: CommentWithParent,
+            position: Int
+        )
     }
 }

@@ -13,6 +13,11 @@ import android.os.Handler
 import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import android.widget.*
 import android.view.*
 import android.widget.AbsListView
 import android.widget.PopupMenu
@@ -79,6 +84,7 @@ data class CommentWithParent(val comment: UIComment, val parent: CommentWithPare
 
 class PodcastDetailsFragment : BaseFragment() {
 
+    private var currentOffset: Int = 0
     private var currentCommentRequest: UICreateCommentRequest? = null
     private var currentCommentRecordedDuration: Int = -1
     private var currentCommentRecordedFile: File? = null
@@ -134,6 +140,8 @@ class PodcastDetailsFragment : BaseFragment() {
     // this represents the main comment of the screen, it will be null when we are in podcastMode
     // and it will be the main comment when we are seeing the comments of this comment
     private var uiMainCommentWithParent: CommentWithParent? = null
+
+    private var audioCommentPlayerController: AudioCommentPlayerController? = null
 
 
 
@@ -632,11 +640,6 @@ class PodcastDetailsFragment : BaseFragment() {
         btnPlayComment?.visibility = View.VISIBLE
     }
 
-    private fun showRecordButton() {
-        btnRecord?.visibility = View.VISIBLE
-        btnPlayComment?.visibility = View.INVISIBLE
-    }
-
 
     private fun isCommentBarOpen() : Boolean {
         return commentBarUpperSide.visibility == View.VISIBLE
@@ -748,12 +751,19 @@ class PodcastDetailsFragment : BaseFragment() {
                 // comment and now we are in this activity and we want to see all the related comments
                 // of that specific comment
             } else {
+                // if we don't receive more items and the last call was a comment call of the main comment,
+                // then we got to the last page
+                if(newItems.size == 0 && viewModelGetCommentComments.idComment == uiMainCommentWithParent?.comment?.id)
+                    isLastPage = true
 
                 if (newItems.size > 0) {
                     val firstItem = newItems[0]
                     // if the comments we just received are comments of the mainComment, then we just add it to the list
                     if (firstItem.owner_id == uiMainCommentWithParent?.comment?.id) {
                         fillCommentListWithSpecificParent(newItems, uiMainCommentWithParent)
+                        currentOffset += newItems.size
+
+
 
 
                         // if they are not comments of the main comment, that means that these new comments
@@ -932,11 +942,13 @@ class PodcastDetailsFragment : BaseFragment() {
             if (isReloading) {
                 commentWithParentsItemsList.clear()
                 rvComments?.recycledViewPool?.clear()
+                currentOffset = 0
                 isReloading = false
                 rvComments?.scrollToPosition(0)
             }
 
             fillCommentList(newItems)
+            currentOffset += newItems.size
 
             rvComments?.adapter?.notifyDataSetChanged()
             hideProgressBar()
@@ -987,8 +999,25 @@ class PodcastDetailsFragment : BaseFragment() {
                         startActivityForResult(podcastDetailsIntent, 0)
                     }
 
-                    override fun onPlayClicked(item: UIComment, position: Int) {
-                        Toast.makeText(context, "You clicked on play", Toast.LENGTH_SHORT).show()
+                    override fun onPlayClicked(
+                        item: CommentWithParent,
+                        position: Int,
+                        seekBar: SeekBar,
+                        ibtnPlay: ImageButton
+                    ) {
+                        // if I click in the currently listening comment, then I just launch playclicked
+                        if (audioCommentPlayerController != null && audioCommentPlayerController?.comment == item.comment){
+                            audioCommentPlayerController?.onPlayClicked()
+
+                            // if you click in a different comment than the one that is currently being listened, we'll firts have to destroy de previous one
+                        } else if(audioCommentPlayerController != null && audioCommentPlayerController?.comment != item.comment){
+                            audioCommentPlayerController?.destroy()
+                            audioCommentPlayerController = AudioCommentPlayerController(item.comment, seekBar, ibtnPlay)
+
+                            // if there isn't any comment being listened, just launch this one
+                        } else {
+                            audioCommentPlayerController = AudioCommentPlayerController(item.comment, seekBar, ibtnPlay)
+                        }
                     }
 
                     override fun onListenClicked(item: UIComment, position: Int) {
@@ -1080,6 +1109,18 @@ class PodcastDetailsFragment : BaseFragment() {
                         rvComments?.adapter?.notifyDataSetChanged()
                         rvComments?.scrollToPosition(originalParentPosition)
                     }
+
+                    override fun onSeekProgressChanged(
+                        seekBar: SeekBar?,
+                        progress: Int,
+                        fromUser: Boolean,
+                        currentItem: CommentWithParent,
+                        position: Int
+                    ) {
+                        if(fromUser && audioCommentPlayerController?.comment == currentItem.comment) {
+                            audioCommentPlayerController?.onSeekProgressChanged(progress)
+                        }
+                    }
                 },
                 podcastMode,
                 uiMainCommentWithParent
@@ -1113,12 +1154,10 @@ class PodcastDetailsFragment : BaseFragment() {
                     if (isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
                         isScrolling = false
                         if (podcastMode) {
-                            viewModelGetPodcastComments.offset =
-                                commentWithParentsItemsList.size - 1
+                            viewModelGetPodcastComments.offset = currentOffset
                             getPodcastCommentsDataTrigger.onNext(Unit)
                         } else {
-                            viewModelGetCommentComments.offset =
-                                commentWithParentsItemsList.size - 1
+                            viewModelGetCommentComments.offset = currentOffset
                             getCommentCommentsDataTrigger.onNext(Unit)
                         }
                     }

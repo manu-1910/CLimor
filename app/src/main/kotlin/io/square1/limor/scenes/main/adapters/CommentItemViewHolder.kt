@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -37,6 +38,9 @@ class CommentItemViewHolder(
         false
     )
 ) {
+
+
+
     private var tvUserFullname: TextView = itemView.findViewById(R.id.tvUserName)
     private var tvDateAndLocation: TextView = itemView.findViewById(R.id.tvTimeAndLocation)
 
@@ -47,6 +51,8 @@ class CommentItemViewHolder(
     private var tvCommentText: TextView = itemView.findViewById(R.id.tvCommentText)
     private var tvNameReplyingTo: TextView = itemView.findViewById(R.id.tvNameReplyingTo)
     private var tvMoreReplies: TextView = itemView.findViewById(R.id.tvMoreReplies)
+    private var tvCurrentTime: TextView = itemView.findViewById(R.id.tvCurrentTime)
+    private var tvTotalTime: TextView = itemView.findViewById(R.id.tvTotalTime)
 
     private var ivUser: ImageView = itemView.findViewById(R.id.ivUserPicture)
     private var ivVerifiedUser: ImageView = itemView.findViewById(R.id.ivVerifiedUser)
@@ -56,6 +62,7 @@ class CommentItemViewHolder(
     private var ibtnRecasts: ImageButton = itemView.findViewById(R.id.btnRecasts)
     private var ibtnComments: ImageButton = itemView.findViewById(R.id.btnComments)
     private var ibtnMore: ImageButton = itemView.findViewById(R.id.btnMore)
+    private var ibtnPlay: ImageButton = itemView.findViewById(R.id.btnPlayComment)
 
     private var btnReply: TextView = itemView.findViewById(R.id.btnReply)
     private var barThreadUp: View = itemView.findViewById(R.id.barThreadUp)
@@ -63,6 +70,9 @@ class CommentItemViewHolder(
     private var barDecorator: View = itemView.findViewById(R.id.barDecorator)
     private var layReplyingTo: View = itemView.findViewById(R.id.layReplying)
     private var layMoreReplies: View = itemView.findViewById(R.id.layMoreReplies)
+    private var layPlayer: View = itemView.findViewById(R.id.layPlayer)
+
+    private var seekBar: SeekBar = itemView.findViewById(R.id.seekBar)
 
 
 
@@ -149,9 +159,44 @@ class CommentItemViewHolder(
                 ibtnLike.setImageResource(R.drawable.like)
         }
 
+        // player
+        if(currentItem.comment.type == "audio") {
+            val duration = currentItem.comment.audio.duration
+            val audioUrl = currentItem.comment.audio.url
+            if(duration != null && audioUrl != null) {
+                showPlayer(currentItem, position)
+            } else {
+                layPlayer.visibility = View.GONE
+            }
+        } else {
+            layPlayer.visibility = View.GONE
+        }
+
+
+
 
         ibtnMore.onClick { commentClickListener.onMoreClicked(currentItem.comment, position) }
         btnReply.onClick { commentClickListener.onReplyClicked(currentItem.comment, position) }
+    }
+
+    private fun showPlayer(currentItem: CommentWithParent, position: Int) {
+        layPlayer.visibility = View.VISIBLE
+        seekBar.setOnSeekBarChangeListener (object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                commentClickListener.onSeekProgressChanged(seekBar, progress, fromUser, currentItem, position)
+                tvCurrentTime.text = CommonsKt.calculateDurationMediaPlayer(progress)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+
+        })
+        currentItem.comment.audio.duration?.let { seekBar.max = it * 1000 }
+        ibtnPlay.onClick { commentClickListener.onPlayClicked(currentItem, position, seekBar, ibtnPlay) }
+        currentItem.comment.audio.duration?.let {
+            tvTotalTime.text = CommonsKt.calculateDurationMediaPlayer(it * 1000)
+        }
     }
 
 
@@ -264,7 +309,7 @@ class CommentItemViewHolder(
                     if (currentItem.parent.comment.comment_count > currentItem.parent.comment.comments.size) {
                         layMoreReplies.visibility = View.VISIBLE
                         val numberOfCommentsMore =
-                            currentItem.parent.comment.comment_count - MAX_API_COMMENTS_PER_COMMENT
+                            currentItem.parent.comment.comment_count - currentItem.parent.comment.comments.size
                         val moreRepliesText =
                             numberOfCommentsMore.toString() + " " + context.getString(R.string.more_replies)
                         tvMoreReplies.text = moreRepliesText
@@ -343,7 +388,7 @@ class CommentItemViewHolder(
                 if (currentItem.parent.comment.comment_count > currentItem.parent.comment.comments.size) {
                     layMoreReplies.visibility = View.VISIBLE
                     val numberOfCommentsMore =
-                        currentItem.parent.comment.comment_count - MAX_API_COMMENTS_PER_COMMENT
+                        currentItem.parent.comment.comment_count - currentItem.parent.comment.comments.size
                     val moreRepliesText =
                         numberOfCommentsMore.toString() + " " + context.getString(R.string.more_replies)
                     tvMoreReplies.text = moreRepliesText
