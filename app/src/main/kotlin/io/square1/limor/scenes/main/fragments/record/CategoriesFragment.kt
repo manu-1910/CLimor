@@ -1,10 +1,15 @@
 package io.square1.limor.scenes.main.fragments.record
 
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -19,14 +24,17 @@ import io.square1.limor.common.BaseFragment
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.viewmodels.CategoriesViewModel
+import io.square1.limor.scenes.main.viewmodels.PublishViewModel
 import io.square1.limor.uimodels.UICategory
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.btnClose
 import org.jetbrains.anko.okButton
+import org.jetbrains.anko.padding
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.textColor
 import javax.inject.Inject
 
 
@@ -35,6 +43,7 @@ class CategoriesFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var categoriesViewModel: CategoriesViewModel
+    private lateinit var publishViewModel: PublishViewModel
 
     private var rvCategories: RecyclerView? = null
     private var rootView: View? = null
@@ -76,7 +85,7 @@ class CategoriesFragment : BaseFragment() {
 
         bindViewModel()
         configureToolbar()
-        //apiCallGetCategories()
+        apiCallGetCategories()
         categoriesListener()
 
         //setupRecycler(listCategories)
@@ -96,6 +105,10 @@ class CategoriesFragment : BaseFragment() {
             categoriesViewModel = ViewModelProviders
                 .of(it, viewModelFactory)
                 .get(CategoriesViewModel::class.java)
+
+            publishViewModel = ViewModelProviders
+                .of(it, viewModelFactory)
+                .get(PublishViewModel::class.java)
         }
     }
 
@@ -129,7 +142,86 @@ class CategoriesFragment : BaseFragment() {
             view?.hideKeyboard()
 
             if (it.code == 0) { //Tags Response Ok
+                /*
+                     <com.google.android.material.chip.Chip
+                android:id="@+id/chip"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Sport"
+                android:textColor="@android:color/white"
+                app:checkedIcon="@drawable/ic_select"
+                app:chipBackgroundColor="@color/colorPrimary"
+                app:chipEndPadding="8dp"
+                app:chipIconTint="@android:color/white"
+                app:chipStartPadding="@dimen/marginSmall"
+                app:textEndPadding="@dimen/marginSmall"
+                app:textStartPadding="@dimen/marginSmall"
+                app:chipCornerRadius="6dp"
+                app:chipStrokeWidth="1dp"
+                app:chipStrokeColor="@color/brandSecondary100"/>
+                * */
 
+                val params: LinearLayout.LayoutParams =
+                    LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                params.setMargins(16, 16, 16, 16)
+
+
+
+                val states = arrayOf(
+                    intArrayOf(android.R.attr.state_enabled),
+                    intArrayOf(-android.R.attr.state_enabled),
+                    intArrayOf(-android.R.attr.state_checked),
+                    intArrayOf(android.R.attr.state_pressed)
+                )
+
+                val colors = intArrayOf(
+                    Color.BLACK,
+                    Color.RED,
+                    Color.GREEN,
+                    Color.BLUE
+                )
+
+                val myList = ColorStateList(states, colors)
+
+                for (item in it.data.categories) {
+
+//                    val categoryChip = Chip(context)
+//                    categoryChip.id = item.id
+//                    categoryChip.setTextAppearance(R.style.TextAppearance_MaterialComponents_Button)
+//                    //style="@style/Widget.MaterialComponents.Chip.Filter"
+//                    categoryChip.style { R.style.Widget_MaterialComponents_Chip_Filter }
+//
+//                    categoryChip.text = item.name
+//                    categoryChip.textColor = ContextCompat.getColor(context!!, R.color.white)
+//                    categoryChip.backgroundColor = ContextCompat.getColor(
+//                        context!!,
+//                        R.color.colorPrimary
+//                    )
+//                    categoryChip.chipCornerRadius = 6f
+//                    categoryChip.chipStrokeWidth = 1f
+//                    categoryChip.chipStrokeColor = myList
+
+                    val tvChip = TextView(context)
+                    tvChip.id = item.id
+                    tvChip.text = item.name
+                    tvChip.setTextColor(ContextCompat.getColorStateList(context!!, R.color.chip_textcolor))
+                    tvChip.isEnabled = true
+                    tvChip.padding = 24
+                    tvChip.background = ContextCompat.getDrawable(
+                        context!!,
+                        R.drawable.bg_chip_category
+                    )
+                    tvChip.layoutParams = params
+                    tvChip.setOnClickListener {
+                        publishViewModel.categorySelected = tvChip.text.toString()
+                        findNavController().popBackStack()
+                    }
+
+                    chipGroup!!.addView(tvChip)
+                }
                 toast("success")
 
             }

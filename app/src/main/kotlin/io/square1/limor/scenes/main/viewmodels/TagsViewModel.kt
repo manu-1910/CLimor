@@ -5,34 +5,28 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import io.square1.limor.App
-import io.square1.limor.R
 import io.square1.limor.common.BaseViewModel
 import io.square1.limor.common.SessionManager
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import io.square1.limor.uimodels.*
-import io.square1.limor.usecases.PublishUseCase
+import io.square1.limor.uimodels.UIErrorResponse
+import io.square1.limor.uimodels.UITagsResponse
+import io.square1.limor.usecases.TagsUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class PublishViewModel @Inject constructor(private val publishUseCase: PublishUseCase, private val sessionManager: SessionManager) : BaseViewModel<PublishViewModel.Input, PublishViewModel.Output>() {
+class TagsViewModel @Inject constructor(private val tagsUseCase: TagsUseCase, private val sessionManager: SessionManager) : BaseViewModel<TagsViewModel.Input, TagsViewModel.Output>() {
 
-    var uiPublishRequest = UIPublishRequest(
-        podcast = null
-    );
-
-    var categorySelected: String = ""
-    var locationSelectedItem: UILocations = UILocations("", 0.0, 0.0, true)
 
     private val compositeDispose = CompositeDisposable()
+    var tagToSearch = ""
 
     data class Input(
-        val publishTrigger: Observable<Unit>
+        val categoriesTrigger: Observable<Unit>
     )
 
     data class Output(
-        val response: LiveData<UIPublishResponse>,
+        val response: LiveData<UITagsResponse>,
         val backgroundWorkingProgress: LiveData<Boolean>,
         val errorMessage: SingleLiveEvent<UIErrorResponse>
     )
@@ -40,11 +34,10 @@ class PublishViewModel @Inject constructor(private val publishUseCase: PublishUs
     override fun transform(input: Input): Output {
         val errorTracker = SingleLiveEvent<UIErrorResponse>()
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
-        val response = MutableLiveData<UIPublishResponse>()
+        val response = MutableLiveData<UITagsResponse>()
 
-        input.publishTrigger.subscribe({
-            publishUseCase.execute(uiPublishRequest).subscribe({
-                //sessionManager.storeToken(it.data.access_token.token.access_token)
+        input.categoriesTrigger.subscribe({
+            tagsUseCase.execute(tagToSearch).subscribe({
                 response.value = it
             }, {
                 try {
@@ -52,9 +45,9 @@ class PublishViewModel @Inject constructor(private val publishUseCase: PublishUs
                     val errorResponse: UIErrorResponse? = error.response()?.errorBody()?.parseSuccessResponse(UIErrorResponse.serializer())
                     errorTracker.postValue(errorResponse)
                 } catch (e: Exception) {
-                    val dataError = UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
-                    val errorResponse = UIErrorResponse(99, dataError.toString())
-                    errorTracker.postValue(errorResponse)
+//                    val dataError = UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
+//                    val errorResponse = UIErrorResponse(99, dataError.toString())
+//                    errorTracker.postValue(errorResponse)
                 }
 
             })

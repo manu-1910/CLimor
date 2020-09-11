@@ -125,4 +125,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(CreatePodcastCommentViewModel::class)
     abstract fun bindCreatePodcastCommentsViewModel(createPodcastCommentsViewModel: CreatePodcastCommentViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(TagsViewModel::class)
+    abstract fun bindTagsViewModel(tagsViewModel: TagsViewModel): ViewModel
 }
