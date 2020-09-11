@@ -245,7 +245,10 @@
     <string name="no_comments_yet">There are no comments yet</string>
     <string name="when_comments_ready_will_appear_here">When comments are ready they will appear here</string>
     <string name="you">You</string>
+    <string name="share">Share</string>
     <string name="delete">Delete</string>
     <string name="could_not_write_destination_file">Couldn\'t write into destination file</string>
+    <string name="check_out_this_cast">Check out this cast on Limor</string>
+    <string name="error_retrieving_sharing_url">Error retrieving sharing URL</string>
 
 </resources>

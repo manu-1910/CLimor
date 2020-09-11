@@ -203,7 +203,7 @@ class FeedItemViewHolder(
         }
 
 
-        ibtnMore.onClick { feedClickListener.onMoreClicked(currentItem, position) }
+        ibtnMore.onClick { feedClickListener.onMoreClicked(currentItem, position, ibtnMore) }
         ibtnSend.onClick { feedClickListener.onSendClicked(currentItem, position) }
 
         if(showPlayButton){
