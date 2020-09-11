@@ -38,7 +38,8 @@ fun UIMetaData.asDataEntity(): DataMetaData{
         caption,
         latitude,
         longitude,
-        image_url
+        image_url,
+        category_id
     )
 }
 
@@ -79,7 +80,8 @@ fun UIMetaData.asUIModel(): DataMetaData {
         caption,
         latitude,
         longitude,
-        image_url
+        image_url,
+        category_id
     )
 }
 

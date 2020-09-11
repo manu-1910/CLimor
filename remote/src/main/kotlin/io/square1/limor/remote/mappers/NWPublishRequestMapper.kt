@@ -42,7 +42,8 @@ fun NWMetaData.asDataEntity(): DataMetaData {
         caption,
         latitude,
         longitude,
-        image_url
+        image_url,
+        category_id
     )
 }
 

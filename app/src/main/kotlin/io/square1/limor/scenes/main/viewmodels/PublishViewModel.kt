@@ -23,6 +23,7 @@ class PublishViewModel @Inject constructor(private val publishUseCase: PublishUs
     );
 
     var categorySelected: String = ""
+    var categorySelectedId: Int = 0
     var locationSelectedItem: UILocations = UILocations("", 0.0, 0.0, true)
 
     private val compositeDispose = CompositeDisposable()

@@ -1,7 +1,6 @@
 package io.square1.limor.scenes.main.fragments.record
 
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,7 +14,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.ChipGroup
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
@@ -26,15 +24,12 @@ import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.viewmodels.CategoriesViewModel
 import io.square1.limor.scenes.main.viewmodels.PublishViewModel
 import io.square1.limor.uimodels.UICategory
-import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.btnClose
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.padding
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.support.v4.toast
-import org.jetbrains.anko.textColor
 import javax.inject.Inject
 
 
@@ -45,14 +40,11 @@ class CategoriesFragment : BaseFragment() {
     private lateinit var categoriesViewModel: CategoriesViewModel
     private lateinit var publishViewModel: PublishViewModel
 
-    private var rvCategories: RecyclerView? = null
     private var rootView: View? = null
     private var listCategories = ArrayList<UICategory>()
     private var listCategoriesSelected = ArrayList<UICategory>()
     private val categoriesTrigger = PublishSubject.create<Unit>()
-
     private var chipGroup: ChipGroup? = null
-
     var app: App? = null
 
 
@@ -86,16 +78,11 @@ class CategoriesFragment : BaseFragment() {
         bindViewModel()
         configureToolbar()
         apiCallGetCategories()
-        categoriesListener()
-
-        //setupRecycler(listCategories)
-
-
     }
+
 
     override fun onResume() {
         super.onResume()
-
         categoriesTrigger.onNext(Unit)
     }
 
@@ -126,7 +113,6 @@ class CategoriesFragment : BaseFragment() {
             categoriesViewModel.localListCategoriesSelected.addAll(listCategoriesSelected)
             findNavController().popBackStack()
         }
-
     }
 
 
@@ -138,37 +124,12 @@ class CategoriesFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
-
             if (it.code == 0) { //Tags Response Ok
-                /*
-                     <com.google.android.material.chip.Chip
-                android:id="@+id/chip"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:text="Sport"
-                android:textColor="@android:color/white"
-                app:checkedIcon="@drawable/ic_select"
-                app:chipBackgroundColor="@color/colorPrimary"
-                app:chipEndPadding="8dp"
-                app:chipIconTint="@android:color/white"
-                app:chipStartPadding="@dimen/marginSmall"
-                app:textEndPadding="@dimen/marginSmall"
-                app:textStartPadding="@dimen/marginSmall"
-                app:chipCornerRadius="6dp"
-                app:chipStrokeWidth="1dp"
-                app:chipStrokeColor="@color/brandSecondary100"/>
-                * */
 
                 val params: LinearLayout.LayoutParams =
                     LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                 params.setMargins(16, 16, 16, 16)
-
-
 
                 val states = arrayOf(
                     intArrayOf(android.R.attr.state_enabled),
@@ -184,26 +145,7 @@ class CategoriesFragment : BaseFragment() {
                     Color.BLUE
                 )
 
-                val myList = ColorStateList(states, colors)
-
                 for (item in it.data.categories) {
-
-//                    val categoryChip = Chip(context)
-//                    categoryChip.id = item.id
-//                    categoryChip.setTextAppearance(R.style.TextAppearance_MaterialComponents_Button)
-//                    //style="@style/Widget.MaterialComponents.Chip.Filter"
-//                    categoryChip.style { R.style.Widget_MaterialComponents_Chip_Filter }
-//
-//                    categoryChip.text = item.name
-//                    categoryChip.textColor = ContextCompat.getColor(context!!, R.color.white)
-//                    categoryChip.backgroundColor = ContextCompat.getColor(
-//                        context!!,
-//                        R.color.colorPrimary
-//                    )
-//                    categoryChip.chipCornerRadius = 6f
-//                    categoryChip.chipStrokeWidth = 1f
-//                    categoryChip.chipStrokeColor = myList
-
                     val tvChip = TextView(context)
                     tvChip.id = item.id
                     tvChip.text = item.name
@@ -217,16 +159,12 @@ class CategoriesFragment : BaseFragment() {
                     tvChip.layoutParams = params
                     tvChip.setOnClickListener {
                         publishViewModel.categorySelected = tvChip.text.toString()
+                        publishViewModel.categorySelectedId = tvChip.id
                         findNavController().popBackStack()
                     }
-
                     chipGroup!!.addView(tvChip)
                 }
-                toast("success")
-
             }
-
-
         })
 
         output.backgroundWorkingProgress.observe(this, Observer {
@@ -234,7 +172,6 @@ class CategoriesFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
 
@@ -269,41 +206,6 @@ class CategoriesFragment : BaseFragment() {
             }
         })
     }
-
-
-    private fun categoriesListener(){
-
-
-
-//        var i=1
-//        val genres = arrayOf("Thriller 2", "Comedy 2", "Adventure 2")
-//        for (genre in genres) {
-//
-//            var temp : Chip = Chip(context, null, R.style.Widget_MaterialComponents_Chip_Filter)
-//            temp.id=i
-//            temp.text= genre+i
-//
-//
-//            if (Build.VERSION.SDK_INT < 23) {
-//                temp.setTextAppearance(context, R.style.TextAppearance_MaterialComponents_Button)
-//            } else{
-//                temp.setTextAppearance(R.style.TextAppearance_MaterialComponents_Button)
-//            }
-//
-//            chipGroup!!.addView(temp)
-//            i++
-//        }
-
-
-
-
-
-
-
-
-    }
-
-
 
 }
 

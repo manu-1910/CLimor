@@ -35,7 +35,6 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.hendraanggrian.appcompat.widget.Hashtag
 import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
-import com.hendraanggrian.appcompat.widget.SocialView
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
@@ -55,6 +54,7 @@ import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
+import kotlinx.coroutines.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -63,6 +63,7 @@ import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
 import java.io.File
 import java.io.IOException
+import java.lang.Runnable
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -101,6 +102,8 @@ class PublishFragment : BaseFragment() {
     private var lytImage: RelativeLayout? = null
     private var btnSaveDraft: Button? = null
     private var btnPublishDraft: Button? = null
+    private var lytPublishProgress: LinearLayout? = null
+    private var lytPublishForm: LinearLayout? = null
 
     //Form vars
     private var etDraftTitle: EditText? = null
@@ -145,6 +148,9 @@ class PublishFragment : BaseFragment() {
             btnPublishDraft = rootView?.findViewById(R.id.btnPublish)
             etDraftTitle = rootView?.findViewById(R.id.etTitle)
             etDraftCaption = rootView?.findViewById(R.id.etCaption)
+
+            lytPublishProgress = rootView?.findViewById(R.id.lytPublishProgress)
+            lytPublishForm = rootView?.findViewById(R.id.lytPublishForm)
 
             mediaPlayer = MediaPlayer()
         }
@@ -350,8 +356,84 @@ class PublishFragment : BaseFragment() {
 
         btnPublishDraft?.onClick {
             if (checkEmptyFields()){
-                publishPodcastImage()
-                publishPodcastAudio()
+//                lifecycleScope.launch {
+//                    publishPodcastImage()
+//                    publishPodcastAudio()
+//                    apiCallPublish()
+//                }
+
+//                runBlocking {
+//                    val job = launch(Dispatchers.Default) {
+//                        println("Llamo a publish image")
+//                        publishPodcastImage()
+//                        println("Llamo a publish audio")
+//                        publishPodcastAudio()
+//                    }
+//                    job.join()
+//                    println("Llamo a publish podcast")
+//                    apiCallPublish()
+//                }
+
+
+                runBlocking {
+                    val myContext = Job() + Dispatchers.Default
+
+                    val job1 = launch(myContext) {
+                        println("Llamo a publish image")
+                        publishPodcastImage()
+                        delay(5000)
+                    }
+                    job1.join()
+
+                    val job2 = launch(myContext) {
+                        println("Llamo a publish audio")
+                        publishPodcastAudio()
+                        delay(5000)
+                    }
+                    job2.join()
+
+                    val job3 = launch(myContext) {
+                        println("Llamo a publish podcast")
+                        apiCallPublish()
+                    }
+                    job3.join()
+
+                    /*launch (myContext) {
+                        println("Llamo a publish image")
+                        publishPodcastImage()
+                    }
+
+                    launch (myContext) {
+                        println("Llamo a publish audio")
+                        publishPodcastAudio()
+                    }
+
+                    launch (myContext) {
+                        println("Llamo a publish podcast")
+                        apiCallPublish()
+                    }*/
+
+//                    val def = async (myContext) {
+//                        ...
+//                    }
+
+                }
+
+
+//                GlobalScope.launch(Dispatchers.Main) {
+//                    lytPublishProgress?.visibility = View.VISIBLE
+//                    lytPublishForm?.visibility = View.GONE
+//
+//                    println("Llamo a publish image")
+//                    publishPodcastImage()
+//                    println("Llamo a publish audio")
+//                    publishPodcastAudio()
+//                    println("Llamo a publish podcast")
+//                    publishPodcastAudio()
+//
+//                    lytPublishProgress?.visibility = View.GONE
+//                    lytPublishForm?.visibility = View.VISIBLE
+//                }
             }
         }
 
@@ -381,8 +463,6 @@ class PublishFragment : BaseFragment() {
                     println("Audio upload to AWS succesfully")
                     //var url = audioUrl
                     audioUrlFinal = audioUrl
-
-                    apiCallPublish()
                 }
 
                 override fun onError(error: String?) {
@@ -401,7 +481,7 @@ class PublishFragment : BaseFragment() {
             context,
             object : Commons.ImageUploadCallback {
                 override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
-                    TODO("Not yet implemented")
+                    //TODO("Not yet implemented")
                 }
 
                 override fun onSuccess(imageUrl: String?) {
@@ -412,7 +492,7 @@ class PublishFragment : BaseFragment() {
                 }
 
                 override fun onStateChanged(id: Int, state: TransferState?) {
-                    TODO("Not yet implemented")
+                    //TODO("Not yet implemented")
                 }
 
                 override fun onError(error: String?) {
@@ -429,36 +509,29 @@ class PublishFragment : BaseFragment() {
 
         println("llego aquí muchas veces???????????????")
 
-        if(!isPublished){
-            var uiPublishRequest = UIPublishRequest(
-                podcast = UIPodcastRequest(
-                    audio = UIAudio(
-                        audio_url = audioUrlFinal.toString(),
-                        original_audio_url = audioUrlFinal.toString(),
-                        duration = mediaPlayer.duration,
-                        total_samples = 0.0,
-                        total_length = recordingItem.length!!.toDouble(),
-                        sample_rate = 0.0,
-                        timestamps = ArrayList() //recordingItem.timeStamps
-                    ),
-                    meta_data = UIMetaData(
-                        title = etDraftTitle?.text.toString(),
-                        caption = etDraftCaption?.text.toString(),
-                        latitude = podcastLocation.latitude.takeIf { podcastLocation.latitude != 0.0 }
-                            ?: 0.0,
-                        longitude = podcastLocation.longitude.takeIf { podcastLocation.longitude != 0.0 }
-                            ?: 0.0,
-                        image_url = imageUrlFinal.toString()
-                    )
+        val uiPublishRequest = UIPublishRequest(
+            podcast = UIPodcastRequest(
+                audio = UIAudio(
+                    audio_url = audioUrlFinal.toString(),
+                    original_audio_url = audioUrlFinal.toString(),
+                    duration = mediaPlayer.duration,
+                    total_samples = 0.0,
+                    total_length = recordingItem.length!!.toDouble(),
+                    sample_rate = 0.0,
+                    timestamps = ArrayList() //recordingItem.timeStamps
+                ),
+                meta_data = UIMetaData(
+                    title = etDraftTitle?.text.toString(),
+                    caption = etDraftCaption?.text.toString(),
+                    latitude = podcastLocation.latitude.takeIf { podcastLocation.latitude != 0.0 } ?: 0.0,
+                    longitude = podcastLocation.longitude.takeIf { podcastLocation.longitude != 0.0 } ?: 0.0,
+                    image_url = imageUrlFinal.toString(),
+                    category_id = publishViewModel.categorySelectedId
                 )
             )
-            publishViewModel.uiPublishRequest = uiPublishRequest
-
-            publishPodcastTrigger.onNext(Unit)
-
-        }
-
-
+        )
+        publishViewModel.uiPublishRequest = uiPublishRequest
+        publishPodcastTrigger.onNext(Unit)
     }
 
 
@@ -949,29 +1022,6 @@ class PublishFragment : BaseFragment() {
             callToTagsApiAndShowRecyclerView(text.toString())
         }
     }
-
-
-//    class HashtagAdapter(context: Context) : HashtagArrayAdapter<Hashtag>(context, R.layout.tag_item) {
-//
-//        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-//            val holder: ViewHolder
-//            var view = convertView
-//            when (view) {
-//                null -> {
-//                    view = LayoutInflater.from(context).inflate(R.layout.tag_item, parent, false)
-//                    holder = ViewHolder(view!!)
-//                    view.tag = holder
-//                }
-//                else -> holder = view.tag as ViewHolder
-//            }
-//            getItem(position)?.let { model -> holder.textView.text = model.id }
-//            return view
-//        }
-//
-//        private class ViewHolder(view: View) {
-//            val textView: TextView = view.findViewById(R.id.text1)
-//        }
-//    }
 
 }
 

@@ -20,7 +20,6 @@ class CategoriesViewModel @Inject constructor(private val categoriesUseCase: Cat
     var localListCategoriesSelected: ArrayList<UICategory> = ArrayList()
     var localListCategories: ArrayList<UICategory> = ArrayList()
 
-
     private val compositeDispose = CompositeDisposable()
 
     data class Input(
