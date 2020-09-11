@@ -18,8 +18,9 @@ class AudioCommentPlayerController(
     private val playButton: ImageButton
 ) {
     private lateinit var simpleRecorder: SimpleRecorder
-    private val updater : Runnable
-    private val handler : Handler = Handler()
+    private val updater: Runnable
+    private val handler: Handler = Handler()
+    private var isPrepared: Boolean = false
 
     init {
         prepareAudio()
@@ -27,7 +28,7 @@ class AudioCommentPlayerController(
         updater = object : Runnable {
             override fun run() {
                 handler.postDelayed(this, 150)
-                if(simpleRecorder.isPlaying) {
+                if (simpleRecorder.isPlaying) {
                     val currentPosition = simpleRecorder.getCurrentPosition()
                     seekBar.progress = currentPosition
                 }
@@ -40,14 +41,16 @@ class AudioCommentPlayerController(
     }
 
     fun onPlayClicked() {
-        if (simpleRecorder.isPlaying) {
-            playButton.setImageResource(R.drawable.play)
-            simpleRecorder.pausePlaying()
-            handler.removeCallbacks(updater)
-        } else {
-            playButton.setImageResource(R.drawable.pause)
-            simpleRecorder.resumePlaying()
-            handler.post(updater)
+        if(isPrepared) {
+            if (simpleRecorder.isPlaying) {
+                playButton.setImageResource(R.drawable.play)
+                simpleRecorder.pausePlaying()
+                handler.removeCallbacks(updater)
+            } else {
+                playButton.setImageResource(R.drawable.pause)
+                simpleRecorder.resumePlaying()
+                handler.post(updater)
+            }
         }
     }
 
@@ -75,10 +78,11 @@ class AudioCommentPlayerController(
                             MediaPlayer.OnCompletionListener {
                                 onCompletionListener()
                             })
-                        if(seekBar.progress > 0)
+                        if (seekBar.progress > 0)
                             simpleRecorder.moveToPosition(seekBar.progress)
                         playButton.setImageResource(R.drawable.pause)
                         handler.post(updater)
+                        isPrepared = true
                     }
                 }
             }
@@ -89,6 +93,12 @@ class AudioCommentPlayerController(
         seekBar.progress = 0
         playButton.setImageResource(R.drawable.play)
         handler.removeCallbacks(updater)
+    }
+
+    fun destroy() {
+        simpleRecorder.stopPlaying()
+        handler.removeCallbacks(updater)
+        playButton.setImageResource(R.drawable.play)
     }
 
 }

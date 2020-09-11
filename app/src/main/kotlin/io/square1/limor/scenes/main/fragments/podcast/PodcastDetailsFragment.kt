@@ -78,6 +78,7 @@ data class CommentWithParent(val comment: UIComment, val parent: CommentWithPare
 
 class PodcastDetailsFragment : BaseFragment() {
 
+    private var currentOffset: Int = 0
     private var currentCommentRequest: UICreateCommentRequest? = null
     private var currentCommentRecordedDuration: Int = -1
     private var currentCommentRecordedFile: File? = null
@@ -744,12 +745,19 @@ class PodcastDetailsFragment : BaseFragment() {
                 // comment and now we are in this activity and we want to see all the related comments
                 // of that specific comment
             } else {
+                // if we don't receive more items and the last call was a comment call of the main comment,
+                // then we got to the last page
+                if(newItems.size == 0 && viewModelGetCommentComments.idComment == uiMainCommentWithParent?.comment?.id)
+                    isLastPage = true
 
                 if (newItems.size > 0) {
                     val firstItem = newItems[0]
                     // if the comments we just received are comments of the mainComment, then we just add it to the list
                     if (firstItem.owner_id == uiMainCommentWithParent?.comment?.id) {
                         fillCommentListWithSpecificParent(newItems, uiMainCommentWithParent)
+                        currentOffset += newItems.size
+
+
 
 
                         // if they are not comments of the main comment, that means that these new comments
@@ -928,11 +936,13 @@ class PodcastDetailsFragment : BaseFragment() {
             if (isReloading) {
                 commentWithParentsItemsList.clear()
                 rvComments?.recycledViewPool?.clear()
+                currentOffset = 0
                 isReloading = false
                 rvComments?.scrollToPosition(0)
             }
 
             fillCommentList(newItems)
+            currentOffset += newItems.size
 
             rvComments?.adapter?.notifyDataSetChanged()
             hideProgressBar()
@@ -989,8 +999,16 @@ class PodcastDetailsFragment : BaseFragment() {
                         seekBar: SeekBar,
                         ibtnPlay: ImageButton
                     ) {
+                        // if I click in the currently listening comment, then I just launch playclicked
                         if (audioCommentPlayerController != null && audioCommentPlayerController?.comment == item.comment){
                             audioCommentPlayerController?.onPlayClicked()
+
+                            // if you click in a different comment than the one that is currently being listened, we'll firts have to destroy de previous one
+                        } else if(audioCommentPlayerController != null && audioCommentPlayerController?.comment != item.comment){
+                            audioCommentPlayerController?.destroy()
+                            audioCommentPlayerController = AudioCommentPlayerController(item.comment, seekBar, ibtnPlay)
+
+                            // if there isn't any comment being listened, just launch this one
                         } else {
                             audioCommentPlayerController = AudioCommentPlayerController(item.comment, seekBar, ibtnPlay)
                         }
@@ -1130,12 +1148,10 @@ class PodcastDetailsFragment : BaseFragment() {
                     if (isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
                         isScrolling = false
                         if (podcastMode) {
-                            viewModelGetPodcastComments.offset =
-                                commentWithParentsItemsList.size - 1
+                            viewModelGetPodcastComments.offset = currentOffset
                             getPodcastCommentsDataTrigger.onNext(Unit)
                         } else {
-                            viewModelGetCommentComments.offset =
-                                commentWithParentsItemsList.size - 1
+                            viewModelGetCommentComments.offset = currentOffset
                             getCommentCommentsDataTrigger.onNext(Unit)
                         }
                     }

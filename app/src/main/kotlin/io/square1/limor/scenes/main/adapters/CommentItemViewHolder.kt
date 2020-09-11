@@ -309,7 +309,7 @@ class CommentItemViewHolder(
                     if (currentItem.parent.comment.comment_count > currentItem.parent.comment.comments.size) {
                         layMoreReplies.visibility = View.VISIBLE
                         val numberOfCommentsMore =
-                            currentItem.parent.comment.comment_count - MAX_API_COMMENTS_PER_COMMENT
+                            currentItem.parent.comment.comment_count - currentItem.parent.comment.comments.size
                         val moreRepliesText =
                             numberOfCommentsMore.toString() + " " + context.getString(R.string.more_replies)
                         tvMoreReplies.text = moreRepliesText
@@ -388,7 +388,7 @@ class CommentItemViewHolder(
                 if (currentItem.parent.comment.comment_count > currentItem.parent.comment.comments.size) {
                     layMoreReplies.visibility = View.VISIBLE
                     val numberOfCommentsMore =
-                        currentItem.parent.comment.comment_count - MAX_API_COMMENTS_PER_COMMENT
+                        currentItem.parent.comment.comment_count - currentItem.parent.comment.comments.size
                     val moreRepliesText =
                         numberOfCommentsMore.toString() + " " + context.getString(R.string.more_replies)
                     tvMoreReplies.text = moreRepliesText
