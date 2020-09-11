@@ -2,7 +2,6 @@ package io.square1.limor.remote.services.search
 
 import io.reactivex.Single
 import io.square1.limor.remote.entities.requests.NWLocationsRequest
-import io.square1.limor.remote.entities.requests.NWTagsRequest
 import io.square1.limor.remote.entities.responses.NWLocationsResponse
 import io.square1.limor.remote.entities.responses.NWPodcastsByTagResponse
 import io.square1.limor.remote.entities.responses.NWPromotedTagsResponse
@@ -22,8 +21,8 @@ class SearchServiceImp @Inject constructor(private val serviceConfig: RemoteServ
     RemoteService<SearchService>(SearchService::class.java, serviceConfig) {
 
 
-    fun searchTag(nwTagsRequest: NWTagsRequest): Single<NWTagsResponse>? {
-        return service.searchTag(RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWTagsRequest.serializer(), nwTagsRequest)))
+    fun searchTag(tag: String): Single<NWTagsResponse>? {
+        return service.searchTag(tag)
             .map { response -> response.parseSuccessResponse(NWTagsResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
