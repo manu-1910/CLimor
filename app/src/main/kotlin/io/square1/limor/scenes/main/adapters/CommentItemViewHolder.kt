@@ -179,6 +179,8 @@ class CommentItemViewHolder(
         btnReply.onClick { commentClickListener.onReplyClicked(currentItem, position) }
     }
 
+
+
     private fun showPlayer(currentItem: CommentWithParent, position: Int) {
         layPlayer.visibility = View.VISIBLE
         seekBar.setOnSeekBarChangeListener (object : SeekBar.OnSeekBarChangeListener {

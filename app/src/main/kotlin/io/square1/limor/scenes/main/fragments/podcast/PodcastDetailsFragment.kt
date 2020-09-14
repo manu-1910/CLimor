@@ -76,7 +76,7 @@ data class CommentWithParent(val comment: UIComment, val parent: CommentWithPare
 
 class PodcastDetailsFragment : BaseFragment() {
 
-    private var isWaitingForInfiniteScrollComments: Boolean = false
+    private var isWaitingForApiCall: Boolean = false
     private var currentOffset: Int = 0
     private var currentCommentRequest: UICreateCommentRequest? = null
     private var currentCommentRecordedDuration: Int = -1
@@ -219,6 +219,7 @@ class PodcastDetailsFragment : BaseFragment() {
     private fun initPodcastOrCommentMode() {
         // if it's not null, that means that we have to show the "comment of a comment" screen.
         // If it's null this means that we have to show the "comment of a podcast" screen
+        isWaitingForApiCall = true
         uiMainCommentWithParent?.let {
             podcastMode = false
             viewModelCreateCommentComment.idComment = it.comment.id
@@ -232,14 +233,8 @@ class PodcastDetailsFragment : BaseFragment() {
             rvComments.viewTreeObserver.addOnGlobalLayoutListener {
                 if (firstTimePadding) {
                     firstTimePadding = false
-                    context?.let { context ->
-                        rvComments?.setPadding(
-                            0,
-                            0,
-                            0,
-                            layNestedScroll.height - rvComments.getChildAt(commentWithParentsItemsList.size - 1).height
-                        )
-                    }
+                    val newPadding = layNestedScroll.height - rvComments.getChildAt(commentWithParentsItemsList.size - 1).height
+                    rvComments?.setPadding(0, 0, 0, newPadding)
                     rvComments?.requestLayout()
                     val newY = rvComments.bottom
                     layNestedScroll.post {
@@ -247,9 +242,6 @@ class PodcastDetailsFragment : BaseFragment() {
                     }
                 }
             }
-
-
-//            app_bar_layout?.setExpanded(false) // TODO: commented doing tests about nestedscrollview
 
 
             viewModelGetCommentComments.idComment = it.comment.id
@@ -364,6 +356,7 @@ class PodcastDetailsFragment : BaseFragment() {
             deleteCurrentCommentAudioAndResetBar()
             hideProgressBar()
             hideCommentBar()
+            layNestedScroll.scrollTo(0, rvComments.bottom)
         })
 
         outputPodcast.response.observe(this, Observer {
@@ -373,6 +366,7 @@ class PodcastDetailsFragment : BaseFragment() {
             deleteCurrentCommentAudioAndResetBar()
             hideProgressBar()
             hideCommentBar()
+            layNestedScroll.scrollTo(0, rvComments.bottom)
         })
 
         outputComment.errorMessage.observe(this, Observer {
@@ -412,7 +406,6 @@ class PodcastDetailsFragment : BaseFragment() {
             uiMainCommentWithParent?.comment?.comment_count = uiMainCommentWithParent?.comment?.comment_count!!.inc()
             commentWithParentsItemsList.add(CommentWithParent(commentCreated, uiMainCommentWithParent))
         }
-//        app_bar_layout?.setExpanded(false) // TODO: commented doing tests about nestedscrollview
 //        hideEmptyScenario()
         commentsAdapter?.notifyDataSetChanged()
         rvComments?.scrollToPosition(commentWithParentsItemsList.size - 1)
@@ -453,6 +446,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
             if(commentText.isNotEmpty()) {
                 currentCommentRequest = UICreateCommentRequest(UICommentRequest(commentText, 0, null))
+                isWaitingForApiCall = true
                 if(currentCommentRecordedFile == null) {
                     publishTextComment()
                 } else {
@@ -755,8 +749,8 @@ class PodcastDetailsFragment : BaseFragment() {
                         currentOffset += newItems.size
 
 
-                        if(isWaitingForInfiniteScrollComments)
-                            isWaitingForInfiniteScrollComments = false
+                        if(isWaitingForApiCall)
+                            isWaitingForApiCall = false
 
 
 
@@ -943,8 +937,8 @@ class PodcastDetailsFragment : BaseFragment() {
                 rvComments?.scrollToPosition(0)
             }
 
-            if(isWaitingForInfiniteScrollComments)
-                isWaitingForInfiniteScrollComments = false
+            if(isWaitingForApiCall)
+                isWaitingForApiCall = false
 
             fillCommentList(newItems)
             currentOffset += newItems.size
@@ -1124,60 +1118,24 @@ class PodcastDetailsFragment : BaseFragment() {
         }
 
         rvComments?.adapter = commentsAdapter
-//        rvComments?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-//                super.onScrollStateChanged(recyclerView, newState)
-//                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
-//                    isScrolling = true
-//            }
-//
-//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                super.onScrolled(recyclerView, dx, dy)
-//                // if we scroll down...
-//                if (dy > 0) {
-//
-//                    // those are the items that we have already passed in the list, the items we already saw
-//                    val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
-//
-//                    // this are the items that are currently showing on screen
-//                    val visibleItemsCount = layoutManager.childCount
-//
-//                    // this are the total amount of items
-//                    val totalItemsCount = layoutManager.itemCount
-//
-//                    // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
-//                    if (isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
-//                        isScrolling = false
-//                        if (podcastMode) {
-//                            viewModelGetPodcastComments.offset = currentOffset
-//                            getPodcastCommentsDataTrigger.onNext(Unit)
-//                        } else {
-//                            viewModelGetCommentComments.offset = currentOffset
-//                            getCommentCommentsDataTrigger.onNext(Unit)
-//                        }
-//                    }
-//                }
-//            }
-//        })
         rvComments?.isNestedScrollingEnabled = true
         
         layNestedScroll.setOnScrollChangeListener { v: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
             v?.let{
 //                if(v.getChildAt(v.childCount - 5) != null) {
 //                    if ((scrollY >= (v.getChildAt(v.childCount - 5).measuredHeight - v.measuredHeight)) && scrollY > oldScrollY) {
-                if(rvComments != null && rvComments.visibility == View.VISIBLE) {
-                    if ((scrollY >= (rvComments.measuredHeight - v.measuredHeight)) && scrollY > oldScrollY) {
-                        if (!isLastPage && !isWaitingForInfiniteScrollComments) {
-                            toast("We have to scroll more")
-                            isWaitingForInfiniteScrollComments = true
-//                            isScrolling = false
-                            if (podcastMode) {
-                                viewModelGetPodcastComments.offset = currentOffset
-                                getPodcastCommentsDataTrigger.onNext(Unit)
-                            } else {
-                                viewModelGetCommentComments.offset = currentOffset
-                                getCommentCommentsDataTrigger.onNext(Unit)
-                            }
+                if(!isLastPage && !isWaitingForApiCall && rvComments != null && rvComments.visibility == View.VISIBLE) {
+                    val goingDown = scrollY > oldScrollY
+                    if (goingDown && (scrollY >= (rvComments.measuredHeight - v.measuredHeight))) {
+
+                        toast("We have to scroll more")
+                        isWaitingForApiCall = true
+                        if (podcastMode) {
+                            viewModelGetPodcastComments.offset = currentOffset
+                            getPodcastCommentsDataTrigger.onNext(Unit)
+                        } else {
+                            viewModelGetCommentComments.offset = currentOffset
+                            getCommentCommentsDataTrigger.onNext(Unit)
                         }
                     }
                 }

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.square1.limor.scenes.main.fragments.podcast.CommentWithParent
 import io.square1.limor.uimodels.UIComment
 import io.square1.limor.uimodels.UIPodcast
+import timber.log.Timber
 
 class CommentsAdapter(
     private val context: Context,
@@ -48,6 +49,7 @@ class CommentsAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         val commentItemViewHolder : CommentItemViewHolder = holder as CommentItemViewHolder
+        Timber.d("onBindViewHolder item $position")
 
         val currentItem = list[position]
         if(podcastMode) {
