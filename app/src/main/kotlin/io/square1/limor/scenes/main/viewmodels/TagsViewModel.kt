@@ -9,25 +9,24 @@ import io.square1.limor.common.BaseViewModel
 import io.square1.limor.common.SessionManager
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import io.square1.limor.uimodels.*
-import io.square1.limor.usecases.CategoriesUseCase
+import io.square1.limor.uimodels.UIErrorResponse
+import io.square1.limor.uimodels.UITagsResponse
+import io.square1.limor.usecases.TagsUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class CategoriesViewModel @Inject constructor(private val categoriesUseCase: CategoriesUseCase, private val sessionManager: SessionManager) : BaseViewModel<CategoriesViewModel.Input, CategoriesViewModel.Output>() {
+class TagsViewModel @Inject constructor(private val tagsUseCase: TagsUseCase, private val sessionManager: SessionManager) : BaseViewModel<TagsViewModel.Input, TagsViewModel.Output>() {
 
-
-    var localListCategoriesSelected: ArrayList<UICategory> = ArrayList()
-    var localListCategories: ArrayList<UICategory> = ArrayList()
 
     private val compositeDispose = CompositeDisposable()
+    var tagToSearch = ""
 
     data class Input(
         val categoriesTrigger: Observable<Unit>
     )
 
     data class Output(
-        val response: LiveData<UICategoriesResponse>,
+        val response: LiveData<UITagsResponse>,
         val backgroundWorkingProgress: LiveData<Boolean>,
         val errorMessage: SingleLiveEvent<UIErrorResponse>
     )
@@ -35,11 +34,10 @@ class CategoriesViewModel @Inject constructor(private val categoriesUseCase: Cat
     override fun transform(input: Input): Output {
         val errorTracker = SingleLiveEvent<UIErrorResponse>()
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
-        val response = MutableLiveData<UICategoriesResponse>()
+        val response = MutableLiveData<UITagsResponse>()
 
         input.categoriesTrigger.subscribe({
-            categoriesUseCase.execute().subscribe({
-                //sessionManager.storeToken(it.data.access_token.token.access_token)
+            tagsUseCase.execute(tagToSearch).subscribe({
                 response.value = it
             }, {
                 try {

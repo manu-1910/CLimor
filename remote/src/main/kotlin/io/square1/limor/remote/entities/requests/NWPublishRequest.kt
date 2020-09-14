@@ -33,5 +33,6 @@ data class NWMetaData(
     var caption: String = "",
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
-    var image_url: String = ""
+    var image_url: String = "",
+    var category_id: Int = 0
 )

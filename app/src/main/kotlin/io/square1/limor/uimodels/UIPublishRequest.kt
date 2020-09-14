@@ -27,5 +27,6 @@ data class UIMetaData(
     var caption: String,
     var latitude: Double,
     var longitude: Double,
-    var image_url: String
+    var image_url: String,
+    var category_id: Int
 )

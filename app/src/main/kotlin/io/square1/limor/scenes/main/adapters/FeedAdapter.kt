@@ -2,6 +2,7 @@ package io.square1.limor.scenes.main.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import io.square1.limor.common.SessionManager
@@ -20,10 +21,6 @@ class FeedAdapter(
     private val userLogged : UIUser?
     private var inflator: LayoutInflater
     var list: ArrayList<UIFeedItem> = ArrayList()
-
-    private fun onTagClicked(clickedTag: String) {
-        feedClickListener.onHashtagClicked(clickedTag)
-    }
 
     init {
         this.list = list
@@ -58,6 +55,10 @@ class FeedAdapter(
         fun onHashtagClicked(hashtag : String)
         fun onSendClicked(item : UIFeedItem, position: Int)
         fun onUserClicked(item : UIFeedItem, position: Int)
-        fun onMoreClicked(item : UIFeedItem, position: Int)
+        fun onMoreClicked(
+            item: UIFeedItem,
+            position: Int,
+            view: View
+        )
     }
 }

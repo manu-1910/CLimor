@@ -54,56 +54,61 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 
-        <LinearLayout
-            android:id="@+id/layEmptyScenario"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical"
-            android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <TextView
-                android:id="@+id/tvTitleEmptyScenario"
+            <LinearLayout
+                android:id="@+id/layEmptyScenario"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvTitleEmptyScenario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/marginMedium"
+                    android:layout_marginStart="@dimen/marginMedium"
+                    android:layout_marginEnd="@dimen/marginMedium"
+                    android:gravity="center"
+                    android:text="@string/sorry_there_are_no_podcasts_right_now"
+                    android:textColor="@color/brandSecondary100"
+                    android:textSize="@dimen/textSizeLarge"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvCaptionEmptyScenario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/marginMedium"
+                    android:layout_marginEnd="@dimen/marginMedium"
+                    android:layout_marginBottom="@dimen/marginMedium"
+                    android:gravity="center"
+                    android:textColor="@color/brandSecondary100"
+                    android:text="@string/maybe_you_could_try_later" />
+
+            </LinearLayout>
+
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:theme="@style/ProgressBarTheme"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/marginMedium"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium"
-                android:gravity="center"
-                android:text="@string/sorry_there_are_no_podcasts_right_now"
-                android:textColor="@color/brandSecondary100"
-                android:textSize="@dimen/textSizeLarge"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvCaptionEmptyScenario"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium"
-                android:layout_marginBottom="@dimen/marginMedium"
-                android:gravity="center"
-                android:textColor="@color/brandSecondary100"
-                android:text="@string/maybe_you_could_try_later" />
-
-        </LinearLayout>
+                android:visibility="visible" />
+        </RelativeLayout>
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:theme="@style/ProgressBarTheme"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/layParent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
 
     <LinearLayout
@@ -223,14 +228,29 @@
                 android:background="@color/transparent"
                 android:contentDescription="@string/title_record"
                 android:scaleType="centerCrop"
+                android:visibility="visible"
                 android:src="@drawable/record" />
+
+            <ImageButton
+                android:id="@+id/btnPlayComment"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/marginAlmostLarge"
+                android:layout_marginEnd="@dimen/marginMedium"
+                android:background="@color/transparent"
+                android:contentDescription="@string/title_record"
+                android:scaleType="centerCrop"
+                android:visibility="invisible"
+                android:src="@drawable/play" />
 
             <FrameLayout
                 android:id="@+id/layETCommentHolderDown"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/marginSmall"
-                android:layout_toStartOf="@id/btnPost"
+                android:layout_toStartOf="@id/btnTrash"
                 android:layout_toEndOf="@id/btnRecord">
 
                 <EditText
@@ -243,9 +263,27 @@
                     android:importantForAutofill="no"
                     android:inputType="text"
                     android:textColor="@color/white"
-                    android:textColorHint="@color/brandSecondary100" />
+                    android:textColorHint="@color/brandSecondary100"
+                    android:visibility="visible"/>
+
+                <io.square1.limor.scenes.utils.VisualizerView
+                    android:id="@+id/visualizerComment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"/>
+
             </FrameLayout>
 
+            <ImageButton
+                android:id="@+id/btnTrash"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@id/btnPost"
+                android:background="@color/transparent"
+                android:contentDescription="@string/delete"
+                android:src="@drawable/delete"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/btnPost"

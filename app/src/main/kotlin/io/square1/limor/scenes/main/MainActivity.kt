@@ -62,6 +62,9 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
         setupNavigationController()
 
+        // this is intended to download the data of the current user logged. It's necessary to have it
+        // in some times of the code, so we download it everytime this activivty loads to have it updated
+        // with all of his data
         getProfileTrigger.onNext(Unit)
     }
 
@@ -96,8 +99,22 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
         navController = Navigation.findNavController(this, R.id.navigation_host_fragment)
         bottom_navigation_view.setupWithNavController(navController)
 
+
+        //Used to don't load fragment twice
         bottom_navigation_view.setOnNavigationItemReselectedListener {
-            //Used to don't load fragment again
+
+            // this is to know when the user clicks again in an already loaded fragment
+            when (it.itemId) {
+
+                // in this case, we'll scroll to the top again
+                R.id.navigation_home -> {
+                    val hostFragment = supportFragmentManager.findFragmentById(R.id.navigation_host_fragment)
+                    val currentFragment = hostFragment?.childFragmentManager?.fragments?.get(0)
+                    if (currentFragment != null && currentFragment is FeedFragment  && currentFragment.isVisible) {
+                        currentFragment.scrollToTop()
+                    }
+                }
+            }
         }
 
         navController.addOnNavigatedListener { _, _ ->
