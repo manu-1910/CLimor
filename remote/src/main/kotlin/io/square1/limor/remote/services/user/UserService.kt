@@ -10,6 +10,7 @@ import retrofit2.http.*
 const val USER_ME_PATH = "/api/v1/users/me"
 const val LOG_OUT_PATH = "/oauth/revoke"
 const val SHOW_FEED_PATH = "/api/v1/users/feed"
+const val BLOCKED_USERS = "/api/v1/users/blocked_users"
 const val CREATE_FRIEND_PATH = "/api/v1/users/{id}/friends"
 
 
@@ -33,5 +34,11 @@ interface UserService {
 
     @POST(CREATE_FRIEND_PATH)
     fun createFriend(@Path("id") id : Int): Single<ResponseBody>
+
+    @POST(BLOCKED_USERS)
+    fun createBlockedUser(@Body logoutRequest: RequestBody): Single<ResponseBody>
+
+    @HTTP(method = "DELETE", path = BLOCKED_USERS, hasBody = true) // this is a workaround to make delete work with a request body
+    fun deleteBlockedUser(@Body logoutRequest: RequestBody): Single<ResponseBody>
 
 }

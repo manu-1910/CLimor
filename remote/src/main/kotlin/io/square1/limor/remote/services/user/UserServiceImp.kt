@@ -1,13 +1,11 @@
 package io.square1.limor.remote.services.user
 
 
+import entities.request.DataUserIDRequest
 import io.reactivex.Single
-import io.square1.limor.remote.entities.requests.NWCreateFriendRequest
 import io.square1.limor.remote.entities.requests.NWLogoutRequest
-import io.square1.limor.remote.entities.responses.NWCreateFriendResponse
-import io.square1.limor.remote.entities.responses.NWErrorResponse
-import io.square1.limor.remote.entities.responses.NWFeedResponse
-import io.square1.limor.remote.entities.responses.NWSignUpResponse
+import io.square1.limor.remote.entities.requests.NWUserIDRequest
+import io.square1.limor.remote.entities.responses.*
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
 import io.square1.limor.remote.services.RemoteServiceConfig
@@ -85,6 +83,42 @@ class UserServiceImp @Inject constructor(private val serviceConfig: RemoteServic
                     println("Hemos seguido correctamente al user? ${response.data?.followed}")
                 }
             }
+            .doOnError { error ->
+                println("ERROR: $error")
+            }
+    }
+
+
+
+
+
+    fun createBlockedUser(userIDRequest: NWUserIDRequest): Single<NWCreateBlockedUserResponse> {
+        return service.createBlockedUser(
+            RequestBody.create(
+                MediaType.parse("application/json"),
+                Json.nonstrict.stringify(NWUserIDRequest.serializer(), userIDRequest)
+            )
+        )
+            .map { response ->
+                response.parseSuccessResponse(NWCreateBlockedUserResponse.serializer())
+            }
+            .doOnSuccess { success ->
+                println("SUCCESS: $success")
+            }
+            .doOnError { error ->
+                println("ERROR: $error")
+            }
+    }
+
+    fun deleteBlockedUser(userIDRequest: NWUserIDRequest): Single<NWCreateBlockedUserResponse> {
+        return service.deleteBlockedUser(
+            RequestBody.create(
+                MediaType.parse("application/json"),
+                Json.nonstrict.stringify(NWUserIDRequest.serializer(), userIDRequest)
+            )
+        )
+            .map { response -> response.parseSuccessResponse(NWCreateBlockedUserResponse.serializer()) }
+            .doOnSuccess { success -> println("SUCCESS: $success") }
             .doOnError { error ->
                 println("ERROR: $error")
             }

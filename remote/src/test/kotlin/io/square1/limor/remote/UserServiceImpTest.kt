@@ -1,6 +1,10 @@
 package io.square1.limor.remote
 
+import io.square1.limor.remote.entities.requests.NWCommentRequest
+import io.square1.limor.remote.entities.requests.NWCreateCommentRequest
+import io.square1.limor.remote.entities.requests.NWUserIDRequest
 import io.square1.limor.remote.services.RemoteServiceConfig
+import io.square1.limor.remote.services.podcast.PodcastServiceImp
 import io.square1.limor.remote.services.user.UserServiceImp
 import kotlinx.serialization.ImplicitReflectionSerializer
 import org.junit.Test
@@ -107,5 +111,50 @@ class UserServiceImpTest {
         response.assertValue { it.message == "Success" }
     }
 
+
+    @Test
+    fun should_create_blocked_user_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = CURRENT_URL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = CURRENT_TOKEN,
+            expiredIn = 0
+        )
+
+        userService = UserServiceImp(config)
+
+        val idUser = 5
+        val request = NWUserIDRequest(idUser)
+
+        val response = userService.createBlockedUser(request).test()
+
+        response?.assertNoErrors()
+        response?.assertValue { it.message == "Success" }
+    }
+
+
+    @Test
+    fun should_delete_blocked_user_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = CURRENT_URL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = CURRENT_TOKEN,
+            expiredIn = 0
+        )
+
+        userService = UserServiceImp(config)
+
+        val idUser = 5
+        val request = NWUserIDRequest(idUser)
+
+        val response = userService.deleteBlockedUser(request).test()
+
+        response?.assertNoErrors()
+        response?.assertValue { it.message == "Success" }
+    }
 
 }
