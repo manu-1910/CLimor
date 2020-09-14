@@ -73,7 +73,7 @@ class CommentsAdapter(
         fun onSendClicked(item : UIComment, position: Int)
         fun onUserClicked(item : UIComment, position: Int)
         fun onMoreClicked(item : UIComment, position: Int)
-        fun onReplyClicked(item: UIComment, position: Int)
+        fun onReplyClicked(item: CommentWithParent, position: Int)
         fun onMoreRepliesClicked(parent: CommentWithParent, position: Int)
         fun onShowLessClicked(parent: CommentWithParent, lastChildPosition: Int)
         fun onSeekProgressChanged(

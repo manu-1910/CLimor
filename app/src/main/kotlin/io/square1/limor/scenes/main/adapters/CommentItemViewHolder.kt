@@ -176,7 +176,7 @@ class CommentItemViewHolder(
 
 
         ibtnMore.onClick { commentClickListener.onMoreClicked(currentItem.comment, position) }
-        btnReply.onClick { commentClickListener.onReplyClicked(currentItem.comment, position) }
+        btnReply.onClick { commentClickListener.onReplyClicked(currentItem, position) }
     }
 
     private fun showPlayer(currentItem: CommentWithParent, position: Int) {

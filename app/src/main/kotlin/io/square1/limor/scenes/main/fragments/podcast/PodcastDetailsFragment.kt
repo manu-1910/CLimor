@@ -992,11 +992,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 uiPodcast!!,
                 object : CommentsAdapter.OnCommentClickListener {
                     override fun onItemClicked(item: CommentWithParent, position: Int) {
-                        val podcastDetailsIntent =
-                            Intent(context, PodcastDetailsActivity::class.java)
-                        podcastDetailsIntent.putExtra("podcast", uiPodcast)
-                        podcastDetailsIntent.putExtra("model", item)
-                        startActivityForResult(podcastDetailsIntent, 0)
+                        openNewCommentActivity(item)
                     }
 
                     override fun onPlayClicked(
@@ -1086,8 +1082,8 @@ class PodcastDetailsFragment : BaseFragment() {
                         Toast.makeText(context, "You clicked on more", Toast.LENGTH_SHORT).show()
                     }
 
-                    override fun onReplyClicked(item: UIComment, position: Int) {
-                        Toast.makeText(context, "You clicked on reply", Toast.LENGTH_SHORT).show()
+                    override fun onReplyClicked(item: CommentWithParent, position: Int) {
+                        openNewCommentActivity(item)
                     }
 
                     override fun onMoreRepliesClicked(parent: CommentWithParent, position: Int) {
@@ -1167,6 +1163,15 @@ class PodcastDetailsFragment : BaseFragment() {
         rvComments?.isNestedScrollingEnabled = true
         rvComments?.setHasFixedSize(true)
     }
+
+    private fun openNewCommentActivity(item: CommentWithParent) {
+        val podcastDetailsIntent =
+            Intent(context, PodcastDetailsActivity::class.java)
+        podcastDetailsIntent.putExtra("podcast", uiPodcast)
+        podcastDetailsIntent.putExtra("model", item)
+        startActivityForResult(podcastDetailsIntent, 0)
+    }
+
 
     private fun removeExcessChildrenFromLists(
         parent: CommentWithParent,
