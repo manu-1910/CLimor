@@ -10,7 +10,7 @@ import io.reactivex.Single
 
 
 interface RemoteSearchProvider {
-    fun searchTag(dataTagsRequest: DataTagsRequest): Single<TagsResponseEntity>?
+    fun searchTag(tag: String): Single<TagsResponseEntity>?
     fun searchLocations(dataLocationsRequest: DataLocationsRequest): Single<LocationsResponseEntity>?
     fun trendingTags(): Single<TagsResponseEntity>?
     fun promotedTags(): Single<PromotedTagsResponseEntity>?

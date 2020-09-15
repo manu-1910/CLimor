@@ -20,10 +20,10 @@ import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.fragments.record.adapters.LocationsAdapter
 import io.square1.limor.scenes.main.viewmodels.LocationsViewModel
+import io.square1.limor.scenes.main.viewmodels.PublishViewModel
 import io.square1.limor.uimodels.UILocations
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
-import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.btnClose
 import kotlinx.android.synthetic.main.toolbar_with_searchview.*
 import org.jetbrains.anko.okButton
@@ -38,6 +38,7 @@ class LocationsFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var locationsViewModel: LocationsViewModel
+    private lateinit var publishViewModel: PublishViewModel
 
     private var rvLocations: RecyclerView? = null
     private var rootView: View? = null
@@ -73,7 +74,7 @@ class LocationsFragment : BaseFragment() {
 
         bindViewModel()
         configureToolbar()
-        apiCallSearchTags()
+        apiCallSearchLocations()
         setupRecycler(listLocations)
         searchLocations("") //First search with the location obtained in PublishFragment if exists
     }
@@ -84,6 +85,10 @@ class LocationsFragment : BaseFragment() {
             locationsViewModel = ViewModelProviders
                 .of(it, viewModelFactory)
                 .get(LocationsViewModel::class.java)
+
+            publishViewModel = ViewModelProviders
+                .of(it, viewModelFactory)
+                .get(PublishViewModel::class.java)
         }
     }
 
@@ -104,6 +109,7 @@ class LocationsFragment : BaseFragment() {
             locationSelectedItem.let {
                 if (it != null) {
                     locationsViewModel.locationSelectedItem = it
+                    publishViewModel.locationSelectedItem = it
                 }
             }
             findNavController().popBackStack()
@@ -141,7 +147,7 @@ class LocationsFragment : BaseFragment() {
     }
 
 
-    private fun apiCallSearchTags() {
+    private fun apiCallSearchLocations() {
         val output = locationsViewModel.transform(
             LocationsViewModel.Input(
                 locationsTrigger

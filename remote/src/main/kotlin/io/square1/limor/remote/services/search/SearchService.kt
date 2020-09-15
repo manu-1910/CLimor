@@ -15,7 +15,7 @@ interface SearchService {
 
     @POST(SEARCH_TAG_PATH)
     fun searchTag(
-        @Body tagRequest: RequestBody
+        @Query ("tag") tag: String
     ): Single<ResponseBody>
 
     @POST(SEARCH_LOCATION_PATH)

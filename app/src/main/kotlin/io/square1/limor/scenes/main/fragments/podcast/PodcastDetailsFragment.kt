@@ -13,27 +13,19 @@ import android.os.Handler
 import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
-import android.widget.*
 import android.view.*
-import android.widget.AbsListView
-import android.widget.PopupMenu
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.google.android.material.appbar.AppBarLayout
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
@@ -52,7 +44,7 @@ import io.square1.limor.uimodels.UIComment
 import io.square1.limor.uimodels.UICommentRequest
 import io.square1.limor.uimodels.UICreateCommentRequest
 import io.square1.limor.uimodels.UIPodcast
-import kotlinx.android.synthetic.main.fragment_podcast_details.*
+import kotlinx.android.synthetic.main.fragment_podcast_details_2.*
 import kotlinx.android.synthetic.main.include_interactions_bar.*
 import kotlinx.android.synthetic.main.include_podcast_data.*
 import kotlinx.android.synthetic.main.include_user_bar.*
@@ -84,6 +76,7 @@ data class CommentWithParent(val comment: UIComment, val parent: CommentWithPare
 
 class PodcastDetailsFragment : BaseFragment() {
 
+    private var isWaitingForApiCall: Boolean = false
     private var currentOffset: Int = 0
     private var currentCommentRequest: UICreateCommentRequest? = null
     private var currentCommentRecordedDuration: Int = -1
@@ -96,7 +89,6 @@ class PodcastDetailsFragment : BaseFragment() {
     private var lastCommentRequestedRepliesPosition: Int = 0
     private var lastCommentRequestedRepliesParent: CommentWithParent? = null
     private var lastLikedItemPosition = 0
-    private var isScrolling = false
 
     // this variable will be true when we are showing the details of a podcast with the podcast comments
     // it will be false when we are showing the details of a podcast but with the comments of a comment and its parents
@@ -176,7 +168,7 @@ class PodcastDetailsFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_podcast_details, container, false)
+            rootView = inflater.inflate(R.layout.fragment_podcast_details_2, container, false)
         }
         app = context?.applicationContext as App
         return rootView
@@ -226,6 +218,7 @@ class PodcastDetailsFragment : BaseFragment() {
     private fun initPodcastOrCommentMode() {
         // if it's not null, that means that we have to show the "comment of a comment" screen.
         // If it's null this means that we have to show the "comment of a podcast" screen
+        isWaitingForApiCall = true
         uiMainCommentWithParent?.let {
             podcastMode = false
             viewModelCreateCommentComment.idComment = it.comment.id
@@ -239,26 +232,15 @@ class PodcastDetailsFragment : BaseFragment() {
             rvComments.viewTreeObserver.addOnGlobalLayoutListener {
                 if (firstTimePadding) {
                     firstTimePadding = false
-                    context?.let { context ->
-                        rvComments?.setPadding(
-                            0,
-                            0,
-                            0,
-                            layParent!!.height - CommonsKt.dpToPx(128.0f, context)
-                        )
-                    } // TODO Jose, this last param should be the height of the last item, not hardcoded number
+                    val newPadding = layNestedScroll.height - rvComments.getChildAt(commentWithParentsItemsList.size - 1).height
+                    rvComments?.setPadding(0, 0, 0, newPadding)
                     rvComments?.requestLayout()
-                    val y: Float = rvComments!!.y
-                    rvComments?.startNestedScroll(
-                        ViewCompat.SCROLL_AXIS_VERTICAL,
-                        ViewCompat.TYPE_NON_TOUCH
-                    )
-                    val llm = rvComments?.layoutManager as LinearLayoutManager
-                    llm.scrollToPositionWithOffset(commentWithParentsItemsList.size - 1, y.toInt())
+                    val newY = rvComments.bottom
+                    layNestedScroll.post {
+                        layNestedScroll.scrollTo(0, newY)
+                    }
                 }
             }
-
-            app_bar_layout?.setExpanded(false)
 
 
             viewModelGetCommentComments.idComment = it.comment.id
@@ -335,22 +317,22 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun showEmptyScenario() {
-//        layEmptyScenario?.visibility = View.VISIBLE
-        app_bar_layout?.setExpanded(true)
+        layEmptyScenario?.visibility = View.VISIBLE
         rvComments?.visibility = View.GONE
-
-        val lp = collapsingToolbar.layoutParams as AppBarLayout.LayoutParams
-        lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
-        collapsingToolbar.layoutParams = lp
+//        app_bar_layout?.setExpanded(true)
+//
+//        val lp = collapsingToolbar.layoutParams as AppBarLayout.LayoutParams
+//        lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
+//        collapsingToolbar.layoutParams = lp
     }
 
     private fun hideEmptyScenario() {
         layEmptyScenario?.visibility = View.GONE
         rvComments?.visibility = View.VISIBLE
-
-        val lp = collapsingToolbar.layoutParams as AppBarLayout.LayoutParams
-        lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
-        collapsingToolbar.layoutParams = lp
+//
+//        val lp = collapsingToolbar.layoutParams as AppBarLayout.LayoutParams
+//        lp.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+//        collapsingToolbar.layoutParams = lp
     }
 
     private fun initApiCallCreateComment() {
@@ -370,22 +352,37 @@ class PodcastDetailsFragment : BaseFragment() {
             it.data?.comment?.let { newComment ->
                 addNewCommentToList(newComment)
             }
+            hideProgressCreateComment()
             deleteCurrentCommentAudioAndResetBar()
             hideProgressBar()
             hideCommentBar()
+            layNestedScroll.scrollTo(0, rvComments.bottom)
         })
 
         outputPodcast.response.observe(this, Observer {
             it.data?.comment?.let { newComment ->
                 addNewCommentToList(newComment)
             }
+            hideProgressCreateComment()
             deleteCurrentCommentAudioAndResetBar()
             hideProgressBar()
             hideCommentBar()
+            layNestedScroll.scrollTo(0, rvComments.bottom)
         })
 
         outputComment.errorMessage.observe(this, Observer {
             hideProgressBar()
+            hideProgressCreateComment()
+            Toast.makeText(
+                context,
+                getString(R.string.couldnt_send_comment),
+                Toast.LENGTH_SHORT
+            ).show()
+        })
+
+        outputPodcast.errorMessage.observe(this, Observer {
+            hideProgressBar()
+            hideProgressCreateComment()
             Toast.makeText(
                 context,
                 getString(R.string.couldnt_send_comment),
@@ -421,8 +418,7 @@ class PodcastDetailsFragment : BaseFragment() {
             uiMainCommentWithParent?.comment?.comment_count = uiMainCommentWithParent?.comment?.comment_count!!.inc()
             commentWithParentsItemsList.add(CommentWithParent(commentCreated, uiMainCommentWithParent))
         }
-        app_bar_layout?.setExpanded(false)
-        hideEmptyScenario()
+//        hideEmptyScenario()
         commentsAdapter?.notifyDataSetChanged()
         rvComments?.scrollToPosition(commentWithParentsItemsList.size - 1)
     }
@@ -462,6 +458,8 @@ class PodcastDetailsFragment : BaseFragment() {
 
             if(commentText.isNotEmpty()) {
                 currentCommentRequest = UICreateCommentRequest(UICommentRequest(commentText, 0, null))
+                isWaitingForApiCall = true
+                showProgressCreateComment()
                 if(currentCommentRecordedFile == null) {
                     publishTextComment()
                 } else {
@@ -480,17 +478,28 @@ class PodcastDetailsFragment : BaseFragment() {
         }
 
         btnRecord.setOnTouchListener { view, event ->
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                if(!isCommentBarOpen())
-                    openCommentBarTextAndFocusIt()
+            //Check if all permissions are granted, if not, request again
+            if (!hasPermissions(requireContext(), *PERMISSIONS)) {
+                try {
+                    ActivityCompat.requestPermissions(requireActivity(),
+                        PERMISSIONS, PERMISSION_ALL
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }else{
+                if (event.action == MotionEvent.ACTION_DOWN) {
+                    if(!isCommentBarOpen())
+                        openCommentBarTextAndFocusIt()
 
-                btnRecord.setImageResource(R.drawable.record_red)
-                audioSetup()
-                recordAudio()
-            } else if(event.action == MotionEvent.ACTION_UP) {
-                stopAudio()
-                btnRecord.setImageResource(R.drawable.record)
-                view.performClick()
+                    btnRecord.setImageResource(R.drawable.record_red)
+                    audioSetup()
+                    recordAudio()
+                } else if(event.action == MotionEvent.ACTION_UP) {
+                    stopAudio()
+                    btnRecord.setImageResource(R.drawable.record)
+                    view.performClick()
+                }
             }
             true
         }
@@ -508,21 +517,33 @@ class PodcastDetailsFragment : BaseFragment() {
         }
 
         btnPlayComment.onClick {
-            if(mRecorder.isPlaying) {
-                btnPlayComment.setImageResource(R.drawable.play)
-                mRecorder.pausePlaying()
 
-                // this means that it has a file loaded but it's not currently playing
-            } else if (!mRecorder.isReleased) {
-                btnPlayComment.setImageResource(R.drawable.pause)
-                mRecorder.resumePlaying()
+            //Check if all permissions are granted, if not, request again
+            if (!hasPermissions(requireContext(), *PERMISSIONS)) {
+                try {
+                    ActivityCompat.requestPermissions(requireActivity(),
+                        PERMISSIONS, PERMISSION_ALL
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }else{
+                if(mRecorder.isPlayerPlaying) {
+                    btnPlayComment.setImageResource(R.drawable.play)
+                    mRecorder.pausePlaying()
 
-                // it doesn't have a file loaded
-            } else {
-                currentCommentRecordedFile?.let {
-                    if(it.exists() && it.isFile) {
-                        btnPlayComment.setImageResource(R.drawable.pause)
-                        mRecorder.startPlaying(it.absolutePath, MediaPlayer.OnCompletionListener { onPlayingCommentFinished() })
+                    // this means that it has a file loaded but it's not currently playing
+                } else if (!mRecorder.isPlayerReleased) {
+                    btnPlayComment.setImageResource(R.drawable.pause)
+                    mRecorder.resumePlaying()
+
+                    // it doesn't have a file loaded
+                } else {
+                    currentCommentRecordedFile?.let {
+                        if(it.exists() && it.isFile) {
+                            btnPlayComment.setImageResource(R.drawable.pause)
+                            mRecorder.startPlaying(it.absolutePath, MediaPlayer.OnCompletionListener { onPlayingCommentFinished() })
+                        }
                     }
                 }
             }
@@ -572,23 +593,11 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun recordAudio() {
-
-        //Check if all permissions are granted, if not, request again
-        if (!hasPermissions(requireContext(), *PERMISSIONS)) {
-            try {
-                ActivityCompat.requestPermissions(requireActivity(),
-                    PERMISSIONS, PERMISSION_ALL
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }else{
-            visualizerComment?.visibility = View.VISIBLE
-            isRecording = true
-            println("RECORD --> START")
-            mRecorder.startRecording()
-            handlerRecordingComment.post(updater)
-        }
+        visualizerComment?.visibility = View.VISIBLE
+        isRecording = true
+        println("RECORD --> START")
+        mRecorder.startRecording()
+        handlerRecordingComment.post(updater)
     }
 
 
@@ -599,7 +608,7 @@ class PodcastDetailsFragment : BaseFragment() {
         val filenameRecorded = filenameAndAudio.first
         currentCommentRecordedDuration = filenameAndAudio.second
         currentCommentRecordedFile = File(filenameRecorded)
-        if(currentCommentRecordedFile!!.isFile && currentCommentRecordedFile!!.exists()) {
+        if(currentCommentRecordedDuration > 0 && currentCommentRecordedFile!!.isFile && currentCommentRecordedFile!!.exists()) {
             showPlayButton()
             btnTrash?.visibility = View.VISIBLE
             visualizerComment.invalidate()
@@ -691,6 +700,20 @@ class PodcastDetailsFragment : BaseFragment() {
         }
     }
 
+    private fun showProgressCreateComment() {
+        progressBarSendComment.visibility = View.VISIBLE
+        // you can't set it gone because it will brake the layout, so we set it invisible and non clickable
+        btnPost.visibility = View.INVISIBLE
+        btnPost.isClickable = false
+    }
+
+    private fun hideProgressCreateComment() {
+        progressBarSendComment.visibility = View.GONE
+        // you can't set it gone because it will brake the layout, so we set it invisible and non clickable
+        btnPost.visibility = View.VISIBLE
+        btnPost.isClickable = true
+    }
+
 
     // this function builds the list hierarchy of the first items received in the activity
     // I mean, if we receive a comment of a comment of a comment of a podcast..
@@ -764,11 +787,16 @@ class PodcastDetailsFragment : BaseFragment() {
                         currentOffset += newItems.size
 
 
+                        if(isWaitingForApiCall)
+                            isWaitingForApiCall = false
+
+
 
 
                         // if they are not comments of the main comment, that means that these new comments
                         // are children of a different comment, so we have to add these children to its
                         // parent comment and then, add the childrens in their position in the main list
+                        // this is a "show more" call
                     } else {
                         // we add the new items to its parent
                         lastCommentRequestedRepliesParent?.let { parent ->
@@ -947,6 +975,9 @@ class PodcastDetailsFragment : BaseFragment() {
                 rvComments?.scrollToPosition(0)
             }
 
+            if(isWaitingForApiCall)
+                isWaitingForApiCall = false
+
             fillCommentList(newItems)
             currentOffset += newItems.size
 
@@ -992,11 +1023,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 uiPodcast!!,
                 object : CommentsAdapter.OnCommentClickListener {
                     override fun onItemClicked(item: CommentWithParent, position: Int) {
-                        val podcastDetailsIntent =
-                            Intent(context, PodcastDetailsActivity::class.java)
-                        podcastDetailsIntent.putExtra("podcast", uiPodcast)
-                        podcastDetailsIntent.putExtra("model", item)
-                        startActivityForResult(podcastDetailsIntent, 0)
+                        openNewCommentActivity(item)
                     }
 
                     override fun onPlayClicked(
@@ -1086,8 +1113,8 @@ class PodcastDetailsFragment : BaseFragment() {
                         Toast.makeText(context, "You clicked on more", Toast.LENGTH_SHORT).show()
                     }
 
-                    override fun onReplyClicked(item: UIComment, position: Int) {
-                        Toast.makeText(context, "You clicked on reply", Toast.LENGTH_SHORT).show()
+                    override fun onReplyClicked(item: CommentWithParent, position: Int) {
+                        openNewCommentActivity(item)
                     }
 
                     override fun onMoreRepliesClicked(parent: CommentWithParent, position: Int) {
@@ -1129,30 +1156,18 @@ class PodcastDetailsFragment : BaseFragment() {
         }
 
         rvComments?.adapter = commentsAdapter
-        rvComments?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
-                    isScrolling = true
-            }
+        rvComments?.isNestedScrollingEnabled = true
+        
+        layNestedScroll.setOnScrollChangeListener { v: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
+            v?.let{
+//                if(v.getChildAt(v.childCount - 5) != null) {
+//                    if ((scrollY >= (v.getChildAt(v.childCount - 5).measuredHeight - v.measuredHeight)) && scrollY > oldScrollY) {
+                if(!isLastPage && !isWaitingForApiCall && rvComments != null && rvComments.visibility == View.VISIBLE) {
+                    val goingDown = scrollY > oldScrollY
+                    if (goingDown && (scrollY >= (rvComments.measuredHeight - v.measuredHeight))) {
 
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                // if we scroll down...
-                if (dy > 0) {
-
-                    // those are the items that we have already passed in the list, the items we already saw
-                    val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
-
-                    // this are the items that are currently showing on screen
-                    val visibleItemsCount = layoutManager.childCount
-
-                    // this are the total amount of items
-                    val totalItemsCount = layoutManager.itemCount
-
-                    // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
-                    if (isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
-                        isScrolling = false
+//                        toast("We have to scroll more")
+                        isWaitingForApiCall = true
                         if (podcastMode) {
                             viewModelGetPodcastComments.offset = currentOffset
                             getPodcastCommentsDataTrigger.onNext(Unit)
@@ -1163,10 +1178,18 @@ class PodcastDetailsFragment : BaseFragment() {
                     }
                 }
             }
-        })
-        rvComments?.isNestedScrollingEnabled = true
+        }
         rvComments?.setHasFixedSize(true)
     }
+
+    private fun openNewCommentActivity(item: CommentWithParent) {
+        val podcastDetailsIntent =
+            Intent(context, PodcastDetailsActivity::class.java)
+        podcastDetailsIntent.putExtra("podcast", uiPodcast)
+        podcastDetailsIntent.putExtra("model", item)
+        startActivityForResult(podcastDetailsIntent, 0)
+    }
+
 
     private fun removeExcessChildrenFromLists(
         parent: CommentWithParent,
@@ -1585,20 +1608,20 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
 
-    private fun reloadComments() {
-        showEmptyScenario()
-        showProgressBar()
-        app_bar_layout?.setExpanded(true)
-        isLastPage = false
-        isReloading = true
-        commentWithParentsItemsList.clear()
-        commentsAdapter?.notifyDataSetChanged()
-        if(podcastMode) {
-            viewModelGetPodcastComments.offset = 0
-            getPodcastCommentsDataTrigger.onNext(Unit)
-        } else {
-            viewModelGetCommentComments.offset = 0
-            getCommentCommentsDataTrigger.onNext(Unit)
-        }
-    }
+//    private fun reloadComments() {
+//        showEmptyScenario()
+//        showProgressBar()
+//        app_bar_layout?.setExpanded(true)
+//        isLastPage = false
+//        isReloading = true
+//        commentWithParentsItemsList.clear()
+//        commentsAdapter?.notifyDataSetChanged()
+//        if(podcastMode) {
+//            viewModelGetPodcastComments.offset = 0
+//            getPodcastCommentsDataTrigger.onNext(Unit)
+//        } else {
+//            viewModelGetCommentComments.offset = 0
+//            getCommentCommentsDataTrigger.onNext(Unit)
+//        }
+//    }
 }

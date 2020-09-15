@@ -1,16 +1,19 @@
 package io.square1.limor.scenes.main.fragments.record
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.ChipGroup
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
@@ -19,14 +22,14 @@ import io.square1.limor.common.BaseFragment
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.viewmodels.CategoriesViewModel
+import io.square1.limor.scenes.main.viewmodels.PublishViewModel
 import io.square1.limor.uimodels.UICategory
-import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.btnClose
 import org.jetbrains.anko.okButton
+import org.jetbrains.anko.padding
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
 
 
@@ -35,15 +38,13 @@ class CategoriesFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var categoriesViewModel: CategoriesViewModel
+    private lateinit var publishViewModel: PublishViewModel
 
-    private var rvCategories: RecyclerView? = null
     private var rootView: View? = null
     private var listCategories = ArrayList<UICategory>()
     private var listCategoriesSelected = ArrayList<UICategory>()
     private val categoriesTrigger = PublishSubject.create<Unit>()
-
     private var chipGroup: ChipGroup? = null
-
     var app: App? = null
 
 
@@ -76,17 +77,12 @@ class CategoriesFragment : BaseFragment() {
 
         bindViewModel()
         configureToolbar()
-        //apiCallGetCategories()
-        categoriesListener()
-
-        //setupRecycler(listCategories)
-
-
+        apiCallGetCategories()
     }
+
 
     override fun onResume() {
         super.onResume()
-
         categoriesTrigger.onNext(Unit)
     }
 
@@ -96,6 +92,10 @@ class CategoriesFragment : BaseFragment() {
             categoriesViewModel = ViewModelProviders
                 .of(it, viewModelFactory)
                 .get(CategoriesViewModel::class.java)
+
+            publishViewModel = ViewModelProviders
+                .of(it, viewModelFactory)
+                .get(PublishViewModel::class.java)
         }
     }
 
@@ -113,7 +113,6 @@ class CategoriesFragment : BaseFragment() {
             categoriesViewModel.localListCategoriesSelected.addAll(listCategoriesSelected)
             findNavController().popBackStack()
         }
-
     }
 
 
@@ -125,16 +124,47 @@ class CategoriesFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
-
             if (it.code == 0) { //Tags Response Ok
 
-                toast("success")
+                val params: LinearLayout.LayoutParams =
+                    LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                params.setMargins(16, 16, 16, 16)
 
+                val states = arrayOf(
+                    intArrayOf(android.R.attr.state_enabled),
+                    intArrayOf(-android.R.attr.state_enabled),
+                    intArrayOf(-android.R.attr.state_checked),
+                    intArrayOf(android.R.attr.state_pressed)
+                )
+
+                val colors = intArrayOf(
+                    Color.BLACK,
+                    Color.RED,
+                    Color.GREEN,
+                    Color.BLUE
+                )
+
+                for (item in it.data.categories) {
+                    val tvChip = TextView(context)
+                    tvChip.id = item.id
+                    tvChip.text = item.name
+                    tvChip.setTextColor(ContextCompat.getColorStateList(context!!, R.color.chip_textcolor))
+                    tvChip.isEnabled = true
+                    tvChip.padding = 24
+                    tvChip.background = ContextCompat.getDrawable(
+                        context!!,
+                        R.drawable.bg_chip_category
+                    )
+                    tvChip.layoutParams = params
+                    tvChip.setOnClickListener {
+                        publishViewModel.categorySelected = tvChip.text.toString()
+                        publishViewModel.categorySelectedId = tvChip.id
+                        findNavController().popBackStack()
+                    }
+                    chipGroup!!.addView(tvChip)
+                }
             }
-
-
         })
 
         output.backgroundWorkingProgress.observe(this, Observer {
@@ -142,7 +172,6 @@ class CategoriesFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
 
@@ -177,41 +206,6 @@ class CategoriesFragment : BaseFragment() {
             }
         })
     }
-
-
-    private fun categoriesListener(){
-
-
-
-//        var i=1
-//        val genres = arrayOf("Thriller 2", "Comedy 2", "Adventure 2")
-//        for (genre in genres) {
-//
-//            var temp : Chip = Chip(context, null, R.style.Widget_MaterialComponents_Chip_Filter)
-//            temp.id=i
-//            temp.text= genre+i
-//
-//
-//            if (Build.VERSION.SDK_INT < 23) {
-//                temp.setTextAppearance(context, R.style.TextAppearance_MaterialComponents_Button)
-//            } else{
-//                temp.setTextAppearance(R.style.TextAppearance_MaterialComponents_Button)
-//            }
-//
-//            chipGroup!!.addView(temp)
-//            i++
-//        }
-
-
-
-
-
-
-
-
-    }
-
-
 
 }
 

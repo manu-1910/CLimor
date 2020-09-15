@@ -16,8 +16,8 @@ class DataSearchRepository @Inject constructor(private val remoteProvider: Remot
     SearchRepository {
 
 
-    override fun searchTag(dataTagsRequest: DataTagsRequest): Single<TagsResponseEntity>? {
-        return remoteProvider.searchTag(dataTagsRequest)
+    override fun searchTag(tag: String): Single<TagsResponseEntity>? {
+        return remoteProvider.searchTag(tag)
     }
 
     override fun searchLocations(dataLocationsRequest: DataLocationsRequest): Single<LocationsResponseEntity>? {

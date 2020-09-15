@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.square1.limor.common.SessionManager
 import io.square1.limor.uimodels.UIFeedItem
 import io.square1.limor.uimodels.UIUser
+import timber.log.Timber
 
 
 class FeedAdapter(
@@ -40,7 +41,7 @@ class FeedAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = list[position]
-
+        Timber.d("onBindViewHolder FeedAdapter")
         val feedItemViewHolder : FeedItemViewHolder = holder as FeedItemViewHolder
         feedItemViewHolder.bind(currentItem, position, showPlayButton)
     }

@@ -11,10 +11,7 @@ import io.square1.limor.common.BaseViewModel
 import io.square1.limor.common.SessionManager
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import io.square1.limor.uimodels.UIErrorData
-import io.square1.limor.uimodels.UIErrorResponse
-import io.square1.limor.uimodels.UIPublishRequest
-import io.square1.limor.uimodels.UIPublishResponse
+import io.square1.limor.uimodels.*
 import io.square1.limor.usecases.PublishUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -25,6 +22,9 @@ class PublishViewModel @Inject constructor(private val publishUseCase: PublishUs
         podcast = null
     );
 
+    var categorySelected: String = ""
+    var categorySelectedId: Int = 0
+    var locationSelectedItem: UILocations = UILocations("", 0.0, 0.0, true)
 
     private val compositeDispose = CompositeDisposable()
 

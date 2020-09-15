@@ -3,6 +3,7 @@ package io.square1.limor.scenes.main.fragments.record
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -32,6 +33,8 @@ import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.hendraanggrian.appcompat.widget.Hashtag
+import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
@@ -40,10 +43,8 @@ import io.square1.limor.common.Constants
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.MainActivity
-import io.square1.limor.scenes.main.viewmodels.DraftViewModel
-import io.square1.limor.scenes.main.viewmodels.LocationsViewModel
-import io.square1.limor.scenes.main.viewmodels.PublishViewModel
-import io.square1.limor.scenes.main.viewmodels.CategoriesViewModel
+import io.square1.limor.scenes.main.fragments.record.adapters.HashtagAdapter
+import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
@@ -53,12 +54,16 @@ import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
+import kotlinx.coroutines.*
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.uiThread
 import java.io.File
 import java.io.IOException
+import java.lang.Runnable
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -67,14 +72,13 @@ import kotlin.collections.ArrayList
 
 class PublishFragment : BaseFragment() {
 
-
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var draftViewModel: DraftViewModel
     private lateinit var publishViewModel: PublishViewModel
-    private lateinit var hashtagViewModel: CategoriesViewModel
+    private lateinit var categoriesViewModel: CategoriesViewModel
     private lateinit var locationsViewModel: LocationsViewModel
-
+    private lateinit var tagsViewModel: TagsViewModel
 
     lateinit var recordingItem : UIDraft
     private lateinit var mediaPlayer: MediaPlayer
@@ -84,6 +88,7 @@ class PublishFragment : BaseFragment() {
     var app: App? = null
     private val updateDraftTrigger = PublishSubject.create<Unit>()
     private val publishPodcastTrigger = PublishSubject.create<Unit>()
+    private val getTagsTrigger = PublishSubject.create<Unit>()
 
     //Player vars
     private var audioSeekbar: SeekBar? = null
@@ -97,20 +102,24 @@ class PublishFragment : BaseFragment() {
     private var lytImage: RelativeLayout? = null
     private var btnSaveDraft: Button? = null
     private var btnPublishDraft: Button? = null
+    private var lytPublishProgress: LinearLayout? = null
+    private var lytPublishForm: LinearLayout? = null
 
+    //Form vars
     private var etDraftTitle: EditText? = null
-    private var etDraftCaption: EditText? = null
+    private var etDraftCaption: SocialAutoCompleteTextView? = null
     private var tvDraftCategory: TextView? = null
     private var tvDraftLocation: TextView? = null
-
     private var podcastLocation: UILocations = UILocations("", 0.0, 0.0, false)
-
     private var imageUrlFinal: String? = ""
     private var audioUrlFinal: String? = ""
-
     private var isPublished: Boolean = false
-
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val GALLERY_ACTIVITY_CODE = 200
+    private val RESULT_CROP = 400
+    private var listTags = ArrayList<UITags>()
+    private var listTagsString: ArrayAdapter<Hashtag>? = null
+
 
     companion object {
         val TAG: String = PublishFragment::class.java.simpleName
@@ -137,14 +146,11 @@ class PublishFragment : BaseFragment() {
             lytImage = rootView?.findViewById(R.id.lytImage)
             btnSaveDraft = rootView?.findViewById(R.id.btnSaveAsDraft)
             btnPublishDraft = rootView?.findViewById(R.id.btnPublish)
-
             etDraftTitle = rootView?.findViewById(R.id.etTitle)
             etDraftCaption = rootView?.findViewById(R.id.etCaption)
-            //etDraftHashtags = rootView?.findViewById(R.id.etHashtags)
-            //etDraftLocation = rootView?.findViewById(R.id.etLocation)
 
-            //lytHashtags = rootView?.findViewById(R.id.lytHashtags)
-            //lytLocation = rootView?.findViewById(R.id.lytLocation)
+            lytPublishProgress = rootView?.findViewById(R.id.lytPublishProgress)
+            lytPublishForm = rootView?.findViewById(R.id.lytPublishForm)
 
             mediaPlayer = MediaPlayer()
         }
@@ -176,10 +182,23 @@ class PublishFragment : BaseFragment() {
         updateDraft()
         apiCallPublishPodcast()
         getCityOfDevice()
+        apiCallHashTags()
+        multiCompleteText()
     }
 
     override fun onResume() {
         super.onResume()
+
+        if(!publishViewModel.categorySelected.isNullOrEmpty()){
+            tvSelectedCategory.text = publishViewModel.categorySelected
+        }
+
+        if(publishViewModel.locationSelectedItem != null){
+            if(!publishViewModel.categorySelected.isNullOrEmpty()){
+                tvSelectedLocation.text = publishViewModel.locationSelectedItem.address
+            }
+        }
+
 
 //        //Load selected hashtags
 //        var hashtagListString: String = ""
@@ -274,13 +293,17 @@ class PublishFragment : BaseFragment() {
                 .of(it, viewModelFactory)
                 .get(PublishViewModel::class.java)
 
-            hashtagViewModel = ViewModelProviders
+            categoriesViewModel = ViewModelProviders
                 .of(it, viewModelFactory)
                 .get(CategoriesViewModel::class.java)
 
             locationsViewModel = ViewModelProviders
                 .of(it, viewModelFactory)
                 .get(LocationsViewModel::class.java)
+
+            tagsViewModel = ViewModelProviders
+                .of(it, viewModelFactory)
+                .get(TagsViewModel::class.java)
         }
     }
 
@@ -333,18 +356,97 @@ class PublishFragment : BaseFragment() {
 
         btnPublishDraft?.onClick {
             if (checkEmptyFields()){
-                publishPodcastImage()
-                publishPodcastAudio()
+//                lifecycleScope.launch {
+//                    publishPodcastImage()
+//                    publishPodcastAudio()
+//                    apiCallPublish()
+//                }
+
+//                runBlocking {
+//                    val job = launch(Dispatchers.Default) {
+//                        println("Llamo a publish image")
+//                        publishPodcastImage()
+//                        println("Llamo a publish audio")
+//                        publishPodcastAudio()
+//                    }
+//                    job.join()
+//                    println("Llamo a publish podcast")
+//                    apiCallPublish()
+//                }
+
+
+                runBlocking {
+                    val myContext = Job() + Dispatchers.Default
+
+                    val job1 = launch(myContext) {
+                        println("Llamo a publish image")
+                        publishPodcastImage()
+                        delay(1000)
+                    }
+                    job1.join()
+
+                    val job2 = launch(myContext) {
+                        println("Llamo a publish audio")
+                        publishPodcastAudio()
+                        delay(1000)
+                    }
+                    job2.join()
+
+                    val job3 = launch(myContext) {
+                        println("Llamo a publish podcast")
+                        apiCallPublish()
+                    }
+                    job3.join()
+
+                    /*launch (myContext) {
+                        println("Llamo a publish image")
+                        publishPodcastImage()
+                    }
+
+                    launch (myContext) {
+                        println("Llamo a publish audio")
+                        publishPodcastAudio()
+                    }
+
+                    launch (myContext) {
+                        println("Llamo a publish podcast")
+                        apiCallPublish()
+                    }*/
+
+//                    val def = async (myContext) {
+//                        ...
+//                    }
+
+                }
+
+
+//                GlobalScope.launch(Dispatchers.Main) {
+//                    lytPublishProgress?.visibility = View.VISIBLE
+//                    lytPublishForm?.visibility = View.GONE
+//
+//                    println("Llamo a publish image")
+//                    publishPodcastImage()
+//                    println("Llamo a publish audio")
+//                    publishPodcastAudio()
+//                    println("Llamo a publish podcast")
+//                    publishPodcastAudio()
+//
+//                    lytPublishProgress?.visibility = View.GONE
+//                    lytPublishForm?.visibility = View.VISIBLE
+//                }
             }
         }
 
-        tvCategory?.onClick{
+        lytTvCategory?.onClick{
             findNavController().navigate(R.id.action_record_publish_to_record_categories)
         }
 
-        tvLocation?.onClick{
+        lytTvLocation?.onClick{
             findNavController().navigate(R.id.action_record_publish_to_record_locations)
         }
+
+
+
 
     }
 
@@ -361,8 +463,6 @@ class PublishFragment : BaseFragment() {
                     println("Audio upload to AWS succesfully")
                     //var url = audioUrl
                     audioUrlFinal = audioUrl
-
-                    apiCallPublish()
                 }
 
                 override fun onError(error: String?) {
@@ -381,7 +481,7 @@ class PublishFragment : BaseFragment() {
             context,
             object : Commons.ImageUploadCallback {
                 override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
-                    TODO("Not yet implemented")
+                    //TODO("Not yet implemented")
                 }
 
                 override fun onSuccess(imageUrl: String?) {
@@ -392,7 +492,7 @@ class PublishFragment : BaseFragment() {
                 }
 
                 override fun onStateChanged(id: Int, state: TransferState?) {
-                    TODO("Not yet implemented")
+                    //TODO("Not yet implemented")
                 }
 
                 override fun onError(error: String?) {
@@ -409,36 +509,29 @@ class PublishFragment : BaseFragment() {
 
         println("llego aquí muchas veces???????????????")
 
-        if(!isPublished){
-            var uiPublishRequest = UIPublishRequest(
-                podcast = UIPodcastRequest(
-                    audio = UIAudio(
-                        audio_url = audioUrlFinal.toString(),
-                        original_audio_url = audioUrlFinal.toString(),
-                        duration = mediaPlayer.duration,
-                        total_samples = 0.0,
-                        total_length = recordingItem.length!!.toDouble(),
-                        sample_rate = 0.0,
-                        timestamps = ArrayList() //recordingItem.timeStamps
-                    ),
-                    meta_data = UIMetaData(
-                        title = etDraftTitle?.text.toString(),
-                        caption = etDraftCaption?.text.toString(),
-                        latitude = podcastLocation.latitude.takeIf { podcastLocation.latitude != 0.0 }
-                            ?: 0.0,
-                        longitude = podcastLocation.longitude.takeIf { podcastLocation.longitude != 0.0 }
-                            ?: 0.0,
-                        image_url = imageUrlFinal.toString()
-                    )
+        val uiPublishRequest = UIPublishRequest(
+            podcast = UIPodcastRequest(
+                audio = UIAudio(
+                    audio_url = audioUrlFinal.toString(),
+                    original_audio_url = audioUrlFinal.toString(),
+                    duration = mediaPlayer.duration,
+                    total_samples = 0.0,
+                    total_length = recordingItem.length!!.toDouble(),
+                    sample_rate = 0.0,
+                    timestamps = ArrayList() //recordingItem.timeStamps
+                ),
+                meta_data = UIMetaData(
+                    title = etDraftTitle?.text.toString(),
+                    caption = etDraftCaption?.text.toString(),
+                    latitude = podcastLocation.latitude.takeIf { podcastLocation.latitude != 0.0 } ?: 0.0,
+                    longitude = podcastLocation.longitude.takeIf { podcastLocation.longitude != 0.0 } ?: 0.0,
+                    image_url = imageUrlFinal.toString(),
+                    category_id = publishViewModel.categorySelectedId
                 )
             )
-            publishViewModel.uiPublishRequest = uiPublishRequest
-
-            publishPodcastTrigger.onNext(Unit)
-
-        }
-
-
+        )
+        publishViewModel.uiPublishRequest = uiPublishRequest
+        publishPodcastTrigger.onNext(Unit)
     }
 
 
@@ -513,6 +606,12 @@ class PublishFragment : BaseFragment() {
             .limit(resources.getInteger(R.integer.MAX_PHOTOS)) // max images can be selected (99 by default)
             .theme(R.style.ImagePickerTheme) // must inherit ef_BaseTheme. please refer to sample
             .start()
+
+//        ImagePicker.with(this)
+//            .crop()	    			//Crop image(Optional), Check Customization for more option
+//            .compress(1024)			//Final image size will be less than 1 MB(Optional)
+//            .maxResultSize(1080, 1080)	//Final image resolution will be less than 1080 x 1080(Optional)
+//            .start()
     }
 
 
@@ -647,14 +746,25 @@ class PublishFragment : BaseFragment() {
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
             // Get a list of picked files
             val filesSelected = ImagePicker.getImages(data) as ArrayList<Image>
-            //isFromImagePicker = true
-
             if (filesSelected.size > 0) {
-                Glide.with(context!!).load(filesSelected[0].path).into(draftImage!!)
-                //Add the photopath to recording item
-                draftViewModel.uiDraft.tempPhotoPath = filesSelected[0].path
+                performCrop(filesSelected[0].path)
+            }else{
+                lytImage?.visibility = View.GONE
+                lytImagePlaceholder?.visibility = View.VISIBLE
+            }
+        }
 
-                var imageFile = File(filesSelected[0].path)
+        if (requestCode == RESULT_CROP){
+            if(resultCode == Activity.RESULT_OK){
+                val extras = data?.data
+                val filePath = extras!!.path
+
+                Glide.with(context!!).load(filePath).into(draftImage!!)
+
+                //Add the photopath to recording item
+                draftViewModel.uiDraft.tempPhotoPath = filePath
+
+                val imageFile = File(filePath)
                 Commons.getInstance().handleImage(
                     context,
                     Commons.IMAGE_TYPE_PODCAST,
@@ -673,25 +783,87 @@ class PublishFragment : BaseFragment() {
             }
         }
 
+        //TODO JJ this code works with the new ImagePicker
+//        if (resultCode == Activity.RESULT_OK) {
+//            //Image Uri will not be null for RESULT_OK
+//            val fileUri = data?.data
+//            //imgProfile.setImageURI(fileUri)
+//
+//            //You can get File object from intent
+//            val file:File = ImagePicker.getFile(data)!!
+//
+//            //You can also get File Path from intent
+//            val filePath:String = ImagePicker.getFilePath(data)!!
+//
+//
+//            if (!filePath.isNullOrEmpty()) {
+//                Glide.with(context!!).load(filePath).into(draftImage!!)
+//                //Add the photopath to recording item
+//                draftViewModel.uiDraft.tempPhotoPath = filePath
+//
+//                var imageFile = File(filePath)
+//                Commons.getInstance().handleImage(
+//                    context,
+//                    Commons.IMAGE_TYPE_PODCAST,
+//                    imageFile,
+//                    "podcast_photo"
+//                )
+//
+//                //Update recording item in Realm
+//                updateDraftTrigger.onNext(Unit)
+//
+//                lytImage?.visibility = View.VISIBLE
+//                lytImagePlaceholder?.visibility = View.GONE
+//            }else{
+//                lytImage?.visibility = View.GONE
+//                lytImagePlaceholder?.visibility = View.VISIBLE
+//            }
+//
+//
+//        } else if (resultCode == ImagePicker.RESULT_ERROR) {
+//            toast(ImagePicker.getError(data))
+//        } else {
+//            toast("Task Cancelled")
+//        }
+
         context?.let {
             //LOGIN
             if (requestCode == it.resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH) && resultCode == Activity.RESULT_OK) {
                 loadExistingData()
             }
-//            //FAVOURITES PROPERTY DETAILS
-//            if (requestCode == it.resources.getInteger(R.integer.REQUEST_CODE_FROM_RECENTLY_ADDED_TO_PROPERTY_DETAIL) && resultCode == Activity.RESULT_OK) {
-//                favouritePropertyClicked =
-//                    data?.getSerializableExtra(getString(R.string.propertyKey)) as UIProperty
-//                for (item in recentlyAddedList) {
-//                    if (item is UIProperty)
-//                        if (item.PropertyId == favouritePropertyClicked.PropertyId) {
-//                            item.IsFavourite = favouritePropertyClicked.IsFavourite
-//                            rvFilteredRecentlyAdded?.adapter?.notifyDataSetChanged()
-//                        }
-//                }
-//            }
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+
+    private fun performCrop(picUri: String) {
+        try {
+            //Start Crop Activity
+            val cropIntent = Intent("com.android.camera.action.CROP")
+            // indicate image type and Uri
+            val f = File(picUri)
+            val contentUri = Uri.fromFile(f)
+            cropIntent.setDataAndType(contentUri, "image/*")
+            // set crop properties
+            cropIntent.putExtra("crop", "true")
+            // indicate aspect of desired crop
+            cropIntent.putExtra("aspectX", 1)
+            cropIntent.putExtra("aspectY", 1)
+            // indicate output X and Y
+            cropIntent.putExtra("outputX", 280)
+            cropIntent.putExtra("outputY", 280)
+
+            // retrieve data on return
+            cropIntent.putExtra("return-data", true)
+            // start the activity - we handle returning in onActivityResult
+            startActivityForResult(cropIntent, RESULT_CROP)
+        } // respond to users whose devices do not support the crop action
+        catch (anfe: ActivityNotFoundException) {
+            // display an error message
+            val errorMessage = "your device doesn't support the crop action!"
+            toast(errorMessage)
+
+        }
     }
 
 
@@ -769,12 +941,16 @@ class PublishFragment : BaseFragment() {
             return
         }
         fusedLocationClient.lastLocation
-            .addOnSuccessListener { location : Location? ->
+            .addOnSuccessListener { location: Location? ->
                 // Got last known location. In some rare situations this can be null.
                 //println("location es: " +location)
                 val geoCoder = Geocoder(context, Locale.getDefault()) //it is Geocoder
                 try {
-                    val address: List<Address> = geoCoder.getFromLocation(location!!.latitude, location.longitude, 1)
+                    val address: List<Address> = geoCoder.getFromLocation(
+                        location!!.latitude,
+                        location.longitude,
+                        1
+                    )
                     locationsViewModel.uiLocationsRequest.term = address[0].locality
                     //println("address is " + city)
                 } catch (e: IOException) {
@@ -784,5 +960,68 @@ class PublishFragment : BaseFragment() {
                 }
             }
     }
+
+
+    private fun callToTagsApiAndShowRecyclerView(tag: String){
+        tagsViewModel.tagToSearch = tag
+        getTagsTrigger.onNext(Unit)
+    }
+
+
+    private fun apiCallHashTags() {
+        val output = tagsViewModel.transform(
+            TagsViewModel.Input(
+                getTagsTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if (it.code == 0) {
+                if (it.data.tags.size > 0) {
+                    listTagsString?.clear()
+                    doAsync {
+                        listTags.clear()
+                        listTags.addAll(it.data.tags)
+
+                        uiThread {
+                            for (item in listTags) {
+                                listTagsString?.add(Hashtag(item.text))
+                            }
+                        }
+                    }
+                }
+
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            if (app!!.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (it.errorMessage!!.isNotEmpty()) {
+                    message.append(it.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                println("Error getting the hashtags $message")
+            }
+        })
+    }
+
+
+    private fun multiCompleteText(){
+        listTagsString = HashtagAdapter(context!!)
+        etDraftCaption?.isMentionEnabled = false
+        etDraftCaption?.hashtagColor = ContextCompat.getColor(context!!, R.color.brandPrimary500)
+        etDraftCaption?.hashtagAdapter = listTagsString
+        etDraftCaption?.setHashtagTextChangedListener { view, text ->
+            println("setHashtagTextChangedListener -> $text")
+            callToTagsApiAndShowRecyclerView(text.toString())
+        }
+    }
+
 }
 
