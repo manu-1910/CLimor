@@ -50,7 +50,7 @@ class CommentsAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         val commentItemViewHolder : CommentItemViewHolder = holder as CommentItemViewHolder
-        Timber.d("onBindViewHolder item $position")
+//        Timber.d("onBindViewHolder item $position")
 
         val currentItem = list[position]
         if(podcastMode) {

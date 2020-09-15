@@ -1079,7 +1079,18 @@ class PodcastDetailsFragment : BaseFragment() {
 
                             // if there isn't any comment being listened, just launch this one
                         } else {
-                            audioCommentPlayerController = AudioCommentPlayerController(item.comment, seekBar, ibtnPlay)
+                            if (!hasPermissions(requireContext(), *PERMISSIONS)) {
+                                try {
+                                    ActivityCompat.requestPermissions(requireActivity(),
+                                        PERMISSIONS, PERMISSION_ALL
+                                    )
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            }else {
+                                audioCommentPlayerController =
+                                    AudioCommentPlayerController(item.comment, seekBar, ibtnPlay)
+                            }
                         }
                     }
 
