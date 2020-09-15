@@ -19,8 +19,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
+import android.text.Editable
+import android.text.Spannable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,6 +35,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
@@ -41,6 +44,7 @@ import com.facebook.FacebookSdk.getApplicationContext
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.hendraanggrian.appcompat.widget.Hashtag
+import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter
 import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
@@ -57,11 +61,9 @@ import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
 import io.square1.limor.uimodels.*
 import kotlinx.android.synthetic.main.fragment_publish.*
-import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
-import kotlinx.coroutines.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -72,9 +74,10 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
-import java.lang.Runnable
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -125,12 +128,15 @@ class PublishFragment : BaseFragment() {
     private val GALLERY_ACTIVITY_CODE = 200
     private val RESULT_CROP = 400
     private var listTags = ArrayList<UITags>()
-    private var listTagsString: ArrayAdapter<Hashtag>? = null
+    private var listTagsString: HashtagArrayAdapter<Hashtag>? = null
 
     //Flags to publish podcast
     private var audioUploaded: Boolean = false
     private var imageUploaded: Boolean = false
     private var podcastHasImage: Boolean = false
+
+    private var tw: TextWatcher? = null
+
 
 
     companion object {
@@ -191,10 +197,14 @@ class PublishFragment : BaseFragment() {
         updateDraft()
         apiCallPublishPodcast()
         getCityOfDevice()
+
         apiCallHashTags()
         multiCompleteText()
+        listTagsString = HashtagArrayAdapter<Hashtag>(context!!)
+        setupRecyclerTags(listTagsString!!)
     }
 
+    
     override fun onResume() {
         super.onResume()
 
@@ -208,17 +218,8 @@ class PublishFragment : BaseFragment() {
             }
         }
 
-
-//        //Load selected hashtags
-//        var hashtagListString: String = ""
-//        for (tag in hashtagViewModel.localListTagsSelected){
-//            hashtagListString = "#"+tag.text+", "
-//        }
-//        etDraftHashtags?.text = hashtagListString
-
         //Load selected location
         podcastLocation = locationsViewModel.locationSelectedItem
-        //etLocation.text = podcastLocation.address
     }
 
 
@@ -378,6 +379,20 @@ class PublishFragment : BaseFragment() {
         lytTvLocation?.onClick{
             findNavController().navigate(R.id.action_record_publish_to_record_locations)
         }
+
+        //Used for show or hide the recyclerview of the hashtags
+        tw = object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+            override fun afterTextChanged(editable: Editable) {}
+            override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {
+                if (s.substring(s.length - 1) == "#") {
+                    rvTags.visibility = View.VISIBLE
+                } else if (s.substring(s.length - 1) == " ") {
+                    rvTags.visibility = View.GONE
+                }
+            }
+        }
+        etCaption.addTextChangedListener(tw)
 
     }
 
@@ -930,6 +945,7 @@ class PublishFragment : BaseFragment() {
                             for (item in listTags) {
                                 listTagsString?.add(Hashtag(item.text))
                             }
+                            rvTags?.adapter?.notifyDataSetChanged()
                         }
                     }
                 }
@@ -956,7 +972,7 @@ class PublishFragment : BaseFragment() {
 
 
     private fun multiCompleteText(){
-        listTagsString = HashtagAdapter(context!!)
+        //listTagsString = HashtagAdapter(context!!)
         etDraftCaption?.isMentionEnabled = false
         etDraftCaption?.hashtagColor = ContextCompat.getColor(context!!, R.color.brandPrimary500)
         etDraftCaption?.hashtagAdapter = listTagsString
@@ -967,28 +983,71 @@ class PublishFragment : BaseFragment() {
     }
 
 
-
-    // Method to save an bitmap to a file
-    private fun bitmapToFile(bitmap:Bitmap): Uri {
+    private fun bitmapToFile(bitmap: Bitmap): Uri {
         // Get the context wrapper
         val wrapper = ContextWrapper(context!!)
 
         // Initialize a new file instance to save bitmap object
-        var file = wrapper.getDir("Images",Context.MODE_PRIVATE)
-        file = File(file,"${UUID.randomUUID()}.jpg")
+        var file = wrapper.getDir("Images", Context.MODE_PRIVATE)
+        file = File(file, "${UUID.randomUUID()}.jpg")
 
         try{
             // Compress the bitmap and save in jpg format
             val stream: OutputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
             stream.flush()
             stream.close()
-        }catch (e:IOException){
+        }catch (e: IOException){
             e.printStackTrace()
         }
 
         // Return the saved bitmap uri
         return Uri.parse(file.absolutePath)
     }
+
+
+    private fun setupRecyclerTags(tagList: HashtagArrayAdapter<Hashtag>) {
+        rvTags?.layoutManager = LinearLayoutManager(context)
+        rvTags?.adapter = listTagsString?.let {
+            HashtagAdapter(it, object : HashtagAdapter.OnItemClickListener {
+                    override fun onItemClick(item: Hashtag) {
+                        val actualString = etCaption.text
+                        val finalString: String =
+                            actualString.substring(0, actualString.lastIndexOf(getCurrentWord(etCaption)!!))+
+                                    "#$item" +
+                                    actualString.substring(actualString.lastIndexOf(getCurrentWord(etCaption)!!) + getCurrentWord(etCaption)!!.length, actualString.length)
+
+                        etCaption.applyWithDisabledTextWatcher(tw!!) {
+                            text = finalString
+                        }
+                        etCaption.setSelection(etCaption.text.length); //This places cursor to end of EditText.
+                        rvTags?.adapter?.notifyDataSetChanged()
+                    }
+                })
+        }
+    }
+
+
+    fun getCurrentWord(editText: EditText): String? {
+        val textSpan: Spannable = editText.text
+        val regex = Regex("#\\w+")
+        val pattern: Pattern = Pattern.compile(regex.pattern)
+        val matcher: Matcher = pattern.matcher(textSpan)
+        var start = 0
+        var end = 0
+        var currentWord = ""
+        while (matcher.find()) {
+            currentWord = matcher.group(matcher.groupCount())
+        }
+        return currentWord // This is current word
+    }
+
+
+    fun TextView.applyWithDisabledTextWatcher(textWatcher: TextWatcher, codeBlock: TextView.() -> Unit) {
+        this.removeTextChangedListener(textWatcher)
+        codeBlock()
+        this.addTextChangedListener(textWatcher)
+    }
+
 }
 
