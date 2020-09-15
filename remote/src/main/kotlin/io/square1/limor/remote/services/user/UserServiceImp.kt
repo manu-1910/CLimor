@@ -93,12 +93,12 @@ class UserServiceImp @Inject constructor(private val serviceConfig: RemoteServic
 
 
     fun createBlockedUser(userIDRequest: NWUserIDRequest): Single<NWCreateBlockedUserResponse> {
-        return service.createBlockedUser(
-            RequestBody.create(
-                MediaType.parse("application/json"),
-                Json.nonstrict.stringify(NWUserIDRequest.serializer(), userIDRequest)
-            )
+        val requestString = Json.nonstrict.stringify(NWUserIDRequest.serializer(), userIDRequest)
+        val request = RequestBody.create(
+            MediaType.parse("application/json"),
+            requestString
         )
+        return service.createBlockedUser(request)
             .map { response ->
                 response.parseSuccessResponse(NWCreateBlockedUserResponse.serializer())
             }

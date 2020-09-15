@@ -516,6 +516,9 @@ class PodcastDetailsFragment : BaseFragment() {
             }
         }
 
+        // this is NOT the button to play an another user comment
+        // this is the button to play your just recorded comment
+        // be careful and don't confuse them
         btnPlayComment.onClick {
 
             //Check if all permissions are granted, if not, request again

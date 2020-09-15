@@ -1,10 +1,7 @@
 package io.square1.limor.remote
 
-import io.square1.limor.remote.entities.requests.NWCommentRequest
-import io.square1.limor.remote.entities.requests.NWCreateCommentRequest
 import io.square1.limor.remote.entities.requests.NWUserIDRequest
 import io.square1.limor.remote.services.RemoteServiceConfig
-import io.square1.limor.remote.services.podcast.PodcastServiceImp
 import io.square1.limor.remote.services.user.UserServiceImp
 import kotlinx.serialization.ImplicitReflectionSerializer
 import org.junit.Test
@@ -18,9 +15,10 @@ class UserServiceImpTest {
     private val CURRENT_URL = URL_DEVELOPMENT
 
 
-    private val TOKEN_DEVELOPMENT = "9b1b2517ba88187cc8e50a2f40446a0ff10200b9353ef356441c751553dc33ce"
+    private val TOKEN_TEST_DEVELOPMENT = "9b1b2517ba88187cc8e50a2f40446a0ff10200b9353ef356441c751553dc33ce"
+    private val TOKEN_USER_DEVELOPMENT = "4t6bOFXd3L89qqPLdXsBHtTOP4_-t_61Q2kl5R4dAdk"
     private val TOKEN_STAGING = "36bf82e596dc582796508c09d050484181fa51278eb6b0c2bdbfb269c98a3992"
-    private val CURRENT_TOKEN = TOKEN_DEVELOPMENT
+    private val CURRENT_TOKEN = TOKEN_USER_DEVELOPMENT
 
 
 

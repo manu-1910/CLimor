@@ -36,9 +36,9 @@ interface UserService {
     fun createFriend(@Path("id") id : Int): Single<ResponseBody>
 
     @POST(BLOCKED_USERS)
-    fun createBlockedUser(@Body logoutRequest: RequestBody): Single<ResponseBody>
+    fun createBlockedUser(@Body request: RequestBody): Single<ResponseBody>
 
     @HTTP(method = "DELETE", path = BLOCKED_USERS, hasBody = true) // this is a workaround to make delete work with a request body
-    fun deleteBlockedUser(@Body logoutRequest: RequestBody): Single<ResponseBody>
+    fun deleteBlockedUser(@Body request: RequestBody): Single<ResponseBody>
 
 }
