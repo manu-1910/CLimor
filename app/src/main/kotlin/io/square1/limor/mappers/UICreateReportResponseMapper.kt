@@ -1,19 +1,19 @@
 package io.square1.limor.mappers
 
-import entities.response.CreateCommentReportResponseEntity
+import entities.response.CreateReportResponseEntity
 import entities.response.ReportedEntity
 import io.reactivex.Single
-import io.square1.limor.uimodels.UICreateCommentReportResponse
+import io.square1.limor.uimodels.UICreateReportResponse
 import io.square1.limor.uimodels.UIReported
 
 
-fun Single<CreateCommentReportResponseEntity>.asUIModel(): Single<UICreateCommentReportResponse> {
+fun Single<CreateReportResponseEntity>.asUIModel(): Single<UICreateReportResponse> {
     return this.map { it.asUIModel() }
 }
 
 
-fun CreateCommentReportResponseEntity.asUIModel(): UICreateCommentReportResponse {
-    return UICreateCommentReportResponse(
+fun CreateReportResponseEntity.asUIModel(): UICreateReportResponse {
+    return UICreateReportResponse(
         code,
         message,
         data?.asUIModel()

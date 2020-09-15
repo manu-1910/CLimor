@@ -24,7 +24,7 @@ class DataCommentRepository @Inject constructor(private val remoteProvider: Remo
         return remoteProvider.getComments(id, limit, offset)
     }
 
-    override fun reportComment(id: Int): Single<CreateCommentReportResponseEntity>? {
+    override fun reportComment(id: Int): Single<CreateReportResponseEntity>? {
         return remoteProvider.reportComment(id)
     }
 

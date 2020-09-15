@@ -33,7 +33,7 @@ class RemoteCommentProviderImp @Inject constructor(private val provider: Comment
         return provider.getComments(id, limit, offset)?.asDataEntity()
     }
 
-    override fun reportComment(id: Int): Single<CreateCommentReportResponseEntity>? {
+    override fun reportComment(id: Int): Single<CreateReportResponseEntity>? {
         return provider.reportComment(id)?.asDataEntity()
     }
 

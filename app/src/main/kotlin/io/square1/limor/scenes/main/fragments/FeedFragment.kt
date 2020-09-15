@@ -35,6 +35,7 @@ import javax.inject.Inject
 class FeedFragment : BaseFragment() {
 
 
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -50,6 +51,7 @@ class FeedFragment : BaseFragment() {
     private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
     private lateinit var viewModelCreatePodcastRecast: CreatePodcastRecastViewModel
     private lateinit var viewModelDeletePodcastRecast: DeletePodcastRecastViewModel
+    private lateinit var viewModelCreatePodcastReport: CreatePodcastReportViewModel
     private val getFeedDataTrigger = PublishSubject.create<Unit>()
 
 
@@ -57,6 +59,7 @@ class FeedFragment : BaseFragment() {
     private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastRecastDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastRecastDataTrigger = PublishSubject.create<Unit>()
+    private val createPodcastReportDataTrigger = PublishSubject.create<Unit>()
 
     // infinite scroll variables
     private var isScrolling: Boolean = false
@@ -110,6 +113,7 @@ class FeedFragment : BaseFragment() {
             initApiCallDeleteLike()
             initApiCallCreateRecast()
             initApiCallDeleteRecast()
+            initApiCallCreatePodcastReport()
 
             getFeedDataTrigger.onNext(Unit)
         }
@@ -345,10 +349,18 @@ class FeedFragment : BaseFragment() {
         popup.setOnMenuItemClickListener {menuItem ->
             when(menuItem.itemId) {
                 R.id.menu_share -> onShareClicked(item)
+                R.id.menu_report -> onPodcastReportClicked(item)
             }
             true
         }
         popup.show()
+    }
+
+    private fun onPodcastReportClicked(item: UIFeedItem) {
+        item.podcast?.id?.let {
+            viewModelCreatePodcastReport.idPodcastToReport = it
+            createPodcastReportDataTrigger.onNext(Unit)
+        }
     }
 
     private fun onShareClicked(item: UIFeedItem) {
@@ -455,6 +467,40 @@ class FeedFragment : BaseFragment() {
 
         }
 
+    }
+
+
+    private fun initApiCallCreatePodcastReport() {
+        val output = viewModelCreatePodcastReport.transform(
+            CreatePodcastReportViewModel.Input(
+                createPodcastReportDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                Toast.makeText(
+                    context,
+                    getString(R.string.podcast_already_reported),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    context,
+                    getString(R.string.podcast_reported_ok),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            Toast.makeText(
+                context,
+                getString(R.string.error_report),
+                Toast.LENGTH_SHORT
+            ).show()
+        })
     }
 
     private fun handleErrorState() {
@@ -588,6 +634,12 @@ class FeedFragment : BaseFragment() {
             viewModelDeletePodcastRecast = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastRecastViewModel::class.java)
+        }
+
+        activity?.let { fragmentActivity ->
+            viewModelCreatePodcastReport = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreatePodcastReportViewModel::class.java)
         }
     }
 

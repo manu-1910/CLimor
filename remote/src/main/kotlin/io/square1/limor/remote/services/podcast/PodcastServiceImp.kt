@@ -104,4 +104,17 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
             }
     }
 
+
+
+    fun reportPodcast(id : Int): Single<NWCreateReportResponse>? {
+        return service.reportPodcast(id)
+            .map { response -> response.parseSuccessResponse(NWCreateReportResponse.serializer()) }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
 }

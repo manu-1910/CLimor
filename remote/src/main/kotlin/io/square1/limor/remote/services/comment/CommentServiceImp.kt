@@ -64,9 +64,9 @@ class CommentServiceImp @Inject constructor(private val serviceConfig: RemoteSer
             }
     }
 
-    fun reportComment(id: Int): Single<NWCreateCommentReportResponse>? {
+    fun reportComment(id: Int): Single<NWCreateReportResponse>? {
         return service.reportComment(id)
-            .map { response -> response.parseSuccessResponse(NWCreateCommentReportResponse.serializer()) }
+            .map { response -> response.parseSuccessResponse(NWCreateReportResponse.serializer()) }
             .doOnSuccess { success ->
                 println("SUCCESS: $success")
             }
