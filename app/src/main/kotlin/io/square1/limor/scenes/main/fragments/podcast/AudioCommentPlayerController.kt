@@ -66,9 +66,9 @@ class AudioCommentPlayerController(
         val url = comment.audio.url
         if (url != null) {
             val downloadDirectory =
-                File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/download/")
+                File(Environment.getExternalStorageDirectory()?.absolutePath, "/limorv2/download/")
             if (!downloadDirectory.exists()) {
-                downloadDirectory.mkdir()
+                val isDirectoryCreated = downloadDirectory.mkdir()
             }
             val fileName = url.substring(url.lastIndexOf("/") + 1)
             val finalPath: String = downloadDirectory.absolutePath + "/" + fileName
@@ -77,16 +77,16 @@ class AudioCommentPlayerController(
                 URL(url).openStream().use { input ->
                     FileOutputStream(destinationFile).use { output ->
                         input.copyTo(output)
+                        isPrepared = true
+                        handler.post(updater)
                         simpleRecorder = SimpleRecorder(destinationFile.absolutePath)
+                        if (seekBar.progress > 0)
+                            simpleRecorder?.moveToPosition(seekBar.progress)
                         simpleRecorder?.startPlaying(destinationFile.absolutePath,
                             MediaPlayer.OnCompletionListener {
                                 onCompletionListener()
                             })
-                        if (seekBar.progress > 0)
-                            simpleRecorder?.moveToPosition(seekBar.progress)
                         playButton.setImageResource(R.drawable.pause)
-                        handler.post(updater)
-                        isPrepared = true
                     }
                 }
             }

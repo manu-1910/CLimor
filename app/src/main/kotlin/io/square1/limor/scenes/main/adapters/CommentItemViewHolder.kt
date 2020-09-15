@@ -173,7 +173,7 @@ class CommentItemViewHolder(
 
 
 
-        ibtnMore.onClick { commentClickListener.onMoreClicked(currentItem.comment, position) }
+        ibtnMore.onClick { commentClickListener.onMoreClicked(currentItem.comment, position, ibtnMore) }
         btnReply.onClick { commentClickListener.onReplyClicked(currentItem, position) }
     }
 
