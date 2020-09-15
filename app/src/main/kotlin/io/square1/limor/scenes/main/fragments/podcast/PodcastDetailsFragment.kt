@@ -89,7 +89,6 @@ class PodcastDetailsFragment : BaseFragment() {
     private var lastCommentRequestedRepliesPosition: Int = 0
     private var lastCommentRequestedRepliesParent: CommentWithParent? = null
     private var lastLikedItemPosition = 0
-    private var isScrolling = false
 
     // this variable will be true when we are showing the details of a podcast with the podcast comments
     // it will be false when we are showing the details of a podcast but with the comments of a comment and its parents
@@ -353,6 +352,7 @@ class PodcastDetailsFragment : BaseFragment() {
             it.data?.comment?.let { newComment ->
                 addNewCommentToList(newComment)
             }
+            hideProgressCreateComment()
             deleteCurrentCommentAudioAndResetBar()
             hideProgressBar()
             hideCommentBar()
@@ -363,6 +363,7 @@ class PodcastDetailsFragment : BaseFragment() {
             it.data?.comment?.let { newComment ->
                 addNewCommentToList(newComment)
             }
+            hideProgressCreateComment()
             deleteCurrentCommentAudioAndResetBar()
             hideProgressBar()
             hideCommentBar()
@@ -371,6 +372,17 @@ class PodcastDetailsFragment : BaseFragment() {
 
         outputComment.errorMessage.observe(this, Observer {
             hideProgressBar()
+            hideProgressCreateComment()
+            Toast.makeText(
+                context,
+                getString(R.string.couldnt_send_comment),
+                Toast.LENGTH_SHORT
+            ).show()
+        })
+
+        outputPodcast.errorMessage.observe(this, Observer {
+            hideProgressBar()
+            hideProgressCreateComment()
             Toast.makeText(
                 context,
                 getString(R.string.couldnt_send_comment),
@@ -447,6 +459,7 @@ class PodcastDetailsFragment : BaseFragment() {
             if(commentText.isNotEmpty()) {
                 currentCommentRequest = UICreateCommentRequest(UICommentRequest(commentText, 0, null))
                 isWaitingForApiCall = true
+                showProgressCreateComment()
                 if(currentCommentRecordedFile == null) {
                     publishTextComment()
                 } else {
@@ -465,17 +478,28 @@ class PodcastDetailsFragment : BaseFragment() {
         }
 
         btnRecord.setOnTouchListener { view, event ->
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                if(!isCommentBarOpen())
-                    openCommentBarTextAndFocusIt()
+            //Check if all permissions are granted, if not, request again
+            if (!hasPermissions(requireContext(), *PERMISSIONS)) {
+                try {
+                    ActivityCompat.requestPermissions(requireActivity(),
+                        PERMISSIONS, PERMISSION_ALL
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }else{
+                if (event.action == MotionEvent.ACTION_DOWN) {
+                    if(!isCommentBarOpen())
+                        openCommentBarTextAndFocusIt()
 
-                btnRecord.setImageResource(R.drawable.record_red)
-                audioSetup()
-                recordAudio()
-            } else if(event.action == MotionEvent.ACTION_UP) {
-                stopAudio()
-                btnRecord.setImageResource(R.drawable.record)
-                view.performClick()
+                    btnRecord.setImageResource(R.drawable.record_red)
+                    audioSetup()
+                    recordAudio()
+                } else if(event.action == MotionEvent.ACTION_UP) {
+                    stopAudio()
+                    btnRecord.setImageResource(R.drawable.record)
+                    view.performClick()
+                }
             }
             true
         }
@@ -493,21 +517,33 @@ class PodcastDetailsFragment : BaseFragment() {
         }
 
         btnPlayComment.onClick {
-            if(mRecorder.isPlaying) {
-                btnPlayComment.setImageResource(R.drawable.play)
-                mRecorder.pausePlaying()
 
-                // this means that it has a file loaded but it's not currently playing
-            } else if (!mRecorder.isReleased) {
-                btnPlayComment.setImageResource(R.drawable.pause)
-                mRecorder.resumePlaying()
+            //Check if all permissions are granted, if not, request again
+            if (!hasPermissions(requireContext(), *PERMISSIONS)) {
+                try {
+                    ActivityCompat.requestPermissions(requireActivity(),
+                        PERMISSIONS, PERMISSION_ALL
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }else{
+                if(mRecorder.isPlayerPlaying) {
+                    btnPlayComment.setImageResource(R.drawable.play)
+                    mRecorder.pausePlaying()
 
-                // it doesn't have a file loaded
-            } else {
-                currentCommentRecordedFile?.let {
-                    if(it.exists() && it.isFile) {
-                        btnPlayComment.setImageResource(R.drawable.pause)
-                        mRecorder.startPlaying(it.absolutePath, MediaPlayer.OnCompletionListener { onPlayingCommentFinished() })
+                    // this means that it has a file loaded but it's not currently playing
+                } else if (!mRecorder.isPlayerReleased) {
+                    btnPlayComment.setImageResource(R.drawable.pause)
+                    mRecorder.resumePlaying()
+
+                    // it doesn't have a file loaded
+                } else {
+                    currentCommentRecordedFile?.let {
+                        if(it.exists() && it.isFile) {
+                            btnPlayComment.setImageResource(R.drawable.pause)
+                            mRecorder.startPlaying(it.absolutePath, MediaPlayer.OnCompletionListener { onPlayingCommentFinished() })
+                        }
                     }
                 }
             }
@@ -557,23 +593,11 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun recordAudio() {
-
-        //Check if all permissions are granted, if not, request again
-        if (!hasPermissions(requireContext(), *PERMISSIONS)) {
-            try {
-                ActivityCompat.requestPermissions(requireActivity(),
-                    PERMISSIONS, PERMISSION_ALL
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }else{
-            visualizerComment?.visibility = View.VISIBLE
-            isRecording = true
-            println("RECORD --> START")
-            mRecorder.startRecording()
-            handlerRecordingComment.post(updater)
-        }
+        visualizerComment?.visibility = View.VISIBLE
+        isRecording = true
+        println("RECORD --> START")
+        mRecorder.startRecording()
+        handlerRecordingComment.post(updater)
     }
 
 
@@ -584,7 +608,7 @@ class PodcastDetailsFragment : BaseFragment() {
         val filenameRecorded = filenameAndAudio.first
         currentCommentRecordedDuration = filenameAndAudio.second
         currentCommentRecordedFile = File(filenameRecorded)
-        if(currentCommentRecordedFile!!.isFile && currentCommentRecordedFile!!.exists()) {
+        if(currentCommentRecordedDuration > 0 && currentCommentRecordedFile!!.isFile && currentCommentRecordedFile!!.exists()) {
             showPlayButton()
             btnTrash?.visibility = View.VISIBLE
             visualizerComment.invalidate()
@@ -674,6 +698,20 @@ class PodcastDetailsFragment : BaseFragment() {
                 )
             }
         }
+    }
+
+    private fun showProgressCreateComment() {
+        progressBarSendComment.visibility = View.VISIBLE
+        // you can't set it gone because it will brake the layout, so we set it invisible and non clickable
+        btnPost.visibility = View.INVISIBLE
+        btnPost.isClickable = false
+    }
+
+    private fun hideProgressCreateComment() {
+        progressBarSendComment.visibility = View.GONE
+        // you can't set it gone because it will brake the layout, so we set it invisible and non clickable
+        btnPost.visibility = View.VISIBLE
+        btnPost.isClickable = true
     }
 
 
@@ -1128,7 +1166,7 @@ class PodcastDetailsFragment : BaseFragment() {
                     val goingDown = scrollY > oldScrollY
                     if (goingDown && (scrollY >= (rvComments.measuredHeight - v.measuredHeight))) {
 
-                        toast("We have to scroll more")
+//                        toast("We have to scroll more")
                         isWaitingForApiCall = true
                         if (podcastMode) {
                             viewModelGetPodcastComments.offset = currentOffset
