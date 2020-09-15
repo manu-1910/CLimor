@@ -1,19 +1,19 @@
 package io.square1.limor.remote.mappers
 
-import entities.response.CreateCommentReportResponseEntity
+import entities.response.CreateReportResponseEntity
 import entities.response.ReportedEntity
 import io.reactivex.Single
-import io.square1.limor.remote.entities.responses.NWCreateCommentReportResponse
+import io.square1.limor.remote.entities.responses.NWCreateReportResponse
 import io.square1.limor.remote.entities.responses.NWReported
 
 
-fun Single<NWCreateCommentReportResponse>.asDataEntity(): Single<CreateCommentReportResponseEntity> {
+fun Single<NWCreateReportResponse>.asDataEntity(): Single<CreateReportResponseEntity> {
     return this.map { it.asDataEntity() }
 }
 
 
-fun NWCreateCommentReportResponse.asDataEntity(): CreateCommentReportResponseEntity {
-    return CreateCommentReportResponseEntity(
+fun NWCreateReportResponse.asDataEntity(): CreateReportResponseEntity {
+    return CreateReportResponseEntity(
         code,
         message,
         data?.asDataEntity()
@@ -21,8 +21,8 @@ fun NWCreateCommentReportResponse.asDataEntity(): CreateCommentReportResponseEnt
 }
 
 
-fun CreateCommentReportResponseEntity.asRemoteEntity(): NWCreateCommentReportResponse {
-    return NWCreateCommentReportResponse(
+fun CreateReportResponseEntity.asRemoteEntity(): NWCreateReportResponse {
+    return NWCreateReportResponse(
         code,
         message,
         data?.asRemoteEntity()

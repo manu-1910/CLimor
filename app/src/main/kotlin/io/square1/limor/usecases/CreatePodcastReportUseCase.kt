@@ -5,16 +5,16 @@ import io.square1.limor.common.executors.PostExecutionThread
 import io.square1.limor.mappers.asUIModel
 import io.square1.limor.remote.executors.JobExecutor
 import io.square1.limor.uimodels.UICreateReportResponse
-import repositories.comment.CommentRepository
+import repositories.podcast.PodcastRepository
 import javax.inject.Inject
 
-class CreateCommentReportUseCase @Inject constructor(
-    private val commentRepository: CommentRepository,
+class CreatePodcastReportUseCase @Inject constructor(
+    private val podcastRepository: PodcastRepository,
     private val postExecutionThread: PostExecutionThread,
     private val jobExecutor: JobExecutor
 ) {
     fun execute(id: Int): Single<UICreateReportResponse> {
-        return commentRepository.reportComment(id)
+        return podcastRepository.reportPodcast(id)
             ?.asUIModel()
             ?.observeOn(postExecutionThread.getScheduler())
             ?.subscribeOn(jobExecutor.getScheduler())!!

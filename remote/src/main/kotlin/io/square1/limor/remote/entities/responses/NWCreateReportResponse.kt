@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class NWCreateCommentReportResponse(
+data class NWCreateReportResponse(
     @Optional
     val code: Int = 0,
     @Optional

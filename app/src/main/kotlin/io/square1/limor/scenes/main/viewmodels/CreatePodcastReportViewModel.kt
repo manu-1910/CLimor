@@ -13,15 +13,15 @@ import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.uimodels.UICreateReportResponse
 import io.square1.limor.uimodels.UIErrorData
 import io.square1.limor.uimodels.UIErrorResponse
-import io.square1.limor.usecases.CreateCommentReportUseCase
+import io.square1.limor.usecases.CreatePodcastReportUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class CreateCommentReportViewModel @Inject constructor(private val createCommentReportUseCase: CreateCommentReportUseCase) :
-    BaseViewModel<CreateCommentReportViewModel.Input, CreateCommentReportViewModel.Output>() {
+class CreatePodcastReportViewModel @Inject constructor(private val createPodcastReportUseCase: CreatePodcastReportUseCase) :
+    BaseViewModel<CreatePodcastReportViewModel.Input, CreatePodcastReportViewModel.Output>() {
 
     private val compositeDispose = CompositeDisposable()
-    var idCommentToReport = 0
+    var idPodcastToReport = 0
 
     data class Input(
         val createCommentReportTrigger: Observable<Unit>
@@ -39,7 +39,7 @@ class CreateCommentReportViewModel @Inject constructor(private val createComment
         val response = MutableLiveData<UICreateReportResponse>()
 
         input.createCommentReportTrigger.subscribe({
-            createCommentReportUseCase.execute(idCommentToReport).subscribe({
+            createPodcastReportUseCase.execute(idPodcastToReport).subscribe({
                 response.value = it
 
             }, {

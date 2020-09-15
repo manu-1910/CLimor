@@ -1,7 +1,7 @@
 package entities.response
 
 
-data class CreateCommentReportResponseEntity(
+data class CreateReportResponseEntity(
     val code : Int,
     val message: String,
     val data: ReportedEntity?
