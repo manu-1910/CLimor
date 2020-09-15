@@ -56,7 +56,7 @@ public class VisualizerView extends View {
             // if previous list is not null and has more items than the amount we can fit now
             // then we'll have to truncate the previous list
         } else if(amplitudes != null) {
-            int difference = amplitudes.size() - newCapacity;
+            int difference = amplitudes.size() - newCapacity - 1;
             newList.addAll(amplitudes.subList(difference, amplitudes.size() - 1));
         }
 

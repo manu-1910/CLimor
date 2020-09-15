@@ -10,10 +10,7 @@ import android.text.style.ClickableSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.SeekBar
-import android.widget.TextView
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -23,6 +20,7 @@ import io.square1.limor.scenes.main.fragments.podcast.CommentWithParent
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIPodcast
 import org.jetbrains.anko.sdk23.listeners.onClick
+import timber.log.Timber
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -176,8 +174,10 @@ class CommentItemViewHolder(
 
 
         ibtnMore.onClick { commentClickListener.onMoreClicked(currentItem.comment, position) }
-        btnReply.onClick { commentClickListener.onReplyClicked(currentItem.comment, position) }
+        btnReply.onClick { commentClickListener.onReplyClicked(currentItem, position) }
     }
+
+
 
     private fun showPlayer(currentItem: CommentWithParent, position: Int) {
         layPlayer.visibility = View.VISIBLE
@@ -193,7 +193,10 @@ class CommentItemViewHolder(
 
         })
         currentItem.comment.audio.duration?.let { seekBar.max = it * 1000 }
-        ibtnPlay.onClick { commentClickListener.onPlayClicked(currentItem, position, seekBar, ibtnPlay) }
+        ibtnPlay.onClick {
+            Timber.d("on play comment clicked")
+            commentClickListener.onPlayClicked(currentItem, position, seekBar, ibtnPlay)
+        }
         currentItem.comment.audio.duration?.let {
             tvTotalTime.text = CommonsKt.calculateDurationMediaPlayer(it * 1000)
         }
