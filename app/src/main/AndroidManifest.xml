@@ -90,7 +90,7 @@
 
         <provider
                 android:name="androidx.core.content.FileProvider"
-                android:authorities="${applicationId}.provider"
+                android:authorities="io.square1.limor.app.provider"
                 android:exported="false"
                 android:grantUriPermissions="true">
             <meta-data

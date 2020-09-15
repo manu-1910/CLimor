@@ -5,8 +5,10 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
@@ -14,7 +16,10 @@ import android.location.Location
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Build
+import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +27,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -31,6 +37,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
+import com.facebook.FacebookSdk.getApplicationContext
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.hendraanggrian.appcompat.widget.Hashtag
@@ -62,7 +69,9 @@ import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.io.OutputStream
 import java.lang.Runnable
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -102,8 +111,6 @@ class PublishFragment : BaseFragment() {
     private var lytImage: RelativeLayout? = null
     private var btnSaveDraft: Button? = null
     private var btnPublishDraft: Button? = null
-    private var lytPublishProgress: LinearLayout? = null
-    private var lytPublishForm: LinearLayout? = null
 
     //Form vars
     private var etDraftTitle: EditText? = null
@@ -119,6 +126,11 @@ class PublishFragment : BaseFragment() {
     private val RESULT_CROP = 400
     private var listTags = ArrayList<UITags>()
     private var listTagsString: ArrayAdapter<Hashtag>? = null
+
+    //Flags to publish podcast
+    private var audioUploaded: Boolean = false
+    private var imageUploaded: Boolean = false
+    private var podcastHasImage: Boolean = false
 
 
     companion object {
@@ -148,9 +160,6 @@ class PublishFragment : BaseFragment() {
             btnPublishDraft = rootView?.findViewById(R.id.btnPublish)
             etDraftTitle = rootView?.findViewById(R.id.etTitle)
             etDraftCaption = rootView?.findViewById(R.id.etCaption)
-
-            lytPublishProgress = rootView?.findViewById(R.id.lytPublishProgress)
-            lytPublishForm = rootView?.findViewById(R.id.lytPublishForm)
 
             mediaPlayer = MediaPlayer()
         }
@@ -221,7 +230,7 @@ class PublishFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
+            pbPublish?.visibility = View.GONE
             view?.hideKeyboard()
 
             if (it.code == 0) { //Publish Ok
@@ -246,7 +255,7 @@ class PublishFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
+            pbPublish?.visibility = View.GONE
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
 
@@ -356,84 +365,9 @@ class PublishFragment : BaseFragment() {
 
         btnPublishDraft?.onClick {
             if (checkEmptyFields()){
-//                lifecycleScope.launch {
-//                    publishPodcastImage()
-//                    publishPodcastAudio()
-//                    apiCallPublish()
-//                }
-
-//                runBlocking {
-//                    val job = launch(Dispatchers.Default) {
-//                        println("Llamo a publish image")
-//                        publishPodcastImage()
-//                        println("Llamo a publish audio")
-//                        publishPodcastAudio()
-//                    }
-//                    job.join()
-//                    println("Llamo a publish podcast")
-//                    apiCallPublish()
-//                }
-
-
-                runBlocking {
-                    val myContext = Job() + Dispatchers.Default
-
-                    val job1 = launch(myContext) {
-                        println("Llamo a publish image")
-                        publishPodcastImage()
-                        delay(1000)
-                    }
-                    job1.join()
-
-                    val job2 = launch(myContext) {
-                        println("Llamo a publish audio")
-                        publishPodcastAudio()
-                        delay(1000)
-                    }
-                    job2.join()
-
-                    val job3 = launch(myContext) {
-                        println("Llamo a publish podcast")
-                        apiCallPublish()
-                    }
-                    job3.join()
-
-                    /*launch (myContext) {
-                        println("Llamo a publish image")
-                        publishPodcastImage()
-                    }
-
-                    launch (myContext) {
-                        println("Llamo a publish audio")
-                        publishPodcastAudio()
-                    }
-
-                    launch (myContext) {
-                        println("Llamo a publish podcast")
-                        apiCallPublish()
-                    }*/
-
-//                    val def = async (myContext) {
-//                        ...
-//                    }
-
-                }
-
-
-//                GlobalScope.launch(Dispatchers.Main) {
-//                    lytPublishProgress?.visibility = View.VISIBLE
-//                    lytPublishForm?.visibility = View.GONE
-//
-//                    println("Llamo a publish image")
-//                    publishPodcastImage()
-//                    println("Llamo a publish audio")
-//                    publishPodcastAudio()
-//                    println("Llamo a publish podcast")
-//                    publishPodcastAudio()
-//
-//                    lytPublishProgress?.visibility = View.GONE
-//                    lytPublishForm?.visibility = View.VISIBLE
-//                }
+                //In the result of those calls I will call the method readyToPublish() to check their flags
+                publishPodcastImage()
+                publishPodcastAudio()
             }
         }
 
@@ -445,14 +379,29 @@ class PublishFragment : BaseFragment() {
             findNavController().navigate(R.id.action_record_publish_to_record_locations)
         }
 
+    }
 
 
+    private fun readyToPublish(){
+
+        if(podcastHasImage){
+            if(imageUploaded && audioUploaded){
+                imageUploaded = false
+                audioUploaded = false
+                apiCallPublish()
+            }
+        }else{
+            if(audioUploaded){
+                imageUploaded = false
+                audioUploaded = false
+                apiCallPublish()
+            }
+        }
 
     }
 
 
     private fun publishPodcastAudio() {
-
         //Upload audio file to AWS
         Commons.getInstance().uploadAudio(
             context,
@@ -461,44 +410,41 @@ class PublishFragment : BaseFragment() {
             object : Commons.AudioUploadCallback {
                 override fun onSuccess(audioUrl: String?) {
                     println("Audio upload to AWS succesfully")
-                    //var url = audioUrl
+                    audioUploaded = true
                     audioUrlFinal = audioUrl
+                    readyToPublish()
                 }
 
                 override fun onError(error: String?) {
-                    var error = error
+                    audioUploaded = false
+                    val error = error
                     println("Audio upload to AWS error: $error")
-
                 }
             })
     }
 
 
     private fun publishPodcastImage() {
-
         //Upload audio file to AWS
         Commons.getInstance().uploadImage(
             context,
             object : Commons.ImageUploadCallback {
-                override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
-                    //TODO("Not yet implemented")
-                }
+                override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {}
 
                 override fun onSuccess(imageUrl: String?) {
                     println("Image upload to AWS succesfully")
                     //var imageUploadedUrl = imageUrl
+                    imageUploaded = true
                     imageUrlFinal = imageUrl
-
+                    readyToPublish()
                 }
 
-                override fun onStateChanged(id: Int, state: TransferState?) {
-                    //TODO("Not yet implemented")
-                }
+                override fun onStateChanged(id: Int, state: TransferState?) {}
 
                 override fun onError(error: String?) {
+                    imageUploaded = false
                     var error = error
                     println("Image upload to AWS error: $error")
-
                 }
             }, Commons.IMAGE_TYPE_ATTACHMENT
         )
@@ -508,6 +454,7 @@ class PublishFragment : BaseFragment() {
     private fun apiCallPublish(){
 
         println("llego aquí muchas veces???????????????")
+        pbPublish?.visibility = View.VISIBLE
 
         val uiPublishRequest = UIPublishRequest(
             podcast = UIPodcastRequest(
@@ -523,8 +470,10 @@ class PublishFragment : BaseFragment() {
                 meta_data = UIMetaData(
                     title = etDraftTitle?.text.toString(),
                     caption = etDraftCaption?.text.toString(),
-                    latitude = podcastLocation.latitude.takeIf { podcastLocation.latitude != 0.0 } ?: 0.0,
-                    longitude = podcastLocation.longitude.takeIf { podcastLocation.longitude != 0.0 } ?: 0.0,
+                    latitude = podcastLocation.latitude.takeIf { podcastLocation.latitude != 0.0 }
+                        ?: 0.0,
+                    longitude = podcastLocation.longitude.takeIf { podcastLocation.longitude != 0.0 }
+                        ?: 0.0,
                     image_url = imageUrlFinal.toString(),
                     category_id = publishViewModel.categorySelectedId
                 )
@@ -538,8 +487,6 @@ class PublishFragment : BaseFragment() {
     private fun loadExistingData(){
 
         //recordingItem
-
-
         if(!recordingItem.title.toString().trim().isNullOrEmpty()){
 
             //val autosaveText = draftViewModel.uiDraft.title?.toEditable()
@@ -553,7 +500,10 @@ class PublishFragment : BaseFragment() {
         if(!recordingItem.tempPhotoPath.toString().trim().isNullOrEmpty()){
             //Glide.with(context!!).load(draftViewModel.uiDraft.tempPhotoPath).into(draftImage!!)
 
-            var imageFile = File(recordingItem.tempPhotoPath)
+            val imageFile = File(recordingItem.tempPhotoPath)
+            if (!imageFile.path.isNullOrEmpty()){
+                podcastHasImage = true
+            }
             Glide.with(context!!).load(imageFile).into(draftImage!!)  // Uri of the picture
             lytImagePlaceholder?.visibility = View.GONE
             lytImage?.visibility = View.VISIBLE
@@ -756,10 +706,28 @@ class PublishFragment : BaseFragment() {
 
         if (requestCode == RESULT_CROP){
             if(resultCode == Activity.RESULT_OK){
-                val extras = data?.data
-                val filePath = extras!!.path
+                var filePath: String? = ""
+                val bundle: Bundle?
+                var image: Bitmap? = null
+                var uri: Uri? = null
 
-                Glide.with(context!!).load(filePath).into(draftImage!!)
+                val extras: Uri? = data?.data
+                if(extras != null) {
+                    filePath = extras.path
+                } else {
+                    bundle = data?.extras
+                    image = bundle?.get("data") as Bitmap
+
+                    uri = bitmapToFile(image)
+                    filePath = uri.path
+                }
+
+                if(draftImage != null){
+                    Glide.with(context!!).load(filePath).into(draftImage!!)
+                    podcastHasImage = true
+                }else{
+                    podcastHasImage = false
+                }
 
                 //Add the photopath to recording item
                 draftViewModel.uiDraft.tempPhotoPath = filePath
@@ -783,49 +751,6 @@ class PublishFragment : BaseFragment() {
             }
         }
 
-        //TODO JJ this code works with the new ImagePicker
-//        if (resultCode == Activity.RESULT_OK) {
-//            //Image Uri will not be null for RESULT_OK
-//            val fileUri = data?.data
-//            //imgProfile.setImageURI(fileUri)
-//
-//            //You can get File object from intent
-//            val file:File = ImagePicker.getFile(data)!!
-//
-//            //You can also get File Path from intent
-//            val filePath:String = ImagePicker.getFilePath(data)!!
-//
-//
-//            if (!filePath.isNullOrEmpty()) {
-//                Glide.with(context!!).load(filePath).into(draftImage!!)
-//                //Add the photopath to recording item
-//                draftViewModel.uiDraft.tempPhotoPath = filePath
-//
-//                var imageFile = File(filePath)
-//                Commons.getInstance().handleImage(
-//                    context,
-//                    Commons.IMAGE_TYPE_PODCAST,
-//                    imageFile,
-//                    "podcast_photo"
-//                )
-//
-//                //Update recording item in Realm
-//                updateDraftTrigger.onNext(Unit)
-//
-//                lytImage?.visibility = View.VISIBLE
-//                lytImagePlaceholder?.visibility = View.GONE
-//            }else{
-//                lytImage?.visibility = View.GONE
-//                lytImagePlaceholder?.visibility = View.VISIBLE
-//            }
-//
-//
-//        } else if (resultCode == ImagePicker.RESULT_ERROR) {
-//            toast(ImagePicker.getError(data))
-//        } else {
-//            toast("Task Cancelled")
-//        }
-
         context?.let {
             //LOGIN
             if (requestCode == it.resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH) && resultCode == Activity.RESULT_OK) {
@@ -842,7 +767,26 @@ class PublishFragment : BaseFragment() {
             val cropIntent = Intent("com.android.camera.action.CROP")
             // indicate image type and Uri
             val f = File(picUri)
-            val contentUri = Uri.fromFile(f)
+            var contentUri: Uri
+
+            if (Build.VERSION.SDK_INT > M) {
+                contentUri = FileProvider.getUriForFile(
+                    context!!,
+                    "io.square1.limor.app.provider",
+                    f
+                ) //package.provider
+
+                getApplicationContext().grantUriPermission(
+                    "com.android.camera",
+                    contentUri,
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+                cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                cropIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            } else {
+                contentUri = Uri.fromFile(f)
+            }
+
             cropIntent.setDataAndType(contentUri, "image/*")
             // set crop properties
             cropIntent.putExtra("crop", "true")
@@ -860,9 +804,8 @@ class PublishFragment : BaseFragment() {
         } // respond to users whose devices do not support the crop action
         catch (anfe: ActivityNotFoundException) {
             // display an error message
-            val errorMessage = "your device doesn't support the crop action!"
+            val errorMessage = "Your device doesn't support the crop action!"
             toast(errorMessage)
-
         }
     }
 
@@ -876,9 +819,9 @@ class PublishFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
             if (it) {
-                toast(getString(R.string.draft_updated))
+                //toast(getString(R.string.draft_updated))
             } else {
-                toast(getString(R.string.draft_not_updated))
+                //toast(getString(R.string.draft_not_updated))
             }
         })
 
@@ -892,7 +835,7 @@ class PublishFragment : BaseFragment() {
     }
 
 
-    private fun checkEmptyFields(): Boolean{ //TODO Check with API what the mandatory fields are
+    private fun checkEmptyFields(): Boolean{
 
         var returned = true
 
@@ -1023,5 +966,29 @@ class PublishFragment : BaseFragment() {
         }
     }
 
+
+
+    // Method to save an bitmap to a file
+    private fun bitmapToFile(bitmap:Bitmap): Uri {
+        // Get the context wrapper
+        val wrapper = ContextWrapper(context!!)
+
+        // Initialize a new file instance to save bitmap object
+        var file = wrapper.getDir("Images",Context.MODE_PRIVATE)
+        file = File(file,"${UUID.randomUUID()}.jpg")
+
+        try{
+            // Compress the bitmap and save in jpg format
+            val stream: OutputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream)
+            stream.flush()
+            stream.close()
+        }catch (e:IOException){
+            e.printStackTrace()
+        }
+
+        // Return the saved bitmap uri
+        return Uri.parse(file.absolutePath)
+    }
 }
 
