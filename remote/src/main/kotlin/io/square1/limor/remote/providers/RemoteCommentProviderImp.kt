@@ -1,10 +1,7 @@
 package io.square1.limor.remote.providers
 
 import entities.request.DataCreateCommentRequest
-import entities.response.CreateCommentLikeResponseEntity
-import entities.response.CreateCommentResponseEntity
-import entities.response.DeleteResponseEntity
-import entities.response.GetCommentsResponseEntity
+import entities.response.*
 import io.reactivex.Single
 import io.square1.limor.remote.mappers.asDataEntity
 import io.square1.limor.remote.mappers.asRemoteEntity
@@ -34,6 +31,10 @@ class RemoteCommentProviderImp @Inject constructor(private val provider: Comment
 
     override fun getComments(id: Int, limit: Int, offset: Int): Single<GetCommentsResponseEntity>? {
         return provider.getComments(id, limit, offset)?.asDataEntity()
+    }
+
+    override fun reportComment(id: Int): Single<CreateCommentReportResponseEntity>? {
+        return provider.reportComment(id)?.asDataEntity()
     }
 
 }
