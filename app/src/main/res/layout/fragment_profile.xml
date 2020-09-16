@@ -1,208 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/brandSecondary400">
 
     <LinearLayout
+        android:id="@+id/layProfileTop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <RelativeLayout
-            android:id="@+id/lytImageProfile"
-            android:layout_marginTop="@dimen/marginSmall"
-            android:layout_marginBottom="@dimen/marginSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="visible">
-
-            <ImageView
-                android:id="@+id/ivUserImage"
-                android:layout_centerInParent="true"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/add"
-                android:translationZ="4dp"/>
-
-            <ImageView
-                android:id="@+id/placeHolder"
-                android:layout_centerInParent="true"
-                android:layout_width="119dp"
-                android:layout_height="119dp"
-                android:src="@drawable/publish_placeholder"/>
-
-            <TextView
-                android:id="@+id/tvChoosePhoto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/marginAlmostLarge"
-                android:textColor="@color/brandPrimary500"
-                android:textSize="@dimen/textSizeVerySmall"
-                android:fontFamily="@font/roboto_medium"
-                android:layout_centerHorizontal="true"
-                android:text="@string/choose_a_photo"
-                android:layout_below="@+id/placeHolder"/>
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/lytImage"
-            android:layout_marginTop="@dimen/marginSmall"
-            android:layout_marginBottom="@dimen/marginSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/ivUser"
-                android:layout_centerInParent="true"
-                android:layout_width="119dp"
-                android:layout_height="119dp"
-                android:src="@drawable/publish_placeholder"/>
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:layout_marginTop="@dimen/marginMedium"
+                android:contentDescription="@string/user_picture"
+                android:src="@drawable/publish_placeholder"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        </RelativeLayout>
-
-        <View
-            android:layout_marginTop="@dimen/marginSmall"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/brandSecondary300"/>
+            <ImageView
+                android:id="@+id/ivVerifiedUser"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_toEndOf="@+id/ivUser"
+                android:contentDescription="@string/verified"
+                android:src="@drawable/verified"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/ivUser"
+                app:layout_constraintEnd_toEndOf="@id/ivUser" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         <LinearLayout
-            android:id="@+id/lytForm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginTop="@dimen/marginMedium"
+            android:layout_marginEnd="@dimen/marginMedium"
             android:orientation="vertical">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvBio"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium">
-
-                <TextView
-                    android:id="@+id/tvFullName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/title_fullname"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"/>
-
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/etFullName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginVeryHuge"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:hint="@string/title_fullname"
-                    android:layout_alignParentEnd="true"/>
-            </RelativeLayout>
+                android:fontFamily="@font/roboto"
+                android:text="Football and Rugby journalist bringing you the latest news."
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSizeSmall"
+                tools:ignore="HardcodedText" />
 
             <RelativeLayout
+                android:layout_marginTop="@dimen/marginMedium"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium">
+                android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/tvUsername"
+                    android:id="@+id/tvNumberFollowers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/title_username"
                     android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"/>
-
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/etUsername"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginVeryHuge"
+                    android:fontFamily="@font/roboto_medium"
+                    android:text="16.7k"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:hint="@string/title_username"
-                    android:layout_alignParentEnd="true"/>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium">
+                    android:textSize="@dimen/textSizeSmall"
+                    tools:ignore="HardcodedText" />
 
                 <TextView
-                    android:id="@+id/tvEmail"
+                    android:id="@+id/tvFollowers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/title_email"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"/>
-
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/etEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginVeryHuge"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:hint="@string/title_email"
-                    android:layout_alignParentEnd="true"/>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium">
+                    android:layout_toEndOf="@+id/tvNumberFollowers"
+                    android:text=" Followers"
+                    android:textColor="@color/brandSecondary100"
+                    tools:ignore="HardcodedText" />
 
                 <TextView
-                    android:id="@+id/tvPhoneNumber"
+                    android:id="@+id/tvNumberFollowing"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/marginMedium"
+                    android:layout_toEndOf="@+id/tvFollowers"
+                    android:fontFamily="@font/roboto_medium"
+                    android:text="16.7k"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/title_phone"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"/>
+                    android:textSize="@dimen/textSizeSmall"
+                    tools:ignore="HardcodedText" />
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/etPhoneNumber"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginVeryHuge"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:hint="@string/title_phone"
-                    android:layout_alignParentEnd="true"/>
+                    android:layout_toEndOf="@+id/tvNumberFollowing"
+                    android:text=" Following"
+                    android:textColor="@color/brandSecondary100"
+                    tools:ignore="HardcodedText" />
             </RelativeLayout>
+
+
+            <LinearLayout
+                android:id="@+id/layFollows"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/marginMedium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layProfileTop">
+
+                <Button
+                    android:id="@+id/btnFollow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_round_yellow_ripple"
+                    android:text="@string/follow"
+                    android:textColor="@color/brandSecondary500" />
+            </LinearLayout>
 
         </LinearLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnLogout"
-            android:layout_margin="@dimen/marginSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/logout"/>
-
     </LinearLayout>
 
-</ScrollView>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/marginSmall"
+        android:text="@string/logout"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layProfileTop" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

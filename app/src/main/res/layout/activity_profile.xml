@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/toolbarProfile"
+        layout="@layout/toolbar_profile" />
+
+    <fragment
+        android:layout_below="@id/toolbarProfile"
+        android:id="@+id/navigation_host_fragment_profile"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/rl_mini_player_view"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/another_user_profile_nav">
+
+    </fragment>
+
+    <include layout="@layout/mini_player_view"
+        android:id="@+id/rl_mini_player_view"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/miniPlayerHeight"
+        android:visibility="gone"/>
+
+</RelativeLayout>
+

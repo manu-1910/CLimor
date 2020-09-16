@@ -112,6 +112,39 @@ class CommonsKt {
 
         fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
 
+
+        fun formatSocialMediaQuantity(quantity : Int) : String {
+            return when {
+                quantity < 10000 -> {
+                    quantity.toString()
+                }
+                quantity in 10000..99999 -> {
+                    val newQty = quantity / 1000.toFloat()
+                    val output = "%.1fk".format(newQty)
+                    output
+                }
+                quantity in 100000..999999 -> {
+                    val newQty = quantity / 1000.toFloat()
+                    val output = "%.0fk".format(newQty)
+                    output
+                }
+                quantity in 1000000..99999999 -> {
+                    val newQty = quantity / 1000000.toFloat()
+                    val output = "%.1fM".format(newQty)
+                    output
+                }
+                quantity in 10000000..999999999 -> {
+                    val newQty = quantity / 1000000.toFloat()
+                    val output = "%.0fM".format(newQty)
+                    output
+                } else -> {
+                    val newQty = quantity / 1000000000.toFloat()
+                    val output = "%.1fB".format(newQty)
+                    output
+                }
+            }
+        }
+
     }
 
 }

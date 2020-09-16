@@ -36,6 +36,7 @@ import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.extensions.showKeyboard
 import io.square1.limor.scenes.main.adapters.CommentsAdapter
+import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
@@ -1192,7 +1193,9 @@ class PodcastDetailsFragment : BaseFragment() {
                     }
 
                     override fun onUserClicked(item: UIComment, position: Int) {
-                        Toast.makeText(context, "You clicked on user", Toast.LENGTH_SHORT).show()
+                        val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+                        userProfileIntent.putExtra("user", item.user)
+                        startActivity(userProfileIntent)
                     }
 
                     override fun onMoreClicked(item: UIComment, position: Int, v: View) {
@@ -1674,7 +1677,11 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun onUserClicked() {
-        Toast.makeText(context, "User clicked", Toast.LENGTH_SHORT).show()
+        uiPodcast?.user?.let {
+            val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+            userProfileIntent.putExtra("user", it)
+            startActivity(userProfileIntent)
+        }
     }
 
     private fun configureToolbar() {

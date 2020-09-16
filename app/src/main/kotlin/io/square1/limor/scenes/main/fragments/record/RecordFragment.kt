@@ -305,7 +305,7 @@ class RecordFragment : BaseFragment() {
                 }
                 else -> {
                     doAsync {
-                        val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
+                        val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath , "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
 
                         if(mergeAmrAudioFiles(draftViewModel.filesArray, finalAudio.absolutePath)){
                             //if(mergeWavAudioFiles(draftViewModel.filesArray, finalAudio.absolutePath)){
@@ -344,7 +344,7 @@ class RecordFragment : BaseFragment() {
     private fun audioSetup() {
 
         // Note: this is not the audio file name, it's a directory.
-        val recordingDirectory = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/")
+        val recordingDirectory = File(Environment.getExternalStorageDirectory()?.absolutePath , "/limorv2/")
         if(!recordingDirectory.exists()){
             recordingDirectory.mkdir()
         }
