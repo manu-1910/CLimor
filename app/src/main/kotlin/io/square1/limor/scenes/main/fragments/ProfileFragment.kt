@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -20,21 +21,24 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
+import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.viewmodels.LogoutViewModel
 import io.square1.limor.scenes.main.viewmodels.ProfileViewModel
 import io.square1.limor.scenes.splash.SplashActivity
 import io.square1.limor.scenes.utils.CommonsKt.Companion.formatSocialMediaQuantity
-import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
 import io.square1.limor.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_profile.*
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
 
 
 class ProfileFragment : BaseFragment() {
 
+
+    private var uiUser: UIUser? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -48,8 +52,13 @@ class ProfileFragment : BaseFragment() {
     private val logoutTrigger = PublishSubject.create<Unit>()
 
     private var tvToolbarUsername: TextView? = null
+    private var btnBack: ImageButton? = null
+    private var btnSettings: ImageButton? = null
+    private var btnMore: ImageButton? = null
 
     var app: App? = null
+
+    private var isMyProfileMode : Boolean = false
 
 
     companion object {
@@ -69,15 +78,51 @@ class ProfileFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         app = context?.applicationContext as App
-        tvToolbarUsername = activity?.findViewById<TextView>(R.id.tvToolbarUsername)
-
+        initToolbarViews()
 
         listeners()
         bindViewModel()
         apiCallGetUser()
         apiCallLogout()
 
-        getUserDataTrigger.onNext(Unit)
+        if(activity is UserProfileActivity) {
+            isMyProfileMode = false
+            uiUser = (activity as UserProfileActivity).uiUser
+        } else {
+            isMyProfileMode = true
+            uiUser = sessionManager.getStoredUser()
+            getUserDataTrigger.onNext(Unit)
+        }
+        printUserData()
+        configureToolbar()
+        configureScreen()
+    }
+
+    private fun configureScreen() {
+        if(isMyProfileMode) {
+            btnLogout.visibility = View.VISIBLE
+            btnSettings?.visibility = View.VISIBLE
+            btnMore?.visibility = View.GONE
+            layFollows?.visibility = View.GONE
+        } else {
+            btnLogout.visibility = View.GONE
+            btnSettings?.visibility = View.GONE
+            btnMore?.visibility = View.VISIBLE
+            layFollows?.visibility = View.VISIBLE
+        }
+    }
+
+    private fun initToolbarViews() {
+        tvToolbarUsername = activity?.findViewById(R.id.tvToolbarUsername)
+        btnBack = activity?.findViewById(R.id.btnBack)
+        btnSettings = activity?.findViewById(R.id.btnSettings)
+        btnMore = activity?.findViewById(R.id.btnMore)
+    }
+
+    private fun configureToolbar() {
+        if(isMyProfileMode) {
+            btnBack?.visibility = View.GONE
+        }
     }
 
 
@@ -85,6 +130,14 @@ class ProfileFragment : BaseFragment() {
         btnLogout.onClick {
             logoutTrigger.onNext(Unit)
             logOutFromFacebook()
+        }
+
+        btnBack?.onClick {
+            activity?.finish()
+        }
+
+        btnSettings?.onClick {
+            toast("You clicked settings")
         }
     }
 
@@ -110,9 +163,9 @@ class ProfileFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            //pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
-            printUserData(it.data.user)
+            uiUser = it.data.user
+            printUserData()
         })
 
         output.backgroundWorkingProgress.observe(this, Observer {
@@ -209,33 +262,27 @@ class ProfileFragment : BaseFragment() {
     }
 
 
-    private fun printUserData(user: UIUser) {
-        tvToolbarUsername?.text = (user.first_name + " " + user.last_name).toEditable()
-        user.followers_count?.let {
+    private fun printUserData() {
+        val fullname = uiUser?.first_name + " " + uiUser?.last_name
+        tvToolbarUsername?.text = fullname
+        uiUser?.followers_count?.let {
             tvNumberFollowers.text = formatSocialMediaQuantity(it)
         }
-        user.following_count?.let {
+        uiUser?.following_count?.let {
             tvNumberFollowing.text = formatSocialMediaQuantity(it)
         }
         context?.let {
             Glide.with(it)
-                .load(user.images.medium_url)
+                .load(uiUser?.images?.medium_url)
                 .into(ivUser)
         }
-        if (!user.verified)
-            ivVerifiedUser.visibility = View.GONE
+        uiUser?.verified?.let {
+            if (it)
+                ivVerifiedUser.visibility = View.VISIBLE
+        }
 
-        tvBio.text = user.description
 
-//        formatSocialMediaQuantity(1294)
-//        formatSocialMediaQuantity(12940)
-//        formatSocialMediaQuantity(129400)
-//        formatSocialMediaQuantity(1294000)
-//        formatSocialMediaQuantity(12940000)
-//        formatSocialMediaQuantity(129400000)
-//        formatSocialMediaQuantity(1294000000)
+        tvBio.text = uiUser?.description
     }
-
-
 
 }

@@ -259,5 +259,6 @@
     <string name="chat">Chat</string>
     <string name="user">User</string>
     <string name="settings">Settings</string>
+    <string name="follow">Follow</string>
 
 </resources>
