@@ -12,6 +12,7 @@ const val LOG_OUT_PATH = "/oauth/revoke"
 const val SHOW_FEED_PATH = "/api/v1/users/feed"
 const val BLOCKED_USERS = "/api/v1/users/blocked_users"
 const val CREATE_FRIEND_PATH = "/api/v1/users/{id}/friends"
+const val REPORT_USER_PATH = "/api/v1/users/{id}/reports"
 
 
 interface UserService {
@@ -40,5 +41,8 @@ interface UserService {
 
     @HTTP(method = "DELETE", path = BLOCKED_USERS, hasBody = true) // this is a workaround to make delete work with a request body
     fun deleteBlockedUser(@Body request: RequestBody): Single<ResponseBody>
+
+    @POST(REPORT_USER_PATH)
+    fun reportUser(@Path("id") id: Int, @Body request: RequestBody): Single<ResponseBody>
 
 }

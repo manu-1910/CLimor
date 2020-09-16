@@ -1,6 +1,7 @@
 package io.square1.limor.remote.providers
 
 
+import entities.request.DataCreateUserReportRequestEntity
 import entities.request.DataLogoutRequest
 import entities.request.DataUserIDRequest
 import entities.response.*
@@ -42,6 +43,13 @@ class RemoteUserProviderImp @Inject constructor(private val provider: UserServic
 
     override fun deleteBlockedUser(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity> {
         return provider.deleteBlockedUser(userIDRequest.asRemoteEntity()).asDataEntity()
+    }
+
+    override fun reportUser(
+        id: Int,
+        request: DataCreateUserReportRequestEntity
+    ): Single<CreateReportResponseEntity> {
+        return provider.reportUser(id, request.asRemoteEntity()).asDataEntity()
     }
 }
 

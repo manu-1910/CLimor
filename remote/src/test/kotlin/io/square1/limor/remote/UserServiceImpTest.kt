@@ -1,5 +1,6 @@
 package io.square1.limor.remote
 
+import io.square1.limor.remote.entities.requests.NWCreateUserReportRequest
 import io.square1.limor.remote.entities.requests.NWUserIDRequest
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.user.UserServiceImp
@@ -150,6 +151,29 @@ class UserServiceImpTest {
         val request = NWUserIDRequest(idUser)
 
         val response = userService.deleteBlockedUser(request).test()
+
+        response?.assertNoErrors()
+        response?.assertValue { it.message == "Success" }
+    }
+
+
+    @Test
+    fun should_report_user_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = CURRENT_URL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = CURRENT_TOKEN,
+            expiredIn = 0
+        )
+
+        userService = UserServiceImp(config)
+
+        val idUser = 5
+        val request = NWCreateUserReportRequest("I don't like him")
+
+        val response = userService.reportUser(idUser, request).test()
 
         response?.assertNoErrors()
         response?.assertValue { it.message == "Success" }

@@ -1,6 +1,7 @@
 package repositories.user
 
 
+import entities.request.DataCreateUserReportRequestEntity
 import entities.request.DataLogoutRequest
 import entities.request.DataUserIDRequest
 import entities.response.*
@@ -38,6 +39,13 @@ class DataUserRepository @Inject constructor(private val remoteProvider: RemoteU
 
     override fun deleteUserBlocked(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity> {
         return remoteProvider.deleteBlockedUser(userIDRequest)
+    }
+
+    override fun reportUser(
+        id: Int,
+        request: DataCreateUserReportRequestEntity
+    ): Single<CreateReportResponseEntity> {
+        return remoteProvider.reportUser(id, request)
     }
 
 }

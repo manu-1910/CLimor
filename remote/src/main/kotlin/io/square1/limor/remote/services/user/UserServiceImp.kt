@@ -1,8 +1,8 @@
 package io.square1.limor.remote.services.user
 
 
-import entities.request.DataUserIDRequest
 import io.reactivex.Single
+import io.square1.limor.remote.entities.requests.NWCreateUserReportRequest
 import io.square1.limor.remote.entities.requests.NWLogoutRequest
 import io.square1.limor.remote.entities.requests.NWUserIDRequest
 import io.square1.limor.remote.entities.responses.*
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 
 @ImplicitReflectionSerializer
-class UserServiceImp @Inject constructor(private val serviceConfig: RemoteServiceConfig) :
+class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
     RemoteService<UserService>(UserService::class.java, serviceConfig) {
 
     fun userMe(): Single<NWSignUpResponse> {
@@ -123,5 +123,26 @@ class UserServiceImp @Inject constructor(private val serviceConfig: RemoteServic
                 println("ERROR: $error")
             }
     }
+
+
+
+    fun reportUser(id:Int, createReportRequest: NWCreateUserReportRequest): Single<NWCreateReportResponse> {
+        val requestString = Json.nonstrict.stringify(NWCreateUserReportRequest.serializer(), createReportRequest)
+        val request = RequestBody.create(
+            MediaType.parse("application/json"),
+            requestString
+        )
+        return service.reportUser(id, request)
+            .map { response ->
+                response.parseSuccessResponse(NWCreateReportResponse.serializer())
+            }
+            .doOnSuccess { success ->
+                println("SUCCESS: $success")
+            }
+            .doOnError { error ->
+                println("ERROR: $error")
+            }
+    }
+
 
 }
