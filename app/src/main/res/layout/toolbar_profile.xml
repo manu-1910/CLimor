@@ -24,6 +24,18 @@
             android:gravity="center_vertical"
             android:src="@drawable/chat"
             android:textAllCaps="false"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentStart="true"
+            android:contentDescription="@string/description_back"
+            android:gravity="center_vertical"
+            android:src="@drawable/chevron_left"
+            android:textAllCaps="false"
             android:visibility="visible" />
 
         <TextView
@@ -48,7 +60,7 @@
             android:layout_toEndOf="@id/tvToolbarUsername"
             android:gravity="center_vertical"
             android:src="@drawable/chevron_down"
-            android:visibility="visible"
+            android:visibility="gone"
             android:contentDescription="@string/user" />
 
         <ImageButton
@@ -59,7 +71,7 @@
             android:layout_toStartOf="@id/btnSettings"
             android:gravity="center_vertical"
             android:src="@drawable/stats"
-            android:visibility="visible"
+            android:visibility="gone"
             android:contentDescription="@string/settings" />
 
         <ImageButton
@@ -69,9 +81,20 @@
             android:layout_height="?attr/actionBarSize"
             android:layout_alignParentEnd="true"
             android:gravity="center_vertical"
-            android:src="@drawable/icon_info"
-            android:visibility="visible"
+            android:src="@drawable/settings"
+            android:visibility="gone"
             android:contentDescription="@string/settings" />
+
+        <ImageButton
+            android:id="@+id/btnMore"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical"
+            android:src="@drawable/more_yellow"
+            android:visibility="visible"
+            android:contentDescription="@string/more" />
 
     </RelativeLayout>
 </androidx.appcompat.widget.Toolbar>

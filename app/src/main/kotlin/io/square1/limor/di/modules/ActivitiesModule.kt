@@ -8,6 +8,7 @@ import io.square1.limor.scenes.main.MainActivity
 import io.square1.limor.scenes.main.fragments.player.AudioPlayerActivity
 import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
 import io.square1.limor.scenes.main.fragments.podcast.PodcastsByTagActivity
+import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.fragments.record.RecordActivity
 import io.square1.limor.scenes.splash.SplashActivity
 
@@ -40,6 +41,12 @@ abstract class ActivitiesModule {
         (PodcastDetailsActivityFragmentsBuildersModule::class)
     ])
     abstract fun contributePodcastDetailsActivityInjector(): PodcastDetailsActivity
+
+
+    @ContributesAndroidInjector(modules = [
+        (UserProfileActivityFragmentsBuildersModule::class)
+    ])
+    abstract fun contributeUserProfileActivityInjector(): UserProfileActivity
 
     @ContributesAndroidInjector(modules = [
         (PodcastsByTagActivityFragmentsBuildersModule::class)

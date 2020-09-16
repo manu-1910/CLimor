@@ -22,6 +22,7 @@ import io.square1.limor.common.SessionManager
 import io.square1.limor.scenes.main.adapters.FeedAdapter
 import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
 import io.square1.limor.scenes.main.fragments.podcast.PodcastsByTagActivity
+import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIFeedItem
@@ -279,7 +280,9 @@ class FeedFragment : BaseFragment() {
                     }
 
                     override fun onUserClicked(item: UIFeedItem, position: Int) {
-                        Toast.makeText(context, "You clicked on user", Toast.LENGTH_SHORT).show()
+                        val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+                        userProfileIntent.putExtra("user", item.podcast?.user)
+                        startActivity(userProfileIntent)
                     }
 
                     override fun onMoreClicked(

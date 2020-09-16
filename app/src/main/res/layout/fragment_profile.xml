@@ -37,6 +37,7 @@
                 android:layout_toEndOf="@+id/ivUser"
                 android:contentDescription="@string/verified"
                 android:src="@drawable/verified"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/ivUser"
                 app:layout_constraintEnd_toEndOf="@id/ivUser" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -44,7 +45,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/marginMedium"
             android:layout_marginTop="@dimen/marginMedium"
             android:layout_marginEnd="@dimen/marginMedium"
@@ -61,6 +62,7 @@
                 tools:ignore="HardcodedText" />
 
             <RelativeLayout
+                android:layout_marginTop="@dimen/marginMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -105,19 +107,38 @@
                     tools:ignore="HardcodedText" />
             </RelativeLayout>
 
+
+            <LinearLayout
+                android:id="@+id/layFollows"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/marginMedium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layProfileTop">
+
+                <Button
+                    android:id="@+id/btnFollow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_round_yellow_ripple"
+                    android:text="@string/follow"
+                    android:textColor="@color/brandSecondary500" />
+            </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>
-
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnLogout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:layout_gravity="center"
         android:layout_margin="@dimen/marginSmall"
         android:text="@string/logout"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layProfileTop" />
