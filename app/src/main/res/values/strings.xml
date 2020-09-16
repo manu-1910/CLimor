@@ -250,5 +250,11 @@
     <string name="could_not_write_destination_file">Couldn\'t write into destination file</string>
     <string name="check_out_this_cast">Check out this cast on Limor</string>
     <string name="error_retrieving_sharing_url">Error retrieving sharing URL</string>
+    <string name="report">Report</string>
+    <string name="error_report">We couldn\'t send your report at the moment, please, try again later</string>
+    <string name="comment_reported_ok">Comment reported successfully</string>
+    <string name="comment_already_reported">Your comment was already reported</string>
+    <string name="podcast_reported_ok">Podcast reported successfully</string>
+    <string name="podcast_already_reported">Your podcast was already reported</string>
 
 </resources>

@@ -2,6 +2,7 @@ package io.square1.limor.scenes.main.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.SeekBar
@@ -49,7 +50,7 @@ class CommentsAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         val commentItemViewHolder : CommentItemViewHolder = holder as CommentItemViewHolder
-        Timber.d("onBindViewHolder item $position")
+//        Timber.d("onBindViewHolder item $position")
 
         val currentItem = list[position]
         if(podcastMode) {
@@ -74,7 +75,7 @@ class CommentsAdapter(
         fun onHashtagClicked(hashtag : String)
         fun onSendClicked(item : UIComment, position: Int)
         fun onUserClicked(item : UIComment, position: Int)
-        fun onMoreClicked(item : UIComment, position: Int)
+        fun onMoreClicked(item : UIComment, position: Int, v: View)
         fun onReplyClicked(item: CommentWithParent, position: Int)
         fun onMoreRepliesClicked(parent: CommentWithParent, position: Int)
         fun onShowLessClicked(parent: CommentWithParent, lastChildPosition: Int)

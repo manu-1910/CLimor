@@ -107,6 +107,8 @@ class PodcastDetailsFragment : BaseFragment() {
     private lateinit var viewModelDeleteCommentLike: DeleteCommentLikeViewModel
     private lateinit var viewModelCreatePodcastComment: CreatePodcastCommentViewModel
     private lateinit var viewModelCreateCommentComment: CreateCommentCommentViewModel
+    private lateinit var viewModelCreateCommentReport: CreateCommentReportViewModel
+    private lateinit var viewModelCreatePodcastReport: CreatePodcastReportViewModel
     private val getPodcastCommentsDataTrigger = PublishSubject.create<Unit>()
     private val getCommentCommentsDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
@@ -117,6 +119,8 @@ class PodcastDetailsFragment : BaseFragment() {
     private val deleteCommentLikeDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastCommentDataTrigger = PublishSubject.create<Unit>()
     private val createCommentCommentDataTrigger = PublishSubject.create<Unit>()
+    private val createCommentReportDataTrigger = PublishSubject.create<Unit>()
+    private val createPodcastReportDataTrigger = PublishSubject.create<Unit>()
 
     private val commentWithParentsItemsList = ArrayList<CommentWithParent>()
 
@@ -196,6 +200,8 @@ class PodcastDetailsFragment : BaseFragment() {
         initApiCallCreateCommentLike()
         initApiCallDeleteCommentLike()
         initApiCallCreateComment()
+        initApiCallCreateCommentReport()
+        initApiCallCreatePodcastReport()
         configureToolbar()
 
         // we get the possible comment clicked from the previous activity.
@@ -213,6 +219,72 @@ class PodcastDetailsFragment : BaseFragment() {
             if(it)
                 openCommentBarTextAndFocusIt()
         }
+    }
+
+    private fun initApiCallCreatePodcastReport() {
+        val output = viewModelCreatePodcastReport.transform(
+            CreatePodcastReportViewModel.Input(
+                createPodcastReportDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                Toast.makeText(
+                    context,
+                    getString(R.string.podcast_already_reported),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    context,
+                    getString(R.string.podcast_reported_ok),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            Toast.makeText(
+                context,
+                getString(R.string.error_report),
+                Toast.LENGTH_SHORT
+            ).show()
+        })
+    }
+
+    private fun initApiCallCreateCommentReport() {
+        val output = viewModelCreateCommentReport.transform(
+            CreateCommentReportViewModel.Input(
+                createCommentReportDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                Toast.makeText(
+                    context,
+                    getString(R.string.comment_already_reported),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    context,
+                    getString(R.string.comment_reported_ok),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            Toast.makeText(
+                context,
+                getString(R.string.error_report),
+                Toast.LENGTH_SHORT
+            ).show()
+        })
     }
 
     private fun initPodcastOrCommentMode() {
@@ -1046,7 +1118,18 @@ class PodcastDetailsFragment : BaseFragment() {
 
                             // if there isn't any comment being listened, just launch this one
                         } else {
-                            audioCommentPlayerController = AudioCommentPlayerController(item.comment, seekBar, ibtnPlay)
+                            if (!hasPermissions(requireContext(), *PERMISSIONS)) {
+                                try {
+                                    ActivityCompat.requestPermissions(requireActivity(),
+                                        PERMISSIONS, PERMISSION_ALL
+                                    )
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            }else {
+                                audioCommentPlayerController =
+                                    AudioCommentPlayerController(item.comment, seekBar, ibtnPlay)
+                            }
                         }
                     }
 
@@ -1112,8 +1195,8 @@ class PodcastDetailsFragment : BaseFragment() {
                         Toast.makeText(context, "You clicked on user", Toast.LENGTH_SHORT).show()
                     }
 
-                    override fun onMoreClicked(item: UIComment, position: Int) {
-                        Toast.makeText(context, "You clicked on more", Toast.LENGTH_SHORT).show()
+                    override fun onMoreClicked(item: UIComment, position: Int, v: View) {
+                        onCommentMoreClicked(item, v)
                     }
 
                     override fun onReplyClicked(item: CommentWithParent, position: Int) {
@@ -1301,6 +1384,19 @@ class PodcastDetailsFragment : BaseFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastCommentViewModel::class.java)
         }
+
+
+        activity?.let { fragmentActivity ->
+            viewModelCreateCommentReport = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreateCommentReportViewModel::class.java)
+        }
+
+        activity?.let { fragmentActivity ->
+            viewModelCreatePodcastReport = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreatePodcastReportViewModel::class.java)
+        }
     }
 
 
@@ -1451,6 +1547,34 @@ class PodcastDetailsFragment : BaseFragment() {
         Toast.makeText(context, "Send clicked", Toast.LENGTH_SHORT).show()
     }
 
+    private fun onCommentMoreClicked(comment: UIComment, v: View) {
+        showCommentMorePopupMenu(comment, v)
+    }
+
+    private fun showCommentMorePopupMenu(
+        comment: UIComment,
+        v: View
+    ) {
+        val popup = PopupMenu(context, v, Gravity.TOP)
+        val inflater: MenuInflater = popup.menuInflater
+        inflater.inflate(R.menu.menu_popup_comment, popup.menu)
+
+
+        //set menu item click listener here
+        popup.setOnMenuItemClickListener {menuItem ->
+            when(menuItem.itemId) {
+                R.id.menu_report -> onReportCommentClicked(comment)
+            }
+            true
+        }
+        popup.show()
+    }
+
+    private fun onReportCommentClicked(comment: UIComment) {
+        viewModelCreateCommentReport.idCommentToReport = comment.id
+        createCommentReportDataTrigger.onNext(Unit)
+    }
+
     private fun onPodcastMoreClicked() {
         showPodcastMorePopupMenu()
     }
@@ -1465,10 +1589,18 @@ class PodcastDetailsFragment : BaseFragment() {
         popup.setOnMenuItemClickListener {menuItem ->
             when(menuItem.itemId) {
                 R.id.menu_share -> onSharePodcastClicked()
+                R.id.menu_report -> onReportPodcastClicked()
             }
             true
         }
         popup.show()
+    }
+
+    private fun onReportPodcastClicked() {
+        uiPodcast?.id?.let {
+            viewModelCreatePodcastReport.idPodcastToReport = it
+            createPodcastReportDataTrigger.onNext(Unit)
+        }
     }
 
     private fun onSharePodcastClicked() {

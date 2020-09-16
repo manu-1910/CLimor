@@ -43,6 +43,9 @@ class DataPodcastRepository @Inject constructor(private val remoteProvider: Remo
         return remoteProvider.getComments(id, limit, offset)
     }
 
+    override fun reportPodcast(id: Int): Single<CreateReportResponseEntity>? {
+        return remoteProvider.reportPodcast(id)
+    }
 
 
 }
