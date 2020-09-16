@@ -1,20 +1,24 @@
 package io.square1.limor.scenes.main.viewmodels
 
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseViewModel
 import io.square1.limor.common.SessionManager
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import io.square1.limor.uimodels.*
+import io.square1.limor.uimodels.UIErrorResponse
+import io.square1.limor.uimodels.UILocations
+import io.square1.limor.uimodels.UIPublishRequest
+import io.square1.limor.uimodels.UIPublishResponse
 import io.square1.limor.usecases.PublishUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
+
 
 class PublishViewModel @Inject constructor(private val publishUseCase: PublishUseCase, private val sessionManager: SessionManager) : BaseViewModel<PublishViewModel.Input, PublishViewModel.Output>() {
 
@@ -53,9 +57,10 @@ class PublishViewModel @Inject constructor(private val publishUseCase: PublishUs
                     val errorResponse: UIErrorResponse? = error.response()?.errorBody()?.parseSuccessResponse(UIErrorResponse.serializer())
                     errorTracker.postValue(errorResponse)
                 } catch (e: Exception) {
-                    val dataError = UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
-                    val errorResponse = UIErrorResponse(99, dataError.toString())
-                    errorTracker.postValue(errorResponse)
+                    //val dataError = UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
+                    //val errorResponse = UIErrorResponse(99, dataError.toString())
+                    //errorTracker.postValue(errorResponse)
+                    e.printStackTrace()
                 }
 
             })
