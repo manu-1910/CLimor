@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/colorPrimary"
+    android:elevation="2dp"
+    app:contentInsetEnd="0dp"
+    app:contentInsetStart="0dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <ImageButton
+            android:id="@+id/btnChat"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentStart="true"
+            android:contentDescription="@string/chat"
+            android:gravity="center_vertical"
+            android:src="@drawable/chat"
+            android:textAllCaps="false"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tvToolbarUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/roboto_medium"
+            android:text="Alexa Tenorio"
+            android:textColor="@color/toolbar_text"
+            android:textSize="@dimen/textSizeNormal"
+            tools:ignore="HardcodedText" />
+
+        <ImageButton
+            android:background="@color/transparent"
+            android:id="@+id/btnUserMore"
+            android:paddingStart="@dimen/marginVerySmall"
+            android:paddingEnd="@dimen/marginVerySmall"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_toEndOf="@id/tvToolbarUsername"
+            android:gravity="center_vertical"
+            android:src="@drawable/chevron_down"
+            android:visibility="visible"
+            android:contentDescription="@string/user" />
+
+        <ImageButton
+            android:id="@+id/btnStats"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_toStartOf="@id/btnSettings"
+            android:gravity="center_vertical"
+            android:src="@drawable/stats"
+            android:visibility="visible"
+            android:contentDescription="@string/settings" />
+
+        <ImageButton
+            android:id="@+id/btnSettings"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical"
+            android:src="@drawable/icon_info"
+            android:visibility="visible"
+            android:contentDescription="@string/settings" />
+
+    </RelativeLayout>
+</androidx.appcompat.widget.Toolbar>
