@@ -19,9 +19,9 @@
 
     <ImageView
         android:id="@+id/ivSelected"
-        android:layout_width="17dp"
-        android:layout_height="15dp"
-        android:src="@drawable/color"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:src="@drawable/selected"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/marginMedium"
         android:layout_centerInParent="true"
