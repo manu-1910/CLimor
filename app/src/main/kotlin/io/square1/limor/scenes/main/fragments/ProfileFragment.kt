@@ -1,26 +1,29 @@
 package io.square1.limor.scenes.main.fragments
 
 import android.content.Intent
-import io.square1.limor.R
-import io.square1.limor.common.BaseFragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.bumptech.glide.Glide
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
 import com.facebook.HttpMethod
 import com.facebook.login.LoginManager
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
+import io.square1.limor.R
+import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.main.viewmodels.LogoutViewModel
 import io.square1.limor.scenes.main.viewmodels.ProfileViewModel
 import io.square1.limor.scenes.splash.SplashActivity
+import io.square1.limor.scenes.utils.CommonsKt.Companion.formatSocialMediaQuantity
 import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
 import io.square1.limor.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_profile.*
@@ -35,6 +38,7 @@ class ProfileFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+
     @Inject
     lateinit var sessionManager: SessionManager
 
@@ -42,6 +46,8 @@ class ProfileFragment : BaseFragment() {
     private lateinit var viewModelLogout: LogoutViewModel
     private val getUserDataTrigger = PublishSubject.create<Unit>()
     private val logoutTrigger = PublishSubject.create<Unit>()
+
+    private var tvToolbarUsername: TextView? = null
 
     var app: App? = null
 
@@ -63,6 +69,8 @@ class ProfileFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         app = context?.applicationContext as App
+        tvToolbarUsername = activity?.findViewById<TextView>(R.id.tvToolbarUsername)
+
 
         listeners()
         bindViewModel()
@@ -84,13 +92,13 @@ class ProfileFragment : BaseFragment() {
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
             viewModelProfile = ViewModelProviders
-                 .of(fragmentActivity, viewModelFactory)
-                 .get(ProfileViewModel::class.java)
+                .of(fragmentActivity, viewModelFactory)
+                .get(ProfileViewModel::class.java)
 
             viewModelLogout = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(LogoutViewModel::class.java)
-         }
+        }
     }
 
 
@@ -131,7 +139,6 @@ class ProfileFragment : BaseFragment() {
             }
         })
     }
-
 
 
     private fun apiCallLogout() {
@@ -186,22 +193,49 @@ class ProfileFragment : BaseFragment() {
     }
 
 
-    private fun logOutFromFacebook(){ //TODO
+    private fun logOutFromFacebook() { //TODO
         // Logout
         if (AccessToken.getCurrentAccessToken() != null) {
-            GraphRequest(AccessToken.getCurrentAccessToken(), "/me/permissions/", null, HttpMethod.DELETE, GraphRequest.Callback {
-                AccessToken.setCurrentAccessToken(null)
-                LoginManager.getInstance().logOut()
-            }).executeAsync()
+            GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/me/permissions/",
+                null,
+                HttpMethod.DELETE,
+                GraphRequest.Callback {
+                    AccessToken.setCurrentAccessToken(null)
+                    LoginManager.getInstance().logOut()
+                }).executeAsync()
         }
     }
 
 
     private fun printUserData(user: UIUser) {
-        etFullName.text = (user.first_name + " " + user.last_name).toEditable()
-        etUsername.text = user.username?.toEditable()
-        etEmail.text = user.email?.toEditable()
-        etPhoneNumber.text = user.phone_number?.toEditable()
+        tvToolbarUsername?.text = (user.first_name + " " + user.last_name).toEditable()
+        user.followers_count?.let {
+            tvNumberFollowers.text = formatSocialMediaQuantity(it)
+        }
+        user.following_count?.let {
+            tvNumberFollowing.text = formatSocialMediaQuantity(it)
+        }
+        context?.let {
+            Glide.with(it)
+                .load(user.images.medium_url)
+                .into(ivUser)
+        }
+        if (!user.verified)
+            ivVerifiedUser.visibility = View.GONE
+
+        tvBio.text = user.description
+
+//        formatSocialMediaQuantity(1294)
+//        formatSocialMediaQuantity(12940)
+//        formatSocialMediaQuantity(129400)
+//        formatSocialMediaQuantity(1294000)
+//        formatSocialMediaQuantity(12940000)
+//        formatSocialMediaQuantity(129400000)
+//        formatSocialMediaQuantity(1294000000)
     }
+
+
 
 }

@@ -9,6 +9,11 @@
         android:id="@+id/toolbar"
         layout="@layout/toolbar_with_logo_and_back_icon" />
 
+    <include
+        android:id="@+id/toolbarProfile"
+        android:visibility="gone"
+        layout="@layout/toolbar_profile" />
+
     <FrameLayout
         android:id="@+id/mainContainer"
         android:layout_width="match_parent"
