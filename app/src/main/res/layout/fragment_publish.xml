@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/brandSecondary400">
 
     <androidx.core.widget.NestedScrollView
@@ -46,8 +47,8 @@
 
                             <ImageView
                                 android:id="@+id/ivDraft"
-                                android:layout_width="119dp"
-                                android:layout_height="119dp"
+                                android:layout_width="66dp"
+                                android:layout_height="66dp"
                                 android:src="@drawable/publish_placeholder"
                                 android:scaleType="fitXY"/>
                         </RelativeLayout>
@@ -69,17 +70,17 @@
 
                             <ImageView
                                 android:id="@+id/placeHolder"
+                                android:layout_width="66dp"
+                                android:layout_height="66dp"
                                 android:layout_centerInParent="true"
-                                android:layout_width="119dp"
-                                android:layout_height="119dp"
-                                android:src="@drawable/publish_placeholder"/>
+                                android:src="@drawable/publish_placeholder" />
                         </RelativeLayout>
 
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/etTitle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="151dp"
+                            android:layout_marginStart="98dp"
                             android:layout_marginTop="@dimen/marginMedium"
                             android:layout_marginBottom="@dimen/marginMedium"
                             android:layout_marginEnd="@dimen/marginMedium"
@@ -92,7 +93,6 @@
                     </RelativeLayout>
 
                     <View
-                        android:layout_marginTop="@dimen/marginSmall"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="@color/brandSecondary300"/>
@@ -114,7 +114,7 @@
                             android:foregroundGravity="top"
                             android:gravity="top"
                             android:hint="@string/hint_caption"
-                            android:lines="2"
+                            android:lines="3"
                             android:textColor="@color/white"
                             android:textColorHint="@color/brandSecondary100"
                             android:textSize="@dimen/textSizeNormal"
@@ -172,7 +172,6 @@
                         </RelativeLayout>
 
                         <View
-                            android:layout_marginTop="@dimen/marginSmall"
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:background="@color/brandSecondary300"/>
@@ -209,7 +208,6 @@
                         </RelativeLayout>
 
                         <View
-                            android:layout_marginTop="@dimen/marginSmall"
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:background="@color/brandSecondary300"/>
@@ -228,7 +226,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:background="@color/brandSecondary400"
-                            android:layout_marginTop="@dimen/marginSmall"
                             android:layout_marginStart="@dimen/marginMedium"
                             android:layout_marginEnd="@dimen/marginMedium">
 

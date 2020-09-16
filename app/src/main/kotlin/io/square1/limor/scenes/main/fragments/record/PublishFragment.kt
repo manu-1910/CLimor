@@ -98,9 +98,11 @@ class PublishFragment : BaseFragment() {
     private var run: Runnable? = null
     private var rootView: View? = null
     var app: App? = null
+
     private val updateDraftTrigger = PublishSubject.create<Unit>()
     private val publishPodcastTrigger = PublishSubject.create<Unit>()
     private val getTagsTrigger = PublishSubject.create<Unit>()
+    private val deleteDraftsTrigger = PublishSubject.create<Unit>()
 
     //Player vars
     private var audioSeekbar: SeekBar? = null
@@ -197,7 +199,7 @@ class PublishFragment : BaseFragment() {
         updateDraft()
         apiCallPublishPodcast()
         getCityOfDevice()
-
+        deleteDraft()
         apiCallHashTags()
         multiCompleteText()
         listTagsString = HashtagArrayAdapter<Hashtag>(context!!)
@@ -208,18 +210,12 @@ class PublishFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
 
-        if(!publishViewModel.categorySelected.isNullOrEmpty()){
-            tvSelectedCategory.text = publishViewModel.categorySelected
-        }
-
-        if(publishViewModel.locationSelectedItem != null){
-            if(!publishViewModel.categorySelected.isNullOrEmpty()){
-                tvSelectedLocation.text = publishViewModel.locationSelectedItem.address
-            }
-        }
-
         //Load selected location
         podcastLocation = locationsViewModel.locationSelectedItem
+
+        tvSelectedLocation.text = podcastLocation.address
+        tvSelectedCategory.text = publishViewModel.categorySelected
+
     }
 
 
@@ -235,6 +231,8 @@ class PublishFragment : BaseFragment() {
             view?.hideKeyboard()
 
             if (it.code == 0) { //Publish Ok
+
+                callToDeleteDraft()
 
                 isPublished = true
 
@@ -385,10 +383,14 @@ class PublishFragment : BaseFragment() {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {}
             override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {
-                if (s.substring(s.length - 1) == "#") {
-                    rvTags.visibility = View.VISIBLE
-                } else if (s.substring(s.length - 1) == " ") {
-                    rvTags.visibility = View.GONE
+                try {
+                    if (s.substring(s.length - 1) == "#") {
+                        rvTags.visibility = View.VISIBLE
+                    } else if (s.substring(s.length - 1) == " ") {
+                        rvTags.visibility = View.GONE
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }
@@ -1047,6 +1049,36 @@ class PublishFragment : BaseFragment() {
         this.removeTextChangedListener(textWatcher)
         codeBlock()
         this.addTextChangedListener(textWatcher)
+    }
+
+
+    private fun callToDeleteDraft(){
+        draftViewModel.uiDraft = recordingItem
+        deleteDraftsTrigger.onNext(Unit)
+    }
+
+
+    private fun deleteDraft() {
+        val output = draftViewModel.deleteDraftRealm(
+            DraftViewModel.InputDelete(
+                deleteDraftsTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if (it) {
+                println(getString(R.string.draft_deleted))
+            } else {
+                println(getString(R.string.draft_not_deleted))
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+        output.errorMessage.observe(this, Observer {
+            toast(getString(R.string.centre_not_deleted_error))
+        })
     }
 
 }

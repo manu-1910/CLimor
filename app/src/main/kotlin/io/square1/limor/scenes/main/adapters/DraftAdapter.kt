@@ -61,7 +61,7 @@ class DraftAdapter(
             mediaPlayer.setDataSource(modelList.filePath)
             mediaPlayer.prepare() // might take long for buffering.
         } catch (e: Exception) {
-            e.printStackTrace()
+            //e.printStackTrace()
         }
 
         if(playerPosition == position){
