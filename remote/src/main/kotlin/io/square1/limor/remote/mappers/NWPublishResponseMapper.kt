@@ -61,12 +61,10 @@ fun NWPodcast.asDataEntity(): PodcastEntity {
 fun NWAudio.asDataEntity(): AudioEntity {
     return AudioEntity(
         audio_url,
-        duration,
         original_audio_url,
-        sample_rate,
-        timestamps,
-        total_length,
-        total_samples
+        duration,
+        total_samples,
+        total_length
     )
 }
 

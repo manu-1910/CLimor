@@ -232,19 +232,23 @@ class PublishFragment : BaseFragment() {
 
             if (it.code == 0) { //Publish Ok
 
+                println ("response del apiCallPublishPodcast()")
                 callToDeleteDraft()
 
                 isPublished = true
 
-                alert {
-                    this.titleResource = R.string.cast_published_ok_title
-                    this.messageResource = R.string.cast_published_ok_description
-                    okButton {
-                        val mainIntent = Intent(context, MainActivity::class.java)
-                        startActivity(mainIntent)
-                        (activity as RecordActivity).finish()
-                    }
-                }.show()
+                try {
+                    alert {
+                        this.titleResource = R.string.cast_published_ok_title
+                        this.messageResource = R.string.cast_published_ok_description
+                        okButton {
+                            val mainIntent = Intent(context, MainActivity::class.java)
+                            startActivity(mainIntent)
+                            (activity as RecordActivity).finish()
+                        }
+                    }.show()
+                } catch (e: Exception) {
+                }
 
             }
         })
@@ -405,12 +409,14 @@ class PublishFragment : BaseFragment() {
             if(imageUploaded && audioUploaded){
                 imageUploaded = false
                 audioUploaded = false
+                println("---------------DOUBLE apiCallPublish 1()")
                 apiCallPublish()
             }
         }else{
             if(audioUploaded){
                 imageUploaded = false
                 audioUploaded = false
+                println("---------------DOUBLE apiCallPublish 2()")
                 apiCallPublish()
             }
         }
@@ -470,7 +476,7 @@ class PublishFragment : BaseFragment() {
 
     private fun apiCallPublish(){
 
-        println("llego aquí muchas veces???????????????")
+        println("---------------DOUBLE Start of apiCallPublish()")
         pbPublish?.visibility = View.VISIBLE
 
         val uiPublishRequest = UIPublishRequest(
@@ -480,9 +486,7 @@ class PublishFragment : BaseFragment() {
                     original_audio_url = audioUrlFinal.toString(),
                     duration = mediaPlayer.duration,
                     total_samples = 0.0,
-                    total_length = recordingItem.length!!.toDouble(),
-                    sample_rate = 0.0,
-                    timestamps = ArrayList() //recordingItem.timeStamps
+                    total_length = recordingItem.length!!.toDouble()
                 ),
                 meta_data = UIMetaData(
                     title = etDraftTitle?.text.toString(),
@@ -854,29 +858,35 @@ class PublishFragment : BaseFragment() {
 
     private fun checkEmptyFields(): Boolean{
 
-        var returned = true
+        println("---------------DOUBLE Start of checkEmptyFields()")
+        var titleNotEmpty = false
+        var captionNotEmpty = false
 
         //Check the Title of the cast
-        if(etDraftTitle?.text?.isNotEmpty()!!) {
-            returned = true
+        if(!etDraftTitle?.text.isNullOrEmpty()) {
+            titleNotEmpty = true
         }else{
             alert(getString(R.string.title_cannot_be_empty)) {
                 okButton {}
             }.show()
-            returned = false
+            titleNotEmpty = false
         }
 
         //Check the Caption of the cast
-        if(etDraftCaption?.text?.isNotEmpty()!!) {
-            returned = true
+        if(!etDraftCaption?.text.isNullOrEmpty()) {
+            captionNotEmpty = true
         }else{
             alert(getString(R.string.caption_cannot_be_empty)) {
                 okButton {}
             }.show()
-            returned = false
+            captionNotEmpty = false
         }
 
-        return returned
+        if(titleNotEmpty && captionNotEmpty){
+            return true
+        }else {
+            return false
+        }
     }
 
 

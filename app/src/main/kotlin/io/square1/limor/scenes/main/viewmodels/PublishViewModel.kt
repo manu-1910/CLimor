@@ -3,6 +3,7 @@ package io.square1.limor.scenes.main.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -20,7 +21,7 @@ import retrofit2.HttpException
 import javax.inject.Inject
 
 
-class PublishViewModel @Inject constructor(private val publishUseCase: PublishUseCase, private val sessionManager: SessionManager) : BaseViewModel<PublishViewModel.Input, PublishViewModel.Output>() {
+class PublishViewModel @Inject constructor(private val publishUseCase: PublishUseCase) : ViewModel() {
 
     var uiPublishRequest = UIPublishRequest(
         podcast = null
@@ -42,7 +43,7 @@ class PublishViewModel @Inject constructor(private val publishUseCase: PublishUs
         val errorMessage: SingleLiveEvent<UIErrorResponse>
     )
 
-    override fun transform(input: Input): Output {
+    fun transform(input: Input): Output {
         val errorTracker = SingleLiveEvent<UIErrorResponse>()
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
         val response = MutableLiveData<UIPublishResponse>()
@@ -54,7 +55,7 @@ class PublishViewModel @Inject constructor(private val publishUseCase: PublishUs
             }, {
                 try {
                     val error = it as HttpException
-                    val errorResponse: UIErrorResponse? = error.response()?.errorBody()?.parseSuccessResponse(UIErrorResponse.serializer())
+                    val errorResponse: UIErrorResponse? = error.response().errorBody()?.parseSuccessResponse(UIErrorResponse.serializer())
                     errorTracker.postValue(errorResponse)
                 } catch (e: Exception) {
                     //val dataError = UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
