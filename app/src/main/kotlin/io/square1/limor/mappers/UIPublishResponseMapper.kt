@@ -57,7 +57,7 @@ fun PodcastEntity.asUIModel(): UIPodcast {
         title,
         updated_at,
         user.asUIModel(),
-        getAllUICategory(categories)
+        category?.asUIModel()
     )
 }
 

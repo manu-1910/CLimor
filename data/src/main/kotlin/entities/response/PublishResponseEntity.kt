@@ -38,7 +38,7 @@ data class PodcastEntity(
     var title: String,
     var updated_at: Int,
     var user: UserEntity,
-    var categories: ArrayList<CategoryEntity>
+    var category: CategoryEntity?
 )
 
 
