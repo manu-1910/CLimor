@@ -11,7 +11,6 @@ fun Single<PublishResponseEntity>.asUIModel(): Single<UIPublishResponse> {
 }
 
 
-//TODO me he quedado por aquí
 fun PublishResponseEntity.asUIModel(): UIPublishResponse{
     return UIPublishResponse(
         code,
@@ -57,7 +56,7 @@ fun PodcastEntity.asUIModel(): UIPodcast {
         title,
         updated_at,
         user.asUIModel(),
-        getAllUICategory(categories)
+        category.asUIModel()
     )
 }
 
@@ -68,9 +67,7 @@ fun AudioEntity.asUIModel(): UIAudio{
         original_audio_url,
         duration,
         total_samples,
-        total_length,
-        sample_rate,
-        timestamps
+        total_length
     )
 }
 
@@ -142,24 +139,18 @@ fun getAllUITags(entityList: ArrayList<TagsEntity>?): ArrayList<UITags> {
     return uiList
 }
 
-fun getAllUICategory(entityList: ArrayList<CategoryEntity>?): ArrayList<UICategory> {
+fun getAllUICategory(entityList: ArrayList<CategoryEntity>): ArrayList<UICategory> {
     val uiList = ArrayList<UICategory>()
-    if (entityList != null) {
-        for (item in entityList) {
-            if (item != null)
-                uiList.add(item.asUIModel())
-        }
+    for (item in entityList) {
+        uiList.add(item.asUIModel())
     }
     return uiList
 }
 
-fun getAllContentMentions(entityList: ArrayList<ContentMentionItemEntity>?): ArrayList<UIContentMentionItem> {
+fun getAllContentMentions(entityList: ArrayList<ContentMentionItemEntity>): ArrayList<UIContentMentionItem> {
     val uiList = ArrayList<UIContentMentionItem>()
-    if (entityList != null) {
-        for (item in entityList) {
-            if (item != null)
-                uiList.add(item.asUIModel())
-        }
+    for (item in entityList) {
+        uiList.add(item.asUIModel())
     }
     return uiList
 }

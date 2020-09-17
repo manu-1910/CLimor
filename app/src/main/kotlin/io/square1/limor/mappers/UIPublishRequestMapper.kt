@@ -26,9 +26,7 @@ fun UIAudio.asDataEntity(): DataAudio {
         original_audio_url,
         duration,
         total_samples,
-        total_length,
-        sample_rate,
-        timestamps
+        total_length
     )
 }
 
@@ -68,9 +66,7 @@ fun UIAudio.asUIModel(): DataAudio {
         original_audio_url,
         duration,
         total_samples,
-        total_length,
-        sample_rate,
-        timestamps
+        total_length
     )
 }
 
