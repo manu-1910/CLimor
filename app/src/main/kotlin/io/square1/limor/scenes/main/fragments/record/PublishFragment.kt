@@ -20,6 +20,7 @@ import android.os.Build
 import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
 import android.os.Handler
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.Spannable
 import android.text.TextWatcher
@@ -129,6 +130,7 @@ class PublishFragment : BaseFragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val GALLERY_ACTIVITY_CODE = 200
     private val RESULT_CROP = 400
+    private val RESULT_CROP_API_29 = 553
     private var listTags = ArrayList<UITags>()
     private var listTagsString: HashtagArrayAdapter<Hashtag>? = null
 
@@ -170,6 +172,14 @@ class PublishFragment : BaseFragment() {
             etDraftCaption = rootView?.findViewById(R.id.etCaption)
 
             mediaPlayer = MediaPlayer()
+
+            bindViewModel()
+            configureMediaPlayerWithButtons()
+            updateDraft()
+            apiCallPublishPodcast()
+            getCityOfDevice()
+            deleteDraft()
+            apiCallHashTags()
         }
         app = context?.applicationContext as App
         return rootView
@@ -191,17 +201,11 @@ class PublishFragment : BaseFragment() {
         recordingItem = UIDraft()
         recordingItem = arguments!!["recordingItem"] as UIDraft
 
-        bindViewModel()
         configureToolbar()
         listeners()
-        configureMediaPlayerWithButtons()
         loadExistingData()
-        updateDraft()
-        apiCallPublishPodcast()
-        getCityOfDevice()
-        deleteDraft()
-        apiCallHashTags()
         multiCompleteText()
+
         listTagsString = HashtagArrayAdapter<Hashtag>(context!!)
         setupRecyclerTags(listTagsString!!)
     }
@@ -232,7 +236,6 @@ class PublishFragment : BaseFragment() {
 
             if (it.code == 0) { //Publish Ok
 
-                println ("response del apiCallPublishPodcast()")
                 callToDeleteDraft()
 
                 isPublished = true
@@ -404,23 +407,19 @@ class PublishFragment : BaseFragment() {
 
 
     private fun readyToPublish(){
-
         if(podcastHasImage){
             if(imageUploaded && audioUploaded){
                 imageUploaded = false
                 audioUploaded = false
-                println("---------------DOUBLE apiCallPublish 1()")
                 apiCallPublish()
             }
         }else{
             if(audioUploaded){
                 imageUploaded = false
                 audioUploaded = false
-                println("---------------DOUBLE apiCallPublish 2()")
                 apiCallPublish()
             }
         }
-
     }
 
 
@@ -475,8 +474,6 @@ class PublishFragment : BaseFragment() {
 
 
     private fun apiCallPublish(){
-
-        println("---------------DOUBLE Start of apiCallPublish()")
         pbPublish?.visibility = View.VISIBLE
 
         val uiPublishRequest = UIPublishRequest(
@@ -804,9 +801,11 @@ class PublishFragment : BaseFragment() {
                 )
                 cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 cropIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri) //For android API 29
             } else {
                 contentUri = Uri.fromFile(f)
             }
+
 
             cropIntent.setDataAndType(contentUri, "image/*")
             // set crop properties
