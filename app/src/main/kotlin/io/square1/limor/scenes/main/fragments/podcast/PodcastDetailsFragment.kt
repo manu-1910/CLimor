@@ -1318,84 +1318,66 @@ class PodcastDetailsFragment : BaseFragment() {
             viewModelGetPodcastComments = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(GetPodcastCommentsViewModel::class.java)
-        }
-        viewModelGetPodcastComments.limit = FEED_LIMIT_REQUEST
-        viewModelGetPodcastComments.offset = 0
+            viewModelGetPodcastComments.limit = FEED_LIMIT_REQUEST
+            viewModelGetPodcastComments.offset = 0
 
-        activity?.let { fragmentActivity ->
+
             viewModelGetCommentComments = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(GetCommentCommentsViewModel::class.java)
-        }
-        viewModelGetCommentComments.limit = FEED_LIMIT_REQUEST
-        viewModelGetCommentComments.offset = 0
+            viewModelGetCommentComments.limit = FEED_LIMIT_REQUEST
+            viewModelGetCommentComments.offset = 0
 
 
-        activity?.let { fragmentActivity ->
             viewModelCreatePodcastLike = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastLikeViewModel::class.java)
-        }
-        uiPodcast?.id?.let { viewModelCreatePodcastLike.idPodcast = it }
+            uiPodcast?.id?.let { viewModelCreatePodcastLike.idPodcast = it }
 
 
-        activity?.let { fragmentActivity ->
             viewModelDeletePodcastLike = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastLikeViewModel::class.java)
-        }
-        uiPodcast?.id?.let { viewModelDeletePodcastLike.idPodcast = it }
+            uiPodcast?.id?.let { viewModelDeletePodcastLike.idPodcast = it }
 
 
-        activity?.let { fragmentActivity ->
             viewModelCreatePodcastRecast = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastRecastViewModel::class.java)
-        }
-        uiPodcast?.id?.let { viewModelCreatePodcastRecast.idPodcast = it }
+            uiPodcast?.id?.let { viewModelCreatePodcastRecast.idPodcast = it }
 
 
-        activity?.let { fragmentActivity ->
             viewModelDeletePodcastRecast = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastRecastViewModel::class.java)
-        }
-        uiPodcast?.id?.let { viewModelDeletePodcastRecast.idPodcast = it }
+            uiPodcast?.id?.let { viewModelDeletePodcastRecast.idPodcast = it }
 
-        activity?.let { fragmentActivity ->
+
             viewModelCreateCommentLike = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreateCommentLikeViewModel::class.java)
-        }
 
-        activity?.let { fragmentActivity ->
+
             viewModelDeleteCommentLike = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(DeleteCommentLikeViewModel::class.java)
-        }
 
 
-
-        activity?.let { fragmentActivity ->
             viewModelCreateCommentComment = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreateCommentCommentViewModel::class.java)
-        }
 
-        activity?.let { fragmentActivity ->
+
             viewModelCreatePodcastComment = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastCommentViewModel::class.java)
-        }
 
 
-        activity?.let { fragmentActivity ->
             viewModelCreateCommentReport = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreateCommentReportViewModel::class.java)
-        }
 
-        activity?.let { fragmentActivity ->
+
             viewModelCreatePodcastReport = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastReportViewModel::class.java)
