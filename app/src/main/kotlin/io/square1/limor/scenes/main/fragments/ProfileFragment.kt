@@ -2,10 +2,9 @@ package io.square1.limor.scenes.main.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageButton
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -22,12 +21,16 @@ import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
+import io.square1.limor.scenes.main.fragments.profile.UserReportActivity
+import io.square1.limor.scenes.main.viewmodels.CreateUserReportViewModel
+import io.square1.limor.scenes.main.viewmodels.GetPodcastCommentsViewModel
 import io.square1.limor.scenes.main.viewmodels.LogoutViewModel
 import io.square1.limor.scenes.main.viewmodels.ProfileViewModel
 import io.square1.limor.scenes.splash.SplashActivity
 import io.square1.limor.scenes.utils.CommonsKt.Companion.formatSocialMediaQuantity
 import io.square1.limor.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_profile.*
+import kotlinx.android.synthetic.main.fragment_profile.ivVerifiedUser
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -42,6 +45,11 @@ class ProfileFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private lateinit var viewModelCreateUserReport: CreateUserReportViewModel
+    private val createUserReportDataTrigger = PublishSubject.create<Unit>()
+
+
 
     @Inject
     lateinit var sessionManager: SessionManager
@@ -88,6 +96,7 @@ class ProfileFragment : BaseFragment() {
         if(activity is UserProfileActivity) {
             isMyProfileMode = false
             uiUser = (activity as UserProfileActivity).uiUser
+            apiCallReportUser()
         } else {
             isMyProfileMode = true
             uiUser = sessionManager.getStoredUser()
@@ -109,6 +118,12 @@ class ProfileFragment : BaseFragment() {
             btnSettings?.visibility = View.GONE
             btnMore?.visibility = View.VISIBLE
             layFollows?.visibility = View.VISIBLE
+            uiUser?.followed?.let {
+                if(it)
+                    btnFollow.text = getString(R.string.unfollow)
+                else
+                    btnFollow.text = getString(R.string.follow)
+            }
         }
     }
 
@@ -139,7 +154,54 @@ class ProfileFragment : BaseFragment() {
         btnSettings?.onClick {
             toast("You clicked settings")
         }
+
+        btnMore?.onClick {
+            showPopupMoreMenu()
+        }
+
+        btnFollow?.onClick {
+
+        }
     }
+
+
+    private fun showPopupMoreMenu() {
+        val popup = PopupMenu(context, btnMore, Gravity.TOP)
+        val inflater: MenuInflater = popup.menuInflater
+        inflater.inflate(R.menu.menu_popup_profile, popup.menu)
+
+
+        //set menu item click listener here
+        popup.setOnMenuItemClickListener {menuItem ->
+            when(menuItem.itemId) {
+                R.id.menu_report -> onReportUserClicked()
+                R.id.menu_block -> onBlockUserClicked()
+            }
+            true
+        }
+        popup.show()
+    }
+
+    private fun onBlockUserClicked() {
+        toast("You clicked on block")
+    }
+
+    private fun onReportUserClicked() {
+        val reportUserIntent = Intent(context, UserReportActivity::class.java)
+        startActivityForResult(reportUserIntent, 0)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        data?.let {
+            val reason = data.getStringExtra("reason")
+            viewModelCreateUserReport.idUser = uiUser!!.id
+            viewModelCreateUserReport.reason = reason
+            createUserReportDataTrigger.onNext(Unit)
+        }
+    }
+
+
 
 
     private fun bindViewModel() {
@@ -151,6 +213,12 @@ class ProfileFragment : BaseFragment() {
             viewModelLogout = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(LogoutViewModel::class.java)
+
+            if(!isMyProfileMode) {
+                viewModelCreateUserReport = ViewModelProviders
+                    .of(fragmentActivity, viewModelFactory)
+                    .get(CreateUserReportViewModel::class.java)
+            }
         }
     }
 
@@ -166,6 +234,47 @@ class ProfileFragment : BaseFragment() {
             view?.hideKeyboard()
             uiUser = it.data.user
             printUserData()
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            //pbSignUp?.visibility = View.GONE
+            view?.hideKeyboard()
+            if (app!!.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (it.errorMessage!!.isNotEmpty()) {
+                    message.append(it.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                alert(message.toString()) {
+                    okButton { }
+                }.show()
+            } else {
+                alert(getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+        })
+    }
+
+
+    private fun apiCallReportUser() {
+        val output = viewModelCreateUserReport.transform(
+            CreateUserReportViewModel.Input(
+                createUserReportDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if(it.code == 0) {
+                toast(getString(R.string.user_reported_ok))
+            } else {
+                toast(getString(R.string.user_reported_error))
+            }
         })
 
         output.backgroundWorkingProgress.observe(this, Observer {

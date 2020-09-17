@@ -3,6 +3,6 @@ package io.square1.limor.remote.entities.requests
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NWCreateFriendRequest(
+data class NWUserIDRequest(
     var user_id: Int = 0
 )
