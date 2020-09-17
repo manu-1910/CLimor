@@ -29,8 +29,12 @@ class DataUserRepository @Inject constructor(private val remoteProvider: RemoteU
         return remoteProvider.feedShow(limit, offset)
     }
 
-    override fun createFriend(id : Int): Single<CreateFriendResponseEntity> {
+    override fun createFriend(id : Int): Single<CreateDeleteFriendResponseEntity> {
         return remoteProvider.createFriend(id)
+    }
+
+    override fun deleteFriend(id: Int): Single<CreateDeleteFriendResponseEntity> {
+        return remoteProvider.deleteFriend(id)
     }
 
     override fun createUserBlocked(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity> {

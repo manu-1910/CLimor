@@ -4,7 +4,7 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NWCreateFriendResponse(
+data class NWCreateDeleteFriendResponse(
     @Optional
     val code: Int = 0,
     @Optional

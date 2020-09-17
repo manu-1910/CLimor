@@ -5,13 +5,13 @@ import io.reactivex.Single
 import io.square1.limor.uimodels.*
 
 
-fun Single<CreateFriendResponseEntity>.asUIModel(): Single<UICreateFriendResponse> {
+fun Single<CreateDeleteFriendResponseEntity>.asUIModel(): Single<UICreateDeleteFriendResponse> {
     return this.map { it.asUIModel() }
 }
 
 
-fun CreateFriendResponseEntity.asUIModel(): UICreateFriendResponse {
-    return UICreateFriendResponse(
+fun CreateDeleteFriendResponseEntity.asUIModel(): UICreateDeleteFriendResponse {
+    return UICreateDeleteFriendResponse(
         code,
         message,
         data?.asUIModel()

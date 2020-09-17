@@ -1,6 +1,6 @@
 package entities.response
 
-data class CreateFriendResponseEntity(
+data class CreateDeleteFriendResponseEntity(
     val code : Int,
     val message: String,
     val data: FollowedEntity?

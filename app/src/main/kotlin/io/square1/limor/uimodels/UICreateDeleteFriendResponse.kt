@@ -1,6 +1,6 @@
 package io.square1.limor.uimodels
 
-data class UICreateFriendResponse(
+data class UICreateDeleteFriendResponse(
     var code: Int,
     var message: String,
     var data: UIFollowed?

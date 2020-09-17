@@ -13,7 +13,8 @@ interface RemoteUserProvider {
     fun logOut(dataLogoutRequest: DataLogoutRequest): Single<ErrorResponseEntity>
     fun feedShow(): Single<FeedResponseEntity>
     fun feedShow(limit : Int, offset: Int): Single<FeedResponseEntity>
-    fun createFriend(id: Int) : Single<CreateFriendResponseEntity>
+    fun createFriend(id: Int) : Single<CreateDeleteFriendResponseEntity>
+    fun deleteFriend(id: Int) : Single<CreateDeleteFriendResponseEntity>
     fun createBlockedUser(userIDRequest: DataUserIDRequest) : Single<CreateBlockedUserResponseEntity>
     fun deleteBlockedUser(userIDRequest: DataUserIDRequest) : Single<CreateBlockedUserResponseEntity>
     fun reportUser(id: Int, request: DataCreateUserReportRequestEntity) : Single<CreateReportResponseEntity>

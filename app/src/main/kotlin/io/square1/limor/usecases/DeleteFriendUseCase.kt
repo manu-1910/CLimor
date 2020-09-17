@@ -8,13 +8,13 @@ import io.square1.limor.uimodels.UICreateDeleteFriendResponse
 import repositories.user.UserRepository
 import javax.inject.Inject
 
-class CreateFriendUseCase @Inject constructor(
+class DeleteFriendUseCase @Inject constructor(
     private val userRepository: UserRepository,
     private val postExecutionThread: PostExecutionThread,
     private val jobExecutor: JobExecutor
 ) {
     fun execute(id : Int): Single<UICreateDeleteFriendResponse> {
-        return userRepository.createFriend(id)
+        return userRepository.deleteFriend(id)
             ?.asUIModel()
             ?.observeOn(postExecutionThread.getScheduler())
             ?.subscribeOn(jobExecutor.getScheduler())!!
