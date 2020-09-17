@@ -400,6 +400,7 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun hideEmptyScenario() {
+
         layEmptyScenario?.visibility = View.GONE
         rvComments?.visibility = View.VISIBLE
 //
@@ -424,23 +425,30 @@ class PodcastDetailsFragment : BaseFragment() {
         outputComment.response.observe(this, Observer {
             it.data?.comment?.let { newComment ->
                 addNewCommentToList(newComment)
+                hideEmptyScenario()
             }
+
             hideProgressCreateComment()
             deleteCurrentCommentAudioAndResetBar()
             hideProgressBar()
             hideCommentBar()
-            layNestedScroll.scrollTo(0, rvComments.bottom)
+            layNestedScroll.post {
+                layNestedScroll.scrollTo(0, rvComments.bottom)
+            }
         })
 
         outputPodcast.response.observe(this, Observer {
             it.data?.comment?.let { newComment ->
                 addNewCommentToList(newComment)
+                hideEmptyScenario()
             }
             hideProgressCreateComment()
             deleteCurrentCommentAudioAndResetBar()
             hideProgressBar()
             hideCommentBar()
-            layNestedScroll.scrollTo(0, rvComments.bottom)
+            layNestedScroll.post {
+                layNestedScroll.scrollTo(0, rvComments.bottom)
+            }
         })
 
         outputComment.errorMessage.observe(this, Observer {
