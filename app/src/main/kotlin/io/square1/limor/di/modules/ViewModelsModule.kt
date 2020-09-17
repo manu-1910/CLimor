@@ -150,4 +150,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(CreatePodcastReportViewModel::class)
     abstract fun bindCreatePodcastReportViewModel(createPodcastReportViewModel: CreatePodcastReportViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CreateUserReportViewModel::class)
+    abstract fun bindCreateUserReportViewModel(createUserReportViewModel: CreateUserReportViewModel): ViewModel
 }
