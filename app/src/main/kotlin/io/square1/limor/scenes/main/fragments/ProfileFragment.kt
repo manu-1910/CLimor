@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
 import com.facebook.HttpMethod
@@ -383,6 +384,7 @@ class ProfileFragment : BaseFragment() {
         context?.let {
             Glide.with(it)
                 .load(uiUser?.images?.medium_url)
+                .apply(RequestOptions.circleCropTransform())
                 .into(ivUser)
         }
         uiUser?.verified?.let {
