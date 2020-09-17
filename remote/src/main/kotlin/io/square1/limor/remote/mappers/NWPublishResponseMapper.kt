@@ -54,7 +54,7 @@ fun NWPodcast.asDataEntity(): PodcastEntity {
         title,
         updated_at,
         user.asDataEntity(),
-        getAllCategoriesEntities(categories)
+        category?.asDataEntity()
     )
 }
 

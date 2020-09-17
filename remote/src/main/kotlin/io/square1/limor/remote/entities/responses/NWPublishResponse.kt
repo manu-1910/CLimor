@@ -74,7 +74,7 @@ data class NWPodcast(
     @Optional
     val user: NWUser = NWUser(),
     @Optional
-    val categories: ArrayList<NWCategory> = ArrayList()
+    val category: NWCategory? = NWCategory()
 )
 
 
