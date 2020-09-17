@@ -3,7 +3,11 @@ package io.square1.limor.remote.mappers
 
 import entities.request.*
 import io.reactivex.Single
-import io.square1.limor.remote.entities.requests.*
+import io.square1.limor.remote.entities.requests.NWAudio
+import io.square1.limor.remote.entities.requests.NWMetaData
+import io.square1.limor.remote.entities.requests.NWPodcastRequest
+import io.square1.limor.remote.entities.requests.NWPublishRequest
+
 
 //***** FROM REMOTE TO DATA
 fun Single<NWPublishRequest>.asDataEntity(): Single<DataPublishRequest> {
@@ -30,9 +34,7 @@ fun NWAudio.asDataEntity(): DataAudio {
         original_audio_url,
         duration,
         total_samples,
-        total_length,
-        sample_rate,
-        timestamps
+        total_length
     )
 }
 
@@ -72,9 +74,7 @@ fun DataAudio.asRemoteEntity() : NWAudio {
         original_audio_url,
         duration,
         total_samples,
-        total_length,
-        sample_rate,
-        timestamps
+        total_length
     )
 }
 
@@ -84,6 +84,8 @@ fun DataMetaData.asRemoteEntity() : NWMetaData {
         caption,
         latitude,
         longitude,
-        image_url
+        image_url,
+        category_id
     )
 }
+

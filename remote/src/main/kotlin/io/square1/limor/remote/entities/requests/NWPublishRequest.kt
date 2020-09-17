@@ -20,11 +20,7 @@ data class NWAudio(
     var original_audio_url: String? = "",
     var duration: Int = 0,
     var total_samples: Double = 0.0,
-    var total_length: Double = 0.0,
-    @Optional
-    var sample_rate: Double = 0.0,
-    @Optional
-    var timestamps: ArrayList<String> = ArrayList()
+    var total_length: Double = 0.0
 )
 
 @Serializable
