@@ -18,7 +18,7 @@ data class NWLocationsResponse(
 @Serializable
 data class NWLocationsArray(
     @Optional
-    val locations: ArrayList<NWLocations> = ArrayList()
+    val locations: ArrayList<NWLocations>? = ArrayList()
 )
 
 @Serializable
