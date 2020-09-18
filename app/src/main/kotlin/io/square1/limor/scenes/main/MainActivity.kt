@@ -177,6 +177,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
     private fun showHomeToolbar(toolbarTitle: String) {
         btnClose?.visibility = View.GONE
+        toolbarProfile.visibility = View.GONE
         when (toolbarTitle) {
             getString(R.string.title_home) -> {
                 //viewModel.unreadCountCentres = 0
@@ -252,23 +253,8 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
                 bottom_navigation_view?.visibility = View.VISIBLE
             }
             getString(R.string.title_profile) -> {
-
-                tvToolbarTitle?.text = toolbarTitle
-
-                btnToolbarLeft?.visibility = View.GONE
-                btnToolbarLeft?.onClick { navController.popBackStack() }
-
-                /*badgeVisibility()
-                badgeViewingVisibility()
-                badgeLeadVisibility()
-                badgeCentreVisibility()*/
-
-                btnToolbarRight?.visibility = View.GONE
-                btnToolbarRight?.text = ""
-                btnToolbarRight?.onClick { toast("right button clicked") }
-
+                toolbarProfile.visibility = View.VISIBLE
                 bottom_navigation_view?.visibility = View.VISIBLE
-
             }
 
         }

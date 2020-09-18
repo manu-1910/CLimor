@@ -220,6 +220,7 @@ class EditFragment : WaveformFragment() {
         //AnalyticsManager.getInstance().recordEditEvent(AnalyticsManager.RecordingEditEventType.RECORDING_EDIT_COPY_PASTE);
         //addMarker(selectedMarker.getStartPos(), selectedMarker.getStartPos() + 2, true, null);    //TODO JJ esta es la original
         addMarker(selectedMarker.startPos, selectedMarker.startPos + 2, true, null) //TODO JJ
+
     }
 
     private fun deleteClick() {
@@ -665,11 +666,14 @@ class EditFragment : WaveformFragment() {
             recordingItem!!.filePath = editedWithMarkersFileName
             recordingItem!!.editedFilePath = editedWithMarkersFileName
         } else {
-            recordingItem!!.filePath = ""
-            recordingItem!!.editedFilePath = ""
+            //TODO JJ This should be commented
+            //recordingItem!!.filePath = ""
+            //recordingItem!!.editedFilePath = ""
         }
 
         recordingItem!!.timeStamps = timeStamps
+        recordingItem!!.length = player.duration.toLong() //si modifico el audio y le doy atrás, el record sigue mostrando la duración del audio original, no el editado
+        draftViewModel.durationOfLastAudio = player.duration.toLong()
         updateRecordingItem()
 
         findNavController().popBackStack()

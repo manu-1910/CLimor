@@ -1,7 +1,9 @@
 package io.square1.limor.remote.providers
 
 
+import entities.request.DataCreateUserReportRequestEntity
 import entities.request.DataLogoutRequest
+import entities.request.DataUserIDRequest
 import entities.response.*
 import io.reactivex.Single
 import io.square1.limor.remote.mappers.asDataEntity
@@ -31,8 +33,27 @@ class RemoteUserProviderImp @Inject constructor(private val provider: UserServic
         return provider.feedShow(limit, offset).asDataEntity()
     }
 
-    override fun createFriend(id : Int): Single<CreateFriendResponseEntity> {
+    override fun createFriend(id : Int): Single<CreateDeleteFriendResponseEntity> {
         return provider.createFriend(id).asDataEntity()
+    }
+
+    override fun deleteFriend(id : Int): Single<CreateDeleteFriendResponseEntity> {
+        return provider.deleteFriend(id).asDataEntity()
+    }
+
+    override fun createBlockedUser(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity> {
+        return provider.createBlockedUser(userIDRequest.asRemoteEntity()).asDataEntity()
+    }
+
+    override fun deleteBlockedUser(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity> {
+        return provider.deleteBlockedUser(userIDRequest.asRemoteEntity()).asDataEntity()
+    }
+
+    override fun reportUser(
+        id: Int,
+        request: DataCreateUserReportRequestEntity
+    ): Single<CreateReportResponseEntity> {
+        return provider.reportUser(id, request.asRemoteEntity()).asDataEntity()
     }
 
     override fun getNotifications(limit: Int, offset: Int): Single<NotificationsResponseEntity> {

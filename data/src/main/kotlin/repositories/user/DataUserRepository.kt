@@ -1,8 +1,9 @@
 package repositories.user
 
 
-import entities.request.DataCreateFriendRequest
+import entities.request.DataCreateUserReportRequestEntity
 import entities.request.DataLogoutRequest
+import entities.request.DataUserIDRequest
 import entities.response.*
 import io.reactivex.Single
 import providers.remote.RemoteUserProvider
@@ -28,8 +29,27 @@ class DataUserRepository @Inject constructor(private val remoteProvider: RemoteU
         return remoteProvider.feedShow(limit, offset)
     }
 
-    override fun createFriend(id : Int): Single<CreateFriendResponseEntity> {
+    override fun createFriend(id : Int): Single<CreateDeleteFriendResponseEntity> {
         return remoteProvider.createFriend(id)
+    }
+
+    override fun deleteFriend(id: Int): Single<CreateDeleteFriendResponseEntity> {
+        return remoteProvider.deleteFriend(id)
+    }
+
+    override fun createUserBlocked(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity> {
+        return remoteProvider.createBlockedUser(userIDRequest)
+    }
+
+    override fun deleteUserBlocked(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity> {
+        return remoteProvider.deleteBlockedUser(userIDRequest)
+    }
+
+    override fun reportUser(
+        id: Int,
+        request: DataCreateUserReportRequestEntity
+    ): Single<CreateReportResponseEntity> {
+        return remoteProvider.reportUser(id, request)
     }
 
     override fun getNotifications(limit: Int, offset: Int): Single<NotificationsResponseEntity> {

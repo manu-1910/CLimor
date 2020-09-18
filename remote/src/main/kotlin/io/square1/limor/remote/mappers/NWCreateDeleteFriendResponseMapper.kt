@@ -1,19 +1,19 @@
 package io.square1.limor.remote.mappers
 
-import entities.response.CreateFriendResponseEntity
+import entities.response.CreateDeleteFriendResponseEntity
 import entities.response.FollowedEntity
 import io.reactivex.Single
-import io.square1.limor.remote.entities.responses.NWCreateFriendResponse
+import io.square1.limor.remote.entities.responses.NWCreateDeleteFriendResponse
 import io.square1.limor.remote.entities.responses.NWFollowed
 
 
-fun Single<NWCreateFriendResponse>.asDataEntity(): Single<CreateFriendResponseEntity> {
+fun Single<NWCreateDeleteFriendResponse>.asDataEntity(): Single<CreateDeleteFriendResponseEntity> {
     return this.map { it.asDataEntity() }
 }
 
 
-fun NWCreateFriendResponse.asDataEntity(): CreateFriendResponseEntity {
-    return CreateFriendResponseEntity(
+fun NWCreateDeleteFriendResponse.asDataEntity(): CreateDeleteFriendResponseEntity {
+    return CreateDeleteFriendResponseEntity(
         code,
         message,
         data?.asDataEntity()
@@ -21,8 +21,8 @@ fun NWCreateFriendResponse.asDataEntity(): CreateFriendResponseEntity {
 }
 
 
-fun CreateFriendResponseEntity.asRemoteEntity(): NWCreateFriendResponse {
-    return NWCreateFriendResponse(
+fun CreateDeleteFriendResponseEntity.asRemoteEntity(): NWCreateDeleteFriendResponse {
+    return NWCreateDeleteFriendResponse(
         code,
         message,
         data?.asRemoteEntity()

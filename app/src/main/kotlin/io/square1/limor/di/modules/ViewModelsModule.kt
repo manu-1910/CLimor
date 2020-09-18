@@ -88,6 +88,11 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(DeleteFriendViewModel::class)
+    abstract fun bindDeleteFriendViewModel(deleteFriendViewModel: DeleteFriendViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(CreatePodcastLikeViewModel::class)
     abstract fun bindCreatePodcastLikeViewModel(createPodcastLikeViewModel: CreatePodcastLikeViewModel): ViewModel
 
@@ -140,6 +145,21 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(TagsViewModel::class)
     abstract fun bindTagsViewModel(tagsViewModel: TagsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CreateCommentReportViewModel::class)
+    abstract fun bindCreateCommentReportViewModel(createCommentReportViewModel: CreateCommentReportViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CreatePodcastReportViewModel::class)
+    abstract fun bindCreatePodcastReportViewModel(createPodcastReportViewModel: CreatePodcastReportViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CreateUserReportViewModel::class)
+    abstract fun bindCreateUserReportViewModel(createUserReportViewModel: CreateUserReportViewModel): ViewModel
 
     @Binds
     @IntoMap

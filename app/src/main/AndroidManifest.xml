@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.STORAGE"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -68,12 +69,23 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
+            android:name="io.square1.limor.scenes.main.fragments.profile.UserProfileActivity"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
             android:name="io.square1.limor.scenes.main.fragments.podcast.PodcastsByTagActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name="io.square1.limor.scenes.main.fragments.player.AudioPlayerActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
+            android:name="io.square1.limor.scenes.main.fragments.profile.UserReportActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
 
@@ -90,7 +102,7 @@
 
         <provider
                 android:name="androidx.core.content.FileProvider"
-                android:authorities="${applicationId}.provider"
+                android:authorities="io.square1.limor.app.provider"
                 android:exported="false"
                 android:grantUriPermissions="true">
             <meta-data

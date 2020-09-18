@@ -10,7 +10,7 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseViewModel
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import io.square1.limor.uimodels.UICreateFriendResponse
+import io.square1.limor.uimodels.UICreateDeleteFriendResponse
 import io.square1.limor.uimodels.UIErrorData
 import io.square1.limor.uimodels.UIErrorResponse
 import io.square1.limor.usecases.CreateFriendUseCase
@@ -27,7 +27,7 @@ class CreateFriendViewModel @Inject constructor(private val createFriendUseCase:
     )
 
     data class Output(
-        val response: LiveData<UICreateFriendResponse>,
+        val response: LiveData<UICreateDeleteFriendResponse>,
         val backgroundWorkingProgress: LiveData<Boolean>,
         val errorMessage: SingleLiveEvent<UIErrorResponse>
     )
@@ -35,7 +35,7 @@ class CreateFriendViewModel @Inject constructor(private val createFriendUseCase:
     override fun transform(input: Input): Output {
         val errorTracker = SingleLiveEvent<UIErrorResponse>()
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
-        val response = MutableLiveData<UICreateFriendResponse>()
+        val response = MutableLiveData<UICreateDeleteFriendResponse>()
 
         input.createFriendTrigger.subscribe({
             createFriendUseCase.execute(idNewFriend).subscribe({

@@ -2,8 +2,9 @@ package io.square1.limor.remote.services.user
 
 
 import io.reactivex.Single
-import io.square1.limor.remote.entities.requests.NWCreateFriendRequest
+import io.square1.limor.remote.entities.requests.NWCreateUserReportRequest
 import io.square1.limor.remote.entities.requests.NWLogoutRequest
+import io.square1.limor.remote.entities.requests.NWUserIDRequest
 import io.square1.limor.remote.entities.responses.*
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 
 @ImplicitReflectionSerializer
-class UserServiceImp @Inject constructor(private val serviceConfig: RemoteServiceConfig) :
+class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
     RemoteService<UserService>(UserService::class.java, serviceConfig) {
 
     fun userMe(): Single<NWSignUpResponse> {
@@ -73,19 +74,90 @@ class UserServiceImp @Inject constructor(private val serviceConfig: RemoteServic
             }
     }
 
-    fun createFriend(id: Int): Single<NWCreateFriendResponse> {
+    fun createFriend(id: Int): Single<NWCreateDeleteFriendResponse> {
         return service.createFriend(id)
-            .map { response -> response.parseSuccessResponse(NWCreateFriendResponse.serializer()) }
+            .map { response -> response.parseSuccessResponse(NWCreateDeleteFriendResponse.serializer()) }
             .doOnSuccess { response ->
                 run {
                     println("SUCCESS: $response")
-                    println("Hemos seguido correctamente al user? ${response.data?.followed}")
+//                    println("Hemos seguido correctamente al user? ${response.data?.followed}")
                 }
             }
             .doOnError { error ->
                 println("ERROR: $error")
             }
     }
+
+    fun deleteFriend(id: Int): Single<NWCreateDeleteFriendResponse> {
+        return service.deleteFriend(id)
+            .map { response -> response.parseSuccessResponse(NWCreateDeleteFriendResponse.serializer()) }
+            .doOnSuccess { response ->
+                run {
+                    println("SUCCESS: $response")
+//                    println("Hemos seguido correctamente al user? ${response.data?.followed}")
+                }
+            }
+            .doOnError { error ->
+                println("ERROR: $error")
+            }
+    }
+
+
+
+
+
+    fun createBlockedUser(userIDRequest: NWUserIDRequest): Single<NWCreateBlockedUserResponse> {
+        val requestString = Json.nonstrict.stringify(NWUserIDRequest.serializer(), userIDRequest)
+        val request = RequestBody.create(
+            MediaType.parse("application/json"),
+            requestString
+        )
+        return service.createBlockedUser(request)
+            .map { response ->
+                response.parseSuccessResponse(NWCreateBlockedUserResponse.serializer())
+            }
+            .doOnSuccess { success ->
+                println("SUCCESS: $success")
+            }
+            .doOnError { error ->
+                println("ERROR: $error")
+            }
+    }
+
+    fun deleteBlockedUser(userIDRequest: NWUserIDRequest): Single<NWCreateBlockedUserResponse> {
+        return service.deleteBlockedUser(
+            RequestBody.create(
+                MediaType.parse("application/json"),
+                Json.nonstrict.stringify(NWUserIDRequest.serializer(), userIDRequest)
+            )
+        )
+            .map { response -> response.parseSuccessResponse(NWCreateBlockedUserResponse.serializer()) }
+            .doOnSuccess { success -> println("SUCCESS: $success") }
+            .doOnError { error ->
+                println("ERROR: $error")
+            }
+    }
+
+
+
+    fun reportUser(id:Int, createReportRequest: NWCreateUserReportRequest): Single<NWCreateReportResponse> {
+        val requestString = Json.nonstrict.stringify(NWCreateUserReportRequest.serializer(), createReportRequest)
+        val request = RequestBody.create(
+            MediaType.parse("application/json"),
+            requestString
+        )
+        return service.reportUser(id, request)
+            .map { response ->
+                response.parseSuccessResponse(NWCreateReportResponse.serializer())
+            }
+            .doOnSuccess { success ->
+                println("SUCCESS: $success")
+            }
+            .doOnError { error ->
+                println("ERROR: $error")
+            }
+    }
+
 
     fun getNotifications(limit: Int?, offset: Int?): Single<NWNotificationsResponse> {
         return service.getNotifications(limit, offset)

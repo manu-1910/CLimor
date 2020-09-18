@@ -1,4 +1,4 @@
-package io.square1.limor.scenes.main.adapters
+package io.square1.limor.scenes.main.fragments.record.adapters
 
 import android.content.Context
 import android.media.AudioAttributes
@@ -12,24 +12,21 @@ import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import io.square1.limor.R
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIDraft
-import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk23.listeners.onClick
-import java.io.File
 import java.util.concurrent.TimeUnit
 
 
 class DraftAdapter(
     var context: Context,
     list: ArrayList<UIDraft>,
-    private val listener: DraftAdapter.OnItemClickListener,
-    private val deleteListener: DraftAdapter.OnDeleteItemClickListener,
-    private val duplicateListener: DraftAdapter.OnDuplicateItemClickListener,
-    private val editListener: DraftAdapter.OnEditItemClickListener,
+    private val listener: OnItemClickListener,
+    private val deleteListener: OnDeleteItemClickListener,
+    private val duplicateListener: OnDuplicateItemClickListener,
+    private val editListener: OnEditItemClickListener,
     //private val continueRecordingListener: DraftAdapter.OnContinueRecordingItemClickListener,
     private val navController: NavController
 ) : RecyclerView.Adapter<DraftAdapter.ViewHolder>() {
@@ -38,7 +35,7 @@ class DraftAdapter(
     var seekHandler = Handler()
     var run: Runnable? = null
     var playerPosition: Int = -1
-
+    lateinit var mediaPlayer: MediaPlayer
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = inflator.inflate(R.layout.fragment_drafts_item, parent, false)
@@ -50,7 +47,7 @@ class DraftAdapter(
         val modelList = list[position]
 
         // Initializing MediaPlayer
-        val mediaPlayer = MediaPlayer()
+        mediaPlayer = MediaPlayer()
         //mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
         mediaPlayer.setAudioAttributes(
             AudioAttributes.Builder()
@@ -61,7 +58,7 @@ class DraftAdapter(
             mediaPlayer.setDataSource(modelList.filePath)
             mediaPlayer.prepare() // might take long for buffering.
         } catch (e: Exception) {
-            e.printStackTrace()
+            //e.printStackTrace()
         }
 
         if(playerPosition == position){
@@ -202,11 +199,13 @@ class DraftAdapter(
                 when (item.itemId) {
                     R.id.menu_duplicate_cast -> {
                         //Toast.makeText(context, "duplicate cast", Toast.LENGTH_SHORT).show()
+                        stopMediaPlayer()
                         duplicateListener.onDuplicateItemClick(position)
                         true
                     }
                     R.id.menu_delete_cast -> {
                         //Toast.makeText(context, "delete cast", Toast.LENGTH_SHORT).show()
+                        stopMediaPlayer()
                         deleteListener.onDeleteItemClick(position)
                         true
                     }
@@ -229,6 +228,8 @@ class DraftAdapter(
             //val bundle = bundleOf("recordingItem" to modelList)
             //navController.navigate(R.id.action_record_drafts_to_record_edit, bundle)
 
+            stopMediaPlayer()
+
             modelList.length = mediaPlayer.duration.toLong()
             editListener.onEditItemClick(modelList)
 
@@ -250,6 +251,16 @@ class DraftAdapter(
 
     override fun getItemCount(): Int {
         return list.size
+    }
+
+    private fun stopMediaPlayer(){
+        try {
+            if(mediaPlayer.isPlaying){
+                mediaPlayer.stop()
+            }
+        } catch (e: Exception) {
+            println("Exception stopping media player inside DraftAdapter")
+        }
     }
 
 

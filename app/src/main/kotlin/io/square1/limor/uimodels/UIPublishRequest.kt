@@ -17,9 +17,7 @@ data class UIAudio(
     var original_audio_url: String?,
     var duration: Int,
     var total_samples: Double,
-    var total_length: Double,
-    var sample_rate: Double,
-    var timestamps: ArrayList<String>
+    var total_length: Double
 ): Serializable
 
 data class UIMetaData(
@@ -29,4 +27,4 @@ data class UIMetaData(
     var longitude: Double,
     var image_url: String,
     var category_id: Int
-)
+): Serializable

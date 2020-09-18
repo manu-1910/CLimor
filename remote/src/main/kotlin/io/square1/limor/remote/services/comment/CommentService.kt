@@ -9,6 +9,7 @@ import retrofit2.http.*
 
 const val COMMENT_LIKE_PATH = "/api/v1/comments/{id}/like"
 const val COMMENT_COMMENT_PATH = "/api/v1/comments/{id}/comments"
+const val REPORT_COMMENT_PATH = "/api/v1/comments/{id}/reports"
 
 
 interface CommentService {
@@ -34,6 +35,11 @@ interface CommentService {
     fun createComment(
         @Path("id") idComment: Int,
         @Body request: RequestBody
+    ): Single<ResponseBody>
+
+    @POST(REPORT_COMMENT_PATH)
+    fun reportComment(
+        @Path("id") idComment: Int
     ): Single<ResponseBody>
 
 }

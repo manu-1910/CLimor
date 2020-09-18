@@ -21,15 +21,15 @@ import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
-import io.square1.limor.scenes.main.adapters.DraftAdapter
+import io.square1.limor.scenes.main.fragments.record.adapters.DraftAdapter
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.copyFile
 import io.square1.limor.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import io.square1.limor.uimodels.UIDraft
+import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.toast
-import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -187,7 +187,7 @@ class DraftsFragment : BaseFragment() {
                         draftsLocalList.removeAt(position)
 
                         rvDrafts?.adapter?.notifyItemRemoved(position)
-                        rvDrafts?.adapter?.notifyItemRangeChanged(0, draftsLocalList.size)
+                        //rvDrafts?.adapter?.notifyItemRangeChanged(0, draftsLocalList.size)
 
 
                     }
@@ -222,18 +222,28 @@ class DraftsFragment : BaseFragment() {
                     override fun onEditItemClick(item: UIDraft) {
                         pbDrafts?.visibility = View.VISIBLE
 
+//                        //Go to record fragment to continue recording
+//                        draftViewModel.uiDraft = item
+//                        draftViewModel.filesArray.add(File(item.filePath))
+//                        draftViewModel.continueRecording = true
+//                        draftViewModel.durationOfLastAudio = item.length!!
+//
+//                        try {
+//                            //navController.navigate(R.id.action_record_drafts_to_record_fragment)
+//
+//                            findNavController().popBackStack()
+//                        } catch (e: Exception) {
+//                            e.printStackTrace()
+//                        }
+
                         //Go to record fragment to continue recording
                         draftViewModel.uiDraft = item
                         draftViewModel.filesArray.add(File(item.filePath))
                         draftViewModel.continueRecording = true
-                        draftViewModel.durationOfLastAudio = item.length!!
+                        //draftViewModel.durationOfLastAudio = item.length!!
 
-                        try {
-                            //navController.navigate(R.id.action_record_drafts_to_record_fragment)
-                            findNavController().popBackStack()
-                        } catch (e: Exception) {
-                        e.printStackTrace()
-                        }
+                        val bundle = bundleOf("recordingItem" to draftViewModel.uiDraft)
+                        findNavController().navigate(R.id.action_record_drafts_to_record_edit, bundle)
                     }
                 }
 //                ,
@@ -385,6 +395,7 @@ class DraftsFragment : BaseFragment() {
         pbDrafts?.visibility = View.VISIBLE
         getDraftsTrigger.onNext(Unit)
     }
+
 
 
 

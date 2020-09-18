@@ -7,6 +7,7 @@ import io.square1.limor.scenes.utils.Commons
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
+import java.lang.Exception
 import java.util.*
 
 
@@ -15,9 +16,11 @@ class SimpleRecorder(private val folderPath: String) {
     private var recorder = MediaRecorder()
     private var player = MediaPlayer()
     private var lastFileName = ""
-    var isPlaying = false
-    var isReleased = true
-    var isPaused = !isPlaying && !isReleased
+    var isPlayerPlaying = false
+    var isPlayerReleased = true
+    var isPlayerPaused = !isPlayerPlaying && !isPlayerReleased
+
+    var isRecorderRecording = false
 
     fun startRecording() {
         Timber.d("Inside startRecording")
@@ -38,18 +41,22 @@ class SimpleRecorder(private val folderPath: String) {
 
         Timber.d("Inside startRecording just before start")
         recorder.start()
+        isRecorderRecording = true
     }
 
     fun stopRecording(): Pair<String, Int> {
-        recorder.stop()
-        recorder.release()
+        var duration = 0
+        if(isRecorderRecording) {
+            recorder.stop()
+            recorder.release()
 
-        val mmr = MediaMetadataRetriever()
-        mmr.setDataSource(lastFileName)
-        val durationStr =
-            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-        val duration = durationStr.toInt() / 1000
+            val mmr = MediaMetadataRetriever()
+            mmr.setDataSource(lastFileName)
+            val durationStr =
+                mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+            duration = durationStr.toInt() / 1000
 
+        }
         return Pair(lastFileName, duration)
     }
 
@@ -61,14 +68,14 @@ class SimpleRecorder(private val folderPath: String) {
                 setDataSource(fileName)
                 prepare()
                 start()
-                this@SimpleRecorder.isReleased = false
-                this@SimpleRecorder.isPlaying = true
+                this@SimpleRecorder.isPlayerReleased = false
+                this@SimpleRecorder.isPlayerPlaying = true
             } catch (e: IOException) {
                 Timber.e("prepare() failed")
             }
         }
         player.setOnCompletionListener {
-            isPlaying = false
+            isPlayerPlaying = false
             completionListener.onCompletion(it)
         }
     }
@@ -78,20 +85,24 @@ class SimpleRecorder(private val folderPath: String) {
     }
 
     fun resumePlaying() {
-        isPlaying = true
+        isPlayerPlaying = true
         player.start()
     }
 
     fun pausePlaying() {
-        isPlaying = false
+        isPlayerPlaying = false
         player.pause()
     }
 
     fun stopPlaying() {
-
-        player.release()
-        isReleased = true
-        isPlaying = false
+        try {
+            player.stop()
+        } catch (e:Exception){}
+        try {
+            player.release()
+        } catch (e:Exception){}
+        isPlayerReleased = true
+        isPlayerPlaying = false
     }
 
     fun getMaxAmplitude() : Int {

@@ -4,8 +4,7 @@ import io.reactivex.Single
 import io.square1.limor.common.executors.PostExecutionThread
 import io.square1.limor.mappers.asUIModel
 import io.square1.limor.remote.executors.JobExecutor
-import io.square1.limor.uimodels.UICreateFriendResponse
-import io.square1.limor.uimodels.UIFeedResponse
+import io.square1.limor.uimodels.UICreateDeleteFriendResponse
 import repositories.user.UserRepository
 import javax.inject.Inject
 
@@ -14,7 +13,7 @@ class CreateFriendUseCase @Inject constructor(
     private val postExecutionThread: PostExecutionThread,
     private val jobExecutor: JobExecutor
 ) {
-    fun execute(id : Int): Single<UICreateFriendResponse> {
+    fun execute(id : Int): Single<UICreateDeleteFriendResponse> {
         return userRepository.createFriend(id)
             ?.asUIModel()
             ?.observeOn(postExecutionThread.getScheduler())

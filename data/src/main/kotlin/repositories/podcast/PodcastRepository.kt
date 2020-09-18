@@ -14,4 +14,5 @@ interface PodcastRepository {
     fun deleteRecast(idPodcast: Int): Single<DeleteResponseEntity>?
     fun createComment(id: Int, request: DataCreateCommentRequest): Single<CreateCommentResponseEntity>?
     fun getComments(id: Int, limit: Int, offset: Int): Single<GetCommentsResponseEntity>?
+    fun reportPodcast(id: Int): Single<CreateReportResponseEntity>?
 }

@@ -1,360 +1,380 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/brandSecondary400">
 
-<androidx.core.widget.NestedScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
-
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <LinearLayout
-            android:id="@+id/lytPublishProgress"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/brandSecondary600withTransparency"
-            android:orientation="vertical"
-            android:visibility="gone">
-            <Spinner
-                android:id="@+id/pbPublish"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_gravity="center" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/lytPublishForm"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <include
-                android:id="@+id/toolbar"
-                layout="@layout/toolbar_with_back_arrow_icon"/>
-
-            <RelativeLayout
-                android:id="@+id/lytImageAndTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="visible">
-
-                <RelativeLayout
-                    android:id="@+id/lytImage"
-                    android:layout_margin="@dimen/marginMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:id="@+id/ivDraft"
-                        android:layout_width="119dp"
-                        android:layout_height="119dp"
-                        android:src="@drawable/publish_placeholder"
-                        android:scaleType="fitXY"/>
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/lytImagePlaceHolder"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/marginMedium"
-                    android:visibility="visible">
-
-                    <ImageView
-                        android:id="@+id/ivDraftImage"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/add"
-                        android:layout_centerInParent="true"
-                        android:translationZ="4dp"/>
-
-                    <ImageView
-                        android:id="@+id/placeHolder"
-                        android:layout_centerInParent="true"
-                        android:layout_width="119dp"
-                        android:layout_height="119dp"
-                        android:src="@drawable/publish_placeholder"/>
-                </RelativeLayout>
-
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/etTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="151dp"
-                    android:layout_marginTop="@dimen/marginMedium"
-                    android:layout_marginBottom="@dimen/marginMedium"
-                    android:layout_marginEnd="@dimen/marginMedium"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:hint="@string/hint_title"
-                    android:textColorHint="@color/brandSecondary100"
-                    app:backgroundTint="@color/transparent"/>
-            </RelativeLayout>
-
-            <View
-                android:layout_marginTop="@dimen/marginSmall"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/brandSecondary300"/>
+            android:layout_height="wrap_content">
 
             <LinearLayout
-                android:id="@+id/lytForm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
-                    android:id="@+id/etCaption"
+                <LinearLayout
+                    android:id="@+id/lytPublishForm"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/Widget.AppCompat.EditText"
-                    android:layout_gravity="top"
-                    android:layout_margin="@dimen/marginMedium"
-                    android:fontFamily="@font/roboto"
-                    android:foregroundGravity="top"
-                    android:gravity="top"
-                    android:hint="@string/hint_caption"
-                    android:lines="2"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/brandSecondary100"
-                    android:textSize="@dimen/textSizeNormal"
-                    app:hyperlinkColor="@color/brandPrimary500"
-                    app:backgroundTint="@color/transparent"
-                    app:socialFlags="hashtag" />
-
-                <View
-                    android:layout_marginTop="@dimen/marginSmall"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/brandSecondary300"/>
-
-                <RelativeLayout
-                    android:id="@+id/lytTvCategory"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/marginMedium"
+                    android:orientation="vertical"
                     android:visibility="visible">
 
-                    <TextView
-                        android:id="@+id/tvCategory"
+                    <include
+                        android:id="@+id/toolbar"
+                        layout="@layout/toolbar_with_back_arrow_icon"/>
+
+                    <RelativeLayout
+                        android:id="@+id/lytImageAndTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:fontFamily="@font/roboto"
-                        android:text="@string/title_category"
-                        android:layout_alignParentStart="true"/>
+                        android:visibility="visible">
 
-                    <TextView
-                        android:id="@+id/tvSelectedCategory"
+                        <RelativeLayout
+                            android:id="@+id/lytImage"
+                            android:layout_margin="@dimen/marginMedium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:id="@+id/ivDraft"
+                                android:layout_width="66dp"
+                                android:layout_height="66dp"
+                                android:src="@drawable/publish_placeholder"
+                                android:scaleType="fitXY"/>
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/lytImagePlaceHolder"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/marginMedium"
+                            android:visibility="visible">
+
+                            <ImageView
+                                android:id="@+id/ivDraftImage"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/add"
+                                android:layout_centerInParent="true"
+                                android:translationZ="4dp"/>
+
+                            <ImageView
+                                android:id="@+id/placeHolder"
+                                android:layout_width="66dp"
+                                android:layout_height="66dp"
+                                android:layout_centerInParent="true"
+                                android:src="@drawable/publish_placeholder" />
+                        </RelativeLayout>
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/etTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="98dp"
+                            android:layout_marginTop="@dimen/marginMedium"
+                            android:layout_marginBottom="@dimen/marginMedium"
+                            android:layout_marginEnd="@dimen/marginMedium"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/textSizeNormal"
+                            android:fontFamily="@font/roboto"
+                            android:hint="@string/hint_title"
+                            android:textColorHint="@color/brandSecondary100"
+                            app:backgroundTint="@color/transparent"/>
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/brandSecondary300"/>
+
+                    <LinearLayout
+                        android:id="@+id/lytForm"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/chevron_right"
-                        android:textColor="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:fontFamily="@font/roboto"
-                        android:gravity="end"
-                        android:layout_toEndOf="@id/tvCategory"
-                        android:layout_alignParentEnd="true"/>
+                        android:orientation="vertical">
 
-                </RelativeLayout>
+                        <com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
+                            android:id="@+id/etCaption"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.AppCompat.EditText"
+                            android:layout_gravity="top"
+                            android:layout_margin="@dimen/marginMedium"
+                            android:fontFamily="@font/roboto"
+                            android:foregroundGravity="top"
+                            android:gravity="top"
+                            android:hint="@string/hint_caption"
+                            android:lines="3"
+                            android:textColor="@color/white"
+                            android:textColorHint="@color/brandSecondary100"
+                            android:textSize="@dimen/textSizeNormal"
+                            app:hyperlinkColor="@color/brandPrimary500"
+                            app:backgroundTint="@color/transparent"
+                            app:socialFlags="hashtag" />
+
+                        <View
+                            android:layout_marginTop="@dimen/marginSmall"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/brandSecondary300"/>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvTags"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            tools:listitem="@layout/tag_item"
+                            android:visibility="gone"/>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/brandSecondary300"/>
 
 
-                <View
-                    android:layout_marginTop="@dimen/marginSmall"
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lytWithoutTagsRecycler"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/brandSecondary300"/>
-
-                <RelativeLayout
-                    android:id="@+id/lytTvLocation"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/marginMedium"
+                    android:orientation="vertical"
                     android:visibility="visible">
 
-                    <TextView
-                        android:id="@+id/tvLocation"
+                    <RelativeLayout
+                        android:id="@+id/lytTvCategory"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:fontFamily="@font/roboto"
-                        android:text="@string/title_location"
-                        android:layout_alignParentStart="true"/>
+                        android:layout_margin="@dimen/marginMedium"
+                        android:visibility="visible">
 
-                    <TextView
-                        android:id="@+id/tvSelectedLocation"
+                        <TextView
+                            android:id="@+id/tvCategory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/textSizeNormal"
+                            android:fontFamily="@font/roboto"
+                            android:text="@string/title_category"
+                            android:layout_alignParentStart="true"/>
+
+                        <TextView
+                            android:id="@+id/tvSelectedCategory"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:drawableEnd="@drawable/chevron_right"
+                            android:textColor="@color/brandSecondary100"
+                            android:textSize="@dimen/textSizeNormal"
+                            android:fontFamily="@font/roboto"
+                            android:gravity="end"
+                            android:layout_toEndOf="@id/tvCategory"
+                            android:layout_alignParentEnd="true"/>
+
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/brandSecondary300"/>
+
+                    <RelativeLayout
+                        android:id="@+id/lytTvLocation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/marginMedium"
+                        android:visibility="visible">
+
+                        <TextView
+                            android:id="@+id/tvLocation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/textSizeNormal"
+                            android:fontFamily="@font/roboto"
+                            android:text="@string/title_location"
+                            android:layout_alignParentStart="true"/>
+
+                        <TextView
+                            android:id="@+id/tvSelectedLocation"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:drawableEnd="@drawable/chevron_right"
+                            android:textColor="@color/brandSecondary100"
+                            android:textSize="@dimen/textSizeNormal"
+                            android:fontFamily="@font/roboto"
+                            android:gravity="end"
+                            android:layout_toEndOf="@id/tvLocation"
+                            android:layout_alignParentEnd="true"/>
+
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/brandSecondary300"/>
+
+
+
+                    <LinearLayout
+                        android:id="@+id/lytPlayer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/chevron_right"
-                        android:textColor="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:fontFamily="@font/roboto"
-                        android:gravity="end"
-                        android:layout_toEndOf="@id/tvLocation"
-                        android:layout_alignParentEnd="true"/>
+                        android:layout_marginTop="@dimen/marginAlmostLarge"
+                        android:orientation="vertical"
+                        android:visibility="visible">
 
-                </RelativeLayout>
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:background="@color/brandSecondary400"
+                            android:layout_marginStart="@dimen/marginMedium"
+                            android:layout_marginEnd="@dimen/marginMedium">
+
+                            <SeekBar
+                                android:id="@+id/sbProgress"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:maxHeight="4dp"
+                                android:minHeight="4dp"
+                                android:paddingTop="8dip"
+                                android:progress="50"
+                                android:progressDrawable="@drawable/custom_seekbar_progress" />
+
+                            <TextView
+                                android:id="@+id/tvTimePass"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/sbProgress"
+                                android:textSize="@dimen/textSizeVerySmall"
+                                android:textColor="@color/brandSecondary100"
+                                android:fontFamily="@font/roboto"
+                                android:layout_alignParentStart="true"
+                                android:layout_marginStart="@dimen/marginSmall"
+                                android:layout_marginTop="@dimen/marginTiny"
+                                android:gravity="left"
+                                android:text="00:00"/>
+
+                            <TextView
+                                android:id="@+id/tvDuration"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/sbProgress"
+                                android:textSize="@dimen/textSizeVerySmall"
+                                android:textColor="@color/brandSecondary100"
+                                android:fontFamily="@font/roboto"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginEnd="@dimen/marginSmall"
+                                android:layout_marginTop="@dimen/marginTiny"
+                                android:gravity="right"
+                                android:text="00:00"/>
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="62dip">
+
+                            <ImageButton android:id="@+id/ibRew"
+                                android:layout_toLeftOf="@id/ibPlayPause"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:layout_marginTop="6dp"
+                                android:layout_marginBottom="6dp"
+                                android:layout_marginRight="@dimen/marginMedium"
+                                style="@android:style/MediaButton"
+                                android:contentDescription="@string/rewind"
+                                android:src="@drawable/rewind"
+                                android:scaleType="fitCenter"/>
+
+                            <ImageButton android:id="@+id/ibPlayPause"
+                                android:layout_centerHorizontal="true"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                style="@android:style/MediaButton"
+                                android:contentDescription="@string/play"
+                                android:src="@drawable/play"
+                                android:scaleType="fitCenter"/>
+
+                            <ImageButton android:id="@+id/ibFfwd"
+                                android:layout_toRightOf="@id/ibPlayPause"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:layout_marginTop="6dp"
+                                android:layout_marginBottom="6dp"
+                                android:layout_marginLeft="@dimen/marginMedium"
+                                style="@android:style/MediaButton"
+                                android:contentDescription="@string/ffwd"
+                                android:src="@drawable/forward"
+                                android:scaleType="fitCenter"/>
+
+                        </RelativeLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/marginMedium"
+                        android:layout_marginEnd="@dimen/marginMedium"
+                        android:layout_marginBottom="@dimen/marginMedium"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnSaveAsDraft"
+                            style="@android:style/Widget.Material.Button.Borderless"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:fontFamily="@font/roboto_medium"
+                            android:text="@string/btn_save_as_draft"
+                            android:textAllCaps="false"
+                            android:textColor="@color/brandPrimary500"
+                            android:textSize="@dimen/textSizeNormal"
+                            android:layout_weight="1"
+                            android:layout_marginRight="@dimen/marginSmall"/>
 
 
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnPublish"
+                            style="@android:style/Widget.Material.Button.Borderless.Colored"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:background="@drawable/bg_round_yellow_ripple"
+                            android:fontFamily="@font/roboto_medium"
+                            android:text="@string/btn_publish"
+                            android:textAllCaps="false"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="@dimen/textSizeNormal"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="@dimen/marginSmall"/>
 
-                <View
-                    android:layout_marginTop="@dimen/marginSmall"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/brandSecondary300"/>
+                    </LinearLayout>
+                </LinearLayout>
 
+                </LinearLayout>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/lytPlayer"
-                android:layout_width="match_parent"
+            <ProgressBar
+                android:id="@+id/pbPublish"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/marginAlmostLarge"
-                android:orientation="vertical"
-                android:visibility="visible">
+                android:layout_centerInParent="true"
+                android:theme="@style/ProgressBarTheme"
+                android:visibility="gone" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:background="@color/brandSecondary400"
-                    android:layout_marginTop="@dimen/marginSmall"
-                    android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginEnd="@dimen/marginMedium">
-
-                    <SeekBar
-                        android:id="@+id/sbProgress"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:maxHeight="4dp"
-                        android:minHeight="4dp"
-                        android:paddingTop="8dip"
-                        android:progress="50"
-                        android:progressDrawable="@drawable/custom_seekbar_progress" />
-
-                    <TextView
-                        android:id="@+id/tvTimePass"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/sbProgress"
-                        android:textSize="@dimen/textSizeVerySmall"
-                        android:textColor="@color/brandSecondary100"
-                        android:fontFamily="@font/roboto"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginStart="@dimen/marginSmall"
-                        android:layout_marginTop="@dimen/marginTiny"
-                        android:gravity="left"
-                        android:text="00:00"/>
-
-                    <TextView
-                        android:id="@+id/tvDuration"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/sbProgress"
-                        android:textSize="@dimen/textSizeVerySmall"
-                        android:textColor="@color/brandSecondary100"
-                        android:fontFamily="@font/roboto"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="@dimen/marginSmall"
-                        android:layout_marginTop="@dimen/marginTiny"
-                        android:gravity="right"
-                        android:text="00:00"/>
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="62dip">
-
-                    <ImageButton android:id="@+id/ibRew"
-                        android:layout_toLeftOf="@id/ibPlayPause"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginTop="6dp"
-                        android:layout_marginBottom="6dp"
-                        android:layout_marginRight="@dimen/marginMedium"
-                        style="@android:style/MediaButton"
-                        android:contentDescription="@string/rewind"
-                        android:src="@drawable/rewind"
-                        android:scaleType="fitCenter"/>
-
-                    <ImageButton android:id="@+id/ibPlayPause"
-                        android:layout_centerHorizontal="true"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        style="@android:style/MediaButton"
-                        android:contentDescription="@string/play"
-                        android:src="@drawable/play"
-                        android:scaleType="fitCenter"/>
-
-                    <ImageButton android:id="@+id/ibFfwd"
-                        android:layout_toRightOf="@id/ibPlayPause"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginTop="6dp"
-                        android:layout_marginBottom="6dp"
-                        android:layout_marginLeft="@dimen/marginMedium"
-                        style="@android:style/MediaButton"
-                        android:contentDescription="@string/ffwd"
-                        android:src="@drawable/forward"
-                        android:scaleType="fitCenter"/>
-
-                </RelativeLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium"
-                android:layout_marginBottom="@dimen/marginMedium"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnSaveAsDraft"
-                    style="@android:style/Widget.Material.Button.Borderless"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:fontFamily="@font/roboto_medium"
-                    android:text="@string/btn_save_as_draft"
-                    android:textAllCaps="false"
-                    android:textColor="@color/brandPrimary500"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:layout_weight="1"
-                    android:layout_marginRight="@dimen/marginSmall"/>
+        </RelativeLayout>
 
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnPublish"
-                    style="@android:style/Widget.Material.Button.Borderless.Colored"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:background="@drawable/bg_round_yellow_ripple"
-                    android:fontFamily="@font/roboto_medium"
-                    android:text="@string/btn_publish"
-                    android:textAllCaps="false"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="@dimen/marginSmall"/>
-
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

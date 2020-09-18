@@ -17,7 +17,7 @@ class AudioCommentPlayerController(
     private val seekBar: SeekBar,
     private val playButton: ImageButton
 ) {
-    private lateinit var simpleRecorder: SimpleRecorder
+    private var simpleRecorder: SimpleRecorder? = null
     private val updater: Runnable
     private val handler: Handler = Handler()
     private var isPrepared: Boolean = false
@@ -28,9 +28,11 @@ class AudioCommentPlayerController(
         updater = object : Runnable {
             override fun run() {
                 handler.postDelayed(this, 150)
-                if (simpleRecorder.isPlaying) {
-                    val currentPosition = simpleRecorder.getCurrentPosition()
-                    seekBar.progress = currentPosition
+                simpleRecorder?.let {
+                    if(it.isPlayerPlaying) {
+                        val currentPosition = it.getCurrentPosition()
+                        seekBar.progress = currentPosition
+                    }
                 }
             }
         }
@@ -42,29 +44,31 @@ class AudioCommentPlayerController(
 
     fun onPlayClicked() {
         if(isPrepared) {
-            if (simpleRecorder.isPlaying) {
-                playButton.setImageResource(R.drawable.play)
-                simpleRecorder.pausePlaying()
-                handler.removeCallbacks(updater)
-            } else {
-                playButton.setImageResource(R.drawable.pause)
-                simpleRecorder.resumePlaying()
-                handler.post(updater)
+            simpleRecorder?.let {
+                if (it.isPlayerPlaying) {
+                    playButton.setImageResource(R.drawable.play)
+                    it.pausePlaying()
+                    handler.removeCallbacks(updater)
+                } else {
+                    playButton.setImageResource(R.drawable.pause)
+                    it.resumePlaying()
+                    handler.post(updater)
+                }
             }
         }
     }
 
     fun onSeekProgressChanged(progress: Int) {
-        simpleRecorder.moveToPosition(progress)
+        simpleRecorder?.moveToPosition(progress)
     }
 
     private fun downloadAudioComment() {
         val url = comment.audio.url
         if (url != null) {
             val downloadDirectory =
-                File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/download/")
+                File(Environment.getExternalStorageDirectory()?.absolutePath, "/limorv2/download/")
             if (!downloadDirectory.exists()) {
-                downloadDirectory.mkdir()
+                val isDirectoryCreated = downloadDirectory.mkdir()
             }
             val fileName = url.substring(url.lastIndexOf("/") + 1)
             val finalPath: String = downloadDirectory.absolutePath + "/" + fileName
@@ -73,16 +77,16 @@ class AudioCommentPlayerController(
                 URL(url).openStream().use { input ->
                     FileOutputStream(destinationFile).use { output ->
                         input.copyTo(output)
+                        isPrepared = true
+                        handler.post(updater)
                         simpleRecorder = SimpleRecorder(destinationFile.absolutePath)
-                        simpleRecorder.startPlaying(destinationFile.absolutePath,
+                        if (seekBar.progress > 0)
+                            simpleRecorder?.moveToPosition(seekBar.progress)
+                        simpleRecorder?.startPlaying(destinationFile.absolutePath,
                             MediaPlayer.OnCompletionListener {
                                 onCompletionListener()
                             })
-                        if (seekBar.progress > 0)
-                            simpleRecorder.moveToPosition(seekBar.progress)
                         playButton.setImageResource(R.drawable.pause)
-                        handler.post(updater)
-                        isPrepared = true
                     }
                 }
             }
@@ -96,9 +100,11 @@ class AudioCommentPlayerController(
     }
 
     fun destroy() {
-        simpleRecorder.stopPlaying()
-        handler.removeCallbacks(updater)
-        playButton.setImageResource(R.drawable.play)
+        simpleRecorder?.let {
+            it.stopPlaying()
+            handler.removeCallbacks(updater)
+            playButton.setImageResource(R.drawable.play)
+        }
     }
 
 }

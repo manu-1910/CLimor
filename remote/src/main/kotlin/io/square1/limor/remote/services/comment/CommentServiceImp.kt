@@ -2,10 +2,7 @@ package io.square1.limor.remote.services.comment
 
 import io.reactivex.Single
 import io.square1.limor.remote.entities.requests.NWCreateCommentRequest
-import io.square1.limor.remote.entities.responses.NWCreateCommentLikeResponse
-import io.square1.limor.remote.entities.responses.NWCreateCommentResponse
-import io.square1.limor.remote.entities.responses.NWDeleteResponse
-import io.square1.limor.remote.entities.responses.NWGetCommentsResponse
+import io.square1.limor.remote.entities.responses.*
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
 import io.square1.limor.remote.services.RemoteServiceConfig
@@ -59,6 +56,17 @@ class CommentServiceImp @Inject constructor(private val serviceConfig: RemoteSer
             MediaType.parse("application/json"), Json.nonstrict.stringify(
                 NWCreateCommentRequest.serializer(), request)))
             .map { response -> response.parseSuccessResponse(NWCreateCommentResponse.serializer()) }
+            .doOnSuccess { success ->
+                println("SUCCESS: $success")
+            }
+            .doOnError { error ->
+                println("ERROR: $error")
+            }
+    }
+
+    fun reportComment(id: Int): Single<NWCreateReportResponse>? {
+        return service.reportComment(id)
+            .map { response -> response.parseSuccessResponse(NWCreateReportResponse.serializer()) }
             .doOnSuccess { success ->
                 println("SUCCESS: $success")
             }
