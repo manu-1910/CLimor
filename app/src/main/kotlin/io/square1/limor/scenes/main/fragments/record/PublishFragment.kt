@@ -115,6 +115,7 @@ class PublishFragment : BaseFragment() {
     private var draftImage: ImageView? = null
     private var lytImagePlaceholder: RelativeLayout? = null
     private var lytImage: RelativeLayout? = null
+    private var lytWithoutTagsRecycler: LinearLayout? = null
     private var btnSaveDraft: Button? = null
     private var btnPublishDraft: Button? = null
 
@@ -170,6 +171,8 @@ class PublishFragment : BaseFragment() {
             btnPublishDraft = rootView?.findViewById(R.id.btnPublish)
             etDraftTitle = rootView?.findViewById(R.id.etTitle)
             etDraftCaption = rootView?.findViewById(R.id.etCaption)
+
+            lytWithoutTagsRecycler = rootView?.findViewById(R.id.lytWithoutTagsRecycler)
 
             mediaPlayer = MediaPlayer()
 
@@ -393,8 +396,10 @@ class PublishFragment : BaseFragment() {
                 try {
                     if (s.substring(s.length - 1) == "#") {
                         rvTags.visibility = View.VISIBLE
-                    } else if (s.substring(s.length - 1) == " ") {
+                        lytWithoutTagsRecycler?.visibility = View.GONE
+                    } else if ((s.substring(s.length - 1) == " ") || (s.substring(s.length - 1) == System.lineSeparator())){
                         rvTags.visibility = View.GONE
+                        lytWithoutTagsRecycler?.visibility = View.VISIBLE
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
