@@ -74,7 +74,7 @@ data class NWPodcast(
     @Optional
     val user: NWUser = NWUser(),
     @Optional
-    val categories: ArrayList<NWCategory> = ArrayList()
+    val category: NWCategory? = NWCategory()
 )
 
 
@@ -83,17 +83,13 @@ data class NWAudio(
     @Optional
     val audio_url: String = "",
     @Optional
-    val duration: Int = 0,
-    @Optional
     val original_audio_url: String? = "",
     @Optional
-    val sample_rate: Double = 0.0,
+    val duration: Int = 0,
     @Optional
-    val timestamps: ArrayList<String> = ArrayList(),
+    val total_samples: Double = 0.0,
     @Optional
-    val total_length: Double = 0.0,
-    @Optional
-    val total_samples: Double = 0.0
+    val total_length: Double = 0.0
 )
 
 @Serializable

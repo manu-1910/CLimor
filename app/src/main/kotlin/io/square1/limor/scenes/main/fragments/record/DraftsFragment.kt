@@ -21,7 +21,7 @@ import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
-import io.square1.limor.scenes.main.adapters.DraftAdapter
+import io.square1.limor.scenes.main.fragments.record.adapters.DraftAdapter
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.copyFile
@@ -30,7 +30,6 @@ import io.square1.limor.uimodels.UIDraft
 import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.toast
-import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -396,6 +395,7 @@ class DraftsFragment : BaseFragment() {
         pbDrafts?.visibility = View.VISIBLE
         getDraftsTrigger.onNext(Unit)
     }
+
 
 
 

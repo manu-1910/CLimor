@@ -106,12 +106,16 @@ class RecordFragment : BaseFragment() {
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 1f)
 
+
+
         bindViewModel()
         configureToolbar()
         audioSetup()
         listeners()
         insertDraft()
         deleteDraft()
+
+        recordingItem = UIDraft()
 
         //Check Permissions
         if (!hasPermissions(requireContext(), *PERMISSIONS)) {

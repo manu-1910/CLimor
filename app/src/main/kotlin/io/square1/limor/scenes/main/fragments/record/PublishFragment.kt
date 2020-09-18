@@ -20,6 +20,7 @@ import android.os.Build
 import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
 import android.os.Handler
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.Spannable
 import android.text.TextWatcher
@@ -114,6 +115,7 @@ class PublishFragment : BaseFragment() {
     private var draftImage: ImageView? = null
     private var lytImagePlaceholder: RelativeLayout? = null
     private var lytImage: RelativeLayout? = null
+    private var lytWithoutTagsRecycler: LinearLayout? = null
     private var btnSaveDraft: Button? = null
     private var btnPublishDraft: Button? = null
 
@@ -129,6 +131,7 @@ class PublishFragment : BaseFragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val GALLERY_ACTIVITY_CODE = 200
     private val RESULT_CROP = 400
+    private val RESULT_CROP_API_29 = 553
     private var listTags = ArrayList<UITags>()
     private var listTagsString: HashtagArrayAdapter<Hashtag>? = null
 
@@ -169,7 +172,17 @@ class PublishFragment : BaseFragment() {
             etDraftTitle = rootView?.findViewById(R.id.etTitle)
             etDraftCaption = rootView?.findViewById(R.id.etCaption)
 
+            lytWithoutTagsRecycler = rootView?.findViewById(R.id.lytWithoutTagsRecycler)
+
             mediaPlayer = MediaPlayer()
+
+            bindViewModel()
+            configureMediaPlayerWithButtons()
+            updateDraft()
+            apiCallPublishPodcast()
+            getCityOfDevice()
+            deleteDraft()
+            apiCallHashTags()
         }
         app = context?.applicationContext as App
         return rootView
@@ -191,17 +204,11 @@ class PublishFragment : BaseFragment() {
         recordingItem = UIDraft()
         recordingItem = arguments!!["recordingItem"] as UIDraft
 
-        bindViewModel()
         configureToolbar()
         listeners()
-        configureMediaPlayerWithButtons()
         loadExistingData()
-        updateDraft()
-        apiCallPublishPodcast()
-        getCityOfDevice()
-        deleteDraft()
-        apiCallHashTags()
         multiCompleteText()
+
         listTagsString = HashtagArrayAdapter<Hashtag>(context!!)
         setupRecyclerTags(listTagsString!!)
     }
@@ -236,15 +243,18 @@ class PublishFragment : BaseFragment() {
 
                 isPublished = true
 
-                alert {
-                    this.titleResource = R.string.cast_published_ok_title
-                    this.messageResource = R.string.cast_published_ok_description
-                    okButton {
-                        val mainIntent = Intent(context, MainActivity::class.java)
-                        startActivity(mainIntent)
-                        (activity as RecordActivity).finish()
-                    }
-                }.show()
+                try {
+                    alert {
+                        this.titleResource = R.string.cast_published_ok_title
+                        this.messageResource = R.string.cast_published_ok_description
+                        okButton {
+                            val mainIntent = Intent(context, MainActivity::class.java)
+                            startActivity(mainIntent)
+                            (activity as RecordActivity).finish()
+                        }
+                    }.show()
+                } catch (e: Exception) {
+                }
 
             }
         })
@@ -386,8 +396,10 @@ class PublishFragment : BaseFragment() {
                 try {
                     if (s.substring(s.length - 1) == "#") {
                         rvTags.visibility = View.VISIBLE
-                    } else if (s.substring(s.length - 1) == " ") {
+                        lytWithoutTagsRecycler?.visibility = View.GONE
+                    } else if ((s.substring(s.length - 1) == " ") || (s.substring(s.length - 1) == System.lineSeparator())){
                         rvTags.visibility = View.GONE
+                        lytWithoutTagsRecycler?.visibility = View.VISIBLE
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -400,7 +412,6 @@ class PublishFragment : BaseFragment() {
 
 
     private fun readyToPublish(){
-
         if(podcastHasImage){
             if(imageUploaded && audioUploaded){
                 imageUploaded = false
@@ -414,7 +425,6 @@ class PublishFragment : BaseFragment() {
                 apiCallPublish()
             }
         }
-
     }
 
 
@@ -469,8 +479,6 @@ class PublishFragment : BaseFragment() {
 
 
     private fun apiCallPublish(){
-
-        println("llego aquí muchas veces???????????????")
         pbPublish?.visibility = View.VISIBLE
 
         val uiPublishRequest = UIPublishRequest(
@@ -480,9 +488,7 @@ class PublishFragment : BaseFragment() {
                     original_audio_url = audioUrlFinal.toString(),
                     duration = mediaPlayer.duration,
                     total_samples = 0.0,
-                    total_length = recordingItem.length!!.toDouble(),
-                    sample_rate = 0.0,
-                    timestamps = ArrayList() //recordingItem.timeStamps
+                    total_length = recordingItem.length!!.toDouble()
                 ),
                 meta_data = UIMetaData(
                     title = etDraftTitle?.text.toString(),
@@ -800,9 +806,11 @@ class PublishFragment : BaseFragment() {
                 )
                 cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 cropIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri) //For android API 29
             } else {
                 contentUri = Uri.fromFile(f)
             }
+
 
             cropIntent.setDataAndType(contentUri, "image/*")
             // set crop properties
@@ -854,29 +862,35 @@ class PublishFragment : BaseFragment() {
 
     private fun checkEmptyFields(): Boolean{
 
-        var returned = true
+        println("---------------DOUBLE Start of checkEmptyFields()")
+        var titleNotEmpty = false
+        var captionNotEmpty = false
 
         //Check the Title of the cast
-        if(etDraftTitle?.text?.isNotEmpty()!!) {
-            returned = true
+        if(!etDraftTitle?.text.isNullOrEmpty()) {
+            titleNotEmpty = true
         }else{
             alert(getString(R.string.title_cannot_be_empty)) {
                 okButton {}
             }.show()
-            returned = false
+            titleNotEmpty = false
         }
 
         //Check the Caption of the cast
-        if(etDraftCaption?.text?.isNotEmpty()!!) {
-            returned = true
+        if(!etDraftCaption?.text.isNullOrEmpty()) {
+            captionNotEmpty = true
         }else{
             alert(getString(R.string.caption_cannot_be_empty)) {
                 okButton {}
             }.show()
-            returned = false
+            captionNotEmpty = false
         }
 
-        return returned
+        if(titleNotEmpty && captionNotEmpty){
+            return true
+        }else {
+            return false
+        }
     }
 
 

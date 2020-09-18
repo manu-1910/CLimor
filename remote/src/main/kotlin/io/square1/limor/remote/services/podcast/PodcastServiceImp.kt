@@ -21,7 +21,9 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
 
 
     fun publishPodcast(nwPublishRequest: NWPublishRequest): Single<NWPublishResponse>? {
-        return service.publishPodcast(RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWPublishRequest.serializer(), nwPublishRequest)))
+        val jsonRequest = Json.nonstrict.stringify(NWPublishRequest.serializer(), nwPublishRequest)
+        val request = RequestBody.create(MediaType.parse("application/json"), jsonRequest)
+        return service.publishPodcast(request)
             .map { response -> response.parseSuccessResponse(NWPublishResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")

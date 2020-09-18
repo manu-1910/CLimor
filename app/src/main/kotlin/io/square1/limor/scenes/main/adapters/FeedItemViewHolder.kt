@@ -151,10 +151,14 @@ class FeedItemViewHolder(
         ivMainFeedPicture.onClick { feedClickListener.onItemClicked(currentItem, position) }
 
         // verified
-        if (currentItem.user.verified)
-            ivVerifiedUser.visibility = View.VISIBLE
-        else
+        currentItem.podcast?.user?.verified?.let {
+            if (it)
+                ivVerifiedUser.visibility = View.VISIBLE
+            else
+                ivVerifiedUser.visibility = View.GONE
+        } ?: run {
             ivVerifiedUser.visibility = View.GONE
+        }
 
         // like
         currentItem.podcast?.liked?.let {

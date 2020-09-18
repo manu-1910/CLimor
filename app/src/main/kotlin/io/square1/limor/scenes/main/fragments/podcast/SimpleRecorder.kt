@@ -7,6 +7,7 @@ import io.square1.limor.scenes.utils.Commons
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
+import java.lang.Exception
 import java.util.*
 
 
@@ -94,8 +95,12 @@ class SimpleRecorder(private val folderPath: String) {
     }
 
     fun stopPlaying() {
-        player.stop()
-        player.release()
+        try {
+            player.stop()
+        } catch (e:Exception){}
+        try {
+            player.release()
+        } catch (e:Exception){}
         isPlayerReleased = true
         isPlayerPlaying = false
     }
