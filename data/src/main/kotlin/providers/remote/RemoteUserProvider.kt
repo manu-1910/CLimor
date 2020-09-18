@@ -18,4 +18,5 @@ interface RemoteUserProvider {
     fun createBlockedUser(userIDRequest: DataUserIDRequest) : Single<CreateBlockedUserResponseEntity>
     fun deleteBlockedUser(userIDRequest: DataUserIDRequest) : Single<CreateBlockedUserResponseEntity>
     fun reportUser(id: Int, request: DataCreateUserReportRequestEntity) : Single<CreateReportResponseEntity>
+    fun getNotifications(limit : Int, offset: Int): Single<NotificationsResponseEntity>
 }

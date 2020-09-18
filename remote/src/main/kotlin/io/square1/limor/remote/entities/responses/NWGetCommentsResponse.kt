@@ -57,13 +57,13 @@ data class NWComment(
     @Optional
     val number_of_listens: Int = 0,
     @Optional
-    val podcast_id: Int = 0,
+    val podcast_id: Int? = 0,
     @Optional
     val links: NWLinks = NWLinks(),
     @Optional
-    val comment_count: Int = 0
-    //@Optional
-    //val ad: ,
+    val comment_count: Int = 0,
+    @Optional
+    val ad: NWAd? = NWAd()
 )
 
 @Serializable

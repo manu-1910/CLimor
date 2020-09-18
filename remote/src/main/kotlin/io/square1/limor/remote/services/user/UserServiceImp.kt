@@ -159,4 +159,19 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
     }
 
 
+    fun getNotifications(limit: Int?, offset: Int?): Single<NWNotificationsResponse> {
+        return service.getNotifications(limit, offset)
+            .map { response -> response.parseSuccessResponse(NWNotificationsResponse.serializer()) }
+            .doOnSuccess { response ->
+                run {
+                    println("SUCCESS: $response")
+                }
+            }
+            .doOnError { error ->
+                run {
+                    println("ERROR: $error")
+                }
+            }
+    }
+
 }

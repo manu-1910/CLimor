@@ -4,7 +4,6 @@ import entities.response.*
 import io.reactivex.Single
 import io.square1.limor.uimodels.*
 
-
 fun Single<PodcastsByTagResponseEntity>.asUIModel(): Single<UIPodcastsByTagResponse> {
     return this.map { it.asUIModel() }
 }

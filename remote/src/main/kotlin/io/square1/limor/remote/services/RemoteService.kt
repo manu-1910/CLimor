@@ -101,6 +101,7 @@ abstract class RemoteService<T> constructor(c: Class<T>, private val config: Rem
 
     private fun getLoggingInterceptor(): Interceptor {
         val logging = HttpLoggingInterceptor()
+        logging.level = HttpLoggingInterceptor.Level.BODY
         //logging.level = if (config.debug)
         //    HttpLoggingInterceptor.Level.BODY
         //else

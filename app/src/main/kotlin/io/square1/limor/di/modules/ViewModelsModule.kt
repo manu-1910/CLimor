@@ -160,4 +160,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(CreateUserReportViewModel::class)
     abstract fun bindCreateUserReportViewModel(createUserReportViewModel: CreateUserReportViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(NotificationsViewModel::class)
+    abstract fun bindNotificationsViewModel(notificationsViewModel: NotificationsViewModel): ViewModel
 }
