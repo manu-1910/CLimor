@@ -340,11 +340,15 @@ class ProfileFragment : BaseFragment() {
         uiUser?.followed?.let {
             if(it) {
                 btnFollow.text = getString(R.string.follow)
+                uiUser!!.followers_count = uiUser!!.followers_count?.dec()
             } else {
                 btnFollow.text = getString(R.string.unfollow)
+                uiUser!!.followers_count = uiUser!!.followers_count?.inc()
             }
 
+            tvNumberFollowers.text = formatSocialMediaQuantity(uiUser!!.followers_count!!)
             uiUser?.followed = !it
+
         }
     }
 
