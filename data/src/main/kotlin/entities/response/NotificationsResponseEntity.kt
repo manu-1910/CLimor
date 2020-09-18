@@ -1,5 +1,7 @@
 package entities.response
 
+import kotlinx.serialization.Optional
+
 data class NotificationsResponseEntity(
     var code: Int,
     var message: String,
@@ -14,28 +16,32 @@ data class NotificationItemsEntity(
     val id: Int,
     val message: String,
     val status: String,
-    val created_at: Long,
+    val created_at: String,
     val notification_type: String,
     val resources: ResourcesEntity
 )
 
 data class ResourcesEntity(
-    val ad: AdEntity,
+    val participant_id: Int,
+    val conversation_id: Int,
+    val images: ImagesEntity,
+    val ad: AdEntity?,
     val comment: CommentEntity,
-    val owner: UserEntity
+    val owner: UserEntity,
+    val podcast: PodcastEntity?
 )
 
 data class AdEntity(
     val id: Long,
     val user: UserEntity,
     val title: String,
-    val address: String,
-    val gallery: List<GalleryEntity>,
+    val address: String?,
+    val gallery: ArrayList<GalleryEntity>,
     val caption: String,
     val created_at: Long,
     val updated_at: Long,
-    val latitude: Double,
-    val longitude: Double,
+    val latitude: Double?,
+    val longitude: Double?,
     val liked: Boolean,
     val viewed: Boolean,
     val reported: Boolean,
@@ -48,8 +54,10 @@ data class AdEntity(
     val active: Boolean,
     val learn_more_url: String,
     val links: AdDataLinksEntity,
-    val sharing_url: String,
-    val learn_more_title: String
+    val mentions: MentionsEntity,
+    val tags: TagsEntity,
+    val sharing_url: String?,
+    val learn_more_title: String?
 )
 
 data class GalleryEntity(
@@ -59,9 +67,9 @@ data class GalleryEntity(
 )
 
 data class AdDataLinksEntity(
-    val content: List<DataLinkEntity>,
-    val text: List<DataLinkEntity>,
-    val caption: List<DataLinkEntity>
+    val content: ArrayList<DataLinkEntity>,
+    val text: ArrayList<DataLinkEntity>,
+    val caption: ArrayList<DataLinkEntity>
 )
 
 data class DataLinkEntity(

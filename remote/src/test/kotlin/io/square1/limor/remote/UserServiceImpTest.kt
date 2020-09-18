@@ -114,7 +114,7 @@ class UserServiceImpTest {
             debug = true,
             client_id = "",
             client_secret = "",
-            token = "KGFkiVN8SXyNLs8-28_aTBOd96YqOu_PQXRMGSwL4v8",
+            token = "PaEH9-VD6l9YeO63I6DdfktPp752mGmdixCGjE-QLT8",
             expiredIn = 0
         )
 

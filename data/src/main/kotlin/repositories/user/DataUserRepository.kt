@@ -32,4 +32,7 @@ class DataUserRepository @Inject constructor(private val remoteProvider: RemoteU
         return remoteProvider.createFriend(id)
     }
 
+    override fun getNotifications(limit: Int, offset: Int): Single<NotificationsResponseEntity> {
+        return remoteProvider.getNotifications(limit, offset)
+    }
 }

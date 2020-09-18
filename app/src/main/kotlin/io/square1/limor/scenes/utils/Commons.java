@@ -25,6 +25,7 @@ import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -120,6 +121,15 @@ public class Commons {
         } else {
             return String.format(Locale.getDefault(), "%02d:%02d:%02d", calendar.get(Calendar.HOUR) - 1, calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
         }
+    }
+
+    public static String getHourMinutesFromDateString(String dateString){
+        DateTime dateTime = new DateTime( dateString, DateTimeZone.getDefault() );
+        String hour = String.valueOf(dateTime.getHourOfDay());
+        hour = (hour.length() == 1) ? ("0" + hour) : hour;
+        String minuteOfHour = String.valueOf(dateTime.getMinuteOfHour());
+        minuteOfHour = (minuteOfHour.length() == 1) ? ("0" + minuteOfHour) : minuteOfHour;
+        return hour + ":" + minuteOfHour;
     }
 
     public static void showAlertYesNo(Context context, int title, int message, DialogInterface.OnClickListener listener) {

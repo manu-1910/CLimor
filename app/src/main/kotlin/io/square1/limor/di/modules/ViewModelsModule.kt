@@ -140,4 +140,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(TagsViewModel::class)
     abstract fun bindTagsViewModel(tagsViewModel: TagsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(NotificationsViewModel::class)
+    abstract fun bindNotificationsViewModel(notificationsViewModel: NotificationsViewModel): ViewModel
 }

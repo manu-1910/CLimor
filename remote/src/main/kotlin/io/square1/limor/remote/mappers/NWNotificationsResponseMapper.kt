@@ -37,9 +37,13 @@ fun NWNotificationItem.asDataEntity(): NotificationItemsEntity {
 
 fun NWResources.asDataEntity(): ResourcesEntity {
     return ResourcesEntity(
-        ad.asDataEntity(),
+        participant_id,
+        conversation_id,
+        images.asDataEntity(),
+        ad?.asDataEntity(),
         comment.asDataEntity(),
-        owner.asDataEntity()
+        owner.asDataEntity(),
+        podcast?.asDataEntity()
     )
 }
 
@@ -68,6 +72,8 @@ fun NWAd.asDataEntity(): AdEntity {
         active,
         learn_more_url,
         links.asDataEntity(),
+        mentions.asDataEntity(),
+        tags.asDataEntity(),
         sharing_url,
         learn_more_title
     )

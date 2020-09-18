@@ -29,7 +29,7 @@ data class CommentEntity(
     var comments: ArrayList<CommentEntity>,
     var podcast: PodcastEntity?,
     var number_of_listens: Int,
-    var podcast_id: Int,
+    var podcast_id: Int?,
     var links: LinksEntity,
     var comment_count: Int
 
