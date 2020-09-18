@@ -16,11 +16,16 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.subjects.PublishSubject
+import io.square1.limor.App
 import io.square1.limor.scenes.main.adapters.NotificationsAdapter
+import io.square1.limor.scenes.main.viewmodels.CreateFriendViewModel
+import io.square1.limor.scenes.main.viewmodels.DeleteFriendViewModel
 import io.square1.limor.scenes.main.viewmodels.NotificationsViewModel
 import io.square1.limor.uimodels.UINotificationItem
 import kotlinx.android.synthetic.main.fragment_notifications.*
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.okButton
+import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
 import javax.inject.Inject
@@ -28,12 +33,19 @@ import javax.inject.Inject
 
 class NotificationsFragment : BaseFragment() {
 
+    var app: App? = null
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var viewModelNotifications: NotificationsViewModel
+    private lateinit var viewModelCreateFriend: CreateFriendViewModel
+    private lateinit var viewModelDeleteFriend: DeleteFriendViewModel
 
     private val getNotificationsTrigger = PublishSubject.create<Unit>()
+    private val createFriendDataTrigger = PublishSubject.create<Unit>()
+    private val deleteFriendDataTrigger = PublishSubject.create<Unit>()
+
     private var notificationAdapter: NotificationsAdapter? = null
 
     // views
@@ -43,6 +55,8 @@ class NotificationsFragment : BaseFragment() {
     // infinite scroll variables
     private var isScrolling: Boolean = false
     private var isLastPage: Boolean = false
+
+    private var currentFollowItem: UINotificationItem? = null
 
     companion object {
         val TAG: String = NotificationsFragment::class.java.simpleName
@@ -61,11 +75,15 @@ class NotificationsFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        app = context?.applicationContext as App
+
         rvNotifications = view.findViewById(R.id.rv_notifications)
         tvNoNotifications = view.findViewById(R.id.tv_no_notifications)
 
         bindViewModel()
         initApiCallGetNotifications()
+        apiCallCreateUser()
+        apiCallDeleteUser()
         configureAdapter()
         initSwipeRefreshLayout()
 
@@ -156,6 +174,14 @@ class NotificationsFragment : BaseFragment() {
             viewModelNotifications = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(NotificationsViewModel::class.java)
+
+            viewModelCreateFriend = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreateFriendViewModel::class.java)
+
+            viewModelDeleteFriend = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(DeleteFriendViewModel::class.java)
         }
     }
 
@@ -181,7 +207,19 @@ class NotificationsFragment : BaseFragment() {
                     }
 
                     override fun onFollowClicked(item: UINotificationItem, position: Int) {
-                        toast("You clicked on follow")
+
+                        currentFollowItem = item
+                        val userId = item.resources.owner.id
+
+                        if(item.resources.owner.followed){
+                            viewModelDeleteFriend.idFriend = userId
+                            deleteFriendDataTrigger.onNext(Unit)
+                        }else{
+                            viewModelCreateFriend.idNewFriend = userId
+                            createFriendDataTrigger.onNext(Unit)
+                        }
+
+                        showProgress(true)
                     }
                 }
             )
@@ -234,6 +272,103 @@ class NotificationsFragment : BaseFragment() {
     private fun setNotificationViewModelVariables(newOffset: Int = 0) {
         viewModelNotifications.limit = FEED_LIMIT_REQUEST
         viewModelNotifications.offset = newOffset
+    }
+
+    private fun apiCallCreateUser() {
+        val output = viewModelCreateFriend.transform(
+            CreateFriendViewModel.Input(
+                createFriendDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if(it.code == 0) {
+                revertUserFollowedState()
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+
+            if (app!!.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (it.errorMessage!!.isNotEmpty()) {
+                    message.append(it.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                alert(message.toString()) {
+                    okButton { }
+                }.show()
+            } else {
+                alert(getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+
+            showProgress(false)
+
+        })
+    }
+
+
+    private fun apiCallDeleteUser() {
+        val output = viewModelDeleteFriend.transform(
+            DeleteFriendViewModel.Input(
+                deleteFriendDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if(it.code == 0) {
+                revertUserFollowedState()
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+
+            if (app!!.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (it.errorMessage!!.isNotEmpty()) {
+                    message.append(it.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                alert(message.toString()) {
+                    okButton { }
+                }.show()
+            } else {
+                alert(getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+
+            showProgress(false)
+        })
+    }
+
+    private fun revertUserFollowedState() {
+
+        currentFollowItem?.let {
+
+            val index = viewModelNotifications.updateFollowedStatus(currentFollowItem!!)
+
+            if(index != -1){
+                rvNotifications?.adapter?.notifyItemChanged(index)
+            }
+
+
+        }
+
+        showProgress(false)
+
     }
 
 

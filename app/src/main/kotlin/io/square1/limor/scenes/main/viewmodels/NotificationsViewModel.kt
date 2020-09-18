@@ -51,6 +51,19 @@ class NotificationsViewModel @Inject constructor(private val getNotificationsUse
         val notificationItem: UINotificationItem?
     )
 
+    fun updateFollowedStatus(item: UINotificationItem): Int {
+
+        for ((index, notification) in notificationList.withIndex()) {
+            if (!notification.isHeader && notification.notificationItem?.id == item.id) {
+                notification.notificationItem.resources.owner.followed =
+                    !notification.notificationItem.resources.owner.followed
+                return index
+            }
+        }
+
+        return -1
+    }
+
     fun addItems(items: ArrayList<UINotificationItem>): ArrayList<Notification> {
 
         oldLength = notificationList.size
@@ -65,14 +78,14 @@ class NotificationsViewModel @Inject constructor(private val getNotificationsUse
             if (notificationMap.containsKey(dateTime)) {
 
                 var containsItem = false
-                for (notificationItem in notificationMap[dateTime]!!){
-                    if(notificationItem.id == uiNotificationItem.id){
+                for (notificationItem in notificationMap[dateTime]!!) {
+                    if (notificationItem.id == uiNotificationItem.id) {
                         containsItem = true
                         break
                     }
                 }
 
-                if(!containsItem){
+                if (!containsItem) {
                     notificationMap[dateTime]?.add(uiNotificationItem)
                 }
 

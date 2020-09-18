@@ -69,7 +69,8 @@
             android:layout_width="wrap_content"
             android:layout_height="32dp"
             android:background="@drawable/bg_round_yellow_ripple"
-            android:text="@string/btn_title_follow"
+            android:text="@string/follow"
+            android:textColor="@color/black"
             android:textAllCaps="false" />
 
 

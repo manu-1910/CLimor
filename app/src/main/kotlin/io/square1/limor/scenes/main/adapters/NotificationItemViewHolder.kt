@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import io.square1.limor.R
@@ -71,6 +72,17 @@ class NotificationItemViewHolder(
             NOTIFICATION_TYPE_FOLLOW -> {
                 tvTitle.text = currentItem.resources.owner.username
                 btnFollow.visibility = View.VISIBLE
+
+                if(currentItem.resources.owner.followed){
+                    btnFollow.background = ContextCompat.getDrawable(context, R.drawable.bg_round_brand_500_ripple)
+                    btnFollow.setTextColor(ContextCompat.getColor(context, R.color.white))
+                    btnFollow.text = context.getString(R.string.unfollow)
+                }else{
+                    btnFollow.background = ContextCompat.getDrawable(context, R.drawable.bg_round_yellow_ripple)
+                    btnFollow.setTextColor(ContextCompat.getColor(context, R.color.black))
+                    btnFollow.text = context.getString(R.string.follow)
+                }
+
                 btnFollow.onClick {
                     notificationClickListener.onFollowClicked(
                         currentItem,
