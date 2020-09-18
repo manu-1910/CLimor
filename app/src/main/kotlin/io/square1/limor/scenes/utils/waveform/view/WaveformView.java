@@ -444,18 +444,17 @@ public class WaveformView extends View {
 
             // Right top timestamp
             if (!markerSet.isEditMarker()) {
-                float leftEnd = markerSet.getEndPos() + Commons.dpToPx(getContext(), 16);
+                float leftEnd = markerSet.getEndPos() - offset + Commons.dpToPx(getContext(), 16);
                 float topEnd = measuredHeight - topOffset + Commons.dpToPx(getContext(), 16);
-                String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getEndPos() / NEW_WIDTH));
+                String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getEndPos()/NEW_WIDTH));
                 //String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getEndPos()));
                 canvas.drawText(timeCode, leftEnd, topEnd, timeCodePaintBlack);
             }
 
             // Left bottom timestamp (is always visible, for normal marker and for edit marker
-            float leftStart = markerSet.getStartPos() - Commons.dpToPx(getContext(), 44);
+            float leftStart = markerSet.getStartPos() - offset - Commons.dpToPx(getContext(), 44);
             float topStart = measuredHeight - topOffset + Commons.dpToPx(getContext(), 16);
-            String timeCodeStart = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getStartPos() / NEW_WIDTH));
-            //String timeCodeStart = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getStartPos()));
+            String timeCodeStart = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getStartPos()/NEW_WIDTH));
             canvas.drawText(timeCodeStart, leftStart, topStart, timeCodePaintBlack);
         }
 
@@ -478,9 +477,10 @@ public class WaveformView extends View {
         // Draw text
         for (int count = 1; count < 8; count++) {
             //String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(((int)(eight * count) + offset)/ NEW_WIDTH));
-            String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(((int)(eight * count) + offset)/ NEW_WIDTH));
+            String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(((int)(eight * count) + offset)/ NEW_WIDTH ));
             float offsetText = (float) (0.5 * timeCodePaint.measureText(timeCode));
             canvas.drawText(timeCode, eight * count - offsetText , (int) (16 * density), timeCodePaint);
+
         }
 
         if (listener != null) {
