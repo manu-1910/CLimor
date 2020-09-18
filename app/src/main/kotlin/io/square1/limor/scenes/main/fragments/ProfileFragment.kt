@@ -106,9 +106,10 @@ class ProfileFragment : BaseFragment() {
             uiUser = sessionManager.getStoredUser()
             getUserDataTrigger.onNext(Unit)
         }
-        printUserData()
+
         configureToolbar()
         configureScreen()
+        printUserData()
     }
 
     private fun checkIfIsMyProfile() : Boolean {
@@ -132,12 +133,6 @@ class ProfileFragment : BaseFragment() {
             btnSettings?.visibility = View.GONE
             btnMore?.visibility = View.VISIBLE
             layFollows?.visibility = View.VISIBLE
-            uiUser?.followed?.let {
-                if(it)
-                    btnFollow.text = getString(R.string.unfollow)
-                else
-                    btnFollow.text = getString(R.string.follow)
-            }
         }
     }
 
@@ -519,6 +514,15 @@ class ProfileFragment : BaseFragment() {
         uiUser?.verified?.let {
             if (it)
                 ivVerifiedUser.visibility = View.VISIBLE
+        }
+
+        if(!isMyProfileMode) {
+            uiUser?.followed?.let {
+                if(it)
+                    btnFollow.text = getString(R.string.unfollow)
+                else
+                    btnFollow.text = getString(R.string.follow)
+            }
         }
 
 
