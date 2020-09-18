@@ -88,6 +88,11 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(DeleteFriendViewModel::class)
+    abstract fun bindDeleteFriendViewModel(deleteFriendViewModel: DeleteFriendViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(CreatePodcastLikeViewModel::class)
     abstract fun bindCreatePodcastLikeViewModel(createPodcastLikeViewModel: CreatePodcastLikeViewModel): ViewModel
 

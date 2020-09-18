@@ -11,7 +11,7 @@ const val USER_ME_PATH = "/api/v1/users/me"
 const val LOG_OUT_PATH = "/oauth/revoke"
 const val SHOW_FEED_PATH = "/api/v1/users/feed"
 const val BLOCKED_USERS = "/api/v1/users/blocked_users"
-const val CREATE_FRIEND_PATH = "/api/v1/users/{id}/friends"
+const val FRIENDS_PATH = "/api/v1/users/{id}/friends"
 const val REPORT_USER_PATH = "/api/v1/users/{id}/reports"
 
 
@@ -33,8 +33,11 @@ interface UserService {
     @GET(SHOW_FEED_PATH)
     fun feedShow(): Single<ResponseBody>
 
-    @POST(CREATE_FRIEND_PATH)
+    @POST(FRIENDS_PATH)
     fun createFriend(@Path("id") id : Int): Single<ResponseBody>
+
+    @DELETE(FRIENDS_PATH)
+    fun deleteFriend(@Path("id") id : Int): Single<ResponseBody>
 
     @POST(BLOCKED_USERS)
     fun createBlockedUser(@Body request: RequestBody): Single<ResponseBody>

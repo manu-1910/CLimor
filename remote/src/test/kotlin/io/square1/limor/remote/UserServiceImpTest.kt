@@ -111,6 +111,27 @@ class UserServiceImpTest {
         response.assertValue { it.message == "Success" }
     }
 
+    @Test
+    fun should_delete_friend_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = CURRENT_URL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = CURRENT_TOKEN,
+            expiredIn = 0
+        )
+
+        userService = UserServiceImp(config)
+
+        val idFriend = 8
+
+        val response = userService.deleteFriend(idFriend).test()
+
+        response.assertNoErrors()
+        response.assertValue { it.message == "Success" }
+    }
+
 
     @Test
     fun should_create_blocked_user_successfully() {

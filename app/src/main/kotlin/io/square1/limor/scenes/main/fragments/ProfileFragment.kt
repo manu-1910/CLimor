@@ -23,10 +23,7 @@ import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.fragments.profile.UserReportActivity
-import io.square1.limor.scenes.main.viewmodels.CreateUserReportViewModel
-import io.square1.limor.scenes.main.viewmodels.GetPodcastCommentsViewModel
-import io.square1.limor.scenes.main.viewmodels.LogoutViewModel
-import io.square1.limor.scenes.main.viewmodels.ProfileViewModel
+import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.splash.SplashActivity
 import io.square1.limor.scenes.utils.CommonsKt.Companion.formatSocialMediaQuantity
 import io.square1.limor.uimodels.UIUser
@@ -48,7 +45,11 @@ class ProfileFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var viewModelCreateUserReport: CreateUserReportViewModel
+    private lateinit var viewModelCreateFriend: CreateFriendViewModel
+    private lateinit var viewModelDeleteFriend: DeleteFriendViewModel
     private val createUserReportDataTrigger = PublishSubject.create<Unit>()
+    private val createFriendDataTrigger = PublishSubject.create<Unit>()
+    private val deleteFriendDataTrigger = PublishSubject.create<Unit>()
 
 
 
@@ -89,23 +90,36 @@ class ProfileFragment : BaseFragment() {
         app = context?.applicationContext as App
         initToolbarViews()
 
+        isMyProfileMode = checkIfIsMyProfile()
+
         listeners()
         bindViewModel()
         apiCallGetUser()
         apiCallLogout()
 
-        if(activity is UserProfileActivity) {
-            isMyProfileMode = false
+        if(!isMyProfileMode) {
             uiUser = (activity as UserProfileActivity).uiUser
             apiCallReportUser()
+            apiCallCreateUser()
+            apiCallDeleteUser()
         } else {
-            isMyProfileMode = true
             uiUser = sessionManager.getStoredUser()
             getUserDataTrigger.onNext(Unit)
         }
-        printUserData()
+
         configureToolbar()
         configureScreen()
+        printUserData()
+    }
+
+    private fun checkIfIsMyProfile() : Boolean {
+        return if(activity !is UserProfileActivity) {
+            true
+        } else {
+            val loggedUser = sessionManager.getStoredUser()
+            uiUser = (activity as UserProfileActivity).uiUser
+            loggedUser?.id == uiUser?.id
+        }
     }
 
     private fun configureScreen() {
@@ -119,12 +133,6 @@ class ProfileFragment : BaseFragment() {
             btnSettings?.visibility = View.GONE
             btnMore?.visibility = View.VISIBLE
             layFollows?.visibility = View.VISIBLE
-            uiUser?.followed?.let {
-                if(it)
-                    btnFollow.text = getString(R.string.unfollow)
-                else
-                    btnFollow.text = getString(R.string.follow)
-            }
         }
     }
 
@@ -160,8 +168,21 @@ class ProfileFragment : BaseFragment() {
             showPopupMoreMenu()
         }
 
-        btnFollow?.onClick {
+        btnFollow.onClick {
+            uiUser?.followed?.let{
+                revertUserFollowedState()
 
+                // if the user is followed now, we must unfollow him
+                if (it) {
+                    viewModelDeleteFriend.idFriend = uiUser!!.id
+                    deleteFriendDataTrigger.onNext(Unit)
+
+                    // if the user is unfollowed now, we must follow him
+                } else {
+                    viewModelCreateFriend.idNewFriend = uiUser!!.id
+                    createFriendDataTrigger.onNext(Unit)
+                }
+            }
         }
     }
 
@@ -219,7 +240,110 @@ class ProfileFragment : BaseFragment() {
                 viewModelCreateUserReport = ViewModelProviders
                     .of(fragmentActivity, viewModelFactory)
                     .get(CreateUserReportViewModel::class.java)
+
+                viewModelCreateFriend = ViewModelProviders
+                    .of(fragmentActivity, viewModelFactory)
+                    .get(CreateFriendViewModel::class.java)
+
+                viewModelDeleteFriend = ViewModelProviders
+                    .of(fragmentActivity, viewModelFactory)
+                    .get(DeleteFriendViewModel::class.java)
             }
+        }
+    }
+
+    private fun apiCallCreateUser() {
+        val output = viewModelCreateFriend.transform(
+            CreateFriendViewModel.Input(
+                createFriendDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if(it.code != 0) {
+                revertUserFollowedState()
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            //pbSignUp?.visibility = View.GONE
+            view?.hideKeyboard()
+            revertUserFollowedState()
+            if (app!!.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (it.errorMessage!!.isNotEmpty()) {
+                    message.append(it.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                alert(message.toString()) {
+                    okButton { }
+                }.show()
+            } else {
+                alert(getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+        })
+    }
+
+
+    private fun apiCallDeleteUser() {
+        val output = viewModelDeleteFriend.transform(
+            DeleteFriendViewModel.Input(
+                deleteFriendDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if(it.code != 0) {
+                revertUserFollowedState()
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            //pbSignUp?.visibility = View.GONE
+            view?.hideKeyboard()
+            revertUserFollowedState()
+            if (app!!.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (it.errorMessage!!.isNotEmpty()) {
+                    message.append(it.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                alert(message.toString()) {
+                    okButton { }
+                }.show()
+            } else {
+                alert(getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+        })
+    }
+
+    private fun revertUserFollowedState() {
+        uiUser?.followed?.let {
+            if(it) {
+                btnFollow.text = getString(R.string.follow)
+                uiUser!!.followers_count = uiUser!!.followers_count?.dec()
+            } else {
+                btnFollow.text = getString(R.string.unfollow)
+                uiUser!!.followers_count = uiUser!!.followers_count?.inc()
+            }
+
+            tvNumberFollowers.text = formatSocialMediaQuantity(uiUser!!.followers_count!!)
+            uiUser?.followed = !it
+
         }
     }
 
@@ -390,6 +514,15 @@ class ProfileFragment : BaseFragment() {
         uiUser?.verified?.let {
             if (it)
                 ivVerifiedUser.visibility = View.VISIBLE
+        }
+
+        if(!isMyProfileMode) {
+            uiUser?.followed?.let {
+                if(it)
+                    btnFollow.text = getString(R.string.unfollow)
+                else
+                    btnFollow.text = getString(R.string.follow)
+            }
         }
 
 

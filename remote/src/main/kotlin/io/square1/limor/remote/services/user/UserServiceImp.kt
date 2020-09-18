@@ -74,13 +74,27 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
             }
     }
 
-    fun createFriend(id: Int): Single<NWCreateFriendResponse> {
+    fun createFriend(id: Int): Single<NWCreateDeleteFriendResponse> {
         return service.createFriend(id)
-            .map { response -> response.parseSuccessResponse(NWCreateFriendResponse.serializer()) }
+            .map { response -> response.parseSuccessResponse(NWCreateDeleteFriendResponse.serializer()) }
             .doOnSuccess { response ->
                 run {
                     println("SUCCESS: $response")
-                    println("Hemos seguido correctamente al user? ${response.data?.followed}")
+//                    println("Hemos seguido correctamente al user? ${response.data?.followed}")
+                }
+            }
+            .doOnError { error ->
+                println("ERROR: $error")
+            }
+    }
+
+    fun deleteFriend(id: Int): Single<NWCreateDeleteFriendResponse> {
+        return service.deleteFriend(id)
+            .map { response -> response.parseSuccessResponse(NWCreateDeleteFriendResponse.serializer()) }
+            .doOnSuccess { response ->
+                run {
+                    println("SUCCESS: $response")
+//                    println("Hemos seguido correctamente al user? ${response.data?.followed}")
                 }
             }
             .doOnError { error ->

@@ -13,17 +13,17 @@ import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.uimodels.UICreateDeleteFriendResponse
 import io.square1.limor.uimodels.UIErrorData
 import io.square1.limor.uimodels.UIErrorResponse
-import io.square1.limor.usecases.CreateFriendUseCase
+import io.square1.limor.usecases.DeleteFriendUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class CreateFriendViewModel @Inject constructor(private val createFriendUseCase: CreateFriendUseCase) : BaseViewModel<CreateFriendViewModel.Input, CreateFriendViewModel.Output>() {
+class DeleteFriendViewModel @Inject constructor(private val deleteFriendUseCase: DeleteFriendUseCase) : BaseViewModel<DeleteFriendViewModel.Input, DeleteFriendViewModel.Output>() {
 
     private val compositeDispose = CompositeDisposable()
-    var idNewFriend = 0
+    var idFriend = 0
 
     data class Input(
-        val createFriendTrigger: Observable<Unit>
+        val deleteFriendTrigger: Observable<Unit>
     )
 
     data class Output(
@@ -37,14 +37,15 @@ class CreateFriendViewModel @Inject constructor(private val createFriendUseCase:
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
         val response = MutableLiveData<UICreateDeleteFriendResponse>()
 
-        input.createFriendTrigger.subscribe({
-            createFriendUseCase.execute(idNewFriend).subscribe({
+        input.deleteFriendTrigger.subscribe({
+            deleteFriendUseCase.execute(idFriend).subscribe({
                 response.value = it
 
             }, {
                 try {
                     val error = it as HttpException
-                    val errorResponse: UIErrorResponse? = error.response()?.errorBody()?.parseSuccessResponse(UIErrorResponse.serializer())
+                    val errorResponse: UIErrorResponse? = error.response()?.errorBody()?.parseSuccessResponse(
+                        UIErrorResponse.serializer())
                     errorTracker.postValue(errorResponse)
                 } catch (e: Exception) {
                     val dataError = UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))

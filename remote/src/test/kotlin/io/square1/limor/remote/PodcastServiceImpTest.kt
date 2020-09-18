@@ -38,9 +38,7 @@ class PodcastServiceImpTest{
                     "https://limor-platform-development.s3.amazonaws.com/podcast_comment_audio_direct_upload/audioFile_3180_1530517744075.m4a",
                     100,
                     1000.0,
-                    13000.0,
-                    0.0,
-                    ArrayList<String>()
+                    13000.0
                 ),
                 NWMetaData(
                     "podcast",
