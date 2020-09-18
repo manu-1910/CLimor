@@ -140,79 +140,89 @@
                             android:layout_height="1dp"
                             android:background="@color/brandSecondary300"/>
 
-                        <RelativeLayout
-                            android:id="@+id/lytTvCategory"
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lytWithoutTagsRecycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <RelativeLayout
+                        android:id="@+id/lytTvCategory"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/marginMedium"
+                        android:visibility="visible">
+
+                        <TextView
+                            android:id="@+id/tvCategory"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/marginMedium"
-                            android:visibility="visible">
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/textSizeNormal"
+                            android:fontFamily="@font/roboto"
+                            android:text="@string/title_category"
+                            android:layout_alignParentStart="true"/>
 
-                            <TextView
-                                android:id="@+id/tvCategory"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/textSizeNormal"
-                                android:fontFamily="@font/roboto"
-                                android:text="@string/title_category"
-                                android:layout_alignParentStart="true"/>
-
-                            <TextView
-                                android:id="@+id/tvSelectedCategory"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:drawableEnd="@drawable/chevron_right"
-                                android:textColor="@color/brandSecondary100"
-                                android:textSize="@dimen/textSizeNormal"
-                                android:fontFamily="@font/roboto"
-                                android:gravity="end"
-                                android:layout_toEndOf="@id/tvCategory"
-                                android:layout_alignParentEnd="true"/>
-
-                        </RelativeLayout>
-
-                        <View
+                        <TextView
+                            android:id="@+id/tvSelectedCategory"
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/brandSecondary300"/>
+                            android:layout_height="wrap_content"
+                            android:drawableEnd="@drawable/chevron_right"
+                            android:textColor="@color/brandSecondary100"
+                            android:textSize="@dimen/textSizeNormal"
+                            android:fontFamily="@font/roboto"
+                            android:gravity="end"
+                            android:layout_toEndOf="@id/tvCategory"
+                            android:layout_alignParentEnd="true"/>
 
-                        <RelativeLayout
-                            android:id="@+id/lytTvLocation"
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/brandSecondary300"/>
+
+                    <RelativeLayout
+                        android:id="@+id/lytTvLocation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/marginMedium"
+                        android:visibility="visible">
+
+                        <TextView
+                            android:id="@+id/tvLocation"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/marginMedium"
-                            android:visibility="visible">
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/textSizeNormal"
+                            android:fontFamily="@font/roboto"
+                            android:text="@string/title_location"
+                            android:layout_alignParentStart="true"/>
 
-                            <TextView
-                                android:id="@+id/tvLocation"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/textSizeNormal"
-                                android:fontFamily="@font/roboto"
-                                android:text="@string/title_location"
-                                android:layout_alignParentStart="true"/>
-
-                            <TextView
-                                android:id="@+id/tvSelectedLocation"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:drawableEnd="@drawable/chevron_right"
-                                android:textColor="@color/brandSecondary100"
-                                android:textSize="@dimen/textSizeNormal"
-                                android:fontFamily="@font/roboto"
-                                android:gravity="end"
-                                android:layout_toEndOf="@id/tvLocation"
-                                android:layout_alignParentEnd="true"/>
-
-                        </RelativeLayout>
-
-                        <View
+                        <TextView
+                            android:id="@+id/tvSelectedLocation"
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/brandSecondary300"/>
+                            android:layout_height="wrap_content"
+                            android:drawableEnd="@drawable/chevron_right"
+                            android:textColor="@color/brandSecondary100"
+                            android:textSize="@dimen/textSizeNormal"
+                            android:fontFamily="@font/roboto"
+                            android:gravity="end"
+                            android:layout_toEndOf="@id/tvLocation"
+                            android:layout_alignParentEnd="true"/>
 
-                    </LinearLayout>
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/brandSecondary300"/>
+
+
 
                     <LinearLayout
                         android:id="@+id/lytPlayer"
@@ -350,6 +360,9 @@
 
                     </LinearLayout>
                 </LinearLayout>
+
+                </LinearLayout>
+
             </LinearLayout>
 
             <ProgressBar
