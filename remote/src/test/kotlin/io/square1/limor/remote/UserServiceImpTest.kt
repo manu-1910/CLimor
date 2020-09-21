@@ -201,4 +201,25 @@ class UserServiceImpTest {
         response?.assertValue { it.message == "Success" }
     }
 
+
+    @Test
+    fun should_get_notifications_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = CURRENT_URL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = "PaEH9-VD6l9YeO63I6DdfktPp752mGmdixCGjE-QLT8",
+            expiredIn = 0
+        )
+
+        userService = UserServiceImp(config)
+
+        val response = userService.getNotifications(10, 0).test()
+
+        response.assertNoErrors()
+        response.assertValue { it.message == "Success" }
+    }
+
+
 }

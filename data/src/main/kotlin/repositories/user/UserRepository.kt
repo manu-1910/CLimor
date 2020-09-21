@@ -17,4 +17,5 @@ interface UserRepository {
     fun createUserBlocked(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity>
     fun deleteUserBlocked(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity>
     fun reportUser(id :Int, request: DataCreateUserReportRequestEntity): Single<CreateReportResponseEntity>
+    fun getNotifications(limit: Int, offset: Int): Single<NotificationsResponseEntity>
 }

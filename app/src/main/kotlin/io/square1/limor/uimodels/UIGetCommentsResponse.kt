@@ -31,7 +31,7 @@ data class UIComment(
     var comments: ArrayList<UIComment>,
     var podcast: UIPodcast?,
     var number_of_listens: Int,
-    var podcast_id: Int,
+    var podcast_id: Int?,
     var links: UILinks,
     var comment_count: Int
 ) : Serializable

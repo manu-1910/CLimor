@@ -266,5 +266,7 @@
     <string name="report_user">Report user</string>
     <string name="user_reported_ok">User reported successfully</string>
     <string name="user_reported_error">We couldn\'t report the user. Please try again later.</string>
+    <string name="no_notifications_message">Your notifications will show up here</string>
+    <string name="no_notifications_error_message">There was an error getting notifications. Please try again.</string>
 
 </resources>

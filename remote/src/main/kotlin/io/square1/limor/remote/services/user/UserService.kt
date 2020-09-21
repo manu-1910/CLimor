@@ -13,7 +13,7 @@ const val SHOW_FEED_PATH = "/api/v1/users/feed"
 const val BLOCKED_USERS = "/api/v1/users/blocked_users"
 const val FRIENDS_PATH = "/api/v1/users/{id}/friends"
 const val REPORT_USER_PATH = "/api/v1/users/{id}/reports"
-
+const val NOTIFICATIONS_PATH = "/api/v1/users/notifications"
 
 interface UserService {
 
@@ -47,5 +47,8 @@ interface UserService {
 
     @POST(REPORT_USER_PATH)
     fun reportUser(@Path("id") id: Int, @Body request: RequestBody): Single<ResponseBody>
+
+    @GET(NOTIFICATIONS_PATH)
+    fun getNotifications(@Query ("limit") limit : Int?, @Query("offset") offset : Int?): Single<ResponseBody>
 
 }
