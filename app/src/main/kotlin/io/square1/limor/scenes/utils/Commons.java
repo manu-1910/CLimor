@@ -592,4 +592,22 @@ public class Commons {
     }
 
 
+
+
+
+    public static void deleteFiles(ArrayList<String> filePaths) {
+        for (String cachedPath : filePaths) {
+            deleteFile(cachedPath);
+        }
+    }
+
+    public static void deleteFile(String filePath) {
+        if (filePath == null) {
+            return;
+        }
+        File file = new File(filePath);
+        file.delete();
+    }
+
+
 }

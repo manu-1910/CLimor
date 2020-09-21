@@ -33,6 +33,7 @@ import io.square1.limor.scenes.main.viewmodels.DraftViewModel
 import io.square1.limor.scenes.utils.Commons.mergeAmrAudioFiles
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.audioFileFormat
+import io.square1.limor.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import io.square1.limor.scenes.utils.VisualizerView
 import io.square1.limor.uimodels.UIDraft
 import kotlinx.android.synthetic.main.fragment_record.*
@@ -115,7 +116,7 @@ class RecordFragment : BaseFragment() {
         insertDraft()
         deleteDraft()
 
-        recordingItem = UIDraft()
+        //recordingItem = UIDraft()
 
         //Check Permissions
         if (!hasPermissions(requireContext(), *PERMISSIONS)) {
@@ -190,7 +191,7 @@ class RecordFragment : BaseFragment() {
         positiveButton.onClick {
 
             recordingItem?.title = editText.text.toString()
-            recordingItem?.caption = CommonsKt.getDateTimeFormatted()
+            recordingItem?.date = getDateTimeFormatted()
 
             //Inserting in Realm
             insertDraftInRealm(recordingItem!!)
@@ -714,8 +715,10 @@ class RecordFragment : BaseFragment() {
         output.response.observe(this, Observer {
             if (it) {
                 //toast(getString(R.string.draft_inserted))
+                println("Draft inserted succesfully")
             } else {
                 //toast(getString(R.string.draft_not_inserted))
+                println("Error inserting draft in Realm")
             }
         })
 
@@ -739,8 +742,10 @@ class RecordFragment : BaseFragment() {
         output.response.observe(this, Observer {
             if (it) {
                 //toast(getString(R.string.draft_deleted))
+                println("Draft deleted in realm")
             } else {
                 //toast(getString(R.string.draft_not_deleted))
+                println("Error deleting draft in realm")
             }
         })
 
@@ -817,6 +822,9 @@ class RecordFragment : BaseFragment() {
         if(item.title.isNullOrEmpty()){
             item.title = getString(R.string.autosaved_draft)
         }
+        if(item.date.isNullOrEmpty()){
+            item.date = getDateTimeFormatted()
+        }
 
         draftViewModel.uiDraft = item
 
@@ -865,6 +873,11 @@ class RecordFragment : BaseFragment() {
 //        super.onDetach()
 //    }
 
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        //recordingItem = null
+    }
 
 
 }

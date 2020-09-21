@@ -15,7 +15,12 @@ data class DraftEntity(
     val length: Long?,
     val time: Long?,
     val isEditMode: Boolean?,
-    val timeStamps: ArrayList<TimeStampEntity>
+    val timeStamps: ArrayList<TimeStampEntity>,
+    val date: String?,
+    val categoryId: Int?,
+    val category: String?,
+    val location: LocationsEntity?
+
 )
 
 

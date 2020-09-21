@@ -280,16 +280,11 @@ class EditFragment : WaveformFragment() {
                 dismissProgress()
                 e.printStackTrace()
             }
+            //for (i = 0 i < 2; i++) {
             for (i in 0..1) {
-                val outPath =
-                    activity!!.externalCacheDir.absolutePath + "/limor_record_chunk_" + i + ".m4a"
-                val startTime =
-                    waveformView.pixelsToSeconds(if (i == 0) 0 else (editMarker.startPos / NEW_WIDTH) - 10)
-                val endTime = waveformView.pixelsToSeconds(
-                    if (i == 0) (editMarker.startPos / NEW_WIDTH) else waveformView.millisecsToPixels(
-                        player.duration - 10
-                    )
-                )
+                val outPath = activity?.externalCacheDir!!.absolutePath + "/limor_record_chunk_" + i + ".m4a"
+                val startTime = waveformView.pixelsToSeconds(if (i == 0) 0 else (editMarker.startPos / NEW_WIDTH) - 5) //TODO JJ había un 10 e iba mal
+                val endTime = waveformView.pixelsToSeconds(if (i == 0) (editMarker.startPos / NEW_WIDTH) else waveformView.millisecsToPixels(player.duration - 5)) //TODO JJ había un 10 e iba mal
                 val startFrame = waveformView.secondsToFrames(startTime)
                 val endFrame = waveformView.secondsToFrames(endTime)
                 val outFile = File(outPath)
@@ -304,8 +299,7 @@ class EditFragment : WaveformFragment() {
                     e.printStackTrace()
                 }
             }
-            fileName =
-                activity!!.externalCacheDir.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
+            fileName = activity?.externalCacheDir!!.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
             try {
                 val listMovies: MutableList<Movie> = ArrayList()
                 for (filename in audioFilePaths) {
@@ -320,23 +314,24 @@ class EditFragment : WaveformFragment() {
                     }
                 }
                 val outputMovie = Movie()
-                if (!listTracks.isEmpty()) {
+                if (listTracks.isNotEmpty()) {
                     outputMovie.addTrack(AppendTrack(*listTracks.toTypedArray()))
+                    //outputMovie.addTrack(AppendTrack(listTracks.toTypedArray()[listTracks.size])) //TODO JJ
                 }
+
                 val container = DefaultMp4Builder().build(outputMovie)
                 val fileChannel = RandomAccessFile(String.format(fileName), "rws").channel
                 container.writeContainer(fileChannel)
                 fileChannel.close()
 
-                //SHOUtils.deleteFiles(audioFilePaths); //TODO JJ Check this
+                Commons.deleteFiles(audioFilePaths); //TODO JJ Check this
+
                 audioFilePaths = ArrayList()
-                val copiedLength: Int
-                val startPosMilliseconds =
-                    waveformView.pixelsToMillisecs(selectedMarker.startPos / NEW_WIDTH)
-                val endPosMilliseconds =
-                    waveformView.pixelsToMillisecs(selectedMarker.endPos / NEW_WIDTH)
+                var copiedLength: Int = 0
+                val startPosMilliseconds = waveformView.pixelsToMillisecs(selectedMarker.startPos / NEW_WIDTH)
+                val endPosMilliseconds = waveformView.pixelsToMillisecs(selectedMarker.endPos / NEW_WIDTH)
                 copiedLength = endPosMilliseconds - startPosMilliseconds
-                activity!!.runOnUiThread {
+                activity?.runOnUiThread {
                     val timeStamps = ArrayList<UITimeStamp>()
                     if (markerSets != null && markerSets.size > 0) {
                         val iterator = markerSets.iterator()
@@ -387,9 +382,9 @@ class EditFragment : WaveformFragment() {
                     //removeMarker(firstMarkerSet);
 
                     shouldReloadPreview = true
-                    recordingItem!!.timeStamps = timeStamps
-                    recordingItem!!.length = recordingItem!!.length!! + copiedLength
-                    recordingItem!!.filePath = fileName
+                    recordingItem?.timeStamps = timeStamps
+                    recordingItem?.length = recordingItem?.length?.plus(copiedLength)
+                    recordingItem?.filePath = fileName
                     updateRecordingItem()
                     dismissProgress()
                     loadFromFile(fileName)

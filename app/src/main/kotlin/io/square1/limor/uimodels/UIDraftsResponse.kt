@@ -20,9 +20,13 @@ data class UIDraft(
     var length: Long?,
     var time: Long?,
     var isEditMode: Boolean?,
-    var timeStamps: ArrayList<UITimeStamp>?
+    var timeStamps: ArrayList<UITimeStamp>?,
+    var date: String?,
+    var categoryId: Int?,
+    var category: String?,
+    var location: UILocations?
 ): Serializable {
-    constructor() : this( 0,"", "", "", "", "", 0, 0, false, ArrayList())
+    constructor() : this( 0,"", "", "", "", "", 0, 0, false, ArrayList(), "", 0, "", UILocations())
 }
 
 

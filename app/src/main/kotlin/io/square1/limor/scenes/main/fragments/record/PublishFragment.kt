@@ -25,9 +25,11 @@ import android.provider.MediaStore
 import android.text.Editable
 import android.text.Spannable
 import android.text.TextWatcher
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -60,7 +62,9 @@ import io.square1.limor.scenes.main.fragments.record.adapters.HashtagAdapter
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
+import io.square1.limor.scenes.utils.CommonsKt.Companion.dpToPx
 import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
+import io.square1.limor.scenes.utils.waveform.KeyboardUtils
 import io.square1.limor.uimodels.*
 import kotlinx.android.synthetic.main.fragment_publish.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
@@ -80,9 +84,10 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlin.collections.ArrayList
+import kotlin.math.roundToInt
 
 
-class PublishFragment : BaseFragment() {
+class PublishFragment : BaseFragment(){
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -133,6 +138,8 @@ class PublishFragment : BaseFragment() {
     private val RESULT_CROP_API_29 = 553
     private var listTags = ArrayList<UITags>()
     private var listTagsString: HashtagArrayAdapter<Hashtag>? = null
+    private var tvSelectedLocation: TextView? = null
+    private var tvSelectedCategory: TextView? = null
 
     //Flags to publish podcast
     private var audioUploaded: Boolean = false
@@ -140,6 +147,8 @@ class PublishFragment : BaseFragment() {
     private var podcastHasImage: Boolean = false
 
     private var tw: TextWatcher? = null
+
+    private var isShowingTagsRecycler = false
 
 
 
@@ -170,6 +179,8 @@ class PublishFragment : BaseFragment() {
             btnPublishDraft = rootView?.findViewById(R.id.btnPublish)
             etDraftTitle = rootView?.findViewById(R.id.etTitle)
             etDraftCaption = rootView?.findViewById(R.id.etCaption)
+            tvSelectedLocation = rootView?.findViewById(R.id.tvSelectedLocation)
+            tvSelectedCategory = rootView?.findViewById(R.id.tvSelectedCategory)
 
             lytWithoutTagsRecycler = rootView?.findViewById(R.id.lytWithoutTagsRecycler)
 
@@ -182,6 +193,7 @@ class PublishFragment : BaseFragment() {
             getCityOfDevice()
             deleteDraft()
             apiCallHashTags()
+
         }
         app = context?.applicationContext as App
         return rootView
@@ -193,6 +205,7 @@ class PublishFragment : BaseFragment() {
         recordingItem = UIDraft()
         recordingItem = arguments!!["recordingItem"] as UIDraft
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -219,9 +232,15 @@ class PublishFragment : BaseFragment() {
         //Load selected location
         podcastLocation = locationsViewModel.locationSelectedItem
 
-        tvSelectedLocation.text = podcastLocation.address
-        tvSelectedCategory.text = publishViewModel.categorySelected
-
+        if(!podcastLocation.address.isNullOrEmpty()){
+            tvSelectedLocation?.text = podcastLocation.address
+            recordingItem.location = podcastLocation
+        }
+        if(!publishViewModel.categorySelected.isNullOrEmpty()){
+            tvSelectedCategory?.text = publishViewModel.categorySelected
+            recordingItem.category = publishViewModel.categorySelected
+            recordingItem.categoryId = publishViewModel.categorySelectedId
+        }
     }
 
 
@@ -393,12 +412,14 @@ class PublishFragment : BaseFragment() {
             override fun afterTextChanged(editable: Editable) {}
             override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {
                 try {
-                    if (s.substring(s.length - 1) == "#") {
+                    if (s.substring(s.length - 2).startsWith("#")) {
                         rvTags.visibility = View.VISIBLE
                         lytWithoutTagsRecycler?.visibility = View.GONE
+                        isShowingTagsRecycler = true
                     } else if ((s.substring(s.length - 1) == " ") || (s.substring(s.length - 1) == System.lineSeparator())){
                         rvTags.visibility = View.GONE
                         lytWithoutTagsRecycler?.visibility = View.VISIBLE
+                        isShowingTagsRecycler = false
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -406,6 +427,21 @@ class PublishFragment : BaseFragment() {
             }
         }
         etCaption.addTextChangedListener(tw)
+
+
+        //Keyboard listener to hide the recycler
+        KeyboardUtils.addKeyboardToggleListener(activity) { isVisible ->
+            //println("keyboard visible: $isVisible")
+            if(isShowingTagsRecycler){
+                if(isVisible){
+                    rvTags.visibility = View.VISIBLE
+                    lytWithoutTagsRecycler?.visibility = View.GONE
+                }else{
+                    rvTags.visibility = View.GONE
+                    lytWithoutTagsRecycler?.visibility = View.VISIBLE
+                }
+            }
+        }
 
     }
 
@@ -451,29 +487,42 @@ class PublishFragment : BaseFragment() {
 
 
     private fun publishPodcastImage() {
-        //Upload audio file to AWS
-        Commons.getInstance().uploadImage(
-            context,
-            object : Commons.ImageUploadCallback {
-                override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {}
 
-                override fun onSuccess(imageUrl: String?) {
-                    println("Image upload to AWS succesfully")
-                    //var imageUploadedUrl = imageUrl
-                    imageUploaded = true
-                    imageUrlFinal = imageUrl
-                    readyToPublish()
-                }
 
-                override fun onStateChanged(id: Int, state: TransferState?) {}
+        if(Commons.getInstance().isImageReadyForUpload){
+            //Upload audio file to AWS
+            Commons.getInstance().uploadImage(
+                context,
+                object : Commons.ImageUploadCallback {
+                    override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {}
 
-                override fun onError(error: String?) {
-                    imageUploaded = false
-                    var error = error
-                    println("Image upload to AWS error: $error")
-                }
-            }, Commons.IMAGE_TYPE_ATTACHMENT
-        )
+                    override fun onSuccess(imageUrl: String?) {
+                        println("Image upload to AWS succesfully")
+                        //var imageUploadedUrl = imageUrl
+                        imageUploaded = true
+                        imageUrlFinal = imageUrl
+                        readyToPublish()
+                    }
+
+                    override fun onStateChanged(id: Int, state: TransferState?) {}
+
+                    override fun onError(error: String?) {
+                        imageUploaded = false
+                        var error = error
+                        println("Image upload to AWS error: $error")
+                    }
+                }, Commons.IMAGE_TYPE_ATTACHMENT
+            )
+        }else{
+            val imageFile = File(recordingItem.tempPhotoPath)
+            Commons.getInstance().handleImage(
+                context,
+                Commons.IMAGE_TYPE_PODCAST,
+                imageFile,
+                "podcast_photo"
+            )
+            publishPodcastAudio()
+        }
     }
 
 
@@ -510,7 +559,6 @@ class PublishFragment : BaseFragment() {
 
         //recordingItem
         if(!recordingItem.title.toString().trim().isNullOrEmpty()){
-
             //val autosaveText = draftViewModel.uiDraft.title?.toEditable()
             if(!recordingItem.title.toString().trim().equals(getString(R.string.autosave))){
                 etDraftTitle?.text = recordingItem.title?.toEditable()
@@ -533,6 +581,19 @@ class PublishFragment : BaseFragment() {
             lytImagePlaceholder?.visibility = View.VISIBLE
             lytImage?.visibility = View.GONE
         }
+        if(!recordingItem.category.toString().isNullOrEmpty()){
+            tvSelectedCategory?.text = recordingItem.category
+        }else{
+            tvSelectedCategory?.text = publishViewModel.categorySelected
+            recordingItem.category = publishViewModel.categorySelected
+            recordingItem.categoryId = publishViewModel.categorySelectedId
+        }
+        if(!recordingItem.location?.address.toString().isNullOrEmpty()){
+            tvSelectedLocation?.text = recordingItem.location?.address
+        }else{
+            tvSelectedLocation?.text = publishViewModel.locationSelectedItem.address
+            recordingItem.location = publishViewModel.locationSelectedItem
+        }
     }
 
 
@@ -544,26 +605,14 @@ class PublishFragment : BaseFragment() {
             recordingItem.title = getString(R.string.autosave)
         }
 
-        if(!etDraftCaption?.text.toString().isNullOrEmpty()){
-            recordingItem.caption = etDraftCaption?.text.toString()
-        }else{
-            recordingItem.caption = "autosave caption"
-        }
+        recordingItem.caption = etDraftCaption?.text.toString()
+        recordingItem.title = etDraftTitle?.text.toString()
+        recordingItem.caption = etDraftCaption?.text.toString()
 
-        //recordingItem.hastags
-        //recordingItem.location
-        
-        //Compose the viewmodel object
-        draftViewModel.uiDraft.title = etDraftTitle?.text.toString()
-        draftViewModel.uiDraft.caption = etDraftCaption?.text.toString()
-        //draftViewModel.uiDraft.hashtags = etdrafthashtangs?.text.toString()
-        //draftViewModel.uiDraft.location = etdraftlocation?.text.toString()
-        draftViewModel.uiDraft.filePath = recordingItem.filePath
-        draftViewModel.uiDraft.editedFilePath = recordingItem.filePath
+        draftViewModel.uiDraft = recordingItem
 
         //Update Realm
         updateDraftTrigger.onNext(Unit)
-
     }
 
 
@@ -868,8 +917,10 @@ class PublishFragment : BaseFragment() {
         output.response.observe(this, Observer {
             if (it) {
                 //toast(getString(R.string.draft_updated))
+                println("Draft updated")
             } else {
                 //toast(getString(R.string.draft_not_updated))
+                println("Draft NOT updated")
             }
         })
 
@@ -878,7 +929,8 @@ class PublishFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            toast(getString(R.string.draft_not_updated_error))
+            //toast(getString(R.string.draft_not_updated_error))
+            println("There was an error updating the draft")
         })
     }
 
@@ -909,11 +961,7 @@ class PublishFragment : BaseFragment() {
             captionNotEmpty = false
         }
 
-        if(titleNotEmpty && captionNotEmpty){
-            return true
-        }else {
-            return false
-        }
+        return titleNotEmpty && captionNotEmpty
     }
 
 
@@ -1049,20 +1097,32 @@ class PublishFragment : BaseFragment() {
         rvTags?.layoutManager = LinearLayoutManager(context)
         rvTags?.adapter = listTagsString?.let {
             HashtagAdapter(it, object : HashtagAdapter.OnItemClickListener {
-                    override fun onItemClick(item: Hashtag) {
-                        val actualString = etCaption.text
-                        val finalString: String =
-                            actualString.substring(0, actualString.lastIndexOf(getCurrentWord(etCaption)!!))+
-                                    "#$item" +
-                                    actualString.substring(actualString.lastIndexOf(getCurrentWord(etCaption)!!) + getCurrentWord(etCaption)!!.length, actualString.length)
+                override fun onItemClick(item: Hashtag) {
+                    val actualString = etCaption.text
+                    val finalString: String =
+                        actualString.substring(
+                            0, actualString.lastIndexOf(
+                                getCurrentWord(
+                                    etCaption
+                                )!!
+                            )
+                        ) +
+                                "#$item" +
+                                actualString.substring(
+                                    actualString.lastIndexOf(
+                                        getCurrentWord(
+                                            etCaption
+                                        )!!
+                                    ) + getCurrentWord(etCaption)!!.length, actualString.length
+                                )
 
-                        etCaption.applyWithDisabledTextWatcher(tw!!) {
-                            text = finalString
-                        }
-                        etCaption.setSelection(etCaption.text.length); //This places cursor to end of EditText.
-                        rvTags?.adapter?.notifyDataSetChanged()
+                    etCaption.applyWithDisabledTextWatcher(tw!!) {
+                        text = finalString
                     }
-                })
+                    etCaption.setSelection(etCaption.text.length); //This places cursor to end of EditText.
+                    rvTags?.adapter?.notifyDataSetChanged()
+                }
+            })
         }
     }
 
@@ -1082,7 +1142,10 @@ class PublishFragment : BaseFragment() {
     }
 
 
-    fun TextView.applyWithDisabledTextWatcher(textWatcher: TextWatcher, codeBlock: TextView.() -> Unit) {
+    fun TextView.applyWithDisabledTextWatcher(
+        textWatcher: TextWatcher,
+        codeBlock: TextView.() -> Unit
+    ) {
         this.removeTextChangedListener(textWatcher)
         codeBlock()
         this.addTextChangedListener(textWatcher)
@@ -1114,9 +1177,42 @@ class PublishFragment : BaseFragment() {
             trackBackgroudProgress(it)
         })
         output.errorMessage.observe(this, Observer {
-            toast(getString(R.string.centre_not_deleted_error))
+            //toast(getString(R.string.centre_not_deleted_error))
+            println("There was an error deleting the draft from DB")
         })
     }
 
+
+    fun Activity.addKeyboardToggleListener(onKeyboardToggleAction: (shown: Boolean) -> Unit): KeyboardToggleListener? {
+        val root = findViewById<View>(android.R.id.content)
+        val listener = KeyboardToggleListener(root, onKeyboardToggleAction)
+        return root?.viewTreeObserver?.run {
+            addOnGlobalLayoutListener(listener)
+            listener
+        }
+    }
+
+
+    fun View.dpToPx(dp: Float) = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        dp,
+        resources.displayMetrics
+    ).roundToInt()
 }
 
+    open class KeyboardToggleListener(
+        private val root: View?,
+        private val onKeyboardToggleAction: (shown: Boolean) -> Unit
+    ) : ViewTreeObserver.OnGlobalLayoutListener {
+        private var shown = false
+        override fun onGlobalLayout() {
+            root?.run {
+                val heightDiff = rootView.height - height
+                val keyboardShown = heightDiff > dpToPx(200f, context)
+                if (shown != keyboardShown) {
+                    onKeyboardToggleAction.invoke(keyboardShown)
+                    shown = keyboardShown
+                }
+            }
+        }
+}

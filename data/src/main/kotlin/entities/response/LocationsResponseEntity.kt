@@ -10,7 +10,7 @@ data class LocationsEntityArray(
     var locations: ArrayList<LocationsEntity>
 )
 
-class LocationsEntity(
+data class LocationsEntity(
     var address: String,
     var latitude: Double,
     var longitude: Double,
