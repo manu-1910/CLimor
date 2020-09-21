@@ -26,9 +26,7 @@ import io.square1.limor.scenes.main.fragments.profile.UserReportActivity
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.splash.SplashActivity
 import io.square1.limor.scenes.utils.CommonsKt.Companion.formatSocialMediaQuantity
-import io.square1.limor.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_profile.*
-import kotlinx.android.synthetic.main.fragment_profile.ivVerifiedUser
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -39,7 +37,7 @@ import javax.inject.Inject
 class ProfileFragment : BaseFragment() {
 
 
-    private var uiUser: UIUser? = null
+//    private var uiUser: UIUser? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -56,7 +54,8 @@ class ProfileFragment : BaseFragment() {
     @Inject
     lateinit var sessionManager: SessionManager
 
-    private lateinit var viewModelProfile: ProfileViewModel
+//    private lateinit var viewModelProfile: ProfileViewModel
+    private lateinit var viewModelGetUser: GetUserViewModel
     private lateinit var viewModelLogout: LogoutViewModel
     private val getUserDataTrigger = PublishSubject.create<Unit>()
     private val logoutTrigger = PublishSubject.create<Unit>()
@@ -98,14 +97,16 @@ class ProfileFragment : BaseFragment() {
         apiCallLogout()
 
         if(!isMyProfileMode) {
-            uiUser = (activity as UserProfileActivity).uiUser
+            viewModelGetUser.user = (activity as UserProfileActivity).uiUser
             apiCallReportUser()
             apiCallCreateUser()
             apiCallDeleteUser()
         } else {
-            uiUser = sessionManager.getStoredUser()
-            getUserDataTrigger.onNext(Unit)
+            viewModelGetUser.user = sessionManager.getStoredUser()
         }
+
+        viewModelGetUser.id = viewModelGetUser.user?.id
+        getUserDataTrigger.onNext(Unit)
 
         configureToolbar()
         configureScreen()
@@ -117,8 +118,8 @@ class ProfileFragment : BaseFragment() {
             true
         } else {
             val loggedUser = sessionManager.getStoredUser()
-            uiUser = (activity as UserProfileActivity).uiUser
-            loggedUser?.id == uiUser?.id
+            val user = (activity as UserProfileActivity).uiUser
+            loggedUser?.id == user?.id
         }
     }
 
@@ -169,17 +170,17 @@ class ProfileFragment : BaseFragment() {
         }
 
         btnFollow.onClick {
-            uiUser?.followed?.let{
+            viewModelGetUser.user?.followed?.let{
                 revertUserFollowedState()
 
                 // if the user is followed now, we must unfollow him
                 if (it) {
-                    viewModelDeleteFriend.idFriend = uiUser!!.id
+                    viewModelDeleteFriend.idFriend = viewModelGetUser.user!!.id
                     deleteFriendDataTrigger.onNext(Unit)
 
                     // if the user is unfollowed now, we must follow him
                 } else {
-                    viewModelCreateFriend.idNewFriend = uiUser!!.id
+                    viewModelCreateFriend.idNewFriend = viewModelGetUser.user!!.id
                     createFriendDataTrigger.onNext(Unit)
                 }
             }
@@ -217,7 +218,7 @@ class ProfileFragment : BaseFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         data?.let {
             val reason = data.getStringExtra("reason")
-            viewModelCreateUserReport.idUser = uiUser!!.id
+            viewModelCreateUserReport.idUser = viewModelGetUser.user!!.id
             viewModelCreateUserReport.reason = reason
             createUserReportDataTrigger.onNext(Unit)
         }
@@ -228,9 +229,9 @@ class ProfileFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
-            viewModelProfile = ViewModelProviders
+            viewModelGetUser = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
-                .get(ProfileViewModel::class.java)
+                .get(GetUserViewModel::class.java)
 
             viewModelLogout = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
@@ -332,32 +333,32 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun revertUserFollowedState() {
-        uiUser?.followed?.let {
+        viewModelGetUser.user?.followed?.let {
             if(it) {
                 btnFollow.text = getString(R.string.follow)
-                uiUser!!.followers_count = uiUser!!.followers_count?.dec()
+                viewModelGetUser.user!!.followers_count = viewModelGetUser.user!!.followers_count?.dec()
             } else {
                 btnFollow.text = getString(R.string.unfollow)
-                uiUser!!.followers_count = uiUser!!.followers_count?.inc()
+                viewModelGetUser.user!!.followers_count = viewModelGetUser.user!!.followers_count?.inc()
             }
 
-            tvNumberFollowers.text = formatSocialMediaQuantity(uiUser!!.followers_count!!)
-            uiUser?.followed = !it
+            tvNumberFollowers.text = formatSocialMediaQuantity(viewModelGetUser.user!!.followers_count!!)
+            viewModelGetUser.user?.followed = !it
 
         }
     }
 
 
     private fun apiCallGetUser() {
-        val output = viewModelProfile.transform(
-            ProfileViewModel.Input(
+        val output = viewModelGetUser.transform(
+            GetUserViewModel.Input(
                 getUserDataTrigger
             )
         )
 
         output.response.observe(this, Observer {
             view?.hideKeyboard()
-            uiUser = it.data.user
+            viewModelGetUser.user = it.data.user
             printUserData()
         })
 
@@ -497,27 +498,27 @@ class ProfileFragment : BaseFragment() {
 
 
     private fun printUserData() {
-        val fullname = uiUser?.first_name + " " + uiUser?.last_name
+        val fullname = viewModelGetUser.user?.first_name + " " + viewModelGetUser.user?.last_name
         tvToolbarUsername?.text = fullname
-        uiUser?.followers_count?.let {
+        viewModelGetUser.user?.followers_count?.let {
             tvNumberFollowers.text = formatSocialMediaQuantity(it)
         }
-        uiUser?.following_count?.let {
+        viewModelGetUser.user?.following_count?.let {
             tvNumberFollowing.text = formatSocialMediaQuantity(it)
         }
         context?.let {
             Glide.with(it)
-                .load(uiUser?.images?.medium_url)
+                .load(viewModelGetUser.user?.images?.medium_url)
                 .apply(RequestOptions.circleCropTransform())
                 .into(ivUser)
         }
-        uiUser?.verified?.let {
+        viewModelGetUser.user?.verified?.let {
             if (it)
                 ivVerifiedUser.visibility = View.VISIBLE
         }
 
         if(!isMyProfileMode) {
-            uiUser?.followed?.let {
+            viewModelGetUser.user?.followed?.let {
                 if(it)
                     btnFollow.text = getString(R.string.unfollow)
                 else
@@ -526,7 +527,7 @@ class ProfileFragment : BaseFragment() {
         }
 
 
-        tvBio.text = uiUser?.description
+        tvBio.text = viewModelGetUser.user?.description
     }
 
 }

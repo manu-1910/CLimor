@@ -8,6 +8,7 @@ import retrofit2.http.*
 
 
 const val USER_ME_PATH = "/api/v1/users/me"
+const val USER_PATH = "/api/v1/users/{id}"
 const val LOG_OUT_PATH = "/oauth/revoke"
 const val SHOW_FEED_PATH = "/api/v1/users/feed"
 const val BLOCKED_USERS = "/api/v1/users/blocked_users"
@@ -19,6 +20,10 @@ interface UserService {
 
     @GET(USER_ME_PATH)
     fun userMe(): Single<ResponseBody>
+
+
+    @GET(USER_PATH)
+    fun getUser(@Path ("id") id : Int): Single<ResponseBody>
 
 
     @POST(LOG_OUT_PATH)

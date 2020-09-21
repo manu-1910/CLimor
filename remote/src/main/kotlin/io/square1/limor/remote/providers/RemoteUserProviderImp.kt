@@ -17,8 +17,12 @@ import javax.inject.Inject
 @ImplicitReflectionSerializer
 class RemoteUserProviderImp @Inject constructor(private val provider: UserServiceImp) : RemoteUserProvider {
 
-    override fun userMe(): Single<SignUpResponseEntity> {
+    override fun userMe(): Single<GetUserResponseEntity> {
         return provider.userMe().asDataEntity()
+    }
+
+    override fun getUser(id: Int): Single<GetUserResponseEntity> {
+        return provider.getUser(id).asDataEntity()
     }
 
     override fun logOut(dataLogoutRequest: DataLogoutRequest): Single<ErrorResponseEntity> {

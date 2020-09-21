@@ -20,7 +20,7 @@ import io.square1.limor.common.BaseActivity
 import io.square1.limor.common.SessionManager
 import io.square1.limor.scenes.main.fragments.*
 import io.square1.limor.scenes.main.fragments.record.RecordActivity
-import io.square1.limor.scenes.main.viewmodels.ProfileViewModel
+import io.square1.limor.scenes.main.viewmodels.GetUserViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
@@ -37,8 +37,8 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
     override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> = fragmentInjector
 
-    private lateinit var profileViewModel : ProfileViewModel
-    private val getProfileTrigger = PublishSubject.create<Unit>()
+    private lateinit var getUserViewModel : GetUserViewModel
+    private val getUserDataTrigger = PublishSubject.create<Unit>()
 
     @Inject
     lateinit var sessionManager : SessionManager
@@ -58,20 +58,20 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
         bindViewModel()
 
-        initApiCallGetProfile()
+        initApiCallGetUser()
 
         setupNavigationController()
 
         // this is intended to download the data of the current user logged. It's necessary to have it
         // in some times of the code, so we download it everytime this activivty loads to have it updated
         // with all of his data
-        getProfileTrigger.onNext(Unit)
+        getUserDataTrigger.onNext(Unit)
     }
 
-    private fun initApiCallGetProfile() {
-        val output = profileViewModel.transform(
-            ProfileViewModel.Input(
-                getProfileTrigger
+    private fun initApiCallGetUser() {
+        val output = getUserViewModel.transform(
+            GetUserViewModel.Input(
+                getUserDataTrigger
             )
         )
 
@@ -89,9 +89,9 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
     }
 
     private fun bindViewModel() {
-        profileViewModel = ViewModelProviders
+        getUserViewModel = ViewModelProviders
             .of(this, viewModelFactory)
-            .get(ProfileViewModel::class.java)
+            .get(GetUserViewModel::class.java)
     }
 
 

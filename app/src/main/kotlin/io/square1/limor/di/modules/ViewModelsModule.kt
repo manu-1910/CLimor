@@ -48,11 +48,6 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(ProfileViewModel::class)
-    abstract fun bindProfileViewModel(profileViewModel: ProfileViewModel): ViewModel
-
-    @Binds
-    @IntoMap
     @ViewModelKey(LogoutViewModel::class)
     abstract fun bindLogoutViewModel(logoutViewModel: LogoutViewModel): ViewModel
 
@@ -70,6 +65,11 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(LocationsViewModel::class)
     abstract fun bindLocationsViewModel(locationsViewModel: LocationsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(GetUserViewModel::class)
+    abstract fun getUserViewModel(getUserViewModel: GetUserViewModel): ViewModel
 
     @Binds
     @IntoMap

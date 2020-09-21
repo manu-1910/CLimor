@@ -91,6 +91,29 @@ class UserServiceImpTest {
     }
 
     @Test
+    fun should_get_user_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = CURRENT_URL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = CURRENT_TOKEN,
+            expiredIn = 0
+        )
+
+        userService = UserServiceImp(config)
+
+        val idUser = 10
+        val response = userService.getUser(idUser).test()
+
+        response?.assertNoErrors()
+        response?.assertValue {
+            it.message == "Success"
+        }
+
+    }
+
+    @Test
     fun should_create_friend_successfully() {
         val config = RemoteServiceConfig(
             baseUrl = CURRENT_URL,

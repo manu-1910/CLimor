@@ -20,9 +20,16 @@ import javax.inject.Inject
 class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
     RemoteService<UserService>(UserService::class.java, serviceConfig) {
 
-    fun userMe(): Single<NWSignUpResponse> {
+    fun userMe(): Single<NWGetUserResponse> {
         return service.userMe()
-            .map { response -> response.parseSuccessResponse(NWSignUpResponse.serializer()) }
+            .map { response -> response.parseSuccessResponse(NWGetUserResponse.serializer()) }
+            .doOnSuccess { success -> println("SUCCESS: $success") }
+            .doOnError { error -> println("ERROR: $error") }
+    }
+
+    fun getUser(id: Int): Single<NWGetUserResponse> {
+        return service.getUser(id)
+            .map { response -> response.parseSuccessResponse(NWGetUserResponse.serializer()) }
             .doOnSuccess { success -> println("SUCCESS: $success") }
             .doOnError { error -> println("ERROR: $error") }
     }

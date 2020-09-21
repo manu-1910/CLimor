@@ -12,8 +12,12 @@ import javax.inject.Inject
 
 class DataUserRepository @Inject constructor(private val remoteProvider: RemoteUserProvider): UserRepository {
 
-    override fun userMe(): Single<SignUpResponseEntity> {
+    override fun userMe(): Single<GetUserResponseEntity> {
         return remoteProvider.userMe()
+    }
+
+    override fun getUser(id: Int): Single<GetUserResponseEntity> {
+        return remoteProvider.getUser(id)
     }
 
 

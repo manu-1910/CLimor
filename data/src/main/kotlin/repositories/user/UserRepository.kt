@@ -8,7 +8,8 @@ import entities.response.*
 import io.reactivex.Single
 
 interface UserRepository {
-    fun userMe(): Single<SignUpResponseEntity>
+    fun userMe(): Single<GetUserResponseEntity>
+    fun getUser(id: Int): Single<GetUserResponseEntity>
     fun logOut(dataLogoutRequest: DataLogoutRequest): Single<ErrorResponseEntity>
     fun feedShow(): Single<FeedResponseEntity>
     fun feedShow(limit: Int, offset: Int): Single<FeedResponseEntity>
