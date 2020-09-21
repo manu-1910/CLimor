@@ -19,6 +19,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.provider.MediaStore
 import android.text.Editable
@@ -71,10 +72,8 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.OutputStream
+import timber.log.Timber
+import java.io.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
@@ -729,37 +728,61 @@ class PublishFragment : BaseFragment() {
 
         if (requestCode == RESULT_CROP){
             if(resultCode == Activity.RESULT_OK){
-                var filePath: String? = ""
-                val bundle: Bundle?
-                var image: Bitmap? = null
-                var uri: Uri? = null
+                val outputFile: File?
 
-                val extras: Uri? = data?.data
-                if(extras != null) {
-                    filePath = extras.path
+                // if we come from the cropResultActivity and data is not null, it means
+                // that we are in api > 23, so we have to handle the image like this
+                val contentUri: Uri? = data?.data
+                if(contentUri != null) {
+
+                    // our contentUri won't be null, so we'll get an inputstream from that uri
+                    val inputStream : InputStream? = context?.contentResolver?.openInputStream(contentUri)
+
+                    // after that, we'll have to create a file from that stream, we'll use this folder
+                    val croppedImagesDir =
+                        File(Environment.getExternalStorageDirectory()?.absolutePath, Constants.LOCAL_FOLDER_CROPPED_IMAGES)
+                    if (!croppedImagesDir.exists()) {
+                        val isDirectoryCreated = croppedImagesDir.mkdir()
+                    }
+
+                    val fileName = Date().time.toString() + contentUri.path?.substringAfterLast("/")
+                    outputFile = File(croppedImagesDir, fileName)
+                    outputFile.createNewFile()
+                    outputFile.outputStream().use { inputStream?.copyTo(it) }
+
+                    if(!outputFile.exists())
+                        Timber.d("Image doesn't exist")
+
+                    if(!outputFile.isFile)
+                        Timber.d("Image doesn't exist")
+
+
+                    // if we come from crop activity and data is null, that means that we are under
+                    // api <= 23, so we have to handle it like this
                 } else {
-                    bundle = data?.extras
-                    image = bundle?.get("data") as Bitmap
+                    val bundle = data?.extras
+                    val image = bundle?.get("data") as Bitmap
 
-                    uri = bitmapToFile(image)
-                    filePath = uri.path
+                    val uri = bitmapToFile(image)
+                    val filePath = uri.path
+                    // we have to create a file from that uri too
+                    outputFile = File(filePath)
                 }
 
                 if(draftImage != null){
-                    Glide.with(context!!).load(filePath).into(draftImage!!)
+                    Glide.with(context!!).load(outputFile).into(draftImage!!)
                     podcastHasImage = true
                 }else{
                     podcastHasImage = false
                 }
 
                 //Add the photopath to recording item
-                draftViewModel.uiDraft.tempPhotoPath = filePath
+                draftViewModel.uiDraft.tempPhotoPath = outputFile.path
 
-                val imageFile = File(filePath)
                 Commons.getInstance().handleImage(
                     context,
                     Commons.IMAGE_TYPE_PODCAST,
-                    imageFile,
+                    outputFile,
                     "podcast_photo"
                 )
 
@@ -790,7 +813,7 @@ class PublishFragment : BaseFragment() {
             val cropIntent = Intent("com.android.camera.action.CROP")
             // indicate image type and Uri
             val f = File(picUri)
-            var contentUri: Uri
+            val contentUri: Uri
 
             if (Build.VERSION.SDK_INT > M) {
                 contentUri = FileProvider.getUriForFile(

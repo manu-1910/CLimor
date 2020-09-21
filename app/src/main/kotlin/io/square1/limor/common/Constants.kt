@@ -43,6 +43,9 @@ class Constants{
         const val AWS_FOLDER_VIDEO = "video/"
         const val AWS_FOLDER_AUDIO = "audio/"
 
+        const val LOCAL_FOLDER = "/limorv2"
+        const val LOCAL_FOLDER_CROPPED_IMAGES = "$LOCAL_FOLDER/cropped-images/"
+
         const val AUDIO_TYPE_PODCAST = 2
         const val AUDIO_TYPE_COMMENT = 3
         const val AUDIO_TYPE_ATTACHMENT = 6
