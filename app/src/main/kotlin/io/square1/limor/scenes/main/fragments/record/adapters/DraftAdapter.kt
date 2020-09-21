@@ -68,10 +68,8 @@ class DraftAdapter(
         }
 
         holder.tvDraftTitle.text = modelList.title
-        if (!modelList.caption.isNullOrEmpty()){
-            holder.tvDraftDescription.text = modelList.caption
-        }else{
-            holder.tvDraftDescription.text = modelList.time.toString()
+        if (!modelList.date.isNullOrEmpty()){
+            holder.tvDraftDescription.text = modelList.date
         }
 
         holder.itemView.setOnClickListener {
@@ -319,10 +317,6 @@ class DraftAdapter(
         fun onDuplicateItemClick(position: Int)
     }
 
-
-    interface OnContinueRecordingItemClickListener {
-        fun onContinueRecordingItemClick(item:UIDraft, position: Int)
-    }
 
 
 
