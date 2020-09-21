@@ -493,6 +493,9 @@ public class Commons {
         if (imageFileToUpload == null) {
             imageUploadCallback.onError(context.getString(R.string.error_something_went_wrong));
             return;
+        } else if(!imageFileToUpload.exists() || !imageFileToUpload.isFile()) {
+            imageUploadCallback.onError(context.getString(R.string.error_something_went_wrong));
+            return;
         }
         final String completeUrl = Constants.AWS_IMAGE_BASE_URL + imageUrlToUpload;
         ObjectMetadata metadata = new ObjectMetadata();
