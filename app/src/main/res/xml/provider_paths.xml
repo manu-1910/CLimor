@@ -15,4 +15,5 @@
     <files-path
         name="files"
         path="." />
+    <external-path name="images" path="."/>
 </paths>

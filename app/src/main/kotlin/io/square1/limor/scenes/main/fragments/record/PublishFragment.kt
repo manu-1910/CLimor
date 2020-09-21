@@ -45,13 +45,14 @@ import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
 import com.facebook.FacebookSdk.getApplicationContext
+import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.hendraanggrian.appcompat.widget.Hashtag
 import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter
 import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
+import io.square1.limor.BuildConfig
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.Constants
@@ -64,6 +65,7 @@ import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.dpToPx
 import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
+import io.square1.limor.scenes.utils.location.MyLocation
 import io.square1.limor.scenes.utils.waveform.KeyboardUtils
 import io.square1.limor.uimodels.*
 import kotlinx.android.synthetic.main.fragment_publish.*
@@ -87,7 +89,7 @@ import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 
-class PublishFragment : BaseFragment(){
+class PublishFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -150,6 +152,8 @@ class PublishFragment : BaseFragment(){
 
     private var isShowingTagsRecycler = false
 
+    private lateinit var mGoogleApiClient : GoogleApiClient
+
 
 
     companion object {
@@ -187,10 +191,14 @@ class PublishFragment : BaseFragment(){
             mediaPlayer = MediaPlayer()
 
             bindViewModel()
+
+
             configureMediaPlayerWithButtons()
             updateDraft()
             apiCallPublishPodcast()
             getCityOfDevice()
+
+
             deleteDraft()
             apiCallHashTags()
 
@@ -215,6 +223,9 @@ class PublishFragment : BaseFragment(){
 
         recordingItem = UIDraft()
         recordingItem = arguments!!["recordingItem"] as UIDraft
+
+
+
 
         configureToolbar()
         listeners()
@@ -412,15 +423,23 @@ class PublishFragment : BaseFragment(){
             override fun afterTextChanged(editable: Editable) {}
             override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {
                 try {
-                    if (s.substring(s.length - 2).startsWith("#")) {
-                        rvTags.visibility = View.VISIBLE
-                        lytWithoutTagsRecycler?.visibility = View.GONE
-                        isShowingTagsRecycler = true
-                    } else if ((s.substring(s.length - 1) == " ") || (s.substring(s.length - 1) == System.lineSeparator())){
+                    if(s.toString().isNotEmpty()){
+                        if (s.substring(s.length - 2).startsWith("#")) {
+                            rvTags.visibility = View.VISIBLE
+                            lytWithoutTagsRecycler?.visibility = View.GONE
+                            isShowingTagsRecycler = true
+                        } else if ((s.substring(s.length - 1) == " ") || (s.substring(s.length - 1) == System.lineSeparator())){
+                            rvTags.visibility = View.GONE
+                            lytWithoutTagsRecycler?.visibility = View.VISIBLE
+                            isShowingTagsRecycler = false
+                        }
+                    }else{
                         rvTags.visibility = View.GONE
                         lytWithoutTagsRecycler?.visibility = View.VISIBLE
                         isShowingTagsRecycler = false
                     }
+
+
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -785,11 +804,16 @@ class PublishFragment : BaseFragment(){
                 if(contentUri != null) {
 
                     // our contentUri won't be null, so we'll get an inputstream from that uri
-                    val inputStream : InputStream? = context?.contentResolver?.openInputStream(contentUri)
+                    val inputStream : InputStream? = context?.contentResolver?.openInputStream(
+                        contentUri
+                    )
 
                     // after that, we'll have to create a file from that stream, we'll use this folder
                     val croppedImagesDir =
-                        File(Environment.getExternalStorageDirectory()?.absolutePath, Constants.LOCAL_FOLDER_CROPPED_IMAGES)
+                        File(
+                            Environment.getExternalStorageDirectory()?.absolutePath,
+                            Constants.LOCAL_FOLDER_CROPPED_IMAGES
+                        )
                     if (!croppedImagesDir.exists()) {
                         val isDirectoryCreated = croppedImagesDir.mkdir()
                     }
@@ -840,6 +864,7 @@ class PublishFragment : BaseFragment(){
 
                 lytImage?.visibility = View.VISIBLE
                 lytImagePlaceholder?.visibility = View.GONE
+
             }else{
                 lytImage?.visibility = View.GONE
                 lytImagePlaceholder?.visibility = View.VISIBLE
@@ -861,14 +886,14 @@ class PublishFragment : BaseFragment(){
             //Start Crop Activity
             val cropIntent = Intent("com.android.camera.action.CROP")
             // indicate image type and Uri
-            val f = File(picUri)
+            val file = File(picUri)
             val contentUri: Uri
 
             if (Build.VERSION.SDK_INT > M) {
                 contentUri = FileProvider.getUriForFile(
                     context!!,
-                    "io.square1.limor.app.provider",
-                    f
+                     BuildConfig.APPLICATION_ID + ".provider",
+                    file
                 ) //package.provider
 
                 getApplicationContext().grantUriPermission(
@@ -879,10 +904,10 @@ class PublishFragment : BaseFragment(){
                 cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 cropIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri) //For android API 29
-            } else {
-                contentUri = Uri.fromFile(f)
-            }
 
+            } else {
+                contentUri = Uri.fromFile(file)
+            }
 
             cropIntent.setDataAndType(contentUri, "image/*")
             // set crop properties
@@ -898,6 +923,7 @@ class PublishFragment : BaseFragment(){
             cropIntent.putExtra("return-data", true)
             // start the activity - we handle returning in onActivityResult
             startActivityForResult(cropIntent, RESULT_CROP)
+
         } // respond to users whose devices do not support the crop action
         catch (anfe: ActivityNotFoundException) {
             // display an error message
@@ -936,7 +962,6 @@ class PublishFragment : BaseFragment(){
 
 
     private fun checkEmptyFields(): Boolean{
-
         println("---------------DOUBLE Start of checkEmptyFields()")
         var titleNotEmpty = false
         var captionNotEmpty = false
@@ -967,7 +992,6 @@ class PublishFragment : BaseFragment(){
 
     private fun getCityOfDevice(){
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context!!)
         if (ActivityCompat.checkSelfPermission(
                 context!!,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -976,8 +1000,7 @@ class PublishFragment : BaseFragment(){
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
+            // Consider calling ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
             //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
             //                                          int[] grantResults)
@@ -985,10 +1008,11 @@ class PublishFragment : BaseFragment(){
             // for ActivityCompat#requestPermissions for more details.
             return
         }
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                // Got last known location. In some rare situations this can be null.
-                //println("location es: " +location)
+
+
+        val locationResult: MyLocation.LocationResult = object : MyLocation.LocationResult() {
+            override fun gotLocation(location: Location?) {
+                //Got the location!
                 val geoCoder = Geocoder(context, Locale.getDefault()) //it is Geocoder
                 try {
                     val address: List<Address> = geoCoder.getFromLocation(
@@ -996,14 +1020,26 @@ class PublishFragment : BaseFragment(){
                         location.longitude,
                         1
                     )
-                    locationsViewModel.uiLocationsRequest.term = address[0].locality
-                    //println("address is " + city)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                } catch (e: NullPointerException) {
+                    when {
+                        address[0].locality != null -> {
+                            locationsViewModel.uiLocationsRequest.term = address[0].locality
+                        }
+                        address[0].adminArea != null -> {
+                            locationsViewModel.uiLocationsRequest.term = address[0].adminArea
+                        }
+                        address[0].thoroughfare != null -> {
+                            locationsViewModel.uiLocationsRequest.term = address[0].thoroughfare
+                        }
+                    }
+
+                } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
+        }
+        val myLocation = MyLocation()
+        myLocation.getLocation(context!!, locationResult)
+
     }
 
 
@@ -1198,7 +1234,8 @@ class PublishFragment : BaseFragment(){
         dp,
         resources.displayMetrics
     ).roundToInt()
-}
+
+
 
     open class KeyboardToggleListener(
         private val root: View?,
@@ -1215,4 +1252,7 @@ class PublishFragment : BaseFragment(){
                 }
             }
         }
+    }
+
+
 }
