@@ -27,6 +27,7 @@ import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.splash.SplashActivity
 import io.square1.limor.scenes.utils.CommonsKt.Companion.formatSocialMediaQuantity
 import kotlinx.android.synthetic.main.fragment_profile.*
+import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -45,9 +46,13 @@ class ProfileFragment : BaseFragment() {
     private lateinit var viewModelCreateUserReport: CreateUserReportViewModel
     private lateinit var viewModelCreateFriend: CreateFriendViewModel
     private lateinit var viewModelDeleteFriend: DeleteFriendViewModel
+    private lateinit var viewModelCreateBlockedUser: CreateBlockedUserViewModel
+    private lateinit var viewModelDeleteBlockedUser: DeleteBlockedUserViewModel
     private val createUserReportDataTrigger = PublishSubject.create<Unit>()
     private val createFriendDataTrigger = PublishSubject.create<Unit>()
     private val deleteFriendDataTrigger = PublishSubject.create<Unit>()
+    private val createBlockedUserDataTrigger = PublishSubject.create<Unit>()
+    private val deleteBlockedUserDataTrigger = PublishSubject.create<Unit>()
 
 
 
@@ -99,8 +104,10 @@ class ProfileFragment : BaseFragment() {
         if(!isMyProfileMode) {
             viewModelGetUser.user = (activity as UserProfileActivity).uiUser
             apiCallReportUser()
-            apiCallCreateUser()
-            apiCallDeleteUser()
+            apiCallCreateFriend()
+            apiCallDeleteFriend()
+            apiCallCreateBlockedUser()
+            apiCallDeleteBlockedUser()
         } else {
             viewModelGetUser.user = sessionManager.getStoredUser()
         }
@@ -111,6 +118,86 @@ class ProfileFragment : BaseFragment() {
         configureToolbar()
         configureScreen()
         printUserData()
+    }
+
+    private fun apiCallDeleteBlockedUser() {
+        val output = viewModelDeleteBlockedUser.transform(
+            DeleteBlockedUserViewModel.Input(
+                deleteBlockedUserDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if(it.code != 0) {
+                toast(getString(R.string.error_unblocking_user))
+                viewModelGetUser.user?.blocked = true
+            } else {
+                toast(getString(R.string.success_unblocking_user))
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            view?.hideKeyboard()
+            if (app!!.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (it.errorMessage!!.isNotEmpty()) {
+                    message.append(it.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                alert(message.toString()) {
+                    okButton { }
+                }.show()
+            } else {
+                alert(getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+        })
+    }
+
+    private fun apiCallCreateBlockedUser() {
+        val output = viewModelCreateBlockedUser.transform(
+            CreateBlockedUserViewModel.Input(
+                createBlockedUserDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if(it.code != 0) {
+                toast(getString(R.string.error_blocking_user))
+                viewModelGetUser.user?.blocked = false
+            } else {
+                toast(getString(R.string.success_blocking_user))
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            view?.hideKeyboard()
+            if (app!!.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (it.errorMessage!!.isNotEmpty()) {
+                    message.append(it.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                alert(message.toString()) {
+                    okButton { }
+                }.show()
+            } else {
+                alert(getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+        })
     }
 
     private fun checkIfIsMyProfile() : Boolean {
@@ -193,20 +280,63 @@ class ProfileFragment : BaseFragment() {
         val inflater: MenuInflater = popup.menuInflater
         inflater.inflate(R.menu.menu_popup_profile, popup.menu)
 
+        val menuBlock = popup.menu.findItem(R.id.menu_block)
+        viewModelGetUser.user?.blocked?.let {
+            if (it) {
+                menuBlock.title = getString(R.string.unblock)
+            } else {
+                menuBlock.title = getString(R.string.block)
+            }
+        }
 
         //set menu item click listener here
         popup.setOnMenuItemClickListener {menuItem ->
             when(menuItem.itemId) {
                 R.id.menu_report -> onReportUserClicked()
-                R.id.menu_block -> onBlockUserClicked()
+                R.id.menu_block -> onBlockUserMenuClicked()
             }
             true
         }
         popup.show()
     }
 
-    private fun onBlockUserClicked() {
-        toast("You clicked on block")
+
+
+    private fun onBlockUserMenuClicked() {
+        viewModelGetUser.user?.blocked?.let {
+            if(it) {
+                alert(getString(R.string.confirmation_unblock_user)) {
+                    okButton {
+                        performUnblockUser()
+                    }
+                    cancelButton {  }
+                }.show()
+            } else {
+                alert(getString(R.string.confirmation_block_user)) {
+                    okButton {
+                        performBlockUser()
+                    }
+                    cancelButton {  }
+                }.show()
+            }
+        }
+
+    }
+
+    private fun performUnblockUser() {
+        viewModelGetUser.user?.let {user ->
+            viewModelDeleteBlockedUser.idUser = user.id
+            user.blocked = false
+            deleteBlockedUserDataTrigger.onNext(Unit)
+        }
+    }
+
+    private fun performBlockUser() {
+        viewModelGetUser.user?.let {user ->
+            viewModelCreateBlockedUser.idUser = user.id
+            user.blocked = true
+            createBlockedUserDataTrigger.onNext(Unit)
+        }
     }
 
     private fun onReportUserClicked() {
@@ -249,11 +379,19 @@ class ProfileFragment : BaseFragment() {
                 viewModelDeleteFriend = ViewModelProviders
                     .of(fragmentActivity, viewModelFactory)
                     .get(DeleteFriendViewModel::class.java)
+
+                viewModelCreateBlockedUser = ViewModelProviders
+                    .of(fragmentActivity, viewModelFactory)
+                    .get(CreateBlockedUserViewModel::class.java)
+
+                viewModelDeleteBlockedUser = ViewModelProviders
+                    .of(fragmentActivity, viewModelFactory)
+                    .get(DeleteBlockedUserViewModel::class.java)
             }
         }
     }
 
-    private fun apiCallCreateUser() {
+    private fun apiCallCreateFriend() {
         val output = viewModelCreateFriend.transform(
             CreateFriendViewModel.Input(
                 createFriendDataTrigger
@@ -293,7 +431,7 @@ class ProfileFragment : BaseFragment() {
     }
 
 
-    private fun apiCallDeleteUser() {
+    private fun apiCallDeleteFriend() {
         val output = viewModelDeleteFriend.transform(
             DeleteFriendViewModel.Input(
                 deleteFriendDataTrigger

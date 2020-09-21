@@ -45,11 +45,11 @@ class RemoteUserProviderImp @Inject constructor(private val provider: UserServic
         return provider.deleteFriend(id).asDataEntity()
     }
 
-    override fun createBlockedUser(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity> {
+    override fun createBlockedUser(userIDRequest: DataUserIDRequest): Single<BlockedUserResponseEntity> {
         return provider.createBlockedUser(userIDRequest.asRemoteEntity()).asDataEntity()
     }
 
-    override fun deleteBlockedUser(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity> {
+    override fun deleteBlockedUser(userIDRequest: DataUserIDRequest): Single<BlockedUserResponseEntity> {
         return provider.deleteBlockedUser(userIDRequest.asRemoteEntity()).asDataEntity()
     }
 

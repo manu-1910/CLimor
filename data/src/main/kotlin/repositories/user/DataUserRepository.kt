@@ -41,11 +41,11 @@ class DataUserRepository @Inject constructor(private val remoteProvider: RemoteU
         return remoteProvider.deleteFriend(id)
     }
 
-    override fun createUserBlocked(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity> {
+    override fun createUserBlocked(userIDRequest: DataUserIDRequest): Single<BlockedUserResponseEntity> {
         return remoteProvider.createBlockedUser(userIDRequest)
     }
 
-    override fun deleteUserBlocked(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity> {
+    override fun deleteUserBlocked(userIDRequest: DataUserIDRequest): Single<BlockedUserResponseEntity> {
         return remoteProvider.deleteBlockedUser(userIDRequest)
     }
 

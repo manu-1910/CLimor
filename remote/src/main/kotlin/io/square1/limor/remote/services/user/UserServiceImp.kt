@@ -113,7 +113,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
 
 
 
-    fun createBlockedUser(userIDRequest: NWUserIDRequest): Single<NWCreateBlockedUserResponse> {
+    fun createBlockedUser(userIDRequest: NWUserIDRequest): Single<NWBlockedUserResponse> {
         val requestString = Json.nonstrict.stringify(NWUserIDRequest.serializer(), userIDRequest)
         val request = RequestBody.create(
             MediaType.parse("application/json"),
@@ -121,7 +121,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
         )
         return service.createBlockedUser(request)
             .map { response ->
-                response.parseSuccessResponse(NWCreateBlockedUserResponse.serializer())
+                response.parseSuccessResponse(NWBlockedUserResponse.serializer())
             }
             .doOnSuccess { success ->
                 println("SUCCESS: $success")
@@ -131,14 +131,14 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
             }
     }
 
-    fun deleteBlockedUser(userIDRequest: NWUserIDRequest): Single<NWCreateBlockedUserResponse> {
+    fun deleteBlockedUser(userIDRequest: NWUserIDRequest): Single<NWBlockedUserResponse> {
         return service.deleteBlockedUser(
             RequestBody.create(
                 MediaType.parse("application/json"),
                 Json.nonstrict.stringify(NWUserIDRequest.serializer(), userIDRequest)
             )
         )
-            .map { response -> response.parseSuccessResponse(NWCreateBlockedUserResponse.serializer()) }
+            .map { response -> response.parseSuccessResponse(NWBlockedUserResponse.serializer()) }
             .doOnSuccess { success -> println("SUCCESS: $success") }
             .doOnError { error ->
                 println("ERROR: $error")

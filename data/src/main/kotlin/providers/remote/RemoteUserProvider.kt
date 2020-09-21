@@ -16,8 +16,8 @@ interface RemoteUserProvider {
     fun feedShow(limit : Int, offset: Int): Single<FeedResponseEntity>
     fun createFriend(id: Int) : Single<CreateDeleteFriendResponseEntity>
     fun deleteFriend(id: Int) : Single<CreateDeleteFriendResponseEntity>
-    fun createBlockedUser(userIDRequest: DataUserIDRequest) : Single<CreateBlockedUserResponseEntity>
-    fun deleteBlockedUser(userIDRequest: DataUserIDRequest) : Single<CreateBlockedUserResponseEntity>
+    fun createBlockedUser(userIDRequest: DataUserIDRequest) : Single<BlockedUserResponseEntity>
+    fun deleteBlockedUser(userIDRequest: DataUserIDRequest) : Single<BlockedUserResponseEntity>
     fun reportUser(id: Int, request: DataCreateUserReportRequestEntity) : Single<CreateReportResponseEntity>
     fun getNotifications(limit : Int, offset: Int): Single<NotificationsResponseEntity>
 }

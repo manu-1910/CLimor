@@ -268,5 +268,12 @@
     <string name="user_reported_error">We couldn\'t report the user. Please try again later.</string>
     <string name="no_notifications_message">Your notifications will show up here</string>
     <string name="no_notifications_error_message">There was an error getting notifications. Please try again.</string>
+    <string name="confirmation_block_user">Are you sure you want to block this user?</string>
+    <string name="confirmation_unblock_user">Are you sure you want to unblock this user?</string>
+    <string name="unblock">Unblock</string>
+    <string name="error_blocking_user">There was an error blocking this user, please try again later</string>
+    <string name="success_blocking_user">User blocked correctly</string>
+    <string name="error_unblocking_user">There was an error unblocking this user, please try again later</string>
+    <string name="success_unblocking_user">User unblocked correctly</string>
 
 </resources>

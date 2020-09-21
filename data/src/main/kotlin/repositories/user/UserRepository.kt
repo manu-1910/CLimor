@@ -15,8 +15,8 @@ interface UserRepository {
     fun feedShow(limit: Int, offset: Int): Single<FeedResponseEntity>
     fun createFriend(id : Int) : Single<CreateDeleteFriendResponseEntity>
     fun deleteFriend(id : Int) : Single<CreateDeleteFriendResponseEntity>
-    fun createUserBlocked(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity>
-    fun deleteUserBlocked(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity>
+    fun createUserBlocked(userIDRequest: DataUserIDRequest): Single<BlockedUserResponseEntity>
+    fun deleteUserBlocked(userIDRequest: DataUserIDRequest): Single<BlockedUserResponseEntity>
     fun reportUser(id :Int, request: DataCreateUserReportRequestEntity): Single<CreateReportResponseEntity>
     fun getNotifications(limit: Int, offset: Int): Single<NotificationsResponseEntity>
 }

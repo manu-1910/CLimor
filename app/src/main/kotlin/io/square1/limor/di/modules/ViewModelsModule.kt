@@ -113,6 +113,16 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(CreateBlockedUserViewModel::class)
+    abstract fun bindCreateBlockedUserViewModel(createBlockedUserViewModel: CreateBlockedUserViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DeleteBlockedUserViewModel::class)
+    abstract fun bindDeleteBlockedUserViewModel(deleteBlockedUserViewModel: DeleteBlockedUserViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(CreateCommentLikeViewModel::class)
     abstract fun bindCreateCommentLikeViewModel(createCommentLikeViewModel: CreateCommentLikeViewModel): ViewModel
 
