@@ -35,6 +35,12 @@ allprojects {
     task runAcceptanceTests(dependsOn: [':app:connectedAndroidTest']) {
         description 'Run all acceptance tests.'
     }
+
+    // this is necessary to use cropActivity: https://github.com/Yalantis/uCrop
+    repositories {
+        jcenter()
+        maven { url "https://jitpack.io" }
+    }
 }
 task clean(type: Delete) {
     delete rootProject.buildDir
