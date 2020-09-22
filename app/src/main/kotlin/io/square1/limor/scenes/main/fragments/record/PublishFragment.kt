@@ -404,7 +404,9 @@ class PublishFragment : BaseFragment() {
         btnPublishDraft?.onClick {
             if (checkEmptyFields()){
                 //In the result of those calls I will call the method readyToPublish() to check their flags
-                publishPodcastImage()
+                if(podcastHasImage) {
+                    publishPodcastImage()
+                }
                 publishPodcastAudio()
             }
         }
