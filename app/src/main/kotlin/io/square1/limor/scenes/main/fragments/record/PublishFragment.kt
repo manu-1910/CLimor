@@ -72,6 +72,7 @@ import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.uiThread
+import timber.log.Timber
 import java.io.*
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -832,87 +833,11 @@ class PublishFragment : BaseFragment() {
             // this will run when coming from the cropActivity but there is an error
         } else if (resultCode == UCrop.RESULT_ERROR) {
             val cropError = UCrop.getError(data!!)
+            Timber.d(cropError)
             lytImage?.visibility = View.GONE
             lytImagePlaceholder?.visibility = View.VISIBLE
         }
 
-//
-//        if (requestCode == RESULT_CROP){
-//            if(resultCode == Activity.RESULT_OK){
-//                val outputFile: File?
-//
-//                // if we come from the cropResultActivity and data is not null, it means
-//                // that we are in api > 23, so we have to handle the image like this
-//                val contentUri: Uri? = data?.data
-//                if(contentUri != null) {
-//
-//                    // our contentUri won't be null, so we'll get an inputstream from that uri
-//                    val inputStream : InputStream? = context?.contentResolver?.openInputStream(
-//                        contentUri
-//                    )
-//
-//                    // after that, we'll have to create a file from that stream, we'll use this folder
-//                    val croppedImagesDir =
-//                        File(
-//                            Environment.getExternalStorageDirectory()?.absolutePath,
-//                            Constants.LOCAL_FOLDER_CROPPED_IMAGES
-//                        )
-//                    if (!croppedImagesDir.exists()) {
-//                        val isDirectoryCreated = croppedImagesDir.mkdir()
-//                    }
-//
-//                    val fileName = Date().time.toString() + contentUri.path?.substringAfterLast("/")
-//                    outputFile = File(croppedImagesDir, fileName)
-//                    outputFile.createNewFile()
-//                    outputFile.outputStream().use { inputStream?.copyTo(it) }
-//
-//                    if(!outputFile.exists())
-//                        Timber.d("Image doesn't exist")
-//
-//                    if(!outputFile.isFile)
-//                        Timber.d("Image doesn't exist")
-//
-//
-//                    // if we come from crop activity and data is null, that means that we are under
-//                    // api <= 23, so we have to handle it like this
-//                } else {
-//                    val bundle = data?.extras
-//                    val image = bundle?.get("data") as Bitmap
-//
-//                    val uri = bitmapToFile(image)
-//                    val filePath = uri.path
-//                    // we have to create a file from that uri too
-//                    outputFile = File(filePath)
-//                }
-//
-//                if(draftImage != null){
-//                    Glide.with(context!!).load(outputFile).into(draftImage!!)
-//                    podcastHasImage = true
-//                }else{
-//                    podcastHasImage = false
-//                }
-//
-//                //Add the photopath to recording item
-//                draftViewModel.uiDraft.tempPhotoPath = outputFile.path
-//
-//                Commons.getInstance().handleImage(
-//                    context,
-//                    Commons.IMAGE_TYPE_PODCAST,
-//                    outputFile,
-//                    "podcast_photo"
-//                )
-//
-//                //Update recording item in Realm
-//                updateDraftTrigger.onNext(Unit)
-//
-//                lytImage?.visibility = View.VISIBLE
-//                lytImagePlaceholder?.visibility = View.GONE
-//
-//            }else{
-//                lytImage?.visibility = View.GONE
-//                lytImagePlaceholder?.visibility = View.VISIBLE
-//            }
-//        }
 
         context?.let {
             //LOGIN
@@ -924,56 +849,6 @@ class PublishFragment : BaseFragment() {
     }
 
 
-//    private fun performCrop(picUri: String) {
-//        try {
-//            //Start Crop Activity
-//            val cropIntent = Intent("com.android.camera.action.CROP")
-//            // indicate image type and Uri
-//            val file = File(picUri)
-//            val contentUri: Uri
-//
-//            if (Build.VERSION.SDK_INT > M) {
-//                contentUri = FileProvider.getUriForFile(
-//                    context!!,
-//                     BuildConfig.APPLICATION_ID + ".provider",
-//                    file
-//                ) //package.provider
-//
-//                getApplicationContext().grantUriPermission(
-//                    "com.android.camera",
-//                    contentUri,
-//                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
-//                )
-//                cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//                cropIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-//                cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri) //For android API 29
-//
-//            } else {
-//                contentUri = Uri.fromFile(file)
-//            }
-//
-//            cropIntent.setDataAndType(contentUri, "image/*")
-//            // set crop properties
-//            cropIntent.putExtra("crop", "true")
-//            // indicate aspect of desired crop
-//            cropIntent.putExtra("aspectX", 1)
-//            cropIntent.putExtra("aspectY", 1)
-//            // indicate output X and Y
-//            cropIntent.putExtra("outputX", 280)
-//            cropIntent.putExtra("outputY", 280)
-//
-//            // retrieve data on return
-//            cropIntent.putExtra("return-data", true)
-//            // start the activity - we handle returning in onActivityResult
-//            startActivityForResult(cropIntent, RESULT_CROP)
-//
-//        } // respond to users whose devices do not support the crop action
-//        catch (anfe: ActivityNotFoundException) {
-//            // display an error message
-//            val errorMessage = "Your device doesn't support the crop action!"
-//            toast(errorMessage)
-//        }
-//    }
 
     private fun performCrop(sourcePath: String, destination: File) {
         val sourceUri = Uri.fromFile(File(sourcePath))
