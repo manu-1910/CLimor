@@ -1,6 +1,9 @@
 package io.square1.limor.scenes.main.fragments.record
 
 import android.content.Intent
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +24,7 @@ import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.fragments.record.adapters.LocationsAdapter
 import io.square1.limor.scenes.main.viewmodels.LocationsViewModel
 import io.square1.limor.scenes.main.viewmodels.PublishViewModel
+import io.square1.limor.scenes.utils.location.MyLocation
 import io.square1.limor.uimodels.UILocations
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
@@ -30,7 +34,9 @@ import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 class LocationsFragment : BaseFragment() {
@@ -76,7 +82,10 @@ class LocationsFragment : BaseFragment() {
         configureToolbar()
         apiCallSearchLocations()
         setupRecycler(listLocations)
-        searchLocations("") //First search with the location obtained in PublishFragment if exists
+
+        if(locationsViewModel.uiLocationsRequest.term.isNotEmpty()){
+            locationsTrigger.onNext(Unit)
+        }
     }
 
 
@@ -142,8 +151,45 @@ class LocationsFragment : BaseFragment() {
         //Make api call
         if (!term.isNullOrEmpty()){
             locationsViewModel.uiLocationsRequest.term = term
+            locationsTrigger.onNext(Unit)
         }
-        locationsTrigger.onNext(Unit)
+    }
+
+
+
+    private fun callForLocationUpdates(){
+        val locationResult: MyLocation.LocationResult = object : MyLocation.LocationResult() {
+            override fun gotLocation(location: Location?) {
+                //Got the location!
+                val geoCoder = Geocoder(context, Locale.getDefault()) //it is Geocoder
+                try {
+                    val address: List<Address> = geoCoder.getFromLocation(
+                        location!!.latitude,
+                        location.longitude,
+                        1
+                    )
+                    when {
+                        address[0].locality != null -> {
+                            locationsViewModel.uiLocationsRequest.term = address[0].locality
+                            locationsTrigger.onNext(Unit)
+                        }
+                        address[0].adminArea != null -> {
+                            locationsViewModel.uiLocationsRequest.term = address[0].adminArea
+                            locationsTrigger.onNext(Unit)
+                        }
+                        address[0].thoroughfare != null -> {
+                            locationsViewModel.uiLocationsRequest.term = address[0].thoroughfare
+                            locationsTrigger.onNext(Unit)
+                        }
+                    }
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+        val myLocation = MyLocation()
+        myLocation.getLocation(context!!, locationResult)
     }
 
 

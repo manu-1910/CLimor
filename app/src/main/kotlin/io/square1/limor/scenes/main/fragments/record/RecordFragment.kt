@@ -4,6 +4,9 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
@@ -30,11 +33,13 @@ import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
+import io.square1.limor.scenes.main.viewmodels.LocationsViewModel
 import io.square1.limor.scenes.utils.Commons.mergeAmrAudioFiles
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.audioFileFormat
 import io.square1.limor.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import io.square1.limor.scenes.utils.VisualizerView
+import io.square1.limor.scenes.utils.location.MyLocation
 import io.square1.limor.uimodels.UIDraft
 import kotlinx.android.synthetic.main.fragment_record.*
 import kotlinx.android.synthetic.main.toolbar_default.*
@@ -46,6 +51,7 @@ import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.uiThread
 import java.io.File
+import java.util.*
 import javax.inject.Inject
 
 
@@ -54,6 +60,7 @@ class RecordFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var draftViewModel: DraftViewModel
+    private lateinit var locationsViewModel: LocationsViewModel
     private var isRecording = false
     private var isFirstTapRecording = true
     private var timeWhenStopped: Long = 0
@@ -76,6 +83,7 @@ class RecordFragment : BaseFragment() {
     private val deleteDraftTrigger = PublishSubject.create<Unit>()
     var app: App? = null
     var recordingItem: UIDraft? = null
+    lateinit var locationResult: MyLocation.LocationResult
 
 
     companion object {
@@ -108,7 +116,6 @@ class RecordFragment : BaseFragment() {
         ViewCompat.setTranslationZ(view, 1f)
 
 
-
         bindViewModel()
         configureToolbar()
         audioSetup()
@@ -122,10 +129,14 @@ class RecordFragment : BaseFragment() {
         if (!hasPermissions(requireContext(), *PERMISSIONS)) {
             requestPermissions(PERMISSIONS, PERMISSION_ALL)
         }
+
+
     }
 
     override fun onResume() {
         super.onResume()
+
+        requestForLocation()
 
         if (draftViewModel.continueRecording){
             //toast("Tap on record to continue recording the selected draft")
@@ -228,6 +239,10 @@ class RecordFragment : BaseFragment() {
             draftViewModel = ViewModelProviders
                 .of(it, viewModelFactory)
                 .get(DraftViewModel::class.java)
+
+            locationsViewModel = ViewModelProviders
+                .of(it, viewModelFactory)
+                .get(LocationsViewModel::class.java)
         }
     }
 
@@ -393,7 +408,6 @@ class RecordFragment : BaseFragment() {
 
         // Next Button
         nextButton.onClick {
-
 
             isRecording = false
             stopAudio()
@@ -879,6 +893,62 @@ class RecordFragment : BaseFragment() {
         //recordingItem = null
     }
 
+
+
+    private fun requestForLocation(){
+
+        if (ActivityCompat.checkSelfPermission(
+                context!!,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                context!!,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // Consider calling ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+
+
+        locationResult = object : MyLocation.LocationResult() {
+            override fun gotLocation(location: Location?) {
+                //Got the location!
+                println("Location received: " + location?.latitude + "," +location?.longitude)
+                val geoCoder = Geocoder(context!!, Locale.getDefault()) //it is Geocoder
+                try {
+                    val address: List<Address> = geoCoder.getFromLocation(
+                        location!!.latitude,
+                        location.longitude,
+                        1
+                    )
+                    when {
+                        address[0].locality != null -> {
+                            locationsViewModel.uiLocationsRequest.term = address[0].locality
+                            println("Location received " + address[0].locality)
+                        }
+                        address[0].adminArea != null -> {
+                            locationsViewModel.uiLocationsRequest.term = address[0].adminArea
+                            println("Location received " + address[0].adminArea)
+                        }
+                        address[0].thoroughfare != null -> {
+                            locationsViewModel.uiLocationsRequest.term = address[0].thoroughfare
+                            println("Location received " + address[0].thoroughfare)
+                        }
+                    }
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+        val myLocation = MyLocation()
+        myLocation.getLocation(context!!, locationResult)
+    }
 
 }
 

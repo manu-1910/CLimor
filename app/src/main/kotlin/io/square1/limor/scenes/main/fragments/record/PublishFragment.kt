@@ -40,7 +40,6 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
-import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.hendraanggrian.appcompat.widget.Hashtag
 import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter
@@ -73,7 +72,10 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.uiThread
 import timber.log.Timber
-import java.io.*
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.OutputStream
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
@@ -136,17 +138,14 @@ class PublishFragment : BaseFragment() {
     private var listTagsString: HashtagArrayAdapter<Hashtag>? = null
     private var tvSelectedLocation: TextView? = null
     private var tvSelectedCategory: TextView? = null
+    private var tw: TextWatcher? = null
 
     //Flags to publish podcast
     private var audioUploaded: Boolean = false
     private var imageUploaded: Boolean = false
     private var podcastHasImage: Boolean = false
-
-    private var tw: TextWatcher? = null
-
     private var isShowingTagsRecycler = false
 
-    private lateinit var mGoogleApiClient: GoogleApiClient
 
 
     companion object {
@@ -178,23 +177,17 @@ class PublishFragment : BaseFragment() {
             etDraftCaption = rootView?.findViewById(R.id.etCaption)
             tvSelectedLocation = rootView?.findViewById(R.id.tvSelectedLocation)
             tvSelectedCategory = rootView?.findViewById(R.id.tvSelectedCategory)
-
             lytWithoutTagsRecycler = rootView?.findViewById(R.id.lytWithoutTagsRecycler)
 
             mediaPlayer = MediaPlayer()
 
             bindViewModel()
-
-
             configureMediaPlayerWithButtons()
             updateDraft()
             apiCallPublishPodcast()
-            getCityOfDevice()
-
-
+            //getCityOfDevice()
             deleteDraft()
             apiCallHashTags()
-
         }
         app = context?.applicationContext as App
         return rootView
@@ -216,10 +209,7 @@ class PublishFragment : BaseFragment() {
 
         recordingItem = UIDraft()
         recordingItem = arguments!!["recordingItem"] as UIDraft
-
-
-
-
+        
         configureToolbar()
         listeners()
         loadExistingData()
@@ -390,7 +380,6 @@ class PublishFragment : BaseFragment() {
 
         btnSaveDraft?.onClick {
             addDataToRecordingItem()
-            //findNavController().navigate(R.id.action_record_publish_to_record_drafts)
             activity?.finish()
         }
 
@@ -493,7 +482,6 @@ class PublishFragment : BaseFragment() {
 
                 override fun onError(error: String?) {
                     audioUploaded = false
-                    val error = error
                     println("Audio upload to AWS error: $error")
                 }
             })
@@ -501,7 +489,6 @@ class PublishFragment : BaseFragment() {
 
 
     private fun publishPodcastImage() {
-
 
         if (Commons.getInstance().isImageReadyForUpload) {
             //Upload audio file to AWS
@@ -522,7 +509,6 @@ class PublishFragment : BaseFragment() {
 
                     override fun onError(error: String?) {
                         imageUploaded = false
-                        var error = error
                         println("Image upload to AWS error: $error")
                     }
                 }, Commons.IMAGE_TYPE_ATTACHMENT
@@ -641,12 +627,6 @@ class PublishFragment : BaseFragment() {
             .limit(resources.getInteger(R.integer.MAX_PHOTOS)) // max images can be selected (99 by default)
             .theme(R.style.ImagePickerTheme) // must inherit ef_BaseTheme. please refer to sample
             .start()
-
-//        ImagePicker.with(this)
-//            .crop()	    			//Crop image(Optional), Check Customization for more option
-//            .compress(1024)			//Final image size will be less than 1 MB(Optional)
-//            .maxResultSize(1080, 1080)	//Final image resolution will be less than 1080 x 1080(Optional)
-//            .start()
     }
 
 
@@ -851,7 +831,6 @@ class PublishFragment : BaseFragment() {
     }
 
 
-
     private fun performCrop(sourcePath: String, destination: File) {
         val sourceUri = Uri.fromFile(File(sourcePath))
         val destinationUri = Uri.fromFile(destination)
@@ -862,6 +841,7 @@ class PublishFragment : BaseFragment() {
                 .start(it, this, UCrop.REQUEST_CROP)
         }
     }
+
 
     private fun updateDraft() {
         val output = draftViewModel.insertDraftRealm(
@@ -892,7 +872,6 @@ class PublishFragment : BaseFragment() {
 
 
     private fun checkEmptyFields(): Boolean {
-        println("---------------DOUBLE Start of checkEmptyFields()")
         var titleNotEmpty = false
         var captionNotEmpty = false
 
@@ -1025,7 +1004,6 @@ class PublishFragment : BaseFragment() {
 
 
     private fun multiCompleteText() {
-        //listTagsString = HashtagAdapter(context!!)
         etDraftCaption?.isMentionEnabled = false
         etDraftCaption?.hashtagColor = ContextCompat.getColor(context!!, R.color.brandPrimary500)
         etDraftCaption?.hashtagAdapter = listTagsString
