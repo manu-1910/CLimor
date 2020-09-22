@@ -181,6 +181,10 @@ public class AMRAudioRecorder  {
     }
 
     private void prepareRecorder() {
+
+        if(!this.fileDirectory.endsWith("/")){
+            this.fileDirectory = this.fileDirectory + "/";
+        }
         File directory = new File(this.fileDirectory);
         if (!directory.exists() || !directory.isDirectory()) {
             throw new IllegalArgumentException("[AMRAudioRecorder] audioFileDirectory is a not valid directory!");
