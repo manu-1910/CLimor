@@ -13,11 +13,11 @@ import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.uimodels.UIErrorData
 import io.square1.limor.uimodels.UIErrorResponse
 import io.square1.limor.uimodels.UIGetPodcastsResponse
-import io.square1.limor.usecases.PodcastsByTagUseCase
+import io.square1.limor.usecases.GetPodcastsByUserIDUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class FeedByTagViewModel @Inject constructor(private val podcastsByTagUseCase: PodcastsByTagUseCase) : BaseViewModel<FeedByTagViewModel.Input, FeedByTagViewModel.Output>() {
+class GetPodcastsByUserIDViewModel @Inject constructor(private val getPodcastsByUserIDUseCase: GetPodcastsByUserIDUseCase) : BaseViewModel<GetPodcastsByUserIDViewModel.Input, GetPodcastsByUserIDViewModel.Output>() {
 
     private val compositeDispose = CompositeDisposable()
 
@@ -26,7 +26,7 @@ class FeedByTagViewModel @Inject constructor(private val podcastsByTagUseCase: P
 
     data class Input(
         val getFeedTrigger: Observable<Unit>,
-        val tag: String
+        val idUser: Int
     )
 
     data class Output(
@@ -41,14 +41,15 @@ class FeedByTagViewModel @Inject constructor(private val podcastsByTagUseCase: P
         val response = MutableLiveData<UIGetPodcastsResponse>()
 
         input.getFeedTrigger.subscribe({
-            podcastsByTagUseCase.execute(limit, offset, input.tag).subscribe({
+            getPodcastsByUserIDUseCase.execute(input.idUser, limit, offset).subscribe({
                 response.value = it
 
 
             }, {
                 try {
                     val error = it as HttpException
-                    val errorResponse: UIErrorResponse? = error.response()?.errorBody()?.parseSuccessResponse(UIErrorResponse.serializer())
+                    val errorResponse: UIErrorResponse? = error.response().errorBody()?.parseSuccessResponse(
+                        UIErrorResponse.serializer())
                     errorTracker.postValue(errorResponse)
                 } catch (e: Exception) {
                     val dataError = UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))

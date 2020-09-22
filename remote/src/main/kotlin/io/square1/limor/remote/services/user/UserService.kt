@@ -8,6 +8,7 @@ import retrofit2.http.*
 
 
 const val USER_ME_PATH = "/api/v1/users/me"
+const val USER_PODCASTS_PATH = "/api/v1/users/{id}/podcasts"
 const val LOG_OUT_PATH = "/oauth/revoke"
 const val SHOW_FEED_PATH = "/api/v1/users/feed"
 const val BLOCKED_USERS = "/api/v1/users/blocked_users"
@@ -50,5 +51,8 @@ interface UserService {
 
     @GET(NOTIFICATIONS_PATH)
     fun getNotifications(@Query ("limit") limit : Int?, @Query("offset") offset : Int?): Single<ResponseBody>
+
+    @GET(USER_PODCASTS_PATH)
+    fun getPodcasts(@Path("id") id : Int, @Query ("limit") limit : Int? = 10, @Query("offset") offset : Int? = 0): Single<ResponseBody>
 
 }

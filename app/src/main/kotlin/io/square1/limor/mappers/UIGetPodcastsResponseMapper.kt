@@ -4,12 +4,12 @@ import entities.response.*
 import io.reactivex.Single
 import io.square1.limor.uimodels.*
 
-fun Single<PodcastsByTagResponseEntity>.asUIModel(): Single<UIPodcastsByTagResponse> {
+fun Single<GetPodcastsResponseEntity>.asUIModel(): Single<UIGetPodcastsResponse> {
     return this.map { it.asUIModel() }
 }
 
-fun PodcastsByTagResponseEntity.asUIModel(): UIPodcastsByTagResponse {
-    return UIPodcastsByTagResponse(
+fun GetPodcastsResponseEntity.asUIModel(): UIGetPodcastsResponse {
+    return UIGetPodcastsResponse(
         code,
         message,
         data.asUIModel()
@@ -17,8 +17,8 @@ fun PodcastsByTagResponseEntity.asUIModel(): UIPodcastsByTagResponse {
 }
 
 
-fun PodcastsTagItemsEntityArray.asUIModel(): UIPodcastsTagItemsArray {
-    return UIPodcastsTagItemsArray(
+fun PodcastsItemsEntityArray.asUIModel(): UIGetPodcastsItemsArray {
+    return UIGetPodcastsItemsArray(
         getAllPodcastEntities(podcasts)
     )
 }
