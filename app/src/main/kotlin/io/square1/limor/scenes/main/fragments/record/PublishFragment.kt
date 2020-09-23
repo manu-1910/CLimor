@@ -138,7 +138,8 @@ class PublishFragment : BaseFragment() {
     private var listTagsString: HashtagArrayAdapter<Hashtag>? = null
     private var tvSelectedLocation: TextView? = null
     private var tvSelectedCategory: TextView? = null
-    private var tw: TextWatcher? = null
+    private var twCaption: TextWatcher? = null
+    private var twTitle: TextWatcher? = null
 
     //Flags to publish podcast
     private var audioUploaded: Boolean = false
@@ -235,6 +236,10 @@ class PublishFragment : BaseFragment() {
             recordingItem.category = publishViewModel.categorySelected
             recordingItem.categoryId = publishViewModel.categorySelectedId
         }
+
+        //update database
+        draftViewModel.uiDraft = recordingItem
+        updateDraft()
     }
 
 
@@ -402,9 +407,13 @@ class PublishFragment : BaseFragment() {
         }
 
         //Used for show or hide the recyclerview of the hashtags
-        tw = object : TextWatcher {
+        twCaption = object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun afterTextChanged(editable: Editable) {}
+            override fun afterTextChanged(editable: Editable) {
+                recordingItem.caption = editable.toString()
+                draftViewModel.uiDraft = recordingItem
+                updateDraft()
+            }
             override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {
                 try {
                     if (s.toString().isNotEmpty()) {
@@ -429,7 +438,23 @@ class PublishFragment : BaseFragment() {
                 }
             }
         }
-        etCaption.addTextChangedListener(tw)
+        etCaption.addTextChangedListener(twCaption)
+
+
+
+        //Used for show or hide the recyclerview of the hashtags
+        twTitle = object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+            override fun afterTextChanged(editable: Editable) {
+                recordingItem.title = editable.toString()
+                draftViewModel.uiDraft = recordingItem
+                updateDraft()
+            }
+            override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
+        }
+        etCaption.addTextChangedListener(twTitle)
+
+
 
 
         //Keyboard listener to hide the recycler
@@ -1060,7 +1085,7 @@ class PublishFragment : BaseFragment() {
                                     ) + getCurrentWord(etCaption)!!.length, actualString.length
                                 )
 
-                    etCaption.applyWithDisabledTextWatcher(tw!!) {
+                    etCaption.applyWithDisabledTextWatcher(twCaption!!) {
                         text = finalString
                     }
                     etCaption.setSelection(etCaption.text.length); //This places cursor to end of EditText.
