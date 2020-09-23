@@ -6,15 +6,18 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
 import com.facebook.HttpMethod
 import com.facebook.login.LoginManager
+import com.google.android.material.tabs.TabLayoutMediator
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
@@ -28,7 +31,6 @@ import io.square1.limor.scenes.splash.SplashActivity
 import io.square1.limor.scenes.utils.CommonsKt.Companion.formatSocialMediaQuantity
 import io.square1.limor.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_profile.*
-import kotlinx.android.synthetic.main.fragment_profile.ivVerifiedUser
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -89,6 +91,7 @@ class ProfileFragment : BaseFragment() {
 
         app = context?.applicationContext as App
         initToolbarViews()
+        initViewPager()
 
         isMyProfileMode = checkIfIsMyProfile()
 
@@ -110,6 +113,26 @@ class ProfileFragment : BaseFragment() {
         configureToolbar()
         configureScreen()
         printUserData()
+    }
+
+    private fun initViewPager() {
+        val names = arrayOf("Casts", "Likes", "Bookmarks")
+        viewPager.adapter = object : FragmentStateAdapter(this) {
+            override fun getItemCount(): Int {
+                return names.size
+            }
+
+            override fun createFragment(position: Int): Fragment {
+                return when(position) {
+                    0 -> FeedFragment.newInstance()
+                    else -> FeedFragment.newInstance()
+                }
+            }
+
+        }
+        TabLayoutMediator(tab_layout, viewPager) { tab, position ->
+            tab.text = names[position]
+        }.attach()
     }
 
     private fun checkIfIsMyProfile() : Boolean {

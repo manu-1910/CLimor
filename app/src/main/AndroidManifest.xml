@@ -48,9 +48,14 @@
                 android:required="false"/>
 
         <activity
-                android:name="io.square1.limor.scenes.authentication.SignActivity"
-                android:label="@string/app_name"
-                android:theme="@style/AppTheme.NoActionBar"/>
+            android:name="io.square1.limor.scenes.authentication.SignActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
+            android:name="io.square1.limor.common.BaseActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name="io.square1.limor.scenes.main.MainActivity"
