@@ -988,9 +988,9 @@ public class Commons {
         long totalAudioLen = 0;
         long totalDataLen = totalAudioLen + 36;
         long longSampleRate = RECORDER_SAMPLERATE;
-        int channels = 1;
-        long byteRate = RECORDER_BPP * RECORDER_SAMPLERATE * channels / 8;
-
+        int channels = 2;
+        long byteRate = (RECORDER_BPP * RECORDER_SAMPLERATE * channels) / 8;
+        System.out.println("--------- byterate is: " + byteRate);
 
         //bufferSize = AudioRecord.getMinBufferSize(RECORDER_SAMPLERATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
 

@@ -29,7 +29,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
-import com.github.squti.androidwaverecorder.WaveRecorder
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
@@ -42,6 +41,7 @@ import io.square1.limor.scenes.utils.CommonsKt.Companion.audioFileFormat
 import io.square1.limor.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import io.square1.limor.scenes.utils.VisualizerView
 import io.square1.limor.scenes.utils.location.MyLocation
+import io.square1.limor.scenes.utils.waverecorder.WaveRecorder
 import io.square1.limor.uimodels.UIDraft
 import kotlinx.android.synthetic.main.fragment_record.*
 import kotlinx.android.synthetic.main.toolbar_default.*
@@ -388,8 +388,8 @@ class RecordFragment : BaseFragment() {
 
             fileRecording = recordingDirectory.absolutePath + "/"+System.currentTimeMillis() + audioFileFormat
             mRecorder = WaveRecorder(fileRecording)
-            mRecorder.waveConfig.sampleRate = 24000
-            mRecorder.waveConfig.channels = AudioFormat.CHANNEL_IN_MONO
+            mRecorder.waveConfig.sampleRate = 16000
+            mRecorder.waveConfig.channels = AudioFormat.CHANNEL_IN_STEREO
             mRecorder.waveConfig.audioEncoding = AudioFormat.ENCODING_PCM_16BIT
             //mRecorder.noiseSuppressorActive = true
 
