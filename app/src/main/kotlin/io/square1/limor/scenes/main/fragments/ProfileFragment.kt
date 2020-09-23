@@ -119,7 +119,7 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun initViewPager() {
-        val names = arrayOf("Casts", "Likes", "Bookmarks")
+        val names = arrayOf("Casts", "Not implemented", "Not implemented")
         viewPager.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int {
                 return names.size

@@ -546,9 +546,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
         requestNewData()
     }
 
-    protected open fun setFeedViewModelVariables(newOffset: Int = 0) {
-
-    }
+    protected abstract fun setFeedViewModelVariables(newOffset: Int = 0)
 
 
     fun scrollToTop() {
