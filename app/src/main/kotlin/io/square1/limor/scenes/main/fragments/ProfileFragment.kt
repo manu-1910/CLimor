@@ -24,6 +24,7 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
+import io.square1.limor.scenes.main.fragments.profile.UserPodcastsFragment
 import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.fragments.profile.UserReportActivity
 import io.square1.limor.scenes.main.viewmodels.*
@@ -124,8 +125,8 @@ class ProfileFragment : BaseFragment() {
 
             override fun createFragment(position: Int): Fragment {
                 return when(position) {
-                    0 -> FeedFragment.newInstance()
-                    else -> FeedFragment.newInstance()
+                    0 -> UserPodcastsFragment.newInstance()
+                    else -> UserPodcastsFragment.newInstance()
                 }
             }
 

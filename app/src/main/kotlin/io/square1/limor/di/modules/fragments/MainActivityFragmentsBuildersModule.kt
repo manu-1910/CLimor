@@ -13,7 +13,7 @@ abstract class MainActivityFragmentsBuildersModule {
     abstract fun contributeHomeFragmentInjector(): HomeFragment
 
     @ContributesAndroidInjector
-    abstract fun contributeFeedFragmentInjector(): FeedFragment
+    abstract fun contributeFeedFragmentInjector(): FeedItemsListFragment
 
     @ContributesAndroidInjector
     abstract fun contributeDiscoverFragmentInjector(): DiscoverFragment

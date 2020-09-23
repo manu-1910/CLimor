@@ -33,29 +33,26 @@ import org.jetbrains.anko.uiThread
 import javax.inject.Inject
 
 
-class FeedFragment : BaseFragment() {
+open class FeedItemsListFragment : BaseFragment() {
 
 
 
     @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+    open lateinit var viewModelFactory: ViewModelProvider.Factory
 
     @Inject
     lateinit var sessionManager: SessionManager
 
     // viewModels
     private lateinit var viewModelFeed: FeedViewModel
-
-
     private lateinit var viewModelFeedByTag: FeedByTagViewModel
     private lateinit var viewModelCreatePodcastLike: CreatePodcastLikeViewModel
     private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
     private lateinit var viewModelCreatePodcastRecast: CreatePodcastRecastViewModel
     private lateinit var viewModelDeletePodcastRecast: DeletePodcastRecastViewModel
     private lateinit var viewModelCreatePodcastReport: CreatePodcastReportViewModel
+
     private val getFeedDataTrigger = PublishSubject.create<Unit>()
-
-
     private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastRecastDataTrigger = PublishSubject.create<Unit>()
@@ -84,8 +81,8 @@ class FeedFragment : BaseFragment() {
 
 
     companion object {
-        val TAG: String = FeedFragment::class.java.simpleName
-        fun newInstance() = FeedFragment()
+        val TAG: String = FeedItemsListFragment::class.java.simpleName
+        fun newInstance() = FeedItemsListFragment()
         private const val OFFSET_INFINITE_SCROLL = 2
         private const val FEED_LIMIT_REQUEST = 2 // this number multiplied by 2 is because there is
                                                  // an error on the limit param in the back side
@@ -130,6 +127,7 @@ class FeedFragment : BaseFragment() {
             reloadFeed()
         }
     }
+
 
     private fun initApiCallDeleteRecast() {
         val output = viewModelDeletePodcastRecast.transform(
