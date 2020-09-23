@@ -1,7 +1,6 @@
 package io.square1.limor.scenes.main.fragments.podcast
 
 import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -9,7 +8,6 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import io.square1.limor.R
 import io.square1.limor.common.BaseActivity
-import kotlinx.android.synthetic.main.activity_podcasts_by_tag.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -60,10 +58,6 @@ class PodcastsByTagActivity : BaseActivity(), HasSupportFragmentInjector {
             finish()
         }
 
-    }
-
-    fun hideLoadingSpinner(){
-        pb_loading.visibility = View.GONE
     }
 
 }

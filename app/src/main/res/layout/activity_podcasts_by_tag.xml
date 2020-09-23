@@ -24,12 +24,6 @@
             app:defaultNavHost="true"
             app:navGraph="@navigation/podcasts_by_tag_nav" />
 
-        <ProgressBar
-            android:id="@+id/pb_loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true" />
-
         <include layout="@layout/mini_player_view"
             android:id="@+id/rl_mini_player_view"
             android:layout_alignParentBottom="true"

@@ -26,13 +26,13 @@ import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIFeedItem
+import kotlinx.android.synthetic.main.fragment_feed.*
 import org.jetbrains.anko.support.v4.onRefresh
 import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
 
 
-open class FeedItemsListFragment : BaseFragment() {
-
+abstract class FeedItemsListFragment : BaseFragment() {
 
 
     @Inject
@@ -74,11 +74,10 @@ open class FeedItemsListFragment : BaseFragment() {
 
     companion object {
         val TAG: String = FeedItemsListFragment::class.java.simpleName
-        fun newInstance() = FeedItemsListFragment()
         private const val OFFSET_INFINITE_SCROLL = 2
         internal const val FEED_LIMIT_REQUEST = 2 // this number multiplied by 2 is because there is
-                                                 // an error on the limit param in the back side
-                                                 // that duplicates the amount of results,
+        // an error on the limit param in the back side
+        // that duplicates the amount of results,
     }
 
     override fun onCreateView(
@@ -104,9 +103,7 @@ open class FeedItemsListFragment : BaseFragment() {
         return rootView
     }
 
-    protected open fun requestNewData() {
-
-    }
+    abstract fun requestNewData()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -139,7 +136,8 @@ open class FeedItemsListFragment : BaseFragment() {
     }
 
     private fun undoRecast() {
-        Toast.makeText(context, getString(R.string.error_recasting_podcast), Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, getString(R.string.error_recasting_podcast), Toast.LENGTH_SHORT)
+            .show()
         val item = feedItemsList[lastRecastedItemPosition]
         item.podcast?.let { podcast ->
             changeItemRecastStatus(
@@ -178,7 +176,8 @@ open class FeedItemsListFragment : BaseFragment() {
                 feedItemsList,
                 object : FeedAdapter.OnFeedClickListener {
                     override fun onItemClicked(item: UIFeedItem, position: Int) {
-                        val podcastDetailsIntent = Intent(context, PodcastDetailsActivity::class.java)
+                        val podcastDetailsIntent =
+                            Intent(context, PodcastDetailsActivity::class.java)
                         podcastDetailsIntent.putExtra("podcast", item.podcast)
                         startActivity(podcastDetailsIntent)
                     }
@@ -337,8 +336,8 @@ open class FeedItemsListFragment : BaseFragment() {
 
 
         //set menu item click listener here
-        popup.setOnMenuItemClickListener {menuItem ->
-            when(menuItem.itemId) {
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
                 R.id.menu_share -> onShareClicked(item)
                 R.id.menu_report -> onPodcastReportClicked(item)
             }
@@ -355,7 +354,7 @@ open class FeedItemsListFragment : BaseFragment() {
     }
 
     private fun onShareClicked(item: UIFeedItem) {
-        item.podcast?.sharing_url?.let {url ->
+        item.podcast?.sharing_url?.let { url ->
             val text = getString(R.string.check_out_this_cast)
             val finalText = "$text $url"
             val sendIntent: Intent = Intent().apply {
@@ -429,6 +428,7 @@ open class FeedItemsListFragment : BaseFragment() {
     }
 
     protected fun handleErrorState() {
+        pb_loading.visibility = View.GONE
         hideSwipeToRefreshProgressBar()
         Toast.makeText(
             context,
@@ -495,6 +495,22 @@ open class FeedItemsListFragment : BaseFragment() {
                 swipeRefreshLayout?.isRefreshing = false
             }
         }
+    }
+
+    protected fun handleNewFeedData(items: MutableList<UIFeedItem>) {
+        if (isReloading) {
+            feedItemsList.clear()
+            rvFeed?.recycledViewPool?.clear()
+            isReloading = false
+        }
+
+        feedItemsList.addAll(items)
+        if (items.size == 0)
+            isLastPage = true
+
+        rvFeed?.adapter?.notifyDataSetChanged()
+        hideSwipeToRefreshProgressBar()
+        pb_loading.visibility = View.GONE
     }
 
 

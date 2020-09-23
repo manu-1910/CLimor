@@ -8,7 +8,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.scenes.main.viewmodels.FeedViewModel
-import io.square1.limor.uimodels.UIFeedItem
 
 class UserFeedFragment : FeedItemsListFragment() {
 
@@ -67,21 +66,6 @@ class UserFeedFragment : FeedItemsListFragment() {
 
     }
 
-
-    private fun handleNewFeedData(items: MutableList<UIFeedItem>) {
-        if (isReloading) {
-            feedItemsList.clear()
-            rvFeed?.recycledViewPool?.clear()
-            isReloading = false
-        }
-
-        feedItemsList.addAll(items)
-        if (items.size == 0)
-            isLastPage = true
-
-        rvFeed?.adapter?.notifyDataSetChanged()
-        hideSwipeToRefreshProgressBar()
-    }
 
     override fun setFeedViewModelVariables(newOffset: Int) {
         viewModelFeed.limit = FEED_LIMIT_REQUEST

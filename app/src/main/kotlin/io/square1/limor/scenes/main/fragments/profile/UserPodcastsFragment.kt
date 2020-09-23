@@ -23,6 +23,10 @@ class UserPodcastsFragment : FeedItemsListFragment() {
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
+    override fun requestNewData() {
+
+    }
+
     override fun bindViewModel() {
         super.bindViewModel()
         Timber.d("Acabo de correr bindViewModel del UserPodcastsFragment")
