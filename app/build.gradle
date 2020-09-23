@@ -21,8 +21,8 @@ android {
         targetSdkVersion build_versions.target_sdk
 
         applicationId globalConfiguration.androidApplicationId
-        versionCode 11
-        versionName "0.0.11"
+        versionCode 12
+        versionName "0.0.12"
 
         testInstrumentationRunner globalConfiguration.testInstrumentationRunner
         testApplicationId globalConfiguration.testApplicationId
@@ -32,6 +32,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
 
     testOptions {
         unitTests.returnDefaultValues = true
@@ -160,6 +161,9 @@ kapt {
 }
 
 dependencies {
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
     // Anko
     implementation deps.anko.sdk
     implementation deps.anko.sdk_listeners
@@ -334,5 +338,8 @@ dependencies {
 
     // cropping image
     implementation 'com.github.yalantis:ucrop:2.2.6'
+
+    implementation 'com.github.adrielcafe:AndroidAudioConverter:0.0.8'
+    implementation 'com.github.xxjy:amr-wb-enc-android:1.0.0@aar'
 
 }

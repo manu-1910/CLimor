@@ -13,12 +13,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import cafe.adriel.androidaudioconverter.AndroidAudioConverter
+import cafe.adriel.androidaudioconverter.callback.ILoadCallback
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import io.square1.limor.R
 import io.square1.limor.common.BaseActivity
 import io.square1.limor.scenes.main.viewmodels.LocationsViewModel
-import io.square1.limor.scenes.main.viewmodels.ProfileViewModel
 import io.square1.limor.scenes.utils.location.MyLocation
 import java.util.*
 import javax.inject.Inject
@@ -52,6 +53,17 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
         setContentView(R.layout.activity_record)
 
         bindViewModel()
+
+
+        AndroidAudioConverter.load(this, object : ILoadCallback {
+            override fun onSuccess() {
+                // Great!
+            }
+
+            override fun onFailure(error: java.lang.Exception) {
+                // FFmpeg is not supported by device
+            }
+        })
 
         //Check Permissions
         if (!hasPermissions(applicationContext, *PERMISSIONS)) {
