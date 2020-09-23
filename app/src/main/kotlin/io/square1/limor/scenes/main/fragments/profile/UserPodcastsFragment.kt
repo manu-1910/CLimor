@@ -4,15 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
-import dagger.android.support.AndroidSupportInjection
 import io.square1.limor.scenes.main.fragments.FeedItemsListFragment
-import javax.inject.Inject
+import timber.log.Timber
 
 class UserPodcastsFragment : FeedItemsListFragment() {
-
-    @Inject
-    override lateinit var viewModelFactory: ViewModelProvider.Factory
 
 
     companion object {
@@ -25,8 +20,12 @@ class UserPodcastsFragment : FeedItemsListFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        AndroidSupportInjection.inject(this)
         return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
+    override fun bindViewModel() {
+        super.bindViewModel()
+        Timber.d("Acabo de correr bindViewModel del UserPodcastsFragment")
     }
 
 }
