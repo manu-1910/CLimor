@@ -9,18 +9,18 @@ import androidx.lifecycle.ViewModelProviders
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.scenes.main.fragments.FeedItemsListFragment
 import io.square1.limor.scenes.main.fragments.UserFeedFragment
-import io.square1.limor.scenes.main.viewmodels.GetPodcastsByUserIDViewModel
+import io.square1.limor.scenes.main.viewmodels.GetUserLikedPodcastsViewModel
 import io.square1.limor.uimodels.UIFeedItem
 import kotlinx.android.synthetic.main.fragment_feed.*
 
-class UserPodcastsFragment(private val userID: Int) : FeedItemsListFragment() {
+class UserLikedPodcastsFragment(private val userID: Int) : FeedItemsListFragment() {
 
-    private lateinit var viewModelPodcastsByUserID: GetPodcastsByUserIDViewModel
-    private val getPodcastsByUserIDDataTrigger = PublishSubject.create<Unit>()
+    private lateinit var viewModelGetLikedPodcasts: GetUserLikedPodcastsViewModel
+    private val getPodcastsDataTrigger = PublishSubject.create<Unit>()
 
     companion object {
         val TAG: String = UserFeedFragment::class.java.simpleName
-        fun newInstance(newUserId: Int) = UserPodcastsFragment(newUserId)
+        fun newInstance(newUserId: Int) = UserLikedPodcastsFragment(newUserId)
     }
 
     override fun onCreateView(
@@ -37,24 +37,24 @@ class UserPodcastsFragment(private val userID: Int) : FeedItemsListFragment() {
     override fun bindViewModel() {
         super.bindViewModel()
         activity?.let { fragmentActivity ->
-            viewModelPodcastsByUserID = ViewModelProviders
+            viewModelGetLikedPodcasts = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
-                .get(GetPodcastsByUserIDViewModel::class.java)
+                .get(GetUserLikedPodcastsViewModel::class.java)
         }
         resetFeedViewModelVariables()
     }
 
     override fun callTriggerForNewData() {
-        getPodcastsByUserIDDataTrigger.onNext(Unit)
+        getPodcastsDataTrigger.onNext(Unit)
     }
 
 
 
 
     private fun initApiCallGetPodcasts() {
-        val output = viewModelPodcastsByUserID.transform(
-            GetPodcastsByUserIDViewModel.Input(
-                getPodcastsByUserIDDataTrigger,
+        val output = viewModelGetLikedPodcasts.transform(
+            GetUserLikedPodcastsViewModel.Input(
+                getPodcastsDataTrigger,
                 userID
             )
         )
@@ -85,13 +85,13 @@ class UserPodcastsFragment(private val userID: Int) : FeedItemsListFragment() {
 
 
     override fun resetFeedViewModelVariables() {
-        viewModelPodcastsByUserID.limit = FEED_LIMIT_REQUEST
-        viewModelPodcastsByUserID.offset = 0
+        viewModelGetLikedPodcasts.limit = FEED_LIMIT_REQUEST
+        viewModelGetLikedPodcasts.offset = 0
     }
 
     override fun setFeedViewModelVariablesOnScroll() {
-        viewModelPodcastsByUserID.limit = FEED_LIMIT_REQUEST
-        viewModelPodcastsByUserID.offset = feedItemsList.size
+        viewModelGetLikedPodcasts.limit = FEED_LIMIT_REQUEST
+        viewModelGetLikedPodcasts.offset = feedItemsList.size
     }
 
 

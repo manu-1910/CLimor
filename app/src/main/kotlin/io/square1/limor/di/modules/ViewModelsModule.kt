@@ -170,4 +170,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(NotificationsViewModel::class)
     abstract fun bindNotificationsViewModel(notificationsViewModel: NotificationsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(GetUserLikedPodcastsViewModel::class)
+    abstract fun bindGetUserLikedPodcastsViewModel(getUserLikedPodcastsViewModel: GetUserLikedPodcastsViewModel): ViewModel
 }
