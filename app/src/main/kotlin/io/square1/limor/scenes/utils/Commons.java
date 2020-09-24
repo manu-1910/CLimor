@@ -132,6 +132,28 @@ public class Commons {
         return hour + ":" + minuteOfHour;
     }
 
+    public static String getDatePlusHourMinutesFromDateInt(int dateInt){
+        DateTime dateTime = new DateTime( dateInt, DateTimeZone.getDefault() );
+
+        String dayOfMonth = dateTime.dayOfMonth().getAsString();
+        String monthOfYear = dateTime.monthOfYear().getAsString();
+        String year = dateTime.year().getAsString();
+        String date = dayOfMonth + "/" + monthOfYear + "/" + year;
+
+        String hour = String.valueOf(dateTime.getHourOfDay());
+        hour = (hour.length() == 1) ? ("0" + hour) : hour;
+        String minuteOfHour = String.valueOf(dateTime.getMinuteOfHour());
+        minuteOfHour = (minuteOfHour.length() == 1) ? ("0" + minuteOfHour) : minuteOfHour;
+
+        return date + " " + hour + ":" + minuteOfHour;
+    }
+
+    public static String getHumanReadableTimeFromMillis(int durationMillis){
+        int minutes = durationMillis / 1000 / 60;
+        int seconds = durationMillis / 1000 % 60;
+        return String.format(Locale.getDefault(), "%dm %ds", minutes, seconds);
+    }
+
     public static void showAlertYesNo(Context context, int title, int message, DialogInterface.OnClickListener listener) {
         showAlertCustomButtons(context, context.getString(title), context.getString(message), listener, context.getString(R.string.yes), null, context.getString(R.string.no));
     }

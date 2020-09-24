@@ -2,11 +2,7 @@ package repositories.search
 
 
 import entities.request.DataLocationsRequest
-import entities.request.DataTagsRequest
-import entities.response.LocationsResponseEntity
-import entities.response.PodcastsByTagResponseEntity
-import entities.response.PromotedTagsResponseEntity
-import entities.response.TagsResponseEntity
+import entities.response.*
 import io.reactivex.Single
 import providers.remote.RemoteSearchProvider
 import javax.inject.Inject
@@ -34,6 +30,10 @@ class DataSearchRepository @Inject constructor(private val remoteProvider: Remot
 
     override fun podcastsByTag(limit: Int, offset: Int, tag: String): Single<PodcastsByTagResponseEntity>? {
         return remoteProvider.podcastsTag(limit, offset, tag)
+    }
+
+    override fun getSuggestedUsers(): Single<SuggestedUsersResponseEntity>? {
+        return remoteProvider.getSuggestedUsers()
     }
 
 }

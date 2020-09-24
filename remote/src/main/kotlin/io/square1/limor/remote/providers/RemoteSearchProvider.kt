@@ -1,10 +1,7 @@
 package io.square1.limor.remote.providers
 
 import entities.request.DataLocationsRequest
-import entities.response.LocationsResponseEntity
-import entities.response.PodcastsByTagResponseEntity
-import entities.response.PromotedTagsResponseEntity
-import entities.response.TagsResponseEntity
+import entities.response.*
 import io.reactivex.Single
 import io.square1.limor.remote.mappers.asDataEntity
 import io.square1.limor.remote.mappers.asRemoteEntity
@@ -36,6 +33,10 @@ class RemoteSearchProviderImp @Inject constructor(private val provider: SearchSe
 
     override fun podcastsTag(limit: Int, offset: Int, tag: String): Single<PodcastsByTagResponseEntity>? {
         return provider.podcastsByTag(limit, offset, tag)?.asDataEntity()
+    }
+
+    override fun getSuggestedUsers(): Single<SuggestedUsersResponseEntity>? {
+        return provider.getSuggestedUsers()?.asDataEntity()
     }
 
 }

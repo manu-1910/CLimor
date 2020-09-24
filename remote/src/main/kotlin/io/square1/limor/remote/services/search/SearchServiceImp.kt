@@ -2,10 +2,7 @@ package io.square1.limor.remote.services.search
 
 import io.reactivex.Single
 import io.square1.limor.remote.entities.requests.NWLocationsRequest
-import io.square1.limor.remote.entities.responses.NWLocationsResponse
-import io.square1.limor.remote.entities.responses.NWPodcastsByTagResponse
-import io.square1.limor.remote.entities.responses.NWPromotedTagsResponse
-import io.square1.limor.remote.entities.responses.NWTagsResponse
+import io.square1.limor.remote.entities.responses.*
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
 import io.square1.limor.remote.services.RemoteServiceConfig
@@ -58,7 +55,7 @@ class SearchServiceImp @Inject constructor(private val serviceConfig: RemoteServ
 
 
     fun promotedTags(): Single<NWPromotedTagsResponse>? {
-        return service.trendingTags()
+        return service.promotedTags()
             .map { response -> response.parseSuccessResponse(NWPromotedTagsResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
@@ -71,6 +68,17 @@ class SearchServiceImp @Inject constructor(private val serviceConfig: RemoteServ
     fun podcastsByTag(limit: Int, offset: Int, tag: String): Single<NWPodcastsByTagResponse>? {
         return service.podcastsByTag(limit, offset, tag)
             .map { response -> response.parseSuccessResponse(NWPodcastsByTagResponse.serializer()) }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
+    fun getSuggestedUsers(): Single<NWSuggestedUsersResponse>? {
+        return service.getSuggestedUsers()
+            .map { response -> response.parseSuccessResponse(NWSuggestedUsersResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
             }

@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="38dp"
-    xmlns:tools="http://schemas.android.com/tools"
     tools:background="@color/brandSecondary400">
 
     <TextView
         android:id="@+id/tv_date_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="6dp"
         android:ellipsize="end"
         android:letterSpacing="-0.01"
         android:lineSpacingExtra="5sp"
         android:maxLines="1"
+        android:textAllCaps="true"
         android:textColor="@color/marker_time_text"
         android:textSize="13sp"
-        android:layout_marginTop="14dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="6dp"
         tools:text="18 September, 2020" />
 
 </FrameLayout>

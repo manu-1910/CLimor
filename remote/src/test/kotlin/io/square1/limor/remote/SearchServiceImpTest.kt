@@ -62,6 +62,25 @@ class SearchServiceImpTest {
         response?.assertValue { it.message == "Success" }
     }
 
+    @Test
+    fun should_get_suggested_users_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = CURRENT_URL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = CURRENT_TOKEN,
+            expiredIn = 0
+        )
+
+        searchService = SearchServiceImp(config)
+
+        val response = searchService.getSuggestedUsers()?.test()
+
+        response?.assertNoErrors()
+        response?.assertValue { it.message == "Success" }
+    }
+
 
 }
 
