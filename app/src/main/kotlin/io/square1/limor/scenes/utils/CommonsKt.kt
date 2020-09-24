@@ -24,7 +24,8 @@ class CommonsKt {
 
     companion object {
 
-        val audioFileFormat: String = ".amr"
+        //val audioFileFormat: String = ".amr"
+        val audioFileFormat: String = ".wav"
 
         fun getDateTimeFormatted(): String {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -154,6 +155,14 @@ class CommonsKt {
                     val newQty = quantity / 1000000000.toFloat()
                     val output = "%.1fB".format(newQty)
                     output
+                }
+            }
+        }
+
+        fun File.copyTo(file: File) {
+            inputStream().use { input ->
+                file.outputStream().use { output ->
+                    input.copyTo(output)
                 }
             }
         }

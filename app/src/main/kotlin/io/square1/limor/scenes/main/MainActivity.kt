@@ -34,18 +34,14 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
     @Inject
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
-
-    override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> = fragmentInjector
-
-    private lateinit var profileViewModel : ProfileViewModel
-    private val getProfileTrigger = PublishSubject.create<Unit>()
-
     @Inject
     lateinit var sessionManager : SessionManager
 
-
+    private lateinit var profileViewModel : ProfileViewModel
+    private val getProfileTrigger = PublishSubject.create<Unit>()
     private lateinit var navController: NavController
     var app: App? = null
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +64,10 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
         getProfileTrigger.onNext(Unit)
     }
 
+
+    override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> = fragmentInjector
+
+
     private fun initApiCallGetProfile() {
         val output = profileViewModel.transform(
             ProfileViewModel.Input(
@@ -87,6 +87,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
             ).show()
         })
     }
+
 
     private fun bindViewModel() {
         profileViewModel = ViewModelProviders
@@ -169,10 +170,6 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
             }
         }
     }
-
-
-
-
 
 
     private fun showHomeToolbar(toolbarTitle: String) {
@@ -259,6 +256,5 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
         }
     }
-
 
 }
