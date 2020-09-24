@@ -1,5 +1,5 @@
 package entities.request
 
-data class DataLocationsRequest(
+data class DataSearchTermRequest(
     var term: String
 )

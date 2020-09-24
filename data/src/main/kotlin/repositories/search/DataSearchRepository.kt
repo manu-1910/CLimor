@@ -1,7 +1,7 @@
 package repositories.search
 
 
-import entities.request.DataLocationsRequest
+import entities.request.DataSearchTermRequest
 import entities.response.LocationsResponseEntity
 import entities.response.GetPodcastsResponseEntity
 import entities.response.PromotedTagsResponseEntity
@@ -20,8 +20,8 @@ class DataSearchRepository @Inject constructor(private val remoteProvider: Remot
         return remoteProvider.searchTag(tag)
     }
 
-    override fun searchLocations(dataLocationsRequest: DataLocationsRequest): Single<LocationsResponseEntity>? {
-        return remoteProvider.searchLocations(dataLocationsRequest)
+    override fun searchLocations(dataSearchTermRequest: DataSearchTermRequest): Single<LocationsResponseEntity>? {
+        return remoteProvider.searchLocations(dataSearchTermRequest)
     }
 
     override fun trendingTags(): Single<TagsResponseEntity>? {
@@ -38,6 +38,10 @@ class DataSearchRepository @Inject constructor(private val remoteProvider: Remot
 
     override fun getSuggestedUsers(): Single<SuggestedUsersResponseEntity>? {
         return remoteProvider.getSuggestedUsers()
+    }
+
+    override fun searchUsers(searchTermRequest: DataSearchTermRequest): Single<SuggestedUsersResponseEntity>? {
+        return remoteProvider.searchUsers(searchTermRequest)
     }
 
 }

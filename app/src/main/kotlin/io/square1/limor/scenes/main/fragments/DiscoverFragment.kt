@@ -1,23 +1,34 @@
 package io.square1.limor.scenes.main.fragments
 
+import android.animation.LayoutTransition
+import android.animation.ValueAnimator
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.transition.Transition
+import android.transition.Transition.TransitionListener
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import io.square1.limor.App
 import io.square1.limor.common.BaseActivity
+import io.square1.limor.extensions.forceLayoutChanges
+import io.square1.limor.scenes.main.MainActivity
 import io.square1.limor.scenes.main.adapters.DiscoverMainTagsAdapter
 import io.square1.limor.scenes.main.adapters.FeaturedItemAdapter
 import io.square1.limor.scenes.main.adapters.SuggestedPersonAdapter
@@ -30,7 +41,6 @@ import io.square1.limor.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_discover.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.toast
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -52,6 +62,14 @@ class DiscoverFragment : BaseFragment(),
     private var featuredAdapter: FeaturedItemAdapter? = null
     private var topCastAdapter: TopCastAdapter? = null
 
+    private var discoverAccountsFragment: DiscoverAccountsFragment? = null
+    private var discoverHashTagsFragment: DiscoverHashTagsFragment? = null
+
+
+    private var isSearching = false
+
+    private var rlSearch: ViewGroup? = null
+
     companion object {
         val TAG: String = DiscoverFragment::class.java.simpleName
         fun newInstance() = DiscoverFragment()
@@ -67,29 +85,150 @@ class DiscoverFragment : BaseFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        rlSearch = view.findViewById(R.id.rl_search)
+        rlSearch?.forceLayoutChanges()
+
         bindViewModel()
         initSwipeRefreshLayout()
+        initViewPager()
         viewModelDiscover.discoverState.observe(viewLifecycleOwner, discoverStateObserver())
 
         tv_see_all_featured_casts.onClick { toast("See all featured casts clicked") }
         tv_see_all_hashtags.onClick { toast("See all hashtags clicked") }
+        tv_search_cancel.onClick { hideSearchingView() }
 
         setupEditText()
 
+
+    }
+
+    private fun showSearchingView() {
+        val valueAnimator = ValueAnimator.ofInt(
+            0,
+            swipeRefreshLayout_discover.measuredHeight
+        ) //+ (requireActivity() as MainActivity).getToolbarHeight()
+        valueAnimator.duration = 300L
+        valueAnimator.addUpdateListener {
+            val animatedValue = valueAnimator.animatedValue as Int
+            val layoutParams = ll_root_search.layoutParams
+            layoutParams.height = animatedValue
+            ll_root_search.layoutParams = layoutParams
+        }
+        valueAnimator.start()
+        tv_search_cancel.visibility = View.VISIBLE
+
+        discoverAccountsFragment?.setSearchText(et_search.text.toString())
+        discoverHashTagsFragment?.setSearchText(et_search.text.toString())
+
+//        val toolbar = (requireActivity() as MainActivity).getToolBar()
+//        toolbar.forceLayoutChanges()
+//        val layoutTransition = toolbar.layoutTransition
+//        layoutTransition.addTransitionListener(object: LayoutTransition.TransitionListener {
+//            override fun startTransition(
+//                p0: LayoutTransition?,
+//                p1: ViewGroup?,
+//                p2: View?,
+//                p3: Int
+//            ) {
+//
+//            }
+//
+//            override fun endTransition(p0: LayoutTransition?, p1: ViewGroup?, p2: View?, p3: Int) {
+//
+//            }
+//        })
+//        (requireActivity() as MainActivity).hideToolbar(true)
+        isSearching = true
+    }
+
+    private fun hideSearchingView() {
+        val valueAnimator = ValueAnimator.ofInt(swipeRefreshLayout_discover.measuredHeight, 0)
+        valueAnimator.duration = 300L
+        valueAnimator.addUpdateListener {
+            val animatedValue = valueAnimator.animatedValue as Int
+            val layoutParams = ll_root_search.layoutParams
+            layoutParams.height = animatedValue
+            ll_root_search.layoutParams = layoutParams
+        }
+        valueAnimator.start()
+
+        tv_search_cancel.visibility = View.GONE
+        et_search.setText("")
+        (requireActivity() as MainActivity).hideToolbar(false)
+        isSearching = false
+    }
+
+    private fun initViewPager() {
+        val names = arrayOf("Accounts", "Hashtags")
+        viewPager.adapter = object : FragmentStateAdapter(this) {
+            override fun getItemCount(): Int {
+                return names.size
+            }
+
+            override fun createFragment(position: Int): Fragment {
+                return when (position) {
+                    0 -> {
+                        discoverAccountsFragment = DiscoverAccountsFragment.newInstance()
+                        discoverAccountsFragment as DiscoverAccountsFragment
+                    }
+                    else -> {
+                        discoverHashTagsFragment = DiscoverHashTagsFragment.newInstance()
+                        discoverHashTagsFragment as DiscoverHashTagsFragment
+                    }
+                }
+            }
+
+        }
+
+
+        TabLayoutMediator(tab_layout, viewPager) { tab, position ->
+            tab.text = names[position]
+        }.attach()
+
+        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                if (tab != null) {
+                    viewPager.currentItem = tab.position
+                }
+            }
+        })
     }
 
     override fun onStart() {
         viewModelDiscover.start()
+
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (isSearching) {
+                        hideSearchingView()
+                    } else {
+                        if (isEnabled) {
+                            isEnabled = false
+                            requireActivity().onBackPressed()
+                        }
+                    }
+
+                }
+            }
+            )
+
         super.onStart()
     }
 
     private fun setupEditText() {
         et_search.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                if(s.toString().length > 2){
-                    Timber.e("baz")
-                    val rlParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT)
-                    ll_root_search.layoutParams = rlParams
+                if (s.toString().length > 2) {
+                    showSearchingView()
+
                 }
             }
 

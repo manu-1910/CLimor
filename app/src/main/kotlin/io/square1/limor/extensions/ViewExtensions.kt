@@ -1,5 +1,6 @@
 package io.square1.limor.extensions
 
+import android.animation.LayoutTransition
 import android.content.Context
 import android.content.res.Resources
 import android.view.LayoutInflater
@@ -66,4 +67,10 @@ fun <T : RecyclerView.ViewHolder> T.listen(event: (position: Int, type: Int) -> 
         event.invoke(adapterPosition, itemViewType)
     }
     return this
+}
+
+fun ViewGroup.forceLayoutChanges() {
+    val layoutTransition = LayoutTransition()
+    layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
+    setLayoutTransition(layoutTransition)
 }

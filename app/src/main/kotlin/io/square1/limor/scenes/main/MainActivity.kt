@@ -285,5 +285,26 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
     }
 
+    fun hideToolbar(hide: Boolean){
+        val toolbar = window.decorView.findViewById<View>(android.R.id.content).
+        rootView.findViewById(R.id.toolbar) as androidx.appcompat.widget.Toolbar
+        if(hide){
+            toolbar.visibility = View.GONE
+        }else{
+            toolbar.visibility = View.VISIBLE
+        }
+    }
+
+    fun getToolbarHeight() : Int{
+        val toolbar = window.decorView.findViewById<View>(android.R.id.content).
+        rootView.findViewById(R.id.toolbar) as androidx.appcompat.widget.Toolbar
+        return toolbar.measuredHeight
+    }
+
+    fun getToolBar(): androidx.appcompat.widget.Toolbar{
+        return window.decorView.findViewById<View>(android.R.id.content).
+        rootView.findViewById(R.id.toolbar) as androidx.appcompat.widget.Toolbar
+    }
+
 
 }

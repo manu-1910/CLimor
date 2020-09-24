@@ -34,4 +34,10 @@ abstract class MainActivityFragmentsBuildersModule {
     @ContributesAndroidInjector
     abstract fun contributeUserFeedFragmentInjector(): UserFeedFragment
 
+    @ContributesAndroidInjector
+    abstract fun contributeDiscoverAccountsFragmentInjector(): DiscoverAccountsFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeDiscoverHashTagsFragmentInjector(): DiscoverHashTagsFragment
+
 }
