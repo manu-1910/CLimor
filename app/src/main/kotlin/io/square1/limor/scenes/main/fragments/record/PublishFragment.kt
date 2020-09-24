@@ -579,6 +579,12 @@ class PublishFragment : BaseFragment() {
             val imageFile = File(recordingItem.tempPhotoPath)
             if (!imageFile.path.isNullOrEmpty()) {
                 podcastHasImage = true
+                Commons.getInstance().handleImage(
+                    context,
+                    Commons.IMAGE_TYPE_PODCAST,
+                    imageFile,
+                    "podcast_photo"
+                )
             }
             Glide.with(context!!).load(imageFile).into(draftImage!!)  // Uri of the picture
             lytImagePlaceholder?.visibility = View.GONE
@@ -612,7 +618,6 @@ class PublishFragment : BaseFragment() {
         }
 
         recordingItem.caption = etDraftCaption?.text.toString()
-
 
         //Update Realm
         callToUpdateDraft()
@@ -1097,6 +1102,7 @@ class PublishFragment : BaseFragment() {
         draftViewModel.uiDraft = recordingItem
         deleteDraftsTrigger.onNext(Unit)
     }
+
 
     private fun callToUpdateDraft(){
         draftViewModel.uiDraft = recordingItem
