@@ -83,6 +83,11 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(GetPodcastsByUserIDViewModel::class)
+    abstract fun bindGetPodcastsByUserIDViewModel(getPodcastsByUserIDViewModel: GetPodcastsByUserIDViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(CreateFriendViewModel::class)
     abstract fun bindCreateFriendViewModel(createFriendViewModel: CreateFriendViewModel): ViewModel
 

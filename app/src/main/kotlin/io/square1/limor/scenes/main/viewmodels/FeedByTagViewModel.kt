@@ -12,7 +12,7 @@ import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.uimodels.UIErrorData
 import io.square1.limor.uimodels.UIErrorResponse
-import io.square1.limor.uimodels.UIPodcastsByTagResponse
+import io.square1.limor.uimodels.UIGetPodcastsResponse
 import io.square1.limor.usecases.PodcastsByTagUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -30,7 +30,7 @@ class FeedByTagViewModel @Inject constructor(private val podcastsByTagUseCase: P
     )
 
     data class Output(
-        val response: LiveData<UIPodcastsByTagResponse>,
+        val response: LiveData<UIGetPodcastsResponse>,
         val backgroundWorkingProgress: LiveData<Boolean>,
         val errorMessage: SingleLiveEvent<UIErrorResponse>
     )
@@ -38,7 +38,7 @@ class FeedByTagViewModel @Inject constructor(private val podcastsByTagUseCase: P
     override fun transform(input: Input): Output {
         val errorTracker = SingleLiveEvent<UIErrorResponse>()
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
-        val response = MutableLiveData<UIPodcastsByTagResponse>()
+        val response = MutableLiveData<UIGetPodcastsResponse>()
 
         input.getFeedTrigger.subscribe({
             podcastsByTagUseCase.execute(limit, offset, input.tag).subscribe({

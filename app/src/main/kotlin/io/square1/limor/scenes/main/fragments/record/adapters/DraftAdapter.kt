@@ -68,10 +68,8 @@ class DraftAdapter(
         }
 
         holder.tvDraftTitle.text = modelList.title
-        if (!modelList.caption.isNullOrEmpty()){
-            holder.tvDraftDescription.text = modelList.caption
-        }else{
-            holder.tvDraftDescription.text = modelList.time.toString()
+        if (!modelList.date.isNullOrEmpty()){
+            holder.tvDraftDescription.text = modelList.date
         }
 
         holder.itemView.setOnClickListener {
@@ -173,8 +171,11 @@ class DraftAdapter(
         //Forward button
         holder.btnFfwd.onClick {
             try {
-                mediaPlayer.seekTo(30000)
+                if(mediaPlayer.currentPosition + 30000 <= mediaPlayer.duration){
+                    mediaPlayer.seekTo(30000)
+                }
             } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
 
@@ -182,8 +183,11 @@ class DraftAdapter(
         //Rew button
         holder.btnRew.onClick {
             try {
-                mediaPlayer.seekTo(-30000)
+                if(mediaPlayer.currentPosition - 30000 >= 0){
+                    mediaPlayer.seekTo(-30000)
+                }
             } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
 
@@ -319,10 +323,6 @@ class DraftAdapter(
         fun onDuplicateItemClick(position: Int)
     }
 
-
-    interface OnContinueRecordingItemClickListener {
-        fun onContinueRecordingItemClick(item:UIDraft, position: Int)
-    }
 
 
 

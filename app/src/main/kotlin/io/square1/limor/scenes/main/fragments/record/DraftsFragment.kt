@@ -119,10 +119,14 @@ class DraftsFragment : BaseFragment() {
         btnCloseToolbar?.let {
             it.onClick {
                 try {
-                    findNavController().popBackStack()
+                    if(adapter?.mediaPlayer!!.isPlaying){
+                        adapter?.mediaPlayer!!.stop()
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
+
+                findNavController().popBackStack()
             }
         }
 
@@ -151,6 +155,15 @@ class DraftsFragment : BaseFragment() {
                 }
             }
 
+
+            try {
+                if(adapter?.mediaPlayer!!.isPlaying){
+                    adapter?.mediaPlayer!!.stop()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
             rvDrafts?.adapter?.notifyDataSetChanged()
         }
 
@@ -172,6 +185,14 @@ class DraftsFragment : BaseFragment() {
                 object : DraftAdapter.OnDeleteItemClickListener {
                     override fun onDeleteItemClick(position: Int) {
                         pbDrafts?.visibility = View.VISIBLE
+
+                        try {
+                            if(adapter?.mediaPlayer!!.isPlaying){
+                                adapter?.mediaPlayer!!.stop()
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
 
                         draftViewModel.uiDraft = draftsLocalList[position]
                         deleteDraftsTrigger.onNext(Unit)
@@ -196,10 +217,18 @@ class DraftsFragment : BaseFragment() {
                     override fun onDuplicateItemClick(position: Int) {
                         pbDrafts?.visibility = View.VISIBLE
 
+                        try {
+                            if(adapter?.mediaPlayer!!.isPlaying){
+                                adapter?.mediaPlayer!!.stop()
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+
                         var newItem = draftsLocalList[position]
                         newItem.id = System.currentTimeMillis()
                         newItem.title = getString(R.string.duplicated_draft)
-                        newItem.caption = getDateTimeFormatted()
+                        newItem.date = getDateTimeFormatted()
 
                         try {
                             val originalFile = File(draftsLocalList[position].filePath)
@@ -221,6 +250,14 @@ class DraftsFragment : BaseFragment() {
                 object : DraftAdapter.OnEditItemClickListener {
                     override fun onEditItemClick(item: UIDraft) {
                         pbDrafts?.visibility = View.VISIBLE
+
+                        try {
+                            if(adapter?.mediaPlayer!!.isPlaying){
+                                adapter?.mediaPlayer!!.stop()
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
 
 //                        //Go to record fragment to continue recording
 //                        draftViewModel.uiDraft = item

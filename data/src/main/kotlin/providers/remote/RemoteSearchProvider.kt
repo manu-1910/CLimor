@@ -1,8 +1,11 @@
 package providers.remote
 
 import entities.request.DataLocationsRequest
-import entities.request.DataTagsRequest
-import entities.response.*
+import entities.response.LocationsResponseEntity
+import entities.response.GetPodcastsResponseEntity
+import entities.response.PromotedTagsResponseEntity
+import entities.response.TagsResponseEntity
+import entities.response.SuggestedUsersResponseEntity
 import io.reactivex.Single
 
 
@@ -11,6 +14,6 @@ interface RemoteSearchProvider {
     fun searchLocations(dataLocationsRequest: DataLocationsRequest): Single<LocationsResponseEntity>?
     fun trendingTags(): Single<TagsResponseEntity>?
     fun promotedTags(): Single<PromotedTagsResponseEntity>?
-    fun podcastsTag(limit: Int, offset: Int, tag: String): Single<PodcastsByTagResponseEntity>?
+    fun podcastsTag(limit: Int, offset: Int, tag: String): Single<GetPodcastsResponseEntity>?
     fun getSuggestedUsers(): Single<SuggestedUsersResponseEntity>?
 }

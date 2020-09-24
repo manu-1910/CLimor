@@ -1,7 +1,11 @@
 package repositories.search
 
 import entities.request.DataLocationsRequest
-import entities.response.*
+import entities.response.LocationsResponseEntity
+import entities.response.GetPodcastsResponseEntity
+import entities.response.PromotedTagsResponseEntity
+import entities.response.TagsResponseEntity
+import entities.response.SuggestedUsersResponseEntity
 import io.reactivex.Single
 
 interface SearchRepository {
@@ -9,6 +13,6 @@ interface SearchRepository {
     fun searchLocations(dataLocationsRequest: DataLocationsRequest): Single<LocationsResponseEntity>?
     fun trendingTags(): Single<TagsResponseEntity>?
     fun promotedTags(): Single<PromotedTagsResponseEntity>?
-    fun podcastsByTag(limit: Int, offset: Int, tag: String): Single<PodcastsByTagResponseEntity>?
+    fun podcastsByTag(limit: Int, offset: Int, tag: String): Single<GetPodcastsResponseEntity>?
     fun getSuggestedUsers(): Single<SuggestedUsersResponseEntity>?
 }

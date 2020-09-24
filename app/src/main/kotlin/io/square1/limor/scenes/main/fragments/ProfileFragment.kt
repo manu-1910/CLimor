@@ -6,29 +6,36 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
 import com.facebook.HttpMethod
 import com.facebook.login.LoginManager
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
+import io.square1.limor.scenes.main.fragments.profile.UserPodcastsFragment
 import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.fragments.profile.UserReportActivity
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.splash.SplashActivity
+import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.formatSocialMediaQuantity
 import io.square1.limor.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_profile.*
-import kotlinx.android.synthetic.main.fragment_profile.ivVerifiedUser
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -52,7 +59,6 @@ class ProfileFragment : BaseFragment() {
     private val deleteFriendDataTrigger = PublishSubject.create<Unit>()
 
 
-
     @Inject
     lateinit var sessionManager: SessionManager
 
@@ -68,7 +74,7 @@ class ProfileFragment : BaseFragment() {
 
     var app: App? = null
 
-    private var isMyProfileMode : Boolean = false
+    private var isMyProfileMode: Boolean = false
 
 
     companion object {
@@ -89,6 +95,7 @@ class ProfileFragment : BaseFragment() {
 
         app = context?.applicationContext as App
         initToolbarViews()
+        initViewPager()
 
         isMyProfileMode = checkIfIsMyProfile()
 
@@ -97,7 +104,7 @@ class ProfileFragment : BaseFragment() {
         apiCallGetUser()
         apiCallLogout()
 
-        if(!isMyProfileMode) {
+        if (!isMyProfileMode) {
             uiUser = (activity as UserProfileActivity).uiUser
             apiCallReportUser()
             apiCallCreateUser()
@@ -110,10 +117,52 @@ class ProfileFragment : BaseFragment() {
         configureToolbar()
         configureScreen()
         printUserData()
+        CommonsKt.reduceSwipeSensitivity(viewPager)
     }
 
-    private fun checkIfIsMyProfile() : Boolean {
-        return if(activity !is UserProfileActivity) {
+    private fun initViewPager() {
+        val names = arrayOf("Casts", "Not implemented", "Not implemented")
+        viewPager.adapter = object : FragmentStateAdapter(this) {
+            override fun getItemCount(): Int {
+                return names.size
+            }
+
+            override fun createFragment(position: Int): Fragment {
+                return when (position) {
+                    0 -> UserPodcastsFragment.newInstance(uiUser!!.id)
+                    else -> UserPodcastsFragment.newInstance(uiUser!!.id)
+                }
+            }
+
+        }
+        TabLayoutMediator(tab_layout, viewPager) { tab, position ->
+            tab.text = names[position]
+        }.attach()
+
+        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                tab?.let {
+                    val myFragment = childFragmentManager.findFragmentByTag(
+                        "f" + this@ProfileFragment.viewPager.adapter?.getItemId(it.position)
+                    )
+                    if (myFragment is FeedItemsListFragment) {
+                        myFragment.scrollToTop()
+                    }
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+
+            }
+        })
+    }
+
+    private fun checkIfIsMyProfile(): Boolean {
+        return if (activity !is UserProfileActivity) {
             true
         } else {
             val loggedUser = sessionManager.getStoredUser()
@@ -123,7 +172,7 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun configureScreen() {
-        if(isMyProfileMode) {
+        if (isMyProfileMode) {
             btnLogout.visibility = View.VISIBLE
             btnSettings?.visibility = View.VISIBLE
             btnMore?.visibility = View.GONE
@@ -144,7 +193,7 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun configureToolbar() {
-        if(isMyProfileMode) {
+        if (isMyProfileMode) {
             btnBack?.visibility = View.GONE
         }
     }
@@ -169,7 +218,7 @@ class ProfileFragment : BaseFragment() {
         }
 
         btnFollow.onClick {
-            uiUser?.followed?.let{
+            uiUser?.followed?.let {
                 revertUserFollowedState()
 
                 // if the user is followed now, we must unfollow him
@@ -194,8 +243,8 @@ class ProfileFragment : BaseFragment() {
 
 
         //set menu item click listener here
-        popup.setOnMenuItemClickListener {menuItem ->
-            when(menuItem.itemId) {
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
                 R.id.menu_report -> onReportUserClicked()
                 R.id.menu_block -> onBlockUserClicked()
             }
@@ -224,8 +273,6 @@ class ProfileFragment : BaseFragment() {
     }
 
 
-
-
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
             viewModelProfile = ViewModelProviders
@@ -236,7 +283,7 @@ class ProfileFragment : BaseFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(LogoutViewModel::class.java)
 
-            if(!isMyProfileMode) {
+            if (!isMyProfileMode) {
                 viewModelCreateUserReport = ViewModelProviders
                     .of(fragmentActivity, viewModelFactory)
                     .get(CreateUserReportViewModel::class.java)
@@ -260,7 +307,7 @@ class ProfileFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            if(it.code != 0) {
+            if (it.code != 0) {
                 revertUserFollowedState()
             }
         })
@@ -300,7 +347,7 @@ class ProfileFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            if(it.code != 0) {
+            if (it.code != 0) {
                 revertUserFollowedState()
             }
         })
@@ -333,7 +380,7 @@ class ProfileFragment : BaseFragment() {
 
     private fun revertUserFollowedState() {
         uiUser?.followed?.let {
-            if(it) {
+            if (it) {
                 btnFollow.text = getString(R.string.follow)
                 uiUser!!.followers_count = uiUser!!.followers_count?.dec()
             } else {
@@ -387,6 +434,7 @@ class ProfileFragment : BaseFragment() {
     }
 
 
+
     private fun apiCallReportUser() {
         val output = viewModelCreateUserReport.transform(
             CreateUserReportViewModel.Input(
@@ -395,7 +443,7 @@ class ProfileFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            if(it.code == 0) {
+            if (it.code == 0) {
                 toast(getString(R.string.user_reported_ok))
             } else {
                 toast(getString(R.string.user_reported_error))
@@ -516,9 +564,9 @@ class ProfileFragment : BaseFragment() {
                 ivVerifiedUser.visibility = View.VISIBLE
         }
 
-        if(!isMyProfileMode) {
+        if (!isMyProfileMode) {
             uiUser?.followed?.let {
-                if(it)
+                if (it)
                     btnFollow.text = getString(R.string.unfollow)
                 else
                     btnFollow.text = getString(R.string.follow)
