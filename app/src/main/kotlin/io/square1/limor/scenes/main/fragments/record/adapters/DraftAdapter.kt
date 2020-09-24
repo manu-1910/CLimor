@@ -171,8 +171,11 @@ class DraftAdapter(
         //Forward button
         holder.btnFfwd.onClick {
             try {
-                mediaPlayer.seekTo(30000)
+                if(mediaPlayer.currentPosition + 30000 <= mediaPlayer.duration){
+                    mediaPlayer.seekTo(30000)
+                }
             } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
 
@@ -180,8 +183,11 @@ class DraftAdapter(
         //Rew button
         holder.btnRew.onClick {
             try {
-                mediaPlayer.seekTo(-30000)
+                if(mediaPlayer.currentPosition - 30000 >= 0){
+                    mediaPlayer.seekTo(-30000)
+                }
             } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
 
