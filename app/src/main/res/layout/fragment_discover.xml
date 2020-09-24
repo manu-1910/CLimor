@@ -1,212 +1,244 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/brandSecondary400"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+
+
 
     <LinearLayout
-        android:id="@+id/ll_search"
         android:layout_width="match_parent"
-        android:layout_height="47dp"
-        android:background="@color/brandSecondary500"
-        android:elevation="2dp"
-        android:orientation="horizontal"
-        android:paddingBottom="12dp">
+        android:layout_height="match_parent"
+        android:id="@+id/ll_root_main"
+        android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/et_search"
+        <LinearLayout
+            android:id="@+id/ll_search"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/bg_discover_search"
-            android:drawableStart="@drawable/discover_search"
-            android:drawablePadding="7dp"
-            android:hint="@string/search"
-            android:padding="7dp"
-            android:textColorHint="@color/brandSecondary100" />
+            android:layout_height="47dp"
+            android:background="@color/brandSecondary500"
+            android:elevation="2dp"
+            android:orientation="horizontal"
+            android:paddingBottom="12dp">
 
-    </LinearLayout>
+            <EditText
+                android:id="@+id/et_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_discover_search"
+                android:drawableStart="@drawable/discover_search"
+                android:drawablePadding="7dp"
+                android:hint="@string/search"
+                android:padding="7dp"
+                android:textColorHint="@color/brandSecondary100" />
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout_discover"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        </LinearLayout>
 
-        <FrameLayout
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout_discover"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ProgressBar
-                android:id="@+id/pb_loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center" />
-
-            <TextView
-                android:id="@+id/tv_error"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:layout_marginStart="30dp"
-                android:layout_marginEnd="30dp"
-                android:gravity="center"
-                android:text="@string/discover_error_message"
-                android:textColor="@color/white"
-                android:visibility="invisible" />
+                android:layout_height="match_parent">
 
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/sv_main"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                tools:visibility="visible">
+                <ProgressBar
+                    android:id="@+id/pb_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tv_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:gravity="center"
+                    android:text="@string/discover_error_message"
+                    android:textColor="@color/white"
+                    android:visibility="invisible" />
+
+                <androidx.core.widget.NestedScrollView
+                    android:id="@+id/sv_main"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:visibility="gone"
+                    tools:visibility="visible">
 
-                    <RelativeLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp">
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:letterSpacing="-0.02"
+                                android:lineSpacingExtra="5sp"
+                                android:text="@string/title_hashtags"
+                                android:textColor="#ffffff"
+                                android:textSize="17sp" />
+
+                            <TextView
+                                android:id="@+id/tv_see_all_hashtags"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:background="?android:attr/selectableItemBackground"
+                                android:letterSpacing="-0.01"
+                                android:paddingStart="16dp"
+                                android:paddingTop="4dp"
+                                android:paddingEnd="16dp"
+                                android:paddingBottom="4dp"
+                                android:text="@string/see_all"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="13sp" />
+
+                        </RelativeLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rv_hashtags"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            android:orientation="horizontal"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="16dp"
+                            tools:itemCount="1" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
+                            android:layout_marginStart="16dp"
                             android:letterSpacing="-0.02"
                             android:lineSpacingExtra="5sp"
-                            android:text="@string/title_hashtags"
+                            android:paddingTop="8dp"
+                            android:text="@string/suggested_people"
                             android:textColor="#ffffff"
                             android:textSize="17sp" />
 
-                        <TextView
-                            android:id="@+id/tv_see_all_hashtags"
-                            android:layout_width="wrap_content"
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rv_suggested_people"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:background="?android:attr/selectableItemBackground"
-                            android:letterSpacing="-0.01"
-                            android:paddingStart="16dp"
-                            android:paddingTop="4dp"
-                            android:paddingEnd="16dp"
-                            android:paddingBottom="4dp"
-                            android:text="@string/see_all"
-                            android:textColor="@color/colorAccent"
-                            android:textSize="13sp" />
-
-                    </RelativeLayout>
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rv_hashtags"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        android:orientation="horizontal"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="16dp"
-                        tools:itemCount="1" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:letterSpacing="-0.02"
-                        android:lineSpacingExtra="5sp"
-                        android:paddingTop="8dp"
-                        android:text="@string/suggested_people"
-                        android:textColor="#ffffff"
-                        android:textSize="17sp" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rv_suggested_people"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        android:orientation="horizontal"
-                        tools:itemCount="1" />
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            android:orientation="horizontal"
+                            tools:itemCount="1" />
 
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="24dp">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="24dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:letterSpacing="-0.02"
+                                android:lineSpacingExtra="5sp"
+                                android:text="@string/featured_casts"
+                                android:textColor="#ffffff"
+                                android:textSize="17sp" />
+
+                            <TextView
+                                android:id="@+id/tv_see_all_featured_casts"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:background="?android:attr/selectableItemBackground"
+                                android:letterSpacing="-0.01"
+                                android:paddingStart="16dp"
+                                android:paddingTop="4dp"
+                                android:paddingEnd="16dp"
+                                android:paddingBottom="4dp"
+                                android:text="@string/see_all"
+                                android:textColor="@color/colorAccent"
+                                android:textSize="13sp" />
+
+                        </RelativeLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rv_featured_casts"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            android:orientation="horizontal"
+                            tools:itemCount="1" />
+
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="24dp"
                             android:letterSpacing="-0.02"
                             android:lineSpacingExtra="5sp"
-                            android:text="@string/featured_casts"
+                            android:text="@string/top_casts"
                             android:textColor="#ffffff"
                             android:textSize="17sp" />
 
-                        <TextView
-                            android:id="@+id/tv_see_all_featured_casts"
-                            android:layout_width="wrap_content"
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rv_top_casts"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:background="?android:attr/selectableItemBackground"
-                            android:letterSpacing="-0.01"
-                            android:paddingStart="16dp"
-                            android:paddingTop="4dp"
-                            android:paddingEnd="16dp"
-                            android:paddingBottom="4dp"
-                            android:text="@string/see_all"
-                            android:textColor="@color/colorAccent"
-                            android:textSize="13sp" />
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginEnd="8dp"
+                            android:orientation="vertical"
+                            android:paddingBottom="100dp"
+                            tools:itemCount="10" />
 
-                    </RelativeLayout>
+                    </LinearLayout>
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rv_featured_casts"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        android:orientation="horizontal"
-                        tools:itemCount="1" />
+                </androidx.core.widget.NestedScrollView>
 
+            </FrameLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="24dp"
-                        android:letterSpacing="-0.02"
-                        android:lineSpacingExtra="5sp"
-                        android:text="@string/top_casts"
-                        android:textColor="#ffffff"
-                        android:textSize="17sp" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rv_top_casts"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginEnd="8dp"
-                        android:orientation="vertical"
-                        android:paddingBottom="100dp"
-                        tools:itemCount="10" />
+    </LinearLayout>
 
-                </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:id="@+id/ll_root_search">
 
-            </androidx.core.widget.NestedScrollView>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/brandSecondary500">
 
-        </FrameLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="search layout"
+                android:textColor="@color/white"
+                android:layout_centerInParent="true" />
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        </RelativeLayout>
 
-</LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

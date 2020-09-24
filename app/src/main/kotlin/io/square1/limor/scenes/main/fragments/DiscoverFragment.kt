@@ -8,6 +8,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -79,7 +80,6 @@ class DiscoverFragment : BaseFragment(),
 
     override fun onStart() {
         viewModelDiscover.start()
-        et_search.clearFocus()
         super.onStart()
     }
 
@@ -88,6 +88,8 @@ class DiscoverFragment : BaseFragment(),
             override fun afterTextChanged(s: Editable?) {
                 if(s.toString().length > 2){
                     Timber.e("baz")
+                    val rlParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT)
+                    ll_root_search.layoutParams = rlParams
                 }
             }
 
