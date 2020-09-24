@@ -44,7 +44,7 @@ class UserPodcastsFragment(private val userID: Int) : FeedItemsListFragment() {
         setFeedViewModelVariables()
     }
 
-    override fun requestNewData() {
+    override fun callTriggerForNewData() {
         getPodcastsByUserIDDataTrigger.onNext(Unit)
     }
 

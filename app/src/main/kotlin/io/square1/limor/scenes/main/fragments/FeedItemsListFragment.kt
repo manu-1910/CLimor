@@ -71,6 +71,8 @@ abstract class FeedItemsListFragment : BaseFragment() {
     private var lastLikedItemPosition: Int = 0
     private var lastRecastedItemPosition: Int = 0
 
+    private var isRequestingNewData = false
+
 
     companion object {
         val TAG: String = FeedItemsListFragment::class.java.simpleName
@@ -98,12 +100,19 @@ abstract class FeedItemsListFragment : BaseFragment() {
             initApiCallDeleteRecast()
             initApiCallCreatePodcastReport()
 
-            requestNewData()
+//            requestNewData()
         }
         return rootView
     }
 
-    abstract fun requestNewData()
+    protected fun requestNewData() {
+        if(!isRequestingNewData) {
+            isRequestingNewData = true
+            callTriggerForNewData()
+        }
+    }
+
+    abstract fun callTriggerForNewData()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -435,6 +444,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
             "We couldn't get your feed, please, try again later",
             Toast.LENGTH_SHORT
         ).show()
+        isRequestingNewData = false
     }
 
 
@@ -511,6 +521,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
         rvFeed?.adapter?.notifyDataSetChanged()
         hideSwipeToRefreshProgressBar()
         pb_loading.visibility = View.GONE
+        isRequestingNewData = false
     }
 
 

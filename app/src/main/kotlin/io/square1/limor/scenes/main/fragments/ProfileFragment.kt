@@ -73,8 +73,6 @@ class ProfileFragment : BaseFragment() {
 
     private var isMyProfileMode: Boolean = false
 
-    private var currentSelectedFragment: FeedItemsListFragment? = null
-
 
     companion object {
         val TAG: String = ProfileFragment::class.java.simpleName

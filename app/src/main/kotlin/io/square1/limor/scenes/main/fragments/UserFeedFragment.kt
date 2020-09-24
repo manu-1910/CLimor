@@ -41,7 +41,7 @@ class UserFeedFragment : FeedItemsListFragment() {
         setFeedViewModelVariables()
     }
 
-    override fun requestNewData() {
+    override fun callTriggerForNewData() {
         getFeedDataTrigger.onNext(Unit)
     }
 

@@ -50,7 +50,7 @@ class PodcastsByTagFragment : FeedItemsListFragment() {
         setFeedViewModelVariables()
     }
 
-    override fun requestNewData() {
+    override fun callTriggerForNewData() {
         getFeedDataTrigger.onNext(Unit)
     }
 
