@@ -4,25 +4,25 @@ import entities.response.*
 import io.reactivex.Single
 import io.square1.limor.remote.entities.responses.*
 
-fun Single<NWPodcastsByTagResponse>.asDataEntity(): Single<PodcastsByTagResponseEntity> {
+fun Single<NWGetPodcastsResponse>.asDataEntity(): Single<GetPodcastsResponseEntity> {
     return this.map { it.asDataEntity() }
 }
 
-fun NWPodcastsByTagResponse.asDataEntity(): PodcastsByTagResponseEntity {
-    return PodcastsByTagResponseEntity(
+fun NWGetPodcastsResponse.asDataEntity(): GetPodcastsResponseEntity {
+    return GetPodcastsResponseEntity(
         code,
         message,
         data.asDataEntity()
     )
 }
 
-fun NWPodcastsTagItemsArray.asDataEntity(): PodcastsTagItemsEntityArray {
-    return PodcastsTagItemsEntityArray(
-        getAllPodcastsTagItemsEntities(podcasts)
+fun NWPodcastsArray.asDataEntity(): PodcastsItemsEntityArray {
+    return PodcastsItemsEntityArray(
+        getAllPodcastsItemsEntities(podcasts)
     )
 }
 
-fun getAllPodcastsTagItemsEntities(nwList: ArrayList<NWPodcast>?): ArrayList<PodcastEntity> {
+fun getAllPodcastsItemsEntities(nwList: ArrayList<NWPodcast>?): ArrayList<PodcastEntity> {
     val entityList = ArrayList<PodcastEntity>()
     if (nwList != null) {
         for (item in nwList) {

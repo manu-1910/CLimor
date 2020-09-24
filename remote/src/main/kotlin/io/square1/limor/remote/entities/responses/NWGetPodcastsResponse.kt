@@ -4,17 +4,17 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NWPodcastsByTagResponse(
+data class NWGetPodcastsResponse(
     @Optional
     val code: Int = 0,
     @Optional
     val message: String = "",
     @Optional
-    val data: NWPodcastsTagItemsArray = NWPodcastsTagItemsArray()
+    val data: NWPodcastsArray = NWPodcastsArray()
 )
 
 @Serializable
-data class NWPodcastsTagItemsArray(
+data class NWPodcastsArray(
     @Optional
     val podcasts: ArrayList<NWPodcast> = ArrayList()
 )

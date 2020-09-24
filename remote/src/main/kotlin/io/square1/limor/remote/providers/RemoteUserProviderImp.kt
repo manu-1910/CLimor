@@ -59,6 +59,10 @@ class RemoteUserProviderImp @Inject constructor(private val provider: UserServic
     override fun getNotifications(limit: Int, offset: Int): Single<NotificationsResponseEntity> {
         return provider.getNotifications(limit, offset).asDataEntity()
     }
+
+    override fun getPodcasts(id: Int, limit: Int, offset: Int): Single<GetPodcastsResponseEntity> {
+        return provider.getPodcasts(id, limit, offset).asDataEntity()
+    }
 }
 
 

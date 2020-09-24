@@ -3,7 +3,7 @@ package io.square1.limor.remote.services.search
 import io.reactivex.Single
 import io.square1.limor.remote.entities.requests.NWLocationsRequest
 import io.square1.limor.remote.entities.responses.NWLocationsResponse
-import io.square1.limor.remote.entities.responses.NWPodcastsByTagResponse
+import io.square1.limor.remote.entities.responses.NWGetPodcastsResponse
 import io.square1.limor.remote.entities.responses.NWPromotedTagsResponse
 import io.square1.limor.remote.entities.responses.NWTagsResponse
 import io.square1.limor.remote.extensions.parseSuccessResponse
@@ -68,9 +68,9 @@ class SearchServiceImp @Inject constructor(private val serviceConfig: RemoteServ
             }
     }
 
-    fun podcastsByTag(limit: Int, offset: Int, tag: String): Single<NWPodcastsByTagResponse>? {
+    fun podcastsByTag(limit: Int, offset: Int, tag: String): Single<NWGetPodcastsResponse>? {
         return service.podcastsByTag(limit, offset, tag)
-            .map { response -> response.parseSuccessResponse(NWPodcastsByTagResponse.serializer()) }
+            .map { response -> response.parseSuccessResponse(NWGetPodcastsResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
             }

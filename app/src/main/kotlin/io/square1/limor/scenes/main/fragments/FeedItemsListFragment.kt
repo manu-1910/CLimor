@@ -26,35 +26,26 @@ import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIFeedItem
-import org.jetbrains.anko.doAsync
+import kotlinx.android.synthetic.main.fragment_feed.*
 import org.jetbrains.anko.support.v4.onRefresh
 import org.jetbrains.anko.support.v4.toast
-import org.jetbrains.anko.uiThread
 import javax.inject.Inject
 
 
-class FeedFragment : BaseFragment() {
-
+abstract class FeedItemsListFragment : BaseFragment() {
 
 
     @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+    open lateinit var viewModelFactory: ViewModelProvider.Factory
 
     @Inject
     lateinit var sessionManager: SessionManager
 
-    // viewModels
-    private lateinit var viewModelFeed: FeedViewModel
-
-
-    private lateinit var viewModelFeedByTag: FeedByTagViewModel
     private lateinit var viewModelCreatePodcastLike: CreatePodcastLikeViewModel
     private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
     private lateinit var viewModelCreatePodcastRecast: CreatePodcastRecastViewModel
     private lateinit var viewModelDeletePodcastRecast: DeletePodcastRecastViewModel
     private lateinit var viewModelCreatePodcastReport: CreatePodcastReportViewModel
-    private val getFeedDataTrigger = PublishSubject.create<Unit>()
-
 
     private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
@@ -64,13 +55,13 @@ class FeedFragment : BaseFragment() {
 
     // infinite scroll variables
     private var isScrolling: Boolean = false
-    private var isLastPage: Boolean = false
-    private var isReloading: Boolean = false
-    private var rootView: View? = null
+    protected var isLastPage: Boolean = false
+    protected var isReloading: Boolean = false
+    protected var rootView: View? = null
 
 
     // views
-    private var rvFeed: RecyclerView? = null
+    protected var rvFeed: RecyclerView? = null
 
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
     private var feedAdapter: FeedAdapter? = null
@@ -80,16 +71,15 @@ class FeedFragment : BaseFragment() {
     private var lastLikedItemPosition: Int = 0
     private var lastRecastedItemPosition: Int = 0
 
-    private var hashTag: String = ""
+    private var isRequestingNewData = false
 
 
     companion object {
-        val TAG: String = FeedFragment::class.java.simpleName
-        fun newInstance() = FeedFragment()
+        val TAG: String = FeedItemsListFragment::class.java.simpleName
         private const val OFFSET_INFINITE_SCROLL = 2
-        private const val FEED_LIMIT_REQUEST = 2 // this number multiplied by 2 is because there is
-                                                 // an error on the limit param in the back side
-                                                 // that duplicates the amount of results,
+        internal const val FEED_LIMIT_REQUEST = 2 // this number multiplied by 2 is because there is
+        // an error on the limit param in the back side
+        // that duplicates the amount of results,
     }
 
     override fun onCreateView(
@@ -102,24 +92,27 @@ class FeedFragment : BaseFragment() {
             rvFeed = rootView?.findViewById(R.id.rvFeed)
             swipeRefreshLayout = rootView?.findViewById(R.id.swipeRefreshLayout)
 
-            val bundle = requireActivity().intent?.extras
-            if (bundle != null && bundle.containsKey(PodcastsByTagActivity.BUNDLE_KEY_HASHTAG)) {
-                hashTag = bundle.getString(PodcastsByTagActivity.BUNDLE_KEY_HASHTAG)!!
-            }
-
             bindViewModel()
             configureAdapter()
-            initApiCallGetFeed()
             initApiCallCreateLike()
             initApiCallDeleteLike()
             initApiCallCreateRecast()
             initApiCallDeleteRecast()
             initApiCallCreatePodcastReport()
 
-            getFeedDataTrigger.onNext(Unit)
+//            requestNewData()
         }
         return rootView
     }
+
+    protected fun requestNewData() {
+        if(!isRequestingNewData) {
+            isRequestingNewData = true
+            callTriggerForNewData()
+        }
+    }
+
+    abstract fun callTriggerForNewData()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -130,6 +123,7 @@ class FeedFragment : BaseFragment() {
             reloadFeed()
         }
     }
+
 
     private fun initApiCallDeleteRecast() {
         val output = viewModelDeletePodcastRecast.transform(
@@ -151,7 +145,8 @@ class FeedFragment : BaseFragment() {
     }
 
     private fun undoRecast() {
-        Toast.makeText(context, getString(R.string.error_recasting_podcast), Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, getString(R.string.error_recasting_podcast), Toast.LENGTH_SHORT)
+            .show()
         val item = feedItemsList[lastRecastedItemPosition]
         item.podcast?.let { podcast ->
             changeItemRecastStatus(
@@ -190,7 +185,8 @@ class FeedFragment : BaseFragment() {
                 feedItemsList,
                 object : FeedAdapter.OnFeedClickListener {
                     override fun onItemClicked(item: UIFeedItem, position: Int) {
-                        val podcastDetailsIntent = Intent(context, PodcastDetailsActivity::class.java)
+                        val podcastDetailsIntent =
+                            Intent(context, PodcastDetailsActivity::class.java)
                         podcastDetailsIntent.putExtra("podcast", item.podcast)
                         startActivity(podcastDetailsIntent)
                     }
@@ -321,10 +317,10 @@ class FeedFragment : BaseFragment() {
                     val totalItemsCount = layoutManager.itemCount
 
                     // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
-                    if (isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
+                    if (!isRequestingNewData && isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
                         isScrolling = false
-                        setFeedViewModelVariables(feedItemsList.size - 1)
-                        getFeedDataTrigger.onNext(Unit)
+                        setFeedViewModelVariablesOnScroll()
+                        requestNewData()
                     }
                 }
             }
@@ -339,6 +335,8 @@ class FeedFragment : BaseFragment() {
 
     }
 
+    protected abstract fun setFeedViewModelVariablesOnScroll()
+
     private fun showPopupMenu(
         view: View?,
         item: UIFeedItem
@@ -349,8 +347,8 @@ class FeedFragment : BaseFragment() {
 
 
         //set menu item click listener here
-        popup.setOnMenuItemClickListener {menuItem ->
-            when(menuItem.itemId) {
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
                 R.id.menu_share -> onShareClicked(item)
                 R.id.menu_report -> onPodcastReportClicked(item)
             }
@@ -367,7 +365,7 @@ class FeedFragment : BaseFragment() {
     }
 
     private fun onShareClicked(item: UIFeedItem) {
-        item.podcast?.sharing_url?.let {url ->
+        item.podcast?.sharing_url?.let { url ->
             val text = getString(R.string.check_out_this_cast)
             val finalText = "$text $url"
             val sendIntent: Intent = Intent().apply {
@@ -407,72 +405,6 @@ class FeedFragment : BaseFragment() {
     }
 
 
-    private fun initApiCallGetFeed() {
-
-        if (isHashTagFeed()) {
-            val output = viewModelFeedByTag.transform(
-                FeedByTagViewModel.Input(
-                    getFeedDataTrigger,
-                    hashTag
-                )
-            )
-
-            output.response.observe(this, Observer {
-
-                doAsync {
-
-                    /*
-                        This is an attempt to reuse the same feed adapter for regular feedItems AND postCast by tag items
-                        PodCasts returned from the api do not have a unique id property as String.
-                        Currently, the id property of a UIFeedItem is not used, so a wrapper FeedItem is generated here, with the id
-                        Set to the Podcast id's string value.
-                     */
-
-                    val items = mutableListOf<UIFeedItem>()
-                    for (podcast in it.data.podcasts) {
-                        val item = UIFeedItem(
-                            podcast.id.toString(),
-                            podcast,
-                            podcast.user,
-                            false,
-                            podcast.created_at
-                        )
-                        items.add(item)
-                    }
-
-                    uiThread {
-                        handleNewFeedData(items)
-                    }
-                }
-
-            })
-
-            output.errorMessage.observe(this, Observer {
-                handleErrorState()
-            })
-
-
-        } else {
-            val output = viewModelFeed.transform(
-                FeedViewModel.Input(
-                    getFeedDataTrigger
-                )
-            )
-
-            output.response.observe(this, Observer {
-                val newItems = it.data.feed_items
-                handleNewFeedData(newItems)
-            })
-
-            output.errorMessage.observe(this, Observer {
-                handleErrorState()
-            })
-
-        }
-
-    }
-
-
     private fun initApiCallCreatePodcastReport() {
         val output = viewModelCreatePodcastReport.transform(
             CreatePodcastReportViewModel.Input(
@@ -506,39 +438,17 @@ class FeedFragment : BaseFragment() {
         })
     }
 
-    private fun handleErrorState() {
+    protected fun handleErrorState() {
+        pb_loading.visibility = View.GONE
         hideSwipeToRefreshProgressBar()
         Toast.makeText(
             context,
             "We couldn't get your feed, please, try again later",
             Toast.LENGTH_SHORT
         ).show()
+        isRequestingNewData = false
     }
 
-    private fun handleNewFeedData(items: MutableList<UIFeedItem>) {
-
-        if (isHashTagFeed()) {
-            activity?.let { fragmentActivity ->
-                if (fragmentActivity is PodcastsByTagActivity) {
-                    fragmentActivity.hideLoadingSpinner()
-                }
-            }
-        }
-
-        if (isReloading) {
-            feedItemsList.clear()
-            rvFeed?.recycledViewPool?.clear()
-            isReloading = false
-        }
-
-        feedItemsList.addAll(items)
-        if (items.size == 0)
-            isLastPage = true
-
-
-        rvFeed?.adapter?.notifyDataSetChanged()
-        hideSwipeToRefreshProgressBar()
-    }
 
     private fun initApiCallCreateLike() {
         val output = viewModelCreatePodcastLike.transform(
@@ -591,7 +501,7 @@ class FeedFragment : BaseFragment() {
     }
 
 
-    private fun hideSwipeToRefreshProgressBar() {
+    protected fun hideSwipeToRefreshProgressBar() {
         swipeRefreshLayout?.let {
             if (it.isRefreshing) {
                 swipeRefreshLayout?.isRefreshing = false
@@ -599,47 +509,42 @@ class FeedFragment : BaseFragment() {
         }
     }
 
-
-    private fun bindViewModel() {
-        activity?.let { fragmentActivity ->
-            viewModelFeed = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
-                .get(FeedViewModel::class.java)
+    protected fun handleNewFeedData(items: MutableList<UIFeedItem>) {
+        if (isReloading) {
+            feedItemsList.clear()
+            rvFeed?.recycledViewPool?.clear()
+            isReloading = false
         }
 
-        activity?.let { fragmentActivity ->
-            viewModelFeedByTag = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
-                .get(FeedByTagViewModel::class.java)
-        }
+        feedItemsList.addAll(items)
+        if (items.size == 0)
+            isLastPage = true
 
-        setFeedViewModelVariables()
+        rvFeed?.adapter?.notifyDataSetChanged()
+        hideSwipeToRefreshProgressBar()
+        pb_loading.visibility = View.GONE
+        isRequestingNewData = false
+    }
 
+
+    protected open fun bindViewModel() {
         activity?.let { fragmentActivity ->
             viewModelCreatePodcastLike = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastLikeViewModel::class.java)
-        }
 
-        activity?.let { fragmentActivity ->
             viewModelDeletePodcastLike = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastLikeViewModel::class.java)
-        }
 
-        activity?.let { fragmentActivity ->
             viewModelCreatePodcastRecast = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastRecastViewModel::class.java)
-        }
 
-        activity?.let { fragmentActivity ->
             viewModelDeletePodcastRecast = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastRecastViewModel::class.java)
-        }
 
-        activity?.let { fragmentActivity ->
             viewModelCreatePodcastReport = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastReportViewModel::class.java)
@@ -650,21 +555,12 @@ class FeedFragment : BaseFragment() {
     private fun reloadFeed() {
         isLastPage = false
         isReloading = true
-        setFeedViewModelVariables()
-        getFeedDataTrigger.onNext(Unit)
+        resetFeedViewModelVariables()
+        requestNewData()
     }
 
-    private fun setFeedViewModelVariables(newOffset: Int = 0) {
-        viewModelFeed.limit = FEED_LIMIT_REQUEST
-        viewModelFeed.offset = newOffset
+    protected abstract fun resetFeedViewModelVariables()
 
-        viewModelFeedByTag.limit = FEED_LIMIT_REQUEST
-        viewModelFeedByTag.offset = newOffset
-    }
-
-    private fun isHashTagFeed(): Boolean {
-        return hashTag.isNotEmpty()
-    }
 
     fun scrollToTop() {
         rvFeed?.scrollToPosition(0)
