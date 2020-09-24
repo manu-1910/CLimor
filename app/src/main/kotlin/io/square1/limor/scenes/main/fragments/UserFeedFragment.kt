@@ -38,7 +38,7 @@ class UserFeedFragment : FeedItemsListFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(FeedViewModel::class.java)
         }
-        setFeedViewModelVariables()
+        resetFeedViewModelVariables()
     }
 
     override fun callTriggerForNewData() {
@@ -67,10 +67,14 @@ class UserFeedFragment : FeedItemsListFragment() {
     }
 
 
-    override fun setFeedViewModelVariables(newOffset: Int) {
+    override fun resetFeedViewModelVariables() {
         viewModelFeed.limit = FEED_LIMIT_REQUEST
-        viewModelFeed.offset = newOffset
+        viewModelFeed.offset = 0
     }
 
+    override fun setFeedViewModelVariablesOnScroll() {
+        viewModelFeed.limit = FEED_LIMIT_REQUEST
+        viewModelFeed.offset = feedItemsList.size / 2 // TODO: check this, with the backend behaviour, this can has unexpected behaviour too
+    }
 
 }

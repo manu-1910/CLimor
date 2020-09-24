@@ -47,7 +47,7 @@ class PodcastsByTagFragment : FeedItemsListFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(FeedByTagViewModel::class.java)
         }
-        setFeedViewModelVariables()
+        resetFeedViewModelVariables()
     }
 
     override fun callTriggerForNewData() {
@@ -88,10 +88,14 @@ class PodcastsByTagFragment : FeedItemsListFragment() {
     }
 
 
-    override fun setFeedViewModelVariables(newOffset: Int) {
+    override fun resetFeedViewModelVariables() {
         viewModelFeedByTag.limit = FEED_LIMIT_REQUEST
-        viewModelFeedByTag.offset = newOffset
+        viewModelFeedByTag.offset = 0
     }
 
+    override fun setFeedViewModelVariablesOnScroll() {
+        viewModelFeedByTag.limit = FEED_LIMIT_REQUEST
+        viewModelFeedByTag.offset = feedItemsList.size
+    }
 
 }

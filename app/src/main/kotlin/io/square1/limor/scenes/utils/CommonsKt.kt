@@ -6,6 +6,8 @@ import android.os.Build
 import android.text.Editable
 import android.text.format.DateFormat
 import android.util.TypedValue
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -110,6 +112,17 @@ class CommonsKt {
             ).toInt()
         }
 
+        fun reduceSwipeSensitivity(viewPager : ViewPager2) {
+            val recyclerViewField = ViewPager2::class.java.getDeclaredField("mRecyclerView")
+            recyclerViewField.isAccessible = true
+            val recyclerView = recyclerViewField.get(viewPager) as RecyclerView
+
+            val touchSlopField = RecyclerView::class.java.getDeclaredField("mTouchSlop")
+            touchSlopField.isAccessible = true
+            val touchSlop = touchSlopField.get(recyclerView) as Int
+            touchSlopField.set(recyclerView, touchSlop*8)       // "8" was obtained experimentally
+        }
+
         fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
 
 
@@ -146,5 +159,9 @@ class CommonsKt {
         }
 
     }
+
+
+
+
 
 }

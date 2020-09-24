@@ -41,12 +41,14 @@ class UserPodcastsFragment(private val userID: Int) : FeedItemsListFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(GetPodcastsByUserIDViewModel::class.java)
         }
-        setFeedViewModelVariables()
+        resetFeedViewModelVariables()
     }
 
     override fun callTriggerForNewData() {
         getPodcastsByUserIDDataTrigger.onNext(Unit)
     }
+
+
 
 
     private fun initApiCallGetPodcastsByTag() {
@@ -82,9 +84,14 @@ class UserPodcastsFragment(private val userID: Int) : FeedItemsListFragment() {
     }
 
 
-    override fun setFeedViewModelVariables(newOffset: Int) {
+    override fun resetFeedViewModelVariables() {
         viewModelPodcastsByUserID.limit = FEED_LIMIT_REQUEST
-        viewModelPodcastsByUserID.offset = newOffset
+        viewModelPodcastsByUserID.offset = 0
+    }
+
+    override fun setFeedViewModelVariablesOnScroll() {
+        viewModelPodcastsByUserID.limit = FEED_LIMIT_REQUEST
+        viewModelPodcastsByUserID.offset = feedItemsList.size
     }
 
 

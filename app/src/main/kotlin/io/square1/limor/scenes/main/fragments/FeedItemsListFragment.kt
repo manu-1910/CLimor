@@ -317,9 +317,9 @@ abstract class FeedItemsListFragment : BaseFragment() {
                     val totalItemsCount = layoutManager.itemCount
 
                     // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
-                    if (isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
+                    if (!isRequestingNewData && isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
                         isScrolling = false
-                        setFeedViewModelVariables(feedItemsList.size - 1)
+                        setFeedViewModelVariablesOnScroll()
                         requestNewData()
                     }
                 }
@@ -334,6 +334,8 @@ abstract class FeedItemsListFragment : BaseFragment() {
         rvFeed?.addItemDecoration(divider)
 
     }
+
+    protected abstract fun setFeedViewModelVariablesOnScroll()
 
     private fun showPopupMenu(
         view: View?,
@@ -553,11 +555,11 @@ abstract class FeedItemsListFragment : BaseFragment() {
     private fun reloadFeed() {
         isLastPage = false
         isReloading = true
-        setFeedViewModelVariables()
+        resetFeedViewModelVariables()
         requestNewData()
     }
 
-    protected abstract fun setFeedViewModelVariables(newOffset: Int = 0)
+    protected abstract fun resetFeedViewModelVariables()
 
 
     fun scrollToTop() {

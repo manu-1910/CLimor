@@ -10,7 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.facebook.AccessToken
@@ -30,6 +32,7 @@ import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.fragments.profile.UserReportActivity
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.splash.SplashActivity
+import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.formatSocialMediaQuantity
 import io.square1.limor.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_profile.*
@@ -114,6 +117,7 @@ class ProfileFragment : BaseFragment() {
         configureToolbar()
         configureScreen()
         printUserData()
+        CommonsKt.reduceSwipeSensitivity(viewPager)
     }
 
     private fun initViewPager() {
@@ -428,6 +432,7 @@ class ProfileFragment : BaseFragment() {
             }
         })
     }
+
 
 
     private fun apiCallReportUser() {
