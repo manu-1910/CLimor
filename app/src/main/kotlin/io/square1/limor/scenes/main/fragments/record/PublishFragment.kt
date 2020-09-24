@@ -40,7 +40,6 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.hendraanggrian.appcompat.widget.Hashtag
 import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter
 import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
@@ -70,6 +69,7 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
 import timber.log.Timber
 import java.io.File
@@ -124,16 +124,10 @@ class PublishFragment : BaseFragment() {
     //Form vars
     private var etDraftTitle: EditText? = null
     private var etDraftCaption: SocialAutoCompleteTextView? = null
-    private var tvDraftCategory: TextView? = null
-    private var tvDraftLocation: TextView? = null
     private var podcastLocation: UILocations = UILocations("", 0.0, 0.0, false)
     private var imageUrlFinal: String? = ""
     private var audioUrlFinal: String? = ""
     private var isPublished: Boolean = false
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private val GALLERY_ACTIVITY_CODE = 200
-    private val REQUEST_CROP = 400
-    private val RESULT_CROP_API_29 = 553
     private var listTags = ArrayList<UITags>()
     private var listTagsString: HashtagArrayAdapter<Hashtag>? = null
     private var tvSelectedLocation: TextView? = null
@@ -155,11 +149,7 @@ class PublishFragment : BaseFragment() {
     }
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_publish, container, false)
 
@@ -238,8 +228,7 @@ class PublishFragment : BaseFragment() {
         }
 
         //update database
-        draftViewModel.uiDraft = recordingItem
-        updateDraft()
+        callToUpdateDraft()
     }
 
 
@@ -344,7 +333,6 @@ class PublishFragment : BaseFragment() {
 
 
     private fun configureToolbar() {
-
         //Toolbar title
         tvToolbarTitle?.text = getString(R.string.title_publish)
 
@@ -370,7 +358,6 @@ class PublishFragment : BaseFragment() {
 
         //Toolbar Right
         btnToolbarRight.visibility = View.GONE
-
     }
 
 
@@ -411,8 +398,7 @@ class PublishFragment : BaseFragment() {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
                 recordingItem.caption = editable.toString()
-                draftViewModel.uiDraft = recordingItem
-                updateDraft()
+                callToUpdateDraft()
             }
             override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {
                 try {
@@ -431,8 +417,6 @@ class PublishFragment : BaseFragment() {
                         lytWithoutTagsRecycler?.visibility = View.VISIBLE
                         isShowingTagsRecycler = false
                     }
-
-
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -447,14 +431,11 @@ class PublishFragment : BaseFragment() {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
                 recordingItem.title = editable.toString()
-                draftViewModel.uiDraft = recordingItem
-                updateDraft()
+                callToUpdateDraft()
             }
             override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
         }
-        etCaption.addTextChangedListener(twTitle)
-
-
+        etTitle.addTextChangedListener(twTitle)
 
 
         //Keyboard listener to hide the recycler
@@ -598,6 +579,12 @@ class PublishFragment : BaseFragment() {
             val imageFile = File(recordingItem.tempPhotoPath)
             if (!imageFile.path.isNullOrEmpty()) {
                 podcastHasImage = true
+                Commons.getInstance().handleImage(
+                    context,
+                    Commons.IMAGE_TYPE_PODCAST,
+                    imageFile,
+                    "podcast_photo"
+                )
             }
             Glide.with(context!!).load(imageFile).into(draftImage!!)  // Uri of the picture
             lytImagePlaceholder?.visibility = View.GONE
@@ -631,13 +618,9 @@ class PublishFragment : BaseFragment() {
         }
 
         recordingItem.caption = etDraftCaption?.text.toString()
-        recordingItem.title = etDraftTitle?.text.toString()
-        recordingItem.caption = etDraftCaption?.text.toString()
-
-        draftViewModel.uiDraft = recordingItem
 
         //Update Realm
-        updateDraftTrigger.onNext(Unit)
+        callToUpdateDraft()
     }
 
 
@@ -802,8 +785,7 @@ class PublishFragment : BaseFragment() {
                 if (!croppedImagesDir.exists()) {
                     val isDirectoryCreated = croppedImagesDir.mkdir()
                 }
-                val fileName =
-                    Date().time.toString() + filesSelected[0].path.substringAfterLast("/")
+                val fileName = Date().time.toString() + filesSelected[0].path.substringAfterLast("/")
                 val outputFile = File(croppedImagesDir, fileName)
 
                 // and then, we'll perform the crop itself
@@ -833,9 +815,7 @@ class PublishFragment : BaseFragment() {
             )
 
             //Update recording item in Realm
-            updateDraftTrigger.onNext(Unit)
-
-
+            callToUpdateDraft()
 
             // this will run when coming from the cropActivity but there is an error
         } else if (resultCode == UCrop.RESULT_ERROR) {
@@ -1111,10 +1091,7 @@ class PublishFragment : BaseFragment() {
     }
 
 
-    fun TextView.applyWithDisabledTextWatcher(
-        textWatcher: TextWatcher,
-        codeBlock: TextView.() -> Unit
-    ) {
+    fun TextView.applyWithDisabledTextWatcher(textWatcher: TextWatcher, codeBlock: TextView.() -> Unit) {
         this.removeTextChangedListener(textWatcher)
         codeBlock()
         this.addTextChangedListener(textWatcher)
@@ -1124,6 +1101,12 @@ class PublishFragment : BaseFragment() {
     private fun callToDeleteDraft() {
         draftViewModel.uiDraft = recordingItem
         deleteDraftsTrigger.onNext(Unit)
+    }
+
+
+    private fun callToUpdateDraft(){
+        draftViewModel.uiDraft = recordingItem
+        updateDraftTrigger.onNext(Unit)
     }
 
 
