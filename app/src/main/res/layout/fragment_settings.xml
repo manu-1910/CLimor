@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/brandSecondary400">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/toolbar_with_back_arrow_icon" />
+
+            <RelativeLayout
+                android:id="@+id/lytPremium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/marginMedium"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/tvLimorPremium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/brandPrimary500"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:fontFamily="@font/roboto"
+                    android:text="@string/settings_limor_premium"
+                    android:layout_alignParentStart="true"/>
+
+                <TextView
+                    android:id="@+id/tvLefTextLimorPremium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@drawable/chevron_right"
+                    android:textColor="@color/brandSecondary100"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:fontFamily="@font/roboto"
+                    android:gravity="end"
+                    android:layout_toEndOf="@id/tvLimorPremium"
+                    android:layout_alignParentEnd="true"/>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
+
+            <TextView
+                android:id="@+id/tvTitleFollowPeople"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/marker_time_text"
+                android:textSize="@dimen/textSizeVerySmall"
+                android:fontFamily="@font/roboto"
+                android:text="@string/settings_title_follow_people"
+                android:layout_marginTop="@dimen/marginMedium"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:layout_marginEnd="@dimen/marginMedium"
+                android:layout_marginBottom="@dimen/marginVerySmall"
+                android:textAllCaps="true"
+                android:layout_alignParentStart="true" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
+
+
+            <RelativeLayout
+                android:id="@+id/lytFindFacebookFriends"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/marginMedium"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/tvFindFacebookFriends"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:fontFamily="@font/roboto"
+                    android:text="@string/settings_find_facebook_friends"
+                    android:layout_alignParentStart="true"
+                    android:drawableEnd="@drawable/chevron_right"/>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
+
+
+            <RelativeLayout
+                android:id="@+id/lytFindTwitterFriends"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/marginMedium"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/tvFindTwitterFriends"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:fontFamily="@font/roboto"
+                    android:text="@string/settings_find_twitter_friends"
+                    android:layout_alignParentStart="true"
+                    android:drawableEnd="@drawable/chevron_right"/>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
+
+            <TextView
+                android:id="@+id/tvTitleAccount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/marker_time_text"
+                android:textSize="@dimen/textSizeVerySmall"
+                android:fontFamily="@font/roboto"
+                android:text="@string/settings_title_account"
+                android:layout_marginTop="@dimen/marginMedium"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:layout_marginEnd="@dimen/marginMedium"
+                android:layout_marginBottom="@dimen/marginVerySmall"
+                android:textAllCaps="true"
+                android:layout_alignParentStart="true" />
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
+
+
+            <RelativeLayout
+                android:id="@+id/lytEditProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/marginMedium"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/tvEditProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:fontFamily="@font/roboto"
+                    android:text="@string/settings_edit_profile"
+                    android:layout_alignParentStart="true"
+                    android:drawableEnd="@drawable/chevron_right"/>
+
+            </RelativeLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
+
+
+            <RelativeLayout
+                android:id="@+id/lytChangePassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/marginMedium"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/tvChangePassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:fontFamily="@font/roboto"
+                    android:text="@string/settings_change_password"
+                    android:layout_alignParentStart="true"
+                    android:drawableEnd="@drawable/chevron_right"/>
+
+            </RelativeLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
+
+
+            <RelativeLayout
+                android:id="@+id/lytRequestVerification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/marginMedium"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/tvRequestVerification"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:fontFamily="@font/roboto"
+                    android:text="@string/settings_request_verification"
+                    android:layout_alignParentStart="true"
+                    android:drawableEnd="@drawable/chevron_right"/>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
+
+
+            <RelativeLayout
+                android:id="@+id/lytPushNotifications"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/marginMedium"
+                android:visibility="visible">
+
+                <Switch
+                    android:id="@+id/swPushNotifications"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:switchMinWidth="56dp"
+                    android:text="@string/settings_push_notifications"
+                    android:layout_alignParentStart="true"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:fontFamily="@font/roboto"
+                    android:checked="true"
+                    android:layout_alignParentEnd="true"/>
+
+            </RelativeLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
+
+
+            <RelativeLayout
+                android:id="@+id/lytAutoplay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/marginMedium"
+                android:visibility="visible">
+
+                <Switch
+                    android:id="@+id/swAutoplay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:switchMinWidth="56dp"
+                    android:text="@string/settings_autoplay"
+                    android:layout_alignParentStart="true"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:fontFamily="@font/roboto"
+                    android:checked="true"
+                    android:layout_alignParentEnd="true"/>
+
+            </RelativeLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
+
+            <TextView
+                android:id="@+id/tvTitleAbout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/marker_time_text"
+                android:textSize="@dimen/textSizeVerySmall"
+                android:fontFamily="@font/roboto"
+                android:text="@string/settings_title_about"
+                android:layout_marginTop="@dimen/marginMedium"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:layout_marginEnd="@dimen/marginMedium"
+                android:layout_marginBottom="@dimen/marginVerySmall"
+                android:textAllCaps="true"
+                android:layout_alignParentStart="true" />
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
+
+
+            <RelativeLayout
+                android:id="@+id/lytPrivacyPolicy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/marginMedium"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/tvPrivacyPolicy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:fontFamily="@font/roboto"
+                    android:text="@string/settings_privacy_policy"
+                    android:layout_alignParentStart="true"
+                    android:drawableEnd="@drawable/chevron_right"/>
+
+            </RelativeLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
+
+
+            <RelativeLayout
+                android:id="@+id/lytTermsAndConditions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/marginMedium"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/tvTermsAndConditions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:fontFamily="@font/roboto"
+                    android:text="@string/settings_terms"
+                    android:layout_alignParentStart="true"
+                    android:drawableEnd="@drawable/chevron_right"/>
+
+            </RelativeLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
+
+
+            <RelativeLayout
+                android:id="@+id/lytReportProblem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/marginLarge"
+                android:layout_marginBottom="@dimen/marginMedium"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:layout_marginEnd="@dimen/marginMedium"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/tvReportProblem"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:fontFamily="@font/roboto"
+                    android:text="@string/settings_report_a_problem"
+                    android:layout_alignParentStart="true"
+                    android:drawableEnd="@drawable/chevron_right"/>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
+
+            <TextView
+                android:id="@+id/tvAppVersion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/marker_time_text"
+                android:textSize="@dimen/textSizeVerySmall"
+                android:fontFamily="@font/roboto"
+                android:text="v1.0.0"
+                android:layout_marginTop="@dimen/marginMedium"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:layout_marginEnd="@dimen/marginMedium"
+                android:layout_marginBottom="@dimen/marginVerySmall"
+                android:textAllCaps="true"
+                android:layout_alignParentStart="true" />
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brandSecondary300"/>
+
+
+            <RelativeLayout
+                android:id="@+id/lytLogout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/marginMedium"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/tvLogout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:fontFamily="@font/roboto"
+                    android:text="@string/settings_report_a_problem"
+                    android:layout_alignParentStart="true" />
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+
