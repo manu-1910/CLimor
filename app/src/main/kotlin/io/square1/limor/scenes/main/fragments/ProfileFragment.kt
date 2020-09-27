@@ -10,9 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.facebook.AccessToken
@@ -30,6 +28,7 @@ import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.main.fragments.profile.UserPodcastsFragment
 import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.fragments.profile.UserReportActivity
+import io.square1.limor.scenes.main.fragments.settings.SettingsActivity
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.splash.SplashActivity
 import io.square1.limor.scenes.utils.CommonsKt
@@ -211,10 +210,19 @@ class ProfileFragment : BaseFragment() {
 
         btnSettings?.onClick {
             toast("You clicked settings")
+
+            val editProfileIntent = Intent(it?.context, SettingsActivity::class.java)
+            startActivity(editProfileIntent)
+
+
+
         }
 
         btnMore?.onClick {
             showPopupMoreMenu()
+
+
+
         }
 
         btnFollow.onClick {
