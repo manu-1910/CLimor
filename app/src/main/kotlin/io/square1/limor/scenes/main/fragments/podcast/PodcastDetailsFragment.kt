@@ -77,6 +77,7 @@ data class CommentWithParent(val comment: UIComment, val parent: CommentWithPare
 
 class PodcastDetailsFragment : BaseFragment() {
 
+    private var btnRecordClicked: Boolean = false
     private var isWaitingForApiCall: Boolean = false
     private var currentOffset: Int = 0
     private var currentCommentRequest: UICreateCommentRequest? = null
@@ -598,7 +599,7 @@ class PodcastDetailsFragment : BaseFragment() {
             deleteCurrentCommentAudioAndResetBar()
         }
 
-        btnRecord.setOnTouchListener { view, event ->
+        btnRecord.onClick {
             //Check if all permissions are granted, if not, request again
             if (!hasPermissions(requireContext(), *PERMISSIONS)) {
                 try {
@@ -609,21 +610,48 @@ class PodcastDetailsFragment : BaseFragment() {
                     e.printStackTrace()
                 }
             }else{
-                if (event.action == MotionEvent.ACTION_DOWN) {
+                if (!btnRecordClicked) {
+                    btnRecordClicked = true
                     if(!isCommentBarOpen())
                         openCommentBarTextAndFocusIt()
 
                     btnRecord.setImageResource(R.drawable.record_red)
                     audioSetup()
                     recordAudio()
-                } else if(event.action == MotionEvent.ACTION_UP) {
+                } else {
+                    btnRecordClicked = false
                     stopAudio()
                     btnRecord.setImageResource(R.drawable.record)
-                    view.performClick()
                 }
             }
-            true
         }
+
+//        btnRecord.setOnTouchListener { view, event ->
+//            //Check if all permissions are granted, if not, request again
+//            if (!hasPermissions(requireContext(), *PERMISSIONS)) {
+//                try {
+//                    ActivityCompat.requestPermissions(requireActivity(),
+//                        PERMISSIONS, PERMISSION_ALL
+//                    )
+//                } catch (e: Exception) {
+//                    e.printStackTrace()
+//                }
+//            }else{
+//                if (event.action == MotionEvent.ACTION_DOWN) {
+//                    if(!isCommentBarOpen())
+//                        openCommentBarTextAndFocusIt()
+//
+//                    btnRecord.setImageResource(R.drawable.record_red)
+//                    audioSetup()
+//                    recordAudio()
+//                } else if(event.action == MotionEvent.ACTION_UP) {
+//                    stopAudio()
+//                    btnRecord.setImageResource(R.drawable.record)
+//                    view.performClick()
+//                }
+//            }
+//            true
+//        }
 
         updater = object : Runnable {
             override fun run() {
