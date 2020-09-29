@@ -103,6 +103,10 @@
             tools:replace="android:theme"
             android:theme="@style/AppTheme.NoActionBar"/>
 
+        <activity
+            android:name="io.square1.limor.scenes.main.fragments.settings.SettingsActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <meta-data
                 android:name="io.fabric.ApiKey"

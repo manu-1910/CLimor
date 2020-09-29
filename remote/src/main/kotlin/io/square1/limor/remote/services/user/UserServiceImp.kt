@@ -190,4 +190,20 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
             }
     }
 
+
+    fun getPodcastsLiked(id: Int, limit: Int?, offset: Int?): Single<NWGetPodcastsResponse> {
+        return service.getPodcastsLiked(id, limit, offset)
+            .map { response -> response.parseSuccessResponse(NWGetPodcastsResponse.serializer()) }
+            .doOnSuccess { response ->
+                run {
+                    println("SUCCESS: $response")
+                }
+            }
+            .doOnError { error ->
+                run {
+                    println("ERROR: $error")
+                }
+            }
+    }
+
 }

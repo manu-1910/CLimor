@@ -4,6 +4,7 @@ package io.square1.limor.di.modules.fragments
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import io.square1.limor.scenes.main.fragments.*
+import io.square1.limor.scenes.main.fragments.profile.UserLikedPodcastsFragment
 import io.square1.limor.scenes.main.fragments.profile.UserPodcastsFragment
 
 
@@ -33,6 +34,9 @@ abstract class MainActivityFragmentsBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeUserFeedFragmentInjector(): UserFeedFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeUserLikedPodcastsFragmentInjector(): UserLikedPodcastsFragment
 
     @ContributesAndroidInjector
     abstract fun contributeDiscoverAccountsFragmentInjector(): DiscoverAccountsFragment

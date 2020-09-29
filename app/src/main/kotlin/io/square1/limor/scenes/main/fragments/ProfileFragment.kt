@@ -10,9 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.facebook.AccessToken
@@ -27,9 +25,11 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
+import io.square1.limor.scenes.main.fragments.profile.UserLikedPodcastsFragment
 import io.square1.limor.scenes.main.fragments.profile.UserPodcastsFragment
 import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.fragments.profile.UserReportActivity
+import io.square1.limor.scenes.main.fragments.settings.SettingsActivity
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.splash.SplashActivity
 import io.square1.limor.scenes.utils.CommonsKt
@@ -121,7 +121,7 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun initViewPager() {
-        val names = arrayOf("Casts", "Not implemented", "Not implemented")
+        val names = arrayOf("Casts", "Likes", "Not implemented")
         viewPager.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int {
                 return names.size
@@ -130,6 +130,7 @@ class ProfileFragment : BaseFragment() {
             override fun createFragment(position: Int): Fragment {
                 return when (position) {
                     0 -> UserPodcastsFragment.newInstance(uiUser!!.id)
+                    1 -> UserLikedPodcastsFragment.newInstance(uiUser!!.id)
                     else -> UserPodcastsFragment.newInstance(uiUser!!.id)
                 }
             }
@@ -211,10 +212,19 @@ class ProfileFragment : BaseFragment() {
 
         btnSettings?.onClick {
             toast("You clicked settings")
+
+            val editProfileIntent = Intent(it?.context, SettingsActivity::class.java)
+            startActivity(editProfileIntent)
+
+
+
         }
 
         btnMore?.onClick {
             showPopupMoreMenu()
+
+
+
         }
 
         btnFollow.onClick {

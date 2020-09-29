@@ -20,4 +20,5 @@ interface RemoteUserProvider {
     fun reportUser(id: Int, request: DataCreateUserReportRequestEntity) : Single<CreateReportResponseEntity>
     fun getNotifications(limit : Int, offset: Int): Single<NotificationsResponseEntity>
     fun getPodcasts(id: Int, limit : Int, offset: Int): Single<GetPodcastsResponseEntity>
+    fun getPodcastsLiked(id: Int, limit: Int, offset: Int): Single<GetPodcastsResponseEntity>
 }

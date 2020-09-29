@@ -21,8 +21,8 @@ android {
         targetSdkVersion build_versions.target_sdk
 
         applicationId globalConfiguration.androidApplicationId
-        versionCode 14
-        versionName "0.0.14"
+        versionCode 15
+        versionName "0.0.15"
 
         testInstrumentationRunner globalConfiguration.testInstrumentationRunner
         testApplicationId globalConfiguration.testApplicationId
@@ -41,7 +41,7 @@ android {
     signingConfigs {
         debug {
             storeFile file("${System.env.HOME}/dev/keystores/limor_dev.jks")
-            //storeFile file("keystores/limor_dev.jks")
+            storeFile file("keystores/limor_dev.jks")
             storePassword DEV_PASSWORD
             keyAlias DEV_KEY_ALIAS
             keyPassword DEV_KEY_PASSWORD

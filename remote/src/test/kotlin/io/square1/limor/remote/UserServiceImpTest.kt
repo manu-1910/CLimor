@@ -223,13 +223,13 @@ class UserServiceImpTest {
 
 
     @Test
-    fun should_get_podcasts_successfully() {
+    fun should_get_user_podcasts_successfully() {
         val config = RemoteServiceConfig(
             baseUrl = CURRENT_URL,
             debug = true,
             client_id = "",
             client_secret = "",
-            token = "PaEH9-VD6l9YeO63I6DdfktPp752mGmdixCGjE-QLT8",
+            token = CURRENT_TOKEN,
             expiredIn = 0
         )
 
@@ -237,6 +237,26 @@ class UserServiceImpTest {
 
         val userId = 143
         val response = userService.getPodcasts(userId, 10, 0).test()
+
+        response.assertNoErrors()
+        response.assertValue { it.message == "Success" }
+    }
+
+    @Test
+    fun should_get_user_liked_podcasts_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = CURRENT_URL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = CURRENT_TOKEN,
+            expiredIn = 0
+        )
+
+        userService = UserServiceImp(config)
+
+        val userId = 143
+        val response = userService.getPodcastsLiked(userId, 10, 0).test()
 
         response.assertNoErrors()
         response.assertValue { it.message == "Success" }
