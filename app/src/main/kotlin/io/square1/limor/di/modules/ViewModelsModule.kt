@@ -190,4 +190,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(DiscoverHashTagsViewModel::class)
     abstract fun bindDiscoverHashTagsViewModel(discoverHashTagsViewModel: DiscoverHashTagsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ChangePasswordViewModel::class)
+    abstract fun bindChangePasswordViewModel(changePasswordViewModel: ChangePasswordViewModel): ViewModel
 }

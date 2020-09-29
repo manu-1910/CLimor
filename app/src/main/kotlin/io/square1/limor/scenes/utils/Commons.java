@@ -894,7 +894,6 @@ public class Commons {
     }
 
 
-
     public static void loadFFmpeg(Context context) {
         FFmpeg ffmpeg = FFmpeg.getInstance(context);
         try {
@@ -917,7 +916,6 @@ public class Commons {
             e.printStackTrace();
         }
     }
-
 
 
     public static void changePermissionsForJave(Context context){
@@ -948,7 +946,6 @@ public class Commons {
     }
 
 
-
     public static void convertWavToAmr2(File wavFilename, File amrFilename){
         Encoder encoder = new Encoder();
         EncodingAttributes attributes = new EncodingAttributes();
@@ -964,14 +961,7 @@ public class Commons {
         File target = amrFilename;
         try {
             encoder.encode(source, target, attributes);
-        } catch (IllegalArgumentException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (InputFormatException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (EncoderException e1) {
-            // TODO Auto-generated catch block
+        } catch (IllegalArgumentException | EncoderException e1) {
             e1.printStackTrace();
         }
 
@@ -993,10 +983,7 @@ public class Commons {
             e.printStackTrace();
         }
 
-
-
     }
-
 
 
     public static boolean CombineWaveFile(String file1, String file2, String outPutFile) {
@@ -1014,7 +1001,7 @@ public class Commons {
         long byteRate = (RECORDER_BPP * RECORDER_SAMPLERATE * channels) / 8;
         System.out.println("--------- byterate is: " + byteRate);
 
-        //bufferSize = AudioRecord.getMinBufferSize(RECORDER_SAMPLERATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+        bufferSize = AudioRecord.getMinBufferSize(RECORDER_SAMPLERATE, channels, AudioFormat.ENCODING_PCM_16BIT) * 3;
 
         byte[] data = new byte[bufferSize];
         //byte[] data = new byte[4096];
@@ -1022,32 +1009,29 @@ public class Commons {
         try {
             in1 = new FileInputStream(file1);
             in2 = new FileInputStream(file2);
-
             out = new FileOutputStream(outPutFile);
 
             totalAudioLen = in1.getChannel().size() + in2.getChannel().size();
             totalDataLen = totalAudioLen + 36;
 
-            WriteWaveFileHeader(out, totalAudioLen, totalDataLen, longSampleRate, channels, byteRate);
+            WriteWaveFileHeader(out, totalAudioLen, totalDataLen, longSampleRate, channels, byteRate, RECORDER_BPP);
 
             while (in1.read(data) != -1) {
-
                 out.write(data);
-
             }
             while (in2.read(data) != -1) {
-
                 out.write(data);
             }
 
             out.close();
+
             in1.close();
             in2.close();
 
             out.close();
             out.flush();
 
-            System.out.println("Done");System.out.println("Done");System.out.println("Done");System.out.println("Done");System.out.println("Done");System.out.println("Done");
+            System.out.println("Done");
         } catch (IOException e) {
             retorno = false;
             e.printStackTrace();
@@ -1055,9 +1039,7 @@ public class Commons {
         return retorno;
     }
 
-    public static void WriteWaveFileHeader(FileOutputStream out, long totalAudioLen, long totalDataLen, long longSampleRate, int channels, long byteRate) throws IOException {
-
-        int RECORDER_BPP = 16;
+    public static void WriteWaveFileHeader(FileOutputStream out, long totalAudioLen, long totalDataLen, long longSampleRate, int channels, long byteRate, int RECORDER_BPP) throws IOException {
 
         byte[] header = new byte[44];
 
@@ -1093,7 +1075,7 @@ public class Commons {
         header[29] = (byte)((byteRate >> 8) & 0xff);
         header[30] = (byte)((byteRate >> 16) & 0xff);
         header[31] = (byte)((byteRate >> 24) & 0xff);
-        header[32] = (byte)( channels * 16 / 8);
+        header[32] = (byte)( 2 * 16 / 8);
         header[33] = 0;
         header[34] = (byte) RECORDER_BPP;
         header[35] = 0;

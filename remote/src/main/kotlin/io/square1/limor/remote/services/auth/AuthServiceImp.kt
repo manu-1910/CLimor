@@ -5,6 +5,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import io.square1.limor.remote.entities.requests.*
 import io.square1.limor.remote.entities.responses.NWAuthResponse
+import io.square1.limor.remote.entities.responses.NWChangePasswordResponse
 import io.square1.limor.remote.entities.responses.NWSignUpResponse
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
@@ -14,7 +15,6 @@ import kotlinx.serialization.Mapper
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
 import okhttp3.RequestBody
-import java.util.prefs.Preferences
 import javax.inject.Inject
 
 
@@ -83,6 +83,18 @@ class AuthServiceImp @Inject constructor(private val serviceConfig: RemoteServic
             }
     }
 
+
+
+    fun changePassword(nwChangePasswordRequest: NWChangePasswordRequest): Single<NWChangePasswordResponse> {
+        return service.changePassword(RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWChangePasswordRequest.serializer(), nwChangePasswordRequest)))
+            .map { response -> response.parseSuccessResponse(NWChangePasswordResponse.serializer()) }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
 
 
 }
