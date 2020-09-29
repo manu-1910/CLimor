@@ -20,6 +20,7 @@ import javax.inject.Inject
 class CreatePodcastReportViewModel @Inject constructor(private val createPodcastReportUseCase: CreatePodcastReportUseCase) :
     BaseViewModel<CreatePodcastReportViewModel.Input, CreatePodcastReportViewModel.Output>() {
 
+    var reason: String? = ""
     private val compositeDispose = CompositeDisposable()
     var idPodcastToReport = 0
 

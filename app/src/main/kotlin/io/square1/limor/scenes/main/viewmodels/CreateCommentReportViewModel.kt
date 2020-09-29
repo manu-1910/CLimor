@@ -21,6 +21,7 @@ class CreateCommentReportViewModel @Inject constructor(private val createComment
     BaseViewModel<CreateCommentReportViewModel.Input, CreateCommentReportViewModel.Output>() {
 
     private val compositeDispose = CompositeDisposable()
+    var reason: String? = ""
     var idCommentToReport = 0
 
     data class Input(

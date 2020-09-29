@@ -3,10 +3,18 @@
 
     <item
         android:id="@+id/menu_share"
-        android:title="@string/share"/>
+        android:title="@string/share_cast"/>
 
     <item
-        android:id="@+id/menu_report"
-        android:title="@string/report"/>
+        android:id="@+id/menu_report_cast"
+        android:title="@string/report_cast"/>
+
+    <item
+        android:id="@+id/menu_report_user"
+        android:title="@string/report_user"/>
+
+    <item
+        android:id="@+id/menu_block_user"
+        android:title="@string/block_user"/>
 
 </menu>
