@@ -246,11 +246,15 @@
     <string name="when_comments_ready_will_appear_here">When comments are ready they will appear here</string>
     <string name="you">You</string>
     <string name="share">Share</string>
+    <string name="share_cast">Share Cast</string>
     <string name="delete">Delete</string>
     <string name="could_not_write_destination_file">Couldn\'t write into destination file</string>
     <string name="check_out_this_cast">Check out this cast on Limor</string>
     <string name="error_retrieving_sharing_url">Error retrieving sharing URL</string>
-    <string name="report">Report</string>
+    <string name="report_cast">Report Cast</string>
+    <string name="report_user">Report User</string>
+    <string name="report_comment">Report Comment</string>
+    <string name="block_user">Block User</string>
     <string name="error_report">We couldn\'t send your report at the moment, please, try again later</string>
     <string name="comment_reported_ok">Comment reported successfully</string>
     <string name="comment_already_reported">Your comment was already reported</string>
@@ -262,8 +266,12 @@
     <string name="follow">Follow</string>
     <string name="block">Block</string>
     <string name="unfollow">Unfollow</string>
-    <string name="hint_report_user">Tell us why you are reporting this cast…</string>
-    <string name="report_user">Report user</string>
+    <string name="hint_report_user">Tell us why you are reporting this user…</string>
+    <string name="hint_report_cast">Tell us why you are reporting this cast…</string>
+    <string name="hint_report_comment">Tell us why you are reporting this comment…</string>
+    <string name="title_report_user">Report user</string>
+    <string name="title_report_comment">Report comment</string>
+    <string name="title_report_cast">Report cast</string>
     <string name="user_reported_ok">User reported successfully</string>
     <string name="user_reported_error">We couldn\'t report the user. Please try again later.</string>
     <string name="no_notifications_message">Your notifications will show up here</string>
@@ -287,6 +295,7 @@
     <string name="settings_privacy_policy">Privacy Policy</string>
     <string name="settings_terms">Terms &amp; Conditions</string>
     <string name="settings_report_a_problem">Report a Problem</string>
+    <string name="report">Report</string>
 
     <string name="discover_error_message">There was an error getting discovery information. Please try again.</string>
     <string name="discover_no_users">No results found.</string>

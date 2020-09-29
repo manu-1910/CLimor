@@ -1,6 +1,6 @@
 package io.square1.limor.remote
 
-import io.square1.limor.remote.entities.requests.NWCreateUserReportRequest
+import io.square1.limor.remote.entities.requests.NWCreateReportRequest
 import io.square1.limor.remote.entities.requests.NWUserIDRequest
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.user.UserServiceImp
@@ -193,7 +193,7 @@ class UserServiceImpTest {
         userService = UserServiceImp(config)
 
         val idUser = 5
-        val request = NWCreateUserReportRequest("I don't like him")
+        val request = NWCreateReportRequest("I don't like him")
 
         val response = userService.reportUser(idUser, request).test()
 

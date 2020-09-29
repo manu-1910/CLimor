@@ -7,6 +7,6 @@
 
     <item
         android:id="@+id/menu_report"
-        android:title="@string/report"/>
+        android:title="@string/report_user"/>
 
 </menu>

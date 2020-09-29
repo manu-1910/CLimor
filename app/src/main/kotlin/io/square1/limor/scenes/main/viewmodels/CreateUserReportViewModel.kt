@@ -21,7 +21,7 @@ class CreateUserReportViewModel @Inject constructor(private val createUserReport
     private val compositeDispose = CompositeDisposable()
     var idUser = 0
     var reason = ""
-    private lateinit var uiCreateUserReportRequest: UICreateUserReportRequest
+    private lateinit var uiCreateUserReportRequest: UICreateReportRequest
 
     data class Input(
         val createUserReportTrigger: Observable<Unit>
@@ -38,9 +38,9 @@ class CreateUserReportViewModel @Inject constructor(private val createUserReport
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
         val response = MutableLiveData<UICreateReportResponse>()
 
-        uiCreateUserReportRequest = UICreateUserReportRequest(reason)
 
         input.createUserReportTrigger.subscribe({
+            uiCreateUserReportRequest = UICreateReportRequest(reason)
             createUserReportUseCase.execute(idUser, uiCreateUserReportRequest).subscribe({
                 response.value = it
 

@@ -10,6 +10,7 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseViewModel
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
+import io.square1.limor.uimodels.UICreateReportRequest
 import io.square1.limor.uimodels.UICreateReportResponse
 import io.square1.limor.uimodels.UIErrorData
 import io.square1.limor.uimodels.UIErrorResponse
@@ -21,6 +22,7 @@ class CreateCommentReportViewModel @Inject constructor(private val createComment
     BaseViewModel<CreateCommentReportViewModel.Input, CreateCommentReportViewModel.Output>() {
 
     private val compositeDispose = CompositeDisposable()
+    var reason: String? = ""
     var idCommentToReport = 0
 
     data class Input(
@@ -38,8 +40,10 @@ class CreateCommentReportViewModel @Inject constructor(private val createComment
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
         val response = MutableLiveData<UICreateReportResponse>()
 
+
         input.createCommentReportTrigger.subscribe({
-            createCommentReportUseCase.execute(idCommentToReport).subscribe({
+            val request = UICreateReportRequest(reason)
+            createCommentReportUseCase.execute(idCommentToReport, request).subscribe({
                 response.value = it
 
             }, {

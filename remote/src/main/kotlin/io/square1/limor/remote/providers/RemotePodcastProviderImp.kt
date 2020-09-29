@@ -1,6 +1,7 @@
 package io.square1.limor.remote.providers
 
 import entities.request.DataCreateCommentRequest
+import entities.request.DataCreateReportRequestEntity
 import entities.request.DataPublishRequest
 import entities.response.*
 import io.reactivex.Single
@@ -13,21 +14,22 @@ import javax.inject.Inject
 
 
 @ImplicitReflectionSerializer
-class RemotePodcastProviderImp @Inject constructor(private val provider: PodcastServiceImp) : RemotePodcastProvider {
+class RemotePodcastProviderImp @Inject constructor(private val provider: PodcastServiceImp) :
+    RemotePodcastProvider {
 
     override fun publishPodcast(dataPublishRequest: DataPublishRequest): Single<PublishResponseEntity>? {
         return provider.publishPodcast(dataPublishRequest.asRemoteEntity())?.asDataEntity()
     }
 
-    override fun likePodcast(id : Int): Single<CreatePodcastLikeResponseEntity>? {
+    override fun likePodcast(id: Int): Single<CreatePodcastLikeResponseEntity>? {
         return provider.likePodcast(id)?.asDataEntity()
     }
 
-    override fun dislikePodcast(id : Int): Single<DeleteResponseEntity>? {
+    override fun dislikePodcast(id: Int): Single<DeleteResponseEntity>? {
         return provider.dislikePodcast(id)?.asDataEntity()
     }
 
-    override fun recastPodcast(idPodcast : Int): Single<CreatePodcastRecastResponseEntity>? {
+    override fun recastPodcast(idPodcast: Int): Single<CreatePodcastRecastResponseEntity>? {
         return provider.recastPodcast(idPodcast)?.asDataEntity()
     }
 
@@ -46,8 +48,11 @@ class RemotePodcastProviderImp @Inject constructor(private val provider: Podcast
         return provider.getComments(id, limit, offset)?.asDataEntity()
     }
 
-    override fun reportPodcast(id: Int): Single<CreateReportResponseEntity>? {
-        return provider.reportPodcast(id)?.asDataEntity()
+    override fun reportPodcast(
+        id: Int,
+        request: DataCreateReportRequestEntity
+    ): Single<CreateReportResponseEntity>? {
+        return provider.reportPodcast(id, request.asRemoteEntity())?.asDataEntity()
     }
 
     override fun getFeaturedPodcasts(): Single<FeaturedPodcastsResponseEntity>? {

@@ -56,7 +56,8 @@ interface PodcastService {
 
     @POST(PODCAST_REPORTS_PATH)
     fun reportPodcast(
-        @Path("id") idPodcast: Int
+        @Path("id") idPodcast: Int,
+        @Body request: RequestBody
     ): Single<ResponseBody>
 
     @GET(FEATURED_PODCASTS_PATH)
