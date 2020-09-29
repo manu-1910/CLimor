@@ -18,6 +18,7 @@ class SessionManager @Inject constructor(context: Context) {
     private val userKey = "user_key"
     private val pushTokenKey = "push_token_key"
     private val sessionExpiredIn = "session_expired_in"
+    private val pushNotificationsEnabledKey = "push_notifications_enabled_key"
 
 
     fun storeToken(tokenId: String): Boolean {
@@ -74,6 +75,15 @@ class SessionManager @Inject constructor(context: Context) {
     }
 
 
+
+    fun storePushNotificationsEnabled(enabled: Boolean): Boolean {
+        return preferences.edit().putBoolean(pushNotificationsEnabledKey, enabled).commit()
+    }
+
+
+    fun getPushNotificationsEnabled(): Boolean? {
+        return preferences.getBoolean(pushNotificationsEnabledKey, false)
+    }
 
 
 }
