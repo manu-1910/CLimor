@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class DataCreateUserReportRequestEntity (
+data class DataCreateReportRequestEntity (
     val reason: String?
 )

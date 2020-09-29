@@ -10,6 +10,7 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseViewModel
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
+import io.square1.limor.uimodels.UICreateReportRequest
 import io.square1.limor.uimodels.UICreateReportResponse
 import io.square1.limor.uimodels.UIErrorData
 import io.square1.limor.uimodels.UIErrorResponse
@@ -39,8 +40,10 @@ class CreatePodcastReportViewModel @Inject constructor(private val createPodcast
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
         val response = MutableLiveData<UICreateReportResponse>()
 
+
         input.createCommentReportTrigger.subscribe({
-            createPodcastReportUseCase.execute(idPodcastToReport).subscribe({
+            val request = UICreateReportRequest(reason)
+            createPodcastReportUseCase.execute(idPodcastToReport, request).subscribe({
                 response.value = it
 
             }, {

@@ -44,10 +44,7 @@ import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.service.AudioService
-import io.square1.limor.uimodels.UIComment
-import io.square1.limor.uimodels.UICommentRequest
-import io.square1.limor.uimodels.UICreateCommentRequest
-import io.square1.limor.uimodels.UIPodcast
+import io.square1.limor.uimodels.*
 import kotlinx.android.synthetic.main.fragment_podcast_details_2.*
 import kotlinx.android.synthetic.main.include_interactions_bar.*
 import kotlinx.android.synthetic.main.include_podcast_data.*
@@ -1250,7 +1247,7 @@ class PodcastDetailsFragment : BaseFragment() {
                     }
 
                     override fun onMoreClicked(item: UIComment, position: Int, v: View) {
-                        onCommentMoreClicked(item, v)
+                        showCommentMorePopupMenu(item, v)
                     }
 
                     override fun onReplyClicked(item: CommentWithParent, position: Int) {
@@ -1537,7 +1534,7 @@ class PodcastDetailsFragment : BaseFragment() {
         }
 
 
-        btnMore?.onClick { onPodcastMoreClicked() }
+        btnMore?.onClick { showPodcastMorePopupMenu() }
         btnSend?.onClick { onSendClicked() }
         btnPlay?.onClick { onPlayClicked() }
 
@@ -1587,10 +1584,6 @@ class PodcastDetailsFragment : BaseFragment() {
         Toast.makeText(context, "Send clicked", Toast.LENGTH_SHORT).show()
     }
 
-    private fun onCommentMoreClicked(comment: UIComment, v: View) {
-        showCommentMorePopupMenu(comment, v)
-    }
-
     private fun showCommentMorePopupMenu(
         comment: UIComment,
         v: View
@@ -1603,7 +1596,9 @@ class PodcastDetailsFragment : BaseFragment() {
         //set menu item click listener here
         popup.setOnMenuItemClickListener {menuItem ->
             when(menuItem.itemId) {
-                R.id.menu_report -> onReportCommentClicked(comment)
+                R.id.menu_report_comment -> onReportCommentClicked(comment)
+                R.id.menu_report_user -> onReportUserClicked(comment.user)
+                R.id.menu_block_user -> toast("You clicked on block user")
             }
             true
         }
@@ -1617,10 +1612,6 @@ class PodcastDetailsFragment : BaseFragment() {
         startActivityForResult(reportUserIntent, REQUEST_REPORT_COMMENT)
     }
 
-    private fun onPodcastMoreClicked() {
-        showPodcastMorePopupMenu()
-    }
-
     private fun showPodcastMorePopupMenu() {
         val popup = PopupMenu(context, btnMore, Gravity.TOP)
         val inflater: MenuInflater = popup.menuInflater
@@ -1632,16 +1623,17 @@ class PodcastDetailsFragment : BaseFragment() {
             when(menuItem.itemId) {
                 R.id.menu_share -> onSharePodcastClicked()
                 R.id.menu_report_cast -> onReportPodcastClicked()
-                R.id.menu_report_user -> onReportPodcastUserClicked()
+                R.id.menu_report_user -> onReportUserClicked(uiPodcast?.user)
+                R.id.menu_block_user -> toast("You clicked on report user")
             }
             true
         }
         popup.show()
     }
 
-    private fun onReportPodcastUserClicked() {
-        uiPodcast?.user?.id?.let {
-            viewModelCreateUserReport.idUser = it
+    private fun onReportUserClicked(user: UIUser?) {
+        user?.let {
+            viewModelCreateUserReport.idUser = it.id
             val reportIntent = Intent(context, ReportActivity::class.java)
             reportIntent.putExtra("type", TypeReport.USER)
             startActivityForResult(reportIntent, REQUEST_REPORT_USER)

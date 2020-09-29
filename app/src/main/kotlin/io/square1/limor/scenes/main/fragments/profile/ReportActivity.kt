@@ -14,15 +14,15 @@ enum class TypeReport {
     COMMENT, CAST, USER
 }
 
-class UserReportActivity : BaseActivity() {
+class ReportActivity : BaseActivity() {
 
     var typeReport : TypeReport? = TypeReport.USER
 
     var uiUser : UIUser? = null
 
     companion object {
-        val TAG: String = UserReportActivity::class.java.simpleName
-        fun newInstance() = UserReportActivity()
+        val TAG: String = ReportActivity::class.java.simpleName
+        fun newInstance() = ReportActivity()
     }
 
 
