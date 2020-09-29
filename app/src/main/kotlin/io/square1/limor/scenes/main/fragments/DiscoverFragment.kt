@@ -545,7 +545,6 @@ class DiscoverFragment : BaseFragment(),
         val inflater: MenuInflater = popup.menuInflater
         inflater.inflate(R.menu.menu_popup_podcast, popup.menu)
 
-
         //set menu item click listener here
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {

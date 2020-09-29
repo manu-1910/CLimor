@@ -5,21 +5,33 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar_with_logo_and_back_icon" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fl_toolbar_container">
 
-    <include
-        android:id="@+id/toolbarProfile"
-        android:visibility="gone"
-        layout="@layout/toolbar_profile" />
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/toolbar_with_logo_and_back_icon" />
+
+        <include
+            android:id="@+id/toolbarProfile"
+            android:visibility="gone"
+            layout="@layout/toolbar_profile" />
+
+        <include
+            android:id="@+id/toolbarDiscover"
+            android:visibility="gone"
+            layout="@layout/toolbar_discover" />
+
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/mainContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/rl_mini_player_view"
-        android:layout_below="@+id/toolbar"
+        android:layout_below="@+id/fl_toolbar_container"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <fragment
