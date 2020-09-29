@@ -256,7 +256,6 @@
                 android:layout_marginStart="@dimen/marginMedium"
                 android:layout_marginEnd="@dimen/marginMedium"
                 android:layout_marginBottom="@dimen/marginVerySmall"
-                android:textAllCaps="true"
                 android:layout_alignParentStart="true" />
 
 

@@ -18,6 +18,13 @@
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
             app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+        <action
+            android:id="@+id/action_settings_fragment_to_webview_fragment"
+            app:destination="@id/webview_fragment"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
     </fragment>
 
 
@@ -26,7 +33,14 @@
         android:name="io.square1.limor.scenes.main.fragments.settings.ChangePasswordFragment"
         android:label="ChangePasswordFragment"
         tools:layout="@layout/fragment_change_password">
+    </fragment>
 
+
+    <fragment
+        android:id="@+id/webview_fragment"
+        android:name="io.square1.limor.scenes.main.fragments.settings.WebViewFragment"
+        android:label="WebViewFragment"
+        tools:layout="@layout/fragment_webview">
     </fragment>
 
 </navigation>
