@@ -1,6 +1,7 @@
 package providers.remote
 
 import entities.request.DataCreateCommentRequest
+import entities.request.DataCreateReportRequestEntity
 import entities.request.DataPublishRequest
 import entities.response.*
 import io.reactivex.Single
@@ -14,5 +15,7 @@ interface RemotePodcastProvider {
     fun deleteRecast(idPodcast: Int): Single<DeleteResponseEntity>?
     fun createComment(idPodcast: Int, request: DataCreateCommentRequest): Single<CreateCommentResponseEntity>?
     fun getComments(id : Int, limit: Int, offset: Int): Single<GetCommentsResponseEntity>?
-    fun reportPodcast(id: Int): Single<CreateReportResponseEntity>?
+    fun reportPodcast(id: Int, request: DataCreateReportRequestEntity): Single<CreateReportResponseEntity>?
+    fun getPopularPodcasts(): Single<PopularPodcastsResponseEntity>?
+    fun getFeaturedPodcasts(): Single<FeaturedPodcastsResponseEntity>?
 }

@@ -1,5 +1,6 @@
 package io.square1.limor.scenes.main.fragments
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
@@ -22,6 +23,8 @@ import io.square1.limor.common.SessionManager
 import io.square1.limor.scenes.main.adapters.FeedAdapter
 import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
 import io.square1.limor.scenes.main.fragments.podcast.PodcastsByTagActivity
+import io.square1.limor.scenes.main.fragments.profile.ReportActivity
+import io.square1.limor.scenes.main.fragments.profile.TypeReport
 import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.service.AudioService
@@ -46,12 +49,14 @@ abstract class FeedItemsListFragment : BaseFragment() {
     private lateinit var viewModelCreatePodcastRecast: CreatePodcastRecastViewModel
     private lateinit var viewModelDeletePodcastRecast: DeletePodcastRecastViewModel
     private lateinit var viewModelCreatePodcastReport: CreatePodcastReportViewModel
+    private lateinit var viewModelCreateUserReport: CreateUserReportViewModel
 
     private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastRecastDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastRecastDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastReportDataTrigger = PublishSubject.create<Unit>()
+    private val createUserReportDataTrigger = PublishSubject.create<Unit>()
 
     // infinite scroll variables
     private var isScrolling: Boolean = false
@@ -77,9 +82,9 @@ abstract class FeedItemsListFragment : BaseFragment() {
     companion object {
         val TAG: String = FeedItemsListFragment::class.java.simpleName
         private const val OFFSET_INFINITE_SCROLL = 2
-        internal const val FEED_LIMIT_REQUEST = 2 // this number multiplied by 2 is because there is
-        // an error on the limit param in the back side
-        // that duplicates the amount of results,
+        internal const val FEED_LIMIT_REQUEST = 4
+        private const val REQUEST_REPORT_USER: Int = 0
+        private const val REQUEST_REPORT_PODCAST: Int = 1
     }
 
     override fun onCreateView(
@@ -99,6 +104,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
             initApiCallCreateRecast()
             initApiCallDeleteRecast()
             initApiCallCreatePodcastReport()
+            initApiCallCreateUserReport()
 
 //            requestNewData()
         }
@@ -350,17 +356,30 @@ abstract class FeedItemsListFragment : BaseFragment() {
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_share -> onShareClicked(item)
-                R.id.menu_report -> onPodcastReportClicked(item)
+                R.id.menu_report_cast -> onPodcastReportClicked(item)
+                R.id.menu_report_user -> onUserReportClicked(item)
+                R.id.menu_block_user -> toast("You clicked on block user")
             }
             true
         }
         popup.show()
     }
 
+    private fun onUserReportClicked(item: UIFeedItem) {
+        item.podcast?.user?.let {
+            viewModelCreateUserReport.idUser = it.id
+            val reportIntent = Intent(context, ReportActivity::class.java)
+            reportIntent.putExtra("type", TypeReport.USER)
+            startActivityForResult(reportIntent, REQUEST_REPORT_USER)
+        }
+    }
+
     private fun onPodcastReportClicked(item: UIFeedItem) {
         item.podcast?.id?.let {
             viewModelCreatePodcastReport.idPodcastToReport = it
-            createPodcastReportDataTrigger.onNext(Unit)
+            val reportIntent = Intent(context, ReportActivity::class.java)
+            reportIntent.putExtra("type", TypeReport.CAST)
+            startActivityForResult(reportIntent, REQUEST_REPORT_PODCAST)
         }
     }
 
@@ -437,6 +456,42 @@ abstract class FeedItemsListFragment : BaseFragment() {
             ).show()
         })
     }
+
+
+
+    private fun initApiCallCreateUserReport() {
+        val output = viewModelCreateUserReport.transform(
+            CreateUserReportViewModel.Input(
+                createUserReportDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                Toast.makeText(
+                    context,
+                    getString(R.string.user_reported_error),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    context,
+                    getString(R.string.user_reported_ok),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            Toast.makeText(
+                context,
+                getString(R.string.error_report),
+                Toast.LENGTH_SHORT
+            ).show()
+        })
+    }
+
 
     protected fun handleErrorState() {
         pb_loading.visibility = View.GONE
@@ -548,6 +603,10 @@ abstract class FeedItemsListFragment : BaseFragment() {
             viewModelCreatePodcastReport = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastReportViewModel::class.java)
+
+            viewModelCreateUserReport = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreateUserReportViewModel::class.java)
         }
     }
 
@@ -564,6 +623,27 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
     fun scrollToTop() {
         rvFeed?.scrollToPosition(0)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == Activity.RESULT_OK) {
+            val reason = data?.getStringExtra("reason")
+            when (requestCode) {
+                REQUEST_REPORT_PODCAST -> {
+                    data?.let {
+                        viewModelCreatePodcastReport.reason = reason
+                        createPodcastReportDataTrigger.onNext(Unit)
+                    }
+                }
+                REQUEST_REPORT_USER -> {
+                    data?.let {
+                        reason?.let { viewModelCreateUserReport.reason = it }
+                        createUserReportDataTrigger.onNext(Unit)
+                    }
+                }
+            }
+        }
     }
 
 }

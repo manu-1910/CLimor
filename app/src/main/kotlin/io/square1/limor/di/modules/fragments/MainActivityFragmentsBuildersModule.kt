@@ -38,4 +38,10 @@ abstract class MainActivityFragmentsBuildersModule {
     @ContributesAndroidInjector
     abstract fun contributeUserLikedPodcastsFragmentInjector(): UserLikedPodcastsFragment
 
+    @ContributesAndroidInjector
+    abstract fun contributeDiscoverAccountsFragmentInjector(): DiscoverAccountsFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeDiscoverHashTagsFragmentInjector(): DiscoverHashTagsFragment
+
 }

@@ -178,6 +178,21 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(DiscoverViewModel::class)
+    abstract fun bindDiscoverViewModel(discoverViewModel: DiscoverViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverAccountsViewModel::class)
+    abstract fun bindDiscoverAccountsViewModel(discoverAccountsViewModel: DiscoverAccountsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverHashTagsViewModel::class)
+    abstract fun bindDiscoverHashTagsViewModel(discoverHashTagsViewModel: DiscoverHashTagsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(ChangePasswordViewModel::class)
     abstract fun bindChangePasswordViewModel(changePasswordViewModel: ChangePasswordViewModel): ViewModel
 }

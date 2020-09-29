@@ -4,6 +4,7 @@ package io.square1.limor.scenes.main
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import android.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -22,11 +23,13 @@ import io.square1.limor.scenes.main.fragments.*
 import io.square1.limor.scenes.main.fragments.record.RecordActivity
 import io.square1.limor.scenes.main.viewmodels.ProfileViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.notification_item.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.toast
+import java.lang.Exception
 import javax.inject.Inject
 
 
@@ -178,6 +181,9 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
         when (toolbarTitle) {
             getString(R.string.title_home) -> {
                 //viewModel.unreadCountCentres = 0
+
+                applyToolbarElevation(true)
+
                 tvToolbarTitle?.text = toolbarTitle
 
                 btnToolbarLeft?.visibility = View.GONE
@@ -196,6 +202,9 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
             }
             getString(R.string.title_discover) -> {
                 //viewModel.unreadCountLeads = 0
+
+                applyToolbarElevation(false)
+
                 tvToolbarTitle?.text = toolbarTitle
 
                 btnToolbarLeft?.visibility = View.GONE
@@ -235,6 +244,8 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
             getString(R.string.title_notifications) -> {
                 tvToolbarTitle?.text = toolbarTitle
 
+                applyToolbarElevation(true)
+
                 btnToolbarLeft?.visibility = View.GONE
                 btnToolbarLeft?.onClick { navController.popBackStack() }
 
@@ -256,5 +267,44 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
         }
     }
+
+    private fun applyToolbarElevation(apply: Boolean){
+
+        try{
+            val toolbar = window.decorView.findViewById<View>(android.R.id.content).
+            rootView.findViewById(R.id.toolbar) as androidx.appcompat.widget.Toolbar
+
+            if(apply){
+                toolbar.elevation = 10F
+            }else{
+                toolbar.elevation = 0F
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+
+    }
+
+    fun hideToolbar(hide: Boolean){
+        val toolbar = window.decorView.findViewById<View>(android.R.id.content).
+        rootView.findViewById(R.id.toolbar) as androidx.appcompat.widget.Toolbar
+        if(hide){
+            toolbar.visibility = View.GONE
+        }else{
+            toolbar.visibility = View.VISIBLE
+        }
+    }
+
+    fun getToolbarHeight() : Int{
+        val toolbar = window.decorView.findViewById<View>(android.R.id.content).
+        rootView.findViewById(R.id.toolbar) as androidx.appcompat.widget.Toolbar
+        return toolbar.measuredHeight
+    }
+
+    fun getToolBar(): androidx.appcompat.widget.Toolbar{
+        return window.decorView.findViewById<View>(android.R.id.content).
+        rootView.findViewById(R.id.toolbar) as androidx.appcompat.widget.Toolbar
+    }
+
 
 }

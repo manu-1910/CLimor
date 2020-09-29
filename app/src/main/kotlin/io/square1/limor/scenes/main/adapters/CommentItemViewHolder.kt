@@ -104,6 +104,9 @@ class CommentItemViewHolder(
         // currentItem.comment.podcast?.number_of_recasts?.let { tvRecasts.text = it.toString() }
         tvRecasts.onClick { commentClickListener.onRecastClicked(currentItem.comment, position) }
         ibtnRecasts.onClick { commentClickListener.onRecastClicked(currentItem.comment, position) }
+        // TODO: this is hardcoded to hide the recast feature in comments. This should be removed when the recast of a comment is implemented
+        tvRecasts.visibility = View.GONE
+        ibtnRecasts.visibility = View.GONE
 
         // likes
         currentItem.comment.number_of_likes.let { tvLikes.text = it.toString() }
