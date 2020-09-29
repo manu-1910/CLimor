@@ -16,4 +16,6 @@ interface PodcastRepository {
     fun createComment(id: Int, request: DataCreateCommentRequest): Single<CreateCommentResponseEntity>?
     fun getComments(id: Int, limit: Int, offset: Int): Single<GetCommentsResponseEntity>?
     fun reportPodcast(id: Int, request: DataCreateReportRequestEntity): Single<CreateReportResponseEntity>?
+    fun getPopularPodcasts(): Single<PopularPodcastsResponseEntity>?
+    fun getFeaturedPodcasts(): Single<FeaturedPodcastsResponseEntity>?
 }

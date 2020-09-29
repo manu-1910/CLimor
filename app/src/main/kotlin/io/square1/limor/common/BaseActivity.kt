@@ -18,6 +18,7 @@ import dagger.android.AndroidInjection
 import io.square1.limor.R
 import io.square1.limor.scenes.main.fragments.player.AudioPlayerActivity
 import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
+import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.service.AudioService
 import io.square1.limor.service.PlayerStatus
 import kotlinx.android.synthetic.main.mini_player_view.view.*
@@ -99,10 +100,7 @@ abstract class BaseActivity : AppCompatActivity() {
             miniPlayerView!!.tv_audio_title.text = audioService?.uiPodcast?.caption
 
             val durationMillis = audioService?.uiPodcast?.audio?.duration
-            val minutes = durationMillis!! / 1000 / 60
-            val seconds = durationMillis / 1000 % 60
-            val humanReadableDuration = String.format("%dm %ds", minutes, seconds)
-            miniPlayerView!!.tv_duration.text = humanReadableDuration
+            miniPlayerView!!.tv_duration.text = Commons.getHumanReadableTimeFromMillis(durationMillis!!)
         } catch (e: Exception) {
             e.printStackTrace()
         }

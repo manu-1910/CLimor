@@ -297,4 +297,10 @@
     <string name="settings_report_a_problem">Report a Problem</string>
     <string name="report">Report</string>
 
+    <string name="discover_error_message">There was an error getting discovery information. Please try again.</string>
+    <string name="discover_no_users">No results found.</string>
+    <string name="suggested_people">Suggested People</string>
+    <string name="featured_casts">Featured Casts</string>
+    <string name="top_casts">Top Casts</string>
+    <string name="see_all">See All</string>
 </resources>

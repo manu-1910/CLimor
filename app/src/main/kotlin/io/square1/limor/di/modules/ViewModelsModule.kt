@@ -175,4 +175,19 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(GetUserLikedPodcastsViewModel::class)
     abstract fun bindGetUserLikedPodcastsViewModel(getUserLikedPodcastsViewModel: GetUserLikedPodcastsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverViewModel::class)
+    abstract fun bindDiscoverViewModel(discoverViewModel: DiscoverViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverAccountsViewModel::class)
+    abstract fun bindDiscoverAccountsViewModel(discoverAccountsViewModel: DiscoverAccountsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverHashTagsViewModel::class)
+    abstract fun bindDiscoverHashTagsViewModel(discoverHashTagsViewModel: DiscoverHashTagsViewModel): ViewModel
 }

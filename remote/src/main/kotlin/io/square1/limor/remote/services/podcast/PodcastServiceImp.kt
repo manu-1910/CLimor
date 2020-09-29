@@ -122,4 +122,26 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
             }
     }
 
+    fun getFeaturedPodcasts(): Single<NWFeaturedPodcastsResponse>? {
+        return service.getFeaturedPodcasts()
+            .map { response -> response.parseSuccessResponse(NWFeaturedPodcastsResponse.serializer()) }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
+    fun getPopularPodcasts(): Single<NWPopularPodcastsResponse>? {
+        return service.getPopularPodcasts()
+            .map { response -> response.parseSuccessResponse(NWPopularPodcastsResponse.serializer()) }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
 }
