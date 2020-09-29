@@ -7,6 +7,7 @@ import android.view.*
 import android.widget.AbsListView
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -30,6 +31,7 @@ import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIFeedItem
 import kotlinx.android.synthetic.main.fragment_feed.*
+import kotlinx.android.synthetic.main.fragment_notifications.*
 import org.jetbrains.anko.support.v4.onRefresh
 import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
@@ -125,6 +127,24 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 20f)
+        initSwipeAndRefreshLayout()
+    }
+
+    private fun initSwipeAndRefreshLayout() {
+        swipeRefreshLayout?.setProgressBackgroundColorSchemeColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.colorPrimaryDark
+            )
+        )
+
+        swipeRefreshLayout?.setColorSchemeColors(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.brandPrimary500
+            )
+        )
+
         swipeRefreshLayout?.onRefresh {
             reloadFeed()
         }
