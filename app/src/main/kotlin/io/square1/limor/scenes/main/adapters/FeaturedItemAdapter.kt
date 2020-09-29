@@ -3,6 +3,7 @@ package io.square1.limor.scenes.main.adapters
 import android.content.Context
 import android.graphics.Point
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import io.square1.limor.uimodels.UIPodcast
@@ -48,6 +49,6 @@ class FeaturedItemAdapter(
     interface OnFeaturedClicked {
         fun onFeaturedItemClicked(item: UIPodcast, position: Int)
         fun onPlayClicked(item: UIPodcast, position: Int)
-        fun onMoreClicked(item: UIPodcast, position: Int)
+        fun onMoreClicked(item: UIPodcast, position: Int, view: View)
     }
 }
