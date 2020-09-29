@@ -131,19 +131,6 @@
 
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnLogout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="@dimen/marginSmall"
-        android:text="@string/logout"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layProfileTop" />
-
-
     <View
         android:id="@+id/barDecoratorUp"
         android:layout_width="match_parent"
@@ -152,7 +139,7 @@
         android:background="@color/brandSecondary300"
         app:layout_constraintStart_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnLogout" />
+        app:layout_constraintTop_toBottomOf="@id/layProfileTop" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
