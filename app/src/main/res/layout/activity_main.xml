@@ -6,7 +6,7 @@
     android:animateLayoutChanges="true">
 
     <include
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbar_main"
         layout="@layout/toolbar_with_logo_and_back_icon" />
 
     <include
@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/rl_mini_player_view"
-        android:layout_below="@+id/toolbar"
+        android:layout_below="@+id/toolbar_main"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <fragment
