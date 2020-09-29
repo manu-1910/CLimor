@@ -351,7 +351,8 @@ class RecordFragment : BaseFragment() {
             mRecorder.waveConfig.sampleRate = 16000
             mRecorder.waveConfig.channels = AudioFormat.CHANNEL_IN_STEREO
             mRecorder.waveConfig.audioEncoding = AudioFormat.ENCODING_PCM_16BIT
-            mRecorder.noiseSuppressorActive = true
+            //mRecorder.noiseSuppressorActive = true
+
             mRecorder.onAmplitudeListener = {
                 runOnUiThread {
                     if(isRecording){

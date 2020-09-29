@@ -28,6 +28,7 @@ import android.util.Log;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -112,6 +113,7 @@ public class SoundFile {
         if (!Arrays.asList(getSupportedExtensions()).contains(components[components.length - 1])) {
             return null;
         }
+
         SoundFile soundFile = new SoundFile();
         soundFile.setProgressListener(progressListener);
         soundFile.ReadFile(f);
@@ -265,6 +267,7 @@ public class SoundFile {
                 } else {
                     presentation_time = extractor.getSampleTime();
                     codec.queueInputBuffer(inputBufferIndex, 0, sample_size, presentation_time, 0);
+                    //extractor.seekTo(44, MediaExtractor.SEEK_TO_NEXT_SYNC);
                     extractor.advance();
                     tot_size_read += sample_size;
                     if (mProgressListener != null) {
@@ -403,10 +406,11 @@ public class SoundFile {
         mFileType = "raw";
         mFileSize = 0;
         mSampleRate = 44100;
-        mChannels = 1;  // record mono audio.
+        //mChannels = 1;  // record mono audio.
+        mChannels = 2;  // record mono audio.
         short[] buffer = new short[1024];  // buffer contains 1 mono frame of 1024 16 bits samples
-        int minBufferSize = AudioRecord.getMinBufferSize(
-                mSampleRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+        //int minBufferSize = AudioRecord.getMinBufferSize(mSampleRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+        int minBufferSize = AudioRecord.getMinBufferSize(mSampleRate, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);
         // make sure minBufferSize can contain at least 1 second of audio (16 bits sample).
         if (minBufferSize < mSampleRate * 2) {
             minBufferSize = mSampleRate * 2;
@@ -414,7 +418,8 @@ public class SoundFile {
         AudioRecord audioRecord = new AudioRecord(
                 MediaRecorder.AudioSource.DEFAULT,
                 mSampleRate,
-                AudioFormat.CHANNEL_IN_MONO,
+                //AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.CHANNEL_IN_STEREO,
                 AudioFormat.ENCODING_PCM_16BIT,
                 minBufferSize
                 );
@@ -621,8 +626,7 @@ public class SoundFile {
         buffer = new byte[4096];
         try {
             FileOutputStream outputStream = new FileOutputStream(outputFile);
-            outputStream.write(
-                    MP4Header.getMP4Header(mSampleRate, numChannels, frame_sizes, bitrate));
+            outputStream.write(MP4Header.getMP4Header(mSampleRate, numChannels, frame_sizes, bitrate));
             while (encoded_size - encodedBytes.position() > buffer.length) {
                 encodedBytes.get(buffer);
                 outputStream.write(buffer);
