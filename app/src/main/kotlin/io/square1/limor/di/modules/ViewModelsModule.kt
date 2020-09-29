@@ -180,4 +180,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(DiscoverAccountsViewModel::class)
     abstract fun bindDiscoverAccountsViewModel(discoverAccountsViewModel: DiscoverAccountsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverHashTagsViewModel::class)
+    abstract fun bindDiscoverHashTagsViewModel(discoverHashTagsViewModel: DiscoverHashTagsViewModel): ViewModel
 }

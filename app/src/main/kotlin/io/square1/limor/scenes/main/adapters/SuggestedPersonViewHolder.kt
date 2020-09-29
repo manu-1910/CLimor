@@ -36,8 +36,6 @@ class SuggestedPersonViewHolder(
 
         tvSubtitle.text = currentItem.username
 
-        currentItem.first_name?.let { }
-
         if (currentItem.first_name != null && currentItem.last_name != null) {
             try {
                 val firstNameChar =

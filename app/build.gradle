@@ -148,7 +148,7 @@ android {
         exclude 'META-INF/ASL2.0'
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/LICENSE'
-        exclude 'META-INF/main.kotlin_module'
+        exclude 'META-INF/*.kotlin_module'
     }
 
     dataBinding {
@@ -346,5 +346,7 @@ dependencies {
 
     implementation 'com.github.adrielcafe:AndroidAudioConverter:0.0.8'
     implementation 'com.github.xxjy:amr-wb-enc-android:1.0.0@aar'
+
+    implementation 'com.jakewharton.rxbinding4:rxbinding-core:4.0.0'
 
 }

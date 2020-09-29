@@ -128,7 +128,8 @@
                                     android:paddingBottom="4dp"
                                     android:text="@string/see_all"
                                     android:textColor="@color/colorAccent"
-                                    android:textSize="13sp" />
+                                    android:textSize="13sp"
+                                    android:visibility="invisible" />
 
                             </RelativeLayout>
 
@@ -192,7 +193,8 @@
                                     android:paddingBottom="4dp"
                                     android:text="@string/see_all"
                                     android:textColor="@color/colorAccent"
-                                    android:textSize="13sp" />
+                                    android:textSize="13sp"
+                                    android:visibility="invisible" />
 
                             </RelativeLayout>
 
@@ -259,10 +261,18 @@
                         app:tabSelectedTextColor="@color/brandPrimary500"
                         app:tabTextColor="@color/brandSecondary100" />
 
+                    <View
+                        android:id="@+id/view_border"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_below="@+id/tab_layout"
+                        android:background="@color/brandSecondary300" />
+
                     <androidx.viewpager2.widget.ViewPager2
                         android:id="@+id/viewPager"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/view_border" />
 
                 </RelativeLayout>
 

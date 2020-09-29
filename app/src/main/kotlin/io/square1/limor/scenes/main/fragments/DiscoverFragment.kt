@@ -1,18 +1,15 @@
 package io.square1.limor.scenes.main.fragments
 
-import android.animation.LayoutTransition
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.transition.Transition
-import android.transition.Transition.TransitionListener
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
+import android.widget.FrameLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -25,10 +22,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.jakewharton.rxbinding4.widget.textChangeEvents
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.square1.limor.App
 import io.square1.limor.common.BaseActivity
 import io.square1.limor.extensions.forceLayoutChanges
-import io.square1.limor.scenes.main.MainActivity
 import io.square1.limor.scenes.main.adapters.DiscoverMainTagsAdapter
 import io.square1.limor.scenes.main.adapters.FeaturedItemAdapter
 import io.square1.limor.scenes.main.adapters.SuggestedPersonAdapter
@@ -41,8 +39,10 @@ import io.square1.limor.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_discover.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.toast
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+const val BUNDLE_KEY_SEARCH_TEXT = "BUNDLE_KEY_SEARCH_TEXT"
 
 class DiscoverFragment : BaseFragment(),
     DiscoverMainTagsAdapter.OnDiscoverMainTagClicked,
@@ -62,17 +62,18 @@ class DiscoverFragment : BaseFragment(),
     private var featuredAdapter: FeaturedItemAdapter? = null
     private var topCastAdapter: TopCastAdapter? = null
 
-    private var discoverAccountsFragment: DiscoverAccountsFragment? = null
-    private var discoverHashTagsFragment: DiscoverHashTagsFragment? = null
-
-
-    private var isSearching = false
+    private var discoverText = ""
 
     private var rlSearch: ViewGroup? = null
 
     companion object {
         val TAG: String = DiscoverFragment::class.java.simpleName
         fun newInstance() = DiscoverFragment()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        bindViewModel()
+        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(
@@ -85,10 +86,13 @@ class DiscoverFragment : BaseFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if(viewModelDiscover.isSearching){
+            revealLayout()
+        }
+
         rlSearch = view.findViewById(R.id.rl_search)
         rlSearch?.forceLayoutChanges()
 
-        bindViewModel()
         initSwipeRefreshLayout()
         initViewPager()
         viewModelDiscover.discoverState.observe(viewLifecycleOwner, discoverStateObserver())
@@ -97,65 +101,139 @@ class DiscoverFragment : BaseFragment(),
         tv_see_all_hashtags.onClick { toast("See all hashtags clicked") }
         tv_search_cancel.onClick { hideSearchingView() }
 
+
+    }
+
+    override fun onResume() {
+        super.onResume()
         setupEditText()
+    }
 
+    override fun onSaveInstanceState(outState: Bundle) {
 
+        if (!viewModelDiscover.isSearching) {
+            viewModelDiscover.isSearchConfigChange = true
+        }
+
+        super.onSaveInstanceState(outState)
     }
 
     private fun showSearchingView() {
-        val valueAnimator = ValueAnimator.ofInt(
-            0,
-            swipeRefreshLayout_discover.measuredHeight
-        ) //+ (requireActivity() as MainActivity).getToolbarHeight()
-        valueAnimator.duration = 300L
-        valueAnimator.addUpdateListener {
-            val animatedValue = valueAnimator.animatedValue as Int
-            val layoutParams = ll_root_search.layoutParams
-            layoutParams.height = animatedValue
-            ll_root_search.layoutParams = layoutParams
+
+        if (viewModelDiscover.isSearchConfigChange) {
+            viewModelDiscover.isSearchConfigChange = false
+            return
         }
-        valueAnimator.start()
+
+        revealLayout()
+
+        val currentFragment = childFragmentManager.findFragmentByTag("f" + viewPager.currentItem)
+        if (currentFragment != null && currentFragment is DiscoverTabFragment) {
+            currentFragment.setSearchText(et_search.text.toString())
+        }
+
+        viewModelDiscover.isSearching = true
+
+    }
+
+    private fun revealLayout() {
+        if (viewModelDiscover.isSearching) {
+            //Just show with no animation
+            val params = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+            ll_root_search.layoutParams = params
+        } else {
+            //Animate the layout
+            val valueAnimator = ValueAnimator.ofInt(
+                0,
+                swipeRefreshLayout_discover.measuredHeight
+            )
+            valueAnimator.duration = 300L
+            valueAnimator.addUpdateListener {
+                try {
+                    val animatedValue = valueAnimator.animatedValue as Int
+                    val layoutParams = ll_root_search.layoutParams
+                    layoutParams.height = animatedValue
+                    ll_root_search.layoutParams = layoutParams
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            valueAnimator.start()
+        }
+
         tv_search_cancel.visibility = View.VISIBLE
+        tab_layout.bringToFront()
+        addCloseIconToSearch(true)
+    }
 
-        discoverAccountsFragment?.setSearchText(et_search.text.toString())
-        discoverHashTagsFragment?.setSearchText(et_search.text.toString())
+    private fun addCloseIconToSearch(add: Boolean) {
+        if (add) {
+            et_search.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.discover_search,
+                0,
+                R.drawable.et_close,
+                0
+            )
 
-//        val toolbar = (requireActivity() as MainActivity).getToolBar()
-//        toolbar.forceLayoutChanges()
-//        val layoutTransition = toolbar.layoutTransition
-//        layoutTransition.addTransitionListener(object: LayoutTransition.TransitionListener {
-//            override fun startTransition(
-//                p0: LayoutTransition?,
-//                p1: ViewGroup?,
-//                p2: View?,
-//                p3: Int
-//            ) {
-//
-//            }
-//
-//            override fun endTransition(p0: LayoutTransition?, p1: ViewGroup?, p2: View?, p3: Int) {
-//
-//            }
-//        })
-//        (requireActivity() as MainActivity).hideToolbar(true)
-        isSearching = true
+            et_search.setOnTouchListener(object : View.OnTouchListener {
+
+                @SuppressLint("ClickableViewAccessibility")
+                override fun onTouch(p0: View?, event: MotionEvent?): Boolean {
+                    val drawableRight = 2
+
+                    if (event?.action == MotionEvent.ACTION_UP) {
+                        if (et_search.compoundDrawables[drawableRight] != null && event.rawX >= (et_search.right - et_search.compoundDrawables[drawableRight].bounds.width())) {
+
+                            hideSearchingView()
+
+                            return true
+                        }
+                    }
+                    return false
+                }
+
+            })
+
+        } else {
+            et_search.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.discover_search,
+                0,
+                0,
+                0
+            )
+        }
     }
 
     private fun hideSearchingView() {
+
         val valueAnimator = ValueAnimator.ofInt(swipeRefreshLayout_discover.measuredHeight, 0)
         valueAnimator.duration = 300L
         valueAnimator.addUpdateListener {
-            val animatedValue = valueAnimator.animatedValue as Int
-            val layoutParams = ll_root_search.layoutParams
-            layoutParams.height = animatedValue
-            ll_root_search.layoutParams = layoutParams
+            try {
+                val animatedValue = valueAnimator.animatedValue as Int
+                val layoutParams = ll_root_search.layoutParams
+                layoutParams.height = animatedValue
+                ll_root_search.layoutParams = layoutParams
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
         valueAnimator.start()
 
         tv_search_cancel.visibility = View.GONE
-        et_search.setText("")
-        (requireActivity() as MainActivity).hideToolbar(false)
-        isSearching = false
+        //(requireActivity() as MainActivity).hideToolbar(false)
+        addCloseIconToSearch(false)
+        viewModelDiscover.isSearching = false
+
+        val currentFragment = childFragmentManager.findFragmentByTag("f" + viewPager.currentItem)
+        if (currentFragment != null && currentFragment is DiscoverAccountsFragment) {
+            currentFragment.clearAdapter()
+        }
+
+
     }
 
     private fun initViewPager() {
@@ -168,12 +246,12 @@ class DiscoverFragment : BaseFragment(),
             override fun createFragment(position: Int): Fragment {
                 return when (position) {
                     0 -> {
-                        discoverAccountsFragment = DiscoverAccountsFragment.newInstance()
-                        discoverAccountsFragment as DiscoverAccountsFragment
+                        DiscoverAccountsFragment.newInstance(discoverText)
+
                     }
                     else -> {
-                        discoverHashTagsFragment = DiscoverHashTagsFragment.newInstance()
-                        discoverHashTagsFragment as DiscoverHashTagsFragment
+                        DiscoverHashTagsFragment.newInstance(discoverText)
+
                     }
                 }
             }
@@ -195,6 +273,12 @@ class DiscoverFragment : BaseFragment(),
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if (tab != null) {
                     viewPager.currentItem = tab.position
+
+                    val currentFragment =
+                        childFragmentManager.findFragmentByTag("f" + viewPager.currentItem)
+                    if (currentFragment != null && currentFragment is DiscoverTabFragment) {
+                        currentFragment.setSearchText(et_search.text.toString())
+                    }
                 }
             }
         })
@@ -207,7 +291,7 @@ class DiscoverFragment : BaseFragment(),
             .onBackPressedDispatcher
             .addCallback(this, object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (isSearching) {
+                    if (viewModelDiscover.isSearching) {
                         hideSearchingView()
                     } else {
                         if (isEnabled) {
@@ -224,20 +308,37 @@ class DiscoverFragment : BaseFragment(),
     }
 
     private fun setupEditText() {
-        et_search.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                if (s.toString().length > 2) {
-                    showSearchingView()
 
+        // Debounce this input so that the API is not called too often
+        et_search.textChangeEvents().debounce(300, TimeUnit.MILLISECONDS)
+            .map { charSequence ->
+                charSequence.text
+            }
+            //.skip(1)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { searchText ->
+
+                if (searchText.isNotEmpty() && searchText.length > 1) {
+                    discoverText = et_search.text.toString()
+                    if (!viewModelDiscover.isSearching) {
+                        showSearchingView()
+                    } else {
+
+                        val currentFragment =
+                            childFragmentManager.findFragmentByTag("f" + viewPager.currentItem)
+                        if (currentFragment != null && currentFragment is DiscoverTabFragment) {
+                            currentFragment.setSearchText(discoverText)
+                        }
+
+                    }
+
+                } else {
+                    if (viewModelDiscover.isSearching) {
+                        hideSearchingView()
+                    }
                 }
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-        })
     }
 
 

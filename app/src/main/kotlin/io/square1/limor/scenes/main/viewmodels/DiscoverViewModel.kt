@@ -30,6 +30,8 @@ class DiscoverViewModel @Inject constructor(
     private var promotedTags: ArrayList<UITags> = ArrayList()
 
     private var hasData = false
+    var isSearchConfigChange = false
+    var isSearching = false
 
     private val _discoverState = MutableLiveData<DiscoverState>()
     val discoverState: LiveData<DiscoverState>
@@ -130,8 +132,6 @@ class DiscoverViewModel @Inject constructor(
 
 // States for the fragment to observe
 sealed class DiscoverState
-object DiscoverStarted : DiscoverState()
-object DiscoverFinished : DiscoverState()
 
 data class DiscoverAllData(
     val popularPodcasts: ArrayList<UIPodcast>,
