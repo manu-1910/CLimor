@@ -25,10 +25,7 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
-import io.square1.limor.scenes.main.fragments.profile.UserLikedPodcastsFragment
-import io.square1.limor.scenes.main.fragments.profile.UserPodcastsFragment
-import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
-import io.square1.limor.scenes.main.fragments.profile.UserReportActivity
+import io.square1.limor.scenes.main.fragments.profile.*
 import io.square1.limor.scenes.main.fragments.settings.SettingsActivity
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.splash.SplashActivity
@@ -222,9 +219,6 @@ class ProfileFragment : BaseFragment() {
 
         btnMore?.onClick {
             showPopupMoreMenu()
-
-
-
         }
 
         btnFollow.onClick {
@@ -268,7 +262,8 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun onReportUserClicked() {
-        val reportUserIntent = Intent(context, UserReportActivity::class.java)
+        val reportUserIntent = Intent(context, ReportActivity::class.java)
+        reportUserIntent.putExtra("type", TypeReport.USER)
         startActivityForResult(reportUserIntent, 0)
     }
 

@@ -2,6 +2,7 @@ package repositories.podcast
 
 
 import entities.request.DataCreateCommentRequest
+import entities.request.DataCreateReportRequestEntity
 import entities.request.DataPublishRequest
 import entities.response.*
 import io.reactivex.Single
@@ -43,8 +44,11 @@ class DataPodcastRepository @Inject constructor(private val remoteProvider: Remo
         return remoteProvider.getComments(id, limit, offset)
     }
 
-    override fun reportPodcast(id: Int): Single<CreateReportResponseEntity>? {
-        return remoteProvider.reportPodcast(id)
+    override fun reportPodcast(
+        id: Int,
+        request: DataCreateReportRequestEntity
+    ): Single<CreateReportResponseEntity>? {
+        return remoteProvider.reportPodcast(id, request)
     }
 
 

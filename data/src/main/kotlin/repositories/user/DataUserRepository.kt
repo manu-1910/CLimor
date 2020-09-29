@@ -1,7 +1,7 @@
 package repositories.user
 
 
-import entities.request.DataCreateUserReportRequestEntity
+import entities.request.DataCreateReportRequestEntity
 import entities.request.DataLogoutRequest
 import entities.request.DataUserIDRequest
 import entities.response.*
@@ -47,7 +47,7 @@ class DataUserRepository @Inject constructor(private val remoteProvider: RemoteU
 
     override fun reportUser(
         id: Int,
-        request: DataCreateUserReportRequestEntity
+        request: DataCreateReportRequestEntity
     ): Single<CreateReportResponseEntity> {
         return remoteProvider.reportUser(id, request)
     }

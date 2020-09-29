@@ -1,7 +1,7 @@
 package providers.remote
 
 
-import entities.request.DataCreateUserReportRequestEntity
+import entities.request.DataCreateReportRequestEntity
 import entities.request.DataLogoutRequest
 import entities.request.DataUserIDRequest
 import entities.response.*
@@ -17,7 +17,7 @@ interface RemoteUserProvider {
     fun deleteFriend(id: Int) : Single<CreateDeleteFriendResponseEntity>
     fun createBlockedUser(userIDRequest: DataUserIDRequest) : Single<CreateBlockedUserResponseEntity>
     fun deleteBlockedUser(userIDRequest: DataUserIDRequest) : Single<CreateBlockedUserResponseEntity>
-    fun reportUser(id: Int, request: DataCreateUserReportRequestEntity) : Single<CreateReportResponseEntity>
+    fun reportUser(id: Int, request: DataCreateReportRequestEntity) : Single<CreateReportResponseEntity>
     fun getNotifications(limit : Int, offset: Int): Single<NotificationsResponseEntity>
     fun getPodcasts(id: Int, limit : Int, offset: Int): Single<GetPodcastsResponseEntity>
     fun getPodcastsLiked(id: Int, limit: Int, offset: Int): Single<GetPodcastsResponseEntity>

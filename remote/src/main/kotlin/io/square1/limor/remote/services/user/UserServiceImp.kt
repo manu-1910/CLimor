@@ -2,7 +2,7 @@ package io.square1.limor.remote.services.user
 
 
 import io.reactivex.Single
-import io.square1.limor.remote.entities.requests.NWCreateUserReportRequest
+import io.square1.limor.remote.entities.requests.NWCreateReportRequest
 import io.square1.limor.remote.entities.requests.NWLogoutRequest
 import io.square1.limor.remote.entities.requests.NWUserIDRequest
 import io.square1.limor.remote.entities.responses.*
@@ -140,8 +140,8 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
 
 
 
-    fun reportUser(id:Int, createReportRequest: NWCreateUserReportRequest): Single<NWCreateReportResponse> {
-        val requestString = Json.nonstrict.stringify(NWCreateUserReportRequest.serializer(), createReportRequest)
+    fun reportUser(id:Int, createReportRequest: NWCreateReportRequest): Single<NWCreateReportResponse> {
+        val requestString = Json.nonstrict.stringify(NWCreateReportRequest.serializer(), createReportRequest)
         val request = RequestBody.create(
             MediaType.parse("application/json"),
             requestString

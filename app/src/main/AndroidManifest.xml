@@ -91,7 +91,7 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name="io.square1.limor.scenes.main.fragments.profile.UserReportActivity"
+            android:name="io.square1.limor.scenes.main.fragments.profile.ReportActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
 
