@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
+import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -49,9 +51,18 @@ class SettingsFragment : BaseFragment() {
 
 
         //bindViewModel()
+
+        listeners()
+
         configureToolbar()
     }
 
+
+    private fun listeners(){
+        lytChangePassword.onClick {
+            findNavController().navigate(R.id.action_settings_fragment_to_change_password_fragment)
+        }
+    }
 
 
     private fun configureToolbar() {
