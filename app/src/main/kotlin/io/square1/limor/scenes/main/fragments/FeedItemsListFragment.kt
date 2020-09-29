@@ -82,9 +82,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
     companion object {
         val TAG: String = FeedItemsListFragment::class.java.simpleName
         private const val OFFSET_INFINITE_SCROLL = 2
-        internal const val FEED_LIMIT_REQUEST = 2 // this number multiplied by 2 is because there is
-        // an error on the limit param in the back side
-        // that duplicates the amount of results,
+        internal const val FEED_LIMIT_REQUEST = 4
         private const val REQUEST_REPORT_USER: Int = 0
         private const val REQUEST_REPORT_PODCAST: Int = 1
     }

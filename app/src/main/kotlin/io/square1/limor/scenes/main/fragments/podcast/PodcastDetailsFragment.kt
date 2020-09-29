@@ -45,7 +45,7 @@ import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.*
-import kotlinx.android.synthetic.main.fragment_podcast_details_2.*
+import kotlinx.android.synthetic.main.fragment_podcast_details.*
 import kotlinx.android.synthetic.main.include_interactions_bar.*
 import kotlinx.android.synthetic.main.include_podcast_data.*
 import kotlinx.android.synthetic.main.include_user_bar.*
@@ -179,7 +179,7 @@ class PodcastDetailsFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_podcast_details_2, container, false)
+            rootView = inflater.inflate(R.layout.fragment_podcast_details, container, false)
         }
         app = context?.applicationContext as App
         return rootView
