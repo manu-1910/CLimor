@@ -19,113 +19,6 @@
                 android:id="@+id/toolbar"
                 layout="@layout/toolbar_with_back_arrow_icon" />
 
-            <RelativeLayout
-                android:id="@+id/lytPremium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/marginMedium"
-                android:visibility="visible">
-
-                <TextView
-                    android:id="@+id/tvLimorPremium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/brandPrimary500"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/settings_limor_premium"
-                    android:layout_alignParentStart="true"/>
-
-                <TextView
-                    android:id="@+id/tvLefTextLimorPremium"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableEnd="@drawable/chevron_right"
-                    android:textColor="@color/brandSecondary100"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:gravity="end"
-                    android:layout_toEndOf="@id/tvLimorPremium"
-                    android:layout_alignParentEnd="true"/>
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/brandSecondary300"/>
-
-            <TextView
-                android:id="@+id/tvTitleFollowPeople"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/marker_time_text"
-                android:textSize="@dimen/textSizeVerySmall"
-                android:fontFamily="@font/roboto"
-                android:text="@string/settings_title_follow_people"
-                android:layout_marginTop="@dimen/marginMedium"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginEnd="@dimen/marginMedium"
-                android:layout_marginBottom="@dimen/marginVerySmall"
-                android:textAllCaps="true"
-                android:layout_alignParentStart="true" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/brandSecondary300"/>
-
-
-            <RelativeLayout
-                android:id="@+id/lytFindFacebookFriends"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/marginMedium"
-                android:visibility="visible">
-
-                <TextView
-                    android:id="@+id/tvFindFacebookFriends"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/settings_find_facebook_friends"
-                    android:layout_alignParentStart="true"
-                    android:drawableEnd="@drawable/chevron_right"/>
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/brandSecondary300"/>
-
-
-            <RelativeLayout
-                android:id="@+id/lytFindTwitterFriends"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/marginMedium"
-                android:visibility="visible">
-
-                <TextView
-                    android:id="@+id/tvFindTwitterFriends"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/settings_find_twitter_friends"
-                    android:layout_alignParentStart="true"
-                    android:drawableEnd="@drawable/chevron_right"/>
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/brandSecondary300"/>
 
             <TextView
                 android:id="@+id/tvTitleAccount"
@@ -180,7 +73,10 @@
                 android:id="@+id/lytChangePassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/marginMedium"
+                android:padding="@dimen/marginMedium"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:focusable="true"
                 android:visibility="visible">
 
                 <TextView
@@ -204,36 +100,13 @@
 
 
             <RelativeLayout
-                android:id="@+id/lytRequestVerification"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/marginMedium"
-                android:visibility="visible">
-
-                <TextView
-                    android:id="@+id/tvRequestVerification"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/settings_request_verification"
-                    android:layout_alignParentStart="true"
-                    android:drawableEnd="@drawable/chevron_right"/>
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/brandSecondary300"/>
-
-
-            <RelativeLayout
                 android:id="@+id/lytPushNotifications"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/marginMedium"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:focusable="true"
                 android:visibility="visible">
 
                 <Switch
@@ -257,34 +130,6 @@
                 android:layout_height="1dp"
                 android:background="@color/brandSecondary300"/>
 
-
-            <RelativeLayout
-                android:id="@+id/lytAutoplay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/marginMedium"
-                android:visibility="visible">
-
-                <Switch
-                    android:id="@+id/swAutoplay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:switchMinWidth="56dp"
-                    android:text="@string/settings_autoplay"
-                    android:layout_alignParentStart="true"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:checked="true"
-                    android:layout_alignParentEnd="true"/>
-
-            </RelativeLayout>
-
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/brandSecondary300"/>
 
             <TextView
                 android:id="@+id/tvTitleAbout"
@@ -313,6 +158,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/marginMedium"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:focusable="true"
                 android:visibility="visible">
 
                 <TextView
@@ -340,6 +188,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/marginMedium"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:focusable="true"
                 android:visibility="visible">
 
                 <TextView
@@ -370,6 +221,9 @@
                 android:layout_marginBottom="@dimen/marginMedium"
                 android:layout_marginStart="@dimen/marginMedium"
                 android:layout_marginEnd="@dimen/marginMedium"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:focusable="true"
                 android:visibility="visible">
 
                 <TextView
@@ -402,7 +256,6 @@
                 android:layout_marginStart="@dimen/marginMedium"
                 android:layout_marginEnd="@dimen/marginMedium"
                 android:layout_marginBottom="@dimen/marginVerySmall"
-                android:textAllCaps="true"
                 android:layout_alignParentStart="true" />
 
 
@@ -417,7 +270,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/marginMedium"
-                android:visibility="visible">
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:focusable="true">
 
                 <TextView
                     android:id="@+id/tvLogout"
@@ -426,7 +281,7 @@
                     android:textColor="@color/white"
                     android:textSize="@dimen/textSizeNormal"
                     android:fontFamily="@font/roboto"
-                    android:text="@string/settings_report_a_problem"
+                    android:text="@string/logout"
                     android:layout_alignParentStart="true" />
 
             </RelativeLayout>

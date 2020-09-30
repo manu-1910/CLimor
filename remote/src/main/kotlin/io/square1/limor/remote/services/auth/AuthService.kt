@@ -16,6 +16,7 @@ const val FACEBOOK_LOGIN_PATH = "/oauth/token"
 const val AUTH_REGISTER_PATH = "/api/v1/users"
 const val AUTH_FORGOT_PASSWORD_PATH = "/api/v1/users/reset_password"  //TODO JJ IMPLEMENT LOGOUT
 const val AUTH_MERGE_ACCOUNTS_PATH = "/api/v1/users/merge"
+const val CHANGE_PASSWORD_PATH = "/api/v1/users/password"
 
 
 interface AuthService {
@@ -46,5 +47,11 @@ interface AuthService {
     @POST(AUTH_MERGE_ACCOUNTS_PATH)
     fun mergeAccounts(
         @QueryMap(encoded = true) mergeFacebookAccountRequest: @JvmSuppressWildcards Map<String, @JvmSuppressWildcards Any>
+    ): Single<ResponseBody>
+
+
+    @POST(CHANGE_PASSWORD_PATH)
+    fun changePassword(
+        @Body changePasswordRequest: RequestBody
     ): Single<ResponseBody>
 }

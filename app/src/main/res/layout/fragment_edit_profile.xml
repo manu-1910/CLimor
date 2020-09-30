@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/brandSecondary400"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/toolbar_with_back_arrow_icon" />
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="118dp"
+            android:layout_height="118dp"
+            android:src="@drawable/profile"
+            android:layout_marginTop="@dimen/marginMedium"
+            android:layout_gravity="center_horizontal"
+            app:civ_border_width="2dp"
+            app:civ_border_color="#FF000000"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/choose_a_photo"
+            android:textColor="@color/brandPrimary500"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:textAllCaps="false"/>
+
+
+        <TextView
+            android:id="@+id/tvTitleProfile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/marker_time_text"
+            android:textSize="@dimen/textSizeVerySmall"
+            android:fontFamily="@font/roboto"
+            android:text="@string/settings_title_profile"
+            android:layout_marginTop="@dimen/marginMedium"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginEnd="@dimen/marginMedium"
+            android:layout_marginBottom="@dimen/marginVerySmall"
+            android:textAllCaps="true"
+            android:layout_alignParentStart="true" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/brandSecondary300"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginEnd="@dimen/marginMedium"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tvFullName"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignBottom="@id/etFullName"
+                android:layout_marginBottom="@dimen/marginSmall"
+                android:fontFamily="@font/roboto"
+                android:textSize="@dimen/textSizeNormal"
+                android:textColor="@color/white"
+                android:text="@string/title_fullname" />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etFullName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/tvFullName"
+                android:layout_alignParentEnd="true"
+                android:fontFamily="@font/roboto"
+                android:textSize="@dimen/textSizeNormal"
+                android:textColor="@color/white"
+                android:textColorHint="@color/brandSecondary100"
+                android:hint="@string/hint_fullname"/>
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/pbEditProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:theme="@style/ProgressBarTheme"
+        android:visibility="gone" />
+</RelativeLayout>
+
+
+

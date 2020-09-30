@@ -74,7 +74,7 @@ class UserFeedFragment : FeedItemsListFragment() {
 
     override fun setFeedViewModelVariablesOnScroll() {
         viewModelFeed.limit = FEED_LIMIT_REQUEST
-        viewModelFeed.offset = feedItemsList.size / 2 // TODO: check this, with the backend behaviour, this can has unexpected behaviour too
+        viewModelFeed.offset = feedItemsList.size
     }
 
 }

@@ -132,6 +132,11 @@
     <string name="add_photo">Add Photo</string>
     <string name="title_cannot_be_empty">Title can not be empty</string>
     <string name="caption_cannot_be_empty">Caption can not be empty</string>
+    <string name="current_password_cannot_be_empty">Current password can not be empty</string>
+    <string name="new_password_cannot_be_empty">New password can not be empty</string>
+    <string name="confirm_password_cannot_be_empty">Confirm password can not be empty</string>
+    <string name="all_fields_mandatory">All fields are mandatory</string>
+    <string name="passwords_not_match">The passwords you entered does not match</string>
 
 
     <!-- Menu Marker -->
@@ -296,6 +301,11 @@
     <string name="settings_terms">Terms &amp; Conditions</string>
     <string name="settings_report_a_problem">Report a Problem</string>
     <string name="report">Report</string>
+    <string name="btnUpdate">Update</string>
+    <string name="hint_current_password">Current Password</string>
+    <string name="hint_new_password">New Password</string>
+    <string name="hint_confirm_password">Confirm Password</string>
+    <string name="change_password_ok">The password has been changed succesfully</string>
 
     <string name="discover_error_message">There was an error getting discovery information. Please try again.</string>
     <string name="discover_no_users">No results found.</string>
@@ -304,4 +314,30 @@
     <string name="top_casts">Top Casts</string>
     <string name="see_all">See All</string>
     <string name="discover">Discover</string>
+
+    <string name="webViewKey">WEB_VIEW_KEY</string>
+    <string name="privacy_url">https://www.limor.ie/privacy-policy</string>
+    <string name="terms_url">https://www.limor.ie/terms-and-conditions-of-use</string>
+    <string name="support_email">support@limor.ie</string>
+    <string name="email_subject">Limor Support Request</string>
+    <string name="request_from">Support request from</string>
+
+    <!-- EditProfile screen -->
+    <string name="settings_title_profile">PROFILE</string>
+    <string name="title_personal_information">PERSONAL INFORMATION</string>
+    <string name="title_under_record">Record your voice bio. (Max 1 min)</string>
+    <string name="hint_fullname">Full Name</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_website">Website</string>
+    <string name="hint_bio">Bio</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_phone">Phone No.</string>
+    <string name="hint_age">Age</string>
+    <string name="hint_gender">Gender</string>
+
+
+
+
+
+
 </resources>

@@ -45,7 +45,7 @@ import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.*
-import kotlinx.android.synthetic.main.fragment_podcast_details_2.*
+import kotlinx.android.synthetic.main.fragment_podcast_details.*
 import kotlinx.android.synthetic.main.include_interactions_bar.*
 import kotlinx.android.synthetic.main.include_podcast_data.*
 import kotlinx.android.synthetic.main.include_user_bar.*
@@ -77,6 +77,7 @@ data class CommentWithParent(val comment: UIComment, val parent: CommentWithPare
 
 class PodcastDetailsFragment : BaseFragment() {
 
+    private var btnRecordClicked: Boolean = false
     private var isWaitingForApiCall: Boolean = false
     private var currentOffset: Int = 0
     private var currentCommentRequest: UICreateCommentRequest? = null
@@ -179,7 +180,7 @@ class PodcastDetailsFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_podcast_details_2, container, false)
+            rootView = inflater.inflate(R.layout.fragment_podcast_details, container, false)
         }
         app = context?.applicationContext as App
         return rootView
@@ -598,7 +599,7 @@ class PodcastDetailsFragment : BaseFragment() {
             deleteCurrentCommentAudioAndResetBar()
         }
 
-        btnRecord.setOnTouchListener { view, event ->
+        btnRecord.onClick {
             //Check if all permissions are granted, if not, request again
             if (!hasPermissions(requireContext(), *PERMISSIONS)) {
                 try {
@@ -609,21 +610,22 @@ class PodcastDetailsFragment : BaseFragment() {
                     e.printStackTrace()
                 }
             }else{
-                if (event.action == MotionEvent.ACTION_DOWN) {
+                if (!btnRecordClicked) {
+                    btnRecordClicked = true
                     if(!isCommentBarOpen())
                         openCommentBarTextAndFocusIt()
 
                     btnRecord.setImageResource(R.drawable.record_red)
                     audioSetup()
                     recordAudio()
-                } else if(event.action == MotionEvent.ACTION_UP) {
+                } else {
+                    btnRecordClicked = false
                     stopAudio()
                     btnRecord.setImageResource(R.drawable.record)
-                    view.performClick()
                 }
             }
-            true
         }
+
 
         updater = object : Runnable {
             override fun run() {

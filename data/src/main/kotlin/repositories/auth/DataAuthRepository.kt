@@ -1,10 +1,9 @@
 package repositories.auth
 
 
-import entities.request.DataMergeFacebookAccountRequest
-import entities.request.DataSignUpRequest
-import entities.request.DataTokenFBRequest
+import entities.request.*
 import entities.response.AuthResponseEntity
+import entities.response.ChangePasswordResponseEntity
 import entities.response.SignUpResponseEntity
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -32,5 +31,9 @@ class DataAuthRepository @Inject constructor(private val remoteProvider: RemoteA
 
     override fun mergeFacebookAccount(dataMergeFacebookAccountRequest: DataMergeFacebookAccountRequest): Single<AuthResponseEntity> {
         return remoteProvider.mergeFBAccount(dataMergeFacebookAccountRequest)
+    }
+
+    override fun changePassword(dataChangePasswordRequest: DataChangePasswordRequest): Single<ChangePasswordResponseEntity> {
+        return remoteProvider.changePassword(dataChangePasswordRequest)
     }
 }

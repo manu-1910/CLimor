@@ -1,10 +1,12 @@
 package io.square1.limor.remote.providers
 
 
+import entities.request.DataChangePasswordRequest
 import entities.request.DataMergeFacebookAccountRequest
 import entities.request.DataSignUpRequest
 import entities.request.DataTokenFBRequest
 import entities.response.AuthResponseEntity
+import entities.response.ChangePasswordResponseEntity
 import entities.response.SignUpResponseEntity
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -43,6 +45,10 @@ class RemoteAuthProviderImp @Inject constructor(private val provider: AuthServic
         return provider.mergeAccounts(dataMergeFacebookAccountRequest.asRemoteEntity()).asDataEntity()
     }
 
+
+    override fun changePassword(dataChangePasswordRequest: DataChangePasswordRequest): Single<ChangePasswordResponseEntity> {
+        return provider.changePassword(dataChangePasswordRequest.asRemoteEntity()).asDataEntity()
+    }
 
 }
 

@@ -11,7 +11,7 @@
         android:id="@+id/fl_toolbar_container">
 
         <include
-            android:id="@+id/toolbar"
+            android:id="@+id/toolbar_main"
             layout="@layout/toolbar_with_logo_and_back_icon" />
 
         <include

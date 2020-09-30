@@ -150,7 +150,7 @@
             android:layout_marginStart="16dp"
             android:background="@color/transparent"
             android:contentDescription="@string/send"
-
+            android:visibility="gone"
             android:scaleType="fitEnd"
             android:src="@drawable/send" />
     </LinearLayout>
