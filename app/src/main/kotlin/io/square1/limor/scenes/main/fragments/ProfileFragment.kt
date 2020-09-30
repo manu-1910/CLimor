@@ -23,13 +23,11 @@ import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.main.fragments.profile.*
 import io.square1.limor.scenes.main.fragments.settings.SettingsActivity
-import io.square1.limor.scenes.main.viewmodels.CreateFriendViewModel
-import io.square1.limor.scenes.main.viewmodels.CreateUserReportViewModel
-import io.square1.limor.scenes.main.viewmodels.DeleteFriendViewModel
-import io.square1.limor.scenes.main.viewmodels.ProfileViewModel
+import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.formatSocialMediaQuantity
 import kotlinx.android.synthetic.main.fragment_profile.*
+import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -39,8 +37,6 @@ import javax.inject.Inject
 
 class ProfileFragment : BaseFragment() {
 
-
-//    private var uiUser: UIUser? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -99,8 +95,6 @@ class ProfileFragment : BaseFragment() {
         bindViewModel()
         apiCallGetUser()
 
-        if (!isMyProfileMode) {
-            uiUser = (activity as UserProfileActivity).uiUser
         if(!isMyProfileMode) {
             viewModelGetUser.user = (activity as UserProfileActivity).uiUser
             apiCallReportUser()
@@ -210,9 +204,9 @@ class ProfileFragment : BaseFragment() {
 
             override fun createFragment(position: Int): Fragment {
                 return when (position) {
-                    0 -> UserPodcastsFragment.newInstance(uiUser!!.id)
-                    1 -> UserLikedPodcastsFragment.newInstance(uiUser!!.id)
-                    else -> UserPodcastsFragment.newInstance(uiUser!!.id)
+                    0 -> UserPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
+                    1 -> UserLikedPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
+                    else -> UserPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
                 }
             }
 

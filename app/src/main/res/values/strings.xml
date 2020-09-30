@@ -340,10 +340,8 @@
     <string name="hint_phone">Phone No.</string>
     <string name="hint_age">Age</string>
     <string name="hint_gender">Gender</string>
-
-
-
-
+    <string name="title_settings_privacy">Privacy</string>
+    <string name="settings_blocked_users">Blocked Users</string>
 
 
 </resources>

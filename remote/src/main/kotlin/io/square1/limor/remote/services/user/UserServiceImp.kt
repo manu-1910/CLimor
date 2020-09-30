@@ -213,4 +213,22 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
             }
     }
 
+
+
+
+    fun getBlockedUsers(limit: Int?, offset: Int?): Single<NWGetBlockedUsersResponse> {
+        return service.getBlockedUsers(limit, offset)
+            .map { response -> response.parseSuccessResponse(NWGetBlockedUsersResponse.serializer()) }
+            .doOnSuccess { response ->
+                run {
+                    println("SUCCESS: $response")
+                }
+            }
+            .doOnError { error ->
+                run {
+                    println("ERROR: $error")
+                }
+            }
+    }
+
 }
