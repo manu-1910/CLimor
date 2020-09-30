@@ -321,4 +321,22 @@
     <string name="email_subject">Limor Support Request</string>
     <string name="request_from">Support request from</string>
 
+    <!-- EditProfile screen -->
+    <string name="settings_title_profile">PROFILE</string>
+    <string name="title_personal_information">PERSONAL INFORMATION</string>
+    <string name="title_under_record">Record your voice bio. (Max 1 min)</string>
+    <string name="hint_fullname">Full Name</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_website">Website</string>
+    <string name="hint_bio">Bio</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_phone">Phone No.</string>
+    <string name="hint_age">Age</string>
+    <string name="hint_gender">Gender</string>
+
+
+
+
+
+
 </resources>
