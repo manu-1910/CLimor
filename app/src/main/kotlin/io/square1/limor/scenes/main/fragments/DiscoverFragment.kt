@@ -29,6 +29,7 @@ import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.common.BaseActivity
 import io.square1.limor.extensions.forceLayoutChanges
+import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.main.adapters.DiscoverMainTagsAdapter
 import io.square1.limor.scenes.main.adapters.FeaturedItemAdapter
 import io.square1.limor.scenes.main.adapters.SuggestedPersonAdapter
@@ -40,7 +41,6 @@ import io.square1.limor.scenes.main.fragments.profile.TypeReport
 import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.service.AudioService
-import io.square1.limor.uimodels.UIFeedItem
 import io.square1.limor.uimodels.UIPodcast
 import io.square1.limor.uimodels.UITags
 import io.square1.limor.uimodels.UIUser
@@ -77,6 +77,7 @@ class DiscoverFragment : BaseFragment(),
     private var topCastAdapter: TopCastAdapter? = null
 
     private var discoverText = ""
+    private var skipTextChange = false
 
     private var rlSearch: ViewGroup? = null
 
@@ -106,7 +107,7 @@ class DiscoverFragment : BaseFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if(viewModelDiscover.isSearching){
+        if (viewModelDiscover.isSearching) {
             revealLayout()
         }
 
@@ -119,7 +120,12 @@ class DiscoverFragment : BaseFragment(),
 
         tv_see_all_featured_casts.onClick { toast("See all featured casts clicked") }
         tv_see_all_hashtags.onClick { toast("See all hashtags clicked") }
-        tv_search_cancel.onClick { hideSearchingView() }
+        tv_search_cancel.onClick {
+            hideSearchingView()
+            et_search.setText("")
+            discoverText = ""
+            et_search.hideKeyboard()
+        }
 
 
     }
@@ -207,7 +213,8 @@ class DiscoverFragment : BaseFragment(),
                     if (event?.action == MotionEvent.ACTION_UP) {
                         if (et_search.compoundDrawables[drawableRight] != null && event.rawX >= (et_search.right - et_search.compoundDrawables[drawableRight].bounds.width())) {
 
-                            hideSearchingView()
+                            skipTextChange = true
+                            et_search.setText("")
 
                             return true
                         }
@@ -338,25 +345,31 @@ class DiscoverFragment : BaseFragment(),
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { searchText ->
 
-                if (searchText.isNotEmpty() && searchText.length > 1) {
-                    discoverText = et_search.text.toString()
-                    if (!viewModelDiscover.isSearching) {
-                        showSearchingView()
-                    } else {
+                if (!skipTextChange) {
+                    if (searchText.isNotEmpty() && searchText.length > 1) {
+                        discoverText = et_search.text.toString()
+                        if (!viewModelDiscover.isSearching) {
+                            showSearchingView()
+                        } else {
 
-                        val currentFragment =
-                            childFragmentManager.findFragmentByTag("f" + viewPager.currentItem)
-                        if (currentFragment != null && currentFragment is DiscoverTabFragment) {
-                            currentFragment.setSearchText(discoverText)
+                            val currentFragment =
+                                childFragmentManager.findFragmentByTag("f" + viewPager.currentItem)
+                            if (currentFragment != null && currentFragment is DiscoverTabFragment) {
+                                currentFragment.setSearchText(discoverText)
+                            }
+
                         }
 
                     }
-
+//                    else {
+//                        if (viewModelDiscover.isSearching) {
+//                            hideSearchingView()
+//                        }
+//                   }
                 } else {
-                    if (viewModelDiscover.isSearching) {
-                        hideSearchingView()
-                    }
+                    skipTextChange = false
                 }
+
             }
 
     }
@@ -541,7 +554,7 @@ class DiscoverFragment : BaseFragment(),
         view: View?,
         item: UIPodcast
     ) {
-        val popup = PopupMenu(context, view, Gravity.RIGHT)
+        val popup = PopupMenu(context, view, Gravity.END)
         val inflater: MenuInflater = popup.menuInflater
         inflater.inflate(R.menu.menu_popup_podcast, popup.menu)
 
@@ -661,7 +674,7 @@ class DiscoverFragment : BaseFragment(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
             val reason = data?.getStringExtra("reason")
             when (requestCode) {
                 REQUEST_REPORT_PODCAST -> {

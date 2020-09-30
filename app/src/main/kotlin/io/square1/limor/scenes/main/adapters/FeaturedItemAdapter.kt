@@ -18,7 +18,7 @@ class FeaturedItemAdapter(
     private var inflator: LayoutInflater
     var list: ArrayList<UIPodcast> = ArrayList()
     private val widthFactor = 0.824
-    var itemWith = 0
+    private var itemWith = 0
 
     init {
         this.list = list
