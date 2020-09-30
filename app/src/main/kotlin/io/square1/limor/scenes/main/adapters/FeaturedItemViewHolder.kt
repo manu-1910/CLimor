@@ -46,7 +46,7 @@ class FeaturedItemViewHolder(
     fun bind(currentItem: UIPodcast, position: Int) {
 
         rlRoot.onClick { featuredClickListener.onFeaturedItemClicked(currentItem, position) }
-        ivMore.onClick { featuredClickListener.onMoreClicked(currentItem, position) }
+        ivMore.onClick { featuredClickListener.onMoreClicked(currentItem, position, itemView) }
         ivPlay.onClick { featuredClickListener.onPlayClicked(currentItem, position) }
 
         Glide.with(context)

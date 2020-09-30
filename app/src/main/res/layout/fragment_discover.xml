@@ -256,7 +256,7 @@
                         android:background="@color/brandSecondary400"
                         android:clickable="true"
                         android:focusable="true"
-                        app:tabGravity="center"
+                        app:tabGravity="fill"
                         app:tabMode="scrollable"
                         app:tabSelectedTextColor="@color/brandPrimary500"
                         app:tabTextColor="@color/brandSecondary100" />
