@@ -1,5 +1,6 @@
 package io.square1.limor.scenes.main.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.scenes.main.adapters.DiscoverUsersAdapter
+import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.viewmodels.CreateFriendViewModel
 import io.square1.limor.scenes.main.viewmodels.DeleteFriendViewModel
 import io.square1.limor.scenes.main.viewmodels.DiscoverAccountsViewModel
@@ -79,22 +81,9 @@ class DiscoverAccountsFragment : BaseFragment(), DiscoverTabFragment {
 
 
     override fun setSearchText(text: String){
-        //if(text != viewModelDiscoverAccounts.searchText){
-        //if(viewModelDiscoverAccounts.results.size == 0){
             showProgress(true)
             viewModelDiscoverAccounts.searchText = text
             getUsersTrigger.onNext(Unit)
-        //} else{
-
-//            if(text != viewModelDiscoverAccounts.searchText){
-//
-//            }else{
-//                //Just reconnect
-//
-//            }
-//        }
-
-        //}
     }
 
     fun clearAdapter(){
@@ -139,7 +128,9 @@ class DiscoverAccountsFragment : BaseFragment(), DiscoverTabFragment {
                 viewModelDiscoverAccounts.results,
                 object : DiscoverUsersAdapter.OnUserSearchClicked {
                     override fun onUserClicked(item: UIUser, position: Int) {
-                        toast("You clicked on a user")
+                        val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+                        userProfileIntent.putExtra("user", item)
+                        startActivity(userProfileIntent)
                     }
 
                     override fun onFollowClicked(item: UIUser, position: Int) {

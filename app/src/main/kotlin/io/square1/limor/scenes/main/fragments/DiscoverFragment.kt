@@ -2,14 +2,15 @@ package io.square1.limor.scenes.main.fragments
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.FrameLayout
+import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -24,13 +25,20 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.jakewharton.rxbinding4.widget.textChangeEvents
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.common.BaseActivity
 import io.square1.limor.extensions.forceLayoutChanges
+import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.main.adapters.DiscoverMainTagsAdapter
 import io.square1.limor.scenes.main.adapters.FeaturedItemAdapter
 import io.square1.limor.scenes.main.adapters.SuggestedPersonAdapter
 import io.square1.limor.scenes.main.adapters.TopCastAdapter
+import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
+import io.square1.limor.scenes.main.fragments.podcast.PodcastsByTagActivity
+import io.square1.limor.scenes.main.fragments.profile.ReportActivity
+import io.square1.limor.scenes.main.fragments.profile.TypeReport
+import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIPodcast
@@ -57,18 +65,27 @@ class DiscoverFragment : BaseFragment(),
 
     private lateinit var viewModelDiscover: DiscoverViewModel
 
+    private lateinit var viewModelCreatePodcastReport: CreatePodcastReportViewModel
+    private val createPodcastReportDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelCreateUserReport: CreateUserReportViewModel
+    private val createUserReportDataTrigger = PublishSubject.create<Unit>()
+
     private var discoverMainTagsAdapter: DiscoverMainTagsAdapter? = null
     private var suggestedPersonAdapter: SuggestedPersonAdapter? = null
     private var featuredAdapter: FeaturedItemAdapter? = null
     private var topCastAdapter: TopCastAdapter? = null
 
     private var discoverText = ""
+    private var skipTextChange = false
 
     private var rlSearch: ViewGroup? = null
 
     companion object {
         val TAG: String = DiscoverFragment::class.java.simpleName
         fun newInstance() = DiscoverFragment()
+        private const val REQUEST_REPORT_PODCAST: Int = 1
+        private const val REQUEST_REPORT_USER: Int = 0
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,13 +97,17 @@ class DiscoverFragment : BaseFragment(),
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        initApiCallCreateUserReport()
+        initApiCallCreatePodcastReport()
+
         return inflater.inflate(R.layout.fragment_discover, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if(viewModelDiscover.isSearching){
+        if (viewModelDiscover.isSearching) {
             revealLayout()
         }
 
@@ -99,7 +120,12 @@ class DiscoverFragment : BaseFragment(),
 
         tv_see_all_featured_casts.onClick { toast("See all featured casts clicked") }
         tv_see_all_hashtags.onClick { toast("See all hashtags clicked") }
-        tv_search_cancel.onClick { hideSearchingView() }
+        tv_search_cancel.onClick {
+            hideSearchingView()
+            et_search.setText("")
+            discoverText = ""
+            et_search.hideKeyboard()
+        }
 
 
     }
@@ -187,7 +213,8 @@ class DiscoverFragment : BaseFragment(),
                     if (event?.action == MotionEvent.ACTION_UP) {
                         if (et_search.compoundDrawables[drawableRight] != null && event.rawX >= (et_search.right - et_search.compoundDrawables[drawableRight].bounds.width())) {
 
-                            hideSearchingView()
+                            skipTextChange = true
+                            et_search.setText("")
 
                             return true
                         }
@@ -318,25 +345,31 @@ class DiscoverFragment : BaseFragment(),
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { searchText ->
 
-                if (searchText.isNotEmpty() && searchText.length > 1) {
-                    discoverText = et_search.text.toString()
-                    if (!viewModelDiscover.isSearching) {
-                        showSearchingView()
-                    } else {
+                if (!skipTextChange) {
+                    if (searchText.isNotEmpty() && searchText.length > 1) {
+                        discoverText = et_search.text.toString()
+                        if (!viewModelDiscover.isSearching) {
+                            showSearchingView()
+                        } else {
 
-                        val currentFragment =
-                            childFragmentManager.findFragmentByTag("f" + viewPager.currentItem)
-                        if (currentFragment != null && currentFragment is DiscoverTabFragment) {
-                            currentFragment.setSearchText(discoverText)
+                            val currentFragment =
+                                childFragmentManager.findFragmentByTag("f" + viewPager.currentItem)
+                            if (currentFragment != null && currentFragment is DiscoverTabFragment) {
+                                currentFragment.setSearchText(discoverText)
+                            }
+
                         }
 
                     }
-
+//                    else {
+//                        if (viewModelDiscover.isSearching) {
+//                            hideSearchingView()
+//                        }
+//                   }
                 } else {
-                    if (viewModelDiscover.isSearching) {
-                        hideSearchingView()
-                    }
+                    skipTextChange = false
                 }
+
             }
 
     }
@@ -451,23 +484,42 @@ class DiscoverFragment : BaseFragment(),
             viewModelDiscover = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(DiscoverViewModel::class.java)
+
+            viewModelCreatePodcastReport = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreatePodcastReportViewModel::class.java)
+
+            viewModelCreateUserReport = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreateUserReportViewModel::class.java)
         }
     }
 
     override fun onDiscoverTagClicked(item: UITags, position: Int) {
-        toast("hashTag clicked")
+        val podcastByTagIntent = Intent(context, PodcastsByTagActivity::class.java)
+        val text = "#" + item.text
+        podcastByTagIntent.putExtra(
+            PodcastsByTagActivity.BUNDLE_KEY_HASHTAG,
+            text
+        )
+        startActivity(podcastByTagIntent)
     }
 
     override fun onPersonClicked(item: UIUser, position: Int) {
-        toast("person clicked")
+        val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+        userProfileIntent.putExtra("user", item)
+        startActivity(userProfileIntent)
     }
 
     override fun onFeaturedItemClicked(item: UIPodcast, position: Int) {
-        toast("featured item clicked")
+        val podcastDetailsIntent =
+            Intent(context, PodcastDetailsActivity::class.java)
+        podcastDetailsIntent.putExtra("podcast", item)
+        startActivity(podcastDetailsIntent)
     }
 
-    override fun onMoreClicked(item: UIPodcast, position: Int) {
-        toast("more clicked")
+    override fun onMoreClicked(item: UIPodcast, position: Int, view: View) {
+        showPopupMenu(view, item)
     }
 
     override fun onPlayClicked(item: UIPodcast, position: Int) {
@@ -475,7 +527,10 @@ class DiscoverFragment : BaseFragment(),
     }
 
     override fun onTopCastItemClicked(item: UIPodcast, position: Int) {
-        toast("top cast clicked")
+        val podcastDetailsIntent =
+            Intent(context, PodcastDetailsActivity::class.java)
+        podcastDetailsIntent.putExtra("podcast", item)
+        startActivity(podcastDetailsIntent)
     }
 
     override fun onTopCastPlayClicked(item: UIPodcast, position: Int) {
@@ -492,6 +547,149 @@ class DiscoverFragment : BaseFragment(),
                     activity.showMiniPlayer()
                 }
 
+        }
+    }
+
+    private fun showPopupMenu(
+        view: View?,
+        item: UIPodcast
+    ) {
+        val popup = PopupMenu(context, view, Gravity.END)
+        val inflater: MenuInflater = popup.menuInflater
+        inflater.inflate(R.menu.menu_popup_podcast, popup.menu)
+
+        //set menu item click listener here
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_share -> onShareClicked(item)
+                R.id.menu_report_cast -> onPodcastReportClicked(item)
+                R.id.menu_report_user -> onUserReportClicked(item)
+                R.id.menu_block_user -> toast("You clicked on block user")
+            }
+            true
+        }
+        popup.show()
+    }
+
+    private fun onUserReportClicked(item: UIPodcast) {
+        item.user.let {
+            viewModelCreateUserReport.idUser = it.id
+            val reportIntent = Intent(context, ReportActivity::class.java)
+            reportIntent.putExtra("type", TypeReport.USER)
+            startActivityForResult(reportIntent, REQUEST_REPORT_USER)
+        }
+    }
+
+    private fun onShareClicked(item: UIPodcast) {
+        item.sharing_url?.let { url ->
+            val text = getString(R.string.check_out_this_cast)
+            val finalText = "$text $url"
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, finalText)
+                type = "text/plain"
+            }
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(shareIntent)
+        } ?: run {
+            toast(getString(R.string.error_retrieving_sharing_url))
+        }
+    }
+
+    private fun onPodcastReportClicked(item: UIPodcast) {
+        item.id.let {
+            viewModelCreatePodcastReport.idPodcastToReport = it
+            val reportIntent = Intent(context, ReportActivity::class.java)
+            reportIntent.putExtra("type", TypeReport.CAST)
+            startActivityForResult(reportIntent, REQUEST_REPORT_PODCAST)
+        }
+    }
+
+    private fun initApiCallCreatePodcastReport() {
+        val output = viewModelCreatePodcastReport.transform(
+            CreatePodcastReportViewModel.Input(
+                createPodcastReportDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                Toast.makeText(
+                    context,
+                    getString(R.string.podcast_already_reported),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    context,
+                    getString(R.string.podcast_reported_ok),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            Toast.makeText(
+                context,
+                getString(R.string.error_report),
+                Toast.LENGTH_SHORT
+            ).show()
+        })
+    }
+
+    private fun initApiCallCreateUserReport() {
+        val output = viewModelCreateUserReport.transform(
+            CreateUserReportViewModel.Input(
+                createUserReportDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                Toast.makeText(
+                    context,
+                    getString(R.string.user_reported_error),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    context,
+                    getString(R.string.user_reported_ok),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            Toast.makeText(
+                context,
+                getString(R.string.error_report),
+                Toast.LENGTH_SHORT
+            ).show()
+        })
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            val reason = data?.getStringExtra("reason")
+            when (requestCode) {
+                REQUEST_REPORT_PODCAST -> {
+                    data?.let {
+                        viewModelCreatePodcastReport.reason = reason
+                        createPodcastReportDataTrigger.onNext(Unit)
+                    }
+                }
+                REQUEST_REPORT_USER -> {
+                    data?.let {
+                        reason?.let { viewModelCreateUserReport.reason = it }
+                        createUserReportDataTrigger.onNext(Unit)
+                    }
+                }
+            }
         }
     }
 

@@ -313,6 +313,7 @@
     <string name="featured_casts">Featured Casts</string>
     <string name="top_casts">Top Casts</string>
     <string name="see_all">See All</string>
+    <string name="discover">Discover</string>
 
     <string name="webViewKey">WEB_VIEW_KEY</string>
     <string name="privacy_url">https://www.limor.ie/privacy-policy</string>

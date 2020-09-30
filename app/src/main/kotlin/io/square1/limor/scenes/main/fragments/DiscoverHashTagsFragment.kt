@@ -1,5 +1,6 @@
 package io.square1.limor.scenes.main.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.scenes.main.adapters.DiscoverHashTagsAdapter
+import io.square1.limor.scenes.main.fragments.podcast.PodcastsByTagActivity
 import io.square1.limor.scenes.main.viewmodels.DiscoverHashTagsViewModel
 import io.square1.limor.uimodels.UITags
 import kotlinx.android.synthetic.main.fragment_discover_accounts.*
@@ -113,7 +115,13 @@ class DiscoverHashTagsFragment : BaseFragment(), DiscoverHashTagsAdapter.OnHashT
                 viewModelDiscoverHashTags.results,
                 object : DiscoverHashTagsAdapter.OnHashTagSearchClicked {
                     override fun onHashTagClicked(item: UITags, position: Int) {
-                        toast("You clicked on a hash tag")
+                        val podcastByTagIntent = Intent(context, PodcastsByTagActivity::class.java)
+                        val text = "#" + item.text
+                        podcastByTagIntent.putExtra(
+                            PodcastsByTagActivity.BUNDLE_KEY_HASHTAG,
+                            text
+                        )
+                        startActivity(podcastByTagIntent)
                     }
 
 
