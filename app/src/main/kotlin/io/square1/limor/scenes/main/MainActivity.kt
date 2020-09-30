@@ -27,6 +27,7 @@ import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.toast
+import java.lang.Exception
 import javax.inject.Inject
 
 
@@ -34,18 +35,14 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
     @Inject
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
-
-    override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> = fragmentInjector
-
-    private lateinit var getUserViewModel : GetUserViewModel
-    private val getUserDataTrigger = PublishSubject.create<Unit>()
-
     @Inject
     lateinit var sessionManager : SessionManager
 
-
+    private lateinit var getUserViewModel : GetUserViewModel
+    private val getUserDataTrigger = PublishSubject.create<Unit>()
     private lateinit var navController: NavController
     var app: App? = null
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +65,10 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
         getUserDataTrigger.onNext(Unit)
     }
 
+
+    override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> = fragmentInjector
+
+
     private fun initApiCallGetUser() {
         val output = getUserViewModel.transform(
             GetUserViewModel.Input(
@@ -87,6 +88,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
             ).show()
         })
     }
+
 
     private fun bindViewModel() {
         getUserViewModel = ViewModelProviders
@@ -110,7 +112,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
                 R.id.navigation_home -> {
                     val hostFragment = supportFragmentManager.findFragmentById(R.id.navigation_host_fragment)
                     val currentFragment = hostFragment?.childFragmentManager?.fragments?.get(0)
-                    if (currentFragment != null && currentFragment is FeedFragment  && currentFragment.isVisible) {
+                    if (currentFragment != null && currentFragment is UserFeedFragment  && currentFragment.isVisible) {
                         currentFragment.scrollToTop()
                     }
                 }
@@ -122,7 +124,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
                 HomeFragment.TAG -> {
                     showHomeToolbar(getString(R.string.title_home))
                 }
-                FeedFragment.TAG -> {
+                UserFeedFragment.TAG -> {
                     showHomeToolbar(getString(R.string.title_home))
                 }
                 DiscoverFragment.TAG -> {
@@ -171,16 +173,16 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
     }
 
 
-
-
-
-
     private fun showHomeToolbar(toolbarTitle: String) {
         btnClose?.visibility = View.GONE
+        toolbar_main.visibility = View.VISIBLE
         toolbarProfile.visibility = View.GONE
         when (toolbarTitle) {
             getString(R.string.title_home) -> {
                 //viewModel.unreadCountCentres = 0
+
+                applyToolbarElevation(true)
+
                 tvToolbarTitle?.text = toolbarTitle
 
                 btnToolbarLeft?.visibility = View.GONE
@@ -199,6 +201,9 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
             }
             getString(R.string.title_discover) -> {
                 //viewModel.unreadCountLeads = 0
+
+                applyToolbarElevation(false)
+
                 tvToolbarTitle?.text = toolbarTitle
 
                 btnToolbarLeft?.visibility = View.GONE
@@ -238,6 +243,8 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
             getString(R.string.title_notifications) -> {
                 tvToolbarTitle?.text = toolbarTitle
 
+                applyToolbarElevation(true)
+
                 btnToolbarLeft?.visibility = View.GONE
                 btnToolbarLeft?.onClick { navController.popBackStack() }
 
@@ -254,10 +261,50 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
             }
             getString(R.string.title_profile) -> {
                 toolbarProfile.visibility = View.VISIBLE
+                toolbar_main.visibility = View.INVISIBLE
+                btnToolbarLeft?.visibility = View.GONE
                 bottom_navigation_view?.visibility = View.VISIBLE
             }
 
         }
+    }
+
+    private fun applyToolbarElevation(apply: Boolean){
+
+        try{
+            val toolbar = window.decorView.findViewById<View>(android.R.id.content).
+            rootView.findViewById(R.id.toolbar_main) as androidx.appcompat.widget.Toolbar
+
+            if(apply){
+                toolbar.elevation = 10F
+            }else{
+                toolbar.elevation = 0F
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+
+    }
+
+    fun hideToolbar(hide: Boolean){
+        val toolbar = window.decorView.findViewById<View>(android.R.id.content).
+        rootView.findViewById(R.id.toolbar_main) as androidx.appcompat.widget.Toolbar
+        if(hide){
+            toolbar.visibility = View.GONE
+        }else{
+            toolbar.visibility = View.VISIBLE
+        }
+    }
+
+    fun getToolbarHeight() : Int{
+        val toolbar = window.decorView.findViewById<View>(android.R.id.content).
+        rootView.findViewById(R.id.toolbar_main) as androidx.appcompat.widget.Toolbar
+        return toolbar.measuredHeight
+    }
+
+    fun getToolBar(): androidx.appcompat.widget.Toolbar{
+        return window.decorView.findViewById<View>(android.R.id.content).
+        rootView.findViewById(R.id.toolbar_main) as androidx.appcompat.widget.Toolbar
     }
 
 

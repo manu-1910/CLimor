@@ -1,7 +1,7 @@
 package io.square1.limor.remote.providers
 
 
-import entities.request.DataCreateUserReportRequestEntity
+import entities.request.DataCreateReportRequestEntity
 import entities.request.DataLogoutRequest
 import entities.request.DataUserIDRequest
 import entities.response.*
@@ -55,13 +55,21 @@ class RemoteUserProviderImp @Inject constructor(private val provider: UserServic
 
     override fun reportUser(
         id: Int,
-        request: DataCreateUserReportRequestEntity
+        request: DataCreateReportRequestEntity
     ): Single<CreateReportResponseEntity> {
         return provider.reportUser(id, request.asRemoteEntity()).asDataEntity()
     }
 
     override fun getNotifications(limit: Int, offset: Int): Single<NotificationsResponseEntity> {
         return provider.getNotifications(limit, offset).asDataEntity()
+    }
+
+    override fun getPodcasts(id: Int, limit: Int, offset: Int): Single<GetPodcastsResponseEntity> {
+        return provider.getPodcasts(id, limit, offset).asDataEntity()
+    }
+
+    override fun getPodcastsLiked(id: Int, limit: Int, offset: Int): Single<GetPodcastsResponseEntity> {
+        return provider.getPodcastsLiked(id, limit, offset).asDataEntity()
     }
 }
 

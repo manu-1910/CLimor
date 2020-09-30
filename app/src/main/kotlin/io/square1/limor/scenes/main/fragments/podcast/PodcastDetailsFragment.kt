@@ -1,6 +1,7 @@
 package io.square1.limor.scenes.main.fragments.podcast
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -36,16 +37,15 @@ import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.extensions.showKeyboard
 import io.square1.limor.scenes.main.adapters.CommentsAdapter
+import io.square1.limor.scenes.main.fragments.profile.TypeReport
 import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
+import io.square1.limor.scenes.main.fragments.profile.ReportActivity
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.service.AudioService
-import io.square1.limor.uimodels.UIComment
-import io.square1.limor.uimodels.UICommentRequest
-import io.square1.limor.uimodels.UICreateCommentRequest
-import io.square1.limor.uimodels.UIPodcast
-import kotlinx.android.synthetic.main.fragment_podcast_details_2.*
+import io.square1.limor.uimodels.*
+import kotlinx.android.synthetic.main.fragment_podcast_details.*
 import kotlinx.android.synthetic.main.include_interactions_bar.*
 import kotlinx.android.synthetic.main.include_podcast_data.*
 import kotlinx.android.synthetic.main.include_user_bar.*
@@ -77,6 +77,7 @@ data class CommentWithParent(val comment: UIComment, val parent: CommentWithPare
 
 class PodcastDetailsFragment : BaseFragment() {
 
+    private var btnRecordClicked: Boolean = false
     private var isWaitingForApiCall: Boolean = false
     private var currentOffset: Int = 0
     private var currentCommentRequest: UICreateCommentRequest? = null
@@ -109,6 +110,7 @@ class PodcastDetailsFragment : BaseFragment() {
     private lateinit var viewModelCreatePodcastComment: CreatePodcastCommentViewModel
     private lateinit var viewModelCreateCommentComment: CreateCommentCommentViewModel
     private lateinit var viewModelCreateCommentReport: CreateCommentReportViewModel
+    private lateinit var viewModelCreateUserReport: CreateUserReportViewModel
     private lateinit var viewModelCreatePodcastReport: CreatePodcastReportViewModel
     private val getPodcastCommentsDataTrigger = PublishSubject.create<Unit>()
     private val getCommentCommentsDataTrigger = PublishSubject.create<Unit>()
@@ -122,6 +124,7 @@ class PodcastDetailsFragment : BaseFragment() {
     private val createCommentCommentDataTrigger = PublishSubject.create<Unit>()
     private val createCommentReportDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastReportDataTrigger = PublishSubject.create<Unit>()
+    private val createUserReportDataTrigger = PublishSubject.create<Unit>()
 
     private val commentWithParentsItemsList = ArrayList<CommentWithParent>()
 
@@ -164,6 +167,10 @@ class PodcastDetailsFragment : BaseFragment() {
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
         private const val PERMISSION_ALL = 1
+
+        private const val REQUEST_REPORT_COMMENT: Int = 0
+        private const val REQUEST_REPORT_PODCAST: Int = 1
+        private const val REQUEST_REPORT_USER: Int = 2
     }
 
 
@@ -173,7 +180,7 @@ class PodcastDetailsFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_podcast_details_2, container, false)
+            rootView = inflater.inflate(R.layout.fragment_podcast_details, container, false)
         }
         app = context?.applicationContext as App
         return rootView
@@ -203,6 +210,7 @@ class PodcastDetailsFragment : BaseFragment() {
         initApiCallCreateComment()
         initApiCallCreateCommentReport()
         initApiCallCreatePodcastReport()
+        initApiCallCreateUserReport()
         configureToolbar()
 
         // we get the possible comment clicked from the previous activity.
@@ -241,6 +249,39 @@ class PodcastDetailsFragment : BaseFragment() {
                 Toast.makeText(
                     context,
                     getString(R.string.podcast_reported_ok),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            Toast.makeText(
+                context,
+                getString(R.string.error_report),
+                Toast.LENGTH_SHORT
+            ).show()
+        })
+    }
+
+    private fun initApiCallCreateUserReport() {
+        val output = viewModelCreateUserReport.transform(
+            CreateUserReportViewModel.Input(
+                createUserReportDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                Toast.makeText(
+                    context,
+                    getString(R.string.user_reported_error),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    context,
+                    getString(R.string.user_reported_ok),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -558,7 +599,7 @@ class PodcastDetailsFragment : BaseFragment() {
             deleteCurrentCommentAudioAndResetBar()
         }
 
-        btnRecord.setOnTouchListener { view, event ->
+        btnRecord.onClick {
             //Check if all permissions are granted, if not, request again
             if (!hasPermissions(requireContext(), *PERMISSIONS)) {
                 try {
@@ -569,21 +610,22 @@ class PodcastDetailsFragment : BaseFragment() {
                     e.printStackTrace()
                 }
             }else{
-                if (event.action == MotionEvent.ACTION_DOWN) {
+                if (!btnRecordClicked) {
+                    btnRecordClicked = true
                     if(!isCommentBarOpen())
                         openCommentBarTextAndFocusIt()
 
                     btnRecord.setImageResource(R.drawable.record_red)
                     audioSetup()
                     recordAudio()
-                } else if(event.action == MotionEvent.ACTION_UP) {
+                } else {
+                    btnRecordClicked = false
                     stopAudio()
                     btnRecord.setImageResource(R.drawable.record)
-                    view.performClick()
                 }
             }
-            true
         }
+
 
         updater = object : Runnable {
             override fun run() {
@@ -1207,7 +1249,7 @@ class PodcastDetailsFragment : BaseFragment() {
                     }
 
                     override fun onMoreClicked(item: UIComment, position: Int, v: View) {
-                        onCommentMoreClicked(item, v)
+                        showCommentMorePopupMenu(item, v)
                     }
 
                     override fun onReplyClicked(item: CommentWithParent, position: Int) {
@@ -1389,6 +1431,10 @@ class PodcastDetailsFragment : BaseFragment() {
             viewModelCreatePodcastReport = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastReportViewModel::class.java)
+
+            viewModelCreateUserReport = ViewModelProviders
+                    .of(fragmentActivity, viewModelFactory)
+                .get(CreateUserReportViewModel::class.java)
         }
     }
 
@@ -1490,7 +1536,7 @@ class PodcastDetailsFragment : BaseFragment() {
         }
 
 
-        btnMore?.onClick { onPodcastMoreClicked() }
+        btnMore?.onClick { showPodcastMorePopupMenu() }
         btnSend?.onClick { onSendClicked() }
         btnPlay?.onClick { onPlayClicked() }
 
@@ -1540,10 +1586,6 @@ class PodcastDetailsFragment : BaseFragment() {
         Toast.makeText(context, "Send clicked", Toast.LENGTH_SHORT).show()
     }
 
-    private fun onCommentMoreClicked(comment: UIComment, v: View) {
-        showCommentMorePopupMenu(comment, v)
-    }
-
     private fun showCommentMorePopupMenu(
         comment: UIComment,
         v: View
@@ -1556,7 +1598,9 @@ class PodcastDetailsFragment : BaseFragment() {
         //set menu item click listener here
         popup.setOnMenuItemClickListener {menuItem ->
             when(menuItem.itemId) {
-                R.id.menu_report -> onReportCommentClicked(comment)
+                R.id.menu_report_comment -> onReportCommentClicked(comment)
+                R.id.menu_report_user -> onReportUserClicked(comment.user)
+                R.id.menu_block_user -> toast("You clicked on block user")
             }
             true
         }
@@ -1565,11 +1609,9 @@ class PodcastDetailsFragment : BaseFragment() {
 
     private fun onReportCommentClicked(comment: UIComment) {
         viewModelCreateCommentReport.idCommentToReport = comment.id
-        createCommentReportDataTrigger.onNext(Unit)
-    }
-
-    private fun onPodcastMoreClicked() {
-        showPodcastMorePopupMenu()
+        val reportUserIntent = Intent(context, ReportActivity::class.java)
+        reportUserIntent.putExtra("type", TypeReport.COMMENT)
+        startActivityForResult(reportUserIntent, REQUEST_REPORT_COMMENT)
     }
 
     private fun showPodcastMorePopupMenu() {
@@ -1582,17 +1624,30 @@ class PodcastDetailsFragment : BaseFragment() {
         popup.setOnMenuItemClickListener {menuItem ->
             when(menuItem.itemId) {
                 R.id.menu_share -> onSharePodcastClicked()
-                R.id.menu_report -> onReportPodcastClicked()
+                R.id.menu_report_cast -> onReportPodcastClicked()
+                R.id.menu_report_user -> onReportUserClicked(uiPodcast?.user)
+                R.id.menu_block_user -> toast("You clicked on report user")
             }
             true
         }
         popup.show()
     }
 
+    private fun onReportUserClicked(user: UIUser?) {
+        user?.let {
+            viewModelCreateUserReport.idUser = it.id
+            val reportIntent = Intent(context, ReportActivity::class.java)
+            reportIntent.putExtra("type", TypeReport.USER)
+            startActivityForResult(reportIntent, REQUEST_REPORT_USER)
+        }
+    }
+
     private fun onReportPodcastClicked() {
         uiPodcast?.id?.let {
             viewModelCreatePodcastReport.idPodcastToReport = it
-            createPodcastReportDataTrigger.onNext(Unit)
+            val reportIntent = Intent(context, ReportActivity::class.java)
+            reportIntent.putExtra("type", TypeReport.CAST)
+            startActivityForResult(reportIntent, REQUEST_REPORT_PODCAST)
         }
     }
 
@@ -1736,6 +1791,29 @@ class PodcastDetailsFragment : BaseFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == Activity.RESULT_OK) {
+            val reason = data?.getStringExtra("reason")
+            when (requestCode) {
+                REQUEST_REPORT_COMMENT -> {
+                    data?.let {
+                        viewModelCreateCommentReport.reason = reason
+                        createCommentReportDataTrigger.onNext(Unit)
+                    }
+                }
+                REQUEST_REPORT_PODCAST -> {
+                    data?.let {
+                        viewModelCreatePodcastReport.reason = reason
+                        createPodcastReportDataTrigger.onNext(Unit)
+                    }
+                }
+                REQUEST_REPORT_USER -> {
+                    data?.let {
+                        reason?.let { viewModelCreateUserReport.reason = it }
+                        createUserReportDataTrigger.onNext(Unit)
+                    }
+                }
+            }
+        }
 //        reloadComments()
     }
 

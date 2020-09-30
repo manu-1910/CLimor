@@ -1,31 +1,32 @@
 package io.square1.limor.remote.mappers
 
 
-import entities.request.DataLocationsRequest
+import entities.request.DataSearchTermRequest
 import io.reactivex.Single
-import io.square1.limor.remote.entities.requests.NWLocationsRequest
+import io.square1.limor.remote.entities.requests.NWSearchTermRequest
 
 
 //***** FROM REMOTE TO DATA
-fun Single<NWLocationsRequest>.asDataEntity(): Single<DataLocationsRequest> {
+fun Single<NWSearchTermRequest>.asDataEntity(): Single<DataSearchTermRequest> {
     return this.map { it.asDataEntity() }
 }
 
-fun NWLocationsRequest.asDataEntity(): DataLocationsRequest {
-    return DataLocationsRequest(
+fun NWSearchTermRequest.asDataEntity(): DataSearchTermRequest {
+    return DataSearchTermRequest(
         term
     )
 }
 
 
 //***** FROM DATA TO REMOTE
-fun Single<DataLocationsRequest>.asRemoteEntity(): Single<NWLocationsRequest> {
+fun Single<DataSearchTermRequest>.asRemoteEntity(): Single<NWSearchTermRequest> {
     return this.map { it.asRemoteEntity() }
 }
 
-fun DataLocationsRequest.asRemoteEntity() : NWLocationsRequest {
-    return NWLocationsRequest(
+fun DataSearchTermRequest.asRemoteEntity() : NWSearchTermRequest {
+    return NWSearchTermRequest(
         term
     )
 }
+
 

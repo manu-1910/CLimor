@@ -2,11 +2,13 @@ package io.square1.limor.mappers
 
 import entities.response.DraftEntity
 import entities.response.DraftsResponseEntity
+import entities.response.LocationsEntity
 import entities.response.TimeStampEntity
 import io.reactivex.Single
 import io.square1.limor.scenes.utils.waveform.WaveformFragment.isEditMode
 import io.square1.limor.uimodels.UIDraft
 import io.square1.limor.uimodels.UIDraftsResponse
+import io.square1.limor.uimodels.UILocations
 import io.square1.limor.uimodels.UITimeStamp
 
 
@@ -54,7 +56,11 @@ fun DraftEntity.asUIModel(): UIDraft {
         length,
         time,
         isEditMode,
-        getAllUITimeStamps(timeStamps)
+        getAllUITimeStamps(timeStamps),
+        date,
+        categoryId,
+        category,
+        location?.asUIModel()
     )
 }
 
@@ -80,7 +86,20 @@ fun UIDraft.asDataEntity(): DraftEntity {
         length,
         time,
         isEditMode,
-        getAllTimeStamps(timeStamps)
+        getAllTimeStamps(timeStamps),
+        date,
+        categoryId,
+        category,
+        location?.asDataEntity()
+    )
+}
+
+fun UILocations.asDataEntity(): LocationsEntity{
+    return LocationsEntity(
+        address,
+        latitude,
+        longitude,
+        isSelected
     )
 }
 

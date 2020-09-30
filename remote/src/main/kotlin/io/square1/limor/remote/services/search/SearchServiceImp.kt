@@ -1,11 +1,13 @@
 package io.square1.limor.remote.services.search
 
 import io.reactivex.Single
-import io.square1.limor.remote.entities.requests.NWLocationsRequest
+import io.square1.limor.remote.entities.requests.NWSearchTermRequest
+import io.square1.limor.remote.entities.requests.NWUserSearchRequest
 import io.square1.limor.remote.entities.responses.NWLocationsResponse
-import io.square1.limor.remote.entities.responses.NWPodcastsByTagResponse
+import io.square1.limor.remote.entities.responses.NWGetPodcastsResponse
 import io.square1.limor.remote.entities.responses.NWPromotedTagsResponse
 import io.square1.limor.remote.entities.responses.NWTagsResponse
+import io.square1.limor.remote.entities.responses.NWSuggestedUsersResponse
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
 import io.square1.limor.remote.services.RemoteServiceConfig
@@ -33,9 +35,20 @@ class SearchServiceImp @Inject constructor(private val serviceConfig: RemoteServ
     }
 
 
-    fun searchLocations(nwLocationsRequest: NWLocationsRequest): Single<NWLocationsResponse>? {
-        return service.searchLocation(RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWLocationsRequest.serializer(), nwLocationsRequest)))
+    fun searchLocations(nwSearchTermRequest: NWSearchTermRequest): Single<NWLocationsResponse>? {
+        return service.searchLocation(RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWSearchTermRequest.serializer(), nwSearchTermRequest)))
             .map { response -> response.parseSuccessResponse(NWLocationsResponse.serializer()) }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
+    fun searchUsers(usersRequest: NWSearchTermRequest): Single<NWSuggestedUsersResponse>? {
+        return service.searchUsers(RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWSearchTermRequest.serializer(), usersRequest)))
+            .map { response -> response.parseSuccessResponse(NWSuggestedUsersResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
             }
@@ -58,7 +71,7 @@ class SearchServiceImp @Inject constructor(private val serviceConfig: RemoteServ
 
 
     fun promotedTags(): Single<NWPromotedTagsResponse>? {
-        return service.trendingTags()
+        return service.promotedTags()
             .map { response -> response.parseSuccessResponse(NWPromotedTagsResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
@@ -68,9 +81,20 @@ class SearchServiceImp @Inject constructor(private val serviceConfig: RemoteServ
             }
     }
 
-    fun podcastsByTag(limit: Int, offset: Int, tag: String): Single<NWPodcastsByTagResponse>? {
+    fun podcastsByTag(limit: Int, offset: Int, tag: String): Single<NWGetPodcastsResponse>? {
         return service.podcastsByTag(limit, offset, tag)
-            .map { response -> response.parseSuccessResponse(NWPodcastsByTagResponse.serializer()) }
+            .map { response -> response.parseSuccessResponse(NWGetPodcastsResponse.serializer()) }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
+    fun getSuggestedUsers(): Single<NWSuggestedUsersResponse>? {
+        return service.getSuggestedUsers()
+            .map { response -> response.parseSuccessResponse(NWSuggestedUsersResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
             }

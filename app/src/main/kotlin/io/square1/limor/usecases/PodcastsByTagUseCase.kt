@@ -4,7 +4,7 @@ import io.reactivex.Single
 import io.square1.limor.common.executors.PostExecutionThread
 import io.square1.limor.mappers.asUIModel
 import io.square1.limor.remote.executors.JobExecutor
-import io.square1.limor.uimodels.UIPodcastsByTagResponse
+import io.square1.limor.uimodels.UIGetPodcastsResponse
 import repositories.search.SearchRepository
 import javax.inject.Inject
 
@@ -13,7 +13,7 @@ class PodcastsByTagUseCase @Inject constructor(
     private val postExecutionThread: PostExecutionThread,
     private val jobExecutor: JobExecutor
 ) {
-    fun execute(limit: Int, offset: Int, tag: String): Single<UIPodcastsByTagResponse> {
+    fun execute(limit: Int, offset: Int, tag: String): Single<UIGetPodcastsResponse> {
         return searchRepository.podcastsByTag(limit, offset, tag)
             ?.asUIModel()
             ?.observeOn(postExecutionThread.getScheduler())

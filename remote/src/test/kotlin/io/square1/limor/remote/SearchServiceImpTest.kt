@@ -1,6 +1,6 @@
 package io.square1.limor.remote
 
-import io.square1.limor.remote.entities.requests.NWLocationsRequest
+import io.square1.limor.remote.entities.requests.NWSearchTermRequest
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.search.SearchServiceImp
 import kotlinx.serialization.ImplicitReflectionSerializer
@@ -55,8 +55,27 @@ class SearchServiceImpTest {
         searchService = SearchServiceImp(config)
 
         val term = ""
-        val request = NWLocationsRequest(term)
+        val request = NWSearchTermRequest(term)
         val response = searchService.searchLocations(request)?.test()
+
+        response?.assertNoErrors()
+        response?.assertValue { it.message == "Success" }
+    }
+
+    @Test
+    fun should_get_suggested_users_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = CURRENT_URL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = CURRENT_TOKEN,
+            expiredIn = 0
+        )
+
+        searchService = SearchServiceImp(config)
+
+        val response = searchService.getSuggestedUsers()?.test()
 
         response?.assertNoErrors()
         response?.assertValue { it.message == "Success" }

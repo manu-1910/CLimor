@@ -1,6 +1,6 @@
 package io.square1.limor.remote
 
-import io.square1.limor.remote.entities.requests.NWCreateUserReportRequest
+import io.square1.limor.remote.entities.requests.NWCreateReportRequest
 import io.square1.limor.remote.entities.requests.NWUserIDRequest
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.user.UserServiceImp
@@ -216,7 +216,7 @@ class UserServiceImpTest {
         userService = UserServiceImp(config)
 
         val idUser = 5
-        val request = NWCreateUserReportRequest("I don't like him")
+        val request = NWCreateReportRequest("I don't like him")
 
         val response = userService.reportUser(idUser, request).test()
 
@@ -239,6 +239,47 @@ class UserServiceImpTest {
         userService = UserServiceImp(config)
 
         val response = userService.getNotifications(10, 0).test()
+
+        response.assertNoErrors()
+        response.assertValue { it.message == "Success" }
+    }
+
+
+    @Test
+    fun should_get_user_podcasts_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = CURRENT_URL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = CURRENT_TOKEN,
+            expiredIn = 0
+        )
+
+        userService = UserServiceImp(config)
+
+        val userId = 143
+        val response = userService.getPodcasts(userId, 10, 0).test()
+
+        response.assertNoErrors()
+        response.assertValue { it.message == "Success" }
+    }
+
+    @Test
+    fun should_get_user_liked_podcasts_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = CURRENT_URL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = CURRENT_TOKEN,
+            expiredIn = 0
+        )
+
+        userService = UserServiceImp(config)
+
+        val userId = 143
+        val response = userService.getPodcastsLiked(userId, 10, 0).test()
 
         response.assertNoErrors()
         response.assertValue { it.message == "Success" }

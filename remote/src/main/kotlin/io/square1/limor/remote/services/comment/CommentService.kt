@@ -39,7 +39,8 @@ interface CommentService {
 
     @POST(REPORT_COMMENT_PATH)
     fun reportComment(
-        @Path("id") idComment: Int
+        @Path("id") idComment: Int,
+        @Body request: RequestBody
     ): Single<ResponseBody>
 
 }

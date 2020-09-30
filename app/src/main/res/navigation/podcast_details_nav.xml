@@ -9,7 +9,7 @@
         android:id="@+id/podcast_details_fragment"
         android:name="io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsFragment"
         android:label="PodcastDetailsFragment"
-        tools:layout="@layout/fragment_podcast_details_2">
+        tools:layout="@layout/fragment_podcast_details">
 
     </fragment>
 

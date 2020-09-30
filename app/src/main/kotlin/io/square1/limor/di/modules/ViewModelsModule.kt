@@ -83,6 +83,11 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(GetPodcastsByUserIDViewModel::class)
+    abstract fun bindGetPodcastsByUserIDViewModel(getPodcastsByUserIDViewModel: GetPodcastsByUserIDViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(CreateFriendViewModel::class)
     abstract fun bindCreateFriendViewModel(createFriendViewModel: CreateFriendViewModel): ViewModel
 
@@ -175,4 +180,29 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(NotificationsViewModel::class)
     abstract fun bindNotificationsViewModel(notificationsViewModel: NotificationsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(GetUserLikedPodcastsViewModel::class)
+    abstract fun bindGetUserLikedPodcastsViewModel(getUserLikedPodcastsViewModel: GetUserLikedPodcastsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverViewModel::class)
+    abstract fun bindDiscoverViewModel(discoverViewModel: DiscoverViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverAccountsViewModel::class)
+    abstract fun bindDiscoverAccountsViewModel(discoverAccountsViewModel: DiscoverAccountsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverHashTagsViewModel::class)
+    abstract fun bindDiscoverHashTagsViewModel(discoverHashTagsViewModel: DiscoverHashTagsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ChangePasswordViewModel::class)
+    abstract fun bindChangePasswordViewModel(changePasswordViewModel: ChangePasswordViewModel): ViewModel
 }

@@ -7,8 +7,8 @@
 
     <fragment
         android:id="@+id/feed_fragment"
-        android:name="io.square1.limor.scenes.main.fragments.FeedFragment"
-        android:label="FeedFragment"
+        android:name="io.square1.limor.scenes.main.fragments.PodcastsByTagFragment"
+        android:label="PodcastsByTagFragment"
         tools:layout="@layout/fragment_feed">
 
     </fragment>

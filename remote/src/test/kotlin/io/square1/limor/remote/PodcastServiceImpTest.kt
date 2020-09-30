@@ -216,6 +216,45 @@ class PodcastServiceImpTest{
         response?.assertValue { it.message == "Success" }
     }
 
+
+    @Test
+    fun should_get_featured_podcasts_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = baseURL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = "9b1b2517ba88187cc8e50a2f40446a0ff10200b9353ef356441c751553dc33ce",
+            expiredIn = 0
+        )
+
+        podcastService = PodcastServiceImp(config)
+
+        val response = podcastService.getFeaturedPodcasts()?.test()
+
+        response?.assertNoErrors()
+        response?.assertValue { it.message == "Success" }
+    }
+
+    @Test
+    fun should_get_popular_podcasts_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = baseURL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = "9b1b2517ba88187cc8e50a2f40446a0ff10200b9353ef356441c751553dc33ce",
+            expiredIn = 0
+        )
+
+        podcastService = PodcastServiceImp(config)
+
+        val response = podcastService.getPopularPodcasts()?.test()
+
+        response?.assertNoErrors()
+        response?.assertValue { it.message == "Success" }
+    }
+
 }
 
 

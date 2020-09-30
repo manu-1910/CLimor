@@ -11,6 +11,8 @@ const val PODCAST_LIKE_PATH = "/api/v1/podcasts/{id}/likes"
 const val PODCAST_RECAST_PATH = "/api/v1/podcasts/{id}/recasts"
 const val PODCAST_COMMENTS_PATH = "/api/v1/podcasts/{id}/comments"
 const val PODCAST_REPORTS_PATH = "/api/v1/podcasts/{id}/reports"
+const val FEATURED_PODCASTS_PATH = "/api/v1/podcasts/featured"
+const val POPULAR_PODCASTS_PATH = "/api/v1/podcasts/popular"
 
 
 interface PodcastService {
@@ -54,6 +56,13 @@ interface PodcastService {
 
     @POST(PODCAST_REPORTS_PATH)
     fun reportPodcast(
-        @Path("id") idPodcast: Int
+        @Path("id") idPodcast: Int,
+        @Body request: RequestBody
     ): Single<ResponseBody>
+
+    @GET(FEATURED_PODCASTS_PATH)
+    fun getFeaturedPodcasts(): Single<ResponseBody>
+
+    @GET(POPULAR_PODCASTS_PATH)
+    fun getPopularPodcasts(): Single<ResponseBody>
 }

@@ -6,28 +6,30 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.facebook.AccessToken
-import com.facebook.GraphRequest
-import com.facebook.HttpMethod
-import com.facebook.login.LoginManager
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
-import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
-import io.square1.limor.scenes.main.fragments.profile.UserReportActivity
-import io.square1.limor.scenes.main.viewmodels.*
-import io.square1.limor.scenes.splash.SplashActivity
+import io.square1.limor.scenes.main.fragments.profile.*
+import io.square1.limor.scenes.main.fragments.settings.SettingsActivity
+import io.square1.limor.scenes.main.viewmodels.CreateFriendViewModel
+import io.square1.limor.scenes.main.viewmodels.CreateUserReportViewModel
+import io.square1.limor.scenes.main.viewmodels.DeleteFriendViewModel
+import io.square1.limor.scenes.main.viewmodels.ProfileViewModel
+import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.formatSocialMediaQuantity
 import kotlinx.android.synthetic.main.fragment_profile.*
-import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -55,15 +57,11 @@ class ProfileFragment : BaseFragment() {
     private val deleteBlockedUserDataTrigger = PublishSubject.create<Unit>()
 
 
-
     @Inject
     lateinit var sessionManager: SessionManager
 
-//    private lateinit var viewModelProfile: ProfileViewModel
     private lateinit var viewModelGetUser: GetUserViewModel
-    private lateinit var viewModelLogout: LogoutViewModel
     private val getUserDataTrigger = PublishSubject.create<Unit>()
-    private val logoutTrigger = PublishSubject.create<Unit>()
 
     private var tvToolbarUsername: TextView? = null
     private var btnBack: ImageButton? = null
@@ -72,7 +70,7 @@ class ProfileFragment : BaseFragment() {
 
     var app: App? = null
 
-    private var isMyProfileMode : Boolean = false
+    private var isMyProfileMode: Boolean = false
 
 
     companion object {
@@ -93,14 +91,16 @@ class ProfileFragment : BaseFragment() {
 
         app = context?.applicationContext as App
         initToolbarViews()
+        initViewPager()
 
         isMyProfileMode = checkIfIsMyProfile()
 
         listeners()
         bindViewModel()
         apiCallGetUser()
-        apiCallLogout()
 
+        if (!isMyProfileMode) {
+            uiUser = (activity as UserProfileActivity).uiUser
         if(!isMyProfileMode) {
             viewModelGetUser.user = (activity as UserProfileActivity).uiUser
             apiCallReportUser()
@@ -118,6 +118,7 @@ class ProfileFragment : BaseFragment() {
         configureToolbar()
         configureScreen()
         printUserData()
+        CommonsKt.reduceSwipeSensitivity(viewPager)
     }
 
     private fun apiCallDeleteBlockedUser() {
@@ -200,8 +201,50 @@ class ProfileFragment : BaseFragment() {
         })
     }
 
-    private fun checkIfIsMyProfile() : Boolean {
-        return if(activity !is UserProfileActivity) {
+    private fun initViewPager() {
+        val names = arrayOf("Casts", "Likes", "Not implemented")
+        viewPager.adapter = object : FragmentStateAdapter(this) {
+            override fun getItemCount(): Int {
+                return names.size
+            }
+
+            override fun createFragment(position: Int): Fragment {
+                return when (position) {
+                    0 -> UserPodcastsFragment.newInstance(uiUser!!.id)
+                    1 -> UserLikedPodcastsFragment.newInstance(uiUser!!.id)
+                    else -> UserPodcastsFragment.newInstance(uiUser!!.id)
+                }
+            }
+
+        }
+        TabLayoutMediator(tab_layout, viewPager) { tab, position ->
+            tab.text = names[position]
+        }.attach()
+
+        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                tab?.let {
+                    val myFragment = childFragmentManager.findFragmentByTag(
+                        "f" + this@ProfileFragment.viewPager.adapter?.getItemId(it.position)
+                    )
+                    if (myFragment is FeedItemsListFragment) {
+                        myFragment.scrollToTop()
+                    }
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+
+            }
+        })
+    }
+
+    private fun checkIfIsMyProfile(): Boolean {
+        return if (activity !is UserProfileActivity) {
             true
         } else {
             val loggedUser = sessionManager.getStoredUser()
@@ -211,13 +254,11 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun configureScreen() {
-        if(isMyProfileMode) {
-            btnLogout.visibility = View.VISIBLE
+        if (isMyProfileMode) {
             btnSettings?.visibility = View.VISIBLE
             btnMore?.visibility = View.GONE
             layFollows?.visibility = View.GONE
         } else {
-            btnLogout.visibility = View.GONE
             btnSettings?.visibility = View.GONE
             btnMore?.visibility = View.VISIBLE
             layFollows?.visibility = View.VISIBLE
@@ -232,17 +273,13 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun configureToolbar() {
-        if(isMyProfileMode) {
+        if (isMyProfileMode) {
             btnBack?.visibility = View.GONE
         }
     }
 
 
     private fun listeners() {
-        btnLogout.onClick {
-            logoutTrigger.onNext(Unit)
-            logOutFromFacebook()
-        }
 
         btnBack?.onClick {
             activity?.finish()
@@ -250,6 +287,12 @@ class ProfileFragment : BaseFragment() {
 
         btnSettings?.onClick {
             toast("You clicked settings")
+
+            val editProfileIntent = Intent(it?.context, SettingsActivity::class.java)
+            startActivity(editProfileIntent)
+
+
+
         }
 
         btnMore?.onClick {
@@ -290,8 +333,8 @@ class ProfileFragment : BaseFragment() {
         }
 
         //set menu item click listener here
-        popup.setOnMenuItemClickListener {menuItem ->
-            when(menuItem.itemId) {
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
                 R.id.menu_report -> onReportUserClicked()
                 R.id.menu_block -> onBlockUserMenuClicked()
             }
@@ -340,7 +383,8 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun onReportUserClicked() {
-        val reportUserIntent = Intent(context, UserReportActivity::class.java)
+        val reportUserIntent = Intent(context, ReportActivity::class.java)
+        reportUserIntent.putExtra("type", TypeReport.USER)
         startActivityForResult(reportUserIntent, 0)
     }
 
@@ -355,19 +399,13 @@ class ProfileFragment : BaseFragment() {
     }
 
 
-
-
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
             viewModelGetUser = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(GetUserViewModel::class.java)
 
-            viewModelLogout = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
-                .get(LogoutViewModel::class.java)
-
-            if(!isMyProfileMode) {
+            if (!isMyProfileMode) {
                 viewModelCreateUserReport = ViewModelProviders
                     .of(fragmentActivity, viewModelFactory)
                     .get(CreateUserReportViewModel::class.java)
@@ -399,7 +437,7 @@ class ProfileFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            if(it.code != 0) {
+            if (it.code != 0) {
                 revertUserFollowedState()
             }
         })
@@ -439,7 +477,7 @@ class ProfileFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            if(it.code != 0) {
+            if (it.code != 0) {
                 revertUserFollowedState()
             }
         })
@@ -526,6 +564,7 @@ class ProfileFragment : BaseFragment() {
     }
 
 
+
     private fun apiCallReportUser() {
         val output = viewModelCreateUserReport.transform(
             CreateUserReportViewModel.Input(
@@ -534,7 +573,7 @@ class ProfileFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            if(it.code == 0) {
+            if (it.code == 0) {
                 toast(getString(R.string.user_reported_ok))
             } else {
                 toast(getString(R.string.user_reported_error))
@@ -565,75 +604,6 @@ class ProfileFragment : BaseFragment() {
             }
         })
     }
-
-
-    private fun apiCallLogout() {
-        val output = viewModelLogout.transform(
-            LogoutViewModel.Input(
-                logoutTrigger
-            )
-        )
-
-        output.response.observe(this, Observer {
-            //pbSignUp?.visibility = View.GONE
-            view?.hideKeyboard()
-
-            //if (it.message == "Success") { //TODO review why message is errormessage and is null
-            if (it.code == 0) {
-
-                sessionManager.logOut()
-
-                val mainIntent = Intent(context, SplashActivity::class.java)
-                startActivity(mainIntent)
-                try {
-                    activity?.finish()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-        })
-
-        output.backgroundWorkingProgress.observe(this, Observer {
-            trackBackgroudProgress(it)
-        })
-
-        output.errorMessage.observe(this, Observer {
-            //pbSignUp?.visibility = View.GONE
-            view?.hideKeyboard()
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                alert(message.toString()) {
-                    okButton { }
-                }.show()
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
-        })
-    }
-
-
-    private fun logOutFromFacebook() { //TODO
-        // Logout
-        if (AccessToken.getCurrentAccessToken() != null) {
-            GraphRequest(
-                AccessToken.getCurrentAccessToken(),
-                "/me/permissions/",
-                null,
-                HttpMethod.DELETE,
-                GraphRequest.Callback {
-                    AccessToken.setCurrentAccessToken(null)
-                    LoginManager.getInstance().logOut()
-                }).executeAsync()
-        }
-    }
-
 
     private fun printUserData() {
         val fullname = viewModelGetUser.user?.first_name + " " + viewModelGetUser.user?.last_name

@@ -2,6 +2,7 @@ package repositories.comment
 
 
 import entities.request.DataCreateCommentRequest
+import entities.request.DataCreateReportRequestEntity
 import entities.response.*
 import io.reactivex.Single
 import providers.remote.RemoteCommentProvider
@@ -24,8 +25,11 @@ class DataCommentRepository @Inject constructor(private val remoteProvider: Remo
         return remoteProvider.getComments(id, limit, offset)
     }
 
-    override fun reportComment(id: Int): Single<CreateReportResponseEntity>? {
-        return remoteProvider.reportComment(id)
+    override fun reportComment(
+        id: Int,
+        request: DataCreateReportRequestEntity
+    ): Single<CreateReportResponseEntity>? {
+        return remoteProvider.reportComment(id, request)
     }
 
     override fun createComment(

@@ -2,6 +2,7 @@ package io.square1.limor.remote.services.podcast
 
 import io.reactivex.Single
 import io.square1.limor.remote.entities.requests.NWCreateCommentRequest
+import io.square1.limor.remote.entities.requests.NWCreateReportRequest
 import io.square1.limor.remote.entities.requests.NWPublishRequest
 import io.square1.limor.remote.entities.responses.*
 import io.square1.limor.remote.extensions.parseSuccessResponse
@@ -108,9 +109,33 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
 
 
 
-    fun reportPodcast(id : Int): Single<NWCreateReportResponse>? {
-        return service.reportPodcast(id)
+    fun reportPodcast(id : Int, request: NWCreateReportRequest): Single<NWCreateReportResponse>? {
+        val jsonRequest = Json.nonstrict.stringify(NWCreateReportRequest.serializer(), request)
+        val requestParsed = RequestBody.create(MediaType.parse("application/json"), jsonRequest)
+        return service.reportPodcast(id, requestParsed)
             .map { response -> response.parseSuccessResponse(NWCreateReportResponse.serializer()) }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
+    fun getFeaturedPodcasts(): Single<NWFeaturedPodcastsResponse>? {
+        return service.getFeaturedPodcasts()
+            .map { response -> response.parseSuccessResponse(NWFeaturedPodcastsResponse.serializer()) }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
+    fun getPopularPodcasts(): Single<NWPopularPodcastsResponse>? {
+        return service.getPopularPodcasts()
+            .map { response -> response.parseSuccessResponse(NWPopularPodcastsResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
             }

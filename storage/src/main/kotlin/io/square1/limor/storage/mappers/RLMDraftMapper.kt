@@ -1,10 +1,12 @@
 package io.square1.limor.storage.mappers
 
 import entities.response.DraftEntity
+import entities.response.LocationsEntity
 import entities.response.TimeStampEntity
 import io.square1.limor.storage.entities.RLMDraft
 import io.reactivex.Single
 import io.realm.RealmList
+import io.square1.limor.storage.entities.RLMLocations
 import io.square1.limor.storage.entities.RLMTimeStamp
 
 
@@ -19,7 +21,11 @@ fun RLMDraft.asDataEntity(): DraftEntity {
         length,
         time,
         isEditMode,
-        getTimeStampsEntities(timeStamps)
+        getTimeStampsEntities(timeStamps),
+        date,
+        categoryId,
+        category,
+        location?.asDataEntity()
     )
 }
 
@@ -38,7 +44,11 @@ fun DraftEntity.asStorageEntity(): RLMDraft {
         length,
         time,
         isEditMode,
-        getRLMTimeStamps(timeStamps)
+        getRLMTimeStamps(timeStamps),
+        date,
+        categoryId,
+        category,
+        location?.asStorageEntity()
     )
 }
 
@@ -59,6 +69,26 @@ fun TimeStampEntity.asStorageEntity(): RLMTimeStamp {
         endSample
     )
 }
+
+fun LocationsEntity.asStorageEntity(): RLMLocations {
+    return RLMLocations(
+        address,
+        latitude,
+        longitude,
+        isSelected
+    )
+}
+
+
+fun RLMLocations.asDataEntity(): LocationsEntity {
+    return LocationsEntity(
+        address,
+        latitude,
+        longitude,
+        isSelected
+    )
+}
+
 
 
 fun getTimeStampsEntities(realmObj: RealmList<RLMTimeStamp>?): ArrayList<TimeStampEntity> {
