@@ -84,7 +84,10 @@ class DiscoverUsersViewHolder(
     }
 
     private fun setTitleFromUsername(currentItem: UIUser) {
-        val text = currentItem.username?.substring(0, 2)?.toUpperCase(Locale.ROOT)
+        var text : String? = ""
+        if(currentItem.username?.length ?: 0 >= 2) {
+            text = currentItem.username?.substring(0, 2)?.toUpperCase(Locale.ROOT)
+        }
         tvTitle.text = text
     }
 

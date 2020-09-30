@@ -10,24 +10,29 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseViewModel
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import io.square1.limor.uimodels.*
-import io.square1.limor.usecases.CreateBlockedUserUseCase
+import io.square1.limor.uimodels.UIErrorData
+import io.square1.limor.uimodels.UIErrorResponse
+import io.square1.limor.uimodels.UIGetBlockedUsersResponse
+import io.square1.limor.uimodels.UIUser
+import io.square1.limor.usecases.GetBlockedUsersUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class CreateBlockedUserViewModel @Inject constructor(private val createBlockedUserUseCase: CreateBlockedUserUseCase) :
-    BaseViewModel<CreateBlockedUserViewModel.Input, CreateBlockedUserViewModel.Output>() {
+class GetBlockedUsersViewModel @Inject constructor(private val getBlockedUsersUseCase: GetBlockedUsersUseCase) :
+    BaseViewModel<GetBlockedUsersViewModel.Input, GetBlockedUsersViewModel.Output>() {
 
     private val compositeDispose = CompositeDisposable()
 
-    var user : UIUser? = null
+    var users = ArrayList<UIUser>()
+    var limit: Int = 10
+    var offset: Int = 0
 
     data class Input(
-        val createBlockedUserTrigger: Observable<Unit>
+        val getFeedTrigger: Observable<Unit>
     )
 
     data class Output(
-        val response: LiveData<UIBlockedUserResponse>,
+        val response: LiveData<UIGetBlockedUsersResponse>,
         val backgroundWorkingProgress: LiveData<Boolean>,
         val errorMessage: SingleLiveEvent<UIErrorResponse>
     )
@@ -35,18 +40,20 @@ class CreateBlockedUserViewModel @Inject constructor(private val createBlockedUs
     override fun transform(input: Input): Output {
         val errorTracker = SingleLiveEvent<UIErrorResponse>()
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
-        val response = MutableLiveData<UIBlockedUserResponse>()
+        val response = MutableLiveData<UIGetBlockedUsersResponse>()
 
-        input.createBlockedUserTrigger.subscribe({
-            val request = UIUserIDRequest(user!!.id)
-            createBlockedUserUseCase.execute(request).subscribe({
+        input.getFeedTrigger.subscribe({
+            getBlockedUsersUseCase.execute(limit, offset).subscribe({
                 response.value = it
+                users.clear()
+                users.addAll(it.data.blocked_users)
+
 
             }, {
                 try {
                     val error = it as HttpException
                     val errorResponse: UIErrorResponse? =
-                        error.response()?.errorBody()?.parseSuccessResponse(
+                        error.response().errorBody()?.parseSuccessResponse(
                             UIErrorResponse.serializer()
                         )
                     errorTracker.postValue(errorResponse)

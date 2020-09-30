@@ -205,4 +205,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(ChangePasswordViewModel::class)
     abstract fun bindChangePasswordViewModel(changePasswordViewModel: ChangePasswordViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(GetBlockedUsersViewModel::class)
+    abstract fun bindGetBlockedUsersViewModel(getBlockedUsersViewModel: GetBlockedUsersViewModel): ViewModel
 }

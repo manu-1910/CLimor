@@ -19,7 +19,7 @@ class DeleteBlockedUserViewModel @Inject constructor(private val deleteBlockedUs
     BaseViewModel<DeleteBlockedUserViewModel.Input, DeleteBlockedUserViewModel.Output>() {
 
     private val compositeDispose = CompositeDisposable()
-    var idUser = 0
+    var user : UIUser? = null
 
     data class Input(
         val deleteBlockedUserTrigger: Observable<Unit>
@@ -37,7 +37,7 @@ class DeleteBlockedUserViewModel @Inject constructor(private val deleteBlockedUs
         val response = MutableLiveData<UIBlockedUserResponse>()
 
         input.deleteBlockedUserTrigger.subscribe({
-            val request = UIUserIDRequest(idUser)
+            val request = UIUserIDRequest(user!!.id)
             deleteBlockedUserUseCase.execute(request).subscribe({
                 response.value = it
 

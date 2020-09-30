@@ -280,13 +280,8 @@ class ProfileFragment : BaseFragment() {
         }
 
         btnSettings?.onClick {
-            toast("You clicked settings")
-
             val editProfileIntent = Intent(it?.context, SettingsActivity::class.java)
             startActivity(editProfileIntent)
-
-
-
         }
 
         btnMore?.onClick {
@@ -362,7 +357,7 @@ class ProfileFragment : BaseFragment() {
 
     private fun performUnblockUser() {
         viewModelGetUser.user?.let {user ->
-            viewModelDeleteBlockedUser.idUser = user.id
+            viewModelDeleteBlockedUser.user = user
             user.blocked = false
             deleteBlockedUserDataTrigger.onNext(Unit)
         }
@@ -370,7 +365,7 @@ class ProfileFragment : BaseFragment() {
 
     private fun performBlockUser() {
         viewModelGetUser.user?.let {user ->
-            viewModelCreateBlockedUser.idUser = user.id
+            viewModelCreateBlockedUser.user = user
             user.blocked = true
             createBlockedUserDataTrigger.onNext(Unit)
         }
