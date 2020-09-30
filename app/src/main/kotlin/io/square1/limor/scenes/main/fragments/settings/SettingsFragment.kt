@@ -89,6 +89,12 @@ class SettingsFragment : BaseFragment() {
 
     private fun listeners(){
 
+
+        lytEditProfile.onClick {
+            findNavController().navigate(R.id.action_settings_fragment_to_edit_profile_fragment)
+        }
+
+
         lytChangePassword.onClick {
             findNavController().navigate(R.id.action_settings_fragment_to_change_password_fragment)
         }
