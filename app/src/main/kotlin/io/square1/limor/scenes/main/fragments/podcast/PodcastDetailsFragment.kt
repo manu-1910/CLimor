@@ -50,7 +50,10 @@ import kotlinx.android.synthetic.main.include_interactions_bar.*
 import kotlinx.android.synthetic.main.include_podcast_data.*
 import kotlinx.android.synthetic.main.include_user_bar.*
 import kotlinx.android.synthetic.main.toolbar_with_logo_and_back_icon.*
+import org.jetbrains.anko.cancelButton
+import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
 import timber.log.Timber
 import java.io.File
@@ -112,6 +115,8 @@ class PodcastDetailsFragment : BaseFragment() {
     private lateinit var viewModelCreateCommentReport: CreateCommentReportViewModel
     private lateinit var viewModelCreateUserReport: CreateUserReportViewModel
     private lateinit var viewModelCreatePodcastReport: CreatePodcastReportViewModel
+    private lateinit var viewModelDeletePodcast: DeletePodcastViewModel
+
     private val getPodcastCommentsDataTrigger = PublishSubject.create<Unit>()
     private val getCommentCommentsDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
@@ -125,6 +130,8 @@ class PodcastDetailsFragment : BaseFragment() {
     private val createCommentReportDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastReportDataTrigger = PublishSubject.create<Unit>()
     private val createUserReportDataTrigger = PublishSubject.create<Unit>()
+    private val deletePodcastDataTrigger = PublishSubject.create<Unit>()
+
 
     private val commentWithParentsItemsList = ArrayList<CommentWithParent>()
 
@@ -205,6 +212,7 @@ class PodcastDetailsFragment : BaseFragment() {
         initApiCallDeletePodcastLike()
         initApiCallCreatePodcastRecast()
         initApiCallDeletePodcastRecast()
+        initApiCallDeletePodcast()
         initApiCallCreateCommentLike()
         initApiCallDeleteCommentLike()
         initApiCallCreateComment()
@@ -370,6 +378,28 @@ class PodcastDetailsFragment : BaseFragment() {
             uiPodcast?.id?.let { viewModelGetPodcastComments.idPodcast = it }
             getPodcastCommentsDataTrigger.onNext(Unit)
         }
+    }
+
+    private fun initApiCallDeletePodcast() {
+        val output = viewModelDeletePodcast.transform(
+            DeletePodcastViewModel.Input(
+                deletePodcastDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                toast(getString(R.string.delete_podcast_error))
+            } else {
+                toast(getString(R.string.delete_podcast_ok))
+                activity?.finish()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            toast(getString(R.string.delete_podcast_error))
+        })
     }
 
     private fun initApiCallDeletePodcastRecast() {
@@ -1435,6 +1465,10 @@ class PodcastDetailsFragment : BaseFragment() {
             viewModelCreateUserReport = ViewModelProviders
                     .of(fragmentActivity, viewModelFactory)
                 .get(CreateUserReportViewModel::class.java)
+
+            viewModelDeletePodcast = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(DeletePodcastViewModel::class.java)
         }
     }
 
@@ -1619,6 +1653,11 @@ class PodcastDetailsFragment : BaseFragment() {
         val inflater: MenuInflater = popup.menuInflater
         inflater.inflate(R.menu.menu_popup_podcast, popup.menu)
 
+        val loggedUser = sessionManager.getStoredUser()
+        if(uiPodcast?.user?.id != loggedUser?.id) {
+            val menuToHide = popup.menu.findItem(R.id.menu_delete_cast)
+            menuToHide.isVisible = false
+        }
 
         //set menu item click listener here
         popup.setOnMenuItemClickListener {menuItem ->
@@ -1626,11 +1665,22 @@ class PodcastDetailsFragment : BaseFragment() {
                 R.id.menu_share -> onSharePodcastClicked()
                 R.id.menu_report_cast -> onReportPodcastClicked()
                 R.id.menu_report_user -> onReportUserClicked(uiPodcast?.user)
+                R.id.menu_delete_cast -> onDeletePodcastClicked()
                 R.id.menu_block_user -> toast("You clicked on report user")
             }
             true
         }
         popup.show()
+    }
+
+    private fun onDeletePodcastClicked() {
+        alert(getString(R.string.confirmation_delete_podcast)) {
+            okButton {
+                viewModelDeletePodcast.podcast = uiPodcast
+                deletePodcastDataTrigger.onNext(Unit)
+            }
+            cancelButton {  }
+        }.show()
     }
 
     private fun onReportUserClicked(user: UIUser?) {

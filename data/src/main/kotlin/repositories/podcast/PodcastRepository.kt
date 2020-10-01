@@ -13,6 +13,7 @@ interface PodcastRepository {
     fun dislikePodcast(id: Int): Single<DeleteResponseEntity>?
     fun recastPodcast(idPodcast: Int): Single<CreatePodcastRecastResponseEntity>?
     fun deleteRecast(idPodcast: Int): Single<DeleteResponseEntity>?
+    fun deletePodcast(idPodcast: Int): Single<DeleteResponseEntity>?
     fun createComment(id: Int, request: DataCreateCommentRequest): Single<CreateCommentResponseEntity>?
     fun getComments(id: Int, limit: Int, offset: Int): Single<GetCommentsResponseEntity>?
     fun reportPodcast(id: Int, request: DataCreateReportRequestEntity): Single<CreateReportResponseEntity>?

@@ -215,4 +215,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(UpdateUserViewModel::class)
     abstract fun bindUpdateUserViewModel(updateUserViewModel: UpdateUserViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DeletePodcastViewModel::class)
+    abstract fun bindDeletePodcastViewModel(deletePodcastViewModel: DeletePodcastViewModel): ViewModel
 }

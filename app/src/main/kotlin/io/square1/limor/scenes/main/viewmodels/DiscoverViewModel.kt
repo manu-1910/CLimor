@@ -120,6 +120,10 @@ class DiscoverViewModel @Inject constructor(
         }))
     }
 
+    fun deleteFeaturedItem(index: Int) {
+        featuredPodcasts.removeAt(index)
+    }
+
 
 
     override fun onCleared() {

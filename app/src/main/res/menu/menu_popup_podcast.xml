@@ -10,6 +10,10 @@
         android:title="@string/report_cast"/>
 
     <item
+        android:id="@+id/menu_delete_cast"
+        android:title="@string/delete_cast"/>
+
+    <item
         android:id="@+id/menu_report_user"
         android:title="@string/report_user"/>
 

@@ -17,7 +17,7 @@ class PodcastServiceImpTest{
 
 
     @Test
-    fun should_publish_podcast_successfully() {
+    fun should_publish_and_delete_podcast_successfully() {
 
         val config = RemoteServiceConfig(
             baseUrl = baseURL,
@@ -50,10 +50,20 @@ class PodcastServiceImpTest{
             )
         )
 
-        val response = podcastService.publishPodcast(publishRequest)?.test()
+        val responseCreate = podcastService.publishPodcast(publishRequest)?.test()
 
-        response?.assertNoErrors()
-        response?.assertValue {
+        responseCreate?.assertNoErrors()
+
+        var idPodcast = 0
+        responseCreate?.assertValue {
+            idPodcast = it.data.podcast.id
+            it.message == "Success"
+        }
+
+        val responseDelete = podcastService.deletePodcast(idPodcast).test()
+        responseDelete?.assertNoErrors()
+
+        responseCreate?.assertValue {
             it.message == "Success"
         }
 

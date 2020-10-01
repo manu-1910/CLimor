@@ -28,8 +28,10 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.common.BaseActivity
+import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.forceLayoutChanges
 import io.square1.limor.extensions.hideKeyboard
+import io.square1.limor.mappers.getPodcasts
 import io.square1.limor.scenes.main.adapters.DiscoverMainTagsAdapter
 import io.square1.limor.scenes.main.adapters.FeaturedItemAdapter
 import io.square1.limor.scenes.main.adapters.SuggestedPersonAdapter
@@ -45,7 +47,10 @@ import io.square1.limor.uimodels.UIPodcast
 import io.square1.limor.uimodels.UITags
 import io.square1.limor.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_discover.*
+import org.jetbrains.anko.cancelButton
+import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -58,10 +63,13 @@ class DiscoverFragment : BaseFragment(),
     FeaturedItemAdapter.OnFeaturedClicked,
     TopCastAdapter.OnTopCastClicked {
 
+    private var lastPodcastDeletedPosition: Int = 0
     var app: App? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject
+    lateinit var sessionManager : SessionManager
 
     private lateinit var viewModelDiscover: DiscoverViewModel
 
@@ -70,6 +78,9 @@ class DiscoverFragment : BaseFragment(),
 
     private lateinit var viewModelCreateUserReport: CreateUserReportViewModel
     private val createUserReportDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelDeletePodcast: DeletePodcastViewModel
+    private val deletePodcastDataTrigger = PublishSubject.create<Unit>()
 
     private var discoverMainTagsAdapter: DiscoverMainTagsAdapter? = null
     private var suggestedPersonAdapter: SuggestedPersonAdapter? = null
@@ -100,6 +111,7 @@ class DiscoverFragment : BaseFragment(),
 
         initApiCallCreateUserReport()
         initApiCallCreatePodcastReport()
+        initApiCallDeletePodcast()
 
         return inflater.inflate(R.layout.fragment_discover, container, false)
     }
@@ -492,6 +504,10 @@ class DiscoverFragment : BaseFragment(),
             viewModelCreateUserReport = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreateUserReportViewModel::class.java)
+
+            viewModelDeletePodcast = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(DeletePodcastViewModel::class.java)
         }
     }
 
@@ -519,7 +535,7 @@ class DiscoverFragment : BaseFragment(),
     }
 
     override fun onMoreClicked(item: UIPodcast, position: Int, view: View) {
-        showPopupMenu(view, item)
+        showPopupMenu(view, item, position)
     }
 
     override fun onPlayClicked(item: UIPodcast, position: Int) {
@@ -552,11 +568,18 @@ class DiscoverFragment : BaseFragment(),
 
     private fun showPopupMenu(
         view: View?,
-        item: UIPodcast
+        item: UIPodcast,
+        position: Int
     ) {
         val popup = PopupMenu(context, view, Gravity.END)
         val inflater: MenuInflater = popup.menuInflater
         inflater.inflate(R.menu.menu_popup_podcast, popup.menu)
+
+        val loggedUser = sessionManager.getStoredUser()
+        if(item.user.id != loggedUser?.id) {
+            val menuToHide = popup.menu.findItem(R.id.menu_delete_cast)
+            menuToHide.isVisible = false
+        }
 
         //set menu item click listener here
         popup.setOnMenuItemClickListener { menuItem ->
@@ -564,11 +587,26 @@ class DiscoverFragment : BaseFragment(),
                 R.id.menu_share -> onShareClicked(item)
                 R.id.menu_report_cast -> onPodcastReportClicked(item)
                 R.id.menu_report_user -> onUserReportClicked(item)
+                R.id.menu_delete_cast -> onDeletePodcastClicked(item, position)
                 R.id.menu_block_user -> toast("You clicked on block user")
             }
             true
         }
         popup.show()
+    }
+
+    private fun onDeletePodcastClicked(
+        item: UIPodcast,
+        position: Int
+    ) {
+        alert(getString(R.string.confirmation_delete_podcast)) {
+            okButton {
+                lastPodcastDeletedPosition = position
+                viewModelDeletePodcast.podcast = item
+                deletePodcastDataTrigger.onNext(Unit)
+            }
+            cancelButton {  }
+        }.show()
     }
 
     private fun onUserReportClicked(item: UIPodcast) {
@@ -604,6 +642,30 @@ class DiscoverFragment : BaseFragment(),
             startActivityForResult(reportIntent, REQUEST_REPORT_PODCAST)
         }
     }
+
+    private fun initApiCallDeletePodcast() {
+        val output = viewModelDeletePodcast.transform(
+            DeletePodcastViewModel.Input(
+                deletePodcastDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                toast(getString(R.string.delete_podcast_error))
+            } else {
+                toast(getString(R.string.delete_podcast_ok))
+                viewModelDiscover.deleteFeaturedItem(lastPodcastDeletedPosition)
+                rv_featured_casts?.adapter?.notifyItemRemoved(lastPodcastDeletedPosition)
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            toast(getString(R.string.delete_podcast_error))
+        })
+    }
+
 
     private fun initApiCallCreatePodcastReport() {
         val output = viewModelCreatePodcastReport.transform(

@@ -33,6 +33,10 @@ class DataPodcastRepository @Inject constructor(private val remoteProvider: Remo
         return remoteProvider.deleteRecast(idPodcast)
     }
 
+    override fun deletePodcast(idPodcast: Int): Single<DeleteResponseEntity>? {
+        return remoteProvider.deletePodcast(idPodcast)
+    }
+
     override fun createComment(
         id: Int,
         request: DataCreateCommentRequest

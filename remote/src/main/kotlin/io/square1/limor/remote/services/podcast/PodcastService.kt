@@ -7,6 +7,7 @@ import retrofit2.http.*
 
 
 const val PUBLISH_PODCAST_PATH = "/api/v1/podcasts/"
+const val PODCAST_PATH = "/api/v1/podcasts/{id}"
 const val PODCAST_LIKE_PATH = "/api/v1/podcasts/{id}/likes"
 const val PODCAST_RECAST_PATH = "/api/v1/podcasts/{id}/recasts"
 const val PODCAST_COMMENTS_PATH = "/api/v1/podcasts/{id}/comments"
@@ -19,6 +20,11 @@ interface PodcastService {
     @POST(PUBLISH_PODCAST_PATH)
     fun publishPodcast(
         @Body publishRequest: RequestBody
+    ): Single<ResponseBody>
+
+    @DELETE(PODCAST_PATH)
+    fun deletePodcast(
+        @Path("id") id: Int
     ): Single<ResponseBody>
 
     @POST(PODCAST_LIKE_PATH)
