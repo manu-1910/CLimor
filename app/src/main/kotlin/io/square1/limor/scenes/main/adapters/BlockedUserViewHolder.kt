@@ -29,23 +29,23 @@ class BlockedUserViewHolder(
 
 
     private var ivUser: ImageView = itemView.findViewById(R.id.ivUser)
-    private var btnFollow: Button = itemView.findViewById(R.id.btnBlock)
+    private var btnBlock: Button = itemView.findViewById(R.id.btnBlock)
     private var tvUserName: TextView = itemView.findViewById(R.id.tvUserName)
 
     fun bind(currentItem: UIUser, position: Int) {
         if (currentItem.blocked) {
-            btnFollow.background =
+            btnBlock.background =
                 ContextCompat.getDrawable(context, R.drawable.bg_round_brand_500_ripple)
-            btnFollow.setTextColor(ContextCompat.getColor(context, R.color.brandPrimary500))
-            btnFollow.text = context.getString(R.string.unblock)
+            btnBlock.setTextColor(ContextCompat.getColor(context, R.color.brandPrimary500))
+            btnBlock.text = context.getString(R.string.unblock)
         } else {
-            btnFollow.background =
+            btnBlock.background =
                 ContextCompat.getDrawable(context, R.drawable.bg_round_yellow_ripple)
-            btnFollow.setTextColor(ContextCompat.getColor(context, R.color.black))
-            btnFollow.text = context.getString(R.string.block)
+            btnBlock.setTextColor(ContextCompat.getColor(context, R.color.black))
+            btnBlock.text = context.getString(R.string.block)
         }
 
-        btnFollow.onClick { listener.onBlockClicked(currentItem, position) }
+        btnBlock.onClick { listener.onBlockClicked(currentItem, position) }
 
         tvUserName.text = "${currentItem.first_name} ${currentItem.last_name}"
         tvUserName.onClick { listener.onUserClicked(currentItem, position) }
