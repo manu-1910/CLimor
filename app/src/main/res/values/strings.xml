@@ -334,10 +334,9 @@
     <string name="hint_phone">Phone No.</string>
     <string name="hint_age">Age</string>
     <string name="hint_gender">Gender</string>
-
-
-
-
+    <string name="delete_cast">Delete Cast</string>
+    <string name="delete_porcast_error">There was an error deleting podcast, please try again later</string>
+    <string name="confirmation_delete_podcast">Are you sure you want to delete this podcast?</string>
 
 
 </resources>

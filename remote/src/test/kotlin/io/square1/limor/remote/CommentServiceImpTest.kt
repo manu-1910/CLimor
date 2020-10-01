@@ -3,6 +3,7 @@ package io.square1.limor.remote
 
 import io.square1.limor.remote.entities.requests.NWCommentRequest
 import io.square1.limor.remote.entities.requests.NWCreateCommentRequest
+import io.square1.limor.remote.entities.requests.NWCreateReportRequest
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.comment.CommentServiceImp
 import kotlinx.serialization.ImplicitReflectionSerializer
@@ -119,7 +120,8 @@ class CommentServiceImpTest{
 
         val idComment = 659
 
-        val response = commentService.reportComment(idComment)?.test()
+        val request = NWCreateReportRequest("this is a reason")
+        val response = commentService.reportComment(idComment, request)?.test()
 
         response?.assertNoErrors()
         response?.assertValue { it.message == "Success" }

@@ -31,7 +31,9 @@ import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIFeedItem
 import kotlinx.android.synthetic.main.fragment_feed.*
-import kotlinx.android.synthetic.main.fragment_notifications.*
+import org.jetbrains.anko.cancelButton
+import org.jetbrains.anko.okButton
+import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.onRefresh
 import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
@@ -39,6 +41,8 @@ import javax.inject.Inject
 
 abstract class FeedItemsListFragment : BaseFragment() {
 
+
+    private var lastPodcastDeletedPosition: Int = 0
 
     @Inject
     open lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -50,6 +54,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
     private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
     private lateinit var viewModelCreatePodcastRecast: CreatePodcastRecastViewModel
     private lateinit var viewModelDeletePodcastRecast: DeletePodcastRecastViewModel
+    private lateinit var viewModelDeletePodcast: DeletePodcastViewModel
     private lateinit var viewModelCreatePodcastReport: CreatePodcastReportViewModel
     private lateinit var viewModelCreateUserReport: CreateUserReportViewModel
 
@@ -57,6 +62,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
     private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastRecastDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastRecastDataTrigger = PublishSubject.create<Unit>()
+    private val deletePodcastDataTrigger = PublishSubject.create<Unit>()
     private val createPodcastReportDataTrigger = PublishSubject.create<Unit>()
     private val createUserReportDataTrigger = PublishSubject.create<Unit>()
 
@@ -105,6 +111,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
             initApiCallDeleteLike()
             initApiCallCreateRecast()
             initApiCallDeleteRecast()
+            initApiCallDeletePodcast()
             initApiCallCreatePodcastReport()
             initApiCallCreateUserReport()
 
@@ -162,6 +169,28 @@ abstract class FeedItemsListFragment : BaseFragment() {
             val code = response.code
             if (code != 0) {
                 undoRecast()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            undoRecast()
+        })
+    }
+
+    private fun initApiCallDeletePodcast() {
+        val output = viewModelDeletePodcast.transform(
+            DeletePodcastViewModel.Input(
+                deletePodcastDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                toast(getString(R.string.delete_porcast_error))
+            } else {
+                feedItemsList.removeAt(lastPodcastDeletedPosition)
+                rvFeed?.adapter?.notifyItemRemoved(lastPodcastDeletedPosition)
             }
         })
 
@@ -312,7 +341,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
                         position: Int,
                         view: View
                     ) {
-                        showPopupMenu(view, item)
+                        showPopupMenu(view, item, position)
                     }
                 },
                 sessionManager,
@@ -365,7 +394,8 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
     private fun showPopupMenu(
         view: View?,
-        item: UIFeedItem
+        item: UIFeedItem,
+        position: Int
     ) {
         val popup = PopupMenu(context, view, Gravity.TOP)
         val inflater: MenuInflater = popup.menuInflater
@@ -378,11 +408,26 @@ abstract class FeedItemsListFragment : BaseFragment() {
                 R.id.menu_share -> onShareClicked(item)
                 R.id.menu_report_cast -> onPodcastReportClicked(item)
                 R.id.menu_report_user -> onUserReportClicked(item)
+                R.id.menu_delete_cast -> onDeletePodcastClicked(item, position)
                 R.id.menu_block_user -> toast("You clicked on block user")
             }
             true
         }
         popup.show()
+    }
+
+    private fun onDeletePodcastClicked(
+        item: UIFeedItem,
+        position: Int
+    ) {
+        alert(getString(R.string.confirmation_delete_podcast)) {
+            okButton {
+                lastPodcastDeletedPosition = position
+                viewModelDeletePodcast.podcast = item.podcast
+                deletePodcastDataTrigger.onNext(Unit)
+            }
+            cancelButton {  }
+        }.show()
     }
 
     private fun onUserReportClicked(item: UIFeedItem) {
@@ -627,6 +672,10 @@ abstract class FeedItemsListFragment : BaseFragment() {
             viewModelCreateUserReport = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreateUserReportViewModel::class.java)
+
+            viewModelDeletePodcast = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(DeletePodcastViewModel::class.java)
         }
     }
 

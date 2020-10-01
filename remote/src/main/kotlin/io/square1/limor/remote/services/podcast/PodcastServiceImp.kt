@@ -107,6 +107,21 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
             }
     }
 
+    fun deletePodcast(
+        idPodcast: Int
+    ): Single<NWDeleteResponse> {
+        return service.deletePodcast(idPodcast)
+            .map {
+                    response -> response.parseSuccessResponse(NWDeleteResponse.serializer())
+            }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
 
 
     fun reportPodcast(id : Int, request: NWCreateReportRequest): Single<NWCreateReportResponse>? {
