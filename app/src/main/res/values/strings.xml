@@ -282,6 +282,13 @@
     <string name="no_notifications_message">Your notifications will show up here</string>
     <string name="no_notifications_error_message">There was an error getting notifications. Please try again.</string>
     <string name="profile_casts_title">Casts</string>
+    <string name="confirmation_block_user">Are you sure you want to block this user?</string>
+    <string name="confirmation_unblock_user">Are you sure you want to unblock this user?</string>
+    <string name="unblock">Unblock</string>
+    <string name="error_blocking_user">There was an error blocking this user, please try again later</string>
+    <string name="success_blocking_user">User blocked correctly</string>
+    <string name="error_unblocking_user">There was an error unblocking this user, please try again later</string>
+    <string name="success_unblocking_user">User unblocked correctly</string>
 
 
     <!-- Settings screen -->
@@ -305,7 +312,7 @@
     <string name="hint_current_password">Current Password</string>
     <string name="hint_new_password">New Password</string>
     <string name="hint_confirm_password">Confirm Password</string>
-    <string name="change_password_ok">The password has been changed succesfully</string>
+    <string name="change_password_ok">The password has been changed successfully</string>
 
     <string name="discover_error_message">There was an error getting discovery information. Please try again.</string>
     <string name="discover_no_users">No results found.</string>
@@ -334,10 +341,9 @@
     <string name="hint_phone">Phone No.</string>
     <string name="hint_age">Age</string>
     <string name="hint_gender">Gender</string>
-
-
-
-
+    <string name="title_settings_privacy">Privacy</string>
+    <string name="settings_blocked_users">Blocked Users</string>
+    <string name="title_blocked_users">Blocked Users</string>
 
 
 </resources>

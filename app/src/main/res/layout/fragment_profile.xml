@@ -118,59 +118,91 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/layProfileTop">
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnFollow"
                     android:layout_width="wrap_content"
                     android:layout_height="32dp"
                     android:background="@drawable/bg_round_yellow_ripple"
                     android:text="@string/follow"
+                    android:textAllCaps="false"
                     android:textColor="@color/brandSecondary500" />
             </LinearLayout>
 
+            <Button
+                android:id="@+id/btnBlock"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_marginTop="@dimen/marginMedium"
+                android:background="@drawable/bg_round_yellow_ripple"
+                android:text="@string/block"
+                android:textAllCaps="false"
+                android:textColor="@color/brandSecondary500"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/layProfileTop"/>
+
         </LinearLayout>
+
+
+
+
 
     </LinearLayout>
 
-    <View
-        android:id="@+id/barDecoratorUp"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layViewPager"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layProfileTop"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginTop="@dimen/marginMedium"
-        android:background="@color/brandSecondary300"
-        app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layProfileTop" />
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:tabGravity="fill"
-        app:tabMode="scrollable"
-        app:tabTextColor="@color/brandSecondary100"
-        app:tabSelectedTextColor="@color/brandPrimary500"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/barDecoratorUp" />
+        android:layout_height="0dp">
+
+        <View
+            android:id="@+id/barDecoratorUp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/brandSecondary300"
+            app:layout_constraintStart_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabGravity="fill"
+            app:tabMode="scrollable"
+            app:tabTextColor="@color/brandSecondary100"
+            app:tabSelectedTextColor="@color/brandPrimary500"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barDecoratorUp" />
 
 
-    <View
-        android:id="@+id/barDecoratorDown"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/brandSecondary300"
-        app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tab_layout" />
+        <View
+            android:id="@+id/barDecoratorDown"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/brandSecondary300"
+            app:layout_constraintStart_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tab_layout" />
 
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/barDecoratorDown"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barDecoratorDown"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

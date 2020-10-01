@@ -1,10 +1,10 @@
 package entities.response
 
 
-data class CreateBlockedUserResponseEntity(
+data class BlockedUserResponseEntity(
     val code : Int,
     val message: String,
-    val data: UserBlockedEntity?
+    val data: UserBlockedEntity
 )
 
 data class UserBlockedEntity (

@@ -15,11 +15,15 @@ import javax.inject.Inject
 @ImplicitReflectionSerializer
 class RemoteUserProviderImp @Inject constructor(private val provider: UserServiceImp) : RemoteUserProvider {
 
-    override fun userMe(): Single<SignUpResponseEntity> {
+    override fun userMe(): Single<GetUserResponseEntity> {
         return provider.userMe().asDataEntity()
     }
 
-    override fun userMeUpdate(dataUpdateProfileRequest: DataUpdateProfileRequest): Single<SignUpResponseEntity> {
+    override fun getUser(id: Int): Single<GetUserResponseEntity> {
+        return provider.getUser(id).asDataEntity()
+    }
+
+    override fun userMeUpdate(dataUpdateProfileRequest: DataUpdateProfileRequest): Single<GetUserResponseEntity> {
         return provider.userMeUpdate(dataUpdateProfileRequest.asRemoteEntity()).asDataEntity()
     }
 
@@ -43,11 +47,11 @@ class RemoteUserProviderImp @Inject constructor(private val provider: UserServic
         return provider.deleteFriend(id).asDataEntity()
     }
 
-    override fun createBlockedUser(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity> {
+    override fun createBlockedUser(userIDRequest: DataUserIDRequest): Single<BlockedUserResponseEntity> {
         return provider.createBlockedUser(userIDRequest.asRemoteEntity()).asDataEntity()
     }
 
-    override fun deleteBlockedUser(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity> {
+    override fun deleteBlockedUser(userIDRequest: DataUserIDRequest): Single<BlockedUserResponseEntity> {
         return provider.deleteBlockedUser(userIDRequest.asRemoteEntity()).asDataEntity()
     }
 
@@ -68,6 +72,10 @@ class RemoteUserProviderImp @Inject constructor(private val provider: UserServic
 
     override fun getPodcastsLiked(id: Int, limit: Int, offset: Int): Single<GetPodcastsResponseEntity> {
         return provider.getPodcastsLiked(id, limit, offset).asDataEntity()
+    }
+
+    override fun getBlockedUsers(limit: Int, offset: Int): Single<GetBlockedUsersResponseEntity> {
+        return provider.getBlockedUsers(limit, offset).asDataEntity()
     }
 }
 

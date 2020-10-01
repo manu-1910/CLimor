@@ -1,13 +1,15 @@
 package io.square1.limor.scenes.utils
 
 import android.content.Context
-import android.content.res.Resources
 import android.os.Build
 import android.text.Editable
 import android.text.format.DateFormat
 import android.util.TypedValue
+import android.widget.Button
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import io.square1.limor.R
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -165,6 +167,25 @@ class CommonsKt {
                 file.outputStream().use { output ->
                     input.copyTo(output)
                 }
+            }
+        }
+
+        fun setButtonLimorStylePressed(
+            button: Button,
+            primaryStatus: Boolean,
+            textPrimary: Int,
+            textSecondary: Int
+        ) {
+            if(primaryStatus) {
+                button.background =
+                    ContextCompat.getDrawable(button.context, R.drawable.bg_round_yellow_ripple)
+                button.setTextColor(ContextCompat.getColor(button.context, R.color.black))
+                button.text = button.context.getString(textPrimary)
+            } else {
+                button.text = button.context.getString(textSecondary)
+                button.background =
+                    ContextCompat.getDrawable(button.context, R.drawable.bg_round_brand_500_ripple)
+                button.setTextColor(ContextCompat.getColor(button.context, R.color.brandPrimary500))
             }
         }
 

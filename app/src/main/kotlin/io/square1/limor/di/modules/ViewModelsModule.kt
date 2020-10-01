@@ -48,11 +48,6 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(ProfileViewModel::class)
-    abstract fun bindProfileViewModel(profileViewModel: ProfileViewModel): ViewModel
-
-    @Binds
-    @IntoMap
     @ViewModelKey(LogoutViewModel::class)
     abstract fun bindLogoutViewModel(logoutViewModel: LogoutViewModel): ViewModel
 
@@ -70,6 +65,11 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(LocationsViewModel::class)
     abstract fun bindLocationsViewModel(locationsViewModel: LocationsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(GetUserViewModel::class)
+    abstract fun getUserViewModel(getUserViewModel: GetUserViewModel): ViewModel
 
     @Binds
     @IntoMap
@@ -115,6 +115,16 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(DeletePodcastRecastViewModel::class)
     abstract fun bindDeletePodcastRecastViewModel(deletePodcastRecastViewModel: DeletePodcastRecastViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CreateBlockedUserViewModel::class)
+    abstract fun bindCreateBlockedUserViewModel(createBlockedUserViewModel: CreateBlockedUserViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DeleteBlockedUserViewModel::class)
+    abstract fun bindDeleteBlockedUserViewModel(deleteBlockedUserViewModel: DeleteBlockedUserViewModel): ViewModel
 
     @Binds
     @IntoMap
@@ -195,6 +205,11 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(ChangePasswordViewModel::class)
     abstract fun bindChangePasswordViewModel(changePasswordViewModel: ChangePasswordViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(GetBlockedUsersViewModel::class)
+    abstract fun bindGetBlockedUsersViewModel(getBlockedUsersViewModel: GetBlockedUsersViewModel): ViewModel
 
     @Binds
     @IntoMap

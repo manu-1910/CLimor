@@ -150,6 +150,10 @@ class SettingsFragment : BaseFragment() {
             }
         }
 
+        lytBlockedUsers.onClick {
+            findNavController().navigate(R.id.action_settings_fragment_to_users_blocked_fragment)
+        }
+
 
         lytLogout.onClick {
             logoutTrigger.onNext(Unit)

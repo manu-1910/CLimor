@@ -6,6 +6,7 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -23,14 +24,11 @@ import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.main.fragments.profile.*
 import io.square1.limor.scenes.main.fragments.settings.SettingsActivity
-import io.square1.limor.scenes.main.viewmodels.CreateFriendViewModel
-import io.square1.limor.scenes.main.viewmodels.CreateUserReportViewModel
-import io.square1.limor.scenes.main.viewmodels.DeleteFriendViewModel
-import io.square1.limor.scenes.main.viewmodels.ProfileViewModel
+import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.formatSocialMediaQuantity
-import io.square1.limor.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_profile.*
+import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -41,24 +39,25 @@ import javax.inject.Inject
 class ProfileFragment : BaseFragment() {
 
 
-    private var uiUser: UIUser? = null
-
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var viewModelCreateUserReport: CreateUserReportViewModel
     private lateinit var viewModelCreateFriend: CreateFriendViewModel
     private lateinit var viewModelDeleteFriend: DeleteFriendViewModel
+    private lateinit var viewModelCreateBlockedUser: CreateBlockedUserViewModel
+    private lateinit var viewModelDeleteBlockedUser: DeleteBlockedUserViewModel
     private val createUserReportDataTrigger = PublishSubject.create<Unit>()
     private val createFriendDataTrigger = PublishSubject.create<Unit>()
     private val deleteFriendDataTrigger = PublishSubject.create<Unit>()
+    private val createBlockedUserDataTrigger = PublishSubject.create<Unit>()
+    private val deleteBlockedUserDataTrigger = PublishSubject.create<Unit>()
 
 
     @Inject
     lateinit var sessionManager: SessionManager
 
-    private lateinit var viewModelProfile: ProfileViewModel
-
+    private lateinit var viewModelGetUser: GetUserViewModel
     private val getUserDataTrigger = PublishSubject.create<Unit>()
 
     private var tvToolbarUsername: TextView? = null
@@ -89,7 +88,6 @@ class ProfileFragment : BaseFragment() {
 
         app = context?.applicationContext as App
         initToolbarViews()
-        initViewPager()
 
         isMyProfileMode = checkIfIsMyProfile()
 
@@ -98,61 +96,163 @@ class ProfileFragment : BaseFragment() {
         apiCallGetUser()
 
         if (!isMyProfileMode) {
-            uiUser = (activity as UserProfileActivity).uiUser
+            viewModelGetUser.user = (activity as UserProfileActivity).uiUser
             apiCallReportUser()
-            apiCallCreateUser()
-            apiCallDeleteUser()
+            apiCallCreateFriend()
+            apiCallDeleteFriend()
+            apiCallCreateBlockedUser()
+            apiCallDeleteBlockedUser()
         } else {
-            uiUser = sessionManager.getStoredUser()
+            viewModelGetUser.user = sessionManager.getStoredUser()
+        }
+
+        viewModelGetUser.id = viewModelGetUser.user?.id
+
+        if(viewModelGetUser.user?.blocked == false) {
             getUserDataTrigger.onNext(Unit)
         }
 
+        initViewPager()
         configureToolbar()
         configureScreen()
         printUserData()
         CommonsKt.reduceSwipeSensitivity(viewPager)
     }
 
-    private fun initViewPager() {
-        val names = arrayOf("Casts", "Likes", "Not implemented")
-        viewPager.adapter = object : FragmentStateAdapter(this) {
-            override fun getItemCount(): Int {
-                return names.size
-            }
+    private fun apiCallDeleteBlockedUser() {
+        val output = viewModelDeleteBlockedUser.transform(
+            DeleteBlockedUserViewModel.Input(
+                deleteBlockedUserDataTrigger
+            )
+        )
 
-            override fun createFragment(position: Int): Fragment {
-                return when (position) {
-                    0 -> UserPodcastsFragment.newInstance(uiUser!!.id)
-                    1 -> UserLikedPodcastsFragment.newInstance(uiUser!!.id)
-                    else -> UserPodcastsFragment.newInstance(uiUser!!.id)
-                }
-            }
-
-        }
-        TabLayoutMediator(tab_layout, viewPager) { tab, position ->
-            tab.text = names[position]
-        }.attach()
-
-        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                tab?.let {
-                    val myFragment = childFragmentManager.findFragmentByTag(
-                        "f" + this@ProfileFragment.viewPager.adapter?.getItemId(it.position)
-                    )
-                    if (myFragment is FeedItemsListFragment) {
-                        myFragment.scrollToTop()
-                    }
-                }
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-
-            }
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-
+        output.response.observe(this, Observer {
+            if (it.code != 0) {
+                toast(getString(R.string.error_unblocking_user))
+                viewModelGetUser.user?.blocked = true
+                setStyleToBlockButton()
+            } else {
+                viewModelGetUser.user?.followed = false
+                setStyleToFollowButton()
+                initViewPager()
+                configureScreen()
+                getUserDataTrigger.onNext(Unit)
+                toast(getString(R.string.success_unblocking_user))
             }
         })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            view?.hideKeyboard()
+            if (app!!.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (it.errorMessage!!.isNotEmpty()) {
+                    message.append(it.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                alert(message.toString()) {
+                    okButton { }
+                }.show()
+            } else {
+                alert(getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+        })
+    }
+
+    private fun apiCallCreateBlockedUser() {
+        val output = viewModelCreateBlockedUser.transform(
+            CreateBlockedUserViewModel.Input(
+                createBlockedUserDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if (it.code != 0) {
+                toast(getString(R.string.error_blocking_user))
+                viewModelGetUser.user?.blocked = false
+                setStyleToBlockButton()
+            } else {
+                initViewPager()
+                configureScreen()
+                toast(getString(R.string.success_blocking_user))
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            view?.hideKeyboard()
+            if (app!!.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (it.errorMessage!!.isNotEmpty()) {
+                    message.append(it.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                alert(message.toString()) {
+                    okButton { }
+                }.show()
+            } else {
+                alert(getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+        })
+    }
+
+    private fun initViewPager() {
+        if(viewModelGetUser.user?.blocked == true) {
+            layViewPager.visibility = View.GONE
+        } else {
+            layViewPager.visibility = View.VISIBLE
+            val names = arrayOf("Casts", "Likes", "Not implemented")
+            viewPager.adapter = object : FragmentStateAdapter(this) {
+                override fun getItemCount(): Int {
+                    return names.size
+                }
+
+                override fun createFragment(position: Int): Fragment {
+                    return when (position) {
+                        0 -> UserPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
+                        1 -> UserLikedPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
+                        else -> UserPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
+                    }
+                }
+
+            }
+            TabLayoutMediator(tab_layout, viewPager) { tab, position ->
+                tab.text = names[position]
+            }.attach()
+
+            tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabReselected(tab: TabLayout.Tab?) {
+                    tab?.let {
+                        val myFragment = childFragmentManager.findFragmentByTag(
+                            "f" + this@ProfileFragment.viewPager.adapter?.getItemId(it.position)
+                        )
+                        if (myFragment is FeedItemsListFragment) {
+                            myFragment.scrollToTop()
+                        }
+                    }
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+                }
+
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+
+                }
+            })
+        }
     }
 
     private fun checkIfIsMyProfile(): Boolean {
@@ -160,8 +260,8 @@ class ProfileFragment : BaseFragment() {
             true
         } else {
             val loggedUser = sessionManager.getStoredUser()
-            uiUser = (activity as UserProfileActivity).uiUser
-            loggedUser?.id == uiUser?.id
+            val user = (activity as UserProfileActivity).uiUser
+            loggedUser?.id == user?.id
         }
     }
 
@@ -173,7 +273,14 @@ class ProfileFragment : BaseFragment() {
         } else {
             btnSettings?.visibility = View.GONE
             btnMore?.visibility = View.VISIBLE
-            layFollows?.visibility = View.VISIBLE
+            if(viewModelGetUser.user?.blocked == true) {
+                layFollows?.visibility = View.GONE
+                btnBlock?.visibility = View.VISIBLE
+                setStyleToBlockButton()
+            } else {
+                layFollows?.visibility = View.VISIBLE
+                btnBlock?.visibility = View.GONE
+            }
         }
     }
 
@@ -193,18 +300,17 @@ class ProfileFragment : BaseFragment() {
 
     private fun listeners() {
 
+        btnBlock?.onClick {
+            onBlockClicked()
+        }
+
         btnBack?.onClick {
             activity?.finish()
         }
 
         btnSettings?.onClick {
-            //toast("You clicked settings")
-
             val editProfileIntent = Intent(it?.context, SettingsActivity::class.java)
             startActivity(editProfileIntent)
-
-
-
         }
 
         btnMore?.onClick {
@@ -212,17 +318,17 @@ class ProfileFragment : BaseFragment() {
         }
 
         btnFollow.onClick {
-            uiUser?.followed?.let {
+            viewModelGetUser.user?.followed?.let {
                 revertUserFollowedState()
 
                 // if the user is followed now, we must unfollow him
                 if (it) {
-                    viewModelDeleteFriend.idFriend = uiUser!!.id
+                    viewModelDeleteFriend.idFriend = viewModelGetUser.user!!.id
                     deleteFriendDataTrigger.onNext(Unit)
 
                     // if the user is unfollowed now, we must follow him
                 } else {
-                    viewModelCreateFriend.idNewFriend = uiUser!!.id
+                    viewModelCreateFriend.idNewFriend = viewModelGetUser.user!!.id
                     createFriendDataTrigger.onNext(Unit)
                 }
             }
@@ -235,20 +341,81 @@ class ProfileFragment : BaseFragment() {
         val inflater: MenuInflater = popup.menuInflater
         inflater.inflate(R.menu.menu_popup_profile, popup.menu)
 
+        val menuBlock = popup.menu.findItem(R.id.menu_block)
+        viewModelGetUser.user?.blocked?.let {
+            if (it) {
+                menuBlock.title = getString(R.string.unblock)
+            } else {
+                menuBlock.title = getString(R.string.block)
+            }
+        }
 
         //set menu item click listener here
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_report -> onReportUserClicked()
-                R.id.menu_block -> onBlockUserClicked()
+                R.id.menu_block -> onBlockClicked()
             }
             true
         }
         popup.show()
     }
 
-    private fun onBlockUserClicked() {
-        toast("You clicked on block")
+
+    private fun onBlockClicked() {
+        viewModelGetUser.user?.blocked?.let {
+            if (it) {
+                alert(getString(R.string.confirmation_unblock_user)) {
+                    okButton {
+                        performUnblockUser()
+                    }
+                    cancelButton { }
+                }.show()
+            } else {
+                alert(getString(R.string.confirmation_block_user)) {
+                    okButton {
+                        performBlockUser()
+                    }
+                    cancelButton { }
+                }.show()
+            }
+        }
+    }
+
+    private fun setStyleToBlockButton() {
+        if(viewModelGetUser.user?.blocked == true) {
+            CommonsKt.setButtonLimorStylePressed(btnBlock, false, R.string.block, R.string.unblock)
+        } else {
+            CommonsKt.setButtonLimorStylePressed(btnBlock, true, R.string.block, R.string.unblock)
+        }
+    }
+
+
+
+    private fun setStyleToFollowButton() {
+        if(viewModelGetUser.user?.followed == true) {
+            CommonsKt.setButtonLimorStylePressed(btnFollow, false, R.string.follow, R.string.unfollow)
+        } else {
+            CommonsKt.setButtonLimorStylePressed(btnFollow, true, R.string.follow, R.string.unfollow)
+        }
+    }
+
+    private fun performUnblockUser() {
+        viewModelGetUser.user?.let { user ->
+            viewModelDeleteBlockedUser.user = user
+            user.blocked = false
+            setStyleToBlockButton()
+            deleteBlockedUserDataTrigger.onNext(Unit)
+        }
+    }
+
+    private fun performBlockUser() {
+        viewModelGetUser.user?.let { user ->
+            viewModelCreateBlockedUser.user = user
+            user.blocked = true
+            setStyleToBlockButton()
+            createBlockedUserDataTrigger.onNext(Unit)
+        }
     }
 
     private fun onReportUserClicked() {
@@ -261,7 +428,7 @@ class ProfileFragment : BaseFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         data?.let {
             val reason = data.getStringExtra("reason")
-            viewModelCreateUserReport.idUser = uiUser!!.id
+            viewModelCreateUserReport.idUser = viewModelGetUser.user!!.id
             viewModelCreateUserReport.reason = reason
             createUserReportDataTrigger.onNext(Unit)
         }
@@ -270,9 +437,9 @@ class ProfileFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
-            viewModelProfile = ViewModelProviders
+            viewModelGetUser = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
-                .get(ProfileViewModel::class.java)
+                .get(GetUserViewModel::class.java)
 
             if (!isMyProfileMode) {
                 viewModelCreateUserReport = ViewModelProviders
@@ -286,11 +453,19 @@ class ProfileFragment : BaseFragment() {
                 viewModelDeleteFriend = ViewModelProviders
                     .of(fragmentActivity, viewModelFactory)
                     .get(DeleteFriendViewModel::class.java)
+
+                viewModelCreateBlockedUser = ViewModelProviders
+                    .of(fragmentActivity, viewModelFactory)
+                    .get(CreateBlockedUserViewModel::class.java)
+
+                viewModelDeleteBlockedUser = ViewModelProviders
+                    .of(fragmentActivity, viewModelFactory)
+                    .get(DeleteBlockedUserViewModel::class.java)
             }
         }
     }
 
-    private fun apiCallCreateUser() {
+    private fun apiCallCreateFriend() {
         val output = viewModelCreateFriend.transform(
             CreateFriendViewModel.Input(
                 createFriendDataTrigger
@@ -330,7 +505,7 @@ class ProfileFragment : BaseFragment() {
     }
 
 
-    private fun apiCallDeleteUser() {
+    private fun apiCallDeleteFriend() {
         val output = viewModelDeleteFriend.transform(
             DeleteFriendViewModel.Input(
                 deleteFriendDataTrigger
@@ -370,32 +545,33 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun revertUserFollowedState() {
-        uiUser?.followed?.let {
+        viewModelGetUser.user?.followed?.let {
             if (it) {
-                btnFollow.text = getString(R.string.follow)
-                uiUser!!.followers_count = uiUser!!.followers_count?.dec()
+                viewModelGetUser.user!!.followers_count =
+                    viewModelGetUser.user!!.followers_count?.dec()
             } else {
-                btnFollow.text = getString(R.string.unfollow)
-                uiUser!!.followers_count = uiUser!!.followers_count?.inc()
+                viewModelGetUser.user!!.followers_count =
+                    viewModelGetUser.user!!.followers_count?.inc()
             }
 
-            tvNumberFollowers.text = formatSocialMediaQuantity(uiUser!!.followers_count!!)
-            uiUser?.followed = !it
-
+            tvNumberFollowers.text =
+                formatSocialMediaQuantity(viewModelGetUser.user!!.followers_count!!)
+            viewModelGetUser.user?.followed = !it
+            setStyleToFollowButton()
         }
     }
 
 
     private fun apiCallGetUser() {
-        val output = viewModelProfile.transform(
-            ProfileViewModel.Input(
+        val output = viewModelGetUser.transform(
+            GetUserViewModel.Input(
                 getUserDataTrigger
             )
         )
 
         output.response.observe(this, Observer {
             view?.hideKeyboard()
-            uiUser = it.data.user
+            viewModelGetUser.user = it.data.user
             printUserData()
         })
 
@@ -423,7 +599,6 @@ class ProfileFragment : BaseFragment() {
             }
         })
     }
-
 
 
     private fun apiCallReportUser() {
@@ -467,36 +642,31 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun printUserData() {
-        val fullname = uiUser?.first_name + " " + uiUser?.last_name
+        val fullname = viewModelGetUser.user?.first_name + " " + viewModelGetUser.user?.last_name
         tvToolbarUsername?.text = fullname
-        uiUser?.followers_count?.let {
+        viewModelGetUser.user?.followers_count?.let {
             tvNumberFollowers.text = formatSocialMediaQuantity(it)
         }
-        uiUser?.following_count?.let {
+        viewModelGetUser.user?.following_count?.let {
             tvNumberFollowing.text = formatSocialMediaQuantity(it)
         }
         context?.let {
             Glide.with(it)
-                .load(uiUser?.images?.medium_url)
+                .load(viewModelGetUser.user?.images?.medium_url)
                 .apply(RequestOptions.circleCropTransform())
                 .into(ivUser)
         }
-        uiUser?.verified?.let {
+        viewModelGetUser.user?.verified?.let {
             if (it)
                 ivVerifiedUser.visibility = View.VISIBLE
         }
 
         if (!isMyProfileMode) {
-            uiUser?.followed?.let {
-                if (it)
-                    btnFollow.text = getString(R.string.unfollow)
-                else
-                    btnFollow.text = getString(R.string.follow)
-            }
+            setStyleToFollowButton()
         }
 
 
-        tvBio.text = uiUser?.description
+        tvBio.text = viewModelGetUser.user?.description
     }
 
 }

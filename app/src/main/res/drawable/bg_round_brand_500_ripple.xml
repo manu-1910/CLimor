@@ -4,6 +4,7 @@
         <shape android:shape="rectangle">
             <solid android:color="@color/brandSecondary400" />
             <corners android:radius="@dimen/cornerRadiusSmall" />
+
         </shape>
     </item>
 
@@ -15,6 +16,7 @@
                 android:startColor="@color/brandSecondary500"
                 android:type="linear" />
             <corners android:radius="@dimen/cornerRadiusSmall" />
+            <stroke android:width="3px" android:color="@color/brandPrimary500" />
         </shape>
     </item>
 </ripple>

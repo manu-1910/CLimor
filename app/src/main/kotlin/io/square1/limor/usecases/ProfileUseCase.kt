@@ -17,14 +17,14 @@ class ProfileUseCase @Inject constructor(
     private val postExecutionThread: PostExecutionThread,
     private val jobExecutor: JobExecutor
 ) {
-    fun execute(): Single<UISignUpResponse> {
+    fun execute(): Single<UIGetUserResponse> {
         return profileRepository.userMe()
             .asUIModel()
             .observeOn(postExecutionThread.getScheduler())
             .subscribeOn(jobExecutor.getScheduler())
     }
 
-    fun executeUpdate(uiUpdateProfileRequest: UIUpdateProfileRequest): Single<UISignUpResponse> {
+    fun executeUpdate(uiUpdateProfileRequest: UIUpdateProfileRequest): Single<UIGetUserResponse> {
         return profileRepository.userMeUpdate(uiUpdateProfileRequest.asDataEntity())
             .asUIModel()
             .observeOn(postExecutionThread.getScheduler())

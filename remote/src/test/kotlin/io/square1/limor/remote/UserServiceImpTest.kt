@@ -18,7 +18,7 @@ class UserServiceImpTest {
 
     private val TOKEN_TEST_DEVELOPMENT = "9b1b2517ba88187cc8e50a2f40446a0ff10200b9353ef356441c751553dc33ce"
     private val TOKEN_USER_DEVELOPMENT = "4t6bOFXd3L89qqPLdXsBHtTOP4_-t_61Q2kl5R4dAdk"
-    private val SECONDARY_TOKEN_USER_DEVELOPMENT = "M4G7QCmu0xkzylHP3JtnH9B_krxPOot9Z91mfsZPavM"
+    private val SECONDARY_TOKEN_USER_DEVELOPMENT = "_67NZZGew7nkFc_k-gjJ0pplifGnVMrPm26MySODRe4"
     private val TOKEN_STAGING = "36bf82e596dc582796508c09d050484181fa51278eb6b0c2bdbfb269c98a3992"
     private val CURRENT_TOKEN = SECONDARY_TOKEN_USER_DEVELOPMENT
 
@@ -82,6 +82,29 @@ class UserServiceImpTest {
         userService = UserServiceImp(config)
 
         val response = userService.userMe().test()
+
+        response?.assertNoErrors()
+        response?.assertValue {
+            it.message == "Success"
+        }
+
+    }
+
+    @Test
+    fun should_get_user_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = CURRENT_URL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = CURRENT_TOKEN,
+            expiredIn = 0
+        )
+
+        userService = UserServiceImp(config)
+
+        val idUser = 10
+        val response = userService.getUser(idUser).test()
 
         response?.assertNoErrors()
         response?.assertValue {
@@ -257,6 +280,27 @@ class UserServiceImpTest {
 
         val userId = 143
         val response = userService.getPodcastsLiked(userId, 10, 0).test()
+
+        response.assertNoErrors()
+        response.assertValue { it.message == "Success" }
+    }
+
+
+
+    @Test
+    fun should_get_blocked_users_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = CURRENT_URL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = CURRENT_TOKEN,
+            expiredIn = 0
+        )
+
+        userService = UserServiceImp(config)
+
+        val response = userService.getBlockedUsers(10, 0).test()
 
         response.assertNoErrors()
         response.assertValue { it.message == "Success" }
