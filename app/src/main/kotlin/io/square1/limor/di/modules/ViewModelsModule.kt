@@ -210,4 +210,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(GetBlockedUsersViewModel::class)
     abstract fun bindGetBlockedUsersViewModel(getBlockedUsersViewModel: GetBlockedUsersViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(UpdateUserViewModel::class)
+    abstract fun bindUpdateUserViewModel(updateUserViewModel: UpdateUserViewModel): ViewModel
 }

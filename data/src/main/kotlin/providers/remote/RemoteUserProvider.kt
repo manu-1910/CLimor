@@ -1,15 +1,14 @@
 package providers.remote
 
 
-import entities.request.DataCreateReportRequestEntity
-import entities.request.DataLogoutRequest
-import entities.request.DataUserIDRequest
+import entities.request.*
 import entities.response.*
 import io.reactivex.Single
 
 
 interface RemoteUserProvider {
     fun userMe(): Single<GetUserResponseEntity>
+    fun userMeUpdate(dataUpdateProfileRequest: DataUpdateProfileRequest): Single<GetUserResponseEntity>
     fun getUser(id: Int): Single<GetUserResponseEntity>
     fun logOut(dataLogoutRequest: DataLogoutRequest): Single<ErrorResponseEntity>
     fun feedShow(): Single<FeedResponseEntity>

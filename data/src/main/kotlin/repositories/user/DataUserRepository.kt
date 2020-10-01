@@ -1,9 +1,7 @@
 package repositories.user
 
 
-import entities.request.DataCreateReportRequestEntity
-import entities.request.DataLogoutRequest
-import entities.request.DataUserIDRequest
+import entities.request.*
 import entities.response.*
 import io.reactivex.Single
 import providers.remote.RemoteUserProvider
@@ -18,6 +16,9 @@ class DataUserRepository @Inject constructor(private val remoteProvider: RemoteU
 
     override fun getUser(id: Int): Single<GetUserResponseEntity> {
         return remoteProvider.getUser(id)
+    }
+    override fun userMeUpdate(dataUpdateProfileRequest: DataUpdateProfileRequest): Single<GetUserResponseEntity> {
+        return remoteProvider.userMeUpdate(dataUpdateProfileRequest)
     }
 
 

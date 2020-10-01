@@ -1,8 +1,6 @@
 package repositories.user
 
-import entities.request.DataCreateReportRequestEntity
-import entities.request.DataLogoutRequest
-import entities.request.DataUserIDRequest
+import entities.request.*
 import entities.response.*
 
 import io.reactivex.Single
@@ -10,6 +8,7 @@ import io.reactivex.Single
 interface UserRepository {
     fun userMe(): Single<GetUserResponseEntity>
     fun getUser(id: Int): Single<GetUserResponseEntity>
+    fun userMeUpdate(dataUpdateProfileRequest: DataUpdateProfileRequest): Single<GetUserResponseEntity>
     fun logOut(dataLogoutRequest: DataLogoutRequest): Single<ErrorResponseEntity>
     fun feedShow(): Single<FeedResponseEntity>
     fun feedShow(limit: Int, offset: Int): Single<FeedResponseEntity>

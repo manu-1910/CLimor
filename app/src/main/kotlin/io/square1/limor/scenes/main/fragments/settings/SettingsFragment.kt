@@ -133,8 +133,8 @@ class SettingsFragment : BaseFragment() {
 
 
         swPushNotifications?.setOnCheckedChangeListener { _, isChecked ->
-            val message = if (isChecked) "Switch1:ON" else "Switch1:OFF"
-            toast(message)
+            //val message = if (isChecked) "Switch1:ON" else "Switch1:OFF"
+            //toast(message)
             sessionManager.storePushNotificationsEnabled(isChecked)
         }
 
