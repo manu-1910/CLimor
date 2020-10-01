@@ -1,9 +1,7 @@
 package io.square1.limor.remote.providers
 
 
-import entities.request.DataCreateReportRequestEntity
-import entities.request.DataLogoutRequest
-import entities.request.DataUserIDRequest
+import entities.request.*
 import entities.response.*
 import io.reactivex.Single
 import io.square1.limor.remote.mappers.asDataEntity
@@ -19,6 +17,10 @@ class RemoteUserProviderImp @Inject constructor(private val provider: UserServic
 
     override fun userMe(): Single<SignUpResponseEntity> {
         return provider.userMe().asDataEntity()
+    }
+
+    override fun userMeUpdate(dataUpdateProfileRequest: DataUpdateProfileRequest): Single<SignUpResponseEntity> {
+        return provider.userMeUpdate(dataUpdateProfileRequest.asRemoteEntity()).asDataEntity()
     }
 
     override fun logOut(dataLogoutRequest: DataLogoutRequest): Single<ErrorResponseEntity> {

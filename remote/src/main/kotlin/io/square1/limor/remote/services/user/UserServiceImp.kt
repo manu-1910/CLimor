@@ -2,9 +2,7 @@ package io.square1.limor.remote.services.user
 
 
 import io.reactivex.Single
-import io.square1.limor.remote.entities.requests.NWCreateReportRequest
-import io.square1.limor.remote.entities.requests.NWLogoutRequest
-import io.square1.limor.remote.entities.requests.NWUserIDRequest
+import io.square1.limor.remote.entities.requests.*
 import io.square1.limor.remote.entities.responses.*
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
@@ -25,6 +23,20 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
             .map { response -> response.parseSuccessResponse(NWSignUpResponse.serializer()) }
             .doOnSuccess { success -> println("SUCCESS: $success") }
             .doOnError { error -> println("ERROR: $error") }
+    }
+
+    fun userMeUpdate(nwUpdateProfileRequest: NWUpdateProfileRequest): Single<NWSignUpResponse> {
+        return service.userMeUpdate(
+            RequestBody.create(
+                MediaType.parse("application/json"),
+                Json.nonstrict.stringify(NWUpdateProfileRequest.serializer(), nwUpdateProfileRequest)
+            )
+        )
+            .map { response -> response.parseSuccessResponse(NWSignUpResponse.serializer()) }
+            .doOnSuccess { success -> println("SUCCESS: $success") }
+            .doOnError { error ->
+                println("ERROR: $error")
+            }
     }
 
 

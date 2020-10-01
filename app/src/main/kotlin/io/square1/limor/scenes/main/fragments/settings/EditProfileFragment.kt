@@ -14,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
@@ -28,6 +29,7 @@ import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.authentication.viewmodels.SignViewModel
 import io.square1.limor.scenes.main.viewmodels.ChangePasswordViewModel
+import io.square1.limor.scenes.main.viewmodels.UpdateUserViewModel
 import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
 import kotlinx.android.synthetic.main.fragment_change_password.*
@@ -58,14 +60,11 @@ class EditProfileFragment : BaseFragment() {
 
     private var rootView: View? = null
     var app: App? = null
+    var profileImageUploaded = true
+    var profileHasImage = false
+    var profileImageUrlFinal = ""
+    var tempPhotoPath = ""
 
-/*
-* // Update User Info
-    @PUT(Constants.API_VERSION + "/users/me")
-    Call<SHOBaseResponse<UserInfoData>> updateUserInfo(
-            @Body UpdateUserRequest updateUserRequest
-    );
-* */
 
     companion object {
         val TAG: String = EditProfileFragment::class.java.simpleName
@@ -110,20 +109,24 @@ class EditProfileFragment : BaseFragment() {
         btnToolbarRight.text = getString(R.string.btnUpdate)
         btnToolbarRight.visibility = View.VISIBLE
         btnToolbarRight.onClick {
-            callToApiUpdateUser()
+
+            pbEditProfile?.visibility = View.VISIBLE
+
+            if(profileHasImage){
+                publishProfileImage()
+            }else{
+                callToApiUpdateUser()
+            }
+
         }
     }
 
 
     private fun bindViewModel() {
         activity?.let {
-            changePasswordViewModel = ViewModelProviders
+            updateUserViewModel = ViewModelProviders
                 .of(it, viewModelFactory)
-                .get(ChangePasswordViewModel::class.java)
-
-            signInViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
-                .get(SignViewModel::class.java)
+                .get(UpdateUserViewModel::class.java)
         }
     }
 
@@ -152,24 +155,37 @@ class EditProfileFragment : BaseFragment() {
 
 
     private fun callToApiUpdateUser(){
+
+        updateUserViewModel.first_name = etFullName.text.toString()
+        updateUserViewModel.last_name = etFullName.text.toString()
+        updateUserViewModel.username = etUsername.text.toString()
+        updateUserViewModel.description = etBio.text.toString()
+        updateUserViewModel.email = etEmail.text.toString()
+        updateUserViewModel.phone_number = etPhone.text.toString()
+        updateUserViewModel.date_of_birth = etAge.text.toString().toInt()
+        updateUserViewModel.gender = etGender.text.toString()
+        if(profileHasImage){
+            updateUserViewModel.image = profileImageUrlFinal
+        }
+
+
         updateUserTrigger.onNext(Unit)
     }
 
 
     private fun apiCallUpdateUser() {
-        val output = changePasswordViewModel.transform(
-            ChangePasswordViewModel.Input(
-                changePasswordTrigger
+        val output = updateUserViewModel.transform(
+            UpdateUserViewModel.Input(
+                updateUserTrigger
             )
         )
 
         output.response.observe(this, Observer {
-            pbChangePassword?.visibility = View.GONE
+            pbEditProfile?.visibility = View.GONE
             view?.hideKeyboard()
 
             if (it.code == 0) {
-                toast("Password changed successfully")
-                signTrigger.onNext(Unit)
+                toast("Profile updated successfully")
             }
 
         })
@@ -179,7 +195,7 @@ class EditProfileFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            pbChangePassword?.visibility = View.GONE
+            pbEditProfile?.visibility = View.GONE
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
                 val message: StringBuilder = StringBuilder()
@@ -244,13 +260,14 @@ class EditProfileFragment : BaseFragment() {
             // this will run when coming from the cropActivity and everything is ok
         } else if (resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             val resultUri = UCrop.getOutput(data!!)
-            //podcastHasImage = true
+            profileHasImage = true
+
             Glide.with(context!!).load(resultUri).into(profile_image!!)
             //lytImage?.visibility = View.VISIBLE
             //lytImagePlaceholder?.visibility = View.GONE
 
             //Add the photopath to recording item
-            //draftViewModel.uiDraft.tempPhotoPath = resultUri?.path
+            tempPhotoPath = resultUri?.path.toString()
 
 //            Commons.getInstance().handleImage(
 //                context,
@@ -304,7 +321,60 @@ class EditProfileFragment : BaseFragment() {
         etPhone.text = sessionManager.getStoredUser()?.phone_number?.toEditable()
         etAge.text = sessionManager.getStoredUser()?.date_of_birth?.toEditable()
         etGender.text = sessionManager.getStoredUser()?.gender?.toEditable()
+        Glide.with(context!!).load(sessionManager.getStoredUser()?.images?.medium_url).into(profile_image!!)
 
+    }
+
+
+    private fun publishProfileImage() {
+
+        if (Commons.getInstance().isImageReadyForUpload) {
+            //Upload audio file to AWS
+            Commons.getInstance().uploadImage(
+                context,
+                object : Commons.ImageUploadCallback {
+                    override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {}
+
+                    override fun onSuccess(imageUrl: String?) {
+                        println("Image upload to AWS succesfully")
+                        //var imageUploadedUrl = imageUrl
+                        profileImageUploaded = true
+                        if (imageUrl != null) {
+                            profileImageUrlFinal = imageUrl
+                        }
+                        readyToUpdate()
+                    }
+
+                    override fun onStateChanged(id: Int, state: TransferState?) {}
+
+                    override fun onError(error: String?) {
+                        profileImageUploaded = false
+                        println("Image upload to AWS error: $error")
+                    }
+                }, Commons.IMAGE_TYPE_ATTACHMENT
+            )
+        } else {
+            val imageFile = File(tempPhotoPath)
+            Commons.getInstance().handleImage(
+                context,
+                Commons.IMAGE_TYPE_PODCAST,
+                imageFile,
+                "podcast_photo"
+            )
+            publishProfileImage()
+        }
+    }
+
+
+    private fun readyToUpdate() {
+        if (profileHasImage) {
+            if (profileImageUploaded) {
+                profileImageUploaded = false
+                callToApiUpdateUser()
+            }
+        } else {
+            callToApiUpdateUser()
+        }
     }
 
 }
