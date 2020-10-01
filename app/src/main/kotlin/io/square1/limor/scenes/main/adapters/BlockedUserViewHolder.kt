@@ -36,7 +36,7 @@ class BlockedUserViewHolder(
         if (currentItem.blocked) {
             btnFollow.background =
                 ContextCompat.getDrawable(context, R.drawable.bg_round_brand_500_ripple)
-            btnFollow.setTextColor(ContextCompat.getColor(context, R.color.white))
+            btnFollow.setTextColor(ContextCompat.getColor(context, R.color.brandPrimary500))
             btnFollow.text = context.getString(R.string.unblock)
         } else {
             btnFollow.background =

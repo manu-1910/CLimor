@@ -24,7 +24,7 @@ class GetBlockedUsersViewModel @Inject constructor(private val getBlockedUsersUs
     private val compositeDispose = CompositeDisposable()
 
     var users = ArrayList<UIUser>()
-    var limit: Int = 10
+    var limit: Int = 16
     var offset: Int = 0
 
     data class Input(
@@ -45,8 +45,6 @@ class GetBlockedUsersViewModel @Inject constructor(private val getBlockedUsersUs
         input.getFeedTrigger.subscribe({
             getBlockedUsersUseCase.execute(limit, offset).subscribe({
                 response.value = it
-                users.clear()
-                users.addAll(it.data.blocked_users)
 
 
             }, {

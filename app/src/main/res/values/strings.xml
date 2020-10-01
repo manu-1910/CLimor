@@ -312,7 +312,7 @@
     <string name="hint_current_password">Current Password</string>
     <string name="hint_new_password">New Password</string>
     <string name="hint_confirm_password">Confirm Password</string>
-    <string name="change_password_ok">The password has been changed succesfully</string>
+    <string name="change_password_ok">The password has been changed successfully</string>
 
     <string name="discover_error_message">There was an error getting discovery information. Please try again.</string>
     <string name="discover_no_users">No results found.</string>
@@ -343,6 +343,7 @@
     <string name="hint_gender">Gender</string>
     <string name="title_settings_privacy">Privacy</string>
     <string name="settings_blocked_users">Blocked Users</string>
+    <string name="title_blocked_users">Blocked Users</string>
 
 
 </resources>

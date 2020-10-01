@@ -31,7 +31,6 @@ import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIFeedItem
 import kotlinx.android.synthetic.main.fragment_feed.*
-import kotlinx.android.synthetic.main.fragment_notifications.*
 import org.jetbrains.anko.support.v4.onRefresh
 import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
