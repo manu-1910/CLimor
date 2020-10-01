@@ -25,7 +25,9 @@ data class UILinks(
     var website: ArrayList<UIWebsite>,
     var content: ArrayList<UIContent>,
     var caption: ArrayList<UICaption>
-): Serializable
+): Serializable {
+    constructor() : this(ArrayList(),ArrayList(),ArrayList())
+}
 
 data class UIWebsite (
     var id: Int,
@@ -54,7 +56,9 @@ data class UIImages(
     var medium_url: String,
     var original_url: String,
     var small_url: String
-): Serializable
+): Serializable {
+    constructor() : this("","","","")
+}
 
 
 data class UIUser(
@@ -86,4 +90,10 @@ data class UIUser(
     var username: String?,
     var verified: Boolean,
     var website: String?
-): Serializable
+):  Serializable {
+    constructor() : this( false, false, false, false, 0,"", "",
+        "", false, false, 0, 0, "",0, UIImages(), "",UILinks(),
+    false,"","",false,false,0,
+        false, 0, "", false, ""
+    )
+}

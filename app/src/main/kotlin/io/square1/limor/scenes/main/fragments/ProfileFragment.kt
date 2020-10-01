@@ -198,7 +198,7 @@ class ProfileFragment : BaseFragment() {
         }
 
         btnSettings?.onClick {
-            toast("You clicked settings")
+            //toast("You clicked settings")
 
             val editProfileIntent = Intent(it?.context, SettingsActivity::class.java)
             startActivity(editProfileIntent)

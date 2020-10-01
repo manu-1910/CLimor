@@ -22,12 +22,11 @@ interface UserService {
     @GET(USER_ME_PATH)
     fun userMe(): Single<ResponseBody>
 
+    @PUT(USER_ME_PATH)
+    fun userMeUpdate(@Body updateRequest: RequestBody): Single<ResponseBody>
 
     @POST(LOG_OUT_PATH)
-    fun logOut(
-        @Body logoutRequest: RequestBody
-    ): Single<ResponseBody>
-
+    fun logOut(@Body logoutRequest: RequestBody): Single<ResponseBody>
 
     @GET(SHOW_FEED_PATH)
     fun feedShow(@Query ("limit") limit : Int?, @Query("offset") offset : Int?): Single<ResponseBody>
