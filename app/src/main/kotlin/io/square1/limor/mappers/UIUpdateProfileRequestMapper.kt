@@ -3,7 +3,6 @@ package io.square1.limor.mappers
 
 import entities.request.DataUpdateProfileRequest
 import entities.request.UpdateUserEntity
-import entities.response.*
 import io.reactivex.Single
 import io.square1.limor.uimodels.*
 
@@ -29,6 +28,7 @@ fun UIUpdateUser.asDataEntity(): UpdateUserEntity {
         phone_number,
         date_of_birth,
         gender,
+        notifications_enabled,
         image_url
     )
 }

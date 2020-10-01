@@ -115,7 +115,7 @@ class ForgotPasswordFragment : BaseFragment() {
                 if (it.errorMessage!!.isNotEmpty()) {
                     message.append(it.errorMessage)
                 } else {
-                    message.append(R.string.some_error)
+                    message.append(getString(R.string.some_error))
                 }
 
                 alert(message.toString()) {

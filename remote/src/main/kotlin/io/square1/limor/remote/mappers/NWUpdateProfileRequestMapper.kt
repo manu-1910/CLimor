@@ -39,6 +39,7 @@ fun NWUpdateUser.asDataEntity(): UpdateUserEntity {
         phone_number,
         date_of_birth,
         gender,
+        notifications_enabled,
         image_url
     )
 }
@@ -55,6 +56,7 @@ fun UpdateUserEntity.asRemoteEntity() : NWUpdateUser {
         phone_number,
         date_of_birth,
         gender,
+        notifications_enabled,
         image_url
     )
 }
