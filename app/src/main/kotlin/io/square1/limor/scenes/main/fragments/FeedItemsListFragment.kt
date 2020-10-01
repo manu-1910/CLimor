@@ -187,7 +187,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
         output.response.observe(this, Observer { response ->
             val code = response.code
             if (code != 0) {
-                toast(getString(R.string.delete_porcast_error))
+                toast(getString(R.string.delete_podcast_error))
             } else {
                 feedItemsList.removeAt(lastPodcastDeletedPosition)
                 rvFeed?.adapter?.notifyItemRemoved(lastPodcastDeletedPosition)
@@ -195,7 +195,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            undoRecast()
+            toast(getString(R.string.delete_podcast_error))
         })
     }
 
@@ -401,6 +401,11 @@ abstract class FeedItemsListFragment : BaseFragment() {
         val inflater: MenuInflater = popup.menuInflater
         inflater.inflate(R.menu.menu_popup_podcast, popup.menu)
 
+        val loggedUser = sessionManager.getStoredUser()
+        if(item.podcast?.user?.id != loggedUser?.id) {
+            val menuToHide = popup.menu.findItem(R.id.menu_delete_cast)
+            menuToHide.isVisible = false
+        }
 
         //set menu item click listener here
         popup.setOnMenuItemClickListener { menuItem ->

@@ -37,7 +37,7 @@ class UpdateUserViewModel @Inject constructor(private val profileUseCase: Profil
     )
 
     data class Output(
-        val response: LiveData<UISignUpResponse>,
+        val response: LiveData<UIGetUserResponse>,
         val backgroundWorkingProgress: LiveData<Boolean>,
         val errorMessage: SingleLiveEvent<UIErrorResponse>
     )
@@ -45,7 +45,7 @@ class UpdateUserViewModel @Inject constructor(private val profileUseCase: Profil
     override fun transform(input: Input): Output {
         val errorTracker = SingleLiveEvent<UIErrorResponse>()
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
-        val response = MutableLiveData<UISignUpResponse>()
+        val response = MutableLiveData<UIGetUserResponse>()
 
         input.updateUserTrigger.subscribe({
             profileUseCase.executeUpdate(

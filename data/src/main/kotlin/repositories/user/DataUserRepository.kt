@@ -10,13 +10,17 @@ import javax.inject.Inject
 
 class DataUserRepository @Inject constructor(private val remoteProvider: RemoteUserProvider): UserRepository {
 
-    override fun userMe(): Single<SignUpResponseEntity> {
+    override fun userMe(): Single<GetUserResponseEntity> {
         return remoteProvider.userMe()
     }
 
-    override fun userMeUpdate(dataUpdateProfileRequest: DataUpdateProfileRequest): Single<SignUpResponseEntity> {
+    override fun getUser(id: Int): Single<GetUserResponseEntity> {
+        return remoteProvider.getUser(id)
+    }
+    override fun userMeUpdate(dataUpdateProfileRequest: DataUpdateProfileRequest): Single<GetUserResponseEntity> {
         return remoteProvider.userMeUpdate(dataUpdateProfileRequest)
     }
+
 
     override fun logOut(dataLogoutRequest: DataLogoutRequest): Single<ErrorResponseEntity> {
         return remoteProvider.logOut(dataLogoutRequest)
@@ -38,11 +42,11 @@ class DataUserRepository @Inject constructor(private val remoteProvider: RemoteU
         return remoteProvider.deleteFriend(id)
     }
 
-    override fun createUserBlocked(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity> {
+    override fun createUserBlocked(userIDRequest: DataUserIDRequest): Single<BlockedUserResponseEntity> {
         return remoteProvider.createBlockedUser(userIDRequest)
     }
 
-    override fun deleteUserBlocked(userIDRequest: DataUserIDRequest): Single<CreateBlockedUserResponseEntity> {
+    override fun deleteUserBlocked(userIDRequest: DataUserIDRequest): Single<BlockedUserResponseEntity> {
         return remoteProvider.deleteBlockedUser(userIDRequest)
     }
 
@@ -63,5 +67,12 @@ class DataUserRepository @Inject constructor(private val remoteProvider: RemoteU
 
     override fun getPodcastsLiked(id: Int, limit: Int, offset: Int): Single<GetPodcastsResponseEntity> {
         return remoteProvider.getPodcastsLiked(id, limit, offset)
+    }
+
+    override fun getBlockedUsers(
+        limit: Int,
+        offset: Int
+    ): Single<GetBlockedUsersResponseEntity> {
+        return remoteProvider.getBlockedUsers(limit, offset)
     }
 }

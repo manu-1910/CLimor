@@ -18,21 +18,28 @@ import javax.inject.Inject
 class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
     RemoteService<UserService>(UserService::class.java, serviceConfig) {
 
-    fun userMe(): Single<NWSignUpResponse> {
+    fun userMe(): Single<NWGetUserResponse> {
         return service.userMe()
-            .map { response -> response.parseSuccessResponse(NWSignUpResponse.serializer()) }
+            .map { response -> response.parseSuccessResponse(NWGetUserResponse.serializer()) }
             .doOnSuccess { success -> println("SUCCESS: $success") }
             .doOnError { error -> println("ERROR: $error") }
     }
 
-    fun userMeUpdate(nwUpdateProfileRequest: NWUpdateProfileRequest): Single<NWSignUpResponse> {
+    fun getUser(id: Int): Single<NWGetUserResponse> {
+        return service.getUser(id)
+            .map { response -> response.parseSuccessResponse(NWGetUserResponse.serializer()) }
+            .doOnSuccess { success -> println("SUCCESS: $success") }
+            .doOnError { error -> println("ERROR: $error") }
+    }
+
+    fun userMeUpdate(nwUpdateProfileRequest: NWUpdateProfileRequest): Single<NWGetUserResponse> {
         return service.userMeUpdate(
             RequestBody.create(
                 MediaType.parse("application/json"),
                 Json.nonstrict.stringify(NWUpdateProfileRequest.serializer(), nwUpdateProfileRequest)
             )
         )
-            .map { response -> response.parseSuccessResponse(NWSignUpResponse.serializer()) }
+            .map { response -> response.parseSuccessResponse(NWGetUserResponse.serializer()) }
             .doOnSuccess { success -> println("SUCCESS: $success") }
             .doOnError { error ->
                 println("ERROR: $error")
@@ -118,7 +125,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
 
 
 
-    fun createBlockedUser(userIDRequest: NWUserIDRequest): Single<NWCreateBlockedUserResponse> {
+    fun createBlockedUser(userIDRequest: NWUserIDRequest): Single<NWBlockedUserResponse> {
         val requestString = Json.nonstrict.stringify(NWUserIDRequest.serializer(), userIDRequest)
         val request = RequestBody.create(
             MediaType.parse("application/json"),
@@ -126,7 +133,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
         )
         return service.createBlockedUser(request)
             .map { response ->
-                response.parseSuccessResponse(NWCreateBlockedUserResponse.serializer())
+                response.parseSuccessResponse(NWBlockedUserResponse.serializer())
             }
             .doOnSuccess { success ->
                 println("SUCCESS: $success")
@@ -136,14 +143,14 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
             }
     }
 
-    fun deleteBlockedUser(userIDRequest: NWUserIDRequest): Single<NWCreateBlockedUserResponse> {
+    fun deleteBlockedUser(userIDRequest: NWUserIDRequest): Single<NWBlockedUserResponse> {
         return service.deleteBlockedUser(
             RequestBody.create(
                 MediaType.parse("application/json"),
                 Json.nonstrict.stringify(NWUserIDRequest.serializer(), userIDRequest)
             )
         )
-            .map { response -> response.parseSuccessResponse(NWCreateBlockedUserResponse.serializer()) }
+            .map { response -> response.parseSuccessResponse(NWBlockedUserResponse.serializer()) }
             .doOnSuccess { success -> println("SUCCESS: $success") }
             .doOnError { error ->
                 println("ERROR: $error")
@@ -206,6 +213,24 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
     fun getPodcastsLiked(id: Int, limit: Int?, offset: Int?): Single<NWGetPodcastsResponse> {
         return service.getPodcastsLiked(id, limit, offset)
             .map { response -> response.parseSuccessResponse(NWGetPodcastsResponse.serializer()) }
+            .doOnSuccess { response ->
+                run {
+                    println("SUCCESS: $response")
+                }
+            }
+            .doOnError { error ->
+                run {
+                    println("ERROR: $error")
+                }
+            }
+    }
+
+
+
+
+    fun getBlockedUsers(limit: Int?, offset: Int?): Single<NWGetBlockedUsersResponse> {
+        return service.getBlockedUsers(limit, offset)
+            .map { response -> response.parseSuccessResponse(NWGetBlockedUsersResponse.serializer()) }
             .doOnSuccess { response ->
                 run {
                     println("SUCCESS: $response")

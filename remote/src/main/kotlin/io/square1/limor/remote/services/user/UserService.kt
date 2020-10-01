@@ -8,11 +8,12 @@ import retrofit2.http.*
 
 
 const val USER_ME_PATH = "/api/v1/users/me"
+const val USERS_PATH = "/api/v1/users/{id}"
 const val USER_PODCASTS_PATH = "/api/v1/users/{id}/podcasts"
 const val USER_LIKED_PODCASTS_PATH = "/api/v1/users/{id}/podcasts/likes"
 const val LOG_OUT_PATH = "/oauth/revoke"
 const val SHOW_FEED_PATH = "/api/v1/users/feed"
-const val BLOCKED_USERS = "/api/v1/users/blocked_users"
+const val BLOCKED_USERS_PATH = "/api/v1/users/blocked_users"
 const val FRIENDS_PATH = "/api/v1/users/{id}/friends"
 const val REPORT_USER_PATH = "/api/v1/users/{id}/reports"
 const val NOTIFICATIONS_PATH = "/api/v1/users/notifications"
@@ -24,6 +25,10 @@ interface UserService {
 
     @PUT(USER_ME_PATH)
     fun userMeUpdate(@Body updateRequest: RequestBody): Single<ResponseBody>
+
+    @GET(USERS_PATH)
+    fun getUser(@Path ("id") id : Int): Single<ResponseBody>
+
 
     @POST(LOG_OUT_PATH)
     fun logOut(@Body logoutRequest: RequestBody): Single<ResponseBody>
@@ -40,10 +45,13 @@ interface UserService {
     @DELETE(FRIENDS_PATH)
     fun deleteFriend(@Path("id") id : Int): Single<ResponseBody>
 
-    @POST(BLOCKED_USERS)
+    @GET(BLOCKED_USERS_PATH)
+    fun getBlockedUsers(@Query ("limit") limit : Int?, @Query("offset") offset : Int?): Single<ResponseBody>
+
+    @POST(BLOCKED_USERS_PATH)
     fun createBlockedUser(@Body request: RequestBody): Single<ResponseBody>
 
-    @HTTP(method = "DELETE", path = BLOCKED_USERS, hasBody = true) // this is a workaround to make delete work with a request body
+    @HTTP(method = "DELETE", path = BLOCKED_USERS_PATH, hasBody = true) // this is a workaround to make delete work with a request body
     fun deleteBlockedUser(@Body request: RequestBody): Single<ResponseBody>
 
     @POST(REPORT_USER_PATH)

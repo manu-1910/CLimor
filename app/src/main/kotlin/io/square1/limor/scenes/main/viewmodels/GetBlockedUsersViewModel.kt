@@ -8,24 +8,31 @@ import io.reactivex.rxkotlin.addTo
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseViewModel
-import io.square1.limor.common.SessionManager
 import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import io.square1.limor.uimodels.*
-import io.square1.limor.usecases.ProfileUseCase
+import io.square1.limor.uimodels.UIErrorData
+import io.square1.limor.uimodels.UIErrorResponse
+import io.square1.limor.uimodels.UIGetBlockedUsersResponse
+import io.square1.limor.uimodels.UIUser
+import io.square1.limor.usecases.GetBlockedUsersUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class ProfileViewModel @Inject constructor(private val profileUseCase: ProfileUseCase, private val sessionManager: SessionManager) : BaseViewModel<ProfileViewModel.Input, ProfileViewModel.Output>() {
+class GetBlockedUsersViewModel @Inject constructor(private val getBlockedUsersUseCase: GetBlockedUsersUseCase) :
+    BaseViewModel<GetBlockedUsersViewModel.Input, GetBlockedUsersViewModel.Output>() {
 
     private val compositeDispose = CompositeDisposable()
 
+    var users = ArrayList<UIUser>()
+    var limit: Int = 16
+    var offset: Int = 0
+
     data class Input(
-        val singUpTrigger: Observable<Unit>
+        val getFeedTrigger: Observable<Unit>
     )
 
     data class Output(
-        val response: LiveData<UISignUpResponse>,
+        val response: LiveData<UIGetBlockedUsersResponse>,
         val backgroundWorkingProgress: LiveData<Boolean>,
         val errorMessage: SingleLiveEvent<UIErrorResponse>
     )
@@ -33,19 +40,24 @@ class ProfileViewModel @Inject constructor(private val profileUseCase: ProfileUs
     override fun transform(input: Input): Output {
         val errorTracker = SingleLiveEvent<UIErrorResponse>()
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
-        val response = MutableLiveData<UISignUpResponse>()
+        val response = MutableLiveData<UIGetBlockedUsersResponse>()
 
-        input.singUpTrigger.subscribe({
-            profileUseCase.execute().subscribe({
+        input.getFeedTrigger.subscribe({
+            getBlockedUsersUseCase.execute(limit, offset).subscribe({
                 response.value = it
-                sessionManager.storeUser(it.data.user)
+
+
             }, {
                 try {
                     val error = it as HttpException
-                    val errorResponse: UIErrorResponse? = error.response()?.errorBody()?.parseSuccessResponse(UIErrorResponse.serializer())
+                    val errorResponse: UIErrorResponse? =
+                        error.response().errorBody()?.parseSuccessResponse(
+                            UIErrorResponse.serializer()
+                        )
                     errorTracker.postValue(errorResponse)
                 } catch (e: Exception) {
-                    val dataError = UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
+                    val dataError =
+                        UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
                     val errorResponse = UIErrorResponse(99, dataError.toString())
                     errorTracker.postValue(errorResponse)
                 }

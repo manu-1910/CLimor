@@ -220,7 +220,7 @@ class PodcastServiceImpTest{
 
         val idPodcast = 659
 
-        val request = NWCreateReportRequest("this is a reason")
+        val request = NWCreateReportRequest("I don't like it")
         val response = podcastService.reportPodcast(idPodcast, request)?.test()
 
         response?.assertNoErrors()

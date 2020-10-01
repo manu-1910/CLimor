@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import io.square1.limor.R
+import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIUser
 import org.jetbrains.anko.sdk23.listeners.onClick
 import java.lang.Exception
@@ -64,13 +65,15 @@ class DiscoverUsersViewHolder(
 
 
         if(currentItem.followed){
-            btnFollow.background = ContextCompat.getDrawable(context, R.drawable.bg_round_brand_500_ripple)
-            btnFollow.setTextColor(ContextCompat.getColor(context, R.color.white))
-            btnFollow.text = context.getString(R.string.unfollow)
+            CommonsKt.setButtonLimorStylePressed(btnFollow, false, R.string.follow, R.string.unfollow)
+//            btnFollow.background = ContextCompat.getDrawable(context, R.drawable.bg_round_brand_500_ripple)
+//            btnFollow.setTextColor(ContextCompat.getColor(context, R.color.white))
+//            btnFollow.text = context.getString(R.string.unfollow)
         }else{
-            btnFollow.background = ContextCompat.getDrawable(context, R.drawable.bg_round_yellow_ripple)
-            btnFollow.setTextColor(ContextCompat.getColor(context, R.color.black))
-            btnFollow.text = context.getString(R.string.follow)
+            CommonsKt.setButtonLimorStylePressed(btnFollow, true, R.string.follow, R.string.unfollow)
+//            btnFollow.background = ContextCompat.getDrawable(context, R.drawable.bg_round_yellow_ripple)
+//            btnFollow.setTextColor(ContextCompat.getColor(context, R.color.black))
+//            btnFollow.text = context.getString(R.string.follow)
         }
 
         btnFollow.onClick {
@@ -84,7 +87,10 @@ class DiscoverUsersViewHolder(
     }
 
     private fun setTitleFromUsername(currentItem: UIUser) {
-        val text = currentItem.username?.substring(0, 2)?.toUpperCase(Locale.ROOT)
+        var text : String? = ""
+        if(currentItem.username?.length ?: 0 >= 2) {
+            text = currentItem.username?.substring(0, 2)?.toUpperCase(Locale.ROOT)
+        }
         tvTitle.text = text
     }
 

@@ -120,7 +120,7 @@ class CommentServiceImpTest{
 
         val idComment = 659
 
-        val request = NWCreateReportRequest("this is a reason")
+        val request = NWCreateReportRequest("I don't like it")
         val response = commentService.reportComment(idComment, request)?.test()
 
         response?.assertNoErrors()

@@ -1,31 +1,31 @@
 package io.square1.limor.remote.mappers
 
-import entities.response.CreateBlockedUserResponseEntity
+import entities.response.BlockedUserResponseEntity
 import entities.response.UserBlockedEntity
 import io.reactivex.Single
 import io.square1.limor.remote.entities.responses.NWBlockedUserData
-import io.square1.limor.remote.entities.responses.NWCreateBlockedUserResponse
+import io.square1.limor.remote.entities.responses.NWBlockedUserResponse
 
 
-fun Single<NWCreateBlockedUserResponse>.asDataEntity(): Single<CreateBlockedUserResponseEntity> {
+fun Single<NWBlockedUserResponse>.asDataEntity(): Single<BlockedUserResponseEntity> {
     return this.map { it.asDataEntity() }
 }
 
 
-fun NWCreateBlockedUserResponse.asDataEntity(): CreateBlockedUserResponseEntity {
-    return CreateBlockedUserResponseEntity(
+fun NWBlockedUserResponse.asDataEntity(): BlockedUserResponseEntity {
+    return BlockedUserResponseEntity(
         code,
         message,
-        data?.asDataEntity()
+        data.asDataEntity()
     )
 }
 
 
-fun CreateBlockedUserResponseEntity.asRemoteEntity(): NWCreateBlockedUserResponse {
-    return NWCreateBlockedUserResponse(
+fun BlockedUserResponseEntity.asRemoteEntity(): NWBlockedUserResponse {
+    return NWBlockedUserResponse(
         code,
         message,
-        data?.asRemoteEntity()
+        data.asRemoteEntity()
     )
 }
 

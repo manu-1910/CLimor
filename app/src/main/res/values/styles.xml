@@ -63,4 +63,15 @@
         <item name="android:letterSpacing">0.0892857143</item>
     </style>
 
+    <!-- Chipview style-->
+    <style name="OutlinedButton" parent="TextAppearance.AppCompat.Button">
+        <!-- Fake Roboto Medium. -->
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:letterSpacing">0.0892857143</item>
+        <item name="android:background">@drawable/bg_round_brand_500_ripple</item>
+    </style>
+
 </resources>
