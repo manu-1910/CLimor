@@ -191,6 +191,8 @@
 
     <!-- Profile fragment -->
     <string name="title_fullname">Full Name</string>
+    <string name="title_firstname">First Name</string>
+    <string name="title_lastname">Last Name</string>
     <string name="title_username">Username</string>
     <string name="title_website">Website</string>
     <string name="title_bio">Bio</string>
@@ -334,6 +336,8 @@
     <string name="title_personal_information">PERSONAL INFORMATION</string>
     <string name="title_under_record">Record your voice bio. (Max 1 min)</string>
     <string name="hint_fullname">Full Name</string>
+    <string name="hint_firstname">First Name</string>
+    <string name="hint_lastname">Last Name</string>
     <string name="hint_username">Username</string>
     <string name="hint_website">Website</string>
     <string name="hint_bio">Bio</string>

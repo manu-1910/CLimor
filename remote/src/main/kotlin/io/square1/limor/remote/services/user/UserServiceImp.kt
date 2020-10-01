@@ -39,8 +39,12 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
                 Json.nonstrict.stringify(NWUpdateProfileRequest.serializer(), nwUpdateProfileRequest)
             )
         )
-            .map { response -> response.parseSuccessResponse(NWGetUserResponse.serializer()) }
-            .doOnSuccess { success -> println("SUCCESS: $success") }
+            .map { response ->
+                response.parseSuccessResponse(NWGetUserResponse.serializer())
+            }
+            .doOnSuccess { success ->
+                println("SUCCESS: $success")
+            }
             .doOnError { error ->
                 println("ERROR: $error")
             }

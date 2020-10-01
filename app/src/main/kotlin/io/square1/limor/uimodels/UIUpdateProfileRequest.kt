@@ -14,5 +14,6 @@ data class UIUpdateUser(
     var phone_number: String?,
     var date_of_birth: Int?,
     var gender: String?,
+    var notifications_enabled: Boolean?,
     var image_url: String?
 )

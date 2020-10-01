@@ -30,6 +30,7 @@ class UpdateUserViewModel @Inject constructor(private val profileUseCase: Profil
     var date_of_birth: Int = 0
     var gender: String = ""
     var image = ""
+    var notifications_enabled = false
 
 
     data class Input(
@@ -60,6 +61,7 @@ class UpdateUserViewModel @Inject constructor(private val profileUseCase: Profil
                         phone_number,
                         date_of_birth,
                         gender,
+                        notifications_enabled,
                         image_url = image
 
                 ))

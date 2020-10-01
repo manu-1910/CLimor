@@ -1,5 +1,6 @@
 package io.square1.limor.scenes.main.fragments.settings
 
+
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
@@ -18,7 +19,6 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
-import com.jakewharton.rxbinding3.widget.textChanges
 import com.yalantis.ucrop.UCrop
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
@@ -27,14 +27,11 @@ import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.Constants
 import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
-import io.square1.limor.scenes.authentication.viewmodels.SignViewModel
-import io.square1.limor.scenes.main.viewmodels.ChangePasswordViewModel
+import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.viewmodels.UpdateUserViewModel
 import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
-import kotlinx.android.synthetic.main.fragment_change_password.*
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
-import kotlinx.android.synthetic.main.fragment_sign_in.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
 import org.jetbrains.anko.okButton
@@ -45,7 +42,6 @@ import timber.log.Timber
 import java.io.File
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 class EditProfileFragment : BaseFragment() {
@@ -92,7 +88,6 @@ class EditProfileFragment : BaseFragment() {
         listeners()
         loadExistingData()
         apiCallUpdateUser()
-
     }
 
 
@@ -132,11 +127,9 @@ class EditProfileFragment : BaseFragment() {
 
 
     private fun listeners(){
-
         btnChoosePhoto.onClick {
             loadImagePicker()
         }
-
     }
 
 
@@ -155,19 +148,19 @@ class EditProfileFragment : BaseFragment() {
 
 
     private fun callToApiUpdateUser(){
-
-        updateUserViewModel.first_name = etFullName.text.toString()
-        updateUserViewModel.last_name = etFullName.text.toString()
+        updateUserViewModel.first_name = etFirstName.text.toString()
+        updateUserViewModel.last_name = etLastName.text.toString()
         updateUserViewModel.username = etUsername.text.toString()
+        updateUserViewModel.website = etWebsite.text.toString()
         updateUserViewModel.description = etBio.text.toString()
         updateUserViewModel.email = etEmail.text.toString()
         updateUserViewModel.phone_number = etPhone.text.toString()
         updateUserViewModel.date_of_birth = etAge.text.toString().toInt()
         updateUserViewModel.gender = etGender.text.toString()
+        updateUserViewModel.notifications_enabled = sessionManager.getPushNotificationsEnabled()!!
         if(profileHasImage){
             updateUserViewModel.image = profileImageUrlFinal
         }
-
 
         updateUserTrigger.onNext(Unit)
     }
@@ -185,7 +178,9 @@ class EditProfileFragment : BaseFragment() {
             view?.hideKeyboard()
 
             if (it.code == 0) {
+                sessionManager.storeUser(it.data.user)
                 toast("Profile updated successfully")
+                findNavController().popBackStack()
             }
 
         })
@@ -204,22 +199,22 @@ class EditProfileFragment : BaseFragment() {
                 } else {
                     message.append(R.string.some_error)
                 }
-//                if(it.code == 10){  //Session expired
-//                    alert(message.toString()) {
-//                        okButton {
-//                            val intent = Intent(context, SignActivity::class.java)
-//                            //intent.putExtra(getString(R.string.otherActivityKey), true)
-//                            startActivityForResult(
-//                                intent,
-//                                resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
-//                            )
-//                        }
-//                    }.show()
-//                }else{
-//                    alert(message.toString()) {
-//                        okButton { }
-//                    }.show()
-//                }
+                if(it.code == 10){  //Session expired
+                    alert(message.toString()) {
+                        okButton {
+                            val intent = Intent(context, SignActivity::class.java)
+                            //intent.putExtra(getString(R.string.otherActivityKey), true)
+                            startActivityForResult(
+                                intent,
+                                resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
+                            )
+                        }
+                    }.show()
+                }else{
+                    alert(message.toString()) {
+                        okButton { }
+                    }.show()
+                }
             } else {
                 alert(getString(R.string.default_no_internet)) {
                     okButton {}
@@ -227,7 +222,6 @@ class EditProfileFragment : BaseFragment() {
             }
         })
     }
-
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -251,11 +245,7 @@ class EditProfileFragment : BaseFragment() {
 
                 // and then, we'll perform the crop itself
                 performCrop(filesSelected[0].path, outputFile)
-            } else {
-                //lytImage?.visibility = View.GONE
-                //lytImagePlaceholder?.visibility = View.VISIBLE
             }
-
 
             // this will run when coming from the cropActivity and everything is ok
         } else if (resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
@@ -263,28 +253,12 @@ class EditProfileFragment : BaseFragment() {
             profileHasImage = true
 
             Glide.with(context!!).load(resultUri).into(profile_image!!)
-            //lytImage?.visibility = View.VISIBLE
-            //lytImagePlaceholder?.visibility = View.GONE
 
             //Add the photopath to recording item
             tempPhotoPath = resultUri?.path.toString()
-
-//            Commons.getInstance().handleImage(
-//                context,
-//                Commons.IMAGE_TYPE_PODCAST,
-//                File(resultUri?.path),
-//                "podcast_photo"
-//            )
-
-            //Update recording item in Realm
-            //callToUpdateDraft()
-
-            // this will run when coming from the cropActivity but there is an error
         } else if (resultCode == UCrop.RESULT_ERROR) {
             val cropError = UCrop.getError(data!!)
             Timber.d(cropError)
-            //lytImage?.visibility = View.GONE
-            //lytImagePlaceholder?.visibility = View.VISIBLE
         }
 
 
@@ -311,9 +285,8 @@ class EditProfileFragment : BaseFragment() {
 
 
     private fun loadExistingData(){
-        //TODO load existing data from user saved in sessionManager
-        val fullname = sessionManager.getStoredUser()?.first_name + sessionManager.getStoredUser()?.last_name
-        etFullName.text = fullname.toEditable()
+        etFirstName.text = sessionManager.getStoredUser()?.first_name?.toEditable()
+        etLastName.text = sessionManager.getStoredUser()?.last_name?.toEditable()
         etUsername.text = sessionManager.getStoredUser()?.username?.toEditable()
         etWebsite.text = sessionManager.getStoredUser()?.website?.toEditable()
         etBio.text = sessionManager.getStoredUser()?.description?.toEditable()
@@ -322,14 +295,12 @@ class EditProfileFragment : BaseFragment() {
         etAge.text = sessionManager.getStoredUser()?.date_of_birth?.toEditable()
         etGender.text = sessionManager.getStoredUser()?.gender?.toEditable()
         Glide.with(context!!).load(sessionManager.getStoredUser()?.images?.medium_url).into(profile_image!!)
-
     }
 
 
     private fun publishProfileImage() {
 
         if (Commons.getInstance().isImageReadyForUpload) {
-            //Upload audio file to AWS
             Commons.getInstance().uploadImage(
                 context,
                 object : Commons.ImageUploadCallback {

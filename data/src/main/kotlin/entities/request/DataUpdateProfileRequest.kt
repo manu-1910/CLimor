@@ -15,5 +15,6 @@ data class UpdateUserEntity(
     val phone_number: String?,
     val date_of_birth: Int?,
     val gender: String?,
+    val notifications_enabled: Boolean?,
     val image_url: String?
 )
