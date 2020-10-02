@@ -1,14 +1,17 @@
-package io.square1.limor.uimodels
+package io.square1.limor.remote.entities.requests
 
+import kotlinx.serialization.Serializable
 
-data class UISignUpFacebookRequest(
+@Serializable
+data class NWSignUpFacebookRequest(
     var client_id: String,
     var client_secret: String,
     var scopes: String = "user",
-    var user: UISignUpFacebookUser
+    var user: NWSignUpFacebookUser
 )
 
-data class UISignUpFacebookUser(
+@Serializable
+data class NWSignUpFacebookUser(
     var facebook_uid: String,
     var facebook_token: String,
     var email: String,

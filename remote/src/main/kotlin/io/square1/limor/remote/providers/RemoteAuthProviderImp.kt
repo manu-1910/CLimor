@@ -1,10 +1,7 @@
 package io.square1.limor.remote.providers
 
 
-import entities.request.DataChangePasswordRequest
-import entities.request.DataMergeFacebookAccountRequest
-import entities.request.DataSignUpRequest
-import entities.request.DataTokenFBRequest
+import entities.request.*
 import entities.response.AuthResponseEntity
 import entities.response.ChangePasswordResponseEntity
 import entities.response.SignUpResponseEntity
@@ -29,6 +26,10 @@ class RemoteAuthProviderImp @Inject constructor(private val provider: AuthServic
 
     override fun signUp(dataSignUpRequest: DataSignUpRequest): Single<SignUpResponseEntity> {
         return provider.register(dataSignUpRequest.asRemoteEntity()).asDataEntity()
+    }
+
+    override fun signUpFB(dataSignUpFacebookRequest: DataSignUpFacebookRequest): Single<SignUpResponseEntity> {
+        return provider.registerFB(dataSignUpFacebookRequest.asRemoteEntity()).asDataEntity()
     }
 
     override fun forgotPass(email: String): Completable {

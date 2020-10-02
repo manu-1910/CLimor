@@ -51,6 +51,7 @@ abstract class DataModule {
 
     @Binds
     abstract fun bindCategoriesRepository(categoriesRepository: DataCategoriesRepository): CategoriesRepository
+
     @Binds
     abstract fun bindCommentRepository(commentRepository: DataCommentRepository): CommentRepository
 
