@@ -17,10 +17,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import io.reactivex.subjects.PublishSubject
+import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseActivity
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.SessionManager
+import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.main.adapters.FeedAdapter
 import io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity
 import io.square1.limor.scenes.main.fragments.podcast.PodcastsByTagActivity
@@ -28,9 +30,12 @@ import io.square1.limor.scenes.main.fragments.profile.ReportActivity
 import io.square1.limor.scenes.main.fragments.profile.TypeReport
 import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.viewmodels.*
+import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIFeedItem
+import io.square1.limor.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_feed.*
+import kotlinx.android.synthetic.main.fragment_profile.*
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
@@ -57,6 +62,9 @@ abstract class FeedItemsListFragment : BaseFragment() {
     private lateinit var viewModelDeletePodcast: DeletePodcastViewModel
     private lateinit var viewModelCreatePodcastReport: CreatePodcastReportViewModel
     private lateinit var viewModelCreateUserReport: CreateUserReportViewModel
+
+    private lateinit var viewModelCreateBlockedUser: CreateBlockedUserViewModel
+    private val createBlockedUserDataTrigger = PublishSubject.create<Unit>()
 
     private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
@@ -86,6 +94,8 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
     private var isRequestingNewData = false
 
+    var app: App? = null
+
 
     companion object {
         val TAG: String = FeedItemsListFragment::class.java.simpleName
@@ -114,10 +124,52 @@ abstract class FeedItemsListFragment : BaseFragment() {
             initApiCallDeletePodcast()
             initApiCallCreatePodcastReport()
             initApiCallCreateUserReport()
+            initApiCallCreateBlockedUser()
 
 //            requestNewData()
         }
         return rootView
+    }
+
+    private fun initApiCallCreateBlockedUser() {
+        val output = viewModelCreateBlockedUser.transform(
+            CreateBlockedUserViewModel.Input(
+                createBlockedUserDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if (it.code != 0) {
+                toast(getString(R.string.error_blocking_user))
+                viewModelCreateBlockedUser.user?.blocked = false
+            } else {
+                reloadFeed()
+                toast(getString(R.string.success_blocking_user))
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            view?.hideKeyboard()
+            if (app!!.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (it.errorMessage!!.isNotEmpty()) {
+                    message.append(it.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                alert(message.toString()) {
+                    okButton { }
+                }.show()
+            } else {
+                alert(getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+        })
     }
 
     protected fun requestNewData() {
@@ -135,6 +187,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 20f)
         initSwipeAndRefreshLayout()
+        app = context?.applicationContext as App
     }
 
     private fun initSwipeAndRefreshLayout() {
@@ -405,6 +458,13 @@ abstract class FeedItemsListFragment : BaseFragment() {
         if(item.podcast?.user?.id != loggedUser?.id) {
             val menuToHide = popup.menu.findItem(R.id.menu_delete_cast)
             menuToHide.isVisible = false
+        } else {
+            val menuBlock = popup.menu.findItem(R.id.menu_block_user)
+            menuBlock.isVisible = false
+            val menuReportUser = popup.menu.findItem(R.id.menu_report_user)
+            menuReportUser.isVisible = false
+            val menuReportCast = popup.menu.findItem(R.id.menu_report_cast)
+            menuReportCast.isVisible = false
         }
 
         //set menu item click listener here
@@ -414,11 +474,28 @@ abstract class FeedItemsListFragment : BaseFragment() {
                 R.id.menu_report_cast -> onPodcastReportClicked(item)
                 R.id.menu_report_user -> onUserReportClicked(item)
                 R.id.menu_delete_cast -> onDeletePodcastClicked(item, position)
-                R.id.menu_block_user -> toast("You clicked on block user")
+                R.id.menu_block_user -> onBlockUserClicked(item, position)
             }
             true
         }
         popup.show()
+    }
+
+    private fun onBlockUserClicked(item: UIFeedItem, position: Int) {
+        alert(getString(R.string.confirmation_block_user)) {
+            okButton {
+                performBlockUser(item.podcast?.user)
+            }
+            cancelButton { }
+        }.show()
+    }
+
+    private fun performBlockUser(user: UIUser?) {
+        user?.let {
+            viewModelCreateBlockedUser.user = it
+            it.blocked = true
+            createBlockedUserDataTrigger.onNext(Unit)
+        }
     }
 
     private fun onDeletePodcastClicked(
@@ -681,6 +758,10 @@ abstract class FeedItemsListFragment : BaseFragment() {
             viewModelDeletePodcast = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastViewModel::class.java)
+
+            viewModelCreateBlockedUser = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreateBlockedUserViewModel::class.java)
         }
     }
 
@@ -691,6 +772,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
         resetFeedViewModelVariables()
         requestNewData()
     }
+
 
     protected abstract fun resetFeedViewModelVariables()
 

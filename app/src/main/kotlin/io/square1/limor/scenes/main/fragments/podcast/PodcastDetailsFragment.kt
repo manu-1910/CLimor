@@ -1634,7 +1634,7 @@ class PodcastDetailsFragment : BaseFragment() {
             when(menuItem.itemId) {
                 R.id.menu_report_comment -> onReportCommentClicked(comment)
                 R.id.menu_report_user -> onReportUserClicked(comment.user)
-                R.id.menu_block_user -> toast("You clicked on block user")
+                R.id.menu_block_user -> toast("You clicked on block comment user")
             }
             true
         }
@@ -1666,7 +1666,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 R.id.menu_report_cast -> onReportPodcastClicked()
                 R.id.menu_report_user -> onReportUserClicked(uiPodcast?.user)
                 R.id.menu_delete_cast -> onDeletePodcastClicked()
-                R.id.menu_block_user -> toast("You clicked on report user")
+                R.id.menu_block_user -> toast("You clicked on report podcast user")
             }
             true
         }
