@@ -54,6 +54,18 @@ class AuthServiceImp @Inject constructor(private val serviceConfig: RemoteServic
     }
 
 
+    fun registerFB(nwSignUpFacebookRequest: NWSignUpFacebookRequest): Single<NWSignUpResponse> {
+        return service.registerBody(RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWSignUpFacebookRequest.serializer(), nwSignUpFacebookRequest)))
+            .map { response -> response.parseSuccessResponse(NWSignUpResponse.serializer()) }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
+
     fun forgotPassword(NWForgotPasswordRequest: NWForgotPasswordRequest): Completable {
         return service.forgotPassword(Mapper.map(NWForgotPasswordRequest))
             .doOnSuccess { println("SUCCESS: $it") }

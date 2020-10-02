@@ -220,4 +220,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(DeletePodcastViewModel::class)
     abstract fun bindDeletePodcastViewModel(deletePodcastViewModel: DeletePodcastViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SignUpFBViewModel::class)
+    abstract fun bindSignUpFBViewModel(signUpFBViewModel: SignUpFBViewModel): ViewModel
 }

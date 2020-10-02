@@ -33,6 +33,7 @@ import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.authentication.viewmodels.MergeFacebookAccountViewModel
 import io.square1.limor.scenes.authentication.viewmodels.SignFBViewModel
+import io.square1.limor.scenes.authentication.viewmodels.SignUpFBViewModel
 import io.square1.limor.scenes.authentication.viewmodels.SignUpViewModel
 import io.square1.limor.scenes.main.MainActivity
 import io.square1.limor.scenes.main.viewmodels.CreateFriendViewModel
@@ -56,13 +57,13 @@ class SignUpFragment : BaseFragment() {
     lateinit var sessionManager: SessionManager
 
     private lateinit var viewModel: SignUpViewModel
-    private lateinit var viewModelSignInFB: SignFBViewModel
+    private lateinit var viewModelSignUpFB: SignUpFBViewModel
     private lateinit var viewModelMergeFacebookAccount: MergeFacebookAccountViewModel
 
     private lateinit var viewModelCreateFriend : CreateFriendViewModel
 
     private val signUpTrigger = PublishSubject.create<Unit>()
-    private val signUpFBLoginTrigger = PublishSubject.create<Unit>()
+    private val signUpFBTrigger = PublishSubject.create<Unit>()
     private val mergeFacebookAccountTrigger = PublishSubject.create<Unit>()
     private val createFriendTrigger = PublishSubject.create<Unit>()
 
@@ -94,7 +95,7 @@ class SignUpFragment : BaseFragment() {
 
         bindViewModel()
         apiCall()
-        apiCallSignInWithFacebook()
+        apiCallSignUpWithFacebook()
         apiCallMergeFacebookAccount()
         initApiCallAutofollowLimor()
         setMessageWithClickableLink(tvTermsAndConditions)
@@ -108,10 +109,11 @@ class SignUpFragment : BaseFragment() {
                 ViewModelProviders
                     .of(fragmentActivity, viewModelFactory)
                     .get(SignUpViewModel::class.java)
-            viewModelSignInFB =
+
+            viewModelSignUpFB =
                 ViewModelProviders
                     .of(fragmentActivity, viewModelFactory)
-                    .get(SignFBViewModel::class.java)
+                    .get(SignUpFBViewModel::class.java)
 
             viewModelMergeFacebookAccount =
                 ViewModelProviders
@@ -196,10 +198,10 @@ class SignUpFragment : BaseFragment() {
         })
     }
 
-    private fun apiCallSignInWithFacebook() {
-        val output = viewModelSignInFB.transform(
-            SignFBViewModel.Input(
-                signUpFBLoginTrigger
+    private fun apiCallSignUpWithFacebook() {
+        val output = viewModelSignUpFB.transform(
+            SignUpFBViewModel.Input(
+                signUpFBTrigger
             )
         )
 
@@ -209,7 +211,7 @@ class SignUpFragment : BaseFragment() {
 
             var token: String = ""
             try{
-                token = it.data.token.access_token
+                token = it.data.access_token.token.access_token
             }catch (e: Exception){
                 token = ""
                 e.printStackTrace()
@@ -225,8 +227,8 @@ class SignUpFragment : BaseFragment() {
                     alert(it.message) {
                         okButton {
                             mergeAccounts(
-                                viewModelSignInFB.fbUidViewModel,
-                                viewModelSignInFB.fbAccessTokenViewModel,
+                                viewModelSignUpFB.fbUidViewModel,
+                                viewModelSignUpFB.fbAccessTokenViewModel,
                                 token
                             )
                         }
@@ -434,21 +436,23 @@ class SignUpFragment : BaseFragment() {
                     val request = GraphRequest.newMeRequest(loginResult.accessToken) { data, response ->
                         try {
                             //here is the data that you want
-                            Timber.d("FBLOGIN_JSON_RES $data")
+                            Timber.d("FBSIGNUP_JSON_RES $data")
 
                             if (data.has("id")) {
                                 Timber.d("Facebook token: $loginResult.accessToken.token ")
                                 //startActivity(Intent(context, MainActivity::class.java))
                                 val fbUid: String = AccessToken.getCurrentAccessToken().userId
                                 val fbToken: String = AccessToken.getCurrentAccessToken().token
-                                var firstName: String = ""
-                                var lastName: String = ""
-                                var email: String = ""
-                                var userImageUrl: String = ""
+                                var firstName = ""
+                                var lastName = ""
+                                var email = ""
+                                var username = ""
+                                var userImageUrl = ""
                                 try {
                                     firstName = data.getString("first_name")
                                     lastName = data.getString("last_name")
                                     email = data.getString("email")
+                                    username = data.getString("username")
                                     userImageUrl = "https://graph.facebook.com/$fbUid/picture?type=large"
                                 } catch (e: JSONException) {
                                     e.printStackTrace()
@@ -456,11 +460,11 @@ class SignUpFragment : BaseFragment() {
                                 val user = UISignUpUser(
                                     email.toString(),
                                     "",
-                                    "$firstName $lastName"
+                                    firstName
                                 )
-                                tryLoginWithFacebook(fbUid, fbToken, user)
+                                tryRegisterWithFacebook(fbUid, fbToken, user)
                             } else {
-                                Timber.e("FBLOGIN_FAILD $data")
+                                Timber.e("FBSIGNUP_FAILED $data")
                             }
 
                         } catch (e: Exception) {
@@ -490,13 +494,16 @@ class SignUpFragment : BaseFragment() {
 
 
 
-    private fun tryLoginWithFacebook(fbUid: String, fbToken: String, user: UISignUpUser) {
-        viewModelSignInFB.fbAccessTokenViewModel = fbToken
-        viewModelSignInFB.fbUidViewModel = fbUid
-        viewModelSignInFB.userViewModel = user
+    private fun tryRegisterWithFacebook(fbUid: String, fbToken: String, user: UISignUpUser) {
+        viewModelSignUpFB.fbAccessTokenViewModel = fbToken
+        viewModelSignUpFB.fbUidViewModel = fbUid
+        viewModelSignUpFB.emailViewModel = user.email
+        viewModelSignUpFB.passwordViewModel = user.password
+        viewModelSignUpFB.userNameViewModel = user.username
 
-        signUpFBLoginTrigger.onNext(Unit)
+        signUpFBTrigger.onNext(Unit)
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -504,12 +511,14 @@ class SignUpFragment : BaseFragment() {
         callbackManager?.onActivityResult(requestCode, resultCode, data)
     }
 
+
     private fun mergeAccounts(fbUid: String, fbToken: String, temporaryAccessToken: String) {
         viewModelMergeFacebookAccount.fbAccessTokenViewModel = fbToken
         viewModelMergeFacebookAccount.fbUidViewModel = fbUid
 
         mergeFacebookAccountTrigger.onNext(Unit)
     }
+
 
     private fun goToMainActivity() {
         //DataManager.getInstance().getUserInfoData(true, null)

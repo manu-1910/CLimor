@@ -1,14 +1,14 @@
-package io.square1.limor.uimodels
+package entities.request
 
 
-data class UISignUpFacebookRequest(
+data class DataSignUpFacebookRequest(
     var client_id: String,
     var client_secret: String,
     var scopes: String = "user",
-    var user: UISignUpFacebookUser
+    var user: DataSignUpFacebookUser
 )
 
-data class UISignUpFacebookUser(
+data class DataSignUpFacebookUser(
     var facebook_uid: String,
     var facebook_token: String,
     var email: String,

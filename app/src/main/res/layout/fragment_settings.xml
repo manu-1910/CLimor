@@ -268,10 +268,15 @@
             </RelativeLayout>
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> LIM-248
             <RelativeLayout
                 android:id="@+id/lytReportProblem"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+<<<<<<< HEAD
                 android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
@@ -279,18 +284,36 @@
                 android:paddingTop="@dimen/marginVeryLarge"
                 android:paddingEnd="@dimen/marginMedium"
                 android:paddingBottom="@dimen/marginEleven"
+=======
+                android:paddingTop="@dimen/marginVeryLarge"
+                android:paddingBottom="@dimen/marginEleven"
+                android:paddingStart="@dimen/marginMedium"
+                android:paddingEnd="@dimen/marginMedium"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:focusable="true"
+>>>>>>> LIM-248
                 android:visibility="visible">
 
                 <TextView
                     android:id="@+id/tvReportProblem"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+<<<<<<< HEAD
                     android:layout_alignParentStart="true"
                     android:drawableEnd="@drawable/chevron_right"
                     android:fontFamily="@font/roboto"
                     android:text="@string/settings_report_a_problem"
                     android:textColor="@color/white"
                     android:textSize="@dimen/textSizeNormal" />
+=======
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/textSizeNormal"
+                    android:fontFamily="@font/roboto"
+                    android:text="@string/settings_report_a_problem"
+                    android:layout_alignParentStart="true"
+                    android:drawableEnd="@drawable/chevron_right"/>
+>>>>>>> LIM-248
 
             </RelativeLayout>
 
@@ -303,11 +326,16 @@
                 android:id="@+id/tvAppVersion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+<<<<<<< HEAD
                 android:layout_alignParentStart="true"
                 android:layout_marginStart="@dimen/marginMedium"
                 android:layout_marginTop="@dimen/marginMedium"
                 android:layout_marginEnd="@dimen/marginMedium"
                 android:layout_marginBottom="@dimen/marginVerySmall"
+=======
+                android:textColor="@color/marker_time_text"
+                android:textSize="@dimen/textSizeVerySmall"
+>>>>>>> LIM-248
                 android:fontFamily="@font/roboto"
                 android:text="v1.0.0"
                 android:textColor="@color/marker_time_text"
