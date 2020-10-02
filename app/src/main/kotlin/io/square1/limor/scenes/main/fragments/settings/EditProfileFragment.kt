@@ -30,6 +30,8 @@ import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.viewmodels.UpdateUserViewModel
 import io.square1.limor.scenes.utils.Commons
+import io.square1.limor.scenes.utils.CommonsKt.Companion.ageToTimestamp
+import io.square1.limor.scenes.utils.CommonsKt.Companion.timestampToAge
 import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
@@ -68,7 +70,11 @@ class EditProfileFragment : BaseFragment() {
     }
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_edit_profile, container, false)
         }
@@ -155,7 +161,7 @@ class EditProfileFragment : BaseFragment() {
         updateUserViewModel.description = etBio.text.toString()
         updateUserViewModel.email = etEmail.text.toString()
         updateUserViewModel.phone_number = etPhone.text.toString()
-        updateUserViewModel.date_of_birth = etAge.text.toString().toInt()
+        updateUserViewModel.date_of_birth =  ageToTimestamp(etAge.text.toString().toInt())
         updateUserViewModel.gender = etGender.text.toString()
         updateUserViewModel.notifications_enabled = sessionManager.getPushNotificationsEnabled()!!
         if(profileHasImage){
@@ -199,7 +205,7 @@ class EditProfileFragment : BaseFragment() {
                 } else {
                     message.append(R.string.some_error)
                 }
-                if(it.code == 10){  //Session expired
+                if (it.code == 10) {  //Session expired
                     alert(message.toString()) {
                         okButton {
                             val intent = Intent(context, SignActivity::class.java)
@@ -210,7 +216,7 @@ class EditProfileFragment : BaseFragment() {
                             )
                         }
                     }.show()
-                }else{
+                } else {
                     alert(message.toString()) {
                         okButton { }
                     }.show()
@@ -292,9 +298,11 @@ class EditProfileFragment : BaseFragment() {
         etBio.text = sessionManager.getStoredUser()?.description?.toEditable()
         etEmail.text = sessionManager.getStoredUser()?.email?.toEditable()
         etPhone.text = sessionManager.getStoredUser()?.phone_number?.toEditable()
-        etAge.text = sessionManager.getStoredUser()?.date_of_birth?.toEditable()
+        etAge.text = timestampToAge(sessionManager.getStoredUser()?.date_of_birth!!).toEditable()
         etGender.text = sessionManager.getStoredUser()?.gender?.toEditable()
-        Glide.with(context!!).load(sessionManager.getStoredUser()?.images?.medium_url).into(profile_image!!)
+        Glide.with(context!!).load(sessionManager.getStoredUser()?.images?.medium_url).into(
+            profile_image!!
+        )
     }
 
 
@@ -347,6 +355,9 @@ class EditProfileFragment : BaseFragment() {
             callToApiUpdateUser()
         }
     }
+
+
+
 
 }
 

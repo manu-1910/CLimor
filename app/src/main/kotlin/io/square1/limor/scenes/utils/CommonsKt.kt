@@ -189,10 +189,28 @@ class CommonsKt {
             }
         }
 
+
+        fun ageToTimestamp(age: Int): Long{
+            val calendar = Calendar.getInstance()
+            calendar.add(Calendar.YEAR, age)
+            val timeMilli = calendar.timeInMillis
+
+            return timeMilli
+        }
+
+
+        fun timestampToAge(age: Long): Int{
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = age
+            val timeYear = calendar.get(Calendar.YEAR)
+
+            val calendarNow = Calendar.getInstance()
+            val currentYear = calendarNow.get(Calendar.YEAR)
+
+            return timeYear - currentYear
+        }
+
     }
-
-
-
 
 
 }
