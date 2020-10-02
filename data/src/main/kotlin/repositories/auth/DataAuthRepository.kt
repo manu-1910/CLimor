@@ -21,6 +21,10 @@ class DataAuthRepository @Inject constructor(private val remoteProvider: RemoteA
         return remoteProvider.signUp(dataSignUpRequest)
     }
 
+    override fun signUpFB(dataSignUpFacebookRequest: DataSignUpFacebookRequest): Single<SignUpResponseEntity>{
+        return remoteProvider.signUpFB(dataSignUpFacebookRequest)
+    }
+
     override fun forgotPass(email: String): Completable {
         return remoteProvider.forgotPass(email)
     }

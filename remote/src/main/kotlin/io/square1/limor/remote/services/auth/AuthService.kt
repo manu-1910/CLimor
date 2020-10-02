@@ -14,7 +14,7 @@ import retrofit2.http.QueryMap
 const val AUTH_LOGIN_PATH = "/oauth/token"
 const val FACEBOOK_LOGIN_PATH = "/oauth/token"
 const val AUTH_REGISTER_PATH = "/api/v1/users"
-const val AUTH_FORGOT_PASSWORD_PATH = "/api/v1/users/reset_password"  //TODO JJ IMPLEMENT LOGOUT
+const val AUTH_FORGOT_PASSWORD_PATH = "/api/v1/users/reset_password"
 const val AUTH_MERGE_ACCOUNTS_PATH = "/api/v1/users/merge"
 const val CHANGE_PASSWORD_PATH = "/api/v1/users/password"
 
