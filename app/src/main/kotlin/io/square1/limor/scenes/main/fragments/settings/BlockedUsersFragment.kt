@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.subjects.PublishSubject
@@ -24,10 +25,12 @@ import io.square1.limor.scenes.main.viewmodels.CreateBlockedUserViewModel
 import io.square1.limor.scenes.main.viewmodels.DeleteBlockedUserViewModel
 import io.square1.limor.scenes.main.viewmodels.GetBlockedUsersViewModel
 import io.square1.limor.uimodels.UIUser
+import kotlinx.android.synthetic.main.fragment_empty_scenario.*
 import kotlinx.android.synthetic.main.fragment_users_blocked.*
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
+import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.onRefresh
 import org.jetbrains.anko.support.v4.toast
@@ -77,6 +80,7 @@ class BlockedUsersFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initToolbar()
+        configureEmptyScenario()
 
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 1f)
@@ -87,11 +91,22 @@ class BlockedUsersFragment : BaseFragment() {
         initApiCallDeleteBlockedUser()
         initSwipeAndRefreshLayout()
         initRecyclerView()
-        requestNewData()
+
+        if(viewModelGetBlockedUsers.users.size == 0)
+            requestNewData()
+    }
+
+    private fun configureEmptyScenario() {
+        tvTitleEmptyScenario.text = getString(R.string.empty_scenario_blocked_users)
     }
 
     private fun initToolbar() {
         tvToolbarTitle.text = getString(R.string.title_blocked_users)
+
+        //Toolbar Left
+        btnClose.onClick {
+            findNavController().popBackStack()
+        }
     }
 
     private fun initRecyclerView() {
@@ -142,7 +157,7 @@ class BlockedUsersFragment : BaseFragment() {
                     // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
                     if (!isRequestingNewData && isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
                         isScrolling = false
-                        setViewModelVariablesOnScroll()
+                        setViewModelVariables()
                         requestNewData(false)
                     }
                 }
@@ -152,7 +167,7 @@ class BlockedUsersFragment : BaseFragment() {
         rvBlockedUsers?.setHasFixedSize(false)
     }
 
-    private fun setViewModelVariablesOnScroll() {
+    private fun setViewModelVariables() {
         viewModelGetBlockedUsers.offset = viewModelGetBlockedUsers.users.size
     }
 
@@ -249,6 +264,7 @@ class BlockedUsersFragment : BaseFragment() {
                 if(it.data.blocked_users.size > 0) {
                     val previousSize = viewModelGetBlockedUsers.users.size
                     viewModelGetBlockedUsers.users.addAll(it.data.blocked_users)
+                    setViewModelVariables()
                     blockedUsersAdapter.notifyItemRangeInserted(previousSize, it.data.blocked_users.size)
                 } else {
                     if(viewModelGetBlockedUsers.users.size == 0)

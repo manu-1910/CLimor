@@ -352,6 +352,7 @@
     <string name="settings_blocked_users">Blocked Users</string>
     <string name="title_blocked_users">Blocked Users</string>
     <string name="delete_podcast_ok">Podcast deleted successfully</string>
+    <string name="empty_scenario_blocked_users">You don\'t have blocked people</string>
 
 
 </resources>
