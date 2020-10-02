@@ -30,12 +30,10 @@ import io.square1.limor.scenes.main.fragments.profile.ReportActivity
 import io.square1.limor.scenes.main.fragments.profile.TypeReport
 import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.viewmodels.*
-import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIFeedItem
 import io.square1.limor.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_feed.*
-import kotlinx.android.synthetic.main.fragment_profile.*
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert

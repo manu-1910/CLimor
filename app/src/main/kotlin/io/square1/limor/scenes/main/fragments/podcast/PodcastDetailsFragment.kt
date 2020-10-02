@@ -14,8 +14,11 @@ import android.os.Handler
 import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.MenuInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -37,9 +40,9 @@ import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.extensions.showKeyboard
 import io.square1.limor.scenes.main.adapters.CommentsAdapter
+import io.square1.limor.scenes.main.fragments.profile.ReportActivity
 import io.square1.limor.scenes.main.fragments.profile.TypeReport
 import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
-import io.square1.limor.scenes.main.fragments.profile.ReportActivity
 import io.square1.limor.scenes.main.viewmodels.*
 import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
@@ -80,6 +83,7 @@ data class CommentWithParent(val comment: UIComment, val parent: CommentWithPare
 
 class PodcastDetailsFragment : BaseFragment() {
 
+    private var isBlockingPodcastUser: Boolean = false
     private var btnRecordClicked: Boolean = false
     private var isWaitingForApiCall: Boolean = false
     private var currentOffset: Int = 0
@@ -131,6 +135,10 @@ class PodcastDetailsFragment : BaseFragment() {
     private val createPodcastReportDataTrigger = PublishSubject.create<Unit>()
     private val createUserReportDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastDataTrigger = PublishSubject.create<Unit>()
+
+
+    private lateinit var viewModelCreateBlockedUser: CreateBlockedUserViewModel
+    private val createBlockedUserDataTrigger = PublishSubject.create<Unit>()
 
 
     private val commentWithParentsItemsList = ArrayList<CommentWithParent>()
@@ -219,6 +227,7 @@ class PodcastDetailsFragment : BaseFragment() {
         initApiCallCreateCommentReport()
         initApiCallCreatePodcastReport()
         initApiCallCreateUserReport()
+        initApiCallCreateBlockedUser()
         configureToolbar()
 
         // we get the possible comment clicked from the previous activity.
@@ -236,6 +245,58 @@ class PodcastDetailsFragment : BaseFragment() {
             if(it)
                 openCommentBarTextAndFocusIt()
         }
+    }
+
+    private fun initApiCallCreateBlockedUser() {
+        val output = viewModelCreateBlockedUser.transform(
+            CreateBlockedUserViewModel.Input(
+                createBlockedUserDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if (it.code != 0) {
+                toast(getString(R.string.error_blocking_user))
+                viewModelCreateBlockedUser.user?.blocked = false
+            } else {
+                toast(getString(R.string.success_blocking_user))
+
+                // you blocked a podcast user and not a comment user
+                if(isBlockingPodcastUser) {
+                    activity?.finish()
+
+
+                }
+
+                // you blocked a comment user
+//                else {
+//
+//                }
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            view?.hideKeyboard()
+            if (app!!.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (it.errorMessage!!.isNotEmpty()) {
+                    message.append(it.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                alert(message.toString()) {
+                    okButton { }
+                }.show()
+            } else {
+                alert(getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+        })
     }
 
     private fun initApiCallCreatePodcastReport() {
@@ -363,7 +424,6 @@ class PodcastDetailsFragment : BaseFragment() {
                     }
                 }
             }
-
 
             viewModelGetCommentComments.idComment = it.comment.id
             getCommentCommentsDataTrigger.onNext(Unit)
@@ -977,9 +1037,13 @@ class PodcastDetailsFragment : BaseFragment() {
 
         output.errorMessage.observe(this, Observer {
             hideProgressBar()
+            val text = when(it.code) {
+                4 -> getString(R.string.error_content_unavailable)
+                else -> getString(R.string.couldnt_get_feed)
+            }
             Toast.makeText(
                 context,
-                getString(R.string.couldnt_get_feed),
+                text,
                 Toast.LENGTH_SHORT
             ).show()
         })
@@ -1143,9 +1207,13 @@ class PodcastDetailsFragment : BaseFragment() {
 
         output.errorMessage.observe(this, Observer {
             hideProgressBar()
+            val text = when(it.code) {
+                4 -> getString(R.string.error_content_unavailable)
+                else -> getString(R.string.couldnt_get_feed)
+            }
             Toast.makeText(
                 context,
-                getString(R.string.couldnt_get_comments),
+                text,
                 Toast.LENGTH_SHORT
             ).show()
         })
@@ -1469,6 +1537,10 @@ class PodcastDetailsFragment : BaseFragment() {
             viewModelDeletePodcast = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastViewModel::class.java)
+
+            viewModelCreateBlockedUser = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreateBlockedUserViewModel::class.java)
         }
     }
 
@@ -1634,11 +1706,24 @@ class PodcastDetailsFragment : BaseFragment() {
             when(menuItem.itemId) {
                 R.id.menu_report_comment -> onReportCommentClicked(comment)
                 R.id.menu_report_user -> onReportUserClicked(comment.user)
-                R.id.menu_block_user -> toast("You clicked on block comment user")
+                R.id.menu_block_user -> onCommentUserBlockClicked(comment.user)
             }
             true
         }
         popup.show()
+    }
+
+    private fun onCommentUserBlockClicked(user: UIUser?) {
+        alert(getString(R.string.confirmation_block_user)) {
+            okButton {
+                viewModelCreateBlockedUser.user = user
+                isBlockingPodcastUser = false
+                createBlockedUserDataTrigger.onNext(Unit)
+            }
+            cancelButton {
+
+            }
+        }.show()
     }
 
     private fun onReportCommentClicked(comment: UIComment) {
@@ -1666,11 +1751,22 @@ class PodcastDetailsFragment : BaseFragment() {
                 R.id.menu_report_cast -> onReportPodcastClicked()
                 R.id.menu_report_user -> onReportUserClicked(uiPodcast?.user)
                 R.id.menu_delete_cast -> onDeletePodcastClicked()
-                R.id.menu_block_user -> toast("You clicked on report podcast user")
+                R.id.menu_block_user -> onPodcastUserBlockClicked(uiPodcast?.user)
             }
             true
         }
         popup.show()
+    }
+
+    private fun onPodcastUserBlockClicked(user: UIUser?) {
+        alert(getString(R.string.confirmation_block_user)) {
+            okButton {
+                viewModelCreateBlockedUser.user = user
+                isBlockingPodcastUser = true
+                createBlockedUserDataTrigger.onNext(Unit)
+            }
+            cancelButton {  }
+        }.show()
     }
 
     private fun onDeletePodcastClicked() {
@@ -1871,7 +1967,6 @@ class PodcastDetailsFragment : BaseFragment() {
 //    private fun reloadComments() {
 //        showEmptyScenario()
 //        showProgressBar()
-//        app_bar_layout?.setExpanded(true)
 //        isLastPage = false
 //        isReloading = true
 //        commentWithParentsItemsList.clear()
