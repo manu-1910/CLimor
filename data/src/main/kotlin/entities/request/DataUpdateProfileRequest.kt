@@ -13,7 +13,7 @@ data class UpdateUserEntity(
     val description: String?,
     val email: String?,
     val phone_number: String?,
-    val date_of_birth: Int?,
+    val date_of_birth: Long?,
     val gender: String?,
     val notifications_enabled: Boolean?,
     val image_url: String?

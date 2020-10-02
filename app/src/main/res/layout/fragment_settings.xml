@@ -46,7 +46,10 @@
                 android:id="@+id/lytEditProfile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/marginMedium"
+                android:paddingTop="@dimen/marginEleven"
+                android:paddingBottom="@dimen/marginEleven"
+                android:paddingStart="@dimen/marginMedium"
+                android:paddingEnd="@dimen/marginMedium"
                 android:visibility="visible">
 
                 <TextView
@@ -73,7 +76,10 @@
                 android:id="@+id/lytChangePassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/marginMedium"
+                android:paddingTop="@dimen/marginEleven"
+                android:paddingBottom="@dimen/marginEleven"
+                android:paddingStart="@dimen/marginMedium"
+                android:paddingEnd="@dimen/marginMedium"
                 android:clickable="true"
                 android:background="?android:attr/selectableItemBackground"
                 android:focusable="true"
@@ -103,7 +109,10 @@
                 android:id="@+id/lytPushNotifications"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/marginMedium"
+                android:paddingTop="@dimen/marginEleven"
+                android:paddingBottom="@dimen/marginEleven"
+                android:paddingStart="@dimen/marginMedium"
+                android:paddingEnd="@dimen/marginMedium"
                 android:clickable="true"
                 android:background="?android:attr/selectableItemBackground"
                 android:focusable="true"
@@ -206,7 +215,10 @@
                 android:id="@+id/lytPrivacyPolicy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/marginMedium"
+                android:paddingTop="@dimen/marginEleven"
+                android:paddingBottom="@dimen/marginEleven"
+                android:paddingStart="@dimen/marginMedium"
+                android:paddingEnd="@dimen/marginMedium"
                 android:clickable="true"
                 android:background="?android:attr/selectableItemBackground"
                 android:focusable="true"
@@ -236,7 +248,10 @@
                 android:id="@+id/lytTermsAndConditions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/marginMedium"
+                android:paddingTop="@dimen/marginEleven"
+                android:paddingBottom="@dimen/marginEleven"
+                android:paddingStart="@dimen/marginMedium"
+                android:paddingEnd="@dimen/marginMedium"
                 android:clickable="true"
                 android:background="?android:attr/selectableItemBackground"
                 android:focusable="true"
@@ -261,38 +276,19 @@
                 android:layout_height="1dp"
                 android:background="@color/brandSecondary300"/>
 
-
-            <RelativeLayout
-                android:id="@+id/lytReportProblem"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/tvTitlePrivacy"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/marginLarge"
-                android:layout_marginBottom="@dimen/marginMedium"
+                android:textColor="@color/marker_time_text"
+                android:textSize="@dimen/textSizeVerySmall"
+                android:fontFamily="@font/roboto"
+                android:text="@string/title_settings_privacy"
+                android:layout_marginTop="@dimen/marginMedium"
                 android:layout_marginStart="@dimen/marginMedium"
                 android:layout_marginEnd="@dimen/marginMedium"
-                android:clickable="true"
-                android:background="?android:attr/selectableItemBackground"
-                android:focusable="true"
-                android:visibility="visible">
-
-                <TextView
-                    android:id="@+id/tvReportProblem"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/textSizeNormal"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/settings_report_a_problem"
-                    android:layout_alignParentStart="true"
-                    android:drawableEnd="@drawable/chevron_right"/>
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/brandSecondary300"/>
-
+                android:layout_marginBottom="@dimen/marginVerySmall"
+                android:textAllCaps="true" />
 
 
             <TextView
@@ -309,18 +305,14 @@
                 android:layout_marginBottom="@dimen/marginVerySmall"
                 android:layout_alignParentStart="true" />
 
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/brandSecondary300"/>
-
-
             <RelativeLayout
                 android:id="@+id/lytLogout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/marginMedium"
+                android:paddingTop="@dimen/marginEleven"
+                android:paddingBottom="@dimen/marginEleven"
+                android:paddingStart="@dimen/marginMedium"
+                android:paddingEnd="@dimen/marginMedium"
                 android:clickable="true"
                 android:background="?android:attr/selectableItemBackground"
                 android:focusable="true">

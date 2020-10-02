@@ -74,4 +74,22 @@
         <item name="android:background">@drawable/bg_round_brand_500_ripple</item>
     </style>
 
+
+    <!-- TextInputLayout Style -->
+    <style name="CustomEditText">
+        <item name="colorOnSurface">@color/green500</item>
+        <item name="colorPrimary">@color/brandPrimary500</item>
+    </style>
+
+    <style name="TextAppearence.App.TextInputLayout" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/textSizeNormal</item>
+        <item name="colorControlNormal">@color/brandSecondary300</item>
+
+        //added attributes
+        <item name="colorControlActivated">@color/brandPrimary500</item>
+        <item name="colorControlHighlight">@color/white</item>
+
+    </style>
+
 </resources>

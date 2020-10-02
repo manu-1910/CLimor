@@ -98,7 +98,7 @@ data class NWUser(
     @Optional
     val blocked_by: Boolean = false,
     @Optional
-    val date_of_birth: Int? = 0,
+    val date_of_birth: Long? = 0,
     @Optional
     val description: String? = "",
     @Optional

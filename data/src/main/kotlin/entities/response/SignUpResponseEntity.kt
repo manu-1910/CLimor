@@ -60,7 +60,7 @@ data class UserEntity(
     val autoplay_enabled: Boolean,
     val blocked: Boolean,
     val blocked_by: Boolean,
-    val date_of_birth: Int?,
+    val date_of_birth: Long?,
     val description: String?,
     val email: String?,
     val first_name: String?,
