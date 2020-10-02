@@ -45,10 +45,8 @@
             android:gravity="center"
             android:layout_centerInParent="true"
             android:fontFamily="@font/roboto_medium"
-            android:text="Alexa Tenorio"
             android:textColor="@color/toolbar_text"
-            android:textSize="@dimen/textSizeNormal"
-            tools:ignore="HardcodedText" />
+            android:textSize="@dimen/textSizeNormal" />
 
         <ImageButton
             android:background="@color/transparent"
