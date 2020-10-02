@@ -6,6 +6,7 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -213,7 +214,7 @@ class ProfileFragment : BaseFragment() {
             layViewPager.visibility = View.GONE
         } else {
             layViewPager.visibility = View.VISIBLE
-            val names = arrayOf("Casts", "Likes", "Not implemented")
+            val names = arrayOf("Casts", "Likes")
             viewPager.adapter = object : FragmentStateAdapter(this) {
                 override fun getItemCount(): Int {
                     return names.size
