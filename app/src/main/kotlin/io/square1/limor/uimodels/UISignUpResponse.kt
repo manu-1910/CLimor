@@ -66,7 +66,7 @@ data class UIUser(
     var autoplay_enabled: Boolean,
     var blocked: Boolean,
     var blocked_by: Boolean,
-    var date_of_birth: Int?,
+    var date_of_birth: Long?,
     var description: String?,
     var email: String?,
     var first_name: String?,

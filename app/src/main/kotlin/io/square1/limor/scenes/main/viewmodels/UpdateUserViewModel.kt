@@ -27,7 +27,7 @@ class UpdateUserViewModel @Inject constructor(private val profileUseCase: Profil
     var description: String = ""
     var email: String = ""
     var phone_number: String = ""
-    var date_of_birth: Int = 0
+    var date_of_birth: Long = 0
     var gender: String = ""
     var image = ""
     var notifications_enabled = false

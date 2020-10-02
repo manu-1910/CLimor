@@ -71,7 +71,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginEnd="@dimen/marginMedium"
                     android:layout_marginTop="@dimen/marginSmall"
                     android:gravity="center">
 
@@ -93,12 +92,14 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_toEndOf="@id/tvFirstName"
+                        android:paddingEnd="@dimen/marginMedium"
                         android:fontFamily="@font/roboto"
                         android:hint="@string/hint_firstname"
                         android:inputType="textPersonName"
                         android:textColor="@color/white"
                         android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal" />
+                        android:textSize="@dimen/textSizeNormal"
+                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
 
                 </RelativeLayout>
 
@@ -107,7 +108,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginEnd="@dimen/marginMedium"
                     android:layout_marginTop="@dimen/marginSmall"
                     android:gravity="center">
 
@@ -127,6 +127,7 @@
                         android:id="@+id/etLastName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="@dimen/marginMedium"
                         android:layout_alignParentEnd="true"
                         android:layout_toEndOf="@id/tvLastName"
                         android:fontFamily="@font/roboto"
@@ -134,7 +135,8 @@
                         android:inputType="textPersonName"
                         android:textColor="@color/white"
                         android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal" />
+                        android:textSize="@dimen/textSizeNormal"
+                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
 
                 </RelativeLayout>
 
@@ -142,7 +144,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginEnd="@dimen/marginMedium"
                     android:layout_marginTop="@dimen/marginSmall"
                     android:gravity="center">
 
@@ -163,13 +164,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
+                        android:paddingEnd="@dimen/marginMedium"
                         android:layout_toEndOf="@id/tvUsername"
                         android:fontFamily="@font/roboto"
                         android:hint="@string/hint_username"
                         android:inputType="textPersonName"
                         android:textColor="@color/white"
                         android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal" />
+                        android:textSize="@dimen/textSizeNormal"
+                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
 
                 </RelativeLayout>
 
@@ -177,7 +180,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginEnd="@dimen/marginMedium"
                     android:layout_marginTop="@dimen/marginSmall"
                     android:gravity="center">
 
@@ -185,6 +187,7 @@
                         android:id="@+id/tvWebsite"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="@dimen/marginMedium"
                         android:layout_alignParentStart="true"
                         android:layout_alignBottom="@id/etWebsite"
                         android:layout_marginBottom="11dp"
@@ -204,7 +207,8 @@
                         android:inputType="textWebEmailAddress"
                         android:textColor="@color/white"
                         android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal" />
+                        android:textSize="@dimen/textSizeNormal"
+                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
 
                 </RelativeLayout>
 
@@ -213,7 +217,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginEnd="@dimen/marginMedium"
                     android:layout_marginTop="@dimen/marginSmall"
                     android:gravity="center">
 
@@ -234,13 +237,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
+                        android:paddingEnd="@dimen/marginMedium"
                         android:layout_toEndOf="@id/tvBio"
                         android:fontFamily="@font/roboto"
                         android:hint="@string/hint_bio"
                         android:inputType="textMultiLine"
                         android:textColor="@color/white"
                         android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal" />
+                        android:textSize="@dimen/textSizeNormal"
+                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
 
                 </RelativeLayout>
 
@@ -269,7 +274,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginEnd="@dimen/marginMedium"
                     android:layout_marginTop="@dimen/marginSmall"
                     android:gravity="center">
 
@@ -289,6 +293,7 @@
                         android:id="@+id/etEmail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingEnd="@dimen/marginMedium"
                         android:layout_alignParentEnd="true"
                         android:layout_toEndOf="@id/tvEmail"
                         android:fontFamily="@font/roboto"
@@ -296,7 +301,8 @@
                         android:inputType="textWebEmailAddress"
                         android:textColor="@color/white"
                         android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal" />
+                        android:textSize="@dimen/textSizeNormal"
+                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
 
                 </RelativeLayout>
 
@@ -304,7 +310,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginEnd="@dimen/marginMedium"
                     android:layout_marginTop="@dimen/marginSmall"
                     android:gravity="center">
 
@@ -325,13 +330,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
+                        android:paddingEnd="@dimen/marginMedium"
                         android:layout_toEndOf="@id/tvPhone"
                         android:fontFamily="@font/roboto"
                         android:hint="@string/hint_phone"
                         android:inputType="phone"
                         android:textColor="@color/white"
                         android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal" />
+                        android:textSize="@dimen/textSizeNormal"
+                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
 
                 </RelativeLayout>
 
@@ -339,7 +346,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginEnd="@dimen/marginMedium"
                     android:layout_marginTop="@dimen/marginSmall"
                     android:gravity="center">
 
@@ -360,13 +366,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
+                        android:paddingEnd="@dimen/marginMedium"
                         android:layout_toEndOf="@id/tvAge"
                         android:fontFamily="@font/roboto"
                         android:hint="@string/hint_age"
                         android:inputType="number"
                         android:textColor="@color/white"
                         android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal" />
+                        android:textSize="@dimen/textSizeNormal"
+                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
 
                 </RelativeLayout>
 
@@ -374,7 +382,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginEnd="@dimen/marginMedium"
                     android:layout_marginTop="@dimen/marginSmall"
                     android:layout_marginBottom="@dimen/marginMedium"
                     android:gravity="center">
@@ -396,13 +403,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
+                        android:paddingEnd="@dimen/marginMedium"
                         android:layout_toEndOf="@id/tvGender"
                         android:fontFamily="@font/roboto"
                         android:hint="@string/hint_gender"
                         android:inputType="text"
                         android:textColor="@color/white"
                         android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal" />
+                        android:textSize="@dimen/textSizeNormal"
+                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
 
                 </RelativeLayout>
 
