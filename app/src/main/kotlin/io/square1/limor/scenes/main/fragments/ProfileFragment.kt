@@ -6,17 +6,14 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.TextView
-import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
 import io.square1.limor.R
@@ -103,6 +100,7 @@ class ProfileFragment : BaseFragment() {
             apiCallDeleteFriend()
             apiCallCreateBlockedUser()
             apiCallDeleteBlockedUser()
+
         } else {
             viewModelGetUser.user = sessionManager.getStoredUser()
         }
@@ -117,7 +115,6 @@ class ProfileFragment : BaseFragment() {
         configureToolbar()
         configureScreen()
         printUserData()
-        CommonsKt.reduceSwipeSensitivity(viewPager)
     }
 
     private fun apiCallDeleteBlockedUser() {
@@ -215,12 +212,11 @@ class ProfileFragment : BaseFragment() {
         } else {
             layViewPager.visibility = View.VISIBLE
             val names = arrayOf("Casts", "Likes")
-            viewPager.adapter = object : FragmentStateAdapter(this) {
-                override fun getItemCount(): Int {
-                    return names.size
-                }
 
-                override fun createFragment(position: Int): Fragment {
+            val adapter = object : FragmentStatePagerAdapter(fragmentManager!!, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+
+
+                override fun getItem(position: Int): Fragment {
                     return when (position) {
                         0 -> UserPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
                         1 -> UserLikedPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
@@ -228,17 +224,21 @@ class ProfileFragment : BaseFragment() {
                     }
                 }
 
-            }
-            TabLayoutMediator(tab_layout, viewPager) { tab, position ->
-                tab.text = names[position]
-            }.attach()
+                override fun getCount() : Int {
+                    return names.size
+                }
 
+                override fun getPageTitle(position: Int): CharSequence {
+                    return names[position]
+                }
+            }
+            viewPager.adapter = adapter
+
+            tab_layout.setupWithViewPager(viewPager)
             tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabReselected(tab: TabLayout.Tab?) {
                     tab?.let {
-                        val myFragment = childFragmentManager.findFragmentByTag(
-                            "f" + this@ProfileFragment.viewPager.adapter?.getItemId(it.position)
-                        )
+                        val myFragment = adapter.instantiateItem(viewPager, it.position)
                         if (myFragment is FeedItemsListFragment) {
                             myFragment.scrollToTop()
                         }
