@@ -83,6 +83,8 @@ data class CommentWithParent(val comment: UIComment, val parent: CommentWithPare
 
 class PodcastDetailsFragment : BaseFragment() {
 
+    private var lastCommentWithParentDeleted: CommentWithParent? = null
+    private var lastPositionCommentDeleted: Int = 0
     private var isBlockingPodcastUser: Boolean = false
     private var btnRecordClicked: Boolean = false
     private var isWaitingForApiCall: Boolean = false
@@ -120,6 +122,7 @@ class PodcastDetailsFragment : BaseFragment() {
     private lateinit var viewModelCreateUserReport: CreateUserReportViewModel
     private lateinit var viewModelCreatePodcastReport: CreatePodcastReportViewModel
     private lateinit var viewModelDeletePodcast: DeletePodcastViewModel
+    private lateinit var viewModelDeleteComment: DeleteCommentViewModel
 
     private val getPodcastCommentsDataTrigger = PublishSubject.create<Unit>()
     private val getCommentCommentsDataTrigger = PublishSubject.create<Unit>()
@@ -135,6 +138,7 @@ class PodcastDetailsFragment : BaseFragment() {
     private val createPodcastReportDataTrigger = PublishSubject.create<Unit>()
     private val createUserReportDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastDataTrigger = PublishSubject.create<Unit>()
+    private val deleteCommentDataTrigger = PublishSubject.create<Unit>()
 
 
     private lateinit var viewModelCreateBlockedUser: CreateBlockedUserViewModel
@@ -228,6 +232,7 @@ class PodcastDetailsFragment : BaseFragment() {
         initApiCallCreatePodcastReport()
         initApiCallCreateUserReport()
         initApiCallCreateBlockedUser()
+        initApiCallDeleteComment()
         configureToolbar()
 
         // we get the possible comment clicked from the previous activity.
@@ -244,6 +249,72 @@ class PodcastDetailsFragment : BaseFragment() {
         activity?.startCommenting?.let {
             if(it)
                 openCommentBarTextAndFocusIt()
+        }
+    }
+
+    private fun initApiCallDeleteComment() {
+        val output = viewModelDeleteComment.transform(
+            DeleteCommentViewModel.Input(
+                deleteCommentDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if (it.code != 0) {
+                toast(getString(R.string.error_deleting_comment))
+            } else {
+                // if the main comment is deleted, then we have to close the activity because you can't
+                // answer that comment anymore
+                if(lastCommentWithParentDeleted == uiMainCommentWithParent) {
+                    toast(getString(R.string.comment_deleted_ok))
+                    activity?.finish()
+
+                    // if it's a different comment the one that is deleted, then you have to make sure
+                    // that its parent has no reference to that deleted comment anymore, and you have to
+                    // delete the children of that deleted comment too
+                } else {
+
+                    lastCommentWithParentDeleted?.parent?.comment?.let { parent ->
+                        parent.comments.remove(lastCommentWithParentDeleted?.comment)
+                        parent.comment_count = parent.comment_count.dec()
+                    }
+                    lastCommentWithParentDeleted?.let { deletedComment -> deleteAllChildComments(lastPositionCommentDeleted, deletedComment) }
+                    commentWithParentsItemsList.removeAt(lastPositionCommentDeleted)
+                    commentsAdapter?.notifyDataSetChanged()
+                }
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            view?.hideKeyboard()
+            if (app!!.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (it.errorMessage!!.isNotEmpty()) {
+                    message.append(it.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                alert(message.toString()) {
+                    okButton { }
+                }.show()
+            } else {
+                alert(getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+        })
+    }
+
+    private fun deleteAllChildComments(lastPositionCommentDeleted: Int, commentDeleted : CommentWithParent) {
+        for(i in commentWithParentsItemsList.size - 1 downTo lastPositionCommentDeleted + 1) {
+            val currentComment = commentWithParentsItemsList[i]
+            if(currentComment.parent == commentDeleted) {
+                commentWithParentsItemsList.removeAt(i)
+            }
         }
     }
 
@@ -1287,12 +1358,13 @@ class PodcastDetailsFragment : BaseFragment() {
                     }
 
                     override fun onCommentClicked(item: CommentWithParent, position: Int) {
-                        val podcastDetailsIntent =
-                            Intent(context, PodcastDetailsActivity::class.java)
-                        podcastDetailsIntent.putExtra("podcast", uiPodcast)
-                        podcastDetailsIntent.putExtra("model", item)
-                        podcastDetailsIntent.putExtra("commenting", true)
-                        startActivityForResult(podcastDetailsIntent, 0)
+//                        val podcastDetailsIntent =
+//                            Intent(context, PodcastDetailsActivity::class.java)
+//                        podcastDetailsIntent.putExtra("podcast", uiPodcast)
+//                        podcastDetailsIntent.putExtra("model", item)
+//                        podcastDetailsIntent.putExtra("commenting", true)
+//                        startActivityForResult(podcastDetailsIntent, 0)
+                        openNewCommentActivity(item, true)
                     }
 
                     override fun onLikeClicked(item: UIComment, position: Int) {
@@ -1346,12 +1418,12 @@ class PodcastDetailsFragment : BaseFragment() {
                         startActivity(userProfileIntent)
                     }
 
-                    override fun onMoreClicked(item: UIComment, position: Int, v: View) {
-                        showCommentMorePopupMenu(item, v)
+                    override fun onMoreClicked(item: CommentWithParent, position: Int, v: View) {
+                        showCommentMorePopupMenu(item, position, v)
                     }
 
                     override fun onReplyClicked(item: CommentWithParent, position: Int) {
-                        openNewCommentActivity(item)
+                        openNewCommentActivity(item, true)
                     }
 
                     override fun onMoreRepliesClicked(parent: CommentWithParent, position: Int) {
@@ -1419,11 +1491,12 @@ class PodcastDetailsFragment : BaseFragment() {
         rvComments?.setHasFixedSize(true)
     }
 
-    private fun openNewCommentActivity(item: CommentWithParent) {
+    private fun openNewCommentActivity(item: CommentWithParent, commenting: Boolean = false) {
         val podcastDetailsIntent =
             Intent(context, PodcastDetailsActivity::class.java)
         podcastDetailsIntent.putExtra("podcast", uiPodcast)
         podcastDetailsIntent.putExtra("model", item)
+        podcastDetailsIntent.putExtra("commenting", commenting)
         startActivityForResult(podcastDetailsIntent, 0)
     }
 
@@ -1541,6 +1614,10 @@ class PodcastDetailsFragment : BaseFragment() {
             viewModelCreateBlockedUser = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreateBlockedUserViewModel::class.java)
+
+            viewModelDeleteComment = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(DeleteCommentViewModel::class.java)
         }
     }
 
@@ -1693,24 +1770,49 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun showCommentMorePopupMenu(
-        comment: UIComment,
+        comment: CommentWithParent,
+        position: Int,
         v: View
     ) {
         val popup = PopupMenu(context, v, Gravity.TOP)
         val inflater: MenuInflater = popup.menuInflater
         inflater.inflate(R.menu.menu_popup_comment, popup.menu)
 
+        val loggedUser = sessionManager.getStoredUser()
+        if(uiPodcast?.user?.id != loggedUser?.id) {
+            // you cannot delete another person's comment
+            popup.menu.findItem(R.id.menu_delete_comment).isVisible = false
+        } else {
+            // you cannot block or report yourself
+            popup.menu.findItem(R.id.menu_report_comment).isVisible = false
+            popup.menu.findItem(R.id.menu_report_user).isVisible = false
+            popup.menu.findItem(R.id.menu_block_user).isVisible = false
+        }
+
 
         //set menu item click listener here
         popup.setOnMenuItemClickListener {menuItem ->
             when(menuItem.itemId) {
-                R.id.menu_report_comment -> onReportCommentClicked(comment)
-                R.id.menu_report_user -> onReportUserClicked(comment.user)
-                R.id.menu_block_user -> onCommentUserBlockClicked(comment.user)
+                R.id.menu_delete_comment -> onDeleteCommentClicked(comment, position)
+                R.id.menu_report_comment -> onReportCommentClicked(comment.comment)
+                R.id.menu_report_user -> onReportUserClicked(comment.comment.user)
+                R.id.menu_block_user -> onCommentUserBlockClicked(comment.comment.user)
             }
             true
         }
         popup.show()
+    }
+
+    private fun onDeleteCommentClicked(comment: CommentWithParent, position: Int) {
+        alert(getString(R.string.confirmation_delete_comment)) {
+            okButton {
+                viewModelDeleteComment.comment = comment.comment
+                lastPositionCommentDeleted = position
+                lastCommentWithParentDeleted = comment
+                deleteCommentDataTrigger.onNext(Unit)
+            }
+            cancelButton {  }
+        }.show()
     }
 
     private fun onCommentUserBlockClicked(user: UIUser?) {

@@ -1,6 +1,7 @@
 package repositories.comment
 
 
+import entities.request.DataContentRequest
 import entities.request.DataCreateCommentRequest
 import entities.request.DataCreateReportRequestEntity
 import entities.response.*
@@ -30,6 +31,13 @@ class DataCommentRepository @Inject constructor(private val remoteProvider: Remo
         request: DataCreateReportRequestEntity
     ): Single<CreateReportResponseEntity>? {
         return remoteProvider.reportComment(id, request)
+    }
+
+    override fun deleteComment(
+        id: Int,
+        request: DataContentRequest
+    ): Single<DeleteResponseEntity>? {
+        return remoteProvider.deleteComment(id, request)
     }
 
     override fun createComment(
