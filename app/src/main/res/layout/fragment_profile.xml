@@ -62,9 +62,9 @@
                 tools:ignore="HardcodedText" />
 
             <RelativeLayout
-                android:layout_marginTop="@dimen/marginMedium"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/marginMedium">
 
                 <TextView
                     android:id="@+id/tvNumberFollowers"
@@ -112,8 +112,8 @@
                 android:id="@+id/layFollows"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="@dimen/marginMedium"
+                android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/layProfileTop">
@@ -137,28 +137,27 @@
                 android:text="@string/block"
                 android:textAllCaps="false"
                 android:textColor="@color/brandSecondary500"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@+id/layProfileTop"/>
+                app:layout_constraintTop_toBottomOf="@+id/layProfileTop" />
 
         </LinearLayout>
 
 
-
-
-
     </LinearLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:id="@+id/layViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/marginMedium"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layProfileTop"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="@dimen/marginMedium"
-        android:layout_width="match_parent"
-        android:layout_height="0dp">
+        app:layout_constraintTop_toBottomOf="@id/layProfileTop">
+
 
         <View
             android:id="@+id/barDecoratorUp"
@@ -167,19 +166,20 @@
             android:background="@color/brandSecondary300"
             app:layout_constraintStart_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@id/viewPager" />
+
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barDecoratorUp"
             app:tabGravity="fill"
             app:tabMode="scrollable"
-            app:tabTextColor="@color/brandSecondary100"
             app:tabSelectedTextColor="@color/brandPrimary500"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barDecoratorUp" />
+            app:tabTextColor="@color/brandSecondary100" />
 
 
         <View
@@ -191,18 +191,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tab_layout" />
 
-
-        <androidx.viewpager2.widget.ViewPager2
+        <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_weight="1"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barDecoratorDown"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barDecoratorDown" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <!--        </androidx.viewpager.widget.ViewPager>-->
 
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -472,14 +472,14 @@ abstract class FeedItemsListFragment : BaseFragment() {
                 R.id.menu_report_cast -> onPodcastReportClicked(item)
                 R.id.menu_report_user -> onUserReportClicked(item)
                 R.id.menu_delete_cast -> onDeletePodcastClicked(item, position)
-                R.id.menu_block_user -> onBlockUserClicked(item, position)
+                R.id.menu_block_user -> onBlockUserClicked(item)
             }
             true
         }
         popup.show()
     }
 
-    private fun onBlockUserClicked(item: UIFeedItem, position: Int) {
+    private fun onBlockUserClicked(item: UIFeedItem) {
         alert(getString(R.string.confirmation_block_user)) {
             okButton {
                 performBlockUser(item.podcast?.user)

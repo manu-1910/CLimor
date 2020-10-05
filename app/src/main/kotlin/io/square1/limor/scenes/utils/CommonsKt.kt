@@ -183,8 +183,7 @@ class CommonsKt {
                 button.text = button.context.getString(textPrimary)
             } else {
                 button.text = button.context.getString(textSecondary)
-                button.background =
-                    ContextCompat.getDrawable(button.context, R.drawable.bg_round_brand_500_ripple)
+                button.background = ContextCompat.getDrawable(button.context, R.drawable.bg_round_transparent_ripple)
                 button.setTextColor(ContextCompat.getColor(button.context, R.color.brandPrimary500))
             }
         }

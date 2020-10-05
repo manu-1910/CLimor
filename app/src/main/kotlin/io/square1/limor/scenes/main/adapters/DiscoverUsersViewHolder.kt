@@ -2,12 +2,12 @@ package io.square1.limor.scenes.main.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import io.square1.limor.R
@@ -64,24 +64,25 @@ class DiscoverUsersViewHolder(
         }
 
 
-        if(currentItem.followed){
-            CommonsKt.setButtonLimorStylePressed(btnFollow, false, R.string.follow, R.string.unfollow)
-//            btnFollow.background = ContextCompat.getDrawable(context, R.drawable.bg_round_brand_500_ripple)
-//            btnFollow.setTextColor(ContextCompat.getColor(context, R.color.white))
-//            btnFollow.text = context.getString(R.string.unfollow)
-        }else{
-            CommonsKt.setButtonLimorStylePressed(btnFollow, true, R.string.follow, R.string.unfollow)
-//            btnFollow.background = ContextCompat.getDrawable(context, R.drawable.bg_round_yellow_ripple)
-//            btnFollow.setTextColor(ContextCompat.getColor(context, R.color.black))
-//            btnFollow.text = context.getString(R.string.follow)
+        if(currentItem.blocked) {
+            btnFollow.visibility = View.GONE
+        } else {
+            btnFollow.visibility = View.VISIBLE
+            if(currentItem.followed){
+                CommonsKt.setButtonLimorStylePressed(btnFollow, false, R.string.follow, R.string.unfollow)
+            }else{
+                CommonsKt.setButtonLimorStylePressed(btnFollow, true, R.string.follow, R.string.unfollow)
+            }
+
+            btnFollow.onClick {
+                userSearchClickListener.onFollowClicked(
+                    currentItem,
+                    position
+                )
+            }
         }
 
-        btnFollow.onClick {
-            userSearchClickListener.onFollowClicked(
-                currentItem,
-                position
-            )
-        }
+
         loadOwnerImage(currentItem)
 
     }
