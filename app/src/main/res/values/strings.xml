@@ -243,6 +243,7 @@
     <string name="more_replies">More replies</string>
     <string name="show_less">Show less</string>
     <string name="someone_recasted">%1$s recasted</string>
+    <string name="user_fullname">%1$s %2$s</string>
     <string name="audio_player_error_msg">There was an error encountered playing this audio, please try again.</string>
     <string name="couldnt_get_feed">We couldn\'t get your feed, please, try again later</string>
     <string name="couldnt_get_comments">We couldn\'t get comments, please, try again later</string>
