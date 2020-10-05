@@ -542,7 +542,8 @@ class PublishFragment : BaseFragment() {
                     original_audio_url = audioUrlFinal.toString(),
                     duration = mediaPlayer.duration,
                     total_samples = 0.0,
-                    total_length = recordingItem.length!!.toDouble()
+//                    total_length = recordingItem.length!!.toDouble()
+                    total_length = mediaPlayer.duration.toDouble() // I just do this because I was told to do it. I prefer to use duration variable
                 ),
                 meta_data = UIMetaData(
                     title = etDraftTitle?.text.toString(),
@@ -690,50 +691,56 @@ class PublishFragment : BaseFragment() {
                     seekHandler.postDelayed(run, 100)
                     //For Showing time of audio(inside runnable)
                     val miliSeconds = mediaPlayer.currentPosition
-                    if (miliSeconds != 0) {
-                        //if audio is playing, showing current time;
-                        val minutes = TimeUnit.MILLISECONDS.toMinutes(miliSeconds.toLong())
-                        val seconds = TimeUnit.MILLISECONDS.toSeconds(miliSeconds.toLong())
-                        if (minutes == 0L) {
-                            timePass?.text = "00:" + String.format("%02d", seconds)
-                            timeDuration?.text =
-                                CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
-                        } else {
-                            if (seconds >= 60) {
-                                val sec = seconds - minutes * 60
-                                timePass?.text =
-                                    String.format("%02d", minutes) + ":" + String.format(
-                                        "%02d",
-                                        seconds
-                                    )
-                                timeDuration?.text = CommonsKt.calculateDurationMediaPlayer(
-                                    mediaPlayer.duration
-                                )
-                            }
-                        }
-                    } else {
-                        //Displaying total time if audio not playing
-                        val totalTime = mediaPlayer.duration
-                        val minutes = TimeUnit.MILLISECONDS.toMinutes(totalTime.toLong())
-                        val seconds = TimeUnit.MILLISECONDS.toSeconds(totalTime.toLong())
-                        if (minutes == 0L) {
-                            timePass?.text = "00:" + String.format("%02d", seconds)
-                            timeDuration?.text =
-                                CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
-                        } else {
-                            if (seconds >= 60) {
-                                val sec = seconds - minutes * 60
-                                timePass?.text =
-                                    String.format("%02d", minutes) + ":" + String.format(
-                                        "%02d",
-                                        seconds
-                                    )
-                                timeDuration?.text = CommonsKt.calculateDurationMediaPlayer(
-                                    mediaPlayer.duration
-                                )
-                            }
-                        }
-                    }
+                    timeDuration?.text = CommonsKt.calculateDurationMediaPlayer(
+                        mediaPlayer.duration
+                    )
+                    timePass?.text = CommonsKt.calculateDurationMediaPlayer(
+                        miliSeconds
+                    )
+//                    if (miliSeconds != 0) {
+//                        //if audio is playing, showing current time;
+//                        val minutes = TimeUnit.MILLISECONDS.toMinutes(miliSeconds.toLong())
+//                        val seconds = TimeUnit.MILLISECONDS.toSeconds(miliSeconds.toLong())
+//                        if (minutes == 0L) {
+//                            timePass?.text = "00:" + String.format("%02d", seconds)
+//                            timeDuration?.text =
+//                                CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
+//                        } else {
+//                            if (seconds >= 60) {
+//                                val sec = seconds - minutes * 60
+//                                timePass?.text =
+//                                    String.format("%02d", minutes) + ":" + String.format(
+//                                        "%02d",
+//                                        seconds
+//                                    )
+//                                timeDuration?.text = CommonsKt.calculateDurationMediaPlayer(
+//                                    mediaPlayer.duration
+//                                )
+//                            }
+//                        }
+//                    } else {
+//                        //Displaying total time if audio not playing
+//                        val totalTime = mediaPlayer.duration
+//                        val minutes = TimeUnit.MILLISECONDS.toMinutes(totalTime.toLong())
+//                        val seconds = TimeUnit.MILLISECONDS.toSeconds(totalTime.toLong())
+//                        if (minutes == 0L) {
+//                            timePass?.text = "00:" + String.format("%02d", seconds)
+//                            timeDuration?.text =
+//                                CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
+//                        } else {
+//                            if (seconds >= 60) {
+//                                val sec = seconds - minutes * 60
+//                                timePass?.text =
+//                                    String.format("%02d", minutes) + ":" + String.format(
+//                                        "%02d",
+//                                        seconds
+//                                    )
+//                                timeDuration?.text = CommonsKt.calculateDurationMediaPlayer(
+//                                    mediaPlayer.duration
+//                                )
+//                            }
+//                        }
+//                    }
                 }
                 run!!.run()
             } else {

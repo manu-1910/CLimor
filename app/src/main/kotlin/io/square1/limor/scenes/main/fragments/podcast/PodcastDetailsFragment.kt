@@ -1669,7 +1669,8 @@ class PodcastDetailsFragment : BaseFragment() {
         tvPodcastText?.movementMethod = LinkMovementMethod.getInstance()
 
         // duration
-        uiPodcast?.audio?.duration?.let {
+//        uiPodcast?.audio?.duration?.let {
+        uiPodcast?.audio?.total_length?.let {
             tvPodcastTime?.text = CommonsKt.calculateDurationMinutesAndSeconds(it.toLong())
         }
 
