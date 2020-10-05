@@ -21,11 +21,27 @@
                 app:exitAnim="@anim/slide_out_left_exit_no_alpha"
                 app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
                 app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
+        <action
+            android:id="@+id/action_signInFragment_to_facebookAuthFragment"
+            app:destination="@id/facebookAuthFragment"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
     </fragment>
 
     <fragment android:id="@+id/signUpFragment"
               android:name="io.square1.limor.scenes.authentication.fragments.SignUpFragment"
-              android:label="SignUpFragment"/>
+              android:label="SignUpFragment">
+        <action
+            android:id="@+id/action_signUpFragment_to_facebookAuthFragment"
+            app:destination="@id/facebookAuthFragment"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+    </fragment>
+
     <fragment android:id="@+id/forgotPasswordFragment"
             android:name="io.square1.limor.scenes.authentication.fragments.ForgotPasswordFragment"
             android:label="ForgotPasswordFragment">
@@ -37,4 +53,8 @@
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
             app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
     </fragment>
+
+    <fragment android:id="@+id/facebookAuthFragment"
+        android:name="io.square1.limor.scenes.authentication.fragments.FacebookAuthFragment"
+        android:label="FacebookAuthFragment"/>
 </navigation>

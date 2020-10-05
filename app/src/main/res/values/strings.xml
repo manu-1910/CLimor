@@ -20,6 +20,7 @@
     <string name="cant_open">Can\'t open!</string>
     <string name="error_not_valid_email">Please enter a valid email</string>
     <string name="error_not_valid_password">Password must contain 6+ characters</string>
+    <string name="error_not_valid_username">Username must be unique</string>
     <string name="error_empty_field_template">%1$s must not be empty</string>
     <string name="reset_password">Reset password</string>
     <string name="you_have_no_permissions_facebook">You have not granted the required permissions to login with Facebook. We need your email address.</string>
@@ -356,4 +357,7 @@
     <string name="error_content_unavailable">The content you are trying to access is not longer available or you don’t have access to it.</string>
 
 
+    <string name="username_more_characters">Username must have 3 or more characters</string>
+    <string name="username_not_available">This username is not available on the system, please try with other</string>
+    <string name="you_must_type_avaible_username">You have to enter a valid username</string>
 </resources>

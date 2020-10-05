@@ -12,5 +12,6 @@
         <attr name="hintText" format="string"/>
         <attr name="inputType" format="integer"/>
         <attr name="hasArrow" format="boolean" />
+        <attr name="hasCheck" format="boolean" />
     </declare-styleable>
 </resources>

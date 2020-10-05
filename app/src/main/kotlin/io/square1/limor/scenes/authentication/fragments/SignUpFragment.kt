@@ -59,7 +59,6 @@ class SignUpFragment : BaseFragment() {
     private lateinit var viewModel: SignUpViewModel
     private lateinit var viewModelSignUpFB: SignUpFBViewModel
     private lateinit var viewModelMergeFacebookAccount: MergeFacebookAccountViewModel
-
     private lateinit var viewModelCreateFriend : CreateFriendViewModel
 
     private val signUpTrigger = PublishSubject.create<Unit>()
@@ -443,28 +442,38 @@ class SignUpFragment : BaseFragment() {
                                 //startActivity(Intent(context, MainActivity::class.java))
                                 val fbUid: String = AccessToken.getCurrentAccessToken().userId
                                 val fbToken: String = AccessToken.getCurrentAccessToken().token
-                                var firstName = ""
-                                var lastName = ""
-                                var email = ""
-                                var username = ""
-                                var userImageUrl = ""
+                                var firstName: String = ""
+                                var lastName: String = ""
+                                var email: String = ""
+                                var userImageUrl: String = ""
                                 try {
                                     firstName = data.getString("first_name")
                                     lastName = data.getString("last_name")
                                     email = data.getString("email")
-                                    username = data.getString("username")
                                     userImageUrl = "https://graph.facebook.com/$fbUid/picture?type=large"
                                 } catch (e: JSONException) {
                                     e.printStackTrace()
                                 }
-                                val user = UISignUpUser(
-                                    email.toString(),
-                                    "",
-                                    firstName
-                                )
-                                tryRegisterWithFacebook(fbUid, fbToken, user)
+//                                val user = UISignUpUser(
+//                                    email.toString(),
+//                                    "",
+//                                    firstName
+//                                )
+//                                userFB = user
+
+                                //tryLoginWithFacebook(fbUid, fbToken, user)
+                                val bundle = Bundle()
+                                bundle.putString("fbUid", fbUid)
+                                bundle.putString("fbToken", fbToken)
+                                bundle.putString("firstName", firstName)
+                                bundle.putString("lastName", lastName)
+                                bundle.putString("email", email)
+                                bundle.putString("userImageUrl", userImageUrl)
+                                findNavController().navigate(R.id.action_signUpFragment_to_facebookAuthFragment, bundle)
+
+
                             } else {
-                                Timber.e("FBSIGNUP_FAILED $data")
+                                Timber.e("FBLOGIN_FAILD $data")
                             }
 
                         } catch (e: Exception) {
