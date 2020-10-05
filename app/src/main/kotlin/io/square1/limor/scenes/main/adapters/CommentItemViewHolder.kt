@@ -69,6 +69,7 @@ class CommentItemViewHolder(
     private var layReplyingTo: View = itemView.findViewById(R.id.layReplying)
     private var layMoreReplies: View = itemView.findViewById(R.id.layMoreReplies)
     private var layPlayer: View = itemView.findViewById(R.id.layPlayer)
+    private var layComment: View = itemView.findViewById(R.id.layComment)
 
     private var seekBar: SeekBar = itemView.findViewById(R.id.seekBar)
 
@@ -95,9 +96,14 @@ class CommentItemViewHolder(
 
 
         // comment text
-        tvCommentText.text = hightlightHashtags(currentItem.comment.content)
-        tvCommentText.movementMethod = LinkMovementMethod.getInstance()
-        tvCommentText.onClick { commentClickListener.onItemClicked(currentItem, position) }
+        if(currentItem.comment.content.isNullOrEmpty()) {
+            layComment.visibility = View.GONE
+        } else {
+            layComment.visibility = View.VISIBLE
+            tvCommentText.text = hightlightHashtags(currentItem.comment.content)
+            tvCommentText.movementMethod = LinkMovementMethod.getInstance()
+            tvCommentText.onClick { commentClickListener.onItemClicked(currentItem, position) }
+        }
 
 
         // recasts

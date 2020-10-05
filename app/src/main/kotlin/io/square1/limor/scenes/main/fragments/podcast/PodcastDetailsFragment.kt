@@ -721,25 +721,11 @@ class PodcastDetailsFragment : BaseFragment() {
                 }
             }
 
-        etCommentUp.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if(etCommentUp.text.isNotEmpty()) {
-                    btnPost.setTextColor(ContextCompat.getColor(context!!, R.color.brandPrimary500))
-                } else {
-                    btnPost.setTextColor(ContextCompat.getColor(context!!, R.color.brandSecondary100))
-                }
-            }
-        })
 
         btnPost.onClick {
             var commentText = ""
             etCommentUp?.text?.let { text -> commentText = text.toString() }
-
-            if(commentText.isNotEmpty()) {
+            if(commentText.isNotEmpty() || currentCommentRecordedFile != null) {
                 currentCommentRequest = UICreateCommentRequest(UICommentRequest(commentText, 0, null))
                 isWaitingForApiCall = true
                 showProgressCreateComment()
@@ -748,12 +734,9 @@ class PodcastDetailsFragment : BaseFragment() {
                 } else {
                     publishAudioComment()
                 }
-
-
             } else {
-                etCommentUp?.error = getString(R.string.this_field_cant_be_empty)
+                etCommentUp?.error = getString(R.string.error_comment_empty)
             }
-
         }
 
         btnTrash.onClick {

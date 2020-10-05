@@ -359,6 +359,7 @@
     <string name="error_content_unavailable">The content you are trying to access is not longer available or you don’t have access to it.</string>
     <string name="error_deleting_comment">The comment could not be deleted. Please try again later.</string>
     <string name="comment_deleted_ok">Comment deleted correctly</string>
+    <string name="error_comment_empty">You have to write or record a comment first</string>
 
 
 </resources>
