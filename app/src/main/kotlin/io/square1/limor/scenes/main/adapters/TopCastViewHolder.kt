@@ -44,7 +44,8 @@ class TopCastViewHolder(
             .into(ivBackground)
 
         tvPodcastTitle.text = currentItem.caption
-        tvPodcastLength.text = Commons.getHumanReadableTimeFromMillis(currentItem.audio.duration)
+//        tvPodcastLength.text = Commons.getHumanReadableTimeFromMillis(currentItem.audio.duration)
+        tvPodcastLength.text = Commons.getHumanReadableTimeFromMillis(currentItem.audio.total_length.toInt())
 
     }
 

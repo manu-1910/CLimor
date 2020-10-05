@@ -291,7 +291,7 @@
                 android:gravity="center_vertical"
                 android:text="@string/post"
                 android:visibility="visible"
-                android:textColor="@color/brandSecondary100"
+                android:textColor="@color/brandPrimary500"
                 android:textSize="17sp" />
 
             <ProgressBar

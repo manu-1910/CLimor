@@ -78,7 +78,7 @@ class CommonsKt {
                 if (seconds >= 60) {
                     val sec = seconds - minutes * 60
                     //finalDuration = "$minutes:$sec"
-                    finalDuration = String.format("%1$02d:%1$02d", minutes, sec)
+                    finalDuration = String.format("%02d:%02d", minutes, sec)
                 }
             }
             return finalDuration

@@ -109,7 +109,8 @@ class FeedItemViewHolder(
         tvPodcastText.movementMethod = LinkMovementMethod.getInstance()
 
         // duration
-        currentItem.podcast?.audio?.duration?.let {
+//        currentItem.podcast?.audio?.duration?.let {
+        currentItem.podcast?.audio?.total_length?.let {
             tvPodcastTime.text = CommonsKt.calculateDurationMinutesAndSeconds(it.toLong())
         }
 

@@ -243,6 +243,7 @@
     <string name="more_replies">More replies</string>
     <string name="show_less">Show less</string>
     <string name="someone_recasted">%1$s recasted</string>
+    <string name="user_fullname">%1$s %2$s</string>
     <string name="audio_player_error_msg">There was an error encountered playing this audio, please try again.</string>
     <string name="couldnt_get_feed">We couldn\'t get your feed, please, try again later</string>
     <string name="couldnt_get_comments">We couldn\'t get comments, please, try again later</string>
@@ -358,6 +359,7 @@
     <string name="error_content_unavailable">The content you are trying to access is not longer available or you don’t have access to it.</string>
     <string name="error_deleting_comment">The comment could not be deleted. Please try again later.</string>
     <string name="comment_deleted_ok">Comment deleted correctly</string>
+    <string name="error_comment_empty">You have to write or record a comment first</string>
 
 
 </resources>
