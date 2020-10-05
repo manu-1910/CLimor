@@ -6,12 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.SeekBar
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import io.square1.limor.scenes.main.fragments.podcast.CommentWithParent
 import io.square1.limor.uimodels.UIComment
 import io.square1.limor.uimodels.UIPodcast
-import timber.log.Timber
 
 class CommentsAdapter(
     private val context: Context,
@@ -75,7 +73,7 @@ class CommentsAdapter(
         fun onHashtagClicked(hashtag : String)
         fun onSendClicked(item : UIComment, position: Int)
         fun onUserClicked(item : UIComment, position: Int)
-        fun onMoreClicked(item : UIComment, position: Int, v: View)
+        fun onMoreClicked(item: CommentWithParent, position: Int, v: View)
         fun onReplyClicked(item: CommentWithParent, position: Int)
         fun onMoreRepliesClicked(parent: CommentWithParent, position: Int)
         fun onShowLessClicked(parent: CommentWithParent, lastChildPosition: Int)

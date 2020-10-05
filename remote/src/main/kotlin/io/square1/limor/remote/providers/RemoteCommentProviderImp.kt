@@ -1,5 +1,6 @@
 package io.square1.limor.remote.providers
 
+import entities.request.DataContentRequest
 import entities.request.DataCreateCommentRequest
 import entities.request.DataCreateReportRequestEntity
 import entities.response.*
@@ -39,6 +40,13 @@ class RemoteCommentProviderImp @Inject constructor(private val provider: Comment
         request: DataCreateReportRequestEntity
     ): Single<CreateReportResponseEntity>? {
         return provider.reportComment(id, request.asRemoteEntity())?.asDataEntity()
+    }
+
+    override fun deleteComment(
+        id: Int,
+        request: DataContentRequest
+    ): Single<DeleteResponseEntity>? {
+        return provider.deleteComment(id, request.asRemoteEntity())?.asDataEntity()
     }
 
 }

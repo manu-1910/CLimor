@@ -261,6 +261,7 @@
     <string name="report_cast">Report Cast</string>
     <string name="report_user">Report User</string>
     <string name="report_comment">Report Comment</string>
+    <string name="delete_comment">Delete Comment</string>
     <string name="block_user">Block User</string>
     <string name="error_report">We couldn\'t send your report at the moment, please, try again later</string>
     <string name="comment_reported_ok">Comment reported successfully</string>
@@ -348,12 +349,15 @@
     <string name="delete_cast">Delete Cast</string>
     <string name="delete_podcast_error">There was an error deleting podcast, please try again later</string>
     <string name="confirmation_delete_podcast">Are you sure you want to delete this podcast?</string>
+    <string name="confirmation_delete_comment">Are you sure you want to delete this comment?</string>
     <string name="title_settings_privacy">Privacy</string>
     <string name="settings_blocked_users">Blocked Users</string>
     <string name="title_blocked_users">Blocked Users</string>
     <string name="delete_podcast_ok">Podcast deleted successfully</string>
     <string name="empty_scenario_blocked_users">You don\'t have blocked people</string>
     <string name="error_content_unavailable">The content you are trying to access is not longer available or you don’t have access to it.</string>
+    <string name="error_deleting_comment">The comment could not be deleted. Please try again later.</string>
+    <string name="comment_deleted_ok">Comment deleted correctly</string>
 
 
 </resources>
