@@ -42,7 +42,17 @@ class BlockedUserViewHolder(
 
         btnBlock.onClick { listener.onBlockClicked(currentItem, position) }
 
-        tvUserFullname.text = context.getString(R.string.user_fullname, currentItem.first_name, currentItem.last_name)
+        var firstName = ""
+        currentItem.first_name?.let {
+            firstName = it
+        }
+
+        var lastName = ""
+        currentItem.last_name?.let {
+            lastName = it
+        }
+
+        tvUserFullname.text = context.getString(R.string.user_fullname, firstName, lastName)
         tvUserFullname.onClick { listener.onUserClicked(currentItem, position) }
 
         tvUsername.text = currentItem.username

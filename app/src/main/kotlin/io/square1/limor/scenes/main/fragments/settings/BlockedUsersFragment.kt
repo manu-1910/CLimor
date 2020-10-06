@@ -237,6 +237,11 @@ class BlockedUsersFragment : BaseFragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        reload()
+    }
+
     private fun reload() {
         isLastPage = false
         viewModelGetBlockedUsers.offset = 0

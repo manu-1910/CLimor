@@ -1,5 +1,6 @@
 package io.square1.limor.scenes.main.fragments
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
@@ -37,6 +38,8 @@ import javax.inject.Inject
 class ProfileFragment : BaseFragment() {
 
 
+
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -71,6 +74,8 @@ class ProfileFragment : BaseFragment() {
     companion object {
         val TAG: String = ProfileFragment::class.java.simpleName
         fun newInstance() = ProfileFragment()
+        private const val REQUEST_SETTINGS: Int = 0
+        private const val REQUEST_REPORT_USER: Int = 1
     }
 
 
@@ -106,10 +111,6 @@ class ProfileFragment : BaseFragment() {
         }
 
         viewModelGetUser.id = viewModelGetUser.user?.id
-
-        if(viewModelGetUser.user?.blocked == false) {
-            getUserDataTrigger.onNext(Unit)
-        }
 
         initViewPager()
         configureToolbar()
@@ -311,7 +312,7 @@ class ProfileFragment : BaseFragment() {
 
         btnSettings?.onClick {
             val editProfileIntent = Intent(it?.context, SettingsActivity::class.java)
-            startActivity(editProfileIntent)
+            startActivityForResult(editProfileIntent, REQUEST_SETTINGS)
         }
 
         btnMore?.onClick {
@@ -422,16 +423,32 @@ class ProfileFragment : BaseFragment() {
     private fun onReportUserClicked() {
         val reportUserIntent = Intent(context, ReportActivity::class.java)
         reportUserIntent.putExtra("type", TypeReport.USER)
-        startActivityForResult(reportUserIntent, 0)
+        startActivityForResult(reportUserIntent, REQUEST_REPORT_USER)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModelGetUser.user?.let {
+            getUserDataTrigger.onNext(Unit)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        data?.let {
-            val reason = data.getStringExtra("reason")
-            viewModelCreateUserReport.idUser = viewModelGetUser.user!!.id
-            viewModelCreateUserReport.reason = reason
-            createUserReportDataTrigger.onNext(Unit)
+        if(resultCode == Activity.RESULT_OK) {
+            when(requestCode) {
+                REQUEST_REPORT_USER -> {
+                    data?.let {
+                        val reason = data.getStringExtra("reason")
+                        viewModelCreateUserReport.idUser = viewModelGetUser.user!!.id
+                        viewModelCreateUserReport.reason = reason
+                        createUserReportDataTrigger.onNext(Unit)
+                    }
+                }
+                REQUEST_SETTINGS -> {
+                    getUserDataTrigger.onNext(Unit)
+                }
+            }
         }
     }
 
@@ -643,7 +660,15 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun printUserData() {
-        val fullname = viewModelGetUser.user?.first_name + " " + viewModelGetUser.user?.last_name
+        var firstName = ""
+        viewModelGetUser.user?.first_name?.let {
+            firstName = it
+        }
+        var lastName = ""
+        viewModelGetUser.user?.last_name?.let {
+            lastName = it
+        }
+        val fullname = "$firstName $lastName".trim()
         tvToolbarUsername?.text = fullname
         viewModelGetUser.user?.followers_count?.let {
             tvNumberFollowers.text = formatSocialMediaQuantity(it)
