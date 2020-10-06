@@ -230,4 +230,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(DeleteCommentViewModel::class)
     abstract fun bindDeleteCommentViewModel(deleteCommentViewModel: DeleteCommentViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(GetPodcastByIdViewModel::class)
+    abstract fun bindGetPodcastByIdViewModel(getPodcastByIdViewModel: GetPodcastByIdViewModel): ViewModel
 }

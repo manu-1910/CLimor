@@ -39,6 +39,7 @@ import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.extensions.showKeyboard
 import io.square1.limor.scenes.main.adapters.CommentsAdapter
+import io.square1.limor.scenes.main.fragments.FeedItemsListFragment
 import io.square1.limor.scenes.main.fragments.profile.ReportActivity
 import io.square1.limor.scenes.main.fragments.profile.TypeReport
 import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
@@ -140,6 +141,10 @@ class PodcastDetailsFragment : BaseFragment() {
     private val deleteCommentDataTrigger = PublishSubject.create<Unit>()
 
 
+    private lateinit var viewModelGetPodcastById: GetPodcastByIdViewModel
+    private val getPodcastByIdDataTrigger = PublishSubject.create<Unit>()
+
+
     private lateinit var viewModelCreateBlockedUser: CreateBlockedUserViewModel
     private val createBlockedUserDataTrigger = PublishSubject.create<Unit>()
 
@@ -189,6 +194,7 @@ class PodcastDetailsFragment : BaseFragment() {
         private const val REQUEST_REPORT_COMMENT: Int = 0
         private const val REQUEST_REPORT_PODCAST: Int = 1
         private const val REQUEST_REPORT_USER: Int = 2
+        private const val REQUEST_PODCAST_DETAILS: Int = 3
     }
 
 
@@ -232,6 +238,7 @@ class PodcastDetailsFragment : BaseFragment() {
         initApiCallCreateUserReport()
         initApiCallCreateBlockedUser()
         initApiCallDeleteComment()
+        initApiCallGetPodcastById()
         configureToolbar()
 
         // we get the possible comment clicked from the previous activity.
@@ -251,6 +258,30 @@ class PodcastDetailsFragment : BaseFragment() {
         }
     }
 
+
+    private fun initApiCallGetPodcastById() {
+        val output = viewModelGetPodcastById.transform(
+            GetPodcastByIdViewModel.Input(
+                getPodcastByIdDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            hideProgressBar()
+            val code = response.code
+            if (code == 0) {
+                uiPodcast = response.data.podcast
+                fillFormLikePodcastData()
+                fillFormRecastPodcastData()
+                fillFormNumberOfCommentsData()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            hideProgressBar()
+        })
+    }
+
     private fun initApiCallDeleteComment() {
         val output = viewModelDeleteComment.transform(
             DeleteCommentViewModel.Input(
@@ -266,6 +297,9 @@ class PodcastDetailsFragment : BaseFragment() {
                 // answer that comment anymore
                 if(lastCommentWithParentDeleted == uiMainCommentWithParent) {
                     toast(getString(R.string.comment_deleted_ok))
+                    uiPodcast?.number_of_comments?.let {numberOfComments ->
+                        uiPodcast?.number_of_comments = numberOfComments - 1
+                    }
                     activity?.finish()
 
                     // if it's a different comment the one that is deleted, then you have to make sure
@@ -279,8 +313,12 @@ class PodcastDetailsFragment : BaseFragment() {
                     }
                     lastCommentWithParentDeleted?.let { deletedComment -> deleteAllChildComments(lastPositionCommentDeleted, deletedComment) }
                     commentWithParentsItemsList.removeAt(lastPositionCommentDeleted)
+                    uiPodcast?.number_of_comments?.let {numberOfComments ->
+                        uiPodcast?.number_of_comments = numberOfComments - 1
+                    }
                     commentsAdapter?.notifyDataSetChanged()
                 }
+                fillFormNumberOfCommentsData()
             }
         })
 
@@ -309,11 +347,17 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun deleteAllChildComments(lastPositionCommentDeleted: Int, commentDeleted : CommentWithParent) {
+        var itemsDeletedCount = 0
         for(i in commentWithParentsItemsList.size - 1 downTo lastPositionCommentDeleted + 1) {
             val currentComment = commentWithParentsItemsList[i]
             if(currentComment.parent == commentDeleted) {
                 commentWithParentsItemsList.removeAt(i)
+                itemsDeletedCount++
             }
+        }
+
+        uiPodcast?.number_of_comments?.let {numberOfComments ->
+            uiPodcast?.number_of_comments = numberOfComments - itemsDeletedCount
         }
     }
 
@@ -627,6 +671,7 @@ class PodcastDetailsFragment : BaseFragment() {
             it.data?.comment?.let { newComment ->
                 addNewCommentToList(newComment)
                 hideEmptyScenario()
+                fillFormNumberOfCommentsData()
             }
 
             hideProgressCreateComment()
@@ -642,6 +687,7 @@ class PodcastDetailsFragment : BaseFragment() {
             it.data?.comment?.let { newComment ->
                 addNewCommentToList(newComment)
                 hideEmptyScenario()
+                fillFormNumberOfCommentsData()
             }
             hideProgressCreateComment()
             deleteCurrentCommentAudioAndResetBar()
@@ -701,6 +747,7 @@ class PodcastDetailsFragment : BaseFragment() {
             commentWithParentsItemsList.add(CommentWithParent(commentCreated, uiMainCommentWithParent))
         }
 //        hideEmptyScenario()
+
         commentsAdapter?.notifyDataSetChanged()
         rvComments?.scrollToPosition(commentWithParentsItemsList.size - 1)
     }
@@ -1479,7 +1526,7 @@ class PodcastDetailsFragment : BaseFragment() {
         podcastDetailsIntent.putExtra("podcast", uiPodcast)
         podcastDetailsIntent.putExtra("model", item)
         podcastDetailsIntent.putExtra("commenting", commenting)
-        startActivityForResult(podcastDetailsIntent, 0)
+        startActivityForResult(podcastDetailsIntent, REQUEST_PODCAST_DETAILS)
     }
 
 
@@ -1600,6 +1647,11 @@ class PodcastDetailsFragment : BaseFragment() {
             viewModelDeleteComment = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(DeleteCommentViewModel::class.java)
+
+            viewModelGetPodcastById = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(GetPodcastByIdViewModel::class.java)
+            uiPodcast?.id?.let { viewModelGetPodcastById.idPodcast = it }
         }
     }
 
@@ -1671,7 +1723,7 @@ class PodcastDetailsFragment : BaseFragment() {
         btnListens?.onClick { onListensClicked() }
 
         // comments
-        uiPodcast?.number_of_comments?.let { tvComments.text = it.toString() }
+        fillFormNumberOfCommentsData()
         tvComments?.onClick { onPodcastCommentClicked() }
         btnComments?.onClick { onPodcastCommentClicked() }
 
@@ -1707,6 +1759,12 @@ class PodcastDetailsFragment : BaseFragment() {
         btnPlay?.onClick { onPlayClicked() }
 
         fillFormLikePodcastData()
+    }
+
+    private fun fillFormNumberOfCommentsData() {
+        uiPodcast?.number_of_comments?.let {
+            tvComments.text = it.toString()
+        }
     }
 
     private fun fillFormRecastPodcastData() {
@@ -1961,8 +2019,15 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun configureToolbar() {
-        btnClose?.onClick { activity?.finish() }
+        btnClose?.onClick {
+            val resultIntent = Intent()
+            resultIntent.putExtra("podcast", uiPodcast)
+            activity?.setResult(Activity.RESULT_OK, resultIntent)
+            activity?.finish()
+        }
     }
+
+
 
     private fun onHashtagClicked(clickedTag: String) {
         val podcastByTagIntent = Intent(context, PodcastsByTagActivity::class.java)
@@ -2041,6 +2106,12 @@ class PodcastDetailsFragment : BaseFragment() {
                     data?.let {
                         reason?.let { viewModelCreateUserReport.reason = it }
                         createUserReportDataTrigger.onNext(Unit)
+                    }
+                }
+                REQUEST_PODCAST_DETAILS -> {
+                    data?.let {
+                        showProgressBar()
+                        getPodcastByIdDataTrigger.onNext(Unit)
                     }
                 }
             }

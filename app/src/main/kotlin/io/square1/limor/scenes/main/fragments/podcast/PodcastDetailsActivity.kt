@@ -1,5 +1,7 @@
 package io.square1.limor.scenes.main.fragments.podcast
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -15,6 +17,7 @@ import javax.inject.Inject
 
 class PodcastDetailsActivity : BaseActivity(), HasSupportFragmentInjector {
 
+    private var feedPosition: Int? = 0
     var startCommenting: Boolean? = false
     var commentWithParent : CommentWithParent? = null
     var uiPodcast : UIPodcast? = null
@@ -39,20 +42,20 @@ class PodcastDetailsActivity : BaseActivity(), HasSupportFragmentInjector {
 
         val bundle = intent?.extras
         uiPodcast = bundle?.get("podcast") as UIPodcast?
+        feedPosition = bundle?.get("position") as Int?
         commentWithParent = bundle?.get("model") as CommentWithParent?
         startCommenting = bundle?.get("commenting") as Boolean?
 
         setupNavigationController()
     }
 
-    override fun onAttachFragment(fragment: Fragment) {
-        super.onAttachFragment(fragment)
-        //val navHostFragment = supportFragmentManager.findFragmentById(R.id.navigation_host_fragment_podcast_details)
-        //val fragmentList = navHostFragment?.childFragmentManager?.fragments
-        //var cosa = fragmentList?.get(0)
+    override fun onBackPressed() {
+        val resultIntent = Intent()
+        resultIntent.putExtra("podcast", uiPodcast)
+        resultIntent.putExtra("position", feedPosition)
+        setResult(Activity.RESULT_OK, resultIntent)
+        super.onBackPressed()
     }
-
-
 
 
     private fun setupNavigationController() {

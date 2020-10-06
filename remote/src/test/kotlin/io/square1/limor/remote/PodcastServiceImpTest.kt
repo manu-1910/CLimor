@@ -291,6 +291,26 @@ class PodcastServiceImpTest{
         response?.assertValue { it.message == "Success" }
     }
 
+    @Test
+    fun should_get_podcast_by_id_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = baseURL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = SECONDARY_TOKEN_USER_DEVELOPMENT,
+            expiredIn = 0
+        )
+
+        podcastService = PodcastServiceImp(config)
+
+        val idPodcast = 1004
+        val response = podcastService.getPodcastById(idPodcast)?.test()
+
+        response?.assertNoErrors()
+        response?.assertValue { it.message == "Success" }
+    }
+
 }
 
 

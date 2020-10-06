@@ -71,4 +71,9 @@ interface PodcastService {
 
     @GET(POPULAR_PODCASTS_PATH)
     fun getPopularPodcasts(): Single<ResponseBody>
+
+    @GET(PODCAST_PATH)
+    fun getPodcastById(
+        @Path("id") idPodcast: Int
+    ): Single<ResponseBody>
 }

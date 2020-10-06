@@ -19,4 +19,5 @@ interface RemotePodcastProvider {
     fun reportPodcast(id: Int, request: DataCreateReportRequestEntity): Single<CreateReportResponseEntity>?
     fun getPopularPodcasts(): Single<PopularPodcastsResponseEntity>?
     fun getFeaturedPodcasts(): Single<FeaturedPodcastsResponseEntity>?
+    fun getPodcastById(id: Int): Single<GetPodcastResponseEntity>?
 }
