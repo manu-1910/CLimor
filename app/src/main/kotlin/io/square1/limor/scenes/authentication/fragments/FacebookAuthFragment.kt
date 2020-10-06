@@ -18,7 +18,6 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.facebook.CallbackManager
 import com.google.gson.Gson
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.App
@@ -62,9 +61,6 @@ class FacebookAuthFragment : BaseFragment() {
     private lateinit var viewModelSignUpFB: SignUpFBViewModel
     private lateinit var viewModelCreateFriend : CreateFriendViewModel
 
-    private var emailFromForgotPassword: String = ""
-    private var callbackManager: CallbackManager? = null
-
     private val signUpFBLoginTrigger = PublishSubject.create<Unit>()
     private val mergeFacebookAccountTrigger = PublishSubject.create<Unit>()
     private val signUpFBTrigger = PublishSubject.create<Unit>()
@@ -77,9 +73,8 @@ class FacebookAuthFragment : BaseFragment() {
     private var email = ""
     private var userImageUrl = ""
     private var usernameIsUnique = false
-
     var app: App? = null
-    var userFB: UISignUpUser ?= null
+
 
     companion object {
         fun newInstance(bundle: Bundle? = null): FacebookAuthFragment {
@@ -96,6 +91,7 @@ class FacebookAuthFragment : BaseFragment() {
     ): View? =
         inflater.inflate(R.layout.fragment_facebook_auth, container, false)
 
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         bindViewModel()
@@ -107,6 +103,7 @@ class FacebookAuthFragment : BaseFragment() {
         listeners()
         app = context?.applicationContext as App
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -150,7 +147,6 @@ class FacebookAuthFragment : BaseFragment() {
     }
 
 
-
     private fun listeners() {
         btnJoinLimor?.onClick {
             view?.hideKeyboard()
@@ -169,7 +165,7 @@ class FacebookAuthFragment : BaseFragment() {
 
         edtUsername.myEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
-                println("el campo es:$s")
+                //println("el campo es:$s")
                 if (s.isNotEmpty() && s.length > 3){
                     usernameExists(s.toString())
                 }
@@ -179,25 +175,6 @@ class FacebookAuthFragment : BaseFragment() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         })
     }
-
-//    //FIELDS VALIDATIONS
-//    private fun validatedUsername(username: String): Boolean {
-//        //return if (username.isNotBlank() && username.count() >= resources.getInteger(R.integer.PASSWORD_MIN_LENGTH)) {
-//        return if (username.isNotBlank() && username.count() >= 3) {
-//            edtUsername?.myEditLyt?.isErrorEnabled = false
-//            edtUsername?.myEditLyt?.error = null
-//
-//            true
-//        } else {
-//            edtUsername?.myEditLyt?.isErrorEnabled = true
-//            edtUsername?.myEditLyt?.error = getString(R.string.username_more_characters)
-//            edtUsername?.requestFocus()
-//            edtUsername?.myEdit?.background = resources.getDrawable(R.drawable.edittext, null)
-//
-//            false
-//        }
-//    }
-
 
 
     //Region Methods for Facebook SignIn/SignUp
@@ -264,8 +241,6 @@ class FacebookAuthFragment : BaseFragment() {
                         viewModelSignInFB.fbAccessTokenViewModel,
                         viewModelSignInFB.userViewModel
                     )
-
-
                 } else {
                     val message: StringBuilder = StringBuilder()
                     if (it.errorMessage!!.isNotEmpty()) {
@@ -277,7 +252,6 @@ class FacebookAuthFragment : BaseFragment() {
                         okButton { }
                     }.show()
                 }
-
             } else {
                 alert(getString(R.string.default_no_internet)) {
                     okButton {}
@@ -358,14 +332,7 @@ class FacebookAuthFragment : BaseFragment() {
     }
 
 
-
-
-
-
-
-
     private fun mergeAccounts(fbUid: String, fbToken: String, temporaryAccessToken: String) {
-
         viewModelMergeFacebookAccount.fbAccessTokenViewModel = fbToken
         viewModelMergeFacebookAccount.fbUidViewModel = fbUid
 
@@ -412,8 +379,6 @@ class FacebookAuthFragment : BaseFragment() {
     }
 
 
-
-
     private fun initApiCallAutofollowLimor() {
         val output = viewModelCreateFriend.transform(
             CreateFriendViewModel.Input(
@@ -439,9 +404,8 @@ class FacebookAuthFragment : BaseFragment() {
     }
     // end Region
 
-    private fun goToMainActivity() {
-        //DataManager.getInstance().getUserInfoData(true, null)
 
+    private fun goToMainActivity() {
         val mainIntent = Intent(context, MainActivity::class.java)
         startActivity(mainIntent)
         (activity as SignActivity).finish()
@@ -450,7 +414,7 @@ class FacebookAuthFragment : BaseFragment() {
 
 
     //Check if username exists previously on the system
-   private fun usernameExists(username: String){
+    private fun usernameExists(username: String){
 
         doAsync {
 
@@ -478,8 +442,7 @@ class FacebookAuthFragment : BaseFragment() {
                     //{"code":0,"message":"Success","data":{"available":false}}
                 },
                 Response.ErrorListener {
-                    var strErrorResponse = "That didn't work!"
-                    println(strErrorResponse)
+                    println(it.localizedMessage.toString())
                     uiThread {
                         usernameIsUnique = false
                         hideCheck()
@@ -495,25 +458,24 @@ class FacebookAuthFragment : BaseFragment() {
 
     }
 
-
     private fun showCheck(){
-        val drawable = ResourcesCompat.getDrawable(resources, R.drawable.selected, null)
-        drawable!!.setBounds(0, 0, 50, 50)
+    val drawable = ResourcesCompat.getDrawable(resources, R.drawable.selected, null)
+    drawable!!.setBounds(0, 0, 50, 50)
 
-        DrawableCompat.setTint(drawable, ContextCompat.getColor(context!!, R.color.brandSecondary100))
-        edtUsername.myEdit.setCompoundDrawables(null, null, drawable, null)
+    DrawableCompat.setTint(drawable, ContextCompat.getColor(context!!, R.color.green500))
+    edtUsername.myEdit.setCompoundDrawables(null, null, drawable, null)
 
-        edtUsername?.myEditLyt?.isErrorEnabled = false
-        edtUsername?.myEditLyt?.error = null
+    edtUsername?.myEditLyt?.isErrorEnabled = false
+    edtUsername?.myEditLyt?.error = null
     }
 
     private fun hideCheck(){
-        edtUsername.myEdit.setCompoundDrawables(null, null, null, null)
+    edtUsername.myEdit.setCompoundDrawables(null, null, null, null)
 
-        edtUsername?.myEditLyt?.isErrorEnabled = true
-        edtUsername?.myEditLyt?.error = getString(R.string.username_not_available)
-        edtUsername?.requestFocus()
-        edtUsername?.myEdit?.background = resources.getDrawable(R.drawable.edittext, null)
+    edtUsername?.myEditLyt?.isErrorEnabled = true
+    edtUsername?.myEditLyt?.error = getString(R.string.username_not_available)
+    edtUsername?.requestFocus()
+    edtUsername?.myEdit?.background = resources.getDrawable(R.drawable.edittext, null)
     }
 
 

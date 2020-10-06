@@ -20,20 +20,23 @@ import javax.inject.Inject
 
 class SignFBViewModel @Inject constructor(private val signInFBUseCase: SignInFBUseCase, private val sessionManager: SessionManager) : BaseViewModel<SignFBViewModel.Input, SignFBViewModel.Output>() {
 
+    var firstnameViewModel = ""
+    var lastnameViewModel = ""
     var emailViewModel = ""
     var passwordViewModel = ""
-    var userNameViewModel = ""
+    var userimageViewModel = ""
     var fbAccessTokenViewModel = ""
     var fbUidViewModel = ""
     var referralCodeViewModel = ""
     var tokenInApp = ""
+    var usernameViewModel = ""
 
     lateinit var userViewModel: UISignUpUser
 
     private val compositeDispose = CompositeDisposable()
 
     data class Input(
-        val singInFBTrigger: Observable<Unit>
+        val loginFBTrigger: Observable<Unit>
     )
 
     data class Output(
@@ -47,7 +50,7 @@ class SignFBViewModel @Inject constructor(private val signInFBUseCase: SignInFBU
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
         val response = MutableLiveData<UIAuthResponse>()
 
-        input.singInFBTrigger.subscribe({
+        input.loginFBTrigger.subscribe({
             signInFBUseCase.execute(
                 UITokenFBRequest(
                     BuildConfig.CLIENT_ID,
@@ -55,7 +58,11 @@ class SignFBViewModel @Inject constructor(private val signInFBUseCase: SignInFBU
                     Constants.GRANT_TYPE_FACEBOOK,
                     fbAccessTokenViewModel,
                     referralCodeViewModel,
-                    userViewModel
+                    UISignUpUser(
+                        emailViewModel,
+                        passwordViewModel,
+                        usernameViewModel
+                    )
                 )
             ).subscribe({
                 sessionManager.storeToken(it.data.token.access_token)
@@ -66,9 +73,10 @@ class SignFBViewModel @Inject constructor(private val signInFBUseCase: SignInFBU
                     val errorResponse: UIErrorResponse? = error.response()?.errorBody()?.parseSuccessResponse(UIErrorResponse.serializer())
                     errorTracker.postValue(errorResponse)
                 } catch (e: Exception) {
-                    val dataError = UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
-                    val errorResponse = UIErrorResponse(99, dataError.toString())
-                    errorTracker.postValue(errorResponse)
+//                    val dataError = UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
+//                    val errorResponse = UIErrorResponse(99, dataError.toString())
+//                    errorTracker.postValue(errorResponse)
+                    e.printStackTrace()
                 }
             })
         }, {}).addTo(compositeDispose)
