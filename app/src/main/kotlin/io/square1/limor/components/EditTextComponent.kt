@@ -42,6 +42,7 @@ import org.jetbrains.anko.topPadding
  *           app:topTextRight="Forgot your password?"
  *           app:textSize="17"
  *           app:hasArrow="false"
+ *           app:hasCheck="false"
  *           android:layout_marginTop="100dp"/>
  *
  * @param hasShadow boolean indicates that the edit text must have shadow or not (plain).
@@ -54,6 +55,7 @@ import org.jetbrains.anko.topPadding
  * @param hintText Set the size of the text of the edit text
  * @param inputType Set the type of keyboard that will be displayed depending on if the edittext is an email, a number, a normal text or a password.
  * @param hasArrow If true paint an arrow drawable at the right of the edittext
+ * @param hasCheck If true paint a check drawable at the right of the edittext
  *
  */
 class EditTextComponent(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
@@ -80,6 +82,8 @@ class EditTextComponent(context: Context, attrs: AttributeSet) : LinearLayout(co
                 val hintText = getString(R.styleable.edit_text_component_attributes_hintText)
                 val inputType = getInteger(R.styleable.edit_text_component_attributes_inputType, 0)
                 val hasArrow = getBoolean(R.styleable.edit_text_component_attributes_hasArrow, false)
+                val hasCheck = getBoolean(R.styleable.edit_text_component_attributes_hasCheck, false)
+
 
                 //Top Text align at left (title of edittext)
                 if (topTitleLeft.isNullOrEmpty()) {
@@ -157,6 +161,15 @@ class EditTextComponent(context: Context, attrs: AttributeSet) : LinearLayout(co
                     drawable!!.setBounds(0, 0, 50, 50)
 
                     DrawableCompat.setTint(drawable, ContextCompat.getColor(context, R.color.brandSecondary100))
+                    myEdit.setCompoundDrawables(null, null, drawable, null)
+                }
+
+                //has arrow at the right?
+                if(hasCheck){
+                    val drawable = ResourcesCompat.getDrawable(resources, R.drawable.selected, null)
+                    drawable!!.setBounds(0, 0, 50, 50)
+
+                    DrawableCompat.setTint(drawable, ContextCompat.getColor(context, R.color.green500))
                     myEdit.setCompoundDrawables(null, null, drawable, null)
                 }
 

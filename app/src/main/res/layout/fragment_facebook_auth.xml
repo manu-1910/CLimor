@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/brandSecondary400">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <io.square1.limor.components.EditTextComponent
+                android:id="@+id/edtUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:fontColor="@color/light"
+                app:hasShadow="false"
+                app:hintText="@string/username"
+                app:inputType="2"
+                app:isPassword="false"
+                app:hasCheck="false"
+                app:hasArrow="false"
+                app:topTitleLeft="@string/username" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnJoinLimor"
+                style="@android:style/Widget.Material.Button.Borderless.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:layout_marginEnd="@dimen/marginMedium"
+                android:layout_marginBottom="@dimen/marginMedium"
+                android:layout_marginTop="@dimen/marginVeryLarge"
+                android:background="@drawable/bg_round_yellow_ripple"
+                android:text="@string/join_limor"
+                android:textAllCaps="false"
+                android:textColor="@color/brandSecondary500"
+                android:textSize="@dimen/textSizeNormal" />
+
+
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/pbFacebookAuth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:theme="@style/ProgressBarTheme"
+            android:visibility="gone" />
+    </RelativeLayout>
+</ScrollView>

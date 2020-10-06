@@ -26,6 +26,8 @@ class SignFBViewModel @Inject constructor(private val signInFBUseCase: SignInFBU
     var fbAccessTokenViewModel = ""
     var fbUidViewModel = ""
     var referralCodeViewModel = ""
+    var tokenInApp = ""
+
     lateinit var userViewModel: UISignUpUser
 
     private val compositeDispose = CompositeDisposable()

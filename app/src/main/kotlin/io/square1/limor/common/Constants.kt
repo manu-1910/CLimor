@@ -57,5 +57,7 @@ class Constants{
         private val ERROR_CODE_NO_AUTHENTICATED_USER: Int = 10
         private const val ERROR_CODE_AUTH_INVALID_CREDENTIALS = 100
         const val ERROR_CODE_FACEBOOK_USER_EXISTS = 1337
+        const val ERROR_CODE_FACEBOOK_USER_DOES_NOT_EXISTS = 4
+        const val ERROR_CODE_FACEBOOK_USER_EXITS_IN_LIMOR = 3
     }
 }
