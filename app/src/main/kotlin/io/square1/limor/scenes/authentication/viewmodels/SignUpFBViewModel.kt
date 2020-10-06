@@ -21,11 +21,14 @@ import javax.inject.Inject
 
 class SignUpFBViewModel @Inject constructor(private val signUpFBUseCase: SignUpFBUseCase, private val sessionManager: SessionManager) : BaseViewModel<SignUpFBViewModel.Input, SignUpFBViewModel.Output>() {
 
+    var firstnameViewModel = ""
+    var lastnameViewModel = ""
     var emailViewModel = ""
     var passwordViewModel = ""
-    var userNameViewModel = ""
+    var userimageViewModel = ""
     var fbAccessTokenViewModel = ""
     var fbUidViewModel = ""
+    var userNameViewModel = ""
 
     private val compositeDispose = CompositeDisposable()
 

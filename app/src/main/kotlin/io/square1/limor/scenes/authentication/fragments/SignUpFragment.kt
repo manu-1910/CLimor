@@ -37,13 +37,13 @@ import io.square1.limor.scenes.authentication.viewmodels.SignUpFBViewModel
 import io.square1.limor.scenes.authentication.viewmodels.SignUpViewModel
 import io.square1.limor.scenes.main.MainActivity
 import io.square1.limor.scenes.main.viewmodels.CreateFriendViewModel
-import io.square1.limor.uimodels.UISignUpUser
 import kotlinx.android.synthetic.main.component_edit_text.view.*
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.support.v4.toast
 import org.json.JSONException
 import timber.log.Timber
 import javax.inject.Inject
@@ -57,14 +57,15 @@ class SignUpFragment : BaseFragment() {
     lateinit var sessionManager: SessionManager
 
     private lateinit var viewModel: SignUpViewModel
+    private lateinit var viewModelSignInFB: SignFBViewModel
     private lateinit var viewModelSignUpFB: SignUpFBViewModel
     private lateinit var viewModelMergeFacebookAccount: MergeFacebookAccountViewModel
     private lateinit var viewModelCreateFriend : CreateFriendViewModel
 
     private val signUpTrigger = PublishSubject.create<Unit>()
-    private val signUpFBTrigger = PublishSubject.create<Unit>()
     private val mergeFacebookAccountTrigger = PublishSubject.create<Unit>()
     private val createFriendTrigger = PublishSubject.create<Unit>()
+    private val loginFBTrigger = PublishSubject.create<Unit>()
 
     private var callbackManager: CallbackManager? = null
 
@@ -94,7 +95,7 @@ class SignUpFragment : BaseFragment() {
 
         bindViewModel()
         apiCall()
-        apiCallSignUpWithFacebook()
+        apiCallSignInWithFacebook()
         apiCallMergeFacebookAccount()
         initApiCallAutofollowLimor()
         setMessageWithClickableLink(tvTermsAndConditions)
@@ -108,6 +109,11 @@ class SignUpFragment : BaseFragment() {
                 ViewModelProviders
                     .of(fragmentActivity, viewModelFactory)
                     .get(SignUpViewModel::class.java)
+
+            viewModelSignInFB =
+                ViewModelProviders
+                    .of(fragmentActivity, viewModelFactory)
+                    .get(SignFBViewModel::class.java)
 
             viewModelSignUpFB =
                 ViewModelProviders
@@ -173,6 +179,7 @@ class SignUpFragment : BaseFragment() {
         })
     }
 
+
     private fun initApiCallAutofollowLimor() {
         val output = viewModelCreateFriend.transform(
             CreateFriendViewModel.Input(
@@ -197,114 +204,6 @@ class SignUpFragment : BaseFragment() {
         })
     }
 
-    private fun apiCallSignUpWithFacebook() {
-        val output = viewModelSignUpFB.transform(
-            SignUpFBViewModel.Input(
-                signUpFBTrigger
-            )
-        )
-
-        output.response.observe(this, Observer {
-            pbSignIn?.visibility = View.GONE
-            view?.hideKeyboard()
-
-            var token: String = ""
-            try{
-                token = it.data.access_token.token.access_token
-            }catch (e: Exception){
-                token = ""
-                e.printStackTrace()
-            }
-
-
-            if(it.message == "Success"){
-                viewModelCreateFriend.idNewFriend = Constants.LIMOR_ACCOUNT_ID
-                createFriendTrigger.onNext(Unit)
-                goToMainActivity()
-            }else{
-                if (it.code == Constants.ERROR_CODE_FACEBOOK_USER_EXISTS) {
-                    alert(it.message) {
-                        okButton {
-                            mergeAccounts(
-                                viewModelSignUpFB.fbUidViewModel,
-                                viewModelSignUpFB.fbAccessTokenViewModel,
-                                token
-                            )
-                        }
-                    }.show()
-                }
-            }
-
-        })
-
-        output.backgroundWorkingProgress.observe(this, Observer {
-            trackBackgroudProgress(it)
-        })
-
-        output.errorMessage.observe(this, Observer {
-            pbSignIn?.visibility = View.GONE
-            view?.hideKeyboard()
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                alert(message.toString()) {
-                    okButton { }
-                }.show()
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
-        })
-    }
-
-
-    private fun apiCallMergeFacebookAccount() {
-        val output = viewModelMergeFacebookAccount.transform(
-            MergeFacebookAccountViewModel.Input(
-                mergeFacebookAccountTrigger
-            )
-        )
-
-        output.response.observe(this, Observer {
-            pbSignIn?.visibility = View.GONE
-            view?.hideKeyboard()
-
-            if (it.message == "Success") {
-                viewModelCreateFriend.idNewFriend = Constants.LIMOR_ACCOUNT_ID
-                createFriendTrigger.onNext(Unit)
-                goToMainActivity()
-            }
-        })
-
-        output.backgroundWorkingProgress.observe(this, Observer {
-            trackBackgroudProgress(it)
-        })
-
-        output.errorMessage.observe(this, Observer {
-            pbSignIn?.visibility = View.GONE
-            view?.hideKeyboard()
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                alert(message.toString()) {
-                    okButton { }
-                }.show()
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
-        })
-    }
 
     private fun listeners() {
         btnSignUpFacebook?.onClick {
@@ -331,11 +230,11 @@ class SignUpFragment : BaseFragment() {
                 pbSignUp?.visibility = View.VISIBLE
                 signUpTrigger.onNext(Unit)
             }
-
         }
 
         tvTermsAndConditions?.onClick {}
     }
+
 
     private fun setMessageWithClickableLink(textView: TextView) {
         val content = getString(R.string.terms)
@@ -364,11 +263,14 @@ class SignUpFragment : BaseFragment() {
         textView.highlightColor = Color.TRANSPARENT
     }
 
+
     private fun saveVariablesIntoViewModel() {
         viewModel.userNameViewModel = edtSignUpUsername.myEdit.text.toString()
         viewModel.emailViewModel = edtSignUpEmail.myEdit.text.toString()
         viewModel.passwordViewModel = edtSignUpPassword.myEdit.text.toString()
     }
+
+
 
     //FIELDS VALIDATIONS
     private fun validatedUsername(username: String): Boolean {
@@ -418,13 +320,18 @@ class SignUpFragment : BaseFragment() {
             false
         }
     }
+    //end Region
 
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        callbackManager?.onActivityResult(requestCode, resultCode, data)
+    }
 
 
     //Region Methods for Facebook SignIn
-
     private fun getUserDataFromGraph() {
-
         // Login
         callbackManager = CallbackManager.Factory.create()
         LoginManager.getInstance().logInWithReadPermissions(this, listOf("public_profile", "email"))
@@ -454,23 +361,25 @@ class SignUpFragment : BaseFragment() {
                                 } catch (e: JSONException) {
                                     e.printStackTrace()
                                 }
-//                                val user = UISignUpUser(
-//                                    email.toString(),
-//                                    "",
-//                                    firstName
-//                                )
-//                                userFB = user
 
-                                //tryLoginWithFacebook(fbUid, fbToken, user)
-                                val bundle = Bundle()
-                                bundle.putString("fbUid", fbUid)
-                                bundle.putString("fbToken", fbToken)
-                                bundle.putString("firstName", firstName)
-                                bundle.putString("lastName", lastName)
-                                bundle.putString("email", email)
-                                bundle.putString("userImageUrl", userImageUrl)
-                                findNavController().navigate(R.id.action_signUpFragment_to_facebookAuthFragment, bundle)
+                                //Setup viewmodel fields if we need a signup
+                                viewModelSignUpFB.fbUidViewModel = fbUid
+                                viewModelSignUpFB.fbAccessTokenViewModel = fbToken
+                                viewModelSignUpFB.firstnameViewModel = firstName
+                                viewModelSignUpFB.lastnameViewModel = lastName
+                                viewModelSignUpFB.emailViewModel = email
+                                viewModelSignUpFB.userimageViewModel = userImageUrl
 
+                                //Setup viewmodel fields if we need a signin
+                                viewModelSignInFB.fbUidViewModel = fbUid
+                                viewModelSignInFB.fbAccessTokenViewModel = fbToken
+                                viewModelSignInFB.firstnameViewModel = firstName
+                                viewModelSignInFB.lastnameViewModel = lastName
+                                viewModelSignInFB.emailViewModel = email
+                                viewModelSignInFB.userimageViewModel = userImageUrl
+
+
+                                tryLoginWithFacebook()
 
                             } else {
                                 Timber.e("FBLOGIN_FAILD $data")
@@ -494,6 +403,7 @@ class SignUpFragment : BaseFragment() {
 
                 override fun onError(error: FacebookException) {
                     error.printStackTrace()
+                    toast(error.message.toString())
                     Timber.d("Facebook onError.")
 
                 }
@@ -502,22 +412,85 @@ class SignUpFragment : BaseFragment() {
     }
 
 
-
-    private fun tryRegisterWithFacebook(fbUid: String, fbToken: String, user: UISignUpUser) {
-        viewModelSignUpFB.fbAccessTokenViewModel = fbToken
-        viewModelSignUpFB.fbUidViewModel = fbUid
-        viewModelSignUpFB.emailViewModel = user.email
-        viewModelSignUpFB.passwordViewModel = user.password
-        viewModelSignUpFB.userNameViewModel = user.username
-
-        signUpFBTrigger.onNext(Unit)
+    private fun tryLoginWithFacebook() {
+        loginFBTrigger.onNext(Unit)
     }
+    private fun apiCallSignInWithFacebook() {
+        val output = viewModelSignInFB.transform(
+            SignFBViewModel.Input(
+                loginFBTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            pbSignUp?.visibility = View.GONE
+            view?.hideKeyboard()
+
+            var token: String = ""
+            try{
+                token = it.data.token.access_token
+                viewModelSignInFB.tokenInApp = token
+            }catch (e: Exception){
+                token = ""
+                e.printStackTrace()
+            }
+
+            if(it.message == "Success"){
+                goToMainActivity()
+            }else{
+                if (it.code == Constants.ERROR_CODE_FACEBOOK_USER_EXISTS) {
+                    alert(it.message) {
+                        okButton {
+                            mergeAccounts(
+                                viewModelSignInFB.fbUidViewModel,
+                                viewModelSignInFB.fbAccessTokenViewModel,
+                                token
+                            )
+                        }
+                    }.show()
+                }
+            }
+
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            pbSignUp?.visibility = View.GONE
+            view?.hideKeyboard()
+            if (app!!.merlinsBeard!!.isConnected) {
+                if (it.code == Constants.ERROR_CODE_FACEBOOK_USER_DOES_NOT_EXISTS) {
+
+                    val bundle = Bundle()
+                    bundle.putString("fbUid", viewModelSignInFB.fbUidViewModel)
+                    bundle.putString("fbToken", viewModelSignInFB.fbAccessTokenViewModel)
+                    bundle.putString("firstName", viewModelSignInFB.firstnameViewModel)
+                    bundle.putString("lastName", viewModelSignInFB.lastnameViewModel)
+                    bundle.putString("email", viewModelSignInFB.emailViewModel)
+                    bundle.putString("userImageUrl", viewModelSignInFB.userimageViewModel)
+                    findNavController().navigate(R.id.action_signUpFragment_to_facebookAuthFragment, bundle)
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+                }else{
+                    val message: StringBuilder = StringBuilder()
+                    if (it.errorMessage!!.isNotEmpty()) {
+                        message.append(it.errorMessage)
+                    } else {
+                        message.append(getString(R.string.some_error))
+                    }
+                    alert(message.toString()) {
+                        okButton { }
+                    }.show()
+                }
 
-        callbackManager?.onActivityResult(requestCode, resultCode, data)
+            } else {
+                alert(getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+        })
     }
 
 
@@ -527,14 +500,54 @@ class SignUpFragment : BaseFragment() {
 
         mergeFacebookAccountTrigger.onNext(Unit)
     }
+    private fun apiCallMergeFacebookAccount() {
+        val output = viewModelMergeFacebookAccount.transform(
+            MergeFacebookAccountViewModel.Input(
+                mergeFacebookAccountTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            pbSignIn?.visibility = View.GONE
+            view?.hideKeyboard()
+
+            if (it.message == "Success") {
+                viewModelCreateFriend.idNewFriend = Constants.LIMOR_ACCOUNT_ID
+                createFriendTrigger.onNext(Unit)
+                goToMainActivity()
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            pbSignIn?.visibility = View.GONE
+            view?.hideKeyboard()
+            if (app!!.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (it.errorMessage!!.isNotEmpty()) {
+                    message.append(it.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                alert(message.toString()) {
+                    okButton { }
+                }.show()
+            } else {
+                alert(getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+        })
+    }
+    // end Region
 
 
     private fun goToMainActivity() {
-        //DataManager.getInstance().getUserInfoData(true, null)
-
         val mainIntent = Intent(context, MainActivity::class.java)
         startActivity(mainIntent)
         (activity as SignActivity).finish()
     }
-    // end Region
 }
