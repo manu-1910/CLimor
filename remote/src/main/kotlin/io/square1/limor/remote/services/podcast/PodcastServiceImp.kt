@@ -159,4 +159,15 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
             }
     }
 
+    fun getPodcastById(id : Int): Single<NWGetPodcastResponse>? {
+        return service.getPodcastById(id)
+            .map { response -> response.parseSuccessResponse(NWGetPodcastResponse.serializer()) }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
 }

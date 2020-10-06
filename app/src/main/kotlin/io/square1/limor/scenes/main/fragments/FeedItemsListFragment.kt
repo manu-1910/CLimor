@@ -45,6 +45,7 @@ import javax.inject.Inject
 abstract class FeedItemsListFragment : BaseFragment() {
 
 
+    private var lastPodcastByIdRequestedPosition: Int = 0
     private var lastPodcastDeletedPosition: Int = 0
 
     @Inject
@@ -60,6 +61,9 @@ abstract class FeedItemsListFragment : BaseFragment() {
     private lateinit var viewModelDeletePodcast: DeletePodcastViewModel
     private lateinit var viewModelCreatePodcastReport: CreatePodcastReportViewModel
     private lateinit var viewModelCreateUserReport: CreateUserReportViewModel
+
+    private lateinit var viewModelGetPodcastById: GetPodcastByIdViewModel
+    private val getPodcastByIdDataTrigger = PublishSubject.create<Unit>()
 
     private lateinit var viewModelCreateBlockedUser: CreateBlockedUserViewModel
     private val createBlockedUserDataTrigger = PublishSubject.create<Unit>()
@@ -101,6 +105,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
         internal const val FEED_LIMIT_REQUEST = 4
         private const val REQUEST_REPORT_USER: Int = 0
         private const val REQUEST_REPORT_PODCAST: Int = 1
+        private const val REQUEST_PODCAST_DETAILS: Int = 2
     }
 
     override fun onCreateView(
@@ -123,6 +128,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
             initApiCallCreatePodcastReport()
             initApiCallCreateUserReport()
             initApiCallCreateBlockedUser()
+            initApiCallGetPodcastById()
 
 //            requestNewData()
         }
@@ -294,7 +300,8 @@ abstract class FeedItemsListFragment : BaseFragment() {
                         val podcastDetailsIntent =
                             Intent(context, PodcastDetailsActivity::class.java)
                         podcastDetailsIntent.putExtra("podcast", item.podcast)
-                        startActivity(podcastDetailsIntent)
+                        podcastDetailsIntent.putExtra("position", position)
+                        startActivityForResult(podcastDetailsIntent, REQUEST_PODCAST_DETAILS)
                     }
 
                     override fun onPlayClicked(item: UIFeedItem, position: Int) {
@@ -669,6 +676,28 @@ abstract class FeedItemsListFragment : BaseFragment() {
         })
     }
 
+    private fun initApiCallGetPodcastById() {
+        val output = viewModelGetPodcastById.transform(
+            GetPodcastByIdViewModel.Input(
+                getPodcastByIdDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer { response ->
+            hideProgressBar()
+            val code = response.code
+            if (code == 0) {
+                val receivedPodcast = response.data.podcast
+                feedItemsList[lastPodcastByIdRequestedPosition].podcast = receivedPodcast
+                feedAdapter?.notifyItemChanged(lastPodcastByIdRequestedPosition)
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            hideProgressBar()
+        })
+    }
+
     private fun initApiCallDeleteLike() {
         val output = viewModelDeletePodcastLike.transform(
             DeletePodcastLikeViewModel.Input(
@@ -760,6 +789,10 @@ abstract class FeedItemsListFragment : BaseFragment() {
             viewModelCreateBlockedUser = ViewModelProviders
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreateBlockedUserViewModel::class.java)
+
+            viewModelGetPodcastById = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(GetPodcastByIdViewModel::class.java)
         }
     }
 
@@ -779,21 +812,43 @@ abstract class FeedItemsListFragment : BaseFragment() {
         rvFeed?.scrollToPosition(0)
     }
 
+    private fun showProgressBar() {
+        swipeRefreshLayout?.isRefreshing = true
+    }
+
+    private fun hideProgressBar() {
+        swipeRefreshLayout?.isRefreshing = false
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK) {
-            val reason = data?.getStringExtra("reason")
             when (requestCode) {
                 REQUEST_REPORT_PODCAST -> {
                     data?.let {
+                        val reason = data.getStringExtra("reason")
                         viewModelCreatePodcastReport.reason = reason
                         createPodcastReportDataTrigger.onNext(Unit)
                     }
                 }
                 REQUEST_REPORT_USER -> {
                     data?.let {
+                        val reason = data.getStringExtra("reason")
                         reason?.let { viewModelCreateUserReport.reason = it }
                         createUserReportDataTrigger.onNext(Unit)
+                    }
+                }
+                REQUEST_PODCAST_DETAILS -> {
+                    data?.let {
+//                        val podcast = data.getSerializableExtra("podcast") as UIPodcast
+                        val position = data.getIntExtra("position", 0)
+                        lastPodcastByIdRequestedPosition = position
+                        feedItemsList[position].podcast?.id?.let { viewModelGetPodcastById.idPodcast = it }
+                        showProgressBar()
+                        getPodcastByIdDataTrigger.onNext(Unit)
+//                        val changedItem = feedItemsList[position]
+//                        changedItem.podcast = podcast
+//                        feedAdapter?.notifyItemChanged(position)
                     }
                 }
             }

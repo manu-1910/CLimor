@@ -59,6 +59,10 @@ class DataPodcastRepository @Inject constructor(private val remoteProvider: Remo
         return remoteProvider.getFeaturedPodcasts()
     }
 
+    override fun getPodcastById(id: Int): Single<GetPodcastResponseEntity>? {
+        return remoteProvider.getPodcastById(id)
+    }
+
     override fun getPopularPodcasts(): Single<PopularPodcastsResponseEntity>? {
         return remoteProvider.getPopularPodcasts()
     }
