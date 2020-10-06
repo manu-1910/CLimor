@@ -69,6 +69,7 @@ class CommentItemViewHolder(
     private var layReplyingTo: View = itemView.findViewById(R.id.layReplying)
     private var layMoreReplies: View = itemView.findViewById(R.id.layMoreReplies)
     private var layPlayer: View = itemView.findViewById(R.id.layPlayer)
+    private var layParent: View = itemView.findViewById(R.id.layParent)
     private var layComment: View = itemView.findViewById(R.id.layComment)
 
     private var seekBar: SeekBar = itemView.findViewById(R.id.seekBar)
@@ -184,6 +185,7 @@ class CommentItemViewHolder(
 
         ibtnMore.onClick { commentClickListener.onMoreClicked(currentItem, position, ibtnMore) }
         btnReply.onClick { commentClickListener.onReplyClicked(currentItem, position) }
+        layParent.onClick { commentClickListener.onItemClicked(currentItem, position) }
     }
 
 

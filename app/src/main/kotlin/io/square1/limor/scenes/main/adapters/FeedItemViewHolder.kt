@@ -105,8 +105,11 @@ class FeedItemViewHolder(
 
         // title & caption
         currentItem.podcast?.title?.let { tvPodcastTitle.text = it }
+        tvPodcastTitle.onClick { feedClickListener.onItemClicked(currentItem, position) }
         currentItem.podcast?.caption?.let { tvPodcastText.text = hightlightHashtags(it) }
         tvPodcastText.movementMethod = LinkMovementMethod.getInstance()
+        tvPodcastText.onClick { feedClickListener.onItemClicked(currentItem, position) }
+
 
         // duration
 //        currentItem.podcast?.audio?.duration?.let {

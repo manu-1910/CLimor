@@ -21,7 +21,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Observer
@@ -154,7 +153,7 @@ class PodcastDetailsFragment : BaseFragment() {
     private var firstTimePadding = true
 
     // this represents the main podcast of the screen, the postcast that we are seeing the details of
-    var uiPodcast: UIPodcast? = null
+    private var uiPodcast: UIPodcast? = null
 
     // this represents the main comment of the screen, it will be null when we are in podcastMode
     // and it will be the main comment when we are seeing the comments of this comment
