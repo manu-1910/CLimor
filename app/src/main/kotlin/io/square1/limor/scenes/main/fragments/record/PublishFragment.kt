@@ -401,24 +401,29 @@ class PublishFragment : BaseFragment() {
                 callToUpdateDraft()
             }
             override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {
-                try {
-                    if (s.toString().isNotEmpty()) {
-                        if (s.substring(s.length - 2).startsWith("#")) {
-                            rvTags.visibility = View.VISIBLE
-                            lytWithoutTagsRecycler?.visibility = View.GONE
-                            isShowingTagsRecycler = true
-                        } else if ((s.substring(s.length - 1) == " ") || (s.substring(s.length - 1) == System.lineSeparator())) {
-                            rvTags.visibility = View.GONE
-                            lytWithoutTagsRecycler?.visibility = View.VISIBLE
-                            isShowingTagsRecycler = false
-                        }
+                if(s.isEmpty()) {
+                    rvTags.visibility = View.GONE
+                    lytWithoutTagsRecycler?.visibility = View.VISIBLE
+                    isShowingTagsRecycler = false
+                } else {
+                    val cleanString = s.toString().replace(System.lineSeparator().toString(), " ")
+                    val lastSpaceIndex = cleanString.lastIndexOf(" ")
+                    val lastWord = if(lastSpaceIndex >= 0) {
+                        cleanString.substring(lastSpaceIndex).trim()
+                    } else {
+                        cleanString.trim()
+                    }
+                    val pattern = "#\\w+".toRegex()
+
+                    if(pattern.matches(lastWord)) {
+                        rvTags.visibility = View.VISIBLE
+                        lytWithoutTagsRecycler?.visibility = View.GONE
+                        isShowingTagsRecycler = true
                     } else {
                         rvTags.visibility = View.GONE
                         lytWithoutTagsRecycler?.visibility = View.VISIBLE
                         isShowingTagsRecycler = false
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
             }
         }
