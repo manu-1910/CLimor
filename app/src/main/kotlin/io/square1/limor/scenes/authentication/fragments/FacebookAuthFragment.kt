@@ -8,12 +8,16 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -36,6 +40,7 @@ import io.square1.limor.scenes.main.MainActivity
 import io.square1.limor.scenes.main.viewmodels.CreateFriendViewModel
 import io.square1.limor.uimodels.UISignUpUser
 import io.square1.limor.uimodels.UIUsernameResponse
+import kotlinx.android.synthetic.main.activity_sign.*
 import kotlinx.android.synthetic.main.component_edit_text.view.*
 import kotlinx.android.synthetic.main.fragment_facebook_auth.*
 import kotlinx.android.synthetic.main.fragment_sign_in.*
@@ -74,6 +79,7 @@ class FacebookAuthFragment : BaseFragment() {
     private var userImageUrl = ""
     private var usernameIsUnique = false
     var app: App? = null
+    var btnClose : ImageButton? = null
 
 
     companion object {
@@ -114,6 +120,15 @@ class FacebookAuthFragment : BaseFragment() {
         lastName = arguments?.getString("lastName").toString()
         email = arguments?.getString("email").toString()
         userImageUrl = arguments?.getString("userImageUrl").toString()
+
+        btnClose = activity?.findViewById(R.id.btnClose)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(activity is SignActivity) {
+            (activity as SignActivity).showToolbar()
+        }
     }
 
 
@@ -174,7 +189,13 @@ class FacebookAuthFragment : BaseFragment() {
             }
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         })
+
+        btnClose?.onClick {
+            findNavController().navigateUp()
+        }
     }
+
+
 
 
     //Region Methods for Facebook SignIn/SignUp

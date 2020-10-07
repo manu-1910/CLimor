@@ -57,7 +57,7 @@ class SignUpFragment : BaseFragment() {
     lateinit var sessionManager: SessionManager
 
     private lateinit var viewModel: SignUpViewModel
-    private lateinit var viewModelSignInFB: SignFBViewModel
+    private var viewModelSignInFB: SignFBViewModel? = null
     private lateinit var viewModelSignUpFB: SignUpFBViewModel
     private lateinit var viewModelMergeFacebookAccount: MergeFacebookAccountViewModel
     private lateinit var viewModelCreateFriend : CreateFriendViewModel
@@ -87,17 +87,28 @@ class SignUpFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_sign_up, container, false)
 
+    override fun onResume() {
+        super.onResume()
+        if(activity is SignActivity) {
+            (activity as SignActivity).hideToolbar()
+        }
+    }
+
+
+
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         app = context?.applicationContext as App
+        if(viewModelSignInFB == null) {
+            bindViewModel()
+            apiCall()
+            apiCallSignInWithFacebook()
+            apiCallMergeFacebookAccount()
+            initApiCallAutofollowLimor()
+        }
 
-        bindViewModel()
-        apiCall()
-        apiCallSignInWithFacebook()
-        apiCallMergeFacebookAccount()
-        initApiCallAutofollowLimor()
         setMessageWithClickableLink(tvTermsAndConditions)
         listeners()
     }
@@ -349,10 +360,10 @@ class SignUpFragment : BaseFragment() {
                                 //startActivity(Intent(context, MainActivity::class.java))
                                 val fbUid: String = AccessToken.getCurrentAccessToken().userId
                                 val fbToken: String = AccessToken.getCurrentAccessToken().token
-                                var firstName: String = ""
-                                var lastName: String = ""
-                                var email: String = ""
-                                var userImageUrl: String = ""
+                                var firstName = ""
+                                var lastName = ""
+                                var email = ""
+                                var userImageUrl = ""
                                 try {
                                     firstName = data.getString("first_name")
                                     lastName = data.getString("last_name")
@@ -371,12 +382,12 @@ class SignUpFragment : BaseFragment() {
                                 viewModelSignUpFB.userimageViewModel = userImageUrl
 
                                 //Setup viewmodel fields if we need a signin
-                                viewModelSignInFB.fbUidViewModel = fbUid
-                                viewModelSignInFB.fbAccessTokenViewModel = fbToken
-                                viewModelSignInFB.firstnameViewModel = firstName
-                                viewModelSignInFB.lastnameViewModel = lastName
-                                viewModelSignInFB.emailViewModel = email
-                                viewModelSignInFB.userimageViewModel = userImageUrl
+                                viewModelSignInFB?.fbUidViewModel = fbUid
+                                viewModelSignInFB?.fbAccessTokenViewModel = fbToken
+                                viewModelSignInFB?.firstnameViewModel = firstName
+                                viewModelSignInFB?.lastnameViewModel = lastName
+                                viewModelSignInFB?.emailViewModel = email
+                                viewModelSignInFB?.userimageViewModel = userImageUrl
 
 
                                 tryLoginWithFacebook()
@@ -416,20 +427,20 @@ class SignUpFragment : BaseFragment() {
         loginFBTrigger.onNext(Unit)
     }
     private fun apiCallSignInWithFacebook() {
-        val output = viewModelSignInFB.transform(
+        val output = viewModelSignInFB?.transform(
             SignFBViewModel.Input(
                 loginFBTrigger
             )
         )
 
-        output.response.observe(this, Observer {
+        output?.response?.observe(this, Observer {
             pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
 
-            var token: String = ""
+            var token = ""
             try{
                 token = it.data.token.access_token
-                viewModelSignInFB.tokenInApp = token
+                viewModelSignInFB?.tokenInApp = token
             }catch (e: Exception){
                 token = ""
                 e.printStackTrace()
@@ -442,8 +453,8 @@ class SignUpFragment : BaseFragment() {
                     alert(it.message) {
                         okButton {
                             mergeAccounts(
-                                viewModelSignInFB.fbUidViewModel,
-                                viewModelSignInFB.fbAccessTokenViewModel,
+                                viewModelSignInFB!!.fbUidViewModel,
+                                viewModelSignInFB!!.fbAccessTokenViewModel,
                                 token
                             )
                         }
@@ -453,23 +464,23 @@ class SignUpFragment : BaseFragment() {
 
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output?.backgroundWorkingProgress?.observe(this, Observer {
             trackBackgroudProgress(it)
         })
 
-        output.errorMessage.observe(this, Observer {
+        output?.errorMessage?.observe(this, Observer {
             pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
                 if (it.code == Constants.ERROR_CODE_FACEBOOK_USER_DOES_NOT_EXISTS) {
 
                     val bundle = Bundle()
-                    bundle.putString("fbUid", viewModelSignInFB.fbUidViewModel)
-                    bundle.putString("fbToken", viewModelSignInFB.fbAccessTokenViewModel)
-                    bundle.putString("firstName", viewModelSignInFB.firstnameViewModel)
-                    bundle.putString("lastName", viewModelSignInFB.lastnameViewModel)
-                    bundle.putString("email", viewModelSignInFB.emailViewModel)
-                    bundle.putString("userImageUrl", viewModelSignInFB.userimageViewModel)
+                    bundle.putString("fbUid", viewModelSignInFB?.fbUidViewModel)
+                    bundle.putString("fbToken", viewModelSignInFB?.fbAccessTokenViewModel)
+                    bundle.putString("firstName", viewModelSignInFB?.firstnameViewModel)
+                    bundle.putString("lastName", viewModelSignInFB?.lastnameViewModel)
+                    bundle.putString("email", viewModelSignInFB?.emailViewModel)
+                    bundle.putString("userImageUrl", viewModelSignInFB?.userimageViewModel)
                     findNavController().navigate(R.id.action_signUpFragment_to_facebookAuthFragment, bundle)
 
 
