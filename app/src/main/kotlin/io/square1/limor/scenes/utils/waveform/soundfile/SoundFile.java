@@ -627,6 +627,9 @@ public class SoundFile {
         try {
             FileOutputStream outputStream = new FileOutputStream(outputFile);
             outputStream.write(MP4Header.getMP4Header(mSampleRate, numChannels, frame_sizes, bitrate));
+            //TODO JJ try to ignore the header of the file
+            //encoded_size = encoded_size + 500;
+            //********************************************
             while (encoded_size - encodedBytes.position() > buffer.length) {
                 encodedBytes.get(buffer);
                 outputStream.write(buffer);

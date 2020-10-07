@@ -1016,6 +1016,11 @@ public class Commons {
 
             WriteWaveFileHeader(out, totalAudioLen, totalDataLen, longSampleRate, channels, byteRate, RECORDER_BPP);
 
+            //TODO JJ intento obviar el tamaño de la cabecera
+            in1.skip(5000);
+            in2.skip(5000);
+            //***********************************************
+
             while (in1.read(data) != -1) {
                 out.write(data);
             }
