@@ -56,5 +56,14 @@
 
     <fragment android:id="@+id/facebookAuthFragment"
         android:name="io.square1.limor.scenes.authentication.fragments.FacebookAuthFragment"
-        android:label="FacebookAuthFragment"/>
+        android:label="FacebookAuthFragment">
+
+        <action
+            android:id="@+id/action_facebookAuthFragment_to_signInFragment"
+            app:destination="@id/signInFragment"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+    </fragment>
 </navigation>

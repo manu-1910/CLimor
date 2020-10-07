@@ -6,6 +6,7 @@ import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -15,6 +16,7 @@ import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.extensions.hideKeyboard
+import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.authentication.viewmodels.ForgotPasswordViewModel
 import io.square1.limor.scenes.authentication.viewmodels.SignViewModel
 import kotlinx.android.synthetic.main.component_edit_text.view.*
@@ -34,6 +36,8 @@ class ForgotPasswordFragment : BaseFragment() {
     private lateinit var viewModelSignIn: SignViewModel
     private val resetPassTrigger = PublishSubject.create<Unit>()
     var app: App? = null
+    var btnClose : ImageButton? = null
+
 
 
     companion object {
@@ -47,6 +51,18 @@ class ForgotPasswordFragment : BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_forgot_password, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        btnClose = activity?.findViewById(R.id.btnClose)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(activity is SignActivity) {
+            (activity as SignActivity).showToolbar()
+        }
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -62,6 +78,7 @@ class ForgotPasswordFragment : BaseFragment() {
         initView()
         apiCall()
         listeners()
+
     }
 
     private fun bindViewModel() {
@@ -163,6 +180,10 @@ class ForgotPasswordFragment : BaseFragment() {
                 // User tried tapping!
                 Timber.e(getString(R.string.cant_open))
             }
+        }
+
+        btnClose?.onClick {
+            findNavController().navigateUp()
         }
     }
 

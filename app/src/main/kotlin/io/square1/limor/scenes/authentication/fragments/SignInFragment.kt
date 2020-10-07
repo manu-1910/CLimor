@@ -7,6 +7,7 @@ import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -31,6 +32,7 @@ import io.square1.limor.scenes.authentication.viewmodels.SignViewModel
 import io.square1.limor.scenes.main.MainActivity
 import io.square1.limor.scenes.main.viewmodels.CreateFriendViewModel
 import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
+import kotlinx.android.synthetic.main.activity_sign.*
 import kotlinx.android.synthetic.main.component_edit_text.view.*
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 import org.jetbrains.anko.okButton
@@ -52,7 +54,7 @@ class SignInFragment : BaseFragment() {
     private lateinit var viewModelSignInMail: SignViewModel
     private lateinit var viewModelSignInFB: SignFBViewModel
     private lateinit var viewModelMergeFacebookAccount: MergeFacebookAccountViewModel
-    private lateinit var viewModelSignUpFB: SignUpFBViewModel
+    private var viewModelSignUpFB: SignUpFBViewModel? = null
     private lateinit var viewModelCreateFriend : CreateFriendViewModel
 
     private val loginFBTrigger = PublishSubject.create<Unit>()
@@ -62,8 +64,6 @@ class SignInFragment : BaseFragment() {
     private var emailFromForgotPassword: String = ""
     private var callbackManager: CallbackManager? = null
     var app: App? = null
-
-
 
     companion object {
         fun newInstance(bundle: Bundle? = null): SignInFragment {
@@ -84,11 +84,13 @@ class SignInFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        bindViewModel()
-        apiCallSignInWithMail()
-        apiCallSignInWithFacebook()
-        apiCallMergeFacebookAccount()
-        initApiCallAutofollowLimor()
+        if(viewModelSignUpFB == null) {
+            bindViewModel()
+            apiCallSignInWithMail()
+            apiCallSignInWithFacebook()
+            apiCallMergeFacebookAccount()
+            initApiCallAutofollowLimor()
+        }
         listeners()
         app = context?.applicationContext as App
     }
@@ -102,6 +104,13 @@ class SignInFragment : BaseFragment() {
             if(!emailFromForgotPassword.isNullOrEmpty()){
                 edtSignInEmail.myEdit.text = emailFromForgotPassword.toEditable()
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(activity is SignActivity) {
+            (activity as SignActivity).hideToolbar()
         }
     }
 
@@ -378,7 +387,6 @@ class SignInFragment : BaseFragment() {
                     bundle.putString("email", viewModelSignInFB.emailViewModel)
                     bundle.putString("userImageUrl", viewModelSignInFB.userimageViewModel)
                     findNavController().navigate(R.id.action_signInFragment_to_facebookAuthFragment, bundle)
-
 
                 }else{
                     val message: StringBuilder = StringBuilder()
