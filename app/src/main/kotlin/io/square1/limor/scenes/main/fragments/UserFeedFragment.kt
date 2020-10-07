@@ -25,9 +25,11 @@ class UserFeedFragment : FeedItemsListFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
-        initApiCallGetFeed()
-        requestNewData()
+        if(rootView == null) {
+            super.onCreateView(inflater, container, savedInstanceState)
+            initApiCallGetFeed()
+            requestNewData()
+        }
         return rootView
     }
 

@@ -3,6 +3,7 @@ package io.square1.limor.scenes.main.fragments
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.*
 import android.widget.ImageButton
 import android.widget.PopupMenu
@@ -32,13 +33,14 @@ import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
+import timber.log.Timber
 import javax.inject.Inject
 
 
 class ProfileFragment : BaseFragment() {
 
 
-
+    private var rootView: View? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -83,39 +85,45 @@ class ProfileFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        if (rootView == null) {
+            rootView = inflater.inflate(R.layout.fragment_profile, container, false)
+
+            app = context?.applicationContext as App
+
+            isMyProfileMode = checkIfIsMyProfile()
+
+            bindViewModel()
+            apiCallGetUser()
+
+            if (!isMyProfileMode) {
+                viewModelGetUser.user = (activity as UserProfileActivity).uiUser
+                apiCallReportUser()
+                apiCallCreateFriend()
+                apiCallDeleteFriend()
+                apiCallCreateBlockedUser()
+                apiCallDeleteBlockedUser()
+
+            } else {
+                viewModelGetUser.user = sessionManager.getStoredUser()
+            }
+
+            viewModelGetUser.id = viewModelGetUser.user?.id
+
+
+        }
+        return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        app = context?.applicationContext as App
         initToolbarViews()
 
-        isMyProfileMode = checkIfIsMyProfile()
-
         listeners()
-        bindViewModel()
-        apiCallGetUser()
-
-        if (!isMyProfileMode) {
-            viewModelGetUser.user = (activity as UserProfileActivity).uiUser
-            apiCallReportUser()
-            apiCallCreateFriend()
-            apiCallDeleteFriend()
-            apiCallCreateBlockedUser()
-            apiCallDeleteBlockedUser()
-
-        } else {
-            viewModelGetUser.user = sessionManager.getStoredUser()
-        }
-
-        viewModelGetUser.id = viewModelGetUser.user?.id
-
         initViewPager()
         configureToolbar()
         configureScreen()
         printUserData()
+
     }
 
     private fun apiCallDeleteBlockedUser() {
@@ -209,14 +217,12 @@ class ProfileFragment : BaseFragment() {
 
     private fun initViewPager() {
         if(viewModelGetUser.user?.blocked == true) {
-            layViewPager.visibility = View.GONE
+            layViewPager?.visibility = View.GONE
         } else {
-            layViewPager.visibility = View.VISIBLE
+            layViewPager?.visibility = View.VISIBLE
             val names = arrayOf("Casts", "Likes")
 
-            val adapter = object : FragmentStatePagerAdapter(fragmentManager!!, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-
-
+            val adapter = object : FragmentStatePagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
                 override fun getItem(position: Int): Fragment {
                     return when (position) {
                         0 -> UserPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
@@ -232,11 +238,25 @@ class ProfileFragment : BaseFragment() {
                 override fun getPageTitle(position: Int): CharSequence {
                     return names[position]
                 }
-            }
-            viewPager.adapter = adapter
 
-            tab_layout.setupWithViewPager(viewPager)
-            tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                // this is necessary. Without this, app will crash when you are in a different fragment
+                // and then push back and it goes back to this fragment.
+                // the fragmentstatepageradapter saves states between different fragments of the adapter itself
+                // but if you go to a different fragment, for example home, and the push back and the navigation
+                // goes back to this profile fragment, the fragmentstatepageradapter will try to restore the
+                // state of the adapter fragments but they are not alive anymore.
+                override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
+                    try {
+                        super.restoreState(state, loader)
+                    } catch (e: Exception) {
+//                        Timber.e("Error Restore State of Fragment : %s", e.message)
+                    }
+                }
+            }
+            viewPager?.adapter = adapter
+
+            tab_layout?.setupWithViewPager(viewPager)
+            tab_layout?.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabReselected(tab: TabLayout.Tab?) {
                     tab?.let {
                         val myFragment = adapter.instantiateItem(viewPager, it.position)
@@ -300,6 +320,7 @@ class ProfileFragment : BaseFragment() {
     }
 
 
+
     private fun listeners() {
 
         btnBlock?.onClick {
@@ -319,7 +340,7 @@ class ProfileFragment : BaseFragment() {
             showPopupMoreMenu()
         }
 
-        btnFollow.onClick {
+        btnFollow?.onClick {
             viewModelGetUser.user?.followed?.let {
                 revertUserFollowedState()
 
@@ -671,10 +692,10 @@ class ProfileFragment : BaseFragment() {
         val fullname = "$firstName $lastName".trim()
         tvToolbarUsername?.text = fullname
         viewModelGetUser.user?.followers_count?.let {
-            tvNumberFollowers.text = formatSocialMediaQuantity(it)
+            tvNumberFollowers?.text = formatSocialMediaQuantity(it)
         }
         viewModelGetUser.user?.following_count?.let {
-            tvNumberFollowing.text = formatSocialMediaQuantity(it)
+            tvNumberFollowing?.text = formatSocialMediaQuantity(it)
         }
         context?.let {
             Glide.with(it)
@@ -684,7 +705,7 @@ class ProfileFragment : BaseFragment() {
         }
         viewModelGetUser.user?.verified?.let {
             if (it)
-                ivVerifiedUser.visibility = View.VISIBLE
+                ivVerifiedUser?.visibility = View.VISIBLE
         }
 
         if (!isMyProfileMode) {
@@ -692,7 +713,7 @@ class ProfileFragment : BaseFragment() {
         }
 
 
-        tvBio.text = viewModelGetUser.user?.description
+        tvBio?.text = viewModelGetUser.user?.description
     }
 
 }
