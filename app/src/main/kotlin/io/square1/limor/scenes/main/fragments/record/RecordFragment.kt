@@ -34,6 +34,7 @@ import io.square1.limor.R
 import io.square1.limor.common.BaseFragment
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
 import io.square1.limor.scenes.main.viewmodels.LocationsViewModel
+import io.square1.limor.scenes.utils.Commons.CombineWavFilesWithFfmpeg
 import io.square1.limor.scenes.utils.Commons.CombineWaveFile
 import io.square1.limor.scenes.utils.CommonsKt.Companion.audioFileFormat
 import io.square1.limor.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
@@ -82,7 +83,7 @@ class RecordFragment : BaseFragment() {
     var recordingItem: UIDraft? = null
     lateinit var locationResult: MyLocation.LocationResult
     private var fileRecording:String=""
-
+    private var continueRecording: Boolean = false
 
 
     companion object {
@@ -283,6 +284,7 @@ class RecordFragment : BaseFragment() {
         btnToolbarRight.onClick {
 
             isRecording = false
+
             stopAudio()
 
             //Merge audios and delete all them except the Audio Merged
@@ -305,7 +307,7 @@ class RecordFragment : BaseFragment() {
                 else -> {
                     doAsync {
                         val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath , "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
-                        if(CombineWaveFile(draftViewModel.filesArray[0].absolutePath, draftViewModel.filesArray[1].absolutePath, finalAudio.absolutePath)){
+                        if(CombineWaveFile(draftViewModel.filesArray[0].absolutePath, draftViewModel.filesArray[1].absolutePath, finalAudio.absolutePath, continueRecording, !continueRecording)){
                             draftViewModel.filesArray.clear()
                             draftViewModel.filesArray.add(finalAudio)
 
@@ -313,6 +315,8 @@ class RecordFragment : BaseFragment() {
                             recordingItem?.filePath = finalAudio.absolutePath
 
                             insertDraftInRealm(recordingItem!!)
+
+                            continueRecording = true
                         }else{
                             println("Fail merge audios")
                         }
@@ -330,6 +334,9 @@ class RecordFragment : BaseFragment() {
                     }
                 }
             }
+
+
+            continueRecording = false
         }
     }
 
@@ -425,7 +432,7 @@ class RecordFragment : BaseFragment() {
                     doAsync {
                         val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
 
-                        if(CombineWaveFile(draftViewModel.filesArray[0].absolutePath, draftViewModel.filesArray[1].absolutePath, finalAudio.absolutePath)){
+                        if(CombineWaveFile(draftViewModel.filesArray[0].absolutePath, draftViewModel.filesArray[1].absolutePath, finalAudio.absolutePath, continueRecording, !continueRecording)){
                             draftViewModel.filesArray.clear()
                             draftViewModel.filesArray.add(finalAudio)
 
