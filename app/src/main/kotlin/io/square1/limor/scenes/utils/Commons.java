@@ -7,8 +7,8 @@ import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.os.Environment;
+import android.util.Log;
 import android.util.TypedValue;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -21,35 +21,26 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.arthenica.mobileffmpeg.Config;
+import com.arthenica.mobileffmpeg.FFmpeg;
 import com.coremedia.iso.boxes.Container;
-import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
-import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
-import com.github.hiteshsondhi88.libffmpeg.LoadBinaryResponseHandler;
-import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
-import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedException;
 import com.google.gson.Gson;
 import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
-import com.xxjy.amrwbenc.AmrWbEncoder;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -70,10 +61,11 @@ import it.sauronsoftware.jave.AudioAttributes;
 import it.sauronsoftware.jave.Encoder;
 import it.sauronsoftware.jave.EncoderException;
 import it.sauronsoftware.jave.EncodingAttributes;
-import it.sauronsoftware.jave.InputFormatException;
 import timber.log.Timber;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.arthenica.mobileffmpeg.FFmpeg.RETURN_CODE_CANCEL;
+import static com.arthenica.mobileffmpeg.FFmpeg.RETURN_CODE_SUCCESS;
 
 public class Commons {
 
@@ -816,62 +808,62 @@ public class Commons {
     }
 
 
-    public static void convertWavToAmr(File wavFilename, File amrFilename){
-        InputStream wavInputStream = null;
-        FileOutputStream outputStream = null;
-        try {
-            wavInputStream = new FileInputStream(wavFilename);
-            //noinspection ResultOfMethodCallIgnored
-            wavInputStream.skip(44);
-
-            //AMR头文件"#!AMR-WB\n"
-            //byte[] header = new byte[]{0x23, 0x21, 0x41, 0x4D, 0x52, 0x2D, 0x57, 0x42, 0x0A};
-            //AMR header AMR-NB
-            byte[] header = new byte[]{0x23, 0x21, 0x41, 0x4D, 0x52, 0x0A};
-
-
-            byte[] wavBuffer = new byte[512];
-            byte[] outBuffer = new byte[512];
-            if (!amrFilename.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                amrFilename.createNewFile();
-            }
-            outputStream = new FileOutputStream(amrFilename);
-            outputStream.write(header);
-
-            AmrWbEncoder.init();
-            int readSize;
-            while ((readSize = wavInputStream.read(wavBuffer)) != -1) {
-                if (readSize > 0) {
-                    short[] buffer = bytes2shorts(wavBuffer);
-
-                    int encodedSize = AmrWbEncoder.encode(AmrWbEncoder.Mode.MD1825.ordinal(), buffer, outBuffer, 0);
-                    if (encodedSize > 0) {
-                        try {
-                            outputStream.write(outBuffer, 0, encodedSize);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-
-
-            //Toast.makeText(, "Convert Success", Toast.LENGTH_SHORT).show();
-            System.out.println("Convert wav to amr succesfully");
-            //play();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            closeStream(wavInputStream);
-            closeStream(outputStream);
-            try {
-                AmrWbEncoder.exit();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    public static void convertWavToAmr(File wavFilename, File amrFilename){
+//        InputStream wavInputStream = null;
+//        FileOutputStream outputStream = null;
+//        try {
+//            wavInputStream = new FileInputStream(wavFilename);
+//            //noinspection ResultOfMethodCallIgnored
+//            wavInputStream.skip(44);
+//
+//            //AMR头文件"#!AMR-WB\n"
+//            //byte[] header = new byte[]{0x23, 0x21, 0x41, 0x4D, 0x52, 0x2D, 0x57, 0x42, 0x0A};
+//            //AMR header AMR-NB
+//            byte[] header = new byte[]{0x23, 0x21, 0x41, 0x4D, 0x52, 0x0A};
+//
+//
+//            byte[] wavBuffer = new byte[512];
+//            byte[] outBuffer = new byte[512];
+//            if (!amrFilename.exists()) {
+//                //noinspection ResultOfMethodCallIgnored
+//                amrFilename.createNewFile();
+//            }
+//            outputStream = new FileOutputStream(amrFilename);
+//            outputStream.write(header);
+//
+//            AmrWbEncoder.init();
+//            int readSize;
+//            while ((readSize = wavInputStream.read(wavBuffer)) != -1) {
+//                if (readSize > 0) {
+//                    short[] buffer = bytes2shorts(wavBuffer);
+//
+//                    int encodedSize = AmrWbEncoder.encode(AmrWbEncoder.Mode.MD1825.ordinal(), buffer, outBuffer, 0);
+//                    if (encodedSize > 0) {
+//                        try {
+//                            outputStream.write(outBuffer, 0, encodedSize);
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//            }
+//
+//
+//            //Toast.makeText(, "Convert Success", Toast.LENGTH_SHORT).show();
+//            System.out.println("Convert wav to amr succesfully");
+//            //play();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            closeStream(wavInputStream);
+//            closeStream(outputStream);
+//            try {
+//                AmrWbEncoder.exit();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
 
     private static void closeStream(Closeable stream) {
@@ -891,30 +883,6 @@ public class Commons {
             buffer[i] = (short) (((input[2 * i] & 0xFF)) | ((input[2 * i + 1] & 0xFF) << 8));
         }
         return buffer;
-    }
-
-
-    public static void loadFFmpeg(Context context) {
-        FFmpeg ffmpeg = FFmpeg.getInstance(context);
-        try {
-            ffmpeg.loadBinary(new LoadBinaryResponseHandler() {
-
-                @Override
-                public void onStart() {}
-
-                @Override
-                public void onFailure() {}
-
-                @Override
-                public void onSuccess() {}
-
-                @Override
-                public void onFinish() {}
-            });
-        } catch (FFmpegNotSupportedException e) {
-            // Handle if FFmpeg is not supported by device
-            e.printStackTrace();
-        }
     }
 
 
@@ -986,7 +954,39 @@ public class Commons {
     }
 
 
-    public static boolean CombineWaveFile(String file1, String file2, String outPutFile) {
+    public static boolean CombineWavFilesWithFfmpeg(String file1, String file2, String outPutFile){
+
+        String s1 = "-i "+file1+" -i "+file2+" -filter_complex [0:a][1:a]concat=n=2:v=0:a=1[out] -map [out] "+outPutFile;
+        String s2 = "-i "+file1+" -i "+file2+" -filter_complex [0:a][1:a]concat=n=2:v=0:a=1 "+outPutFile;
+        String s3 = "-i \"concat:"+file1+"|"+file2+"\" -acodec copy "+outPutFile;
+        String s4 = "-i "+file1+" -i "+file2+" -filter_complex [0:a][1:a]concat=n=2:v=0:a=1 -c:a pcm_s16le -vn -dn -sn -strict -2 "+outPutFile;
+
+        int rc = FFmpeg.execute(s4);
+
+        if (rc == RETURN_CODE_SUCCESS) {
+            Timber.i("Command execution completed successfully.");
+
+            try {
+                deleteFile(file1);
+                deleteFile(file2);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return true;
+
+        } else if (rc == RETURN_CODE_CANCEL) {
+            Timber.i("Command execution cancelled by user.");
+            return false;
+        } else {
+            Timber.i("Command execution failed with rc=%d and the output below.", rc);
+            //Config.printLastCommandOutput(Log.INFO)
+            return false;
+        }
+
+    }
+
+
+    public static boolean CombineWaveFile(String file1, String file2, String outPutFile, boolean skipFirst, boolean skipSecond) {
         int RECORDER_SAMPLERATE = 16000;
         int RECORDER_BPP = 16;
         int bufferSize = 1024;
@@ -998,6 +998,8 @@ public class Commons {
         long totalDataLen = totalAudioLen + 36;
         long longSampleRate = RECORDER_SAMPLERATE;
         int channels = 2;
+        long sizein1 = 0;
+        long sizein2 = 0;
         long byteRate = (RECORDER_BPP * RECORDER_SAMPLERATE * channels) / 8;
         System.out.println("--------- byterate is: " + byteRate);
 
@@ -1011,19 +1013,29 @@ public class Commons {
             in2 = new FileInputStream(file2);
             out = new FileOutputStream(outPutFile);
 
-            totalAudioLen = in1.getChannel().size() + in2.getChannel().size();
+            sizein1 = in1.getChannel().size();
+            sizein2 = in2.getChannel().size();
+            totalAudioLen = sizein1 + sizein2;
             totalDataLen = totalAudioLen + 36;
 
             WriteWaveFileHeader(out, totalAudioLen, totalDataLen, longSampleRate, channels, byteRate, RECORDER_BPP);
 
-            //TODO JJ intento obviar el tamaño de la cabecera
-            in1.skip(5000);
-            in2.skip(5000);
+            //Skip the blip noise at start of the first audio file
+            if(skipFirst){
+                in1.skip(40000);
+            }
             //***********************************************
 
             while (in1.read(data) != -1) {
                 out.write(data);
             }
+
+            //Skip the blip noise at start of the second audio file
+            if(skipSecond){
+                in2.skip(40000);
+            }
+            //***********************************************
+
             while (in2.read(data) != -1) {
                 out.write(data);
             }

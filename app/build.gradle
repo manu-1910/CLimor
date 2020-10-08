@@ -345,8 +345,9 @@ dependencies {
     implementation 'com.github.yalantis:ucrop:2.2.6'
 
     //Audio converter to WAV
-    implementation 'com.github.adrielcafe:AndroidAudioConverter:0.0.8'
-    implementation 'com.github.xxjy:amr-wb-enc-android:1.0.0@aar'
+    //implementation 'com.github.adrielcafe:AndroidAudioConverter:0.0.8'
+    //implementation 'com.github.xxjy:amr-wb-enc-android:1.0.0@aar'
+    implementation 'com.arthenica:mobile-ffmpeg-full:4.2.2.LTS'
 
     implementation 'com.jakewharton.rxbinding4:rxbinding-core:4.0.0'
 

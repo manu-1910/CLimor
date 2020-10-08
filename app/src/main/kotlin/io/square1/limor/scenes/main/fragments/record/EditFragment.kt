@@ -4,26 +4,27 @@ import android.app.ProgressDialog
 import android.content.*
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
-import cafe.adriel.androidaudioconverter.AndroidAudioConverter
-import cafe.adriel.androidaudioconverter.callback.IConvertCallback
-import cafe.adriel.androidaudioconverter.model.AudioFormat
+import com.arthenica.mobileffmpeg.Config
+import com.arthenica.mobileffmpeg.FFmpeg
+import com.arthenica.mobileffmpeg.FFmpeg.RETURN_CODE_CANCEL
+import com.arthenica.mobileffmpeg.FFmpeg.RETURN_CODE_SUCCESS
 import com.googlecode.mp4parser.authoring.Movie
 import com.googlecode.mp4parser.authoring.Track
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack
-import com.xxjy.amrwbenc.AmrWbEncoder
 import io.square1.limor.App
 import io.square1.limor.R
 import io.square1.limor.scenes.main.viewmodels.DraftViewModel
-import io.square1.limor.scenes.utils.*
-import io.square1.limor.scenes.utils.Commons.*
+import io.square1.limor.scenes.utils.AmrEncoder
+import io.square1.limor.scenes.utils.Commons
+import io.square1.limor.scenes.utils.Commons.deleteFile
 import io.square1.limor.scenes.utils.CommonsKt.Companion.copyTo
 import io.square1.limor.scenes.utils.statemanager.Step
 import io.square1.limor.scenes.utils.waveform.MarkerSet
@@ -35,11 +36,12 @@ import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
 import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.toast
-import java.io.*
+import timber.log.Timber
+import java.io.File
+import java.io.IOException
+import java.io.RandomAccessFile
 import java.util.*
 import javax.inject.Inject
-import kotlin.experimental.and
-import kotlin.experimental.or
 
 
 class EditFragment : WaveformFragment() {
@@ -96,6 +98,7 @@ class EditFragment : WaveformFragment() {
         isEditMode = false
         context!!.unregisterReceiver(receiver)
     }
+
 
     override fun getFileName(): String {
         return recordingItem?.filePath!!
@@ -267,7 +270,7 @@ class EditFragment : WaveformFragment() {
             audioFilePaths = ArrayList()
             var copiedChunkPath: String? = null
             val outPathCopied =
-                Objects.requireNonNull(Objects.requireNonNull(activity)!!.externalCacheDir).absolutePath + "/limor_record_chunk_copied.m4a"
+                Objects.requireNonNull(Objects.requireNonNull(activity)?.externalCacheDir)!!.absolutePath + "/limor_record_chunk_copied.m4a"
             val startFrameCopied = waveformView.secondsToFrames(
                 waveformView.pixelsToSeconds(
                     selectedMarker.startPos / NEW_WIDTH
@@ -444,7 +447,7 @@ class EditFragment : WaveformFragment() {
             audioFilePaths = ArrayList()
             for (i in 0..1) {
                 val outPath =
-                    activity!!.externalCacheDir.absolutePath + "/limor_record_chunk_" + i + ".m4a"
+                    activity!!.externalCacheDir!!.absolutePath + "/limor_record_chunk_" + i + ".m4a"
                 val startTime =
                     waveformView.pixelsToSeconds(if (i == 0) 0 else (selectedMarker.endPos / NEW_WIDTH))
                 val endTime = waveformView.pixelsToSeconds(
@@ -462,8 +465,7 @@ class EditFragment : WaveformFragment() {
                     e.printStackTrace()
                 }
             }
-            fileName =
-                activity!!.externalCacheDir.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
+            fileName = activity!!.externalCacheDir!!.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
             try {
                 val listMovies: MutableList<Movie> = ArrayList()
                 for (filename in audioFilePaths) {
@@ -595,13 +597,13 @@ class EditFragment : WaveformFragment() {
             ) {
                 //do something based on the intent's action
                 when {
-                    intent.action.contains("BROADCAST_OPEN_HOW_TO_EDIT") -> {
+                    intent.action!!.contains("BROADCAST_OPEN_HOW_TO_EDIT") -> {
                         openHowToEdit()
                     }
-                    intent.action.contains("BROADCAST_OPEN_PUBLISH_SCREEN") -> {
+                    intent.action!!.contains("BROADCAST_OPEN_PUBLISH_SCREEN") -> {
                         openPublishFragment()
                     }
-                    intent.action.contains("BROADCAST_RESTORE_INITIAL_RECORDING") -> {
+                    intent.action!!.contains("BROADCAST_RESTORE_INITIAL_RECORDING") -> {
                         restoreToInitialState()
                     }
                 }
@@ -697,48 +699,49 @@ class EditFragment : WaveformFragment() {
 
         if(recordingItem!!.filePath!!.endsWith("m4a")){
 
-            val flacFile = File(recordingItem!!.filePath)
-            val callback: IConvertCallback = object : IConvertCallback {
-                override fun onSuccess(convertedFile: File?) {
+            val convertedFile = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".wav")
 
-                    val wavFileInCustomFolder = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".wav")
-                    convertedFile?.copyTo(wavFileInCustomFolder)
+            val commandToExecute1 = "-i " + recordingItem!!.filePath + " -f s16le -ac 2 -ar 16000 " + convertedFile
+            val commandToExecute2 = "-i "+ recordingItem!!.filePath +" -acodec pcm_s16le -ac 2 -ar 16000 " + convertedFile
+            val commandToExecute3 = "-i "+ recordingItem!!.filePath + " " + convertedFile
 
-                    try {
-                        deleteFile(recordingItem!!.filePath)
-                        deleteFile(convertedFile?.absolutePath)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+            val rc: Int = FFmpeg.execute(commandToExecute1)
 
-                    recordingItem!!.editedFilePath = ""
-                    recordingItem!!.filePath = wavFileInCustomFolder.absolutePath
-                    recordingItem!!.timeStamps = timeStamps
-                    recordingItem!!.length = player.duration.toLong() //si modifico el audio y le doy atrás, el record sigue mostrando la duración del audio original, no el editado
+            if (rc == RETURN_CODE_SUCCESS) {
+                Timber.i("Command execution completed successfully.")
 
-                    draftViewModel.uiDraft = recordingItem!!
+                val wavFileInCustomFolder = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".wav")
+                convertedFile?.copyTo(wavFileInCustomFolder)
 
-                    draftViewModel.filesArray.clear()
-                    draftViewModel.filesArray.add(File(recordingItem?.filePath))
-                    draftViewModel.durationOfLastAudio = player.duration.toLong()
-                    draftViewModel.continueRecording = true
-
-                    findNavController().popBackStack()
+                try {
+                    deleteFile(recordingItem!!.filePath)
+                    deleteFile(convertedFile.absolutePath)
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
 
-                override fun onFailure(error: java.lang.Exception?) {
-                    // Oops! Something went wrong
-                    toast(error?.printStackTrace().toString())
-                }
+                recordingItem!!.editedFilePath = ""
+                recordingItem!!.filePath = wavFileInCustomFolder.absolutePath
+                recordingItem!!.timeStamps = timeStamps
+                recordingItem!!.length = player.duration.toLong() //si modifico el audio y le doy atrás, el record sigue mostrando la duración del audio original, no el editado
+
+                draftViewModel.uiDraft = recordingItem!!
+
+                draftViewModel.filesArray.clear()
+                draftViewModel.filesArray.add(File(recordingItem?.filePath))
+                draftViewModel.durationOfLastAudio = player.duration.toLong()
+                draftViewModel.continueRecording = true
+
+                findNavController().popBackStack()
+
+            } else if (rc == RETURN_CODE_CANCEL) {
+                Timber.i("Command execution cancelled by user.")
+                toast("Command execution cancelled by user.")
+            } else {
+                Timber.i(String.format("Command execution failed with rc=%d and the output below.", rc))
             }
-            AndroidAudioConverter.with(context!!) // Your current audio file
-                .setFile(flacFile) // Your desired audio format
-                .setFormat(AudioFormat.WAV) // An callback to know when conversion is finished
-                .setCallback(callback) // Start conversion
-                .convert()
 
         }else{
-            // So fast? Love it!
             draftViewModel.continueRecording = true
             recordingItem!!.timeStamps = timeStamps
             recordingItem!!.length = player.duration.toLong() //si modifico el audio y le doy atrás, el record sigue mostrando la duración del audio original, no el editado
@@ -748,10 +751,8 @@ class EditFragment : WaveformFragment() {
             findNavController().popBackStack()
         }
 
-
-
-
     }
+
 
     private fun showProgress(message: String?) {
         val progressDialog = ProgressDialog(activity)

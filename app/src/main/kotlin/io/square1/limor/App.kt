@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.Application
 import android.app.Service
 import androidx.annotation.VisibleForTesting
-import com.crashlytics.android.Crashlytics
 import com.facebook.FacebookSdk
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.novoda.merlin.MerlinsBeard
@@ -12,13 +11,12 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import dagger.android.HasServiceInjector
-import io.fabric.sdk.android.Fabric
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.square1.limor.di.AppInjector
 import io.square1.limor.di.components.AppComponent
-import timber.log.Timber
 import javax.inject.Inject
+
 
 class App : Application(), HasActivityInjector, HasServiceInjector {
     @Inject
@@ -58,9 +56,20 @@ class App : Application(), HasActivityInjector, HasServiceInjector {
         //Initialize Facebook SDK
         FacebookSdk.sdkInitialize(this)
 
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        }
+//        if (BuildConfig.DEBUG) {
+//            Timber.plant(Timber.DebugTree())
+//        }
+
+//        AndroidAudioConverter.load(this, object : ILoadCallback {
+//            override fun onSuccess() {
+//                println("FFmpeg loaded success")
+//            }
+//
+//            override fun onFailure(error: Exception) {
+//                // FFmpeg is not supported by device
+//                println("FFmpeg loaded error")
+//            }
+//        })
     }
 
     private fun initRealm(): Realm? {
