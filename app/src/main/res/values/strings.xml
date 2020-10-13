@@ -157,6 +157,7 @@
     <!-- Drafts list -->
     <string name="autosaved_draft">Autosave</string>
     <string name="duplicated_draft">Copy of cast</string>
+    <string name="copy_of">Copy of </string>
     <string name="draft_title">New Draft</string>
     <string name="draft_deleted">Draft deleted</string>
     <string name="draft_not_deleted">Draft NOT deleted</string>
