@@ -671,7 +671,6 @@ class EditFragment : WaveformFragment() {
 
         //TODO JJ Guardar los cambios realizados
         handlePause()
-        handlePausePreview()
         //DataManager.getInstance().setSkipRecordScreen(true);
         val timeStamps = ArrayList<UITimeStamp>()
         if (markerSets != null && markerSets.size > 0) {
@@ -750,7 +749,7 @@ class EditFragment : WaveformFragment() {
 
             findNavController().popBackStack()
         }
-
+        handlePausePreview()
     }
 
 
