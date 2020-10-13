@@ -763,9 +763,13 @@ class PublishFragment : BaseFragment() {
         //Forward button
         btnFfwd?.onClick {
             try {
-                mediaPlayer.seekTo(30000)
+                val nextPosition = mediaPlayer.currentPosition + 30000
+                if(nextPosition < mediaPlayer.duration)
+                    mediaPlayer.seekTo(nextPosition)
+                else if(mediaPlayer.currentPosition < mediaPlayer.duration)
+                    mediaPlayer.seekTo(mediaPlayer.duration)
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.d("mediaPlayer.seekTo forward overflow")
             }
         }
 
@@ -773,9 +777,9 @@ class PublishFragment : BaseFragment() {
         //Rew button
         btnRew?.onClick {
             try {
-                mediaPlayer.seekTo(-30000)
+                mediaPlayer.seekTo(mediaPlayer.currentPosition - 30000)
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.d("mediaPlayer.seekTo rewind overflow")
             }
         }
     }
