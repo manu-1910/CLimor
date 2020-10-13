@@ -227,16 +227,21 @@ class DraftsFragment : BaseFragment() {
 
                         var newItem = draftsLocalList[position]
                         newItem.id = System.currentTimeMillis()
-                        newItem.title = getString(R.string.duplicated_draft)
+                        if(draftsLocalList[position].title.toString().isNotEmpty()){
+                            newItem.title = getString(R.string.copy_of) + newItem.title
+                        }else{
+                            newItem.title = getString(R.string.duplicated_draft)
+                        }
                         newItem.date = getDateTimeFormatted()
 
+                        val originalFile = File(draftsLocalList[position].filePath)
+                        val destFile = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + CommonsKt.audioFileFormat)
                         try {
-                            val originalFile = File(draftsLocalList[position].filePath)
-                            val destFile = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + CommonsKt.audioFileFormat)
                             copyFile(originalFile, destFile)
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
+                        newItem.filePath = destFile.absolutePath
 
                         //Insert in Realm
                         draftViewModel.uiDraft = newItem

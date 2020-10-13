@@ -523,7 +523,7 @@ class RecordFragment : BaseFragment() {
             hideToolbarButtons()
         }
 
-        printFilesInFolder()
+        //printFilesInFolder()
 
     }
 
@@ -569,7 +569,7 @@ class RecordFragment : BaseFragment() {
         //Stop timer
         c_meter.stop()
 
-        printFilesInFolder()
+        //printFilesInFolder()
     }
 
 
@@ -691,24 +691,24 @@ class RecordFragment : BaseFragment() {
     }
 
 
-    private fun printFilesInFolder(){
-        val path = Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/"
-        Log.d("Files", "Path: $path")
-        val directory = File(path)
-        val files = directory.listFiles()
-        Log.d("Files", "Size: " + files.size)
-        for (i in files.indices) {
-            Log.d("Files", "FileName:" + files[i].name)
-        }
+//    private fun printFilesInFolder(){
+//        val path = Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/"
+//        Log.d("Files", "Path: $path")
+//        val directory = File(path)
+//        val files = directory.listFiles()
+//        Log.d("Files", "Size: " + files.size)
+//        for (i in files.indices) {
+//            Log.d("Files", "FileName:" + files[i].name)
+//        }
+//
+//        Log.d("Files", "-----------------------------------------------")
+//    }
 
-        Log.d("Files", "-----------------------------------------------")
-    }
 
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        //recordingItem = null
-    }
+//    override fun onDestroyView() {
+//        super.onDestroyView()
+//        //recordingItem = null
+//    }
 
 
     private fun requestForLocation(){

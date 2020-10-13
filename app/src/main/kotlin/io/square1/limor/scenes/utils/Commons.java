@@ -1022,7 +1022,8 @@ public class Commons {
 
             //Skip the blip noise at start of the first audio file
             if(skipFirst){
-                in1.skip(40000);
+                in1.skip(20000);
+                System.out.println("Skipping 20000 in first file");
             }
             //***********************************************
 
@@ -1032,7 +1033,8 @@ public class Commons {
 
             //Skip the blip noise at start of the second audio file
             if(skipSecond){
-                in2.skip(40000);
+                in2.skip(20000);
+                System.out.println("Skipping 20000 in second file");
             }
             //***********************************************
 
