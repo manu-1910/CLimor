@@ -17,6 +17,7 @@ import io.square1.limor.R
 import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIDraft
 import org.jetbrains.anko.sdk23.listeners.onClick
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 
@@ -171,11 +172,13 @@ class DraftAdapter(
         //Forward button
         holder.btnFfwd.onClick {
             try {
-                if(mediaPlayer.currentPosition + 30000 <= mediaPlayer.duration){
-                    mediaPlayer.seekTo(30000)
-                }
+                val nextPosition = mediaPlayer.currentPosition + 30000
+                if(nextPosition < mediaPlayer.duration)
+                    mediaPlayer.seekTo(nextPosition)
+                else if(mediaPlayer.currentPosition < mediaPlayer.duration)
+                    mediaPlayer.seekTo(mediaPlayer.duration)
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.d("mediaPlayer.seekTo forward overflow")
             }
         }
 
@@ -183,11 +186,9 @@ class DraftAdapter(
         //Rew button
         holder.btnRew.onClick {
             try {
-                if(mediaPlayer.currentPosition - 30000 >= 0){
-                    mediaPlayer.seekTo(-30000)
-                }
+                mediaPlayer.seekTo(mediaPlayer.currentPosition - 30000)
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.d("mediaPlayer.seekTo rewind overflow")
             }
         }
 

@@ -11,14 +11,13 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
-import android.text.*
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.MenuInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
@@ -39,7 +38,6 @@ import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.extensions.showKeyboard
 import io.square1.limor.scenes.main.adapters.CommentsAdapter
-import io.square1.limor.scenes.main.fragments.FeedItemsListFragment
 import io.square1.limor.scenes.main.fragments.profile.ReportActivity
 import io.square1.limor.scenes.main.fragments.profile.TypeReport
 import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
@@ -897,12 +895,15 @@ class PodcastDetailsFragment : BaseFragment() {
         ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
 
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE", "UNUSED_VALUE")
     private fun audioSetup() {
 
         // Note: this is not the audio file name, it's a directory.
-        val recordingDirectory = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/")
+        // val recordingDirectory  = File(context!!.getExternalFilesDir(null)?.absolutePath, "limorv2");
+        val recordingDirectory = File(Environment.getExternalStorageDirectory()?.absolutePath, "limorv2")
+        var isDirectoryCreated = false
         if(!recordingDirectory.exists()){
-            recordingDirectory.mkdir()
+            isDirectoryCreated = recordingDirectory.mkdirs()
         }
 
         mRecorder = SimpleRecorder(recordingDirectory.absolutePath)
