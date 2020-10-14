@@ -367,4 +367,6 @@
     <string name="username_more_characters">Username must have 3 or more characters</string>
     <string name="username_not_available">This username is not available on the system, please try with other</string>
     <string name="you_must_type_avaible_username">You have to enter a valid username</string>
+    <string name="error_uploading_audio">There was an error uploading your audio, please try again</string>
+    <string name="error_uploading_image">There was an error when trying to upload your image. Please try again.</string>
 </resources>
