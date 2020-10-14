@@ -735,30 +735,32 @@ class RecordFragment : BaseFragment() {
             override fun gotLocation(location: Location?) {
                 //Got the location!
                 println("Location received: " + location?.latitude + "," +location?.longitude)
-                val geoCoder = Geocoder(context!!, Locale.getDefault()) //it is Geocoder
-                try {
-                    val address: List<Address> = geoCoder.getFromLocation(
-                        location!!.latitude,
-                        location.longitude,
-                        1
-                    )
-                    when {
-                        address[0].locality != null -> {
-                            locationsViewModel.uiLocationsRequest.term = address[0].locality
-                            println("Location received " + address[0].locality)
+                context?.let {
+                    val geoCoder = Geocoder(it, Locale.getDefault()) //it is Geocoder
+                    try {
+                        val address: List<Address> = geoCoder.getFromLocation(
+                            location!!.latitude,
+                            location.longitude,
+                            1
+                        )
+                        when {
+                            address[0].locality != null -> {
+                                locationsViewModel.uiLocationsRequest.term = address[0].locality
+                                println("Location received " + address[0].locality)
+                            }
+                            address[0].adminArea != null -> {
+                                locationsViewModel.uiLocationsRequest.term = address[0].adminArea
+                                println("Location received " + address[0].adminArea)
+                            }
+                            address[0].thoroughfare != null -> {
+                                locationsViewModel.uiLocationsRequest.term = address[0].thoroughfare
+                                println("Location received " + address[0].thoroughfare)
+                            }
                         }
-                        address[0].adminArea != null -> {
-                            locationsViewModel.uiLocationsRequest.term = address[0].adminArea
-                            println("Location received " + address[0].adminArea)
-                        }
-                        address[0].thoroughfare != null -> {
-                            locationsViewModel.uiLocationsRequest.term = address[0].thoroughfare
-                            println("Location received " + address[0].thoroughfare)
-                        }
-                    }
 
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
         }
