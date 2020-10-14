@@ -376,8 +376,9 @@ class PublishFragment : BaseFragment() {
         }
 
         btnPublishDraft?.onClick {
-            pbPublish.visibility = View.VISIBLE
             if (checkEmptyFields()) {
+                pbPublish.visibility = View.VISIBLE
+
                 //In the result of those calls I will call the method readyToPublish() to check their flags
                 if(podcastHasImage) {
                     publishPodcastImage()
@@ -499,7 +500,9 @@ class PublishFragment : BaseFragment() {
                 override fun onError(error: String?) {
                     pbPublish.visibility = View.GONE
                     audioUploaded = false
-                    toast(getString(R.string.error_uploading_audio))
+                    alert(getString(R.string.error_uploading_audio)) {
+                        okButton {  }
+                    }.show()
                     Timber.d("Audio upload to AWS error: $error")
                 }
             })
@@ -530,7 +533,9 @@ class PublishFragment : BaseFragment() {
                     override fun onError(error: String?) {
                         pbPublish.visibility = View.GONE
                         imageUploaded = false
-                        toast(getString(R.string.error_uploading_image))
+                        alert(getString(R.string.error_uploading_image)) {
+                            okButton {  }
+                        }.show()
                         Timber.d("Image upload to AWS error: $error")
                     }
                 }, Commons.IMAGE_TYPE_ATTACHMENT
