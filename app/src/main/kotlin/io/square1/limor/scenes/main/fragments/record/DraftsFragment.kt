@@ -155,7 +155,6 @@ class DraftsFragment : BaseFragment() {
                 }
             }
 
-
             try {
                 if(adapter?.mediaPlayer!!.isPlaying){
                     adapter?.mediaPlayer!!.stop()
@@ -207,7 +206,8 @@ class DraftsFragment : BaseFragment() {
                         //Remove item from the list
                         draftsLocalList.removeAt(position)
 
-                        rvDrafts?.adapter?.notifyItemRemoved(position)
+                        //rvDrafts?.adapter?.notifyItemRemoved(position)
+                        rvDrafts?.adapter?.notifyDataSetChanged()
                         //rvDrafts?.adapter?.notifyItemRangeChanged(0, draftsLocalList.size)
 
 
@@ -264,20 +264,6 @@ class DraftsFragment : BaseFragment() {
                             e.printStackTrace()
                         }
 
-//                        //Go to record fragment to continue recording
-//                        draftViewModel.uiDraft = item
-//                        draftViewModel.filesArray.add(File(item.filePath))
-//                        draftViewModel.continueRecording = true
-//                        draftViewModel.durationOfLastAudio = item.length!!
-//
-//                        try {
-//                            //navController.navigate(R.id.action_record_drafts_to_record_fragment)
-//
-//                            findNavController().popBackStack()
-//                        } catch (e: Exception) {
-//                            e.printStackTrace()
-//                        }
-
                         //Go to record fragment to continue recording
                         draftViewModel.uiDraft = item
                         draftViewModel.filesArray.add(File(item.filePath))
@@ -287,46 +273,8 @@ class DraftsFragment : BaseFragment() {
                         val bundle = bundleOf("recordingItem" to draftViewModel.uiDraft)
                         findNavController().navigate(R.id.action_record_drafts_to_record_edit, bundle)
                     }
-                }
-//                ,
-//                object : DraftAdapter.OnContinueRecordingItemClickListener {
-//                    override fun onContinueRecordingItemClick(item: UIDraft, position: Int) {
-//
-//                        draftViewModel.uiDraft = item
-//                        draftViewModel.filesArray.add(File(item.filePath))
-//                        draftViewModel.continueRecording = true
-//
-//                        try {
-//                            findNavController().popBackStack()
-//                        } catch (e: Exception) {
-//                            e.printStackTrace()
-//                        }
-////**************************************************************************************************
-////                        pbDrafts?.visibility = View.VISIBLE
-////
-////                        var newItem = draftsLocalList[position]
-////                        newItem.id = System.currentTimeMillis()
-////                        newItem.title = getString(R.string.duplicated_draft)
-////                        newItem.caption = getDateTimeFormatted()
-////
-////                        try {
-////                            val originalFile = File(draftsLocalList[position].filePath)
-////                            val destFile = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() +".amr")
-////                            copyFile(originalFile, destFile)
-////                        } catch (e: Exception) {
-////                            e.printStackTrace()
-////                        }
-////
-////                        //Insert in Realm
-////                        draftViewModel.uiDraft = newItem
-////                        insertDraftsTrigger.onNext(Unit)
-////
-////                        //Add item to the list
-////                        draftsLocalList.add(newItem)
-////                        rvDrafts?.adapter?.notifyItemChanged(position)
-//                    }
-//               },
-                , findNavController()
+                },
+                findNavController()
             )
         }
         rvDrafts?.adapter = adapter

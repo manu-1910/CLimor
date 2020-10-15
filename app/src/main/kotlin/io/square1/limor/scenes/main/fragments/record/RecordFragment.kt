@@ -501,7 +501,8 @@ class RecordFragment : BaseFragment() {
                     insertDraftInRealm(recordingItem!!, false)
                 }else{
                     recordingItem = UIDraft()
-                    recordingItem?.id = System.currentTimeMillis()/1000000
+                    //recordingItem?.id = System.currentTimeMillis()/1000000
+                    recordingItem?.id = System.currentTimeMillis()
                     recordingItem?.filePath = fileChosen?.absolutePath
                     //Insert/Create Draft
                     insertDraftInRealm(recordingItem!!, true)
@@ -574,6 +575,7 @@ class RecordFragment : BaseFragment() {
         try {
             mRecorder.stopRecording()
         } catch (e: Exception) {
+            e.printStackTrace()
         }
 
         voiceGraph?.clearAnimation()
@@ -657,7 +659,10 @@ class RecordFragment : BaseFragment() {
         //Model to save in Realm
 
         if(isNew){ //Create new Item
-            var newItem = UIDraft()
+            val newItem = UIDraft()
+            newItem.id = System.currentTimeMillis()
+            newItem.filePath = item.filePath
+
             draftViewModel.uiDraft = UIDraft()
 
             if(item.title.isNullOrEmpty()){
