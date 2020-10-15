@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -164,7 +163,7 @@ class EditProfileFragment : BaseFragment() {
         updateUserViewModel.phone_number = etPhone.text.toString()
         updateUserViewModel.date_of_birth =  ageToTimestamp(etAge.text.toString().toInt())
         updateUserViewModel.gender = etGender.text.toString()
-        updateUserViewModel.notifications_enabled = sessionManager.getPushNotificationsEnabled()!!
+        updateUserViewModel.notifications_enabled = sessionManager.getStoredUser()!!.notifications_enabled
         if(profileHasImage){
             updateUserViewModel.image = profileImageUrlFinal
         }
@@ -202,6 +201,7 @@ class EditProfileFragment : BaseFragment() {
             handleOnApiError(it)
         })
     }
+
 
     private fun handleOnApiError(it: UIErrorResponse) {
         if (app!!.merlinsBeard!!.isConnected) {
@@ -360,8 +360,6 @@ class EditProfileFragment : BaseFragment() {
             callToApiUpdateUser()
         }
     }
-
-
 
 
 }
