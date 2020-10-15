@@ -9,7 +9,6 @@ import android.location.Address
 import android.location.Geocoder
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.text.Spannable
 import android.text.SpannableString
@@ -900,7 +899,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
         // Note: this is not the audio file name, it's a directory.
         // val recordingDirectory  = File(context!!.getExternalFilesDir(null)?.absolutePath, "limorv2");
-        val recordingDirectory = File(Environment.getExternalStorageDirectory()?.absolutePath, "limorv2")
+        val recordingDirectory = File(context?.getExternalFilesDir(null)?.absolutePath, "limorv2")
         var isDirectoryCreated = false
         if(!recordingDirectory.exists()){
             isDirectoryCreated = recordingDirectory.mkdirs()
@@ -951,6 +950,10 @@ class PodcastDetailsFragment : BaseFragment() {
                         viewModelCreateCommentComment.uiCreateCommentRequest = currentCommentRequest!!
                         createCommentCommentDataTrigger.onNext(Unit)
                     }
+                }
+
+                override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
+
                 }
 
                 override fun onError(error: String?) {
@@ -1364,7 +1367,7 @@ class PodcastDetailsFragment : BaseFragment() {
                             // if you click in a different comment than the one that is currently being listened, we'll firts have to destroy de previous one
                         } else if(audioCommentPlayerController != null && audioCommentPlayerController?.comment != item.comment){
                             audioCommentPlayerController?.destroy()
-                            audioCommentPlayerController = AudioCommentPlayerController(item.comment, seekBar, ibtnPlay)
+                            audioCommentPlayerController = AudioCommentPlayerController(item.comment, seekBar, ibtnPlay, context!!)
 
                             // if there isn't any comment being listened, just launch this one
                         } else {
@@ -1378,7 +1381,7 @@ class PodcastDetailsFragment : BaseFragment() {
                                 }
                             }else {
                                 audioCommentPlayerController =
-                                    AudioCommentPlayerController(item.comment, seekBar, ibtnPlay)
+                                    AudioCommentPlayerController(item.comment, seekBar, ibtnPlay, context!!)
                             }
                         }
                     }

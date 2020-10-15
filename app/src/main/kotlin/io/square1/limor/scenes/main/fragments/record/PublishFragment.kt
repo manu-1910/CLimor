@@ -811,7 +811,7 @@ class PublishFragment : BaseFragment() {
 
                 // we'll prepare the outputfile
                 val croppedImagesDir = File(
-                    Environment.getExternalStorageDirectory()?.absolutePath,
+                    context?.getExternalFilesDir(null)?.absolutePath,
                     Constants.LOCAL_FOLDER_CROPPED_IMAGES
                 )
                 if (!croppedImagesDir.exists()) {

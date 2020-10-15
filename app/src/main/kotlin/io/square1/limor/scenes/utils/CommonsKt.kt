@@ -1,15 +1,23 @@
 package io.square1.limor.scenes.utils
 
+import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.text.Editable
 import android.text.format.DateFormat
 import android.util.TypedValue
 import android.widget.Button
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import io.square1.limor.App
 import io.square1.limor.R
+import io.square1.limor.scenes.authentication.SignActivity
+import io.square1.limor.uimodels.UIErrorResponse
+import org.jetbrains.anko.okButton
+import org.jetbrains.anko.support.v4.alert
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -84,30 +92,37 @@ class CommonsKt {
             return finalDuration
         }
 
-        fun calculateDurationMinutesAndSeconds(millis: Long) :String {
+        fun calculateDurationMinutesAndSeconds(millis: Long): String {
             // if it's less than one minute
-            return if(millis < 60 * 1000) {
+            return if (millis < 60 * 1000) {
                 String.format("%ds", TimeUnit.MILLISECONDS.toSeconds(millis))
 
                 // if it's less than one hour
-            } else if(millis < 3600 * 1000){
-                String.format("%dm %ds",
+            } else if (millis < 3600 * 1000) {
+                String.format(
+                    "%dm %ds",
                     TimeUnit.MILLISECONDS.toMinutes(millis),
                     TimeUnit.MILLISECONDS.toSeconds(millis) -
-                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)))
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+                )
 
                 // if it's more than one hour
             } else {
-                String.format("%dh %dm" /*%ds*/,
+                String.format(
+                    "%dh %dm" /*%ds*/,
                     TimeUnit.MILLISECONDS.toHours(millis),
-                    TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis))//,
+                    TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(
+                        TimeUnit.MILLISECONDS.toHours(
+                            millis
+                        )
+                    )//,
                     //TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
                 )
             }
         }
 
 
-        fun dpToPx(dp : Float, context: Context) : Int {
+        fun dpToPx(dp: Float, context: Context): Int {
             return TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 dp,
@@ -115,7 +130,7 @@ class CommonsKt {
             ).toInt()
         }
 
-        fun reduceSwipeSensitivity(viewPager : ViewPager2) {
+        fun reduceSwipeSensitivity(viewPager: ViewPager2) {
             val recyclerViewField = ViewPager2::class.java.getDeclaredField("mRecyclerView")
             recyclerViewField.isAccessible = true
             val recyclerView = recyclerViewField.get(viewPager) as RecyclerView
@@ -123,14 +138,14 @@ class CommonsKt {
             val touchSlopField = RecyclerView::class.java.getDeclaredField("mTouchSlop")
             touchSlopField.isAccessible = true
             val touchSlop = touchSlopField.get(recyclerView) as Int
-            touchSlopField.set(recyclerView, touchSlop*8)       // "8" was obtained experimentally
+            touchSlopField.set(recyclerView, touchSlop * 8)       // "8" was obtained experimentally
         }
 
         fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
         fun Int.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this.toString())
 
 
-        fun formatSocialMediaQuantity(quantity : Int) : String {
+        fun formatSocialMediaQuantity(quantity: Int): String {
             return when {
                 quantity < 10000 -> {
                     quantity.toString()
@@ -154,7 +169,8 @@ class CommonsKt {
                     val newQty = quantity / 1000000.toFloat()
                     val output = "%.0fM".format(newQty)
                     output
-                } else -> {
+                }
+                else -> {
                     val newQty = quantity / 1000000000.toFloat()
                     val output = "%.1fB".format(newQty)
                     output
@@ -176,20 +192,23 @@ class CommonsKt {
             textPrimary: Int,
             textSecondary: Int
         ) {
-            if(primaryStatus) {
+            if (primaryStatus) {
                 button.background =
                     ContextCompat.getDrawable(button.context, R.drawable.bg_round_yellow_ripple)
                 button.setTextColor(ContextCompat.getColor(button.context, R.color.black))
                 button.text = button.context.getString(textPrimary)
             } else {
                 button.text = button.context.getString(textSecondary)
-                button.background = ContextCompat.getDrawable(button.context, R.drawable.bg_round_transparent_ripple)
+                button.background = ContextCompat.getDrawable(
+                    button.context,
+                    R.drawable.bg_round_transparent_ripple
+                )
                 button.setTextColor(ContextCompat.getColor(button.context, R.color.brandPrimary500))
             }
         }
 
 
-        fun ageToTimestamp(age: Int): Long{
+        fun ageToTimestamp(age: Int): Long {
             val calendar = Calendar.getInstance()
             calendar.add(Calendar.YEAR, age)
             val timeMilli = calendar.timeInMillis
@@ -198,7 +217,7 @@ class CommonsKt {
         }
 
 
-        fun timestampToAge(age: Long): Int{
+        fun timestampToAge(age: Long): Int {
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = age
             val timeYear = calendar.get(Calendar.YEAR)
@@ -209,7 +228,42 @@ class CommonsKt {
             return timeYear - currentYear
         }
 
+        fun handleOnApiError(
+            app: App,
+            context: Context,
+            fragment: Fragment,
+            errorResponse: UIErrorResponse
+        ) {
+            if (app.merlinsBeard!!.isConnected) {
+                val message: StringBuilder = StringBuilder()
+                if (errorResponse.errorMessage!!.isNotEmpty()) {
+                    message.append(errorResponse.errorMessage)
+                } else {
+                    message.append(R.string.some_error)
+                }
+                if (errorResponse.code == 10) {  //Session expired
+                    fragment.alert(message.toString()) {
+                        okButton {
+                            val intent = Intent(context, SignActivity::class.java)
+                            //intent.putExtra(getString(R.string.otherActivityKey), true)
+                            fragment.startActivityForResult(
+                                intent,
+                                fragment.resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
+                            )
+                        }
+                    }.show()
+                } else {
+                    fragment.alert(message.toString()) {
+                        okButton { }
+                    }.show()
+                }
+            } else {
+                fragment.alert(context.getString(R.string.default_no_internet)) {
+                    okButton {}
+                }.show()
+            }
+
+        }
+
     }
-
-
 }

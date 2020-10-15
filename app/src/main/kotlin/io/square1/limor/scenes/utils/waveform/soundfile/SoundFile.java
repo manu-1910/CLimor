@@ -16,6 +16,7 @@
 
 package io.square1.limor.scenes.utils.waveform.soundfile;
 
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaCodec;
@@ -729,57 +730,60 @@ public class SoundFile {
     // "<presentation time in seconds>\t<channel 1>\t...\t<channel N>\n"
     // File will be written on the SDCard under media/audio/debug/
     // If fileName is null or empty, then the default file name (samples.tsv) is used.
-    private void DumpSamples(String fileName) {
-        String externalRootDir = Environment.getExternalStorageDirectory().getPath();
-        if (!externalRootDir.endsWith("/")) {
-            externalRootDir += "/";
-        }
-        String parentDir = externalRootDir + "media/audio/debug/";
-        // Create the parent directory
-        File parentDirFile = new File(parentDir);
-        parentDirFile.mkdirs();
-        // If we can't write to that special path, try just writing directly to the SDCard.
-        if (!parentDirFile.isDirectory()) {
-            parentDir = externalRootDir;
-        }
-        if (fileName == null || fileName.isEmpty()) {
-            fileName = "samples.tsv";
-        }
-        File outFile = new File(parentDir + fileName);
-
-        // Start dumping the samples.
-        BufferedWriter writer = null;
-        float presentationTime = 0;
-        mDecodedSamples.rewind();
-        String row;
-        try {
-            writer = new BufferedWriter(new FileWriter(outFile));
-            for (int sampleIndex = 0; sampleIndex < mNumSamples; sampleIndex++) {
-                presentationTime = (float)(sampleIndex) / mSampleRate;
-                row = Float.toString(presentationTime);
-                for (int channelIndex = 0; channelIndex < mChannels; channelIndex++) {
-                    row += "\t" + mDecodedSamples.get();
-                }
-                row += "\n";
-                writer.write(row);
+    private void DumpSamples(Context context, String fileName) {
+        File fileExternal = context.getExternalFilesDir(null);
+        if(fileExternal != null) {
+            String externalRootDir = fileExternal.getPath();
+            if (!externalRootDir.endsWith("/")) {
+                externalRootDir += "/";
             }
-        } catch (IOException e) {
-            Log.w("Ringdroid", "Failed to create the sample TSV file.");
-            Log.w("Ringdroid", getStackTrace(e));
+            String parentDir = externalRootDir + "media/audio/debug/";
+            // Create the parent directory
+            File parentDirFile = new File(parentDir);
+            parentDirFile.mkdirs();
+            // If we can't write to that special path, try just writing directly to the SDCard.
+            if (!parentDirFile.isDirectory()) {
+                parentDir = externalRootDir;
+            }
+            if (fileName == null || fileName.isEmpty()) {
+                fileName = "samples.tsv";
+            }
+            File outFile = new File(parentDir + fileName);
+
+            // Start dumping the samples.
+            BufferedWriter writer = null;
+            float presentationTime = 0;
+            mDecodedSamples.rewind();
+            String row;
+            try {
+                writer = new BufferedWriter(new FileWriter(outFile));
+                for (int sampleIndex = 0; sampleIndex < mNumSamples; sampleIndex++) {
+                    presentationTime = (float)(sampleIndex) / mSampleRate;
+                    row = Float.toString(presentationTime);
+                    for (int channelIndex = 0; channelIndex < mChannels; channelIndex++) {
+                        row += "\t" + mDecodedSamples.get();
+                    }
+                    row += "\n";
+                    writer.write(row);
+                }
+            } catch (IOException e) {
+                Log.w("Ringdroid", "Failed to create the sample TSV file.");
+                Log.w("Ringdroid", getStackTrace(e));
+            }
+            // We are done here. Close the file and rewind the buffer.
+            try {
+                writer.close();
+            } catch (Exception e) {
+                Log.w("Ringdroid", "Failed to close sample TSV file.");
+                Log.w("Ringdroid", getStackTrace(e));
+            }
+            mDecodedSamples.rewind();
         }
-        // We are done here. Close the file and rewind the buffer.
-        try {
-            writer.close();
-        } catch (Exception e) {
-            Log.w("Ringdroid", "Failed to close sample TSV file.");
-            Log.w("Ringdroid", getStackTrace(e));
-        }
-        mDecodedSamples.rewind();
     }
 
     // Helper method (samples will be dumped in media/audio/debug/samples.tsv).
-    private void DumpSamples() {
-        DumpSamples(null);
+    private void DumpSamples(Context context) {
+        DumpSamples(context, null);
     }
 
     // Return the stack trace of a given exception.
