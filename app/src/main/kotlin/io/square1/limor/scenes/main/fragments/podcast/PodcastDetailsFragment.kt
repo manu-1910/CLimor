@@ -953,6 +953,10 @@ class PodcastDetailsFragment : BaseFragment() {
                     }
                 }
 
+                override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
+
+                }
+
                 override fun onError(error: String?) {
                     Timber.d("Audio upload to AWS error: $error")
                 }
