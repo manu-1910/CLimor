@@ -22,9 +22,9 @@ public class MyLocation {
     {
         //I use LocationResult callback class to pass location value from MyLocation to user code.
         locationResult=result;
-        if(lm==null)
+        if(lm==null) {
             lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-
+        }
         //exceptions will be thrown if provider is not permitted.
         try{gps_enabled=lm.isProviderEnabled(LocationManager.GPS_PROVIDER);}catch(Exception ex){}
         try{network_enabled=lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);}catch(Exception ex){}

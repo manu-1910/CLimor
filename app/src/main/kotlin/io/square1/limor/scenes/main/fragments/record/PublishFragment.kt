@@ -36,6 +36,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
@@ -134,6 +135,7 @@ class PublishFragment : BaseFragment() {
     private var tvSelectedCategory: TextView? = null
     private var twCaption: TextWatcher? = null
     private var twTitle: TextWatcher? = null
+    private var rvTags: RecyclerView? = null
 
     //Flags to publish podcast
     private var audioUploaded: Boolean = false
@@ -169,6 +171,7 @@ class PublishFragment : BaseFragment() {
             tvSelectedLocation = rootView?.findViewById(R.id.tvSelectedLocation)
             tvSelectedCategory = rootView?.findViewById(R.id.tvSelectedCategory)
             lytWithoutTagsRecycler = rootView?.findViewById(R.id.lytWithoutTagsRecycler)
+            rvTags = rootView?.findViewById(R.id.rvTags)
 
             mediaPlayer = MediaPlayer()
 
@@ -402,7 +405,7 @@ class PublishFragment : BaseFragment() {
             }
             override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {
                 if(s.isEmpty()) {
-                    rvTags.visibility = View.GONE
+                    rvTags?.visibility = View.GONE
                     lytWithoutTagsRecycler?.visibility = View.VISIBLE
                     isShowingTagsRecycler = false
                 } else {
@@ -416,11 +419,11 @@ class PublishFragment : BaseFragment() {
                     val pattern = "#\\w+".toRegex()
 
                     if(pattern.matches(lastWord)) {
-                        rvTags.visibility = View.VISIBLE
+                        rvTags?.visibility = View.VISIBLE
                         lytWithoutTagsRecycler?.visibility = View.GONE
                         isShowingTagsRecycler = true
                     } else {
-                        rvTags.visibility = View.GONE
+                        rvTags?.visibility = View.GONE
                         lytWithoutTagsRecycler?.visibility = View.VISIBLE
                         isShowingTagsRecycler = false
                     }
@@ -448,10 +451,10 @@ class PublishFragment : BaseFragment() {
             //println("keyboard visible: $isVisible")
             if (isShowingTagsRecycler) {
                 if (isVisible) {
-                    rvTags.visibility = View.VISIBLE
+                    rvTags?.visibility = View.VISIBLE
                     lytWithoutTagsRecycler?.visibility = View.GONE
                 } else {
-                    rvTags.visibility = View.GONE
+                    rvTags?.visibility = View.GONE
                     lytWithoutTagsRecycler?.visibility = View.VISIBLE
                 }
             }

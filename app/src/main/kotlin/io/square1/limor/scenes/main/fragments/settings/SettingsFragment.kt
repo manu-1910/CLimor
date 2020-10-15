@@ -41,11 +41,9 @@ class SettingsFragment : BaseFragment() {
     @Inject
     lateinit var sessionManager: SessionManager
 
-
     private lateinit var viewModelLogout: LogoutViewModel
     private val logoutTrigger = PublishSubject.create<Unit>()
     private var rootView: View? = null
-
     var app: App? = null
 
 
@@ -75,7 +73,6 @@ class SettingsFragment : BaseFragment() {
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 1f)
 
-
         bindViewModel()
         listeners()
         configureToolbar()
@@ -87,7 +84,6 @@ class SettingsFragment : BaseFragment() {
 
 
     private fun listeners(){
-
 
         lytEditProfile.onClick {
             findNavController().navigate(R.id.action_settings_fragment_to_edit_profile_fragment)
@@ -158,7 +154,6 @@ class SettingsFragment : BaseFragment() {
             logoutTrigger.onNext(Unit)
             logOutFromFacebook()
         }
-
 
     }
 
@@ -236,7 +231,7 @@ class SettingsFragment : BaseFragment() {
     }
 
 
-    private fun logOutFromFacebook() { //TODO
+    private fun logOutFromFacebook() {
         // Logout
         if (AccessToken.getCurrentAccessToken() != null) {
             GraphRequest(

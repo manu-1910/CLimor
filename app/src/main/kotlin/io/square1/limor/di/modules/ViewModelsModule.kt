@@ -9,6 +9,7 @@ import io.square1.limor.common.ViewModelFactory
 import io.square1.limor.di.ViewModelKey
 import io.square1.limor.scenes.authentication.viewmodels.*
 import io.square1.limor.scenes.main.viewmodels.*
+import io.square1.limor.scenes.notifications.PushNotificationsViewModel
 
 
 @Module
@@ -235,4 +236,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(GetPodcastByIdViewModel::class)
     abstract fun bindGetPodcastByIdViewModel(getPodcastByIdViewModel: GetPodcastByIdViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PushNotificationsViewModel::class)
+    abstract fun bindPushNotificationsViewModel(pushNotificationsViewModel: PushNotificationsViewModel): ViewModel
 }
