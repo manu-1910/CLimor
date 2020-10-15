@@ -17,6 +17,9 @@ const val BLOCKED_USERS_PATH = "/api/v1/users/blocked_users"
 const val FRIENDS_PATH = "/api/v1/users/{id}/friends"
 const val REPORT_USER_PATH = "/api/v1/users/{id}/reports"
 const val NOTIFICATIONS_PATH = "/api/v1/users/notifications"
+const val USER_DEVICE_PATH = "/api/v1/users/devices"
+
+
 
 interface UserService {
 
@@ -66,4 +69,6 @@ interface UserService {
     @GET(USER_LIKED_PODCASTS_PATH)
     fun getPodcastsLiked(@Path("id") id : Int, @Query ("limit") limit : Int? = 10, @Query("offset") offset : Int? = 0): Single<ResponseBody>
 
+    @POST(USER_DEVICE_PATH)
+    fun sendUserDevice(@Body request: RequestBody): Single<ResponseBody>
 }

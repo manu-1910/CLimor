@@ -126,9 +126,6 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
     }
 
 
-
-
-
     fun createBlockedUser(userIDRequest: NWUserIDRequest): Single<NWBlockedUserResponse> {
         val requestString = Json.nonstrict.stringify(NWUserIDRequest.serializer(), userIDRequest)
         val request = RequestBody.create(
@@ -244,6 +241,22 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
                 run {
                     println("ERROR: $error")
                 }
+            }
+    }
+
+
+
+    fun sendUserDevice(userDeviceRequest: NWUserDeviceRequest): Single<NWUserDeviceResponse> {
+        return service.sendUserDevice(
+            RequestBody.create(
+                MediaType.parse("application/json"),
+                Json.nonstrict.stringify(NWUserDeviceRequest.serializer(), userDeviceRequest)
+            )
+        )
+            .map { response -> response.parseSuccessResponse(NWUserDeviceResponse.serializer()) }
+            .doOnSuccess { success -> println("SUCCESS: $success") }
+            .doOnError { error ->
+                println("ERROR: $error")
             }
     }
 

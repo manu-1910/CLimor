@@ -33,7 +33,6 @@ import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
-import timber.log.Timber
 import javax.inject.Inject
 
 

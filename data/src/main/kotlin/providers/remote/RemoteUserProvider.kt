@@ -22,4 +22,5 @@ interface RemoteUserProvider {
     fun getPodcasts(id: Int, limit : Int, offset: Int): Single<GetPodcastsResponseEntity>
     fun getPodcastsLiked(id: Int, limit: Int, offset: Int): Single<GetPodcastsResponseEntity>
     fun getBlockedUsers(limit: Int, offset: Int): Single<GetBlockedUsersResponseEntity>
+    fun sendUserDevice(userDeviceRequestEntity: DataUserDeviceRequest): Single<UserDeviceResponseEntity>
 }
