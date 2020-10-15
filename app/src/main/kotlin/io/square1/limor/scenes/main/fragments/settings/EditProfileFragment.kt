@@ -33,6 +33,7 @@ import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt.Companion.ageToTimestamp
 import io.square1.limor.scenes.utils.CommonsKt.Companion.timestampToAge
 import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
+import io.square1.limor.uimodels.UIErrorResponse
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
@@ -198,35 +199,39 @@ class EditProfileFragment : BaseFragment() {
         output.errorMessage.observe(this, Observer {
             pbEditProfile?.visibility = View.GONE
             view?.hideKeyboard()
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                if (it.code == 10) {  //Session expired
-                    alert(message.toString()) {
-                        okButton {
-                            val intent = Intent(context, SignActivity::class.java)
-                            //intent.putExtra(getString(R.string.otherActivityKey), true)
-                            startActivityForResult(
-                                intent,
-                                resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
-                            )
-                        }
-                    }.show()
-                } else {
-                    alert(message.toString()) {
-                        okButton { }
-                    }.show()
-                }
+            handleOnApiError(it)
+        })
+    }
+
+    private fun handleOnApiError(it: UIErrorResponse) {
+        if (app!!.merlinsBeard!!.isConnected) {
+            val message: StringBuilder = StringBuilder()
+            if (it.errorMessage!!.isNotEmpty()) {
+                message.append(it.errorMessage)
             } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
+                message.append(R.string.some_error)
+            }
+            if (it.code == 10) {  //Session expired
+                alert(message.toString()) {
+                    okButton {
+                        val intent = Intent(context, SignActivity::class.java)
+                        //intent.putExtra(getString(R.string.otherActivityKey), true)
+                        startActivityForResult(
+                            intent,
+                            resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
+                        )
+                    }
+                }.show()
+            } else {
+                alert(message.toString()) {
+                    okButton { }
                 }.show()
             }
-        })
+        } else {
+            alert(getString(R.string.default_no_internet)) {
+                okButton {}
+            }.show()
+        }
     }
 
 
@@ -240,7 +245,7 @@ class EditProfileFragment : BaseFragment() {
 
                 // we'll prepare the outputfile
                 val croppedImagesDir = File(
-                    Environment.getExternalStorageDirectory()?.absolutePath,
+                    context?.getExternalFilesDir(null)?.absolutePath,
                     Constants.LOCAL_FOLDER_CROPPED_IMAGES
                 )
                 if (!croppedImagesDir.exists()) {

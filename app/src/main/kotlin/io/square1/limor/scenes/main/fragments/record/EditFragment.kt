@@ -698,7 +698,8 @@ class EditFragment : WaveformFragment() {
 
         if(recordingItem!!.filePath!!.endsWith("m4a")){
 
-            val convertedFile = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".wav")
+            val path = context?.getExternalFilesDir(null)?.absolutePath
+            val convertedFile = File(path, "/limorv2/" + System.currentTimeMillis() + ".wav")
 
             val commandToExecute1 = "-i " + recordingItem!!.filePath + " -f s16le -ac 2 -ar 16000 " + convertedFile
             val commandToExecute2 = "-i "+ recordingItem!!.filePath +" -acodec pcm_s16le -ac 2 -ar 16000 " + convertedFile
@@ -709,7 +710,7 @@ class EditFragment : WaveformFragment() {
             if (rc == RETURN_CODE_SUCCESS) {
                 Timber.i("Command execution completed successfully.")
 
-                val wavFileInCustomFolder = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + ".wav")
+                val wavFileInCustomFolder = File(path, "/limorv2/" + System.currentTimeMillis() + ".wav")
                 convertedFile?.copyTo(wavFileInCustomFolder)
 
                 try {

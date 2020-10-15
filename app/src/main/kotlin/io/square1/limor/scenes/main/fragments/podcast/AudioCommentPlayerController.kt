@@ -1,5 +1,6 @@
 package io.square1.limor.scenes.main.fragments.podcast
 
+import android.content.Context
 import android.media.MediaPlayer
 import android.os.Environment
 import android.os.Handler
@@ -15,7 +16,8 @@ import java.net.URL
 class AudioCommentPlayerController(
     val comment: UIComment,
     private val seekBar: SeekBar,
-    private val playButton: ImageButton
+    private val playButton: ImageButton,
+    private val context: Context
 ) {
     private var simpleRecorder: SimpleRecorder? = null
     private val updater: Runnable
@@ -66,7 +68,7 @@ class AudioCommentPlayerController(
         val url = comment.audio.url
         if (url != null) {
             val downloadDirectory =
-                File(Environment.getExternalStorageDirectory()?.absolutePath, "/limorv2/download/")
+                File(context.getExternalFilesDir(null)?.absolutePath, "/limorv2/download/")
             if (!downloadDirectory.exists()) {
                 val isDirectoryCreated = downloadDirectory.mkdir()
             }

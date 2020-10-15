@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.scenes.main.viewmodels.FeedViewModel
+import io.square1.limor.scenes.utils.CommonsKt
 
 class UserFeedFragment : FeedItemsListFragment() {
 
@@ -63,6 +64,7 @@ class UserFeedFragment : FeedItemsListFragment() {
 
         output.errorMessage.observe(this, Observer {
             handleErrorState()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
 
 

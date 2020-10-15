@@ -235,7 +235,7 @@ class DraftsFragment : BaseFragment() {
                         newItem.date = getDateTimeFormatted()
 
                         val originalFile = File(draftsLocalList[position].filePath)
-                        val destFile = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + CommonsKt.audioFileFormat)
+                        val destFile = File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/" + System.currentTimeMillis() + CommonsKt.audioFileFormat)
                         try {
                             copyFile(originalFile, destFile)
                         } catch (e: Exception) {
@@ -311,7 +311,7 @@ class DraftsFragment : BaseFragment() {
 ////
 ////                        try {
 ////                            val originalFile = File(draftsLocalList[position].filePath)
-////                            val destFile = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() +".amr")
+////                            val destFile = File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/" + System.currentTimeMillis() +".amr")
 ////                            copyFile(originalFile, destFile)
 ////                        } catch (e: Exception) {
 ////                            e.printStackTrace()

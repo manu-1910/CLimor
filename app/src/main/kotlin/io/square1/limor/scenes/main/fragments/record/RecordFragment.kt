@@ -304,7 +304,7 @@ class RecordFragment : BaseFragment() {
                 }
                 else -> {
                     doAsync {
-                        val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath , "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
+                        val finalAudio = File(context?.getExternalFilesDir(null)?.absolutePath , "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
                         if(CombineWaveFile(draftViewModel.filesArray[0].absolutePath, draftViewModel.filesArray[1].absolutePath, finalAudio.absolutePath, continueRecording, !continueRecording)){
                             draftViewModel.filesArray.clear()
                             draftViewModel.filesArray.add(finalAudio)
@@ -341,7 +341,7 @@ class RecordFragment : BaseFragment() {
     private fun audioSetup() {
 
         // Note: this is not the audio file name, it's a directory.
-        val recordingDirectory = File(Environment.getExternalStorageDirectory()?.absolutePath , "/limorv2/")
+        val recordingDirectory = File(context?.getExternalFilesDir(null)?.absolutePath , "/limorv2/")
         if(!recordingDirectory.exists()){
             recordingDirectory.mkdir()
         }
@@ -381,7 +381,7 @@ class RecordFragment : BaseFragment() {
     private fun resetAudioSetup() {
 
         // Note: this is not the audio file name, it's a directory.
-        val recordingDirectory = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/")
+        val recordingDirectory = File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/")
         if(!recordingDirectory.exists()){
             recordingDirectory.mkdir()
         }
@@ -427,7 +427,7 @@ class RecordFragment : BaseFragment() {
                 }
                 else -> {
                     doAsync {
-                        val finalAudio = File(Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
+                        val finalAudio = File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
 
                         if(CombineWaveFile(draftViewModel.filesArray[0].absolutePath, draftViewModel.filesArray[1].absolutePath, finalAudio.absolutePath, continueRecording, !continueRecording)){
                             draftViewModel.filesArray.clear()
@@ -636,7 +636,7 @@ class RecordFragment : BaseFragment() {
 
 
     private fun getLastModified(): File? {
-        val directoryFilePath = Environment.getExternalStorageDirectory()?.absolutePath + "/limorv2/"
+        val directoryFilePath = context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/"
         val directory = File(directoryFilePath)
         val files = directory.listFiles { obj: File -> obj.isFile }
         var lastModifiedTime = Long.MIN_VALUE

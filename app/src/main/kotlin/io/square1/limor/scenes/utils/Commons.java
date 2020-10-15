@@ -304,7 +304,7 @@ public class Commons {
     }
 
 
-    public static boolean mergeWavAudioFiles(ArrayList<File> files, String mergedFilePath) {
+    public static boolean mergeWavAudioFiles(Context context, ArrayList<File> files, String mergedFilePath) {
 
         /*
         *    mRecorder.waveConfig.sampleRate = 44100
@@ -316,7 +316,7 @@ public class Commons {
 
         int RECORDER_SAMPLERATE = 44100;
         try {
-            DataOutputStream amplifyOutputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Environment.getExternalStorageDirectory() + "/limorv2/" + System.currentTimeMillis() + audioFileFormat)));
+            DataOutputStream amplifyOutputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(context.getExternalFilesDir(null) + "/limorv2/" + System.currentTimeMillis() + audioFileFormat)));
             DataInputStream[] mergeFilesStream = new DataInputStream[files.size()];
             long[] sizes = new long[files.size()];
             for (int i = 0; i < files.size(); i++) {
@@ -371,7 +371,7 @@ public class Commons {
         }
         long size = 0;
         try {
-            //FileInputStream fileSize = new FileInputStream(Environment.getExternalStorageDirectory() + "/limorv2/" + System.currentTimeMillis() + audioFileFormat);
+            //FileInputStream fileSize = new FileInputStream(context?.getExternalFilesDir(null) + "/limorv2/" + System.currentTimeMillis() + audioFileFormat);
             FileInputStream fileSize = new FileInputStream(mergedFilePath);
             size = fileSize.getChannel().size();
             fileSize.close();
@@ -436,7 +436,7 @@ public class Commons {
         // out.write(header, 0, 44);
 
         try {
-            //RandomAccessFile rFile = new RandomAccessFile(Environment.getExternalStorageDirectory() + "/limorv2/" + System.currentTimeMillis() + audioFileFormat, "rw");
+            //RandomAccessFile rFile = new RandomAccessFile(context?.getExternalFilesDir(null) + "/limorv2/" + System.currentTimeMillis() + audioFileFormat, "rw");
             RandomAccessFile rFile = new RandomAccessFile(mergedFilePath, "rw");
             rFile.seek(0);
             rFile.write(header);
