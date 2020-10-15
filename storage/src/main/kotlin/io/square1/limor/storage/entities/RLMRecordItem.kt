@@ -4,8 +4,7 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
 open class RLMRecordItem(
-    @PrimaryKey
-    var id: Int = 0,
+    @PrimaryKey var id: Int = 0,
     var latitude: Double? = 0.0,
     var longitude: Double? = 0.0,
 

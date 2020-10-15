@@ -6,34 +6,7 @@ import io.reactivex.Flowable
 import providers.storage.StorageDraftProvider
 import javax.inject.Inject
 
-class DataDraftsRepository @Inject constructor(
-    //private val remoteProvider: RemoteDraftsProvider,
-    private val storageProvider: StorageDraftProvider
-) : DraftsRepository {
-
-    ////*****************
-    ////REMOTE
-    ////*****************
-    //override fun centres(): Single<CentresResponseEntity> {
-    //    return remoteProvider.centres()
-    //}
-//
-    //override fun createCentre(centre: CentreEntity): Single<CreateCentreResponseEntity> {
-    //    return remoteProvider.createCentre(centre)
-    //}
-//
-    //override fun centreTypes(): Single<CentreTypesResponseEntity> {
-    //    return remoteProvider.centreTypes()
-    //}
-//
-    //override fun deleteCentre(centreId: Int): Single<DeleteCentreResponseEntity> {
-    //    return remoteProvider.deleteCentre(centreId)
-    //}
-//
-    //override fun updateCentre(centre: CentreEntity): Single<CreateCentreResponseEntity> {
-    //    return remoteProvider.updateCentre(centre)
-    //}
-
+class DataDraftsRepository @Inject constructor(private val storageProvider: StorageDraftProvider) : DraftsRepository {
 
     //*****************
     //STORAGE

@@ -5,6 +5,7 @@ import android.media.AudioAttributes
 
 import android.media.MediaPlayer
 import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import io.square1.limor.R
 import io.square1.limor.scenes.utils.CommonsKt
+import io.square1.limor.uimodels.UIDeleteResponse
 import io.square1.limor.uimodels.UIDraft
 import org.jetbrains.anko.sdk23.listeners.onClick
 import timber.log.Timber
@@ -23,23 +25,22 @@ import java.util.concurrent.TimeUnit
 
 class DraftAdapter(
     var context: Context,
-    list: ArrayList<UIDraft>,
+    var list : ArrayList<UIDraft>,
     private val listener: OnItemClickListener,
     private val deleteListener: OnDeleteItemClickListener,
     private val duplicateListener: OnDuplicateItemClickListener,
     private val editListener: OnEditItemClickListener,
-    //private val continueRecordingListener: DraftAdapter.OnContinueRecordingItemClickListener,
     private val navController: NavController
 ) : RecyclerView.Adapter<DraftAdapter.ViewHolder>() {
     var inflator: LayoutInflater
-    var list: ArrayList<UIDraft> = ArrayList()
-    var seekHandler = Handler()
-    var run: Runnable? = null
+    //var list: ArrayList<UIDraft> = ArrayList()
+    val mainHandler = Handler(Looper.getMainLooper())
     var playerPosition: Int = -1
     lateinit var mediaPlayer: MediaPlayer
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = inflator.inflate(R.layout.fragment_drafts_item, parent, false)
+
         return ViewHolder(view)
     }
 
@@ -55,12 +56,12 @@ class DraftAdapter(
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build()
         )
-        try {
-            mediaPlayer.setDataSource(modelList.filePath)
-            mediaPlayer.prepare() // might take long for buffering.
-        } catch (e: Exception) {
-            //e.printStackTrace()
-        }
+//        try {
+////            mediaPlayer.setDataSource(modelList.filePath)
+////            mediaPlayer.prepare() // might take long for buffering.
+////        } catch (e: Exception) {
+////            e.printStackTrace()
+////        }
 
         if(playerPosition == position){
             holder.playerLayout.visibility = View.VISIBLE
@@ -96,7 +97,7 @@ class DraftAdapter(
 
         holder.seekBar.max = mediaPlayer.duration
         holder.seekBar.tag = position
-        //run.run();
+
         holder.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(
                 seekBar: SeekBar,
@@ -116,22 +117,36 @@ class DraftAdapter(
         })
         holder.tvTimePass.text = "0:00"
         holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
+
         holder.btnPlay.setOnClickListener {
-            if (!mediaPlayer.isPlaying) {
-                mediaPlayer.start()
-                holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
-                run = Runnable {
+
+            try {
+                mediaPlayer.setDataSource(list[position].filePath)
+                mediaPlayer.prepare() // might take long for buffering.
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            mediaPlayer.setOnCompletionListener {
+                holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
+                mediaPlayer.stop()
+            }
+
+
+            mediaPlayer.start()
+
+            holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
+
+            mainHandler.post(object : Runnable {
+                override fun run() {
                     // Updateing SeekBar every 100 miliseconds
                     holder.seekBar.progress = mediaPlayer.currentPosition
-                    seekHandler.postDelayed(run, 100)
                     //For Showing time of audio(inside runnable)
                     val miliSeconds = mediaPlayer.currentPosition
                     if (miliSeconds != 0) {
                         //if audio is playing, showing current time;
-                        val minutes =
-                            TimeUnit.MILLISECONDS.toMinutes(miliSeconds.toLong())
-                        val seconds =
-                            TimeUnit.MILLISECONDS.toSeconds(miliSeconds.toLong())
+                        val minutes = TimeUnit.MILLISECONDS.toMinutes(miliSeconds.toLong())
+                        val seconds = TimeUnit.MILLISECONDS.toSeconds(miliSeconds.toLong())
                         if (minutes == 0L) {
                             holder.tvTimePass.text = "00:" + String.format("%02d", seconds)
                             holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
@@ -145,10 +160,8 @@ class DraftAdapter(
                     } else {
                         //Displaying total time if audio not playing
                         val totalTime = mediaPlayer.duration
-                        val minutes =
-                            TimeUnit.MILLISECONDS.toMinutes(totalTime.toLong())
-                        val seconds =
-                            TimeUnit.MILLISECONDS.toSeconds(totalTime.toLong())
+                        val minutes = TimeUnit.MILLISECONDS.toMinutes(totalTime.toLong())
+                        val seconds = TimeUnit.MILLISECONDS.toSeconds(totalTime.toLong())
                         if (minutes == 0L) {
                             holder.tvTimePass.text = "00:" + String.format("%02d", seconds)
                             holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
@@ -160,12 +173,11 @@ class DraftAdapter(
                             }
                         }
                     }
+
+                    mainHandler.postDelayed(this, 100)
                 }
-                run!!.run()
-            } else {
-                mediaPlayer.pause()
-                holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
-            }
+            })
+
         }
 
 
@@ -214,11 +226,6 @@ class DraftAdapter(
                         deleteListener.onDeleteItemClick(position)
                         true
                     }
-//                    R.id.menu_continue_recording_cast -> {
-//                        //Toast.makeText(context, "continue recording cast", Toast.LENGTH_SHORT).show()
-//                        continueRecordingListener.onContinueRecordingItemClick(modelList, position)
-//                        true
-//                    }
                     else -> false
                 }
             }
@@ -229,26 +236,10 @@ class DraftAdapter(
 
         //Go to Edit button
         holder.tvEditItem.onClick {
-            // Go to edit fragment
-            //val bundle = bundleOf("recordingItem" to modelList)
-            //navController.navigate(R.id.action_record_drafts_to_record_edit, bundle)
-
             stopMediaPlayer()
 
             modelList.length = mediaPlayer.duration.toLong()
             editListener.onEditItemClick(modelList)
-
-//            //Go to record fragment to continue recording
-//            draftViewModel.uiDraft = item
-//            draftViewModel.filesArray.add(File(item.filePath))
-//            draftViewModel.continueRecording = true
-//
-//            try {
-//                //navController.navigate(R.id.action_record_drafts_to_record_fragment)
-//                navController.popBackStack()
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
         }
 
     }
@@ -257,6 +248,7 @@ class DraftAdapter(
     override fun getItemCount(): Int {
         return list.size
     }
+
 
     private fun stopMediaPlayer(){
         try {
@@ -305,7 +297,6 @@ class DraftAdapter(
         inflator = LayoutInflater.from(context)
     }
 
-
     interface OnEditItemClickListener {
         fun onEditItemClick(item: UIDraft)
     }
@@ -314,19 +305,12 @@ class DraftAdapter(
         fun onItemClick(item: UIDraft)
     }
 
-
     interface OnDeleteItemClickListener {
         fun onDeleteItemClick(position: Int)
     }
 
-
     interface OnDuplicateItemClickListener {
         fun onDuplicateItemClick(position: Int)
     }
-
-
-
-
-
 
 }
