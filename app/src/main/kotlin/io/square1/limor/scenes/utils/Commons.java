@@ -102,7 +102,7 @@ public class Commons {
 
     public interface AudioUploadCallback {
         void onSuccess(String audioUrl);
-
+        void onProgressChanged(int id, long bytesCurrent, long bytesTotal);
         void onError(String error);
     }
 
@@ -660,7 +660,9 @@ public class Commons {
                 }
             }
             @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {}
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                callback.onProgressChanged(id, bytesCurrent, bytesTotal);
+            }
             @Override
             public void onError(int id, Exception ex) {
                 callback.onError(ex.getLocalizedMessage());
@@ -751,7 +753,9 @@ public class Commons {
                 }
             }
             @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {}
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                imageUploadCallback.onProgressChanged(id, bytesCurrent, bytesTotal);
+            }
             @Override
             public void onError(int id, Exception ex) {
                 imageUploadCallback.onError(ex.getLocalizedMessage());
