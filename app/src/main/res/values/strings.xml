@@ -369,4 +369,29 @@
     <string name="you_must_type_avaible_username">You have to enter a valid username</string>
     <string name="error_uploading_audio">There was an error uploading your audio, please try again</string>
     <string name="error_uploading_image">There was an error when trying to upload your image. Please try again.</string>
+
+
+    <!-- Push notifications strings -->
+    <string name="fcm_message">FCM Message</string>
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
+
+    <string name="frompush">frompush</string>
+    <string name="push_to_leads">pushtoleads</string>
+    <string name="push_to_centres">pushtocentres</string>
+    <string name="push_to_viewings">pushtoviewings</string>
+    <string name="admin_viewing_key">admin-viewing</string>
+    <string name="centre_active_key">centre-active</string>
+    <string name="operator_viewing_key">operator-viewing</string>
+    <string name="offer_key">offer</string>
+    <string name="taken_key">taken</string>
+    <string name="dead_key">dead</string>
+    <string name="feedback_key">feedback</string>
+    <string name="type_key">type</string>
+    <string name="title_key">title</string>
+    <string name="message_key">message</string>
+    <string name="lead_string_key">lead</string>
+    <string name="viewing_id_key">viewing_id</string>
+    <string name="centre_id_key">centre_id</string>
+    <string name="error_sending_push_to_server">There was an error sending the push notifications token</string>
 </resources>

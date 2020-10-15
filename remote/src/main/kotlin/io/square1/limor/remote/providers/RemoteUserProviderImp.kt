@@ -77,6 +77,10 @@ class RemoteUserProviderImp @Inject constructor(private val provider: UserServic
     override fun getBlockedUsers(limit: Int, offset: Int): Single<GetBlockedUsersResponseEntity> {
         return provider.getBlockedUsers(limit, offset).asDataEntity()
     }
+
+    override fun sendUserDevice(userDeviceRequestEntity: DataUserDeviceRequest): Single<UserDeviceResponseEntity> {
+        return provider.sendUserDevice(userDeviceRequestEntity.asRemoteEntity()).asDataEntity()!!
+    }
 }
 
 

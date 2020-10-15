@@ -1,7 +1,10 @@
 package io.square1.limor.remote
 
 import io.square1.limor.remote.entities.requests.NWCreateReportRequest
+import io.square1.limor.remote.entities.requests.NWUserDeviceData
+import io.square1.limor.remote.entities.requests.NWUserDeviceRequest
 import io.square1.limor.remote.entities.requests.NWUserIDRequest
+import io.square1.limor.remote.entities.responses.NWDevice
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.user.UserServiceImp
 import kotlinx.serialization.ImplicitReflectionSerializer
@@ -21,6 +24,8 @@ class UserServiceImpTest {
     private val SECONDARY_TOKEN_USER_DEVELOPMENT = "r-bGZPdpVGgGlAMmGoskTn9iKJiayL8AmT1oJajg1Vc"
     private val TOKEN_STAGING = "36bf82e596dc582796508c09d050484181fa51278eb6b0c2bdbfb269c98a3992"
     private val CURRENT_TOKEN = SECONDARY_TOKEN_USER_DEVELOPMENT
+
+    private val PUSH_TOKEN = "aaaaaaaaaaaa"
 
 
 
@@ -304,6 +309,38 @@ class UserServiceImpTest {
 
         response.assertNoErrors()
         response.assertValue { it.message == "Success" }
+    }
+
+
+    @Test
+    fun should_send_user_device_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = CURRENT_URL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = CURRENT_TOKEN,
+            expiredIn = 0
+        )
+
+        userService = UserServiceImp(config)
+
+        val device = NWUserDeviceData(
+            "{uuid}",
+            "android",
+            PUSH_TOKEN
+        )
+
+        val request = NWUserDeviceRequest(
+            device
+        )
+
+        val response = userService.sendUserDevice(request).test()
+
+        response.assertNoErrors()
+        response.assertValue {
+            it.message == "Success"
+        }
     }
 
 

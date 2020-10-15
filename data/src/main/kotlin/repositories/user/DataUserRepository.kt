@@ -75,4 +75,9 @@ class DataUserRepository @Inject constructor(private val remoteProvider: RemoteU
     ): Single<GetBlockedUsersResponseEntity> {
         return remoteProvider.getBlockedUsers(limit, offset)
     }
+
+    override fun sendUserDevice(dataUserDeviceRequest: DataUserDeviceRequest): Single<UserDeviceResponseEntity> {
+        return remoteProvider.sendUserDevice(dataUserDeviceRequest)
+    }
+
 }

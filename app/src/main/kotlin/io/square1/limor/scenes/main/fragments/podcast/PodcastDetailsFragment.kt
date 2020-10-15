@@ -2073,7 +2073,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 }
                 hashtaggedString.setSpan(clickableSpan, startIndex, endIndex,
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                println("Hemos encontrado el texto $textFound que empieza en $startIndex y acaba en $endIndex")
+                //println("Hemos encontrado el texto $textFound que empieza en $startIndex y acaba en $endIndex")
             }
             return hashtaggedString
         }

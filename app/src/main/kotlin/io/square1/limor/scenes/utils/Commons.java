@@ -4,11 +4,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.os.Environment;
 import android.util.Log;
 import android.util.TypedValue;
+import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
@@ -23,6 +25,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.arthenica.mobileffmpeg.Config;
 import com.arthenica.mobileffmpeg.FFmpeg;
+import com.bumptech.glide.Glide;
 import com.coremedia.iso.boxes.Container;
 import com.google.gson.Gson;
 import com.googlecode.mp4parser.authoring.Track;
@@ -31,6 +34,8 @@ import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.ocpsoft.prettytime.PrettyTime;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
@@ -84,6 +89,16 @@ public class Commons {
 
     //public static final String audioFileFormat = ".amr";
     public static final String audioFileFormat = ".wav";
+
+
+    public static final String APP_TITLE = "Limor";
+
+    // Notifications
+    public static final String NOTIFICATION_TYPE = "notification_type";
+    public static final String TAG_PUSH_REGISTER_INTENT = "RegIntentService";
+    public static final String TAG_PUSH_REG_COMPLETED = "reg_complete";
+
+
 
     public interface AudioUploadCallback {
         void onSuccess(String audioUrl);
@@ -1113,4 +1128,11 @@ public class Commons {
 
         out.write(header, 0, 44);
     }
+
+
+    public static String getPrettyTimeStamp(long dateEpoch) {
+        return new PrettyTime().format(new Date(dateEpoch * 1000L));
+    }
+
+
 }

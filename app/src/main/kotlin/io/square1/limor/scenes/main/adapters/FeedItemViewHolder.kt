@@ -250,7 +250,7 @@ class FeedItemViewHolder(
                     }
                 }
                 hashtaggedString.setSpan(clickableSpan, startIndex, endIndex, 0)
-                println("Hemos encontrado el texto $textFound que empieza en $startIndex y acaba en $endIndex")
+                //println("Hemos encontrado el texto $textFound que empieza en $startIndex y acaba en $endIndex")
             }
             return hashtaggedString
         }
