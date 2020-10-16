@@ -23,13 +23,13 @@ import io.square1.limor.common.BaseFragment
 import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.main.viewmodels.LogoutViewModel
+import io.square1.limor.scenes.main.viewmodels.UpdateUserViewModel
 import io.square1.limor.scenes.splash.SplashActivity
+import io.square1.limor.scenes.utils.CommonsKt.Companion.handleOnApiError
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
-import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
-import org.jetbrains.anko.support.v4.alert
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -42,7 +42,9 @@ class SettingsFragment : BaseFragment() {
     lateinit var sessionManager: SessionManager
 
     private lateinit var viewModelLogout: LogoutViewModel
+    private lateinit var updateUserViewModel: UpdateUserViewModel
     private val logoutTrigger = PublishSubject.create<Unit>()
+    private val updateUserTrigger = PublishSubject.create<Unit>()
     private var rootView: View? = null
     var app: App? = null
 
@@ -77,9 +79,12 @@ class SettingsFragment : BaseFragment() {
         listeners()
         configureToolbar()
         apiCallLogout()
+        apiCallUpdateUser()
 
         //Set the version name of the app into textview
         tvAppVersion.text = "v" + BuildConfig.VERSION_NAME
+
+        swPushNotifications.isChecked = sessionManager.getStoredUser()!!.notifications_enabled
     }
 
 
@@ -128,9 +133,14 @@ class SettingsFragment : BaseFragment() {
 
 
         swPushNotifications?.setOnCheckedChangeListener { _, isChecked ->
-            //val message = if (isChecked) "Switch1:ON" else "Switch1:OFF"
-            //toast(message)
-            sessionManager.storePushNotificationsEnabled(isChecked)
+
+            val userItem = sessionManager.getStoredUser()
+            if (userItem != null) {
+                userItem.notifications_enabled = isChecked
+                sessionManager.storeUser(userItem)
+            }
+
+            callToUpdateUser()
         }
 
 
@@ -144,6 +154,7 @@ class SettingsFragment : BaseFragment() {
                 e.printStackTrace()
             }
         }
+
 
         lytBlockedUsers.onClick {
             findNavController().navigate(R.id.action_settings_fragment_to_users_blocked_fragment)
@@ -169,12 +180,15 @@ class SettingsFragment : BaseFragment() {
     }
 
 
-
     private fun bindViewModel() {
         activity?.let {
             viewModelLogout = ViewModelProviders
                 .of(it, viewModelFactory)
                 .get(LogoutViewModel::class.java)
+
+            updateUserViewModel = ViewModelProviders
+                .of(it, viewModelFactory)
+                .get(UpdateUserViewModel::class.java)
         }
     }
 
@@ -192,7 +206,6 @@ class SettingsFragment : BaseFragment() {
 
             //if (it.message == "Success") { //TODO review why message is errormessage and is null
             if (it.code == 0) {
-
                 sessionManager.logOut()
 
                 val mainIntent = Intent(context, SplashActivity::class.java)
@@ -212,21 +225,7 @@ class SettingsFragment : BaseFragment() {
         output.errorMessage.observe(this, Observer {
             //pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                alert(message.toString()) {
-                    okButton { }
-                }.show()
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
+            handleOnApiError(App.instance, context!!, this, it)
         })
     }
 
@@ -244,6 +243,49 @@ class SettingsFragment : BaseFragment() {
                     LoginManager.getInstance().logOut()
                 }).executeAsync()
         }
+    }
+
+
+    private fun callToUpdateUser(){
+
+        updateUserViewModel.first_name = sessionManager.getStoredUser()!!.first_name.toString()
+        updateUserViewModel.last_name = sessionManager.getStoredUser()!!.last_name.toString()
+        updateUserViewModel.username = sessionManager.getStoredUser()!!.username.toString()
+        updateUserViewModel.website = sessionManager.getStoredUser()!!.website.toString()
+        updateUserViewModel.description = sessionManager.getStoredUser()!!.description.toString()
+        updateUserViewModel.email = sessionManager.getStoredUser()!!.email.toString()
+        updateUserViewModel.phone_number = sessionManager.getStoredUser()!!.phone_number.toString()
+        updateUserViewModel.date_of_birth = sessionManager.getStoredUser()!!.date_of_birth!!
+        updateUserViewModel.gender = sessionManager.getStoredUser()!!.gender.toString()
+        updateUserViewModel.image = sessionManager.getStoredUser()!!.images.small_url
+        updateUserViewModel.notifications_enabled = sessionManager.getStoredUser()!!.notifications_enabled
+
+        updateUserTrigger.onNext(Unit)
+    }
+
+
+    private fun apiCallUpdateUser() {
+        val output = updateUserViewModel.transform(
+            UpdateUserViewModel.Input(
+                updateUserTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if (it.code == 0) {
+                sessionManager.storeUser(it.data.user)
+                println("Profile updated successfully")
+                swPushNotifications.isChecked = it.data.user.notifications_enabled
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            handleOnApiError(App.instance, context!!, this, it)
+        })
     }
 
 }
