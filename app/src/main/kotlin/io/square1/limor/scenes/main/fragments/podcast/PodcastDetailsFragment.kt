@@ -1299,7 +1299,7 @@ class PodcastDetailsFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer { response ->
+        output.response.observe(this, Observer {
             Timber.d("Dropoff of comment ${lastProgressTrackedComment?.id} and ten $lastProgressTrackedTen sent successfully ")
         })
 
@@ -1466,7 +1466,7 @@ class PodcastDetailsFragment : BaseFragment() {
                     }
 
                     override fun onListenClicked(item: UIComment, position: Int) {
-                        Toast.makeText(context, "You clicked on listen", Toast.LENGTH_SHORT).show()
+
                     }
 
                     override fun onCommentClicked(item: CommentWithParent, position: Int) {
@@ -1843,7 +1843,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
         btnMore?.onClick { showPodcastMorePopupMenu() }
         btnSend?.onClick { onSendClicked() }
-        btnPlay?.onClick { onPlayClicked() }
+        btnPlay?.onClick { onPlayPodcastClicked() }
 
         fillFormLikePodcastData()
     }
@@ -1880,7 +1880,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
 
     // region listeners
-    private fun onPlayClicked() {
+    private fun onPlayPodcastClicked() {
         uiPodcast?.audio?.audio_url?.let { _ ->
 
             AudioService.newIntent(requireContext(), uiPodcast!!, 1L)
@@ -2044,7 +2044,7 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun onItemClicked() {
-        Toast.makeText(context, "Item clicked", Toast.LENGTH_SHORT).show()
+
     }
 
     private fun onPodcastCommentClicked() {
@@ -2052,7 +2052,7 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun onListensClicked() {
-        Toast.makeText(context, "Listens clicked", Toast.LENGTH_SHORT).show()
+
     }
 
     private fun onPodcastLikeClicked() {
