@@ -14,6 +14,7 @@ const val PODCAST_COMMENTS_PATH = "/api/v1/podcasts/{id}/comments"
 const val PODCAST_REPORTS_PATH = "/api/v1/podcasts/{id}/reports"
 const val FEATURED_PODCASTS_PATH = "/api/v1/podcasts/featured"
 const val POPULAR_PODCASTS_PATH = "/api/v1/podcasts/popular"
+const val PODCAST_DROPOFF_PATH = "/api/v1/podcasts/{id}/drop_offs"
 
 
 interface PodcastService {
@@ -62,6 +63,12 @@ interface PodcastService {
 
     @POST(PODCAST_REPORTS_PATH)
     fun reportPodcast(
+        @Path("id") idPodcast: Int,
+        @Body request: RequestBody
+    ): Single<ResponseBody>
+
+    @POST(PODCAST_DROPOFF_PATH)
+    fun createDropOff(
         @Path("id") idPodcast: Int,
         @Body request: RequestBody
     ): Single<ResponseBody>

@@ -3,6 +3,7 @@ package repositories.podcast
 
 import entities.request.DataCreateCommentRequest
 import entities.request.DataCreateReportRequestEntity
+import entities.request.DataDropOffRequest
 import entities.request.DataPublishRequest
 import entities.response.*
 import io.reactivex.Single
@@ -61,6 +62,13 @@ class DataPodcastRepository @Inject constructor(private val remoteProvider: Remo
 
     override fun getPodcastById(id: Int): Single<GetPodcastResponseEntity>? {
         return remoteProvider.getPodcastById(id)
+    }
+
+    override fun createDropOff(
+        id: Int,
+        request: DataDropOffRequest
+    ): Single<UpdatedResponseEntity>? {
+        return remoteProvider.createDropOff(id, request)
     }
 
     override fun getPopularPodcasts(): Single<PopularPodcastsResponseEntity>? {

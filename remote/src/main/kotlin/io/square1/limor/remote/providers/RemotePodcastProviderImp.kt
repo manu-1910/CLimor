@@ -2,6 +2,7 @@ package io.square1.limor.remote.providers
 
 import entities.request.DataCreateCommentRequest
 import entities.request.DataCreateReportRequestEntity
+import entities.request.DataDropOffRequest
 import entities.request.DataPublishRequest
 import entities.response.*
 import io.reactivex.Single
@@ -65,6 +66,13 @@ class RemotePodcastProviderImp @Inject constructor(private val provider: Podcast
 
     override fun getPodcastById(id: Int): Single<GetPodcastResponseEntity>? {
         return provider.getPodcastById(id)?.asDataEntity()
+    }
+
+    override fun createDropOff(
+        id: Int,
+        request: DataDropOffRequest
+    ): Single<UpdatedResponseEntity>? {
+        return provider.createDropOff(id, request.asRemoteEntity()).asDataEntity()
     }
 
     override fun getPopularPodcasts(): Single<PopularPodcastsResponseEntity>? {
