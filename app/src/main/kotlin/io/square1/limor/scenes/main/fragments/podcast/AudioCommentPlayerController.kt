@@ -2,7 +2,6 @@ package io.square1.limor.scenes.main.fragments.podcast
 
 import android.content.Context
 import android.media.MediaPlayer
-import android.os.Environment
 import android.os.Handler
 import android.widget.ImageButton
 import android.widget.SeekBar
@@ -17,7 +16,8 @@ class AudioCommentPlayerController(
     val comment: UIComment,
     private val seekBar: SeekBar,
     private val playButton: ImageButton,
-    private val context: Context
+    private val context: Context,
+    private val listener: CommentPlayerListener
 ) {
     private var simpleRecorder: SimpleRecorder? = null
     private val updater: Runnable
@@ -34,6 +34,7 @@ class AudioCommentPlayerController(
                     if(it.isPlayerPlaying) {
                         val currentPosition = it.getCurrentPosition()
                         seekBar.progress = currentPosition
+                        listener.onProgress(comment, currentPosition)
                     }
                 }
             }
@@ -95,10 +96,15 @@ class AudioCommentPlayerController(
         }
     }
 
+    fun getCurrentPlayerPosition() : Int? {
+        return simpleRecorder?.getCurrentPosition()
+    }
+
     private fun onCompletionListener() {
         seekBar.progress = 0
         playButton.setImageResource(R.drawable.play)
         handler.removeCallbacks(updater)
+        listener.onCompletion(comment)
     }
 
     fun destroy() {
@@ -107,6 +113,11 @@ class AudioCommentPlayerController(
             handler.removeCallbacks(updater)
             playButton.setImageResource(R.drawable.play)
         }
+    }
+
+    interface CommentPlayerListener {
+        fun onProgress(comment: UIComment, positionInMs: Int)
+        fun onCompletion(comment: UIComment)
     }
 
 }
