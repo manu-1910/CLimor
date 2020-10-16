@@ -66,20 +66,23 @@
                     android:layout_margin="@dimen/marginMedium"
                     android:background="@color/brandSecondary100"/>
 
+
             <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnSignInFacebook"
-                    style="@android:style/Widget.Material.Button.Borderless.Colored"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginEnd="@dimen/marginMedium"
-                    android:background="@drawable/bg_round_blue_ripple"
-                    android:text="@string/continue_with_facebook"
-                    android:drawableStart="@drawable/facebook"
-                    android:paddingStart="50dp"
-                    android:textAllCaps="false"
-                    android:textColor="@color/light"
-                    android:textSize="@dimen/textSizeNormal" />
+                android:id="@+id/btnSignInFacebook"
+                style="@android:style/Widget.Material.Button.Borderless.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:layout_marginEnd="@dimen/marginMedium"
+                android:background="@drawable/bg_round_blue_ripple"
+                android:text="@string/continue_with_facebook"
+                android:drawableStart="@drawable/facebook"
+                android:paddingStart="70dp"
+                android:paddingEnd="70dp"
+                android:gravity="center"
+                android:textAllCaps="false"
+                android:textColor="@color/light"
+                android:textSize="@dimen/textSizeNormal" />
 
             <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnSignUp"
