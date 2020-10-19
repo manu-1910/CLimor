@@ -1908,7 +1908,7 @@ class PodcastDetailsFragment : BaseFragment() {
         inflater.inflate(R.menu.menu_popup_comment, popup.menu)
 
         val loggedUser = sessionManager.getStoredUser()
-        if(uiPodcast?.user?.id != loggedUser?.id) {
+        if(comment.comment.user?.id != loggedUser?.id) {
             // you cannot delete another person's comment
             popup.menu.findItem(R.id.menu_delete_comment).isVisible = false
         } else {
