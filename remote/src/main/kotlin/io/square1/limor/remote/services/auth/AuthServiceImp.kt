@@ -32,7 +32,8 @@ class AuthServiceImp @Inject constructor(private val serviceConfig: RemoteServic
         loginRequest.username = email
         loginRequest.password = password
 
-        return service.login(Mapper.map(loginRequest))
+        val map = Mapper.map(loginRequest)
+        return service.login(map)
             .doOnSuccess { success ->
                 println("SUCCESS: $success")
             }
