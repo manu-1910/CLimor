@@ -106,44 +106,58 @@ class PodcastDetailsFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var viewModelGetPodcastComments: GetPodcastCommentsViewModel
-    private lateinit var viewModelGetCommentComments: GetCommentCommentsViewModel
-    private lateinit var viewModelCreatePodcastLike: CreatePodcastLikeViewModel
-    private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
-    private lateinit var viewModelCreatePodcastRecast: CreatePodcastRecastViewModel
-    private lateinit var viewModelDeletePodcastRecast: DeletePodcastRecastViewModel
-    private lateinit var viewModelCreateCommentLike: CreateCommentLikeViewModel
-    private lateinit var viewModelDeleteCommentLike: DeleteCommentLikeViewModel
-    private lateinit var viewModelCreatePodcastComment: CreatePodcastCommentViewModel
-    private lateinit var viewModelCreateCommentComment: CreateCommentCommentViewModel
-    private lateinit var viewModelCreateCommentReport: CreateCommentReportViewModel
-    private lateinit var viewModelCreateUserReport: CreateUserReportViewModel
-    private lateinit var viewModelCreatePodcastReport: CreatePodcastReportViewModel
-    private lateinit var viewModelDeletePodcast: DeletePodcastViewModel
-    private lateinit var viewModelDeleteComment: DeleteCommentViewModel
-
     private val getPodcastCommentsDataTrigger = PublishSubject.create<Unit>()
-    private val getCommentCommentsDataTrigger = PublishSubject.create<Unit>()
-    private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
-    private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
-    private val createPodcastRecastDataTrigger = PublishSubject.create<Unit>()
-    private val deletePodcastRecastDataTrigger = PublishSubject.create<Unit>()
-    private val createCommentLikeDataTrigger = PublishSubject.create<Unit>()
-    private val deleteCommentLikeDataTrigger = PublishSubject.create<Unit>()
-    private val createPodcastCommentDataTrigger = PublishSubject.create<Unit>()
-    private val createCommentCommentDataTrigger = PublishSubject.create<Unit>()
-    private val createCommentReportDataTrigger = PublishSubject.create<Unit>()
-    private val createPodcastReportDataTrigger = PublishSubject.create<Unit>()
-    private val createUserReportDataTrigger = PublishSubject.create<Unit>()
-    private val deletePodcastDataTrigger = PublishSubject.create<Unit>()
-    private val deleteCommentDataTrigger = PublishSubject.create<Unit>()
 
+    private lateinit var viewModelGetCommentComments: GetCommentCommentsViewModel
+    private val getCommentCommentsDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelCreatePodcastLike: CreatePodcastLikeViewModel
+    private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
+    private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelCreatePodcastRecast: CreatePodcastRecastViewModel
+    private val createPodcastRecastDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelDeletePodcastRecast: DeletePodcastRecastViewModel
+    private val deletePodcastRecastDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelCreateCommentLike: CreateCommentLikeViewModel
+    private val createCommentLikeDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelDeleteCommentLike: DeleteCommentLikeViewModel
+    private val deleteCommentLikeDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelCreatePodcastComment: CreatePodcastCommentViewModel
+    private val createPodcastCommentDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelCreateCommentComment: CreateCommentCommentViewModel
+    private val createCommentCommentDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelCreateCommentReport: CreateCommentReportViewModel
+    private val createCommentReportDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelCreateUserReport: CreateUserReportViewModel
+    private val createUserReportDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelCreatePodcastReport: CreatePodcastReportViewModel
+    private val createPodcastReportDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelDeletePodcast: DeletePodcastViewModel
+    private val deletePodcastDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelDeleteComment: DeleteCommentViewModel
+    private val deleteCommentDataTrigger = PublishSubject.create<Unit>()
 
     private lateinit var viewModelGetPodcastById: GetPodcastByIdViewModel
     private val getPodcastByIdDataTrigger = PublishSubject.create<Unit>()
 
-
     private lateinit var viewModelCreateBlockedUser: CreateBlockedUserViewModel
     private val createBlockedUserDataTrigger = PublishSubject.create<Unit>()
+
+    private lateinit var viewModelCreateCommentDropOff : CreateCommentDropOffViewModel
+    private val createCommentDropOffDataTrigger = PublishSubject.create<Unit>()
 
 
     private val commentWithParentsItemsList = ArrayList<CommentWithParent>()
@@ -162,6 +176,10 @@ class PodcastDetailsFragment : BaseFragment() {
     private var uiMainCommentWithParent: CommentWithParent? = null
 
     private var audioCommentPlayerController: AudioCommentPlayerController? = null
+
+    private var lastProgressTrackedComment : UIComment? = null
+    private var lastProgressTrackedTen : Int = 0
+    private lateinit var commentPlayerListener : AudioCommentPlayerController.CommentPlayerListener
 
 
 
@@ -236,6 +254,7 @@ class PodcastDetailsFragment : BaseFragment() {
         initApiCallCreateBlockedUser()
         initApiCallDeleteComment()
         initApiCallGetPodcastById()
+        initApiCallCreateCommentDropOff()
         configureToolbar()
 
         // we get the possible comment clicked from the previous activity.
@@ -861,6 +880,41 @@ class PodcastDetailsFragment : BaseFragment() {
                 }
             }
         }
+
+
+
+        commentPlayerListener = object : AudioCommentPlayerController.CommentPlayerListener {
+            override fun onProgress(comment: UIComment, positionInMs: Int) {
+                comment.audio.duration?.let {duration ->
+                    val durationInMs = duration * 1000
+                    val currentPercentage = positionInMs.toFloat() * 100f / durationInMs.toFloat()
+
+                    // this is the current 'ten' ('decena' in Spanish).
+                    // example:
+                    //   50 out of 100 is 50%, it would return 5
+                    //   27 out of 100 is 27%, it would return 2
+                    //   40 out of 200 is 20%, it would return 2 again
+                    val currentTen = (currentPercentage / 10).toInt()
+                    if(lastProgressTrackedComment != comment) {
+                        lastProgressTrackedComment = comment
+                    } else {
+                        if(currentTen > lastProgressTrackedTen) {
+                            viewModelCreateCommentDropOff.idComment = comment.id
+                            viewModelCreateCommentDropOff.percentage = currentPercentage
+                            createCommentDropOffDataTrigger.onNext(Unit)
+                        }
+                    }
+                    lastProgressTrackedTen = currentTen
+                }
+            }
+
+            override fun onCompletion(comment: UIComment) {
+                viewModelCreateCommentDropOff.idComment = comment.id
+                viewModelCreateCommentDropOff.percentage = 100f
+                createCommentDropOffDataTrigger.onNext(Unit)
+            }
+
+        }
     }
 
     private fun deleteCurrentCommentAudioAndResetBar() {
@@ -1238,6 +1292,22 @@ class PodcastDetailsFragment : BaseFragment() {
         })
     }
 
+    private fun initApiCallCreateCommentDropOff() {
+        val output = viewModelCreateCommentDropOff.transform(
+            CreateCommentDropOffViewModel.Input(
+                createCommentDropOffDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            Timber.d("Dropoff of comment ${lastProgressTrackedComment?.id} and ten $lastProgressTrackedTen sent successfully ")
+        })
+
+        output.errorMessage.observe(this, Observer {
+            Timber.d("Error sending dropoff of comment ${lastProgressTrackedComment?.id} and ten $lastProgressTrackedTen")
+        })
+    }
+
     private fun undoPodcastLike() {
         Toast.makeText(context, getString(R.string.error_liking_podcast), Toast.LENGTH_SHORT).show()
         uiPodcast?.let { podcast -> changeItemLikeStatus(podcast, !podcast.liked) }
@@ -1366,8 +1436,17 @@ class PodcastDetailsFragment : BaseFragment() {
 
                             // if you click in a different comment than the one that is currently being listened, we'll firts have to destroy de previous one
                         } else if(audioCommentPlayerController != null && audioCommentPlayerController?.comment != item.comment){
+
+                            // before swapping comment, we have to send a dropoff because the user is not listening to this comment anymore
+                            audioCommentPlayerController?.comment?.let {comment ->
+                                viewModelCreateCommentDropOff.idComment = comment.id
+                                val durationInMs = (comment.audio.duration ?: 0) * 1000
+                                val currentPlayPositionInMs = audioCommentPlayerController?.getCurrentPlayerPosition() ?: 0
+                                val currentPercentage = currentPlayPositionInMs.toFloat() * 100f / durationInMs.toFloat()
+                                viewModelCreateCommentDropOff.percentage = currentPercentage
+                            }
                             audioCommentPlayerController?.destroy()
-                            audioCommentPlayerController = AudioCommentPlayerController(item.comment, seekBar, ibtnPlay, context!!)
+                            audioCommentPlayerController = AudioCommentPlayerController(item.comment, seekBar, ibtnPlay, context!!, commentPlayerListener)
 
                             // if there isn't any comment being listened, just launch this one
                         } else {
@@ -1381,13 +1460,13 @@ class PodcastDetailsFragment : BaseFragment() {
                                 }
                             }else {
                                 audioCommentPlayerController =
-                                    AudioCommentPlayerController(item.comment, seekBar, ibtnPlay, context!!)
+                                    AudioCommentPlayerController(item.comment, seekBar, ibtnPlay, context!!, commentPlayerListener)
                             }
                         }
                     }
 
                     override fun onListenClicked(item: UIComment, position: Int) {
-                        Toast.makeText(context, "You clicked on listen", Toast.LENGTH_SHORT).show()
+
                     }
 
                     override fun onCommentClicked(item: CommentWithParent, position: Int) {
@@ -1656,6 +1735,10 @@ class PodcastDetailsFragment : BaseFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(GetPodcastByIdViewModel::class.java)
             uiPodcast?.id?.let { viewModelGetPodcastById.idPodcast = it }
+
+            viewModelCreateCommentDropOff = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreateCommentDropOffViewModel::class.java)
         }
     }
 
@@ -1760,7 +1843,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
         btnMore?.onClick { showPodcastMorePopupMenu() }
         btnSend?.onClick { onSendClicked() }
-        btnPlay?.onClick { onPlayClicked() }
+        btnPlay?.onClick { onPlayPodcastClicked() }
 
         fillFormLikePodcastData()
     }
@@ -1797,7 +1880,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
 
     // region listeners
-    private fun onPlayClicked() {
+    private fun onPlayPodcastClicked() {
         uiPodcast?.audio?.audio_url?.let { _ ->
 
             AudioService.newIntent(requireContext(), uiPodcast!!, 1L)
@@ -1961,7 +2044,7 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun onItemClicked() {
-        Toast.makeText(context, "Item clicked", Toast.LENGTH_SHORT).show()
+
     }
 
     private fun onPodcastCommentClicked() {
@@ -1969,7 +2052,7 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun onListensClicked() {
-        Toast.makeText(context, "Listens clicked", Toast.LENGTH_SHORT).show()
+
     }
 
     private fun onPodcastLikeClicked() {
@@ -2122,6 +2205,9 @@ class PodcastDetailsFragment : BaseFragment() {
         }
 //        reloadComments()
     }
+
+
+
 
 
 //    private fun reloadComments() {
