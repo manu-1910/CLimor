@@ -184,7 +184,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
             val durationMillis = audioService?.uiPodcast?.audio?.total_length
 //            val durationMillis = audioService?.uiPodcast?.audio?.duration
-            miniPlayerView!!.tv_duration.text = Commons.cSeconds(durationMillis!!)
+            miniPlayerView!!.tv_duration.text = Commons.getHumanReadableTimeFromSeconds(durationMillis!!)
         } catch (e: Exception) {
             e.printStackTrace()
         }
