@@ -18,6 +18,7 @@ import io.square1.limor.common.BaseFragment
 import io.square1.limor.scenes.main.adapters.DiscoverHashTagsAdapter
 import io.square1.limor.scenes.main.fragments.podcast.PodcastsByTagActivity
 import io.square1.limor.scenes.main.viewmodels.DiscoverHashTagsViewModel
+import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UITags
 import kotlinx.android.synthetic.main.fragment_discover_accounts.*
 import org.jetbrains.anko.support.v4.toast
@@ -94,6 +95,7 @@ class DiscoverHashTagsFragment : BaseFragment(), DiscoverHashTagsAdapter.OnHashT
             viewModelDiscoverHashTags.results.clear()
             rvHashTags?.adapter?.notifyDataSetChanged()
             showProgress(false)
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
 
     }

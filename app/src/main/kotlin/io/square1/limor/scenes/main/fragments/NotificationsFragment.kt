@@ -21,6 +21,7 @@ import io.square1.limor.scenes.main.adapters.NotificationsAdapter
 import io.square1.limor.scenes.main.viewmodels.CreateFriendViewModel
 import io.square1.limor.scenes.main.viewmodels.DeleteFriendViewModel
 import io.square1.limor.scenes.main.viewmodels.NotificationsViewModel
+import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UINotificationItem
 import kotlinx.android.synthetic.main.fragment_notifications.*
 import org.jetbrains.anko.doAsync
@@ -165,6 +166,7 @@ class NotificationsFragment : BaseFragment() {
             tvNoNotifications?.visibility = View.VISIBLE
             tvNoNotifications?.text = getString(R.string.no_notifications_error_message)
             showProgress(false)
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
 
     }
@@ -292,25 +294,8 @@ class NotificationsFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                alert(message.toString()) {
-                    okButton { }
-                }.show()
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
-
             showProgress(false)
-
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 
@@ -333,24 +318,8 @@ class NotificationsFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                alert(message.toString()) {
-                    okButton { }
-                }.show()
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
-
             showProgress(false)
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 

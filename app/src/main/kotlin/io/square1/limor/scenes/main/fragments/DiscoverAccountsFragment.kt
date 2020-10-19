@@ -20,6 +20,7 @@ import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.viewmodels.CreateFriendViewModel
 import io.square1.limor.scenes.main.viewmodels.DeleteFriendViewModel
 import io.square1.limor.scenes.main.viewmodels.DiscoverAccountsViewModel
+import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_discover_accounts.*
 import org.jetbrains.anko.okButton
@@ -115,6 +116,7 @@ class DiscoverAccountsFragment : BaseFragment(), DiscoverTabFragment {
             viewModelDiscoverAccounts.results.clear()
             rvUsers?.adapter?.notifyDataSetChanged()
             showProgress(false)
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
 
     }
@@ -242,25 +244,8 @@ class DiscoverAccountsFragment : BaseFragment(), DiscoverTabFragment {
         })
 
         output.errorMessage.observe(this, Observer {
-
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                alert(message.toString()) {
-                    okButton { }
-                }.show()
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
-
             showProgress(false)
-
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 

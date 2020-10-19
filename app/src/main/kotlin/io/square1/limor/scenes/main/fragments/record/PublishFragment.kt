@@ -1030,15 +1030,7 @@ class PublishFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                println("Error getting the hashtags $message")
-            }
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 
