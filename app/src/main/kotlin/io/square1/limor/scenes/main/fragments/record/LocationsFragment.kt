@@ -24,6 +24,7 @@ import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.fragments.record.adapters.LocationsAdapter
 import io.square1.limor.scenes.main.viewmodels.LocationsViewModel
 import io.square1.limor.scenes.main.viewmodels.PublishViewModel
+import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.location.MyLocation
 import io.square1.limor.uimodels.UILocations
 import kotlinx.android.synthetic.main.fragment_sign_up.*
@@ -224,37 +225,7 @@ class LocationsFragment : BaseFragment() {
         output.errorMessage.observe(this, Observer {
             pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
-            if (app!!.merlinsBeard!!.isConnected) {
-
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-
-                if(it.code == 10){  //Session expired
-                    alert(message.toString()) {
-                        okButton {
-                            val intent = Intent(context, SignActivity::class.java)
-                            //intent.putExtra(getString(R.string.otherActivityKey), true)
-                            startActivityForResult(
-                                intent,
-                                resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
-                            )
-                        }
-                    }.show()
-                }else{
-                    alert(message.toString()) {
-                        okButton { }
-                    }.show()
-                }
-
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 

@@ -253,9 +253,9 @@ class CommonsKt {
                         }
                     }.show()
                 } else {
-                    fragment.alert(message.toString()) {
-                        okButton { }
-                    }.show()
+//                    fragment.alert(message.toString()) {
+//                        okButton { }
+//                    }.show()
                 }
             } else {
                 fragment.alert(context.getString(R.string.default_no_internet)) {

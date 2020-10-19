@@ -1204,6 +1204,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 text,
                 Toast.LENGTH_SHORT
             ).show()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 

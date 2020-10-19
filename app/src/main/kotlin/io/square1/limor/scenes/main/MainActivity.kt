@@ -41,6 +41,7 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.toast
 import javax.inject.Inject
 import android.provider.Settings.Secure
+import io.square1.limor.scenes.utils.CommonsKt
 
 
 class MainActivity : BaseActivity(), HasSupportFragmentInjector{

@@ -30,6 +30,7 @@ import io.square1.limor.scenes.main.fragments.profile.ReportActivity
 import io.square1.limor.scenes.main.fragments.profile.TypeReport
 import io.square1.limor.scenes.main.fragments.profile.UserProfileActivity
 import io.square1.limor.scenes.main.viewmodels.*
+import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.service.AudioService
 import io.square1.limor.uimodels.UIFeedItem
 import io.square1.limor.uimodels.UIUser
@@ -158,21 +159,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
         output.errorMessage.observe(this, Observer {
             view?.hideKeyboard()
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                alert(message.toString()) {
-                    okButton { }
-                }.show()
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 
@@ -231,6 +218,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
         output.errorMessage.observe(this, Observer {
             undoRecast()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 
@@ -253,6 +241,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
         output.errorMessage.observe(this, Observer {
             toast(getString(R.string.delete_podcast_error))
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 
@@ -285,6 +274,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
         output.errorMessage.observe(this, Observer {
             undoRecast()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 
@@ -606,6 +596,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
                 getString(R.string.error_report),
                 Toast.LENGTH_SHORT
             ).show()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 
@@ -641,6 +632,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
                 getString(R.string.error_report),
                 Toast.LENGTH_SHORT
             ).show()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 
@@ -673,6 +665,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
         output.errorMessage.observe(this, Observer {
             undoLike()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 
@@ -695,6 +688,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
         output.errorMessage.observe(this, Observer {
             hideProgressBar()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 
@@ -714,6 +708,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
         output.errorMessage.observe(this, Observer {
             undoLike()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 
