@@ -3,8 +3,8 @@ package io.square1.limor.scenes.main.fragments.record.adapters
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.media.MediaPlayer.OnPreparedListener
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,10 +47,6 @@ class DraftAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val modelList = list[position]
 
-        if(this::mediaPlayer.isInitialized){
-            mediaPlayer.stop()
-            mediaPlayer.release()
-        }
         // Initializing MediaPlayer
         mediaPlayer = MediaPlayer()
         //mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
@@ -60,21 +56,13 @@ class DraftAdapter(
                 .build()
         )
 
-//        try {
-//            //change with setDataSource(Context,Uri);
-//            mediaPlayer.setDataSource(list[position].filePath)
-//            mediaPlayer.prepare()
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-
-//        try {
-////            mediaPlayer.setDataSource(modelList.filePath)
-////            mediaPlayer.prepare() // might take long for buffering.
-////        } catch (e: Exception) {
-////            e.printStackTrace()
-////        }
-
+        try {
+            //change with setDataSource(Context,Uri);
+            mediaPlayer.setDataSource(list[position].filePath)
+            mediaPlayer.prepare()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         if(playerPosition == position){
             holder.playerLayout.visibility = View.VISIBLE
@@ -111,21 +99,12 @@ class DraftAdapter(
         holder.seekBar.tag = position
 
         holder.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onProgressChanged(
-                seekBar: SeekBar,
-                progress: Int,
-                fromUser: Boolean
-            ) {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (mediaPlayer != null && fromUser) {
                     mediaPlayer.seekTo(progress)
                 }
                 if (mediaPlayer.duration <= progress) {
-                    holder.btnPlay.setImageDrawable(
-                        ContextCompat.getDrawable(
-                            context,
-                            R.drawable.play
-                        )
-                    )
+                    holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
                 }
             }
 
@@ -135,81 +114,52 @@ class DraftAdapter(
         holder.tvTimePass.text = "0:00"
         holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
 
+
+        //PLAY BUTTON
         holder.btnPlay.setOnClickListener {
 
-            try{
-                if (mediaPlayer.isPlaying){
+            if (!mediaPlayer.isPlaying){
+                mediaPlayer.setOnCompletionListener {
+                    holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
                     mediaPlayer.stop()
+                    //mediaPlayer.reset()
+                    //mediaPlayer.prepare()
                 }
-            }catch (e: Exception){
-                e.printStackTrace()
-            }
 
-//         sdfg   if (mediaPlayer != null) {
-//                try {
-//                    mediaPlayer.stop() //error
-//                    mediaPlayer.reset()
-//                    mediaPlayer.release()
-//                } catch (e: java.lang.Exception) {
-//                    Log.d("Nitif Activity", e.toString())
-//                }
-//            }
+                try {
+                    mediaPlayer.reset()
+                    mediaPlayer.setDataSource(list[position].filePath)
+                    mediaPlayer.prepare()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
 
+                mediaPlayer.setOnPreparedListener(OnPreparedListener {
+                        player -> player.start()
+                })
 
+                holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
 
-            mediaPlayer.setOnCompletionListener {
+                run = Runnable {
+                    // Updateing SeekBar every 100 miliseconds
+                    val miliSeconds = mediaPlayer.currentPosition
+                    holder.seekBar.progress = miliSeconds
+                    seekHandler.postDelayed(run, 100)
+                    //For Showing time of audio(inside runnable)
+
+                    holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(
+                        mediaPlayer.duration
+                    )
+                    holder.tvTimePass.text = CommonsKt.calculateDurationMediaPlayer(
+                        miliSeconds
+                    )
+                }
+                run!!.run()
+
+            } else {
+                mediaPlayer.pause()
                 holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
-                mediaPlayer.stop()
             }
-
-
-//            try {
-//                //change with setDataSource(Context,Uri);
-//                mediaPlayer.setDataSource(list[position].filePath)
-//                mediaPlayer.prepare()
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//                mediaPlayer.reset()
-//                mediaPlayer.release()
-//
-//            }
-
-
-            try{
-                holder.seekBar.max = mediaPlayer.duration
-                holder.seekBar.tag = position
-            }catch (e: Exception){
-                e.printStackTrace()
-            }
-
-
-            try {
-                //change with setDataSource(Context,Uri);
-                mediaPlayer.setDataSource(list[position].filePath)
-                mediaPlayer.prepare()
-                mediaPlayer.start()
-            } catch (e: Exception) {
-                e.printStackTrace()
-
-            }
-
-            holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
-
-            run = Runnable {
-                // Updateing SeekBar every 100 miliseconds
-                val miliSeconds = mediaPlayer.currentPosition
-                holder.seekBar.progress = miliSeconds
-                holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(
-                    mediaPlayer.duration
-                )
-                holder.tvTimePass.text = CommonsKt.calculateDurationMediaPlayer(
-                    miliSeconds
-                )
-                seekHandler.postDelayed(run, 100)
-
-            }
-            run!!.run()
-
         }
 
 
@@ -325,7 +275,6 @@ class DraftAdapter(
     }
 
     init {
-        this.list = list
         inflator = LayoutInflater.from(context)
     }
 
