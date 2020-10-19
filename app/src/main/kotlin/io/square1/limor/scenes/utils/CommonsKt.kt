@@ -121,6 +121,11 @@ class CommonsKt {
             }
         }
 
+        fun calculateDurationMinutesAndSeconds(seconds: Double): String {
+            val millis = (seconds * 1000).toLong()
+            return calculateDurationMinutesAndSeconds(millis)
+        }
+
 
         fun dpToPx(dp: Float, context: Context): Int {
             return TypedValue.applyDimension(

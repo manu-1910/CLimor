@@ -114,7 +114,7 @@ class FeedItemViewHolder(
         // duration
 //        currentItem.podcast?.audio?.duration?.let {
         currentItem.podcast?.audio?.total_length?.let {
-            tvPodcastTime.text = CommonsKt.calculateDurationMinutesAndSeconds(it.toLong())
+            tvPodcastTime.text = CommonsKt.calculateDurationMinutesAndSeconds(it)
         }
 
         // recasts

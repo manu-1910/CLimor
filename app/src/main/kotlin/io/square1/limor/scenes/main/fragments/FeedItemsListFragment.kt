@@ -838,7 +838,8 @@ abstract class FeedItemsListFragment : BaseFragment() {
 //                        val podcast = data.getSerializableExtra("podcast") as UIPodcast
                         val position = data.getIntExtra("position", 0)
                         lastPodcastByIdRequestedPosition = position
-                        feedItemsList[position].podcast?.id?.let { viewModelGetPodcastById.idPodcast = it }
+                        if(position < feedItemsList.size)
+                            feedItemsList[position].podcast?.id?.let { viewModelGetPodcastById.idPodcast = it }
                         showProgressBar()
                         getPodcastByIdDataTrigger.onNext(Unit)
 //                        val changedItem = feedItemsList[position]
