@@ -177,7 +177,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/barDecoratorUp"
             app:tabGravity="fill"
-            app:tabMode="scrollable"
+            app:tabMaxWidth="0dp"
+            app:tabMode="fixed"
             app:tabSelectedTextColor="@color/brandPrimary500"
             app:tabTextColor="@color/brandSecondary100" />
 
