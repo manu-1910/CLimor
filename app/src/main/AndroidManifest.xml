@@ -13,6 +13,12 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
+    <!--GCM-->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.google.amdroid.c2dm.permission.RECEIVE" />
+    <permission android:name=".permission.C2D_MESSAGE" tools:replace="android:name" android:protectionLevel="signature" />
+    <uses-permission android:name=".permission.C2D_MESSAGE" tools:replace="android:name"/>
+
     <application
             android:name=".App"
             android:allowBackup="true"
@@ -173,6 +179,8 @@
             android:name="io.square1.limor.scenes.notifications.UtilsRegistrationIntentService"
             android:exported="false">
         </service>
+
+
 
     </application>
 

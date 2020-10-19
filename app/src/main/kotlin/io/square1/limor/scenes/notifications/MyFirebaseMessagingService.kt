@@ -40,7 +40,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             val pushNote = JSONObject(data["aps"])
             val message = pushNote.getString("alert")
             getNotificationIntent(pushNote)?.let { sendNotification(message, it) }
-        } catch (e: JSONException) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }

@@ -569,8 +569,22 @@ class RecordFragment : BaseFragment() {
     }
 
 
-    override fun onDestroy() {
-        super.onDestroy()
+//    override fun onDestroy() {
+//        super.onDestroy()
+//
+//        try {
+//            mRecorder.stopRecording()
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//
+//        voiceGraph?.clearAnimation()
+//        voiceGraph?.clear()
+//    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
 
         try {
             mRecorder.stopRecording()
@@ -581,7 +595,6 @@ class RecordFragment : BaseFragment() {
         voiceGraph?.clearAnimation()
         voiceGraph?.clear()
     }
-
 
     private fun insertDraft() {
         val output = draftViewModel.insertDraftRealm(
