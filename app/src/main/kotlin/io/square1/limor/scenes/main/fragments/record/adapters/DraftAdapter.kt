@@ -47,14 +47,18 @@ class DraftAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val modelList = list[position]
 
-        // Initializing MediaPlayer
-        mediaPlayer = MediaPlayer()
-        //mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
-        mediaPlayer.setAudioAttributes(
-            AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build()
-        )
+        if(this::mediaPlayer.isInitialized){
+            //mediaPlayer.release()
+        }else{
+            // Initializing MediaPlayer
+            mediaPlayer = MediaPlayer()
+            //mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+            mediaPlayer.setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build()
+            )
+        }
 
         try {
             //change with setDataSource(Context,Uri);
@@ -63,6 +67,7 @@ class DraftAdapter(
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
 
         if(playerPosition == position){
             holder.playerLayout.visibility = View.VISIBLE
@@ -78,10 +83,10 @@ class DraftAdapter(
         holder.itemView.setOnClickListener {
             playerPosition = position
             //If some cast is playing stop it.
-            if(mediaPlayer.isPlaying){
-                mediaPlayer.stop()
-                holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
-            }
+//            if(mediaPlayer.isPlaying){
+////                mediaPlayer.stop()
+////                holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
+////            }
             notifyDataSetChanged()
             holder.playerLayout.visibility = View.VISIBLE
             listener.onItemClick(modelList)
@@ -121,7 +126,8 @@ class DraftAdapter(
             if (!mediaPlayer.isPlaying){
                 mediaPlayer.setOnCompletionListener {
                     holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
-                    mediaPlayer.stop()
+                    //mediaPlayer.stop()
+                    //mediaPlayer.release()
                     //mediaPlayer.reset()
                     //mediaPlayer.prepare()
                 }
@@ -134,6 +140,10 @@ class DraftAdapter(
                     e.printStackTrace()
                 }
 
+                if (mediaPlayer.currentPosition > 0){
+                    mediaPlayer.seekTo(mediaPlayer.currentPosition)
+                }
+
                 mediaPlayer.setOnPreparedListener(OnPreparedListener {
                         player -> player.start()
                 })
@@ -142,7 +152,12 @@ class DraftAdapter(
 
                 run = Runnable {
                     // Updateing SeekBar every 100 miliseconds
-                    val miliSeconds = mediaPlayer.currentPosition
+                    var miliSeconds = 0
+                    try {
+                        miliSeconds = mediaPlayer.currentPosition
+                    } catch (e: Exception) {
+                            e.printStackTrace()
+                    }
                     holder.seekBar.progress = miliSeconds
                     seekHandler.postDelayed(run, 100)
                     //For Showing time of audio(inside runnable)
