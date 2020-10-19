@@ -1,6 +1,5 @@
 package io.square1.limor.scenes.utils
 
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -268,6 +267,26 @@ class CommonsKt {
                 }.show()
             }
 
+        }
+
+        fun getYearsBetweenTwoCalendars(a : Calendar, b : Calendar) : Int {
+            var diff = b[Calendar.YEAR] - a[Calendar.YEAR]
+            if (a[Calendar.MONTH] > b[Calendar.MONTH] ||
+                a[Calendar.MONTH] == b[Calendar.MONTH] && a[Calendar.DATE] > b[Calendar.DATE]
+            ) {
+                diff--
+            }
+            return diff
+        }
+
+        fun calculateAge(birth : Calendar) : Int {
+            return getYearsBetweenTwoCalendars(birth, Calendar.getInstance())
+        }
+
+        fun calculateAge(timestampBirth : Long) : Int {
+            val calendarBirth = Calendar.getInstance()
+            calendarBirth.timeInMillis = timestampBirth
+            return getYearsBetweenTwoCalendars(calendarBirth, Calendar.getInstance())
         }
 
     }
