@@ -182,9 +182,9 @@ abstract class BaseActivity : AppCompatActivity() {
                 .centerCrop().into(miniPlayerView!!.iv_audio)
             miniPlayerView!!.tv_audio_title.text = audioService?.uiPodcast?.caption
 
-            val durationMillis = audioService?.uiPodcast?.audio?.total_length?.toInt()
+            val durationMillis = audioService?.uiPodcast?.audio?.total_length
 //            val durationMillis = audioService?.uiPodcast?.audio?.duration
-            miniPlayerView!!.tv_duration.text = Commons.getHumanReadableTimeFromMillis(durationMillis!!)
+            miniPlayerView!!.tv_duration.text = Commons.getHumanReadableTimeFromSeconds(durationMillis!!)
         } catch (e: Exception) {
             e.printStackTrace()
         }

@@ -187,6 +187,11 @@ public class Commons {
         return String.format(Locale.getDefault(), "%dm %ds", minutes, seconds);
     }
 
+    public static String getHumanReadableTimeFromSeconds(double seconds){
+        int durationMillis = (int)(seconds * 1000);
+        return getHumanReadableTimeFromMillis(durationMillis);
+    }
+
     public static void showAlertYesNo(Context context, int title, int message, DialogInterface.OnClickListener listener) {
         showAlertCustomButtons(context, context.getString(title), context.getString(message), listener, context.getString(R.string.yes), null, context.getString(R.string.no));
     }

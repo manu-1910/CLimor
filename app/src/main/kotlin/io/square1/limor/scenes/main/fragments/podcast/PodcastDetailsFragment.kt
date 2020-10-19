@@ -1793,7 +1793,7 @@ class PodcastDetailsFragment : BaseFragment() {
         // duration
 //        uiPodcast?.audio?.duration?.let {
         uiPodcast?.audio?.total_length?.let {
-            tvPodcastTime?.text = CommonsKt.calculateDurationMinutesAndSeconds(it.toLong())
+            tvPodcastTime?.text = CommonsKt.calculateDurationMinutesAndSeconds(it)
         }
 
         // recasts
