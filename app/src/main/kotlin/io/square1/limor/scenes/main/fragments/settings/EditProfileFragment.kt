@@ -31,8 +31,6 @@ import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.viewmodels.UpdateUserViewModel
 import io.square1.limor.scenes.utils.Commons
 import io.square1.limor.scenes.utils.CommonsKt
-import io.square1.limor.scenes.utils.CommonsKt.Companion.ageToTimestamp
-import io.square1.limor.scenes.utils.CommonsKt.Companion.timestampToAge
 import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
 import io.square1.limor.uimodels.UIErrorResponse
 import io.square1.limor.uimodels.UIUser
@@ -71,6 +69,7 @@ class EditProfileFragment : BaseFragment() {
     companion object {
         val TAG: String = EditProfileFragment::class.java.simpleName
         fun newInstance() = EditProfileFragment()
+        const val TIMBER_TAG = "BIRTHDATE_ISSUE"
     }
 
 
@@ -170,7 +169,8 @@ class EditProfileFragment : BaseFragment() {
     }
 
     private fun onBirthdateUpdated(newBirthDate: Calendar) {
-        user?.date_of_birth = newBirthDate.timeInMillis
+        val newMillis = newBirthDate.timeInMillis
+        user?.date_of_birth = newMillis
         val now = Calendar.getInstance()
         val years = CommonsKt.getYearsBetweenTwoCalendars(newBirthDate, now)
         etAge.setText(years.toString())
@@ -192,6 +192,8 @@ class EditProfileFragment : BaseFragment() {
 
 
     private fun callToApiUpdateUser(){
+        val userAge = CommonsKt.calculateAge(user?.date_of_birth!!)
+        Timber.tag(TIMBER_TAG).d("callToApiUpdateUser has been called and the user is $userAge")
         updateUserViewModel.first_name = etFirstName.text.toString()
         updateUserViewModel.last_name = etLastName.text.toString()
         updateUserViewModel.username = etUsername.text.toString()
@@ -224,8 +226,13 @@ class EditProfileFragment : BaseFragment() {
             view?.hideKeyboard()
 
             if (it.code == 0) {
+                val userAge = CommonsKt.calculateAge(user?.date_of_birth!!)
+                val newUserAge = CommonsKt.calculateAge(it.data.user.date_of_birth!!)
+                Timber.tag(TIMBER_TAG).d("User is successfully updated and the user is $userAge, the new user age received is $newUserAge")
+                Timber.tag(TIMBER_TAG).d("We will store the user in sessionStorage again")
                 sessionManager.storeUser(it.data.user)
                 toast("Profile updated successfully")
+                Timber.tag(TIMBER_TAG).d("We will go back to Settings Screen")
                 findNavController().popBackStack()
             }
 
