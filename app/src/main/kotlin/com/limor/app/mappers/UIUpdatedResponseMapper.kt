@@ -1,10 +1,10 @@
-package io.square1.limor.mappers
+package com.limor.app.mappers
 
 import entities.response.UpdatedData
 import entities.response.UpdatedResponseEntity
 import io.reactivex.Single
-import io.square1.limor.uimodels.UIUpdatedData
-import io.square1.limor.uimodels.UIUpdatedResponse
+import com.limor.app.uimodels.UIUpdatedData
+import com.limor.app.uimodels.UIUpdatedResponse
 
 
 fun Single<UpdatedResponseEntity>.asUIModel(): Single<UIUpdatedResponse> {

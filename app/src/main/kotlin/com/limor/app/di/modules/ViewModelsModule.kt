@@ -10,6 +10,8 @@ import com.limor.app.scenes.notifications.PushNotificationsViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
+import com.limor.app.scenes.main.viewmodels.CreateCommentDropOffViewModel
+import com.limor.app.scenes.main.viewmodels.CreatePodcastDropOffViewModel
 
 
 @Module

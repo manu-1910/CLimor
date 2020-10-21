@@ -1,4 +1,4 @@
-//package io.square1.limor.scenes.main.fragments.record.adapters
+//package com.limor.app.main.fragments.record.adapters
 //
 //import android.annotation.SuppressLint
 //import android.content.Context

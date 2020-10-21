@@ -18,14 +18,17 @@ import com.facebook.login.LoginManager
 import com.limor.app.App
 import com.limor.app.BuildConfig
 import com.limor.app.R
+import io.reactivex.subjects.PublishSubject
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.SessionManager
 import com.limor.app.extensions.hideKeyboard
+import com.limor.app.scenes.main.fragments.settings.EditProfileFragment.Companion.TIMBER_TAG
 import com.limor.app.scenes.main.viewmodels.LogoutViewModel
 import com.limor.app.scenes.main.viewmodels.UpdateUserViewModel
 import com.limor.app.scenes.splash.SplashActivity
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.CommonsKt.Companion.handleOnApiError
-import io.reactivex.subjects.PublishSubject
+import com.limor.app.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
@@ -132,15 +135,18 @@ class SettingsFragment : BaseFragment() {
         }
 
 
-        swPushNotifications?.setOnCheckedChangeListener { _, isChecked ->
-
+        swPushNotifications?.onClick {
+            val currentStatus = swPushNotifications.isChecked
+            Timber.tag(TIMBER_TAG).d("push notifications switch triggered, now it is $currentStatus")
             val userItem = sessionManager.getStoredUser()
-            if (userItem != null) {
-                userItem.notifications_enabled = isChecked
-                sessionManager.storeUser(userItem)
-            }
+            val userAge = CommonsKt.calculateAge(userItem?.date_of_birth!!)
+            Timber.tag(TIMBER_TAG).d("the current user age is $userAge")
 
-            callToUpdateUser()
+            if (userItem != null) {
+                userItem.notifications_enabled = currentStatus
+                Timber.tag(TIMBER_TAG).d("We call to apiUpdateUser")
+                callToUpdateUser(userItem)
+            }
         }
 
 
@@ -246,19 +252,19 @@ class SettingsFragment : BaseFragment() {
     }
 
 
-    private fun callToUpdateUser(){
-
-        updateUserViewModel.first_name = sessionManager.getStoredUser()!!.first_name.toString()
-        updateUserViewModel.last_name = sessionManager.getStoredUser()!!.last_name.toString()
-        updateUserViewModel.username = sessionManager.getStoredUser()!!.username.toString()
-        updateUserViewModel.website = sessionManager.getStoredUser()!!.website.toString()
-        updateUserViewModel.description = sessionManager.getStoredUser()!!.description.toString()
-        updateUserViewModel.email = sessionManager.getStoredUser()!!.email.toString()
-        updateUserViewModel.phone_number = sessionManager.getStoredUser()!!.phone_number.toString()
-        updateUserViewModel.date_of_birth = sessionManager.getStoredUser()!!.date_of_birth!!
-        updateUserViewModel.gender = sessionManager.getStoredUser()!!.gender.toString()
-        updateUserViewModel.image = sessionManager.getStoredUser()!!.images.small_url
-        updateUserViewModel.notifications_enabled = sessionManager.getStoredUser()!!.notifications_enabled
+    private fun callToUpdateUser(userItem: UIUser) {
+        Timber.tag(TIMBER_TAG).d("We are in callToUpdateUser")
+        updateUserViewModel.first_name = userItem.first_name.toString()
+        updateUserViewModel.last_name = userItem.last_name.toString()
+        updateUserViewModel.username = userItem.username.toString()
+        updateUserViewModel.website = userItem.website.toString()
+        updateUserViewModel.description = userItem.description.toString()
+        updateUserViewModel.email = userItem.email.toString()
+        updateUserViewModel.phone_number = userItem.phone_number.toString()
+        updateUserViewModel.date_of_birth = userItem.date_of_birth!!
+        updateUserViewModel.gender = userItem.gender.toString()
+        updateUserViewModel.image = userItem.images.small_url
+        updateUserViewModel.notifications_enabled = userItem.notifications_enabled
 
         updateUserTrigger.onNext(Unit)
     }
@@ -272,10 +278,11 @@ class SettingsFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
+            Timber.tag(TIMBER_TAG).d("We are in settings fragment apiCallUpdateUser")
             if (it.code == 0) {
-                sessionManager.storeUser(it.data.user)
-                println("Profile updated successfully")
-                swPushNotifications.isChecked = it.data.user.notifications_enabled
+                Timber.tag(TIMBER_TAG).d("Profile updated successfully, we are storing user and changing switch status")
+//                sessionManager.storeUser(it.data.user) // this is not necessary because it is stored inside the viewModel
+//                swPushNotifications.isChecked = it.data.user.notifications_enabled
             }
         })
 
@@ -285,6 +292,7 @@ class SettingsFragment : BaseFragment() {
 
         output.errorMessage.observe(this, Observer {
             handleOnApiError(App.instance, context!!, this, it)
+            swPushNotifications.isChecked = sessionManager.getStoredUser()?.notifications_enabled ?: true
         })
     }
 

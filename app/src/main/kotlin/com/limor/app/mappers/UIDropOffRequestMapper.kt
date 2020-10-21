@@ -1,8 +1,8 @@
-package io.square1.limor.mappers
+package com.limor.app.mappers
 
 import entities.request.DataDropOffRequest
 import io.reactivex.Single
-import io.square1.limor.uimodels.UIDropOffRequest
+import com.limor.app.uimodels.UIDropOffRequest
 
 
 fun Single<DataDropOffRequest>.asUIModel(): Single<UIDropOffRequest> {

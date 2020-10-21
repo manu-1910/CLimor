@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.limor.app.scenes.main.fragments.FeedItemsListFragment
 import com.limor.app.scenes.main.fragments.UserFeedFragment
 import com.limor.app.scenes.main.viewmodels.GetPodcastsByUserIDViewModel
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UIFeedItem
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_feed.*
@@ -80,6 +81,7 @@ class UserPodcastsFragment(private val userID: Int) : FeedItemsListFragment() {
         output.errorMessage.observe(this, Observer {
             pb_loading.visibility = View.GONE
             handleErrorState()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 

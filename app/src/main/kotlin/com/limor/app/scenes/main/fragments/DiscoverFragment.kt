@@ -39,6 +39,7 @@ import com.limor.app.scenes.main.fragments.profile.ReportActivity
 import com.limor.app.scenes.main.fragments.profile.TypeReport
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.*
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.service.AudioService
 import com.limor.app.uimodels.UIPodcast
 import com.limor.app.uimodels.UITags
@@ -691,6 +692,7 @@ class DiscoverFragment : BaseFragment(),
         })
 
         output.errorMessage.observe(this, Observer {
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
             Toast.makeText(
                 context,
                 getString(R.string.error_report),
@@ -724,6 +726,7 @@ class DiscoverFragment : BaseFragment(),
         })
 
         output.errorMessage.observe(this, Observer {
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
             Toast.makeText(
                 context,
                 getString(R.string.error_report),

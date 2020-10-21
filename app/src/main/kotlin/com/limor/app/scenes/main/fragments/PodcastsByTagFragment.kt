@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.limor.app.scenes.main.fragments.podcast.PodcastsByTagActivity
 import com.limor.app.scenes.main.viewmodels.FeedByTagViewModel
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UIFeedItem
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_feed.*
@@ -84,6 +85,7 @@ class PodcastsByTagFragment : FeedItemsListFragment() {
         output.errorMessage.observe(this, Observer {
             pb_loading.visibility = View.GONE
             handleErrorState()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 

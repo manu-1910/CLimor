@@ -17,6 +17,7 @@ import com.limor.app.common.BaseFragment
 import com.limor.app.scenes.main.adapters.DiscoverHashTagsAdapter
 import com.limor.app.scenes.main.fragments.podcast.PodcastsByTagActivity
 import com.limor.app.scenes.main.viewmodels.DiscoverHashTagsViewModel
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UITags
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_discover_accounts.*
@@ -94,6 +95,7 @@ class DiscoverHashTagsFragment : BaseFragment(), DiscoverHashTagsAdapter.OnHashT
             viewModelDiscoverHashTags.results.clear()
             rvHashTags?.adapter?.notifyDataSetChanged()
             showProgress(false)
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
 
     }

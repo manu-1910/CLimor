@@ -19,6 +19,7 @@ import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.CreateFriendViewModel
 import com.limor.app.scenes.main.viewmodels.DeleteFriendViewModel
 import com.limor.app.scenes.main.viewmodels.DiscoverAccountsViewModel
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UIUser
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_discover_accounts.*
@@ -242,21 +243,7 @@ class DiscoverAccountsFragment : BaseFragment(), DiscoverTabFragment {
 
         output.errorMessage.observe(this, Observer {
 
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                alert(message.toString()) {
-                    okButton { }
-                }.show()
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
 
             showProgress(false)
 
@@ -283,21 +270,7 @@ class DiscoverAccountsFragment : BaseFragment(), DiscoverTabFragment {
 
         output.errorMessage.observe(this, Observer {
 
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                alert(message.toString()) {
-                    okButton { }
-                }.show()
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
 
             showProgress(false)
         })

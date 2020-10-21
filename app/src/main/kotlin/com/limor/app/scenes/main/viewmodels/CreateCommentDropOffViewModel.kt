@@ -1,4 +1,4 @@
-package com.limor.app.main.viewmodels
+package com.limor.app.scenes.main.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

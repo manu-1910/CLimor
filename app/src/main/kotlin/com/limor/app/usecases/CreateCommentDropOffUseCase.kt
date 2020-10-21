@@ -1,12 +1,12 @@
-package io.square1.limor.usecases
+package com.limor.app.usecases
 
+import com.limor.app.common.executors.PostExecutionThread
 import io.reactivex.Single
-import io.square1.limor.common.executors.PostExecutionThread
-import io.square1.limor.mappers.asDataEntity
-import io.square1.limor.mappers.asUIModel
+import com.limor.app.mappers.asDataEntity
+import com.limor.app.mappers.asUIModel
 import io.square1.limor.remote.executors.JobExecutor
-import io.square1.limor.uimodels.UIDropOffRequest
-import io.square1.limor.uimodels.UIUpdatedResponse
+import com.limor.app.uimodels.UIDropOffRequest
+import com.limor.app.uimodels.UIUpdatedResponse
 import repositories.comment.CommentRepository
 import javax.inject.Inject
 

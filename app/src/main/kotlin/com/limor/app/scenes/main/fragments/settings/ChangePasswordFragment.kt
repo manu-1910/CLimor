@@ -17,6 +17,7 @@ import com.limor.app.common.SessionManager
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.authentication.viewmodels.SignViewModel
 import com.limor.app.scenes.main.viewmodels.ChangePasswordViewModel
+import com.limor.app.scenes.utils.CommonsKt
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_change_password.*
 import kotlinx.android.synthetic.main.fragment_sign_in.*
@@ -179,34 +180,7 @@ class ChangePasswordFragment : BaseFragment() {
         output.errorMessage.observe(this, Observer {
             pbChangePassword?.visibility = View.GONE
             view?.hideKeyboard()
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-//                if(it.code == 10){  //Session expired
-//                    alert(message.toString()) {
-//                        okButton {
-//                            val intent = Intent(context, SignActivity::class.java)
-//                            //intent.putExtra(getString(R.string.otherActivityKey), true)
-//                            startActivityForResult(
-//                                intent,
-//                                resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
-//                            )
-//                        }
-//                    }.show()
-//                }else{
-//                    alert(message.toString()) {
-//                        okButton { }
-//                    }.show()
-//                }
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 

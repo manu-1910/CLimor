@@ -1,4 +1,4 @@
-package io.square1.limor.uimodels
+package com.limor.app.uimodels
 
 data class UIUpdatedResponse (
     var code: Int,
