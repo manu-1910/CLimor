@@ -1,20 +1,17 @@
-package io.square1.limor.scenes.main.viewmodels
+package com.limor.app.main.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.limor.app.common.BaseViewModel
+import com.limor.app.common.SingleLiveEvent
+import com.limor.app.uimodels.UIDropOffRequest
+import com.limor.app.uimodels.UIErrorResponse
+import com.limor.app.uimodels.UIUpdatedResponse
+import com.limor.app.usecases.CreateCommentDropOffUseCase
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import io.square1.limor.App
-import io.square1.limor.R
-import io.square1.limor.common.BaseViewModel
-import io.square1.limor.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import io.square1.limor.uimodels.UIDropOffRequest
-import io.square1.limor.uimodels.UIErrorData
-import io.square1.limor.uimodels.UIErrorResponse
-import io.square1.limor.uimodels.UIUpdatedResponse
-import io.square1.limor.usecases.CreateCommentDropOffUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -55,10 +52,11 @@ class CreateCommentDropOffViewModel @Inject constructor(private val createCommen
                         )
                     errorTracker.postValue(errorResponse)
                 } catch (e: Exception) {
-                    val dataError =
-                        UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
-                    val errorResponse = UIErrorResponse(99, dataError.toString())
-                    errorTracker.postValue(errorResponse)
+                    e.printStackTrace()
+//                    val dataError =
+//                        UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
+//                    val errorResponse = UIErrorResponse(99, dataError.toString())
+//                    errorTracker.postValue(errorResponse)
                 }
 
             })

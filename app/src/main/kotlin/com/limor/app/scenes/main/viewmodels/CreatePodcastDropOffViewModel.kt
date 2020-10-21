@@ -1,17 +1,16 @@
-package io.square1.limor.scenes.main.viewmodels
+package com.limor.app.main.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import io.square1.limor.App
 import io.square1.limor.R
-import io.square1.limor.common.BaseViewModel
-import io.square1.limor.common.SingleLiveEvent
+import com.limor.app.common.BaseViewModel
+import com.limor.app.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import io.square1.limor.uimodels.*
-import io.square1.limor.usecases.CreatePodcastDropOffUseCase
+import com.limor.app.uimodels.*
+import com.limor.app.usecases.CreatePodcastDropOffUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
