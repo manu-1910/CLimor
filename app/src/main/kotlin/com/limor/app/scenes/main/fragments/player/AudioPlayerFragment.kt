@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.common.BaseFragment
@@ -26,6 +25,7 @@ import com.limor.app.scenes.main.viewmodels.FeedViewModel
 import com.limor.app.service.AudioService
 import com.limor.app.uimodels.UIFeedItem
 import com.limor.app.uimodels.UIPodcast
+import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
 class AudioPlayerFragment : BaseFragment() {

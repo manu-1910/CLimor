@@ -1,7 +1,5 @@
 package com.limor.app.scenes.main.fragments
 
-import com.limor.app.R
-import com.limor.app.common.BaseFragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,13 +13,15 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.App
+import com.limor.app.R
+import com.limor.app.common.BaseFragment
 import com.limor.app.scenes.main.adapters.NotificationsAdapter
 import com.limor.app.scenes.main.viewmodels.CreateFriendViewModel
 import com.limor.app.scenes.main.viewmodels.DeleteFriendViewModel
 import com.limor.app.scenes.main.viewmodels.NotificationsViewModel
 import com.limor.app.uimodels.UINotificationItem
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_notifications.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.okButton

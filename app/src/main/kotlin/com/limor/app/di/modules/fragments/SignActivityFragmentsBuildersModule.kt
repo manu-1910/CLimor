@@ -1,11 +1,11 @@
 package com.limor.app.di.modules.fragments
 
-import dagger.Module
-import dagger.android.ContributesAndroidInjector
 import com.limor.app.scenes.authentication.fragments.FacebookAuthFragment
 import com.limor.app.scenes.authentication.fragments.ForgotPasswordFragment
 import com.limor.app.scenes.authentication.fragments.SignInFragment
 import com.limor.app.scenes.authentication.fragments.SignUpFragment
+import dagger.Module
+import dagger.android.ContributesAndroidInjector
 
 @Module
 abstract class SignActivityFragmentsBuildersModule {

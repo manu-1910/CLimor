@@ -15,7 +15,6 @@ import com.facebook.AccessToken
 import com.facebook.GraphRequest
 import com.facebook.HttpMethod
 import com.facebook.login.LoginManager
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.App
 import com.limor.app.BuildConfig
 import com.limor.app.R
@@ -26,6 +25,7 @@ import com.limor.app.scenes.main.viewmodels.LogoutViewModel
 import com.limor.app.scenes.main.viewmodels.UpdateUserViewModel
 import com.limor.app.scenes.splash.SplashActivity
 import com.limor.app.scenes.utils.CommonsKt.Companion.handleOnApiError
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*

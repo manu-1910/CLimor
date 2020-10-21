@@ -18,8 +18,6 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
-import com.yalantis.ucrop.UCrop
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -33,6 +31,8 @@ import com.limor.app.scenes.utils.CommonsKt.Companion.ageToTimestamp
 import com.limor.app.scenes.utils.CommonsKt.Companion.timestampToAge
 import com.limor.app.scenes.utils.CommonsKt.Companion.toEditable
 import com.limor.app.uimodels.UIErrorResponse
+import com.yalantis.ucrop.UCrop
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*

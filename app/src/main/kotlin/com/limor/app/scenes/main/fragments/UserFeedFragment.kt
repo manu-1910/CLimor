@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.scenes.main.viewmodels.FeedViewModel
 import com.limor.app.scenes.utils.CommonsKt
+import io.reactivex.subjects.PublishSubject
 
 class UserFeedFragment : FeedItemsListFragment() {
 

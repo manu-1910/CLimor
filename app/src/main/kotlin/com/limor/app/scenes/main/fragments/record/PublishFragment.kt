@@ -17,7 +17,6 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.text.Editable
 import android.text.Spannable
@@ -44,8 +43,6 @@ import com.esafirm.imagepicker.model.Image
 import com.hendraanggrian.appcompat.widget.Hashtag
 import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter
 import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
-import com.yalantis.ucrop.UCrop
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -55,7 +52,6 @@ import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.fragments.record.adapters.HashtagAdapter
 import com.limor.app.scenes.main.viewmodels.*
-import io.square1.limor.scenes.main.viewmodels.*
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.CommonsKt.Companion.dpToPx
@@ -63,7 +59,8 @@ import com.limor.app.scenes.utils.CommonsKt.Companion.toEditable
 import com.limor.app.scenes.utils.location.MyLocation
 import com.limor.app.scenes.utils.waveform.KeyboardUtils
 import com.limor.app.uimodels.*
-import io.square1.limor.uimodels.*
+import com.yalantis.ucrop.UCrop
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_publish.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
@@ -72,7 +69,6 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
 import timber.log.Timber
 import java.io.File
@@ -80,7 +76,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
 import java.util.*
-import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.inject.Inject

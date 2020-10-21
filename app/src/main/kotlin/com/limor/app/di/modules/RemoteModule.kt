@@ -1,11 +1,11 @@
 package com.limor.app.di.modules
 
-import dagger.Binds
-import dagger.Module
-import dagger.Provides
 import com.limor.app.App
 import com.limor.app.BuildConfig
 import com.limor.app.common.SessionManager
+import dagger.Binds
+import dagger.Module
+import dagger.Provides
 import io.square1.limor.remote.providers.*
 import io.square1.limor.remote.services.RemoteServiceConfig
 import kotlinx.serialization.ImplicitReflectionSerializer

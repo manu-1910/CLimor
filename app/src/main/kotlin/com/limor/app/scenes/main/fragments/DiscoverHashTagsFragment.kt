@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -19,6 +18,7 @@ import com.limor.app.scenes.main.adapters.DiscoverHashTagsAdapter
 import com.limor.app.scenes.main.fragments.podcast.PodcastsByTagActivity
 import com.limor.app.scenes.main.viewmodels.DiscoverHashTagsViewModel
 import com.limor.app.uimodels.UITags
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_discover_accounts.*
 import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject

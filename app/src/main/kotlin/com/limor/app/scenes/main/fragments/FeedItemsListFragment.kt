@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
@@ -30,10 +29,10 @@ import com.limor.app.scenes.main.fragments.profile.ReportActivity
 import com.limor.app.scenes.main.fragments.profile.TypeReport
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.*
-import io.square1.limor.scenes.main.viewmodels.*
 import com.limor.app.service.AudioService
 import com.limor.app.uimodels.UIFeedItem
 import com.limor.app.uimodels.UIUser
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_feed.*
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton

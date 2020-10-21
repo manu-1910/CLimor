@@ -27,13 +27,13 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
-import java.util.ArrayList;
-
 import com.limor.app.R;
 import com.limor.app.scenes.utils.Commons;
 import com.limor.app.scenes.utils.waveform.MarkerSet;
 import com.limor.app.scenes.utils.waveform.WaveformFragment;
 import com.limor.app.scenes.utils.waveform.soundfile.SoundFile;
+
+import java.util.ArrayList;
 
 
 public class WaveformView extends View {

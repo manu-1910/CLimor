@@ -3,14 +3,11 @@ package com.limor.app.scenes.main.fragments.record
 import android.app.ProgressDialog
 import android.content.*
 import android.os.Bundle
-import android.os.Environment
-import android.util.Log
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
-import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.arthenica.mobileffmpeg.FFmpeg.RETURN_CODE_CANCEL
 import com.arthenica.mobileffmpeg.FFmpeg.RETURN_CODE_SUCCESS

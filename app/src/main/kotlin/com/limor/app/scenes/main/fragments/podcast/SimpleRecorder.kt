@@ -7,7 +7,6 @@ import com.limor.app.scenes.utils.Commons
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
-import java.lang.Exception
 import java.util.*
 
 

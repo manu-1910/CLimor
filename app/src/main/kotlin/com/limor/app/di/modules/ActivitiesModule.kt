@@ -1,19 +1,18 @@
 package com.limor.app.di.modules
 
 import com.limor.app.di.modules.fragments.*
-import dagger.Module
-import dagger.android.ContributesAndroidInjector
-import io.square1.limor.di.modules.fragments.*
 import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.fragments.player.AudioPlayerActivity
 import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
 import com.limor.app.scenes.main.fragments.podcast.PodcastsByTagActivity
-import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.ReportActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.record.RecordActivity
 import com.limor.app.scenes.main.fragments.settings.SettingsActivity
 import com.limor.app.scenes.splash.SplashActivity
+import dagger.Module
+import dagger.android.ContributesAndroidInjector
 
 @Module
 abstract class ActivitiesModule {

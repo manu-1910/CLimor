@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.jakewharton.rxbinding3.widget.textChanges
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -18,6 +17,7 @@ import com.limor.app.common.SessionManager
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.authentication.viewmodels.SignViewModel
 import com.limor.app.scenes.main.viewmodels.ChangePasswordViewModel
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_change_password.*
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle

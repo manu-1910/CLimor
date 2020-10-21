@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -26,6 +25,7 @@ import com.limor.app.scenes.main.viewmodels.LocationsViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.location.MyLocation
 import com.limor.app.uimodels.UILocations
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.btnClose

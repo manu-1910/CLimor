@@ -14,18 +14,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.google.android.exoplayer2.ui.PlayerControlView
-import dagger.android.AndroidInjection
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
 import com.limor.app.R
 import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerStatus
 import com.limor.app.uimodels.UIPodcast
+import dagger.android.AndroidInjection
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.exo_player_control_view.view.*
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.toast
-import java.lang.Exception
 import javax.inject.Inject
 
 

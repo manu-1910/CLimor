@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.ChipGroup
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -24,6 +23,7 @@ import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.viewmodels.CategoriesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.uimodels.UICategory
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.btnClose
 import org.jetbrains.anko.okButton

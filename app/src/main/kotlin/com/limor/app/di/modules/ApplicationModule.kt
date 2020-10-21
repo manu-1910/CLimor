@@ -2,10 +2,10 @@ package com.limor.app.di.modules
 
 import android.app.Application
 import android.content.Context
-import dagger.Binds
-import dagger.Module
 import com.limor.app.common.executors.PostExecutionThread
 import com.limor.app.common.executors.UIThread
+import dagger.Binds
+import dagger.Module
 import io.square1.limor.data.executors.ThreadExecutor
 import io.square1.limor.remote.executors.JobExecutor
 

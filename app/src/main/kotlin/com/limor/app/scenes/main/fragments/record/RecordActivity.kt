@@ -13,12 +13,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.scenes.main.viewmodels.LocationsViewModel
 import com.limor.app.scenes.utils.location.MyLocation
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
 import java.util.*
 import javax.inject.Inject
 

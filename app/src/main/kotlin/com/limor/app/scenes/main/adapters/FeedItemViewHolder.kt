@@ -23,7 +23,6 @@ import com.limor.app.uimodels.UIFeedItem
 import com.limor.app.uimodels.UIUser
 import org.jetbrains.anko.sdk23.listeners.onClick
 import timber.log.Timber
-import java.lang.Exception
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern

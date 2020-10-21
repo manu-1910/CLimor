@@ -2,14 +2,14 @@ package com.limor.app.scenes.main.fragments.record;
 
 import android.media.MediaRecorder;
 
+import com.limor.app.scenes.utils.Commons;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-
-import com.limor.app.scenes.utils.Commons;
 
 /**
  *

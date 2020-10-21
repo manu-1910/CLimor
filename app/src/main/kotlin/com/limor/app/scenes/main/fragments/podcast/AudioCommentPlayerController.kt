@@ -2,7 +2,6 @@ package com.limor.app.scenes.main.fragments.podcast
 
 import android.content.Context
 import android.media.MediaPlayer
-import android.os.Environment
 import android.os.Handler
 import android.widget.ImageButton
 import android.widget.SeekBar

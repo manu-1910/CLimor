@@ -1,8 +1,8 @@
 package com.limor.app.scenes.utils.statemanager;
 
-import java.util.ArrayList;
-
 import com.limor.app.uimodels.UITimeStamp;
+
+import java.util.ArrayList;
 
 public class Step{
 

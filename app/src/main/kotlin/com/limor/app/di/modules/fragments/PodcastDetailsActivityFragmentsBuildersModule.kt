@@ -1,8 +1,8 @@
 package com.limor.app.di.modules.fragments
 
+import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsFragment
 
 @Module
 abstract class PodcastDetailsActivityFragmentsBuildersModule {

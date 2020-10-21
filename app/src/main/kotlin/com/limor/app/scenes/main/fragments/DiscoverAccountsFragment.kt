@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -21,10 +20,10 @@ import com.limor.app.scenes.main.viewmodels.CreateFriendViewModel
 import com.limor.app.scenes.main.viewmodels.DeleteFriendViewModel
 import com.limor.app.scenes.main.viewmodels.DiscoverAccountsViewModel
 import com.limor.app.uimodels.UIUser
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_discover_accounts.*
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
 
 class DiscoverAccountsFragment : BaseFragment(), DiscoverTabFragment {

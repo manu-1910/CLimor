@@ -39,7 +39,6 @@ package com.limor.app.scenes.main.fragments.record.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.hendraanggrian.appcompat.widget.Hashtag

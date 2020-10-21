@@ -2,16 +2,14 @@ package com.limor.app.di.modules
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.limor.app.scenes.main.viewmodels.*
-import dagger.Binds
-import dagger.Module
-import dagger.multibindings.IntoMap
 import com.limor.app.common.ViewModelFactory
 import com.limor.app.di.ViewModelKey
 import com.limor.app.scenes.authentication.viewmodels.*
-import io.square1.limor.scenes.authentication.viewmodels.*
-import io.square1.limor.scenes.main.viewmodels.*
+import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.notifications.PushNotificationsViewModel
+import dagger.Binds
+import dagger.Module
+import dagger.multibindings.IntoMap
 
 
 @Module

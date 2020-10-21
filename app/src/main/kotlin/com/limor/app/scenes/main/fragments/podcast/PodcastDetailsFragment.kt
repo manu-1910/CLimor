@@ -27,7 +27,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
@@ -41,12 +40,11 @@ import com.limor.app.scenes.main.fragments.profile.ReportActivity
 import com.limor.app.scenes.main.fragments.profile.TypeReport
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.*
-import io.square1.limor.scenes.main.viewmodels.*
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.service.AudioService
 import com.limor.app.uimodels.*
-import io.square1.limor.uimodels.*
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_podcast_details.*
 import kotlinx.android.synthetic.main.include_interactions_bar.*
 import kotlinx.android.synthetic.main.include_podcast_data.*

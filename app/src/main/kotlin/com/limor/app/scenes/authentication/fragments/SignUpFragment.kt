@@ -23,7 +23,6 @@ import androidx.navigation.fragment.findNavController
 import com.facebook.*
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -37,6 +36,7 @@ import com.limor.app.scenes.authentication.viewmodels.SignUpFBViewModel
 import com.limor.app.scenes.authentication.viewmodels.SignUpViewModel
 import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.viewmodels.CreateFriendViewModel
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.component_edit_text.view.*
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 import kotlinx.android.synthetic.main.fragment_sign_up.*

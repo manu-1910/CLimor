@@ -7,7 +7,6 @@ import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -17,7 +16,6 @@ import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.jakewharton.rxbinding3.view.clicks
 import com.jakewharton.rxbinding3.widget.textChanges
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -32,7 +30,7 @@ import com.limor.app.scenes.authentication.viewmodels.SignViewModel
 import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.viewmodels.CreateFriendViewModel
 import com.limor.app.scenes.utils.CommonsKt.Companion.toEditable
-import kotlinx.android.synthetic.main.activity_sign.*
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.component_edit_text.view.*
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 import org.jetbrains.anko.okButton

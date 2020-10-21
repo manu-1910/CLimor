@@ -2,14 +2,14 @@ package com.limor.app.di.modules
 
 import dagger.Binds
 import dagger.Module
-import repositories.drafts.DataDraftsRepository
-import repositories.drafts.DraftsRepository
 import repositories.auth.AuthRepository
 import repositories.auth.DataAuthRepository
-import repositories.comment.CommentRepository
-import repositories.comment.DataCommentRepository
 import repositories.categories.CategoriesRepository
 import repositories.categories.DataCategoriesRepository
+import repositories.comment.CommentRepository
+import repositories.comment.DataCommentRepository
+import repositories.drafts.DataDraftsRepository
+import repositories.drafts.DraftsRepository
 import repositories.podcast.DataPodcastRepository
 import repositories.podcast.PodcastRepository
 import repositories.search.DataSearchRepository

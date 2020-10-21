@@ -14,7 +14,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -25,6 +24,7 @@ import com.limor.app.scenes.main.viewmodels.CreateBlockedUserViewModel
 import com.limor.app.scenes.main.viewmodels.DeleteBlockedUserViewModel
 import com.limor.app.scenes.main.viewmodels.GetBlockedUsersViewModel
 import com.limor.app.uimodels.UIUser
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_empty_scenario.*
 import kotlinx.android.synthetic.main.fragment_users_blocked.*
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*

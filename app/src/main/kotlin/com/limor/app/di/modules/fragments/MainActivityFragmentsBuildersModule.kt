@@ -2,11 +2,10 @@ package com.limor.app.di.modules.fragments
 
 
 import com.limor.app.scenes.main.fragments.*
-import dagger.Module
-import dagger.android.ContributesAndroidInjector
-import io.square1.limor.scenes.main.fragments.*
 import com.limor.app.scenes.main.fragments.profile.UserLikedPodcastsFragment
 import com.limor.app.scenes.main.fragments.profile.UserPodcastsFragment
+import dagger.Module
+import dagger.android.ContributesAndroidInjector
 
 
 @Module

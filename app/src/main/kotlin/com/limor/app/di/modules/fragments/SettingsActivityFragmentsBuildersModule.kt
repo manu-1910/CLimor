@@ -4,7 +4,6 @@ package com.limor.app.di.modules.fragments
 import com.limor.app.scenes.main.fragments.settings.*
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import io.square1.limor.scenes.main.fragments.settings.*
 
 
 @Module

@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.scenes.main.fragments.FeedItemsListFragment
 import com.limor.app.scenes.main.fragments.UserFeedFragment
 import com.limor.app.scenes.main.viewmodels.GetUserLikedPodcastsViewModel
 import com.limor.app.uimodels.UIFeedItem
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_feed.*
 
 class UserLikedPodcastsFragment(private val userID: Int) : FeedItemsListFragment() {

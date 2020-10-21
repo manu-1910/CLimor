@@ -3,13 +3,14 @@ package com.limor.app.scenes.main.adapters
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.limor.app.R
 import com.limor.app.uimodels.UIUser
 import org.jetbrains.anko.sdk23.listeners.onClick
-import java.lang.Exception
 import java.util.*
 
 class SuggestedPersonViewHolder(

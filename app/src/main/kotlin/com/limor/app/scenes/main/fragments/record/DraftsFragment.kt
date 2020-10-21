@@ -2,7 +2,6 @@ package com.limor.app.scenes.main.fragments.record
 
 
 import android.os.Bundle
-import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +16,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.subjects.PublishSubject
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -27,6 +25,7 @@ import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.CommonsKt.Companion.copyFile
 import com.limor.app.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import com.limor.app.uimodels.UIDraft
+import io.reactivex.subjects.PublishSubject
 import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.toast

@@ -14,7 +14,6 @@ import com.limor.app.R
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UIUser
 import org.jetbrains.anko.sdk23.listeners.onClick
-import java.lang.Exception
 import java.util.*
 
 

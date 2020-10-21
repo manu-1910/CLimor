@@ -1,12 +1,11 @@
 package com.limor.app.di.modules.fragments
 
-import dagger.Module
-import dagger.Subcomponent
-import dagger.android.ContributesAndroidInjector
 import com.limor.app.scenes.main.fragments.FeedItemsListFragment
 import com.limor.app.scenes.main.fragments.ProfileFragment
 import com.limor.app.scenes.main.fragments.profile.UserLikedPodcastsFragment
 import com.limor.app.scenes.main.fragments.profile.UserPodcastsFragment
+import dagger.Module
+import dagger.android.ContributesAndroidInjector
 
 @Module
 abstract class UserProfileActivityFragmentsBuildersModule {

@@ -1,11 +1,11 @@
 package com.limor.app.scenes.main.fragments
 
-import com.limor.app.R
-import com.limor.app.common.BaseFragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.limor.app.R
+import com.limor.app.common.BaseFragment
 
 
 class HomeFragment : BaseFragment() {

@@ -2,12 +2,11 @@ package com.limor.app.di.components
 
 import android.app.Application
 import android.content.Context
+import com.limor.app.App
+import com.limor.app.di.modules.*
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
-import com.limor.app.App
-import com.limor.app.di.modules.*
-import io.square1.limor.di.modules.*
 import javax.inject.Singleton
 
 @Singleton

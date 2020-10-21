@@ -6,12 +6,11 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
-import com.limor.app.uimodels.UIFeedItem
 import com.limor.app.uimodels.UIPodcast
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
 
 
