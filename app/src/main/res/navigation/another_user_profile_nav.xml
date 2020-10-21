@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/profile_fragment"
-        android:name="io.square1.limor.scenes.main.fragments.ProfileFragment"
+        android:name="com.limor.app.scenes.main.fragments.ProfileFragment"
         android:label="ProfileFragment"
         tools:layout="@layout/fragment_profile">
 

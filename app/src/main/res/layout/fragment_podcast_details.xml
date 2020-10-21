@@ -261,7 +261,7 @@
                     android:textColorHint="@color/brandSecondary100"
                     android:visibility="visible" />
 
-                <io.square1.limor.scenes.utils.VisualizerView
+                <com.limor.app.scenes.utils.VisualizerView
                     android:id="@+id/visualizerComment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

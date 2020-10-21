@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools" package="io.square1.limor">
+          xmlns:tools="http://schemas.android.com/tools" package="com.limor.app">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -51,7 +51,7 @@
             android:resource="@color/colorAccent" />
 
         <activity
-                android:name="io.square1.limor.scenes.splash.SplashActivity"
+                android:name=".scenes.splash.SplashActivity"
                 android:configChanges="orientation|keyboardHidden|screenSize"
                 android:label="@string/app_name"
                 android:theme="@style/AppTheme.NoActionBar.FullScreen">
@@ -67,50 +67,50 @@
                 android:required="false"/>
 
         <activity
-            android:name="io.square1.limor.scenes.authentication.SignActivity"
+            android:name=".scenes.authentication.SignActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name="io.square1.limor.common.BaseActivity"
+            android:name=".common.BaseActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name="io.square1.limor.scenes.main.MainActivity"
+            android:name=".scenes.main.MainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name="io.square1.limor.scenes.main.fragments.record.RecordActivity"
+            android:name=".scenes.main.fragments.record.RecordActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name="io.square1.limor.scenes.main.fragments.podcast.PodcastDetailsActivity"
+            android:name=".scenes.main.fragments.podcast.PodcastDetailsActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name="io.square1.limor.scenes.main.fragments.profile.UserProfileActivity"
+            android:name=".scenes.main.fragments.profile.UserProfileActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name="io.square1.limor.scenes.main.fragments.podcast.PodcastsByTagActivity"
+            android:name=".scenes.main.fragments.podcast.PodcastsByTagActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name="io.square1.limor.scenes.main.fragments.player.AudioPlayerActivity"
+            android:name=".scenes.main.fragments.player.AudioPlayerActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name="io.square1.limor.scenes.main.fragments.profile.ReportActivity"
+            android:name=".scenes.main.fragments.profile.ReportActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
 
@@ -122,7 +122,7 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name="io.square1.limor.scenes.main.fragments.settings.SettingsActivity"
+            android:name=".scenes.main.fragments.settings.SettingsActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
 
@@ -164,23 +164,24 @@
         </activity>
 
         <service
-            android:name="io.square1.limor.service.AudioService"
+            android:name=".service.AudioService"
             android:exported="false" />
 
         <!--FCM-->
         <service
-            android:name="io.square1.limor.scenes.notifications.MyFirebaseMessagingService"
+            android:name=".scenes.notifications.MyFirebaseMessagingService"
             android:stopWithTask="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name="io.square1.limor.scenes.notifications.UtilsRegistrationIntentService"
+            android:name=".scenes.notifications.UtilsRegistrationIntentService"
             android:exported="false">
         </service>
 
-
+        <!--AWS S3-->
+        <service android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"/>
 
     </application>
 

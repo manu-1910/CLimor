@@ -1,6 +1,5 @@
 package io.square1.limor
 
-import io.square1.limor.scenes.utils.CommonsKt.Companion.calculateDurationMinutesAndSeconds
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
