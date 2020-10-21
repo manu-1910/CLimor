@@ -710,60 +710,17 @@ class PublishFragment : BaseFragment() {
                 )
                 run = Runnable {
                     // Updateing SeekBar every 100 miliseconds
-                    audioSeekbar?.progress = mediaPlayer.currentPosition
-                    seekHandler.postDelayed(run, 100)
+
                     //For Showing time of audio(inside runnable)
                     val miliSeconds = mediaPlayer.currentPosition
+                    audioSeekbar?.progress = miliSeconds
                     timeDuration?.text = CommonsKt.calculateDurationMediaPlayer(
                         mediaPlayer.duration
                     )
                     timePass?.text = CommonsKt.calculateDurationMediaPlayer(
                         miliSeconds
                     )
-//                    if (miliSeconds != 0) {
-//                        //if audio is playing, showing current time;
-//                        val minutes = TimeUnit.MILLISECONDS.toMinutes(miliSeconds.toLong())
-//                        val seconds = TimeUnit.MILLISECONDS.toSeconds(miliSeconds.toLong())
-//                        if (minutes == 0L) {
-//                            timePass?.text = "00:" + String.format("%02d", seconds)
-//                            timeDuration?.text =
-//                                CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
-//                        } else {
-//                            if (seconds >= 60) {
-//                                val sec = seconds - minutes * 60
-//                                timePass?.text =
-//                                    String.format("%02d", minutes) + ":" + String.format(
-//                                        "%02d",
-//                                        seconds
-//                                    )
-//                                timeDuration?.text = CommonsKt.calculateDurationMediaPlayer(
-//                                    mediaPlayer.duration
-//                                )
-//                            }
-//                        }
-//                    } else {
-//                        //Displaying total time if audio not playing
-//                        val totalTime = mediaPlayer.duration
-//                        val minutes = TimeUnit.MILLISECONDS.toMinutes(totalTime.toLong())
-//                        val seconds = TimeUnit.MILLISECONDS.toSeconds(totalTime.toLong())
-//                        if (minutes == 0L) {
-//                            timePass?.text = "00:" + String.format("%02d", seconds)
-//                            timeDuration?.text =
-//                                CommonsKt.calculateDurationMediaPlayer(mediaPlayer.duration)
-//                        } else {
-//                            if (seconds >= 60) {
-//                                val sec = seconds - minutes * 60
-//                                timePass?.text =
-//                                    String.format("%02d", minutes) + ":" + String.format(
-//                                        "%02d",
-//                                        seconds
-//                                    )
-//                                timeDuration?.text = CommonsKt.calculateDurationMediaPlayer(
-//                                    mediaPlayer.duration
-//                                )
-//                            }
-//                        }
-//                    }
+                    seekHandler.postDelayed(run, 100)
                 }
                 run!!.run()
             } else {
