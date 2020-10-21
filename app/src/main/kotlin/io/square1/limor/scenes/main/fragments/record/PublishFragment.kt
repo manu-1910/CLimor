@@ -559,7 +559,6 @@ class PublishFragment : BaseFragment() {
     private fun apiCallPublish() {
         pbPublish?.visibility = View.VISIBLE
 
-        val duration : Double = mediaPlayer.duration / 1000.0
         val uiPublishRequest = UIPublishRequest(
             podcast = UIPodcastRequest(
                 audio = UIAudio(
@@ -567,7 +566,7 @@ class PublishFragment : BaseFragment() {
                     original_audio_url = audioUrlFinal.toString(),
                     duration = mediaPlayer.duration,
                     total_samples = 0.0,
-                    total_length = duration
+                    total_length = mediaPlayer.duration.toDouble()
                 ),
                 meta_data = UIMetaData(
                     title = etDraftTitle?.text.toString(),

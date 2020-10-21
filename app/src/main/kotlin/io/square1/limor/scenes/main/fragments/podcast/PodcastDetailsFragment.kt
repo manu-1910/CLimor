@@ -87,7 +87,7 @@ class PodcastDetailsFragment : BaseFragment() {
     private var isWaitingForApiCall: Boolean = false
     private var currentOffset: Int = 0
     private var currentCommentRequest: UICreateCommentRequest? = null
-    private var currentCommentRecordedDuration: Int = -1
+    private var currentCommentRecordedDurationMillis: Int = -1
     private var currentCommentRecordedFile: File? = null
     private var isRecording = false
     private val handlerRecordingComment = Handler()
@@ -886,7 +886,7 @@ class PodcastDetailsFragment : BaseFragment() {
         commentPlayerListener = object : AudioCommentPlayerController.CommentPlayerListener {
             override fun onProgress(comment: UIComment, positionInMs: Int) {
                 comment.audio.duration?.let {duration ->
-                    val durationInMs = duration * 1000
+                    val durationInMs = duration
                     val currentPercentage = positionInMs.toFloat() * 100f / durationInMs.toFloat()
 
                     // this is the current 'ten' ('decena' in Spanish).
@@ -920,7 +920,7 @@ class PodcastDetailsFragment : BaseFragment() {
     private fun deleteCurrentCommentAudioAndResetBar() {
         currentCommentRecordedFile = null
         mRecorder.clear()
-        currentCommentRecordedDuration = -1
+        currentCommentRecordedDurationMillis = -1
         currentCommentRecordedFile = null
         visualizerComment.clear()
         visualizerComment.invalidate()
@@ -976,9 +976,9 @@ class PodcastDetailsFragment : BaseFragment() {
         handlerRecordingComment.removeCallbacks(updater)
         val filenameAndAudio = mRecorder.stopRecording()
         val filenameRecorded = filenameAndAudio.first
-        currentCommentRecordedDuration = filenameAndAudio.second
+        currentCommentRecordedDurationMillis = filenameAndAudio.second
         currentCommentRecordedFile = File(filenameRecorded)
-        if(currentCommentRecordedDuration > 0 && currentCommentRecordedFile!!.isFile && currentCommentRecordedFile!!.exists()) {
+        if(currentCommentRecordedDurationMillis > 0 && currentCommentRecordedFile!!.isFile && currentCommentRecordedFile!!.exists()) {
             showPlayButton()
             btnTrash?.visibility = View.VISIBLE
             visualizerComment.invalidate()
@@ -996,7 +996,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 override fun onSuccess(audioUrl: String?) {
                     Timber.d("Audio uploaded to AWS successfully")
                     currentCommentRequest?.comment?.audio_url = audioUrl
-                    currentCommentRequest?.comment?.duration = currentCommentRecordedDuration
+                    currentCommentRequest?.comment?.duration = currentCommentRecordedDurationMillis
                     if(podcastMode) {
                         viewModelCreatePodcastComment.uiCreateCommentRequest = currentCommentRequest!!
                         createPodcastCommentDataTrigger.onNext(Unit)
@@ -1441,7 +1441,7 @@ class PodcastDetailsFragment : BaseFragment() {
                             // before swapping comment, we have to send a dropoff because the user is not listening to this comment anymore
                             audioCommentPlayerController?.comment?.let {comment ->
                                 viewModelCreateCommentDropOff.idComment = comment.id
-                                val durationInMs = (comment.audio.duration ?: 0) * 1000
+                                val durationInMs = (comment.audio.duration ?: 0)
                                 val currentPlayPositionInMs = audioCommentPlayerController?.getCurrentPlayerPosition() ?: 0
                                 val currentPercentage = currentPlayPositionInMs.toFloat() * 100f / durationInMs.toFloat()
                                 viewModelCreateCommentDropOff.percentage = currentPercentage
@@ -1793,7 +1793,7 @@ class PodcastDetailsFragment : BaseFragment() {
         // duration
 //        uiPodcast?.audio?.duration?.let {
         uiPodcast?.audio?.total_length?.let {
-            tvPodcastTime?.text = CommonsKt.calculateDurationMinutesAndSeconds(it)
+            tvPodcastTime?.text = CommonsKt.calculateDurationMinutesAndSeconds(it.toLong())
         }
 
         // recasts
