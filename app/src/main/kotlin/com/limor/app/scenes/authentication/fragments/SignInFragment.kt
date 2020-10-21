@@ -82,13 +82,11 @@ class SignInFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if(viewModelSignUpFB == null) {
-            bindViewModel()
-            apiCallSignInWithMail()
-            apiCallSignInWithFacebook()
-            apiCallMergeFacebookAccount()
-            initApiCallAutofollowLimor()
-        }
+        bindViewModel()
+        apiCallSignInWithMail()
+        apiCallSignInWithFacebook()
+        apiCallMergeFacebookAccount()
+        initApiCallAutofollowLimor()
         listeners()
         app = context?.applicationContext as App
     }
@@ -103,6 +101,7 @@ class SignInFragment : BaseFragment() {
                 edtSignInEmail.myEdit.text = emailFromForgotPassword.toEditable()
             }
         }
+
     }
 
     override fun onResume() {

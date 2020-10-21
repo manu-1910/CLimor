@@ -1973,6 +1973,13 @@ class PodcastDetailsFragment : BaseFragment() {
         if(uiPodcast?.user?.id != loggedUser?.id) {
             val menuToHide = popup.menu.findItem(R.id.menu_delete_cast)
             menuToHide.isVisible = false
+        } else {
+            val menuToHideReportUser = popup.menu.findItem(R.id.menu_report_user)
+            menuToHideReportUser.isVisible = false
+            val menuToHideReportCast = popup.menu.findItem(R.id.menu_report_cast)
+            menuToHideReportCast.isVisible = false
+            val menuToHideBlockUser = popup.menu.findItem(R.id.menu_block_user)
+            menuToHideBlockUser.isVisible = false
         }
 
         //set menu item click listener here
