@@ -119,8 +119,8 @@ class DraftsFragment : BaseFragment() {
         btnCloseToolbar?.let {
             it.onClick {
                 try {
-                    if(adapter?.mediaPlayer!!.isPlaying){
-                        adapter?.mediaPlayer!!.stop()
+                    if(adapter?.mediaPlayer2!!.isPlaying){
+                        adapter?.mediaPlayer2!!.stop()
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -156,8 +156,8 @@ class DraftsFragment : BaseFragment() {
             }
 
             try {
-                if(adapter?.mediaPlayer!!.isPlaying){
-                    adapter?.mediaPlayer!!.stop()
+                if(adapter?.mediaPlayer2!!.isPlaying){
+                    adapter?.mediaPlayer2!!.stop()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -186,8 +186,8 @@ class DraftsFragment : BaseFragment() {
                         pbDrafts?.visibility = View.VISIBLE
 
                         try {
-                            if(adapter?.mediaPlayer!!.isPlaying){
-                                adapter?.mediaPlayer!!.stop()
+                            if(adapter?.mediaPlayer2!!.isPlaying){
+                                adapter?.mediaPlayer2!!.stop()
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -218,8 +218,8 @@ class DraftsFragment : BaseFragment() {
                         pbDrafts?.visibility = View.VISIBLE
 
                         try {
-                            if(adapter?.mediaPlayer!!.isPlaying){
-                                adapter?.mediaPlayer!!.stop()
+                            if(adapter?.mediaPlayer2!!.isPlaying){
+                                adapter?.mediaPlayer2!!.stop()
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -257,8 +257,8 @@ class DraftsFragment : BaseFragment() {
                         pbDrafts?.visibility = View.VISIBLE
 
                         try {
-                            if(adapter?.mediaPlayer!!.isPlaying){
-                                adapter?.mediaPlayer!!.stop()
+                            if(adapter?.mediaPlayer2!!.isPlaying){
+                                adapter?.mediaPlayer2!!.stop()
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
