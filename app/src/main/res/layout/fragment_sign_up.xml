@@ -15,7 +15,7 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-            <io.square1.limor.components.EditTextComponent
+            <com.limor.app.components.EditTextComponent
                     android:id="@+id/edtSignUpUsername"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
                     app:isPassword="false"
                     app:topTitleLeft="@string/username" />
 
-            <io.square1.limor.components.EditTextComponent
+            <com.limor.app.components.EditTextComponent
                     android:id="@+id/edtSignUpEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
                     app:isPassword="false"
                     app:topTitleLeft="@string/email" />
 
-            <io.square1.limor.components.EditTextComponent
+            <com.limor.app.components.EditTextComponent
                     android:id="@+id/edtSignUpPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

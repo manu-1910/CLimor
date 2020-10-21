@@ -21,8 +21,8 @@ buildscript {
 allprojects {
     addRepos(repositories)
     ext {
-        /*androidApplicationId = "com.limor.app"*/
-        androidApplicationId = "io.square1.limor.app"
+        androidApplicationId = "com.limor.app"
+        //androidApplicationId = "io.square1.limor.app"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testApplicationId = androidApplicationId + '.test'

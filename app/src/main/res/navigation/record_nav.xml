@@ -6,7 +6,7 @@
     app:startDestination="@id/record_fragment">
    <fragment
        android:id="@+id/record_fragment"
-       android:name="io.square1.limor.scenes.main.fragments.record.RecordFragment"
+       android:name="com.limor.app.scenes.main.fragments.record.RecordFragment"
        android:label="RecordFragment"
        tools:layout="@layout/fragment_record">
       <action
@@ -31,12 +31,12 @@
 
    <fragment
        android:id="@+id/record_edit"
-       android:name="io.square1.limor.scenes.main.fragments.record.EditFragment"
+       android:name="com.limor.app.scenes.main.fragments.record.EditFragment"
        android:label="EditFragment"
        tools:layout="@layout/fragment_edit">
       <argument
           android:name="audioFilename"
-          app:type="io.square1.limor.uimodels.UIRecordingItem" />
+          app:type="com.limor.app.uimodels.UIRecordingItem" />
       <action
           android:id="@+id/action_record_edit_to_record_publish"
           app:destination="@id/record_publish"
@@ -47,12 +47,12 @@
 
    <fragment
        android:id="@+id/record_publish"
-       android:name="io.square1.limor.scenes.main.fragments.record.PublishFragment"
+       android:name="com.limor.app.scenes.main.fragments.record.PublishFragment"
        android:label="PublishFragment"
        tools:layout="@layout/fragment_publish">
       <argument
           android:name="audioFilename"
-          app:type="io.square1.limor.uimodels.UIRecordingItem" />
+          app:type="com.limor.app.uimodels.UIRecordingItem" />
       <action
           android:id="@+id/action_record_publish_to_record_drafts"
           app:destination="@id/record_drafts"
@@ -75,7 +75,7 @@
 
    <fragment
        android:id="@+id/record_drafts"
-       android:name="io.square1.limor.scenes.main.fragments.record.DraftsFragment"
+       android:name="com.limor.app.scenes.main.fragments.record.DraftsFragment"
        android:label="DraftsFragment"
        tools:layout="@layout/fragment_drafts">
       <action
@@ -95,7 +95,7 @@
 
    <fragment
        android:id="@+id/record_categories"
-       android:name="io.square1.limor.scenes.main.fragments.record.CategoriesFragment"
+       android:name="com.limor.app.scenes.main.fragments.record.CategoriesFragment"
        android:label="CategoriesFragment"
        tools:layout="@layout/fragment_categories">
 
@@ -103,7 +103,7 @@
 
    <fragment
        android:id="@+id/record_locations"
-       android:name="io.square1.limor.scenes.main.fragments.record.LocationsFragment"
+       android:name="com.limor.app.scenes.main.fragments.record.LocationsFragment"
        android:label="LocationsFragment"
        tools:layout="@layout/fragment_locations">
 
