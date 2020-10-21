@@ -24,7 +24,7 @@ class PodcastServiceImpTest{
 
     private val TOKEN_TEST_DEVELOPMENT = "9b1b2517ba88187cc8e50a2f40446a0ff10200b9353ef356441c751553dc33ce"
     private val TOKEN_USER_DEVELOPMENT = "4t6bOFXd3L89qqPLdXsBHtTOP4_-t_61Q2kl5R4dAdk"
-    private val SECONDARY_TOKEN_USER_DEVELOPMENT = "r-bGZPdpVGgGlAMmGoskTn9iKJiayL8AmT1oJajg1Vc"
+    private val SECONDARY_TOKEN_USER_DEVELOPMENT = "PkRbYfBMW7iTagfOvr7sNvnO4t5iC7OdjCzbbhijpuQ"
     private val TOKEN_STAGING = "36bf82e596dc582796508c09d050484181fa51278eb6b0c2bdbfb269c98a3992"
     private val CURRENT_TOKEN = SECONDARY_TOKEN_USER_DEVELOPMENT
 
@@ -306,6 +306,31 @@ class PodcastServiceImpTest{
 
         val idPodcast = 1004
         val response = podcastService.getPodcastById(idPodcast)?.test()
+
+        response?.assertNoErrors()
+        response?.assertValue { it.message == "Success" }
+    }
+
+
+
+
+    @Test
+    fun should_create_dropoff_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = baseURL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = SECONDARY_TOKEN_USER_DEVELOPMENT,
+            expiredIn = 0
+        )
+
+        podcastService = PodcastServiceImp(config)
+
+        val idPodcast = 1004
+
+        val request = NWDropOffRequest(20f)
+        val response = podcastService.createDropOff(idPodcast, request).test()
 
         response?.assertNoErrors()
         response?.assertValue { it.message == "Success" }

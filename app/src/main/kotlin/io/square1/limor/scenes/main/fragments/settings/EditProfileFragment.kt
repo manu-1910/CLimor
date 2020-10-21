@@ -2,6 +2,7 @@ package io.square1.limor.scenes.main.fragments.settings
 
 
 import android.app.Activity
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -29,10 +30,10 @@ import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.authentication.SignActivity
 import io.square1.limor.scenes.main.viewmodels.UpdateUserViewModel
 import io.square1.limor.scenes.utils.Commons
-import io.square1.limor.scenes.utils.CommonsKt.Companion.ageToTimestamp
-import io.square1.limor.scenes.utils.CommonsKt.Companion.timestampToAge
+import io.square1.limor.scenes.utils.CommonsKt
 import io.square1.limor.scenes.utils.CommonsKt.Companion.toEditable
 import io.square1.limor.uimodels.UIErrorResponse
+import io.square1.limor.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
@@ -62,11 +63,13 @@ class EditProfileFragment : BaseFragment() {
     var profileHasImage = false
     var profileImageUrlFinal = ""
     var tempPhotoPath = ""
+    var user: UIUser? = null
 
 
     companion object {
         val TAG: String = EditProfileFragment::class.java.simpleName
         fun newInstance() = EditProfileFragment()
+        const val TIMBER_TAG = "BIRTHDATE_ISSUE"
     }
 
 
@@ -85,6 +88,8 @@ class EditProfileFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        user = sessionManager.getStoredUser()
 
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 1f)
@@ -136,6 +141,39 @@ class EditProfileFragment : BaseFragment() {
         btnChoosePhoto.onClick {
             loadImagePicker()
         }
+
+        // this is to make the editText non editable
+        etAge.keyListener = null
+        etAge.onClick {
+
+            val date: DatePickerDialog.OnDateSetListener =
+                DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth -> // TODO Auto-generated method stub
+                    val newDate = Calendar.getInstance()
+                    newDate[Calendar.YEAR] = year
+                    newDate[Calendar.MONTH] = monthOfYear
+                    newDate[Calendar.DAY_OF_MONTH] = dayOfMonth
+                    onBirthdateUpdated(newDate)
+                }
+
+            val myCalendar = Calendar.getInstance()
+
+            user?.date_of_birth?.let {
+                val d = Date(it)
+                myCalendar.time = d
+            }
+            DatePickerDialog(
+                context!!, date, myCalendar[Calendar.YEAR], myCalendar[Calendar.MONTH],
+                myCalendar[Calendar.DAY_OF_MONTH]
+            ).show()
+        }
+    }
+
+    private fun onBirthdateUpdated(newBirthDate: Calendar) {
+        val newMillis = newBirthDate.timeInMillis
+        user?.date_of_birth = newMillis
+        val now = Calendar.getInstance()
+        val years = CommonsKt.getYearsBetweenTwoCalendars(newBirthDate, now)
+        etAge.setText(years.toString())
     }
 
 
@@ -154,6 +192,8 @@ class EditProfileFragment : BaseFragment() {
 
 
     private fun callToApiUpdateUser(){
+        val userAge = CommonsKt.calculateAge(user?.date_of_birth!!)
+        Timber.tag(TIMBER_TAG).d("callToApiUpdateUser has been called and the user is $userAge")
         updateUserViewModel.first_name = etFirstName.text.toString()
         updateUserViewModel.last_name = etLastName.text.toString()
         updateUserViewModel.username = etUsername.text.toString()
@@ -161,9 +201,11 @@ class EditProfileFragment : BaseFragment() {
         updateUserViewModel.description = etBio.text.toString()
         updateUserViewModel.email = etEmail.text.toString()
         updateUserViewModel.phone_number = etPhone.text.toString()
-        updateUserViewModel.date_of_birth =  ageToTimestamp(etAge.text.toString().toInt())
+        user?.date_of_birth?.let {
+            updateUserViewModel.date_of_birth = it
+        }
         updateUserViewModel.gender = etGender.text.toString()
-        updateUserViewModel.notifications_enabled = sessionManager.getStoredUser()!!.notifications_enabled
+        updateUserViewModel.notifications_enabled = user!!.notifications_enabled
         if(profileHasImage){
             updateUserViewModel.image = profileImageUrlFinal
         }
@@ -184,8 +226,13 @@ class EditProfileFragment : BaseFragment() {
             view?.hideKeyboard()
 
             if (it.code == 0) {
+                val userAge = CommonsKt.calculateAge(user?.date_of_birth!!)
+                val newUserAge = CommonsKt.calculateAge(it.data.user.date_of_birth!!)
+                Timber.tag(TIMBER_TAG).d("User is successfully updated and the user is $userAge, the new user age received is $newUserAge")
+                Timber.tag(TIMBER_TAG).d("We will store the user in sessionStorage again")
                 sessionManager.storeUser(it.data.user)
                 toast("Profile updated successfully")
+                Timber.tag(TIMBER_TAG).d("We will go back to Settings Screen")
                 findNavController().popBackStack()
             }
 
@@ -296,16 +343,20 @@ class EditProfileFragment : BaseFragment() {
 
 
     private fun loadExistingData(){
-        etFirstName.text = sessionManager.getStoredUser()?.first_name?.toEditable()
-        etLastName.text = sessionManager.getStoredUser()?.last_name?.toEditable()
-        etUsername.text = sessionManager.getStoredUser()?.username?.toEditable()
-        etWebsite.text = sessionManager.getStoredUser()?.website?.toEditable()
-        etBio.text = sessionManager.getStoredUser()?.description?.toEditable()
-        etEmail.text = sessionManager.getStoredUser()?.email?.toEditable()
-        etPhone.text = sessionManager.getStoredUser()?.phone_number?.toEditable()
-        etAge.text = timestampToAge(sessionManager.getStoredUser()?.date_of_birth!!).toEditable()
-        etGender.text = sessionManager.getStoredUser()?.gender?.toEditable()
-        Glide.with(context!!).load(sessionManager.getStoredUser()?.images?.medium_url).into(
+        etFirstName.text = user?.first_name?.toEditable()
+        etLastName.text = user?.last_name?.toEditable()
+        etUsername.text = user?.username?.toEditable()
+        etWebsite.text = user?.website?.toEditable()
+        etBio.text = user?.description?.toEditable()
+        etEmail.text = user?.email?.toEditable()
+        etPhone.text = user?.phone_number?.toEditable()
+
+        etAge.setText("")
+        user?.date_of_birth?.let {
+            etAge.setText(CommonsKt.calculateAge(it).toString())
+        }
+        etGender.text = user?.gender?.toEditable()
+        Glide.with(context!!).load(user?.images?.medium_url).into(
             profile_image!!
         )
     }

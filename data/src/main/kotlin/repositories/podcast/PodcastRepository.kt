@@ -3,6 +3,7 @@ package repositories.podcast
 
 import entities.request.DataCreateCommentRequest
 import entities.request.DataCreateReportRequestEntity
+import entities.request.DataDropOffRequest
 import entities.request.DataPublishRequest
 import entities.response.*
 import io.reactivex.Single
@@ -20,4 +21,5 @@ interface PodcastRepository {
     fun getPopularPodcasts(): Single<PopularPodcastsResponseEntity>?
     fun getFeaturedPodcasts(): Single<FeaturedPodcastsResponseEntity>?
     fun getPodcastById(id: Int): Single<GetPodcastResponseEntity>?
+    fun createDropOff(id: Int, request: DataDropOffRequest): Single<UpdatedResponseEntity>?
 }

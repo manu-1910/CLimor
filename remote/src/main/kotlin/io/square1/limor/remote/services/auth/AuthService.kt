@@ -22,7 +22,7 @@ const val CHANGE_PASSWORD_PATH = "/api/v1/users/password"
 interface AuthService {
     @POST(AUTH_LOGIN_PATH)
     fun login(
-        @QueryMap(encoded = true) loginRequest: @JvmSuppressWildcards Map<String, @JvmSuppressWildcards Any>
+        @QueryMap(encoded = false) loginRequest: @JvmSuppressWildcards Map<String, @JvmSuppressWildcards Any>
     ): Single<ResponseBody>
 
 

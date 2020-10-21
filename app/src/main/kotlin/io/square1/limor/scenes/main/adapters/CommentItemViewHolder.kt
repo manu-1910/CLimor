@@ -203,13 +203,13 @@ class CommentItemViewHolder(
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
 
         })
-        currentItem.comment.audio.duration?.let { seekBar.max = it * 1000 }
+        currentItem.comment.audio.duration?.let { seekBar.max = it }
         ibtnPlay.onClick {
             Timber.d("on play comment clicked")
             commentClickListener.onPlayClicked(currentItem, position, seekBar, ibtnPlay)
         }
         currentItem.comment.audio.duration?.let {
-            tvTotalTime.text = CommonsKt.calculateDurationMediaPlayer(it * 1000)
+            tvTotalTime.text = CommonsKt.calculateDurationMediaPlayer(it)
         }
     }
 

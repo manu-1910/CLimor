@@ -18,6 +18,7 @@ import io.square1.limor.common.SessionManager
 import io.square1.limor.extensions.hideKeyboard
 import io.square1.limor.scenes.authentication.viewmodels.SignViewModel
 import io.square1.limor.scenes.main.viewmodels.ChangePasswordViewModel
+import io.square1.limor.scenes.utils.CommonsKt
 import kotlinx.android.synthetic.main.fragment_change_password.*
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
@@ -179,34 +180,7 @@ class ChangePasswordFragment : BaseFragment() {
         output.errorMessage.observe(this, Observer {
             pbChangePassword?.visibility = View.GONE
             view?.hideKeyboard()
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-//                if(it.code == 10){  //Session expired
-//                    alert(message.toString()) {
-//                        okButton {
-//                            val intent = Intent(context, SignActivity::class.java)
-//                            //intent.putExtra(getString(R.string.otherActivityKey), true)
-//                            startActivityForResult(
-//                                intent,
-//                                resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
-//                            )
-//                        }
-//                    }.show()
-//                }else{
-//                    alert(message.toString()) {
-//                        okButton { }
-//                    }.show()
-//                }
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 

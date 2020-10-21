@@ -1,16 +1,13 @@
 package io.square1.limor.remote
 
 
-import io.square1.limor.remote.entities.requests.NWCommentRequest
-import io.square1.limor.remote.entities.requests.NWContentRequest
-import io.square1.limor.remote.entities.requests.NWCreateCommentRequest
-import io.square1.limor.remote.entities.requests.NWCreateReportRequest
+import io.square1.limor.remote.entities.requests.*
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.comment.CommentServiceImp
 import kotlinx.serialization.ImplicitReflectionSerializer
 import org.junit.Test
 
-private const val CURRENT_TOKEN = "r-bGZPdpVGgGlAMmGoskTn9iKJiayL8AmT1oJajg1Vc"
+private const val CURRENT_TOKEN = "PkRbYfBMW7iTagfOvr7sNvnO4t5iC7OdjCzbbhijpuQ"
 
 @ImplicitReflectionSerializer
 class CommentServiceImpTest{
@@ -73,7 +70,7 @@ class CommentServiceImpTest{
 
         commentService = CommentServiceImp(config)
 
-        val idComment = 2074
+        val idComment = 659
 
         val response = commentService.getComments(idComment, 10, 0)?.test()
 
@@ -94,7 +91,7 @@ class CommentServiceImpTest{
 
         commentService = CommentServiceImp(config)
 
-        val idComment = 2074
+        val idComment = 659
         val createRequest = NWCreateCommentRequest(
             NWCommentRequest(
                 "Hi, I'm a new comment from the android client"
@@ -135,6 +132,28 @@ class CommentServiceImpTest{
 
         val request = NWCreateReportRequest("I don't like it")
         val response = commentService.reportComment(idComment, request)?.test()
+
+        response?.assertNoErrors()
+        response?.assertValue { it.message == "Success" }
+    }
+
+    @Test
+    fun should_create_dropoff_comment_successfully() {
+        val config = RemoteServiceConfig(
+            baseUrl = baseURL,
+            debug = true,
+            client_id = "",
+            client_secret = "",
+            token = CURRENT_TOKEN,
+            expiredIn = 0
+        )
+
+        commentService = CommentServiceImp(config)
+
+        val idComment = 659
+
+        val request = NWDropOffRequest(20f)
+        val response = commentService.createDropOff(idComment, request).test()
 
         response?.assertNoErrors()
         response?.assertValue { it.message == "Success" }
