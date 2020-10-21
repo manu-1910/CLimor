@@ -120,6 +120,11 @@ class CommonsKt {
             }
         }
 
+        fun calculateDurationMinutesAndSeconds(seconds: Double): String {
+            val millis = (seconds * 1000).toLong()
+            return calculateDurationMinutesAndSeconds(millis)
+        }
+
 
         fun dpToPx(dp: Float, context: Context): Int {
             return TypedValue.applyDimension(
@@ -252,9 +257,9 @@ class CommonsKt {
                         }
                     }.show()
                 } else {
-                    fragment.alert(message.toString()) {
-                        okButton { }
-                    }.show()
+//                    fragment.alert(message.toString()) {
+//                        okButton { }
+//                    }.show()
                 }
             } else {
                 fragment.alert(context.getString(R.string.default_no_internet)) {
@@ -262,6 +267,26 @@ class CommonsKt {
                 }.show()
             }
 
+        }
+
+        fun getYearsBetweenTwoCalendars(a : Calendar, b : Calendar) : Int {
+            var diff = b[Calendar.YEAR] - a[Calendar.YEAR]
+            if (a[Calendar.MONTH] > b[Calendar.MONTH] ||
+                a[Calendar.MONTH] == b[Calendar.MONTH] && a[Calendar.DATE] > b[Calendar.DATE]
+            ) {
+                diff--
+            }
+            return diff
+        }
+
+        fun calculateAge(birth : Calendar) : Int {
+            return getYearsBetweenTwoCalendars(birth, Calendar.getInstance())
+        }
+
+        fun calculateAge(timestampBirth : Long) : Int {
+            val calendarBirth = Calendar.getInstance()
+            calendarBirth.timeInMillis = timestampBirth
+            return getYearsBetweenTwoCalendars(calendarBirth, Calendar.getInstance())
         }
 
     }

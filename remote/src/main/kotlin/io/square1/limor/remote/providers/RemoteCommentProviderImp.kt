@@ -3,6 +3,7 @@ package io.square1.limor.remote.providers
 import entities.request.DataContentRequest
 import entities.request.DataCreateCommentRequest
 import entities.request.DataCreateReportRequestEntity
+import entities.request.DataDropOffRequest
 import entities.response.*
 import io.reactivex.Single
 import io.square1.limor.remote.mappers.asDataEntity
@@ -47,6 +48,13 @@ class RemoteCommentProviderImp @Inject constructor(private val provider: Comment
         request: DataContentRequest
     ): Single<DeleteResponseEntity>? {
         return provider.deleteComment(id, request.asRemoteEntity())?.asDataEntity()
+    }
+
+    override fun createDropOff(
+        id: Int,
+        request: DataDropOffRequest
+    ): Single<UpdatedResponseEntity>? {
+        return provider.createDropOff(id, request.asRemoteEntity()).asDataEntity()
     }
 
 }

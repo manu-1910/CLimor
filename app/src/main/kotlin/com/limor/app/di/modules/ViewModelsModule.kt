@@ -241,4 +241,14 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(PushNotificationsViewModel::class)
     abstract fun bindPushNotificationsViewModel(pushNotificationsViewModel: PushNotificationsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CreateCommentDropOffViewModel::class)
+    abstract fun bindCreateCommentDropOffViewModel(viewModel: CreateCommentDropOffViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CreatePodcastDropOffViewModel::class)
+    abstract fun bindCreatePodcastDropOffViewModel(viewModel: CreatePodcastDropOffViewModel): ViewModel
 }

@@ -4,6 +4,7 @@ package repositories.comment
 import entities.request.DataContentRequest
 import entities.request.DataCreateCommentRequest
 import entities.request.DataCreateReportRequestEntity
+import entities.request.DataDropOffRequest
 import entities.response.*
 import io.reactivex.Single
 import providers.remote.RemoteCommentProvider
@@ -38,6 +39,13 @@ class DataCommentRepository @Inject constructor(private val remoteProvider: Remo
         request: DataContentRequest
     ): Single<DeleteResponseEntity>? {
         return remoteProvider.deleteComment(id, request)
+    }
+
+    override fun createDropOff(
+        id: Int,
+        request: DataDropOffRequest
+    ): Single<UpdatedResponseEntity>? {
+        return remoteProvider.createDropOff(id, request)
     }
 
     override fun createComment(

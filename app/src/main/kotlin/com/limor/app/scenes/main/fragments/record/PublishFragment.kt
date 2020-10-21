@@ -563,8 +563,7 @@ class PublishFragment : BaseFragment() {
                     original_audio_url = audioUrlFinal.toString(),
                     duration = mediaPlayer.duration,
                     total_samples = 0.0,
-//                    total_length = recordingItem.length!!.toDouble()
-                    total_length = mediaPlayer.duration.toDouble() // I just do this because I was told to do it. I prefer to use duration variable
+                    total_length = mediaPlayer.duration.toDouble()
                 ),
                 meta_data = UIMetaData(
                     title = etDraftTitle?.text.toString(),
@@ -984,15 +983,7 @@ class PublishFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                println("Error getting the hashtags $message")
-            }
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
 

@@ -16,7 +16,8 @@ class AudioCommentPlayerController(
     val comment: UIComment,
     private val seekBar: SeekBar,
     private val playButton: ImageButton,
-    private val context: Context
+    private val context: Context,
+    private val listener: CommentPlayerListener
 ) {
     private var simpleRecorder: SimpleRecorder? = null
     private val updater: Runnable
@@ -25,7 +26,7 @@ class AudioCommentPlayerController(
 
     init {
         prepareAudio()
-        comment.audio.duration?.let { seekBar.max = it * 1000 }
+        comment.audio.duration?.let { seekBar.max = it }
         updater = object : Runnable {
             override fun run() {
                 handler.postDelayed(this, 150)
@@ -33,6 +34,7 @@ class AudioCommentPlayerController(
                     if(it.isPlayerPlaying) {
                         val currentPosition = it.getCurrentPosition()
                         seekBar.progress = currentPosition
+                        listener.onProgress(comment, currentPosition)
                     }
                 }
             }
@@ -94,10 +96,15 @@ class AudioCommentPlayerController(
         }
     }
 
+    fun getCurrentPlayerPosition() : Int? {
+        return simpleRecorder?.getCurrentPosition()
+    }
+
     private fun onCompletionListener() {
         seekBar.progress = 0
         playButton.setImageResource(R.drawable.play)
         handler.removeCallbacks(updater)
+        listener.onCompletion(comment)
     }
 
     fun destroy() {
@@ -106,6 +113,11 @@ class AudioCommentPlayerController(
             handler.removeCallbacks(updater)
             playButton.setImageResource(R.drawable.play)
         }
+    }
+
+    interface CommentPlayerListener {
+        fun onProgress(comment: UIComment, positionInMs: Int)
+        fun onCompletion(comment: UIComment)
     }
 
 }

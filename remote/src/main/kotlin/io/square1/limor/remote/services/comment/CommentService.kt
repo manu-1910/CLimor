@@ -12,6 +12,7 @@ const val COMMENT_LIKE_PATH = "/api/v1/comments/{id}/like"
 const val COMMENT_COMMENT_PATH = "/api/v1/comments/{id}/comments"
 const val COMMENT_PATH = "/api/v1/comments/{id}"
 const val REPORT_COMMENT_PATH = "/api/v1/comments/{id}/reports"
+const val DROPOFF_COMMENT_PATH = "/api/v1/comments/{id}/drop_offs"
 
 
 interface CommentService {
@@ -49,6 +50,12 @@ interface CommentService {
     fun deleteComment(
         @Path("id") idComment: Int,
         @Body request: RequestBody // I implement this body because it's documented in the API doc, but I think it's useless atm
+    ): Single<ResponseBody>
+
+    @POST(DROPOFF_COMMENT_PATH)
+    fun createDropOff(
+        @Path("id") idComment: Int,
+        @Body request: RequestBody
     ): Single<ResponseBody>
 
 }

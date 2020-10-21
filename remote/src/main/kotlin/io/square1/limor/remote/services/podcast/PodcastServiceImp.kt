@@ -3,6 +3,7 @@ package io.square1.limor.remote.services.podcast
 import io.reactivex.Single
 import io.square1.limor.remote.entities.requests.NWCreateCommentRequest
 import io.square1.limor.remote.entities.requests.NWCreateReportRequest
+import io.square1.limor.remote.entities.requests.NWDropOffRequest
 import io.square1.limor.remote.entities.requests.NWPublishRequest
 import io.square1.limor.remote.entities.responses.*
 import io.square1.limor.remote.extensions.parseSuccessResponse
@@ -98,6 +99,22 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
         return service.createComment(idPodcast, RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWCreateCommentRequest.serializer(), request)))
             .map {
                     response -> response.parseSuccessResponse(NWCreateCommentResponse.serializer())
+            }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
+    fun createDropOff(
+        idPodcast: Int,
+        request: NWDropOffRequest
+    ): Single<NWUpdatedResponse> {
+        return service.createDropOff(idPodcast, RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWDropOffRequest.serializer(), request)))
+            .map {
+                    response -> response.parseSuccessResponse(NWUpdatedResponse.serializer())
             }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")

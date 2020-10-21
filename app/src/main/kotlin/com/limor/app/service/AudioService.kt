@@ -42,7 +42,7 @@ import java.util.*
 private const val PLAYBACK_CHANNEL_ID = "io.square1.limor.playback_channel"
 private const val MEDIA_SESSION_TAG = "io.square1.limor.audio"
 private const val PLAYBACK_NOTIFICATION_ID = 1
-private const val PLAYBACK_TIMER_DELAY = 1000L
+private const val PLAYBACK_TIMER_DELAY = 500L
 private const val PLAYBACK_SKIP_INCREMENTS = 30000L
 private const val ARG_PODCAST = "ARG_PODCAST"
 private const val ARG_START_POSITION = "ARG_START_POSITION"
@@ -79,13 +79,16 @@ class AudioService : Service() {
     }
 
     private lateinit var exoPlayer: SimpleExoPlayer
-
     private var playbackTimer: Timer? = null
+
     private var playerNotificationManager: PlayerNotificationManager? = null
     private var mediaSession: MediaSessionCompat? = null
     private var mediaSessionConnector: MediaSessionConnector? = null
-
     var uiPodcast: UIPodcast? = null
+
+    private var _currentPlayingPosition = MutableLiveData<Long>().apply { value = 0 }
+    var currentPlayingPosition: LiveData<Long> = _currentPlayingPosition
+        get() = _currentPlayingPosition
 
     private val _playerStatusLiveData = MutableLiveData<PlayerStatus>()
     val playerStatusLiveData: LiveData<PlayerStatus>
@@ -290,6 +293,7 @@ class AudioService : Service() {
     @MainThread
     private fun saveLastListeningPosition() {
         // Do we need this?
+        _currentPlayingPosition.postValue(exoPlayer.currentPosition)
     }
 
     @MainThread
@@ -307,7 +311,6 @@ class AudioService : Service() {
                                 playbackTimer?.cancel()
                             }
                         }
-
                     }
                 },
                 PLAYBACK_TIMER_DELAY,
@@ -371,6 +374,9 @@ class AudioService : Service() {
         override fun onPlayerError(e: ExoPlaybackException?) {
             uiPodcast?.let { _playerStatusLiveData.value = PlayerStatus.Error(it.id, e) }
         }
+
+
+
 
     }
 
