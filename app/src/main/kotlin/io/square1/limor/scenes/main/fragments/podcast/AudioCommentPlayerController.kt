@@ -26,7 +26,7 @@ class AudioCommentPlayerController(
 
     init {
         prepareAudio()
-        comment.audio.duration?.let { seekBar.max = it * 1000 }
+        comment.audio.duration?.let { seekBar.max = it }
         updater = object : Runnable {
             override fun run() {
                 handler.postDelayed(this, 150)
