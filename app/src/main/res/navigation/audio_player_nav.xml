@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/audio_player_fragment"
-        android:name="io.square1.limor.scenes.main.fragments.player.AudioPlayerFragment"
+        android:name="com.limor.app.scenes.main.fragments.player.AudioPlayerFragment"
         android:label="AudioPlayerFragment"
         tools:layout="@layout/fragment_audio_player">
 

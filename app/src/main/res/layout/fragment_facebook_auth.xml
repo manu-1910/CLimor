@@ -15,7 +15,7 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <io.square1.limor.components.EditTextComponent
+            <com.limor.app.components.EditTextComponent
                 android:id="@+id/edtUsername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -5,7 +5,7 @@
             app:startDestination="@id/signInFragment">
 
     <fragment android:id="@+id/signInFragment"
-              android:name="io.square1.limor.scenes.authentication.fragments.SignInFragment"
+              android:name="com.limor.app.scenes.authentication.fragments.SignInFragment"
               android:label="SignInFragment">
         <action
                 android:id="@+id/action_signInFragment_to_signUpFragment"
@@ -31,7 +31,7 @@
     </fragment>
 
     <fragment android:id="@+id/signUpFragment"
-              android:name="io.square1.limor.scenes.authentication.fragments.SignUpFragment"
+              android:name="com.limor.app.scenes.authentication.fragments.SignUpFragment"
               android:label="SignUpFragment">
         <action
             android:id="@+id/action_signUpFragment_to_facebookAuthFragment"
@@ -43,7 +43,7 @@
     </fragment>
 
     <fragment android:id="@+id/forgotPasswordFragment"
-            android:name="io.square1.limor.scenes.authentication.fragments.ForgotPasswordFragment"
+            android:name="com.limor.app.scenes.authentication.fragments.ForgotPasswordFragment"
             android:label="ForgotPasswordFragment">
         <action
             android:id="@+id/action_forgotPasswordFragment_to_signInFragment"
@@ -55,7 +55,7 @@
     </fragment>
 
     <fragment android:id="@+id/facebookAuthFragment"
-        android:name="io.square1.limor.scenes.authentication.fragments.FacebookAuthFragment"
+        android:name="com.limor.app.scenes.authentication.fragments.FacebookAuthFragment"
         android:label="FacebookAuthFragment">
 
         <action
