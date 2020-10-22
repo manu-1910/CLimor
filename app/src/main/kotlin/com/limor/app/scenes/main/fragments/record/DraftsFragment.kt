@@ -27,7 +27,10 @@ import com.limor.app.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import com.limor.app.uimodels.UIDraft
 import io.reactivex.subjects.PublishSubject
 import org.jetbrains.anko.bundleOf
+import org.jetbrains.anko.cancelButton
+import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
 import java.io.File
 import javax.inject.Inject
@@ -182,34 +185,37 @@ class DraftsFragment : BaseFragment() {
                 },
                 object : DraftAdapter.OnDeleteItemClickListener {
                     override fun onDeleteItemClick(position: Int) {
-                        pbDrafts?.visibility = View.VISIBLE
+                        alert(getString(R.string.confirmation_delete_draft)) {
+                            okButton {
+                                pbDrafts?.visibility = View.VISIBLE
 
-                        try {
-                            if(adapter?.mediaPlayer2!!.isPlaying){
-                                adapter?.mediaPlayer2!!.stop()
+                                try {
+                                    if(adapter?.mediaPlayer2!!.isPlaying){
+                                        adapter?.mediaPlayer2!!.stop()
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+
+                                draftViewModel.uiDraft = draftsLocalList[position]
+                                deleteDraftsTrigger.onNext(Unit)
+
+                                //Remove the audio file from the folder
+                                try {
+                                    val file = File(draftsLocalList[position].filePath)
+                                    file.delete()
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                                //Remove item from the list
+                                draftsLocalList.removeAt(position)
+
+                                //rvDrafts?.adapter?.notifyItemRemoved(position)
+                                rvDrafts?.adapter?.notifyDataSetChanged()
+                                //rvDrafts?.adapter?.notifyItemRangeChanged(0, draftsLocalList.size)
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-
-                        draftViewModel.uiDraft = draftsLocalList[position]
-                        deleteDraftsTrigger.onNext(Unit)
-
-                        //Remove the audio file from the folder
-                        try {
-                            val file = File(draftsLocalList[position].filePath)
-                            file.delete()
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                        //Remove item from the list
-                        draftsLocalList.removeAt(position)
-
-                        //rvDrafts?.adapter?.notifyItemRemoved(position)
-                        rvDrafts?.adapter?.notifyDataSetChanged()
-                        //rvDrafts?.adapter?.notifyItemRangeChanged(0, draftsLocalList.size)
-
-
+                            cancelButton {  }
+                        }.show()
                     }
                 },
                 object : DraftAdapter.OnDuplicateItemClickListener {

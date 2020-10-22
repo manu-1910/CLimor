@@ -16,8 +16,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.R
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UIDraft
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import timber.log.Timber
+import java.io.File
 
 
 class DraftAdapter(
@@ -108,15 +111,21 @@ class DraftAdapter(
 
         holder.tvDraftTitle.text = modelList.title
 
+        var currentDurationInMillis = 0
         val uri: Uri = Uri.parse(list[position].filePath)
-        val mmr = MediaMetadataRetriever()
-        mmr.setDataSource(context, uri)
-        val durationStr =
-            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-        val currentDurationInMillis = durationStr.toInt()
-        holder.seekBar.max = currentDurationInMillis
-        holder.seekBar.tag = position
+        uri.path?.let {
+            val f = File(it)
+            if(f.exists()) {
+                val mmr = MediaMetadataRetriever()
+                mmr.setDataSource(context, uri)
+                val durationStr =
+                    mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                currentDurationInMillis = durationStr.toInt()
+                holder.seekBar.max = currentDurationInMillis
+            }
+        }
 
+        holder.seekBar.tag = position
         holder.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser && playingPlayerPosition == position) {
@@ -218,55 +227,70 @@ class DraftAdapter(
         holder: ViewHolder,
         position: Int
     ) {
-        // if it's playing or not, then we have to stop the current player draft playing and setup this new draft player
         val currentDraft = list[position]
-        playingPlayerPosition = position
-        // we have to change the previous button image because it's playing state has just changed
-        currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
-
-        // and set the new "current button" and current seekbar
-        currentButtonPlaying = holder.btnPlay
-        currentSeekbarPlaying = holder.seekBar
-
-        currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
-
-
-        if(mediaPlayer2.isPlaying) {
-            mediaPlayer2.pause()
-            mediaPlayer2.stop()
-            mediaPlayer2.release()
+        var shouldContinue = false
+        currentDraft.filePath?.let {path ->
+            val f = File(path)
+            if(f.exists())
+                shouldContinue = true
         }
 
-        mediaPlayer2 = MediaPlayer()
-        mediaPlayer2.setDataSource(currentDraft.filePath)
-        mediaPlayer2.prepare()
-        mediaPlayer2.setOnPreparedListener {
-            it.start()
-            currentSeekbarPlaying?.progress?.let {
-                mediaPlayer2.seekTo(it)
+        // if the file doesn't exist, we shouldn't continue because we won't be able to play it
+        if(!shouldContinue) {
+            context.alert(context.getString(R.string.error_accessing_draft_file)) {
+                okButton {  }
+            }.show()
+        } else {
+            // if it's playing or not, then we have to stop the current player draft playing and setup this new draft player
+            playingPlayerPosition = position
+            // we have to change the previous button image because it's playing state has just changed
+            currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
+
+            // and set the new "current button" and current seekbar
+            currentButtonPlaying = holder.btnPlay
+            currentSeekbarPlaying = holder.seekBar
+
+
+
+            if(mediaPlayer2.isPlaying) {
+                mediaPlayer2.pause()
+                mediaPlayer2.stop()
+                mediaPlayer2.release()
             }
 
-            run = Runnable {
-                // Updateing SeekBar every 100 miliseconds
-                var miliSeconds = 0
-                try {
-                    miliSeconds = mediaPlayer2.currentPosition
-                } catch (e: Exception) {
-                    e.printStackTrace()
+            currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
+
+            mediaPlayer2 = MediaPlayer()
+            mediaPlayer2.setDataSource(currentDraft.filePath)
+            mediaPlayer2.prepare()
+            mediaPlayer2.setOnPreparedListener {
+                it.start()
+                currentSeekbarPlaying?.progress?.let {
+                    mediaPlayer2.seekTo(it)
                 }
-                holder.seekBar.progress = miliSeconds
-                seekHandler.postDelayed(run, 100)
-                //For Showing time of audio(inside runnable)
 
-                holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(
-                    mediaPlayer2.duration
-                )
-                holder.tvTimePass.text = CommonsKt.calculateDurationMediaPlayer(
-                    miliSeconds
-                )
+                run = Runnable {
+                    // Updateing SeekBar every 100 miliseconds
+                    var miliSeconds = 0
+                    try {
+                        miliSeconds = mediaPlayer2.currentPosition
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                    holder.seekBar.progress = miliSeconds
+                    seekHandler.postDelayed(run, 100)
+                    //For Showing time of audio(inside runnable)
+
+                    holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(
+                        mediaPlayer2.duration
+                    )
+                    holder.tvTimePass.text = CommonsKt.calculateDurationMediaPlayer(
+                        miliSeconds
+                    )
+                }
+                run!!.run()
+
             }
-            run!!.run()
-
         }
     }
 
