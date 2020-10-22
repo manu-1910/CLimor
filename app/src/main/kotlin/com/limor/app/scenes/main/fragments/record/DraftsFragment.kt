@@ -220,41 +220,55 @@ class DraftsFragment : BaseFragment() {
                 },
                 object : DraftAdapter.OnDuplicateItemClickListener {
                     override fun onDuplicateItemClick(position: Int) {
-                        pbDrafts?.visibility = View.VISIBLE
+                        val newItem = draftsLocalList[position]
 
-                        try {
-                            if(adapter?.mediaPlayer2!!.isPlaying){
-                                adapter?.mediaPlayer2!!.stop()
+                        var shouldContinue = false
+                        newItem.filePath?.let {path ->
+                            val f = File(path)
+                            shouldContinue = f.exists()
+                        }
+
+                        if(!shouldContinue) {
+                            alert(getString(R.string.error_accessing_draft_file)) {
+                                okButton {  }
+                            }.show()
+                        } else {
+
+                            pbDrafts?.visibility = View.VISIBLE
+
+                            try {
+                                if (adapter?.mediaPlayer2!!.isPlaying) {
+                                    adapter?.mediaPlayer2!!.stop()
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+
+                            newItem.id = System.currentTimeMillis()
+                            val newTitle = getDuplicatedTitle(draftsLocalList[position].title)
+                            newItem.title = newTitle
+
+
+                            newItem.date = getDateTimeFormatted()
+
+                            val originalFile = File(draftsLocalList[position].filePath)
+                            val destFile =
+                                File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/" + System.currentTimeMillis() + CommonsKt.audioFileFormat)
+                            try {
+                                copyFile(originalFile, destFile)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                            newItem.filePath = destFile.absolutePath
+
+                            //Insert in Realm
+                            draftViewModel.uiDraft = newItem
+                            insertDraftsTrigger.onNext(Unit)
+
+                            //Add item to the list
+                            draftsLocalList.add(newItem)
+                            rvDrafts?.adapter?.notifyItemChanged(position)
                         }
-
-                        var newItem = draftsLocalList[position]
-                        newItem.id = System.currentTimeMillis()
-                        if(draftsLocalList[position].title.toString().isNotEmpty()){
-                            newItem.title = getString(R.string.copy_of) + newItem.title
-                        }else{
-                            newItem.title = getString(R.string.duplicated_draft)
-                        }
-                        newItem.date = getDateTimeFormatted()
-
-                        val originalFile = File(draftsLocalList[position].filePath)
-                        val destFile = File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/" + System.currentTimeMillis() + CommonsKt.audioFileFormat)
-                        try {
-                            copyFile(originalFile, destFile)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                        newItem.filePath = destFile.absolutePath
-
-                        //Insert in Realm
-                        draftViewModel.uiDraft = newItem
-                        insertDraftsTrigger.onNext(Unit)
-
-                        //Add item to the list
-                        draftsLocalList.add(newItem)
-                        rvDrafts?.adapter?.notifyItemChanged(position)
                     }
                 },
                 object : DraftAdapter.OnEditItemClickListener {
@@ -284,6 +298,37 @@ class DraftsFragment : BaseFragment() {
         }
         rvDrafts?.adapter = adapter
         rvDrafts?.setHasFixedSize(false)
+    }
+
+    private fun getDuplicatedTitle(currentTitle: String?) : String {
+        if (currentTitle?.isNotEmpty() == true) {
+            val previousTitleClean = currentTitle.substringBeforeLast("-").trim()
+            val lastWord = currentTitle.substringAfterLast("-").trim()
+
+            // this means that there is no - in the string, so it's the first time this item is duplicated, so we add - 1 at the end
+            if (lastWord == currentTitle) {
+                return "$previousTitleClean - 1"
+
+                // this means that there is one - at the end of the string, so probably this is a previously duplicated item
+            } else {
+
+                // we get the number of duplication
+                var number = lastWord.toIntOrNull()
+                // if there is actually a number, then let's increment it
+                if(number != null) {
+                    number++
+
+                    // if the value after the last - is not a number, then we'll ad just a 1 because it's the first time this item is duplicated
+                } else {
+                    number = 1
+                }
+                return "$previousTitleClean - $number"
+            }
+
+        } else {
+            return getString(R.string.duplicated_draft)
+        }
+
     }
 
 
