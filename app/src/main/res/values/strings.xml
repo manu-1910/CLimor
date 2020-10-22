@@ -394,4 +394,7 @@
     <string name="viewing_id_key">viewing_id</string>
     <string name="centre_id_key">centre_id</string>
     <string name="error_sending_push_to_server">There was an error sending the push notifications token</string>
+    <string name="confirmation_delete_draft">Are you sure you want to delete this draft?</string>
+    <string name="error_accessing_draft_file">The audio file of this draft is not accessible or we cannot process it</string>
+    <string name="draft_saved_ok">Draft saved correctly</string>
 </resources>

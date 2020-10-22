@@ -69,6 +69,7 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
 import timber.log.Timber
 import java.io.File
@@ -408,7 +409,7 @@ class PublishFragment : BaseFragment() {
                     lytWithoutTagsRecycler?.visibility = View.VISIBLE
                     isShowingTagsRecycler = false
                 } else {
-                    val cleanString = s.toString().replace(System.lineSeparator().toString(), " ")
+                    val cleanString = s.toString().replace(System.lineSeparator(), " ")
                     val lastSpaceIndex = cleanString.lastIndexOf(" ")
                     val lastWord = if(lastSpaceIndex >= 0) {
                         cleanString.substring(lastSpaceIndex).trim()
@@ -845,11 +846,12 @@ class PublishFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
             if (it) {
-                //toast(getString(R.string.draft_updated))
-                println("Draft updated")
+
+//                toast(getString(R.string.draft_saved_ok))
+                Timber.d("Draft updated")
             } else {
-                //toast(getString(R.string.draft_not_updated))
-                println("Draft NOT updated")
+                toast(getString(R.string.draft_not_updated))
+                Timber.d("Draft NOT updated")
             }
         })
 
@@ -1043,11 +1045,9 @@ class PublishFragment : BaseFragment() {
                                             etCaption
                                         )!!
                                     ) + getCurrentWord(etCaption)!!.length, actualString.length
-                                )
+                                ) + " "
 
-                    etCaption.applyWithDisabledTextWatcher(twCaption!!) {
-                        text = finalString
-                    }
+                    etCaption.setText(finalString)
                     etCaption.setSelection(etCaption.text.length); //This places cursor to end of EditText.
                     rvTags?.adapter?.notifyDataSetChanged()
                 }

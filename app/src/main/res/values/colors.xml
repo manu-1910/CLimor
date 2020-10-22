@@ -121,7 +121,7 @@
     <color tools:override="true" name="ucrop_color_widget_rotate_mid_line">@color/colorAccent</color>
     <color tools:override="true" name="ucrop_color_widget_background">@color/brandSecondary500</color>
 
-    <color name="border_discover_chip">#666666</color>
+    <color name="border_discover_chip">#6F6F6F</color>
     <color name="discover_transparent_overlay">#9a000000</color>
 
 </resources>
