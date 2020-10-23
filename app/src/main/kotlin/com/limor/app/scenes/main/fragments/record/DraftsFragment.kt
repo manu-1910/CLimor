@@ -292,8 +292,7 @@ class DraftsFragment : BaseFragment() {
                         val bundle = bundleOf("recordingItem" to draftViewModel.uiDraft)
                         findNavController().navigate(R.id.action_record_drafts_to_record_edit, bundle)
                     }
-                },
-                findNavController()
+                }
             )
         }
         rvDrafts?.adapter = adapter

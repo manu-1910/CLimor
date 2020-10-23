@@ -658,6 +658,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     player.setDataSource(file.getAbsolutePath());
                     player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     player.prepare();
+                    enableDisableSeekButtons();
                 } catch (final java.io.IOException e) {
                     e.printStackTrace();
                 }
@@ -878,6 +879,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
         isPlaying = false;
         enableDisableButtons();
+        enableDisableSeekButtons();
     }
 
     protected synchronized void handlePausePreview() {
@@ -936,6 +938,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             if (isPlaying) {
                 int newPos = player.getCurrentPosition() - 30000;
                 player.seekTo(newPos);
+                seekBar.setProgress(newPos);
             }
         }
     };
@@ -945,6 +948,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             if (isPlaying) {
                 int newPos = player.getCurrentPosition() + 30000;
                 player.seekTo(newPos);
+                seekBar.setProgress(newPos);
             }
         }
     };
@@ -978,19 +982,16 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
     protected void enableDisableSeekButtons() {
-        if (player.getCurrentPosition() + 30000 > player.getDuration()) {
-            forwardButton.setAlpha(0.6f);
-            forwardButton.setEnabled(false);
-        } else {
+        if(player.isPlaying()) {
             forwardButton.setAlpha(1f);
             forwardButton.setEnabled(true);
-        }
-        if (player.getCurrentPosition() - 30000 < 0){
-            rewindButton.setAlpha(0.6f);
-            rewindButton.setEnabled(false);
-        } else {
             rewindButton.setAlpha(1f);
             rewindButton.setEnabled(true);
+        } else {
+            forwardButton.setAlpha(0.6f);
+            forwardButton.setEnabled(false);
+            rewindButton.setAlpha(0.6f);
+            rewindButton.setEnabled(false);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main.fragments.record.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
@@ -11,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.core.content.ContextCompat
-import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.R
 import com.limor.app.scenes.utils.CommonsKt
@@ -22,7 +22,6 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import timber.log.Timber
 import java.io.File
 
-const val TAG = "DRAFT_PLAYER"
 
 class DraftAdapter(
     var context: Context,
@@ -30,28 +29,30 @@ class DraftAdapter(
     private val listener: OnItemClickListener,
     private val deleteListener: OnDeleteItemClickListener,
     private val duplicateListener: OnDuplicateItemClickListener,
-    private val editListener: OnEditItemClickListener,
-    private val navController: NavController
+    private val editListener: OnEditItemClickListener
 ) : RecyclerView.Adapter<DraftAdapter.ViewHolder>() {
-    var inflator: LayoutInflater
-    //var list: ArrayList<UIDraft> = ArrayList()
-    //val mainHandler = Handler(Looper.getMainLooper())
+    private var lastVisiblePlayerLayout: LinearLayout? = null
+    var inflator: LayoutInflater = LayoutInflater.from(context)
+
     private var currentPlayingItemPosition: Int = -1
     private var currentClickedItemPosition: Int = -1
     var mediaPlayer = MediaPlayer()
 
-
+    // these variables hold the reference to the views of the item that is currently playing:
+    // the play, forward, rewind buttons, the current time textview and the seekbar
     private var currentSeekbarPlaying: SeekBar? = null
-    private var currentButtonPlaying: ImageButton? = null
+    private var currentBtnPlayPlaying: ImageButton? = null
+    private var currentBtnFwdPlaying: ImageButton? = null
+    private var currentBtnRwdPlaying: ImageButton? = null
     private var currentTvPassPlaying: TextView? = null
 
+    // these variables will be used to update the current status of the playing item while it's playing:
+    // seekbar and current time
     private val seekUpdater: Runnable
     private val seekHandler: Handler = Handler()
 
 
     init {
-
-
         seekUpdater = object : Runnable {
             override fun run() {
                 seekHandler.postDelayed(this, 150)
@@ -76,6 +77,11 @@ class DraftAdapter(
     }
 
 
+    companion object {
+        const val TAG = "DRAFT_PLAYER"
+    }
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = inflator.inflate(R.layout.fragment_drafts_item, parent, false)
 
@@ -88,6 +94,7 @@ class DraftAdapter(
 
         // we will just show the player layout of the last item clicked
         if(currentClickedItemPosition == position){
+            lastVisiblePlayerLayout = holder.playerLayout
             holder.playerLayout.visibility = View.VISIBLE
         }else{
             holder.playerLayout.visibility = View.GONE
@@ -95,9 +102,12 @@ class DraftAdapter(
 
         // we have to make sure that the references to the currentViews playing are always updated
         if(position == currentPlayingItemPosition) {
+            // these variables should be updated here, and onOtherDraftPlayClicked and in onCurrentDraftPlayClicked
             currentSeekbarPlaying = holder.seekBar
             currentTvPassPlaying = holder.tvTimePass
-            currentButtonPlaying = holder.btnPlay
+            currentBtnPlayPlaying = holder.btnPlay
+            currentBtnFwdPlaying = holder.btnFfwd
+            currentBtnRwdPlaying = holder.btnRew
         }
 
         // we set title and description
@@ -111,7 +121,9 @@ class DraftAdapter(
             if(currentClickedItemPosition != position) {
                 currentClickedItemPosition = position
                 listener.onItemClick(currentDraft)
-                notifyDataSetChanged()
+                lastVisiblePlayerLayout?.visibility = View.GONE
+                holder.playerLayout.visibility = View.VISIBLE
+                lastVisiblePlayerLayout = holder.playerLayout
             }
         }
 
@@ -159,24 +171,28 @@ class DraftAdapter(
         })
 
         // textViews
-        holder.tvTimePass.text = "00:00"
+        if(position == currentPlayingItemPosition) {
+            holder.tvTimePass.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.currentPosition)
+        } else {
+            holder.tvTimePass.text = "00:00"
+        }
         holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(currentDurationInMillis)
 
 
         // Play, rewind and forward buttons style
         if(position == currentPlayingItemPosition && mediaPlayer.isPlaying) {
             holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
-            enableRewAndFwdButtons(holder, true)
+            enableRewAndFwdButtons(holder.btnRew, holder.btnFfwd, true)
 
         } else {
             holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
-            enableRewAndFwdButtons(holder, false)
+            enableRewAndFwdButtons(holder.btnRew, holder.btnFfwd, false)
         }
 
         // play, rewind and forward button listeners
         holder.btnPlay.setOnClickListener {
             if(currentPlayingItemPosition == position) {
-                onCurrentPlayingDraftPlayClicked(holder, position)
+                onCurrentPlayingDraftPlayClicked(holder)
             } else {
                 onOtherDraftPlayClicked(holder, position)
             }
@@ -209,14 +225,25 @@ class DraftAdapter(
 
     }
 
-    private fun enableRewAndFwdButtons(holder: ViewHolder, enabled : Boolean) {
+    // this method should be called from within listener, like onClickListener, onCompletionListener..
+    // if you want to achieve this functionality inside onBind method, call the method below
+    private fun enableRewAndFwdButtons(enabled : Boolean) {
+        enableRewAndFwdButtons(currentBtnRwdPlaying, currentBtnFwdPlaying, enabled)
+    }
+
+    // The difference between this one and the upper method, is that this should be called inside onBind method,
+    // and the other should be called from inside listeners.
+    // The reason behind this is that the references inside a listener can be changed in this situation
+    // where we are swapping current listening item with another. And in those changes, we are saving
+    // those new references to the buttons in the adequated methods.
+    private fun enableRewAndFwdButtons(btnRwd : ImageButton?, btnFwd: ImageButton?, enabled : Boolean) {
         var alphaValue = 0.6f
         if(enabled)
             alphaValue = 1f
-        holder.btnRew.alpha = alphaValue
-        holder.btnFfwd.alpha = alphaValue
-        holder.btnFfwd.isEnabled = enabled
-        holder.btnRew.isEnabled = enabled
+        btnRwd?.alpha = alphaValue
+        btnFwd?.alpha = alphaValue
+        btnRwd?.isEnabled = enabled
+        btnFwd?.isEnabled = enabled
     }
 
     private fun onRewindClicked(
@@ -243,6 +270,7 @@ class DraftAdapter(
                 } else if (mediaPlayer.currentPosition < mediaPlayer.duration) {
                     mediaPlayer.seekTo(mediaPlayer.duration)
                     holder.seekBar.progress = mediaPlayer.duration
+                    enableRewAndFwdButtons(false)
                 }
             } catch (e: Exception) {
                 Timber.d("mediaPlayer.seekTo forward overflow")
@@ -305,9 +333,12 @@ class DraftAdapter(
 //            currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
 
             // and set the new "current button" and current seekbar
-            currentButtonPlaying = holder.btnPlay
+            // these variables should be updated here, and onBindViewHolder and in onCurrentDraftPlayClicked
+            currentBtnPlayPlaying = holder.btnPlay
             currentSeekbarPlaying = holder.seekBar
             currentTvPassPlaying = holder.tvTimePass
+            currentBtnFwdPlaying = holder.btnFfwd
+            currentBtnRwdPlaying = holder.btnRew
 
 
 
@@ -317,12 +348,12 @@ class DraftAdapter(
                 mediaPlayer.release()
             }
 
-            currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
-            enableRewAndFwdButtons(holder, true)
+            currentBtnPlayPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
+            enableRewAndFwdButtons(true)
 
             mediaPlayer = MediaPlayer()
             mediaPlayer.setOnCompletionListener {
-                onCompletionListener(holder)
+                onCompletionListener()
             }
             mediaPlayer.setDataSource(currentDraft.filePath)
             mediaPlayer.prepare()
@@ -337,30 +368,33 @@ class DraftAdapter(
         }
     }
 
-    private fun onCompletionListener(holder: ViewHolder) {
-        currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
-        enableRewAndFwdButtons(holder, false)
+    private fun onCompletionListener() {
+        currentBtnPlayPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
+        currentSeekbarPlaying?.progress = currentSeekbarPlaying?.max ?: mediaPlayer.duration
+        enableRewAndFwdButtons(false)
         mediaPlayer.pause()
     }
 
     private fun onCurrentPlayingDraftPlayClicked(
-        holder: ViewHolder,
-        position: Int
+        holder: ViewHolder
     ) {
-        currentButtonPlaying = holder.btnPlay
+        // these variables should be updated here, and onOtherDraftPlayClicked and in onBindViewHolder
+        currentBtnPlayPlaying = holder.btnPlay
         currentSeekbarPlaying = holder.seekBar
         currentTvPassPlaying = holder.tvTimePass
+        currentBtnRwdPlaying = holder.btnRew
+        currentBtnFwdPlaying = holder.btnFfwd
 
         // if it is playing, we just have to pause and change buttons images
         if(mediaPlayer.isPlaying) {
             mediaPlayer.pause()
-            currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
-            enableRewAndFwdButtons(holder, false)
+            currentBtnPlayPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
+            enableRewAndFwdButtons(false)
             // if it's not playing, we just have to play it and change buttons images
         } else {
             mediaPlayer.start()
-            currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
-            enableRewAndFwdButtons(holder, true)
+            currentBtnPlayPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
+            enableRewAndFwdButtons(true)
         }
     }
 
@@ -382,38 +416,18 @@ class DraftAdapter(
 
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var btnPlay: ImageButton
-        var btnRew: ImageButton
-        var btnFfwd: ImageButton
-        var tvTimePass: TextView
-        var tvTimeDuration: TextView
-        var seekBar: SeekBar
-        var tvDraftTitle: TextView
-        var tvDraftDescription: TextView
-        var ivDraftDelete: ImageView
-        var playerLayout: LinearLayout
-        var btnMore: ImageButton
-        var tvEditItem: TextView
-
-        init {
-            btnPlay = itemView.findViewById<View>(R.id.ibPlayPause) as ImageButton
-            btnRew = itemView.findViewById<View>(R.id.ibRew) as ImageButton
-            btnFfwd = itemView.findViewById<View>(R.id.ibFfwd) as ImageButton
-            tvTimePass = itemView.findViewById<View>(R.id.tvTimePass) as TextView
-            tvTimeDuration = itemView.findViewById<View>(R.id.tvDuration) as TextView
-            seekBar = itemView.findViewById<View>(R.id.sbProgress) as SeekBar
-            btnMore = itemView.findViewById<View>(R.id.btnMore) as ImageButton
-            tvEditItem = itemView.findViewById<View>(R.id.tvEditItem) as TextView
-            tvDraftTitle = itemView.findViewById(R.id.tvDraftTitle) as TextView
-            tvDraftDescription = itemView.findViewById(R.id.tvDraftDescription) as TextView
-            ivDraftDelete = itemView.findViewById(R.id.ivDraftDelete) as ImageView
-            playerLayout = itemView.findViewById(R.id.itemPlayer) as LinearLayout
-        }
-
-    }
-
-    init {
-        inflator = LayoutInflater.from(context)
+        var btnPlay: ImageButton = itemView.findViewById<View>(R.id.ibPlayPause) as ImageButton
+        var btnRew: ImageButton = itemView.findViewById<View>(R.id.ibRew) as ImageButton
+        var btnFfwd: ImageButton = itemView.findViewById<View>(R.id.ibFfwd) as ImageButton
+        var tvTimePass: TextView = itemView.findViewById<View>(R.id.tvTimePass) as TextView
+        var tvTimeDuration: TextView = itemView.findViewById<View>(R.id.tvDuration) as TextView
+        var seekBar: SeekBar = itemView.findViewById<View>(R.id.sbProgress) as SeekBar
+        var tvDraftTitle: TextView = itemView.findViewById(R.id.tvDraftTitle) as TextView
+        var tvDraftDescription: TextView = itemView.findViewById(R.id.tvDraftDescription) as TextView
+        var ivDraftDelete: ImageView = itemView.findViewById(R.id.ivDraftDelete) as ImageView
+        var playerLayout: LinearLayout = itemView.findViewById(R.id.itemPlayer) as LinearLayout
+        var btnMore: ImageButton = itemView.findViewById<View>(R.id.btnMore) as ImageButton
+        var tvEditItem: TextView = itemView.findViewById<View>(R.id.tvEditItem) as TextView
     }
 
     interface OnEditItemClickListener {
@@ -431,5 +445,6 @@ class DraftAdapter(
     interface OnDuplicateItemClickListener {
         fun onDuplicateItemClick(position: Int)
     }
+
 
 }
