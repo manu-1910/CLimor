@@ -182,11 +182,13 @@ class DraftAdapter(
         // Play, rewind and forward buttons style
         if(position == currentPlayingItemPosition && mediaPlayer.isPlaying) {
             holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
-            enableRewAndFwdButtons(holder.btnRew, holder.btnFfwd, true)
-
+//            enableRewAndFwdButtons(holder.btnRew, holder.btnFfwd, true)
+        } else if(position == currentPlayingItemPosition && !mediaPlayer.isPlaying && mediaPlayer.currentPosition > 0) {
+            holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
+//            enableRewAndFwdButtons(holder.btnRew, holder.btnFfwd, true)
         } else {
             holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
-            enableRewAndFwdButtons(holder.btnRew, holder.btnFfwd, false)
+//            enableRewAndFwdButtons(holder.btnRew, holder.btnFfwd, false)
         }
 
         // play, rewind and forward button listeners
@@ -227,54 +229,50 @@ class DraftAdapter(
 
     // this method should be called from within listener, like onClickListener, onCompletionListener..
     // if you want to achieve this functionality inside onBind method, call the method below
-    private fun enableRewAndFwdButtons(enabled : Boolean) {
-        enableRewAndFwdButtons(currentBtnRwdPlaying, currentBtnFwdPlaying, enabled)
-    }
+//    private fun enableRewAndFwdButtons(enabled : Boolean) {
+//        enableRewAndFwdButtons(currentBtnRwdPlaying, currentBtnFwdPlaying, enabled)
+//    }
 
     // The difference between this one and the upper method, is that this should be called inside onBind method,
     // and the other should be called from inside listeners.
     // The reason behind this is that the references inside a listener can be changed in this situation
     // where we are swapping current listening item with another. And in those changes, we are saving
     // those new references to the buttons in the adequated methods.
-    private fun enableRewAndFwdButtons(btnRwd : ImageButton?, btnFwd: ImageButton?, enabled : Boolean) {
-        var alphaValue = 0.6f
-        if(enabled)
-            alphaValue = 1f
-        btnRwd?.alpha = alphaValue
-        btnFwd?.alpha = alphaValue
-        btnRwd?.isEnabled = enabled
-        btnFwd?.isEnabled = enabled
-    }
+//    private fun enableRewAndFwdButtons(btnRwd : ImageButton?, btnFwd: ImageButton?, enabled : Boolean) {
+//        var alphaValue = 0.6f
+//        if(enabled)
+//            alphaValue = 1f
+//        btnRwd?.alpha = alphaValue
+//        btnFwd?.alpha = alphaValue
+//        btnRwd?.isEnabled = enabled
+//        btnFwd?.isEnabled = enabled
+//    }
 
     private fun onRewindClicked(
         holder: ViewHolder,
         position: Int
     ) {
-        if (currentPlayingItemPosition == position) {
-            try {
-                mediaPlayer.seekTo(mediaPlayer.currentPosition - 30000)
-                holder.seekBar.progress = mediaPlayer.currentPosition - 30000
-            } catch (e: Exception) {
-                Timber.d("mediaPlayer.seekTo rewind overflow")
-            }
+        try {
+            val nextPosition = holder.seekBar.progress - 30000
+            holder.seekBar.progress = nextPosition
+            if(currentPlayingItemPosition == position)
+                mediaPlayer.seekTo(nextPosition)
+        } catch (e: Exception) {
+            Timber.d("mediaPlayer.seekTo rewind overflow")
         }
     }
 
     private fun onForwardClicked(holder :ViewHolder, position: Int) {
-        if (currentPlayingItemPosition == position) {
-            try {
-                val nextPosition = mediaPlayer.currentPosition + 30000
-                if (nextPosition < mediaPlayer.duration) {
-                    mediaPlayer.seekTo(nextPosition)
-                    holder.seekBar.progress = nextPosition
-                } else if (mediaPlayer.currentPosition < mediaPlayer.duration) {
-                    mediaPlayer.seekTo(mediaPlayer.duration)
-                    holder.seekBar.progress = mediaPlayer.duration
-                    enableRewAndFwdButtons(false)
-                }
-            } catch (e: Exception) {
-                Timber.d("mediaPlayer.seekTo forward overflow")
+        try {
+            var nextPosition = holder.seekBar.progress + 30000
+            if(nextPosition > holder.seekBar.max)
+                nextPosition = holder.seekBar.max
+            holder.seekBar.progress = nextPosition
+            if(currentPlayingItemPosition == position) {
+                mediaPlayer.seekTo(nextPosition)
             }
+        } catch (e: Exception) {
+            Timber.d("mediaPlayer.seekTo forward overflow")
         }
     }
 
@@ -349,7 +347,7 @@ class DraftAdapter(
             }
 
             currentBtnPlayPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
-            enableRewAndFwdButtons(true)
+//            enableRewAndFwdButtons(true)
 
             mediaPlayer = MediaPlayer()
             mediaPlayer.setOnCompletionListener {
@@ -361,6 +359,10 @@ class DraftAdapter(
                 it.start()
                 currentSeekbarPlaying?.progress?.let {newProgress ->
                     mediaPlayer.seekTo(newProgress)
+
+                    // this is to restart the audio after you have stopped it at the end of the track
+                    if(mediaPlayer.currentPosition == mediaPlayer.duration)
+                        mediaPlayer.seekTo(0)
                 }
 
                 seekHandler.post(seekUpdater)
@@ -371,7 +373,7 @@ class DraftAdapter(
     private fun onCompletionListener() {
         currentBtnPlayPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
         currentSeekbarPlaying?.progress = currentSeekbarPlaying?.max ?: mediaPlayer.duration
-        enableRewAndFwdButtons(false)
+//        enableRewAndFwdButtons(false)
         mediaPlayer.pause()
     }
 
@@ -389,12 +391,17 @@ class DraftAdapter(
         if(mediaPlayer.isPlaying) {
             mediaPlayer.pause()
             currentBtnPlayPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
-            enableRewAndFwdButtons(false)
+//            enableRewAndFwdButtons(false)
+
             // if it's not playing, we just have to play it and change buttons images
         } else {
+            // this is to restart the audio after you have stopped it at the end of the track
+            if(mediaPlayer.currentPosition == mediaPlayer.duration) {
+                mediaPlayer.seekTo(0)
+            }
             mediaPlayer.start()
             currentBtnPlayPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
-            enableRewAndFwdButtons(true)
+//            enableRewAndFwdButtons(true)
         }
     }
 

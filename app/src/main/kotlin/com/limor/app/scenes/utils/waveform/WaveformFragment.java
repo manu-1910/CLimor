@@ -1,5 +1,6 @@
 package com.limor.app.scenes.utils.waveform;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.media.AudioManager;
@@ -452,6 +453,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     * */
     private void showPopUpMenu(MarkerView marker){
 
+        // Be careful with this SupressLint, this is intended to avoid a false error that android studio reports
+        // with the following line but it's not real. But I insist, be careful, if this fails in the future, take a look at it.
+        @SuppressLint("RestrictedApi")
         PopupMenuView menuView = new PopupMenuView(getContext(), R.menu.menu_popup_edit, new MenuBuilder(getActivity()));
 
         if (marker.getMarkerSet().isMiddleVisible() && marker.getMarkerSet().isEditMarker()){
@@ -696,8 +700,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         progressDialog.dismiss();
         updateDisplay();
         setupSeekBar();
-        rewindButton.setAlpha(0.6f);
-        rewindButton.setEnabled(false);
         populateMarkers();
         shouldReloadPreview = true;
     }
@@ -935,21 +937,21 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     protected View.OnClickListener rewindListener = new View.OnClickListener() {
         public void onClick(View sender) {
-            if (isPlaying) {
+//            if (isPlaying) {
                 int newPos = player.getCurrentPosition() - 30000;
                 player.seekTo(newPos);
                 seekBar.setProgress(newPos);
-            }
+//            }
         }
     };
 
     protected View.OnClickListener ffwdListener = new View.OnClickListener() {
         public void onClick(View sender) {
-            if (isPlaying) {
+//            if (isPlaying) {
                 int newPos = player.getCurrentPosition() + 30000;
                 player.seekTo(newPos);
                 seekBar.setProgress(newPos);
-            }
+//            }
         }
     };
 
@@ -982,17 +984,21 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
     protected void enableDisableSeekButtons() {
-        if(player.isPlaying()) {
             forwardButton.setAlpha(1f);
             forwardButton.setEnabled(true);
             rewindButton.setAlpha(1f);
             rewindButton.setEnabled(true);
-        } else {
-            forwardButton.setAlpha(0.6f);
-            forwardButton.setEnabled(false);
-            rewindButton.setAlpha(0.6f);
-            rewindButton.setEnabled(false);
-        }
+//        if(player.isPlaying()) {
+//            forwardButton.setAlpha(1f);
+//            forwardButton.setEnabled(true);
+//            rewindButton.setAlpha(1f);
+//            rewindButton.setEnabled(true);
+//        } else {
+//            forwardButton.setAlpha(0.6f);
+//            forwardButton.setEnabled(false);
+//            rewindButton.setAlpha(0.6f);
+//            rewindButton.setEnabled(false);
+//        }
     }
 
     private boolean isAvailableArea(float x) {
