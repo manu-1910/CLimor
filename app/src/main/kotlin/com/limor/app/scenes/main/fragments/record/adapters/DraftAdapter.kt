@@ -22,6 +22,7 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import timber.log.Timber
 import java.io.File
 
+const val TAG = "DRAFT_PLAYER"
 
 class DraftAdapter(
     var context: Context,
@@ -35,34 +36,39 @@ class DraftAdapter(
     var inflator: LayoutInflater
     //var list: ArrayList<UIDraft> = ArrayList()
     //val mainHandler = Handler(Looper.getMainLooper())
-    private var run: Runnable? = null
-    private var seekHandler = Handler()
-    var playingPlayerPosition: Int = -1
-    var clickedPlayerPosition: Int = -1
-    var mediaPlayer2 = MediaPlayer()
+    private var currentPlayingItemPosition: Int = -1
+    private var currentClickedItemPosition: Int = -1
+    var mediaPlayer = MediaPlayer()
 
 
     private var currentSeekbarPlaying: SeekBar? = null
     private var currentButtonPlaying: ImageButton? = null
+    private var currentTvPassPlaying: TextView? = null
 
-    private val updater: Runnable
-    private val handler: Handler = Handler()
+    private val seekUpdater: Runnable
+    private val seekHandler: Handler = Handler()
 
 
     init {
-        mediaPlayer2.setOnCompletionListener {
-            currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
-            mediaPlayer2.pause()
-        }
 
-        updater = object : Runnable {
+
+        seekUpdater = object : Runnable {
             override fun run() {
-                handler.postDelayed(this, 150)
-                mediaPlayer2.let {
+                seekHandler.postDelayed(this, 150)
+                mediaPlayer.let {
                     if(it.isPlaying) {
                         val currentPosition = it.currentPosition
-                        currentSeekbarPlaying?.progress = currentPosition
-//                        listener.onProgress(comment, currentPosition)
+//                        Timber.tag(TAG).d("We are updating the playing state. The current status is pos[$currentPosition]")
+                        currentSeekbarPlaying?.let {seekBar ->
+//                            Timber.tag(TAG).d("We are updating the seekbar $seekBar")
+                            seekBar.progress = currentPosition
+                        }
+                        currentTvPassPlaying?.let { tvPass ->
+//                            Timber.tag(TAG).d("We are updating the tv $tvPass")
+                            tvPass.text = CommonsKt.calculateDurationMediaPlayer(
+                                currentPosition
+                            )
+                        }
                     }
                 }
             }
@@ -78,39 +84,46 @@ class DraftAdapter(
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val modelList = list[position]
+        val currentDraft = list[position]
 
-        if(clickedPlayerPosition == position){
+        // we will just show the player layout of the last item clicked
+        if(currentClickedItemPosition == position){
             holder.playerLayout.visibility = View.VISIBLE
         }else{
             holder.playerLayout.visibility = View.GONE
         }
 
-        holder.tvDraftTitle.text = modelList.title
-        if (!modelList.date.isNullOrEmpty()){
-            holder.tvDraftDescription.text = modelList.date
+        // we have to make sure that the references to the currentViews playing are always updated
+        if(position == currentPlayingItemPosition) {
+            currentSeekbarPlaying = holder.seekBar
+            currentTvPassPlaying = holder.tvTimePass
+            currentButtonPlaying = holder.btnPlay
         }
 
-        holder.itemView.setOnClickListener {
-            clickedPlayerPosition = position
-            //If some cast is playing stop it.
-//            if(mediaPlayer.isPlaying){
-////                mediaPlayer.stop()
-////                holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
-////            }
-            notifyDataSetChanged()
-            holder.playerLayout.visibility = View.VISIBLE
-            listener.onItemClick(modelList)
+        // we set title and description
+        holder.tvDraftTitle.text = currentDraft.title
+        if (!currentDraft.date.isNullOrEmpty()){
+            holder.tvDraftDescription.text = currentDraft.date
         }
-        if (modelList.isEditMode!!) {
+
+        // itemClick listener
+        holder.itemView.setOnClickListener {
+            if(currentClickedItemPosition != position) {
+                currentClickedItemPosition = position
+                listener.onItemClick(currentDraft)
+                notifyDataSetChanged()
+            }
+        }
+
+        // edit mode
+        if (currentDraft.isEditMode!!) {
             holder.ivDraftDelete.setImageResource(R.drawable.delete_symbol)
             holder.ivDraftDelete.onClick { deleteListener.onDeleteItemClick(position) }
         } else {
             holder.ivDraftDelete.setImageResource(android.R.color.transparent)
         }
 
-        holder.tvDraftTitle.text = modelList.title
-
+        // we have to calculate the duration of every item
         var currentDurationInMillis = 0
         val uri: Uri = Uri.parse(list[position].filePath)
         uri.path?.let {
@@ -121,106 +134,150 @@ class DraftAdapter(
                 val durationStr =
                     mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                 currentDurationInMillis = durationStr.toInt()
-                holder.seekBar.max = currentDurationInMillis
             }
         }
 
+
+        // seekBar
+        holder.seekBar.max = currentDurationInMillis
+        if(position == currentPlayingItemPosition) {
+            holder.seekBar.progress = mediaPlayer.currentPosition
+        } else {
+            holder.seekBar.progress = 0
+        }
         holder.seekBar.tag = position
         holder.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                if (fromUser && playingPlayerPosition == position) {
-                    mediaPlayer2.seekTo(progress)
-                }
-                if (mediaPlayer2.duration <= progress) {
-                    holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
+                // if we click on the current playing item seekbar, then we'll seek the audio position
+                if (fromUser && currentPlayingItemPosition == position) {
+                    mediaPlayer.seekTo(progress)
                 }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })
-        holder.tvTimePass.text = "0:00"
+
+        // textViews
+        holder.tvTimePass.text = "00:00"
         holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(currentDurationInMillis)
 
 
-        //PLAY BUTTON
-        holder.btnPlay.setOnClickListener {
+        // Play, rewind and forward buttons style
+        if(position == currentPlayingItemPosition && mediaPlayer.isPlaying) {
+            holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
+            enableRewAndFwdButtons(holder, true)
 
-            if(playingPlayerPosition == position) {
+        } else {
+            holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
+            enableRewAndFwdButtons(holder, false)
+        }
+
+        // play, rewind and forward button listeners
+        holder.btnPlay.setOnClickListener {
+            if(currentPlayingItemPosition == position) {
                 onCurrentPlayingDraftPlayClicked(holder, position)
             } else {
                 onOtherDraftPlayClicked(holder, position)
             }
-
-
         }
 
-
-        //Forward button
+        // Forward button
         holder.btnFfwd.onClick {
-            if(playingPlayerPosition == position) {
-                try {
-                    val nextPosition = mediaPlayer2.currentPosition + 30000
-                    if(nextPosition < mediaPlayer2.duration)
-                        mediaPlayer2.seekTo(nextPosition)
-                    else if(mediaPlayer2.currentPosition < mediaPlayer2.duration)
-                        mediaPlayer2.seekTo(mediaPlayer2.duration)
-                } catch (e: Exception) {
-                    Timber.d("mediaPlayer.seekTo forward overflow")
-                }
-            }
+            onForwardClicked(holder, position)
         }
 
-
-        //Rew button
+        // Rewind button
         holder.btnRew.onClick {
-            if(playingPlayerPosition == position) {
-                try {
-                    mediaPlayer2.seekTo(mediaPlayer2.currentPosition - 30000)
-                } catch (e: Exception) {
-                    Timber.d("mediaPlayer.seekTo rewind overflow")
-                }
-            }
+            onRewindClicked(holder, position)
         }
 
 
-        //More button -> show options menu
+        // More button -> show options menu
         holder.btnMore.onClick {
-            //creating a popup menu
-            val popup = PopupMenu(context, holder.btnMore)
-            //inflating menu from xml resource
-            popup.inflate(R.menu.menu_drafts_iems_adapter)
-            //adding click listener
-            popup.setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    R.id.menu_duplicate_cast -> {
-                        //Toast.makeText(context, "duplicate cast", Toast.LENGTH_SHORT).show()
-                        stopMediaPlayer()
-                        duplicateListener.onDuplicateItemClick(position)
-                        true
-                    }
-                    R.id.menu_delete_cast -> {
-                        //Toast.makeText(context, "delete cast", Toast.LENGTH_SHORT).show()
-                        stopMediaPlayer()
-                        deleteListener.onDeleteItemClick(position)
-                        true
-                    }
-                    else -> false
-                }
-            }
-            //displaying the popup
-            popup.show()
+            showMorePopupMenu(holder, position)
         }
 
 
-        //Go to Edit button
+        // Go to Edit button
         holder.tvEditItem.onClick {
             stopMediaPlayer()
 
-            modelList.length = currentDurationInMillis.toLong()
-            editListener.onEditItemClick(modelList)
+            currentDraft.length = currentDurationInMillis.toLong()
+            editListener.onEditItemClick(currentDraft)
         }
 
+    }
+
+    private fun enableRewAndFwdButtons(holder: ViewHolder, enabled : Boolean) {
+        var alphaValue = 0.6f
+        if(enabled)
+            alphaValue = 1f
+        holder.btnRew.alpha = alphaValue
+        holder.btnFfwd.alpha = alphaValue
+        holder.btnFfwd.isEnabled = enabled
+        holder.btnRew.isEnabled = enabled
+    }
+
+    private fun onRewindClicked(
+        holder: ViewHolder,
+        position: Int
+    ) {
+        if (currentPlayingItemPosition == position) {
+            try {
+                mediaPlayer.seekTo(mediaPlayer.currentPosition - 30000)
+                holder.seekBar.progress = mediaPlayer.currentPosition - 30000
+            } catch (e: Exception) {
+                Timber.d("mediaPlayer.seekTo rewind overflow")
+            }
+        }
+    }
+
+    private fun onForwardClicked(holder :ViewHolder, position: Int) {
+        if (currentPlayingItemPosition == position) {
+            try {
+                val nextPosition = mediaPlayer.currentPosition + 30000
+                if (nextPosition < mediaPlayer.duration) {
+                    mediaPlayer.seekTo(nextPosition)
+                    holder.seekBar.progress = nextPosition
+                } else if (mediaPlayer.currentPosition < mediaPlayer.duration) {
+                    mediaPlayer.seekTo(mediaPlayer.duration)
+                    holder.seekBar.progress = mediaPlayer.duration
+                }
+            } catch (e: Exception) {
+                Timber.d("mediaPlayer.seekTo forward overflow")
+            }
+        }
+    }
+
+    private fun showMorePopupMenu(
+        holder: ViewHolder,
+        position: Int
+    ) {
+        //creating a popup menu
+        val popup = PopupMenu(context, holder.btnMore)
+        //inflating menu from xml resource
+        popup.inflate(R.menu.menu_drafts_iems_adapter)
+        //adding click listener
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.menu_duplicate_cast -> {
+                    //Toast.makeText(context, "duplicate cast", Toast.LENGTH_SHORT).show()
+                    stopMediaPlayer()
+                    duplicateListener.onDuplicateItemClick(position)
+                    true
+                }
+                R.id.menu_delete_cast -> {
+                    //Toast.makeText(context, "delete cast", Toast.LENGTH_SHORT).show()
+                    stopMediaPlayer()
+                    deleteListener.onDeleteItemClick(position)
+                    true
+                }
+                else -> false
+            }
+        }
+        //displaying the popup
+        popup.show()
     }
 
     private fun onOtherDraftPlayClicked(
@@ -242,77 +299,69 @@ class DraftAdapter(
             }.show()
         } else {
             // if it's playing or not, then we have to stop the current player draft playing and setup this new draft player
-            playingPlayerPosition = position
+            currentPlayingItemPosition = position
+
             // we have to change the previous button image because it's playing state has just changed
-            currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
+//            currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
 
             // and set the new "current button" and current seekbar
             currentButtonPlaying = holder.btnPlay
             currentSeekbarPlaying = holder.seekBar
+            currentTvPassPlaying = holder.tvTimePass
 
 
 
-            if(mediaPlayer2.isPlaying) {
-                mediaPlayer2.pause()
-                mediaPlayer2.stop()
-                mediaPlayer2.release()
+            if(mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
+                mediaPlayer.stop()
+                mediaPlayer.release()
             }
 
             currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
+            enableRewAndFwdButtons(holder, true)
 
-            mediaPlayer2 = MediaPlayer()
-            mediaPlayer2.setDataSource(currentDraft.filePath)
-            mediaPlayer2.prepare()
-            mediaPlayer2.setOnPreparedListener {
+            mediaPlayer = MediaPlayer()
+            mediaPlayer.setOnCompletionListener {
+                onCompletionListener(holder)
+            }
+            mediaPlayer.setDataSource(currentDraft.filePath)
+            mediaPlayer.prepare()
+            mediaPlayer.setOnPreparedListener {
                 it.start()
-                currentSeekbarPlaying?.progress?.let {
-                    mediaPlayer2.seekTo(it)
+                currentSeekbarPlaying?.progress?.let {newProgress ->
+                    mediaPlayer.seekTo(newProgress)
                 }
 
-                run = Runnable {
-                    // Updateing SeekBar every 100 miliseconds
-                    var miliSeconds = 0
-                    try {
-                        miliSeconds = mediaPlayer2.currentPosition
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                    holder.seekBar.progress = miliSeconds
-                    seekHandler.postDelayed(run, 100)
-                    //For Showing time of audio(inside runnable)
-
-                    holder.tvTimeDuration.text = CommonsKt.calculateDurationMediaPlayer(
-                        mediaPlayer2.duration
-                    )
-                    holder.tvTimePass.text = CommonsKt.calculateDurationMediaPlayer(
-                        miliSeconds
-                    )
-                }
-                run!!.run()
-
+                seekHandler.post(seekUpdater)
             }
         }
+    }
+
+    private fun onCompletionListener(holder: ViewHolder) {
+        currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
+        enableRewAndFwdButtons(holder, false)
+        mediaPlayer.pause()
     }
 
     private fun onCurrentPlayingDraftPlayClicked(
         holder: ViewHolder,
         position: Int
     ) {
-        // if it is playing, we just have to pause and change button image
-        if(mediaPlayer2.isPlaying) {
-            mediaPlayer2.pause()
+        currentButtonPlaying = holder.btnPlay
+        currentSeekbarPlaying = holder.seekBar
+        currentTvPassPlaying = holder.tvTimePass
+
+        // if it is playing, we just have to pause and change buttons images
+        if(mediaPlayer.isPlaying) {
+            mediaPlayer.pause()
             currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
-
-            // if it's not playing, we just have to play it
+            enableRewAndFwdButtons(holder, false)
+            // if it's not playing, we just have to play it and change buttons images
         } else {
-            mediaPlayer2.start()
-
+            mediaPlayer.start()
             currentButtonPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
-            currentButtonPlaying = holder.btnPlay
-            currentSeekbarPlaying = holder.seekBar
+            enableRewAndFwdButtons(holder, true)
         }
-
-
     }
 
 
@@ -323,8 +372,8 @@ class DraftAdapter(
 
     private fun stopMediaPlayer(){
         try {
-            if(mediaPlayer2.isPlaying){
-                mediaPlayer2.stop()
+            if(mediaPlayer.isPlaying){
+                mediaPlayer.stop()
             }
         } catch (e: Exception) {
             println("Exception stopping media player inside DraftAdapter")

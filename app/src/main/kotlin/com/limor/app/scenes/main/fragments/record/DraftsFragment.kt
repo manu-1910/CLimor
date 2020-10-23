@@ -121,8 +121,8 @@ class DraftsFragment : BaseFragment() {
         btnCloseToolbar?.let {
             it.onClick {
                 try {
-                    if(adapter?.mediaPlayer2!!.isPlaying){
-                        adapter?.mediaPlayer2!!.stop()
+                    if(adapter?.mediaPlayer!!.isPlaying){
+                        adapter?.mediaPlayer!!.stop()
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -158,8 +158,8 @@ class DraftsFragment : BaseFragment() {
             }
 
             try {
-                if(adapter?.mediaPlayer2!!.isPlaying){
-                    adapter?.mediaPlayer2!!.stop()
+                if(adapter?.mediaPlayer!!.isPlaying){
+                    adapter?.mediaPlayer!!.stop()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -190,8 +190,8 @@ class DraftsFragment : BaseFragment() {
                                 pbDrafts?.visibility = View.VISIBLE
 
                                 try {
-                                    if(adapter?.mediaPlayer2!!.isPlaying){
-                                        adapter?.mediaPlayer2!!.stop()
+                                    if(adapter?.mediaPlayer!!.isPlaying){
+                                        adapter?.mediaPlayer!!.stop()
                                     }
                                 } catch (e: Exception) {
                                     e.printStackTrace()
@@ -237,8 +237,8 @@ class DraftsFragment : BaseFragment() {
                             pbDrafts?.visibility = View.VISIBLE
 
                             try {
-                                if (adapter?.mediaPlayer2!!.isPlaying) {
-                                    adapter?.mediaPlayer2!!.stop()
+                                if (adapter?.mediaPlayer!!.isPlaying) {
+                                    adapter?.mediaPlayer!!.stop()
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()
@@ -276,8 +276,8 @@ class DraftsFragment : BaseFragment() {
                         pbDrafts?.visibility = View.VISIBLE
 
                         try {
-                            if(adapter?.mediaPlayer2!!.isPlaying){
-                                adapter?.mediaPlayer2!!.stop()
+                            if(adapter?.mediaPlayer!!.isPlaying){
+                                adapter?.mediaPlayer!!.stop()
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()

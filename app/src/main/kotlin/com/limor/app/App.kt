@@ -15,6 +15,7 @@ import dagger.android.HasActivityInjector
 import dagger.android.HasServiceInjector
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -56,9 +57,9 @@ class App : Application(), HasActivityInjector, HasServiceInjector {
         //Initialize Facebook SDK
         FacebookSdk.sdkInitialize(this)
 
-//        if (BuildConfig.DEBUG) {
-//            Timber.plant(Timber.DebugTree())
-//        }
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
 
 //        AndroidAudioConverter.load(this, object : ILoadCallback {
 //            override fun onSuccess() {
