@@ -251,6 +251,18 @@ class EditFragment : WaveformFragment() {
         )
     }
 
+    private fun getStartFrameCopied(): Int {
+        return waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.startPos / NEW_WIDTH))
+    }
+
+    private fun getEndFrameCopied() : Int {
+        return waveformView.secondsToFrames(
+            waveformView.pixelsToSeconds(
+                selectedMarker.endPos / NEW_WIDTH
+            )
+        )
+    }
+
     private fun pasteMarkedChunk() {
         if (markerSets == null || markerSets.size == 0 || isPlayingPreview || isPlaying || selectedMarker == null) {
             return
@@ -265,56 +277,47 @@ class EditFragment : WaveformFragment() {
         showProgress(getString(R.string.progress_please_wait))
         Thread(Runnable {
             audioFilePaths = ArrayList()
-            var copiedChunkPath: String? = null
+
+
+            // we prepare an output path to copy
             val outPathCopied =
                 Objects.requireNonNull(Objects.requireNonNull(activity)?.externalCacheDir)!!.absolutePath + "/limor_record_chunk_copied.m4a"
-            val startFrameCopied = waveformView.secondsToFrames(
-                waveformView.pixelsToSeconds(
-                    selectedMarker.startPos / NEW_WIDTH
-                )
-            ) //TODO JJ NEW 131020
-            val endFrameCopied = waveformView.secondsToFrames(
-                waveformView.pixelsToSeconds(
-                    selectedMarker.endPos / NEW_WIDTH
-                )
-            ) //TODO JJ NEW 131020
-            val outFileCopied = File(outPathCopied)
+
+            // we get first frame where we have to copy
+            val startFrameCopied = getStartFrameCopied()
+
+            // we get the last frame where we have to copy
+            val endFrameCopied = getEndFrameCopied()
+
+            // and write that new temporary file with the just copied piece of audio
+            val copiedChunkPath = writeCopiedTemporaryFile(outPathCopied, startFrameCopied, endFrameCopied)
+
+
+            // now we have to split the audio in 3 files:
+            // the left side of the paste position
+            // the right side of the paste position
+            // the copied chunk
+            val outPathLeft = activity?.externalCacheDir!!.absolutePath + "/limor_record_chunk_0.m4a"
+            val outPathRight = activity?.externalCacheDir!!.absolutePath + "/limor_record_chunk_1.m4a"
+            val endTimeLeft = waveformView.pixelsToSeconds((editMarker.startPos / NEW_WIDTH))
+            val startFrameLeft = 0
+            val endFrameLeft = waveformView.secondsToFrames(endTimeLeft)
+            val startFrameRight = endFrameLeft + 1
+            val endFrameRight = waveformView.secondsToFrames(player.duration / 1000.0)
+            val outFileLeft = File(outPathLeft)
+            val outFileRight = File(outPathRight)
             try {
-                soundFile.WriteFile(
-                    outFileCopied,
-                    startFrameCopied,
-                    endFrameCopied - startFrameCopied
-                )
-                copiedChunkPath = outFileCopied.absolutePath
+                soundFile.WriteFile(outFileLeft, startFrameLeft, endFrameLeft - startFrameLeft)
+                soundFile.WriteFile(outFileRight, startFrameRight, endFrameRight - startFrameRight)
+
+                audioFilePaths.add(outFileLeft.absolutePath)
+                audioFilePaths.add(copiedChunkPath)
+                audioFilePaths.add(outFileRight.absolutePath)
             } catch (e: Exception) {
                 dismissProgress()
                 e.printStackTrace()
             }
-            //for (i = 0 i < 2; i++) {
-            for (i in 0..1) {
-                val outPath =
-                    activity?.externalCacheDir!!.absolutePath + "/limor_record_chunk_" + i + ".m4a"
-                val startTime =
-                    waveformView.pixelsToSeconds(if (i == 0) 0 else (editMarker.startPos / NEW_WIDTH) - 5) //TODO JJ había un 10 e iba mal
-                val endTime = waveformView.pixelsToSeconds(
-                    if (i == 0) (editMarker.startPos / NEW_WIDTH) else waveformView.millisecsToPixels(
-                        player.duration - 5
-                    )
-                ) //TODO JJ había un 10 e iba mal
-                val startFrame = waveformView.secondsToFrames(startTime)
-                val endFrame = waveformView.secondsToFrames(endTime)
-                val outFile = File(outPath)
-                try {
-                    soundFile.WriteFile(outFile, startFrame, endFrame - startFrame)
-                    if (i == 1) {
-                        audioFilePaths.add(copiedChunkPath)
-                    }
-                    audioFilePaths.add(outFile.absolutePath)
-                } catch (e: Exception) {
-                    dismissProgress()
-                    e.printStackTrace()
-                }
-            }
+            
             fileName =
                 activity?.externalCacheDir!!.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
             try {
@@ -430,6 +433,27 @@ class EditFragment : WaveformFragment() {
             }
         }).start()
 
+    }
+
+    private fun writeCopiedTemporaryFile(
+        path: String,
+        startFrameCopied: Int,
+        endFrameCopied: Int
+    ): String? {
+        // we create the outputfile with the output path
+        val file = File(path)
+        try {
+            soundFile.WriteFile(
+                file,
+                startFrameCopied,
+                endFrameCopied - startFrameCopied
+            )
+            return file.absolutePath
+        } catch (e: Exception) {
+            dismissProgress()
+            e.printStackTrace()
+        }
+        return null
     }
 
     protected fun deleteMarkedChunk() {
