@@ -516,8 +516,8 @@ public class SoundFile {
         codec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         codec.start();
 
-        // Get an estimation of the encoded data based on the bitrate. Add 10% to it.
-        int estimatedEncodedSize = (int)((endTime - startTime) * (bitrate / 8) * 1.1);
+        // Get an estimation of the encoded data based on the bitrate. Add 20% to it.
+        int estimatedEncodedSize = (int)((endTime - startTime) * (bitrate / 8) * 1.2);
         ByteBuffer encodedBytes = ByteBuffer.allocate(estimatedEncodedSize);
         ByteBuffer[] inputBuffers = codec.getInputBuffers();
         ByteBuffer[] outputBuffers = codec.getOutputBuffers();

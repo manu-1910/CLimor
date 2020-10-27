@@ -19,7 +19,6 @@ import com.googlecode.mp4parser.authoring.tracks.AppendTrack
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.scenes.main.viewmodels.DraftViewModel
-import com.limor.app.scenes.utils.AmrEncoder
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.Commons.deleteFile
 import com.limor.app.scenes.utils.CommonsKt.Companion.copyTo
@@ -31,7 +30,10 @@ import com.limor.app.uimodels.UITimeStamp
 import kotlinx.android.synthetic.main.fragment_waveform.*
 import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
 import org.jetbrains.anko.bundleOf
+import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.support.v4.runOnUiThread
 import org.jetbrains.anko.support.v4.toast
 import timber.log.Timber
 import java.io.File
@@ -52,16 +54,16 @@ class EditFragment : WaveformFragment() {
     private var initialTimeStamps: ArrayList<UITimeStamp>? = null
     private var progressDialogQueue: Queue<ProgressDialog> = LinkedList()
     private var receiver: BroadcastReceiver? = null
-    private var MEDIA_KEY = "soun"
-    private var BROADCAST_UPDATE_DRAFTS = "update_drafts"
     var app: App? = null
-    var hasAnythingChanged = false
-    private lateinit var encoder: AmrEncoder
+    private var hasAnythingChanged = false
+//    private lateinit var encoder: AmrEncoder
 
 
     companion object {
         val TAG: String = EditFragment::class.java.simpleName
         fun newInstance() = EditFragment()
+        private const val BROADCAST_UPDATE_DRAFTS = "update_drafts"
+        private const val MEDIA_KEY = "soun"
     }
 
 
@@ -69,7 +71,7 @@ class EditFragment : WaveformFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //Setup animation transition
-        ViewCompat.setTranslationZ(view, 40f);
+        ViewCompat.setTranslationZ(view, 40f)
 
         listeners()
         bindViewModel()
@@ -203,7 +205,7 @@ class EditFragment : WaveformFragment() {
             activity,
             getString(R.string.paste),
             getString(R.string.paste_prompt)
-        ) { dialog: DialogInterface?, which: Int -> pasteMarkedChunk() }
+        ) { _: DialogInterface?, _: Int -> pasteMarkedChunk() }
     }
 
     private fun copyClick() {
@@ -228,9 +230,7 @@ class EditFragment : WaveformFragment() {
             }
         }
         //AnalyticsManager.getInstance().recordEditEvent(AnalyticsManager.RecordingEditEventType.RECORDING_EDIT_COPY_PASTE);
-        //addMarker(selectedMarker.getStartPos(), selectedMarker.getStartPos() + 2, true, null);    //TODO JJ esta es la original
-        addMarker(selectedMarker.startPos, selectedMarker.startPos + 2, true, null) //TODO JJ
-
+        addMarker(selectedMarker.startPos, selectedMarker.startPos + 2, true, null)
     }
 
     private fun deleteClick() {
@@ -247,12 +247,18 @@ class EditFragment : WaveformFragment() {
             activity,
             getString(R.string.remove),
             getString(R.string.remove_piece_of_audio_prompt),
-            DialogInterface.OnClickListener { dialogInterface: DialogInterface?, i: Int -> deleteMarkedChunk() }
+            DialogInterface.OnClickListener { _: DialogInterface?, _: Int -> deleteMarkedChunk() }
         )
     }
 
     private fun getStartFrameCopied(): Int {
-        return waveformView.secondsToFrames(waveformView.pixelsToSeconds(selectedMarker.startPos / NEW_WIDTH))
+        val posMarker = selectedMarker.startPos
+        return waveformView.secondsToFrames(waveformView.pixelsToSeconds(posMarker / NEW_WIDTH))
+    }
+
+    private fun getStartSecondCopied(): Double {
+        val posMarker = selectedMarker.startPos
+        return waveformView.pixelsToSeconds(posMarker / NEW_WIDTH)
     }
 
     private fun getEndFrameCopied() : Int {
@@ -260,6 +266,12 @@ class EditFragment : WaveformFragment() {
             waveformView.pixelsToSeconds(
                 selectedMarker.endPos / NEW_WIDTH
             )
+        )
+    }
+
+    private fun getEndSecondCopied() : Double {
+        return waveformView.pixelsToSeconds(
+            selectedMarker.endPos / NEW_WIDTH
         )
     }
 
@@ -275,57 +287,80 @@ class EditFragment : WaveformFragment() {
             )
         )
         showProgress(getString(R.string.progress_please_wait))
+
         Thread(Runnable {
-            audioFilePaths = ArrayList()
-
-
             // we prepare an output path to copy
-            val outPathCopied =
-                Objects.requireNonNull(Objects.requireNonNull(activity)?.externalCacheDir)!!.absolutePath + "/limor_record_chunk_copied.m4a"
+            val copiedChunkPath = activity?.externalCacheDir?.absolutePath + "/limor_record_chunk_copied.m4a"
 
             // we get first frame where we have to copy
-            val startFrameCopied = getStartFrameCopied()
+            val startSecondCopied = getStartSecondCopied().toFloat()
 
             // we get the last frame where we have to copy
-            val endFrameCopied = getEndFrameCopied()
+            val endSecondCopied = getEndSecondCopied().toFloat()
 
             // and write that new temporary file with the just copied piece of audio
-            val copiedChunkPath = writeCopiedTemporaryFile(outPathCopied, startFrameCopied, endFrameCopied)
-
-
-            // now we have to split the audio in 3 files:
-            // the left side of the paste position
-            // the right side of the paste position
-            // the copied chunk
-            val outPathLeft = activity?.externalCacheDir!!.absolutePath + "/limor_record_chunk_0.m4a"
-            val outPathRight = activity?.externalCacheDir!!.absolutePath + "/limor_record_chunk_1.m4a"
-            val endTimeLeft = waveformView.pixelsToSeconds((editMarker.startPos / NEW_WIDTH))
-            val startFrameLeft = 0
-            val endFrameLeft = waveformView.secondsToFrames(endTimeLeft)
-            val startFrameRight = endFrameLeft + 1
-            val endFrameRight = waveformView.secondsToFrames(player.duration / 1000.0)
-            val outFileLeft = File(outPathLeft)
-            val outFileRight = File(outPathRight)
             try {
-                soundFile.WriteFile(outFileLeft, startFrameLeft, endFrameLeft - startFrameLeft)
-                soundFile.WriteFile(outFileRight, startFrameRight, endFrameRight - startFrameRight)
-
-                audioFilePaths.add(outFileLeft.absolutePath)
-                audioFilePaths.add(copiedChunkPath)
-                audioFilePaths.add(outFileRight.absolutePath)
+                writeSoundTemporaryFile(copiedChunkPath, startSecondCopied, endSecondCopied)
             } catch (e: Exception) {
                 dismissProgress()
-                e.printStackTrace()
+                Timber.d("Error writing copied chunk when pasting -> ${e.message}")
+                runOnUiThread {
+                    alert("There was an error copying your audio") {
+                        okButton {  }
+                    }.show()
+                }
+
+                // if this step fails, then we have to exit runnable
+                return@Runnable
             }
-            
-            fileName =
-                activity?.externalCacheDir!!.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
+
+
+            // now we have to split the audio in 2 files:
+            // the left side of the paste position
+            // the right side of the paste position
+            val outPathLeft = activity?.externalCacheDir!!.absolutePath + "/limor_record_chunk_0.m4a"
+            val outPathRight = activity?.externalCacheDir!!.absolutePath + "/limor_record_chunk_1.m4a"
+            val startTimeLeft = 0f
+            val endTimeLeft = waveformView.pixelsToSeconds(editMarker.startPos / NEW_WIDTH).toFloat()
+            val startTimeRight = endTimeLeft + 0.1f
+            val endTimeRight = player.duration / 1000.0f
+
+            // this list will hold the filenames of the audio chunks that will be merged in a single file later
+            audioFilePaths = ArrayList()
             try {
-                val listMovies: MutableList<Movie> = ArrayList()
+                writeSoundTemporaryFile(outPathLeft, startTimeLeft, endTimeLeft)
+                writeSoundTemporaryFile(outPathRight, startTimeRight, endTimeRight)
+
+                audioFilePaths.add(outPathLeft)
+                audioFilePaths.add(copiedChunkPath)
+                audioFilePaths.add(outPathRight)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                dismissProgress()
+                Timber.d("Error writing files in chunks when pasting -> ${e.message}")
+                runOnUiThread {
+                    alert("There was an error pasting your audio") {
+                        okButton {  }
+                    }.show()
+                }
+
+                // if this step fails, then we have to exit runnable
+                return@Runnable
+            }
+
+            // and finally, we have to merge all those 3 chunks in one single file
+            fileName = activity?.externalCacheDir!!.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
+            try {
+                // in order to achieve that, we have to create a list of movies from the previous created files
+                val listMovies = ArrayList<Movie>()
                 for (filename in audioFilePaths) {
                     listMovies.add(MovieCreator.build(filename))
                 }
-                val listTracks: MutableList<Track> = LinkedList()
+
+                val listTracks = ArrayList<Track>()
+
+                // and we have to concatenate a new moview from all the tracks of all the previous movies
+                val outputMovie = Movie()
                 for (movie in listMovies) {
                     for (track in movie.tracks) {
                         if (track.handler == MEDIA_KEY) {
@@ -333,130 +368,179 @@ class EditFragment : WaveformFragment() {
                         }
                     }
                 }
-                val outputMovie = Movie()
-                if (listTracks.isNotEmpty()) {
-                    outputMovie.addTrack(AppendTrack(*listTracks.toTypedArray()))
-                    //outputMovie.addTrack(AppendTrack(listTracks.toTypedArray()[listTracks.size])) //TODO JJ
+
+                if(listTracks.isEmpty()) {
+                    dismissProgress()
+                    Timber.d("The list of tracks is empty for some reason")
+                    runOnUiThread {
+                        alert("There was an error pasting your audio") {
+                            okButton {  }
+                        }.show()
+                    }
+
+                    // if this step fails, then we have to exit runnable
+                    return@Runnable
                 }
 
+                // In this line what we are doing is to create a single track with all the tracks in the track list
+                // you may think that you could just call addTrack for each track, but the result won't be the same
+                outputMovie.addTrack(AppendTrack(*listTracks.toTypedArray()))
+
+
+                // and after that, then we build the outputfile
                 val container = DefaultMp4Builder().build(outputMovie)
                 val fileChannel = RandomAccessFile(String.format(fileName), "rws").channel
                 container.writeContainer(fileChannel)
                 fileChannel.close()
 
-                Commons.deleteFiles(audioFilePaths); //TODO JJ Check this
+                // and finally, we delete all the temporary files used before
+                Commons.deleteFiles(audioFilePaths)
 
-                audioFilePaths = ArrayList()
-                var copiedLength: Int = 0
-                val startPosMilliseconds =
-                    waveformView.pixelsToMillisecs(selectedMarker.startPos / NEW_WIDTH)
-                val endPosMilliseconds =
-                    waveformView.pixelsToMillisecs(selectedMarker.endPos / NEW_WIDTH)
-                copiedLength = endPosMilliseconds - startPosMilliseconds
-                activity?.runOnUiThread {
-                    val timeStamps = ArrayList<UITimeStamp>()
-                    if (markerSets != null && markerSets.size > 0) {
-                        val iterator = markerSets.iterator()
-                        while (iterator.hasNext()) {
-                            val markerSet = iterator.next()
-                            if (!markerSet.isEditMarker) {
-                                var startPosMillisecondsAdjusted: Int
-                                var endPosMillisecondsAdjusted: Int
-                                if (waveformView.pixelsToMillisecs(markerSet.startPos / NEW_WIDTH) < waveformView.pixelsToMillisecs(
-                                        editMarker.startPos / NEW_WIDTH
-                                    )
-                                ) {
-                                    startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
-                                        markerSet.startPos / NEW_WIDTH
-                                    )
-                                    endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
-                                        markerSet.endPos / NEW_WIDTH
-                                    )
-                                } else {
-                                    startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
-                                        markerSet.startPos / NEW_WIDTH
-                                    ) + copiedLength
-                                    endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
-                                        markerSet.endPos / NEW_WIDTH
-                                    ) + copiedLength
-                                }
-                                handleTimeStamps(
-                                    markerSet,
-                                    timeStamps,
-                                    startPosMillisecondsAdjusted,
-                                    endPosMillisecondsAdjusted
+
+
+            } catch (e: IOException) {
+                dismissProgress()
+                Timber.d("Error building movie from chunks -> ${e.message}")
+                runOnUiThread {
+                    alert("There was an error merging your audio") {
+                        okButton {  }
+                    }.show()
+                }
+
+                // if this step fails, then we have to exit runnable
+                return@Runnable
+            }
+
+            // all of the following code is intended to put the markers in the correct place
+            val startPosMilliseconds =
+                waveformView.pixelsToMillisecs(selectedMarker.startPos / NEW_WIDTH)
+            val endPosMilliseconds =
+                waveformView.pixelsToMillisecs(selectedMarker.endPos / NEW_WIDTH)
+            val copiedLength = endPosMilliseconds - startPosMilliseconds
+            activity?.runOnUiThread {
+                val timeStamps = ArrayList<UITimeStamp>()
+                if (markerSets != null && markerSets.size > 0) {
+                    val iterator = markerSets.iterator()
+                    while (iterator.hasNext()) {
+                        val markerSet = iterator.next()
+                        if (!markerSet.isEditMarker) {
+                            var startPosMillisecondsAdjusted: Int
+                            var endPosMillisecondsAdjusted: Int
+                            if (waveformView.pixelsToMillisecs(markerSet.startPos / NEW_WIDTH) < waveformView.pixelsToMillisecs(
+                                    editMarker.startPos / NEW_WIDTH
                                 )
-                                iterator.remove()
-                            } else if (markerSet.isEditMarker) {
-                                //Middle marker
-                                markerSet.middleMarker.visibility = View.GONE
-                                markerSet.middleMarker = null
-                                //Start marker
-                                markerSet.startMarker.visibility = View.GONE
-                                markerSet.startMarker = null
-                                iterator.remove()
+                            ) {
+                                startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
+                                    markerSet.startPos / NEW_WIDTH
+                                )
+                                endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
+                                    markerSet.endPos / NEW_WIDTH
+                                )
+                            } else {
+                                startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
+                                    markerSet.startPos / NEW_WIDTH
+                                ) + copiedLength
+                                endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
+                                    markerSet.endPos / NEW_WIDTH
+                                ) + copiedLength
                             }
+                            handleTimeStamps(
+                                markerSet,
+                                timeStamps,
+                                startPosMillisecondsAdjusted,
+                                endPosMillisecondsAdjusted
+                            )
+                            iterator.remove()
+                        } else if (markerSet.isEditMarker) {
+                            //Middle marker
+                            markerSet.middleMarker.visibility = View.GONE
+                            markerSet.middleMarker = null
+                            //Start marker
+                            markerSet.startMarker.visibility = View.GONE
+                            markerSet.startMarker = null
+                            iterator.remove()
                         }
-
                     }
 
-                    //addMarker(firstMarkerSet.getStartPos(), secondMarkerSet.getEndPos(), false, null);
-                    //removeMarker(firstMarkerSet);
-
-                    shouldReloadPreview = true
-                    recordingItem?.timeStamps = timeStamps
-                    recordingItem?.length = recordingItem?.length?.plus(copiedLength)
-
-                    //Set the new file path to the object
-                    val newFile = File(fileName)
-                    recordingItem?.filePath = newFile.absolutePath
-
-                    updateRecordingItem()
-                    dismissProgress()
-                    loadFromFile(fileName)
-                    activity!!.sendBroadcast(Intent(BROADCAST_UPDATE_DRAFTS))
-                    stepManager.resetRedoSteps()
-                    isEditMode = false
-                    editMarker = null
-
                 }
-                hasAnythingChanged = true
 
-            } catch (ex: IOException) {
+                //addMarker(firstMarkerSet.getStartPos(), secondMarkerSet.getEndPos(), false, null);
+                //removeMarker(firstMarkerSet);
+
+                shouldReloadPreview = true
+                recordingItem?.timeStamps = timeStamps
+                recordingItem?.length = recordingItem?.length?.plus(copiedLength)
+
+                //Set the new file path to the object
+                val newFile = File(fileName)
+                recordingItem?.filePath = newFile.absolutePath
+
+                updateRecordingItem()
                 dismissProgress()
-                ex.printStackTrace()
+                loadFromFile(fileName)
+                activity!!.sendBroadcast(Intent(BROADCAST_UPDATE_DRAFTS))
+                stepManager.resetRedoSteps()
+                isEditMode = false
+                editMarker = null
+
             }
+            hasAnythingChanged = true
+
 
             //This line will remain the original marker when it is copied and pasted
             activity!!.runOnUiThread {
-                addMarker(selectedMarker.startPos, selectedMarker.endPos, false, null); //TODO JJ
+                addMarker(selectedMarker.startPos, selectedMarker.endPos, false, null) //TODO JJ
             }
+
+
         }).start()
 
     }
 
-    private fun writeCopiedTemporaryFile(
+    /**
+     * This method receives a path, start and endframes, and outputs a sound file in the specified path
+     * from the start to the end frame.
+     *
+     * It returns the absolute path of the created file
+     */
+    private fun writeSoundTemporaryFile(
         path: String,
-        startFrameCopied: Int,
-        endFrameCopied: Int
-    ): String? {
+        startFrame: Int,
+        endFrame: Int
+    ): String {
         // we create the outputfile with the output path
         val file = File(path)
-        try {
-            soundFile.WriteFile(
-                file,
-                startFrameCopied,
-                endFrameCopied - startFrameCopied
-            )
-            return file.absolutePath
-        } catch (e: Exception) {
-            dismissProgress()
-            e.printStackTrace()
-        }
-        return null
+        val numFrames = endFrame - startFrame
+        soundFile.WriteFile(
+            file,
+            startFrame,
+            numFrames
+        )
+        return file.absolutePath
     }
 
-    protected fun deleteMarkedChunk() {
+    /**
+     * This method receives a path, start and endframes, and outputs a sound file in the specified path
+     * from the start to the end frame.
+     *
+     * It returns the absolute path of the created file
+     */
+    private fun writeSoundTemporaryFile(
+        path: String,
+        startSecond: Float,
+        endSecond: Float
+    ): String {
+        // we create the outputfile with the output path
+        val file = File(path)
+        soundFile.WriteFile(
+            file,
+            startSecond,
+            endSecond
+        )
+        return file.absolutePath
+    }
+
+    private fun deleteMarkedChunk() {
         if (markerSets == null || markerSets.size == 0 || isPlayingPreview || isPlaying || selectedMarker == null) {
             return
         }
@@ -501,7 +585,7 @@ class EditFragment : WaveformFragment() {
                     }
                 }
                 val outputMovie = Movie()
-                if (!listTracks.isEmpty()) {
+                if (listTracks.isNotEmpty()) {
                     outputMovie.addTrack(AppendTrack(*listTracks.toTypedArray()))
                 }
                 val container = DefaultMp4Builder().build(outputMovie)
@@ -732,7 +816,7 @@ class EditFragment : WaveformFragment() {
                 Timber.i("Command execution completed successfully.")
 
                 val wavFileInCustomFolder = File(path, "/limorv2/" + System.currentTimeMillis() + ".wav")
-                convertedFile?.copyTo(wavFileInCustomFolder)
+                convertedFile.copyTo(wavFileInCustomFolder)
 
                 try {
                     deleteFile(recordingItem!!.filePath)
