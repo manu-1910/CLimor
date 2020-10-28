@@ -328,12 +328,23 @@ class EditFragment : WaveformFragment() {
             // this list will hold the filenames of the audio chunks that will be merged in a single file later
             audioFilePaths = ArrayList()
             try {
-                writeSoundTemporaryFile(outPathLeft, startTimeLeft, endTimeLeft)
-                writeSoundTemporaryFile(outPathRight, startTimeRight, endTimeRight)
+                // endTimeLeft will be 0 when the user wants to paste just at the beginning of the audio.
+                // This check is because if the user wants to paste just in the beginning of the audio, there won't be a "left" side, because
+                // the copied chunk will be at the beginning and the rest of the audio will be at the end
+                if(endTimeLeft > 0) {
+                    writeSoundTemporaryFile(outPathLeft, startTimeLeft, endTimeLeft)
+                    audioFilePaths.add(outPathLeft)
+                }
 
-                audioFilePaths.add(outPathLeft)
                 audioFilePaths.add(copiedChunkPath)
-                audioFilePaths.add(outPathRight)
+
+                // startTimeRight will be greater or equal to endTimeRight when the user wants to paste just at the end of the audio.
+                // This checks is because if the user wants to paste just at the end of the audio, there won't be a "right" side, because
+                // the copied chunk will be just at the end and the rest will be at the beginning
+                if(startTimeRight < endTimeRight) {
+                    writeSoundTemporaryFile(outPathRight, startTimeRight, endTimeRight)
+                    audioFilePaths.add(outPathRight)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
                 dismissProgress()
