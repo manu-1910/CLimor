@@ -1,4 +1,4 @@
-package com.limor.app.scenes.utils.waverecorder
+package com.limor.app.audio.wav.waverecorder
 
 /*
  * MIT License

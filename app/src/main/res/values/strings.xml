@@ -397,4 +397,5 @@
     <string name="confirmation_delete_draft">Are you sure you want to delete this draft?</string>
     <string name="error_accessing_draft_file">The audio file of this draft is not accessible or we cannot process it</string>
     <string name="draft_saved_ok">Draft saved correctly</string>
+    <string name="error_file_corrupted">The file you are trying to play is corrupted</string>
 </resources>

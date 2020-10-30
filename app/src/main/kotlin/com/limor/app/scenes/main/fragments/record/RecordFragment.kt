@@ -21,6 +21,7 @@ import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -31,17 +32,16 @@ import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.scenes.main.viewmodels.DraftViewModel
 import com.limor.app.scenes.main.viewmodels.LocationsViewModel
-import com.limor.app.scenes.utils.Commons.CombineWaveFile
 import com.limor.app.scenes.utils.CommonsKt.Companion.audioFileFormat
 import com.limor.app.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import com.limor.app.scenes.utils.VisualizerView
+import com.limor.app.audio.wav.WavHelper
 import com.limor.app.scenes.utils.location.MyLocation
-import com.limor.app.scenes.utils.waverecorder.WaveRecorder
+import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.uimodels.UIDraft
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_record.*
 import kotlinx.android.synthetic.main.toolbar_default.*
-import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -66,26 +66,26 @@ class RecordFragment : BaseFragment() {
     private var rootView: View? = null
     private var voiceGraph : VisualizerView? = null
     private lateinit var mRecorder : WaveRecorder
-    private val PERMISSION_ALL = 1
-    private var PERMISSIONS = arrayOf(
-        Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.READ_EXTERNAL_STORAGE,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    )
     private val insertDraftTrigger = PublishSubject.create<Unit>()
     private val deleteDraftTrigger = PublishSubject.create<Unit>()
-    var app: App? = null
-    var recordingItem: UIDraft? = null
-    lateinit var locationResult: MyLocation.LocationResult
-    private var fileRecording:String=""
-    private var continueRecording: Boolean = false
+    private var app: App? = null
+    private var uiDraft: UIDraft? = null
+    private lateinit var locationResult: MyLocation.LocationResult
+    private var fileRecording = ""
+    private var continueRecording = false
 
 
     companion object {
         val TAG: String = RecordFragment::class.java.simpleName
         fun newInstance() = RecordFragment()
+        private const val PERMISSION_ALL = 1
+        private val PERMISSIONS = arrayOf(
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
     }
 
 
@@ -114,8 +114,6 @@ class RecordFragment : BaseFragment() {
         insertDraft()
         deleteDraft()
 
-        //recordingItem = UIDraft()
-
         //Check Permissions
         if (!hasPermissions(requireContext(), *PERMISSIONS)) {
             requestPermissions(PERMISSIONS, PERMISSION_ALL)
@@ -141,7 +139,7 @@ class RecordFragment : BaseFragment() {
             }
 
             resetAudioSetup()
-            recordingItem = draftViewModel.uiDraft
+            uiDraft = draftViewModel.uiDraft
         }
     }
 
@@ -169,35 +167,35 @@ class RecordFragment : BaseFragment() {
     }
 
 
-    private fun showSaveDraftAlert(view: View) {
-        val dialog = AlertDialog.Builder(context)
+    private fun showSaveDraftAlert() {
+        val dialogBuilder = AlertDialog.Builder(context)
         val inflater = layoutInflater
-        dialog.setTitle(getString(R.string.save_draft_dialog_title))
+        dialogBuilder.setTitle(getString(R.string.save_draft_dialog_title))
         val dialogLayout = inflater.inflate(R.layout.dialog_with_edittext, null)
         val positiveButton= dialogLayout.findViewById<Button>(R.id.saveButton)
         val cancelButton = dialogLayout.findViewById<Button>(R.id.cancelButton)
         val editText  = dialogLayout.findViewById<EditText>(R.id.editText)
-        dialog.setView(dialogLayout)
-        dialog.setCancelable(false)
-        val ad: AlertDialog = dialog.show()
+        dialogBuilder.setView(dialogLayout)
+        dialogBuilder.setCancelable(false)
+        val dialog: AlertDialog = dialogBuilder.show()
 
         positiveButton.onClick {
 
-            recordingItem?.title = editText.text.toString()
-            recordingItem?.date = getDateTimeFormatted()
+            uiDraft?.title = editText.text.toString()
+            uiDraft?.date = getDateTimeFormatted()
 
             //Inserting in Realm
-            insertDraftInRealm(recordingItem!!, false)
+            insertDraftInRealm(uiDraft!!, false)
 
             toast(getString(R.string.draft_inserted))
 
             activity?.finish()
 
-            ad.dismiss()
+            dialog.dismiss()
         }
 
         cancelButton.onClick {
-            ad.dismiss()
+            dialog.dismiss()
         }
 
         editText.addTextChangedListener(object : TextWatcher {
@@ -267,10 +265,10 @@ class RecordFragment : BaseFragment() {
             ) {
                 positiveButton(getString(R.string.alert_cancel_record_save)){
                     it.dismiss()
-                    showSaveDraftAlert(view!!)
+                    showSaveDraftAlert()
                 }
                 negativeButton(getString(R.string.alert_cancel_record_do_not_save)){
-                    deleteDraftInRealm(recordingItem!!)
+                    deleteDraftInRealm(uiDraft!!)
                     activity?.finish()
                 }
             }.show()
@@ -287,31 +285,31 @@ class RecordFragment : BaseFragment() {
             //Merge audios and delete all them except the Audio Merged
             when (draftViewModel.filesArray.size) {
                 0 -> {
-                    insertDraftInRealm(recordingItem!!, false)
+                    insertDraftInRealm(uiDraft!!, false)
 
-                    val bundle = bundleOf("recordingItem" to recordingItem)
+                    val bundle = bundleOf("recordingItem" to uiDraft)
                     findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
                 }
                 1 -> {
-                    recordingItem?.filePath = draftViewModel.filesArray[0].absolutePath
-                    recordingItem?.editedFilePath = draftViewModel.filesArray[0].absolutePath
-                    insertDraftInRealm(recordingItem!!, false)
+                    uiDraft?.filePath = draftViewModel.filesArray[0].absolutePath
+                    uiDraft?.editedFilePath = draftViewModel.filesArray[0].absolutePath
+                    insertDraftInRealm(uiDraft!!, false)
 
-                    val bundle = bundleOf("recordingItem" to recordingItem)
+                    val bundle = bundleOf("recordingItem" to uiDraft)
                     //findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
                     findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
                 }
                 else -> {
                     doAsync {
                         val finalAudio = File(context?.getExternalFilesDir(null)?.absolutePath , "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
-                        if(CombineWaveFile(draftViewModel.filesArray[0].absolutePath, draftViewModel.filesArray[1].absolutePath, finalAudio.absolutePath, continueRecording, !continueRecording)){
+                        if(WavHelper.combineWaveFile(draftViewModel.filesArray[0].absolutePath, draftViewModel.filesArray[1].absolutePath, finalAudio.absolutePath, continueRecording, !continueRecording)){
                             draftViewModel.filesArray.clear()
                             draftViewModel.filesArray.add(finalAudio)
 
                             //The recording item will be passed to EditFragment as Argument inside a bundle
-                            recordingItem?.filePath = finalAudio.absolutePath
+                            uiDraft?.filePath = finalAudio.absolutePath
 
-                            insertDraftInRealm(recordingItem!!, false)
+                            insertDraftInRealm(uiDraft!!, false)
 
                             continueRecording = true
                         }else{
@@ -320,7 +318,7 @@ class RecordFragment : BaseFragment() {
                         uiThread {
                             //Go to Publish fragment
                             try {
-                                val bundle = bundleOf("recordingItem" to recordingItem)
+                                val bundle = bundleOf("recordingItem" to uiDraft)
                                 findNavController().navigate(
                                     R.id.action_record_fragment_to_record_edit,
                                     bundle
@@ -345,7 +343,7 @@ class RecordFragment : BaseFragment() {
             recordingDirectory.mkdir()
         }
 
-        if (recordingItem != null){
+        if (uiDraft != null){
             changeToEditToolbar()
         }else{
             //Setup audio recorder
@@ -411,37 +409,37 @@ class RecordFragment : BaseFragment() {
             //Merge audios and delete all them except the Audio Merged
             when (draftViewModel.filesArray.size) {
                 0 -> {
-                    insertDraftInRealm(recordingItem!!, false)
+                    insertDraftInRealm(uiDraft!!, false)
 
-                    val bundle = bundleOf("recordingItem" to recordingItem)
+                    val bundle = bundleOf("recordingItem" to uiDraft)
                     findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
                 }
                 1 -> {
-                    recordingItem?.filePath = draftViewModel.filesArray[0].absolutePath
-                    recordingItem?.editedFilePath = draftViewModel.filesArray[0].absolutePath
-                    insertDraftInRealm(recordingItem!!, false)
+                    uiDraft?.filePath = draftViewModel.filesArray[0].absolutePath
+                    uiDraft?.editedFilePath = draftViewModel.filesArray[0].absolutePath
+                    insertDraftInRealm(uiDraft!!, false)
 
-                    val bundle = bundleOf("recordingItem" to recordingItem)
+                    val bundle = bundleOf("recordingItem" to uiDraft)
                     findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
                 }
                 else -> {
                     doAsync {
                         val finalAudio = File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
 
-                        if(CombineWaveFile(draftViewModel.filesArray[0].absolutePath, draftViewModel.filesArray[1].absolutePath, finalAudio.absolutePath, continueRecording, !continueRecording)){
+                        if(WavHelper.combineWaveFile(draftViewModel.filesArray[0].absolutePath, draftViewModel.filesArray[1].absolutePath, finalAudio.absolutePath, continueRecording, !continueRecording)){
                             draftViewModel.filesArray.clear()
                             draftViewModel.filesArray.add(finalAudio)
 
                             //The recording item will be passed to EditFragment as Argument inside a bundle
-                            recordingItem?.filePath = finalAudio.absolutePath
-                            insertDraftInRealm(recordingItem!!, false)
+                            uiDraft?.filePath = finalAudio.absolutePath
+                            insertDraftInRealm(uiDraft!!, false)
                         }else{
                             println("Fail merge audios")
                         }
                         uiThread {
                             //Go to Publish fragment
                             try {
-                                val bundle = bundleOf("recordingItem" to recordingItem)
+                                val bundle = bundleOf("recordingItem" to uiDraft)
                                 findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
                             } catch (e: Exception) {
                             }
@@ -495,18 +493,18 @@ class RecordFragment : BaseFragment() {
 
                 //This is the recorded audio file saved in storage
                 val fileChosen : File? = File(fileRecording)
-                if(recordingItem != null){
-                    recordingItem?.filePath = fileChosen?.absolutePath
-                    insertDraftInRealm(recordingItem!!, false)
+                if(uiDraft != null){
+                    uiDraft?.filePath = fileChosen?.absolutePath
+                    insertDraftInRealm(uiDraft!!, false)
                 }else{
-                    recordingItem = UIDraft()
+                    uiDraft = UIDraft()
                     //recordingItem?.id = System.currentTimeMillis()/1000000
-                    recordingItem?.id = System.currentTimeMillis()
-                    recordingItem?.filePath = fileChosen?.absolutePath
+                    uiDraft?.id = System.currentTimeMillis()
+                    uiDraft?.filePath = fileChosen?.absolutePath
                     //Insert/Create Draft
-                    insertDraftInRealm(recordingItem!!, true)
+                    insertDraftInRealm(uiDraft!!, true)
                 }
-                draftViewModel.filesArray.add(File(recordingItem?.filePath))
+                draftViewModel.filesArray.add(File(uiDraft?.filePath))
 
             }else{
                 println("RECORD --> RESUME")
@@ -541,7 +539,7 @@ class RecordFragment : BaseFragment() {
         } else {
             println("RECORD --> STOP")
 
-            var stopAndMergeOk = false
+            var stopAndMergeOk : Boolean
             try {
                 mRecorder.stopRecording()
                 stopAndMergeOk = true

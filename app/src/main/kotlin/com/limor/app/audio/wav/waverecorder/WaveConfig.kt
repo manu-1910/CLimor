@@ -1,4 +1,4 @@
-package com.limor.app.scenes.utils.waverecorder
+package com.limor.app.audio.wav.waverecorder
 
 /*
  * MIT License
@@ -34,7 +34,7 @@ import android.media.AudioFormat
  * @property [audioEncoding] size of data per sample.
  */
 data class WaveConfig(
-    var sampleRate: Int = 16000,
+    var sampleRate: Int = 44100,
     var channels: Int = AudioFormat.CHANNEL_IN_STEREO,
     var audioEncoding: Int = AudioFormat.ENCODING_PCM_16BIT
 )

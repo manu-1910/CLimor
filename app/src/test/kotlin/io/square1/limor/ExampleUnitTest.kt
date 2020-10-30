@@ -1,5 +1,6 @@
 package io.square1.limor
 
+import com.limor.app.audio.wav.WavHelper
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -24,4 +25,17 @@ class ExampleUnitTest {
 
         calculateDurationMinutesAndSeconds(10)
     }*/
+
+    @Test
+    fun mergeWavFiles() {
+        val file1 = "C:\\Users\\jose.v\\Desktop\\audacity_wav_1.wav"
+        val file2 = "C:\\Users\\jose.v\\Desktop\\audacity_wav_2.wav"
+        val outputFile = "C:\\Users\\jose.v\\Desktop\\audacity_wav_output.wav"
+        val result = WavHelper.combineWaveFile(file1, file2, outputFile,
+            skipFirst = false,
+            skipSecond = false
+        )
+
+        assertEquals(result, true)
+    }
 }

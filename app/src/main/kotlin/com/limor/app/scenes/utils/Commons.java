@@ -1006,7 +1006,7 @@ public class Commons {
 
 
     public static boolean CombineWaveFile(String file1, String file2, String outPutFile, boolean skipFirst, boolean skipSecond) {
-        int RECORDER_SAMPLERATE = 16000;
+        int RECORDER_SAMPLERATE = 44100;
         int RECORDER_BPP = 16;
         int bufferSize = 1024;
         boolean retorno = true;
