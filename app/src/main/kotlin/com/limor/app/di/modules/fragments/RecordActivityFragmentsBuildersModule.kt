@@ -15,6 +15,9 @@ abstract class RecordActivityFragmentsBuildersModule {
     @ContributesAndroidInjector
     abstract fun contributeEditFragmentInjector(): EditFragment
 
+    @ContributesAndroidInjector
+    abstract fun contributeEdit2FragmentInjector(): EditFragment2
+
     //@ContributesAndroidInjector
     //abstract fun contributeWaveformragmentInjector(): WaveformFragment
 
