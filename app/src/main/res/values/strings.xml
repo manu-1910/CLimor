@@ -398,4 +398,7 @@
     <string name="error_accessing_draft_file">The audio file of this draft is not accessible or we cannot process it</string>
     <string name="draft_saved_ok">Draft saved correctly</string>
     <string name="error_file_corrupted">The file you are trying to play is corrupted</string>
+    <string name="error_memory_full">You don\'t have enough free memory</string>
+    <string name="title_error">Error</string>
+    <string name="error_loading_audio_file">There was an error trying to load your audio file</string>
 </resources>

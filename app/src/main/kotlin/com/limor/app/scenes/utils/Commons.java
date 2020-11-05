@@ -195,6 +195,16 @@ public class Commons {
         showAlertCustomButtons(context, title, message, listener, context.getString(R.string.yes), null, context.getString(R.string.no));
     }
 
+    public static void showAlertOkButton(Context context, String title, String message, DialogInterface.OnClickListener listener) {
+        showAlertCustomButtons(context, title, message, listener, context.getString(R.string.ok), null, context.getString(R.string.no));
+    }
+
+    public static void showAlertOkButton(Context context, int resourceTitle, int resourceMessage, DialogInterface.OnClickListener listener) {
+        String title = context.getString(resourceTitle);
+        String message = context.getString(resourceMessage);
+        showAlertCustomButtons(context, title, message, listener, context.getString(R.string.ok), null, context.getString(R.string.no));
+    }
+
     public static void showAlertCustomButtons(Context context, String title, String message, DialogInterface.OnClickListener listenerPositive, String stringButtonPositive,
                                               DialogInterface.OnClickListener listenerNegative, String stringButtonNegative) {
         if (context != null) {

@@ -1,6 +1,7 @@
 package com.limor.app.scenes.utils.waveform;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.media.AudioManager;
@@ -142,10 +143,13 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             loadGui(rootView);
         }
 
+        // if the soundFile object is not loaded yet, then let's load it
         if (soundFile == null) {
-            loadFromFile(fileName);
+            loadFromFile(fileName); // this method also calls reloadVisualizer
+
+            // if the soundObject is already loaded, then let's initialize the visualizer
         } else {
-            handler.post(() -> finishOpeningSoundFile());
+            handler.post(this::reloadVisualizer);
         }
 
         return rootView;
@@ -251,7 +255,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     // region Markers
 
     @Override
-    public void markerDraw() {}
+    public void markerDraw() {
+    }
 
 
     @Override
@@ -267,12 +272,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         touchInitialEndPos = marker.getMarkerSet().getEndPos();
 
 
-
-
 //        if (marker.getType() == MarkerView.MIDDLE_MARKER) { //TODO JJ NEW LINES
 //            showPopUpMenu(marker);
 //        }
-
 
 
     }
@@ -358,16 +360,16 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         //Only 1 marker is available at same time, except when copy and paste marker is selected
         if (markerSets.size() >= 1 && isEditMarker == false) {
             removeMarker(markerSets.get(0));
-           //return;
+            //return;
         }
 
         MarkerSet newMarkerSet = new MarkerSet();
 
         MarkerView startMarker = new MarkerView(getActivity());
         startMarker.setType(MarkerView.START_MARKER);
-        if (isEditMarker){
+        if (isEditMarker) {
             startMarker.setImageDrawable(getResources().getDrawable(R.drawable.marker_circle_green));
-        }else{
+        } else {
             startMarker.setImageDrawable(getResources().getDrawable(R.drawable.marker_circle_blue));
         }
         startMarker.setListener(this);
@@ -385,10 +387,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
         middleMarker.setListener(this);
         middleMarker.setOnFocusChangeListener((view, isSelected) -> {
-            MarkerView markerView = (MarkerView)view;
+            MarkerView markerView = (MarkerView) view;
             if (isSelected && !isEditMarker) {
                 selectedMarker = markerView.getMarkerSet();
-            } else if (isEditMarker){
+            } else if (isEditMarker) {
                 editMarker = markerView.getMarkerSet();
             }
         });
@@ -407,7 +409,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         newMarkerSet.setEndPos(endPos);
         newMarkerSet.setEndVisible(true);
 
-        newMarkerSet.setBackgroundColor(isEditMarker ?  R.color.white : color != null ? color : R.color.colorBackgroundMarker);
+        newMarkerSet.setBackgroundColor(isEditMarker ? R.color.white : color != null ? color : R.color.colorBackgroundMarker);
         newMarkerSet.setId(System.currentTimeMillis());
         newMarkerSet.setEditMarker(isEditMarker);
 
@@ -449,22 +451,22 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
 
     /*
-    * This function will show a contextual menú at the top of the marker
-    * */
-    private void showPopUpMenu(MarkerView marker){
+     * This function will show a contextual menú at the top of the marker
+     * */
+    private void showPopUpMenu(MarkerView marker) {
 
         // Be careful with this SupressLint, this is intended to avoid a false error that android studio reports
         // with the following line but it's not real. But I insist, be careful, if this fails in the future, take a look at it.
         @SuppressLint("RestrictedApi")
         PopupMenuView menuView = new PopupMenuView(getContext(), R.menu.menu_popup_edit, new MenuBuilder(getActivity()));
 
-        if (marker.getMarkerSet().isMiddleVisible() && marker.getMarkerSet().isEditMarker()){
+        if (marker.getMarkerSet().isMiddleVisible() && marker.getMarkerSet().isEditMarker()) {
             //If is the Paste marker I only will show the "paste" option menu
             menuView.setMenuItems(Arrays.asList(
                     new OptionMenu(getString(R.string.menu_paste)),
                     new OptionMenu(getString(R.string.menu_cancel))
             ));
-        }else{
+        } else {
             menuView.setMenuItems(Arrays.asList(
                     new OptionMenu(getString(R.string.menu_preview)),
                     new OptionMenu(getString(R.string.menu_copy)),
@@ -474,13 +476,13 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
 
         //menuView.setSites(PopupView.SITE_BOTTOM, PopupView.SITE_LEFT, PopupView.SITE_TOP, PopupView.SITE_RIGHT);
-        menuView.setSites( PopupView.SITE_BOTTOM );
+        menuView.setSites(PopupView.SITE_BOTTOM);
 
         menuView.setOnMenuClickListener(new OptionMenuView.OnOptionMenuClickListener() {
             @Override
             public boolean onOptionMenuClick(int position, OptionMenu menu) {
                 MenuOption menuOption = MenuOption.valueOf(menu.getTitle().toString());
-                switch (menuOption){
+                switch (menuOption) {
                     case Copy:
                         tvCopy.performClick();
                         break;
@@ -491,8 +493,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                         tvDelete.performClick();
                         break;
                     case Dismiss:
-                        removeMarker(marker.getMarkerSet());
-                        break;
                     case Cancel:
                         removeMarker(marker.getMarkerSet());
                         break;
@@ -634,6 +634,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
 
+
+    // this method loads the received filename into the mediaplayer, to be heard, and
+    // prepares the soundFile object too, necessary to be used with the visualizer
     protected void loadFromFile(String fileName) {
         file = new File(fileName);
         loadingLastUpdateTime = System.currentTimeMillis();
@@ -663,7 +666,12 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     player.prepare();
                     enableDisableSeekButtons();
-                } catch (final java.io.IOException e) {
+                } catch (final IOException e) {
+                    new AlertDialog.Builder(getContext())
+                            .setTitle(getContext().getString(R.string.title_error))
+                            .setMessage(getContext().getString(R.string.error_loading_audio_file))
+                            .setPositiveButton(getContext().getString(R.string.yes), null)
+                            .show();
                     e.printStackTrace();
                 }
             }
@@ -675,22 +683,25 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                 } catch (OutOfMemoryError e) {
                     e.printStackTrace();
                     progressDialog.dismiss();
-                    Commons.showAlertYesNo(getContext(), "ERROR", "You don't have enough free memory", null);
+                    Commons.showAlertYesNo(getContext(), getContext().getString(R.string.title_error), getContext().getString(R.string.error_memory_full), null);
                     return;
                 } catch (final Exception e) {
                     e.printStackTrace();
                     progressDialog.dismiss();
+                    Commons.showAlertOkButton(getContext(), R.string.title_error, R.string.error_memory_full, null);
                     return;
                 }
                 if (loadingKeepGoing) {
-                    handler.post(() -> finishOpeningSoundFile());
+                    handler.post(() -> reloadVisualizer());
                 }
             }
         }.start();
     }
 
 
-    protected void finishOpeningSoundFile() {
+    // this method has to be called after the soundFile object is already initialized.
+    // what it does is to actually initialize the visualizer itself
+    protected void reloadVisualizer() {
         waveformView.setSoundFile(soundFile);
         waveformView.recomputeHeights(density);
         maxPos = waveformView.maxPos();
@@ -722,7 +733,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                 offsetDelta = offsetDelta / CORRECTION;
             } else if (offsetDelta > 0) {
                 offsetDelta = 1;
-            } else if (offsetDelta < -1*CORRECTION) {
+            } else if (offsetDelta < -1 * CORRECTION) {
                 offsetDelta = offsetDelta / CORRECTION;
             } else if (offsetDelta < 0) {
                 offsetDelta = -1;
@@ -805,8 +816,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                 }
 
 
-
-                markerSet.getMiddleMarker().setColorFilter( markerSet.isEditMarker() ? ContextCompat.getColor(getContext(), R.color.marker_paste_green) : ContextCompat.getColor(getContext(), R.color.marker_blue));
+                markerSet.getMiddleMarker().setColorFilter(markerSet.isEditMarker() ? ContextCompat.getColor(getContext(), R.color.marker_paste_green) : ContextCompat.getColor(getContext(), R.color.marker_blue));
 
                 //markerSet.getMiddleMarker().setColorFilter(ContextCompat.getColor(getContext(), markerSet.getBackgroundColor()));
                 markerSet.getMiddleMarker().setAlpha(markerSet.isEditMarker() ? 1.0f : 0.5f);
@@ -835,7 +845,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                 markerSet.getEndMarker().setLayoutParams(endMarkerParams);
 
                 RelativeLayout.LayoutParams middleMarkerParams = new RelativeLayout.LayoutParams(markerSize, markerSize);
-                middleMarkerParams.leftMargin =  markerSet.getMiddleX();
+                middleMarkerParams.leftMargin = markerSet.getMiddleX();
                 middleMarkerParams.topMargin = Commons.dpToPx(getActivity(), 28);
                 markerSet.getMiddleMarker().setLayoutParams(middleMarkerParams);
             }
@@ -843,14 +853,14 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
     /*
-    * This function is the responsible to set the offsetGoal in the center of the screen
-    * */
+     * This function is the responsible to set the offsetGoal in the center of the screen
+     * */
     private void setOffsetGoalNoUpdate(int offset) {
         if (touchDragging) {
             return;
         }
 
-        int middle = width/2;
+        int middle = width / 2;
 
         offsetGoal = offset;
 
@@ -938,9 +948,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected View.OnClickListener rewindListener = new View.OnClickListener() {
         public void onClick(View sender) {
 //            if (isPlaying) {
-                int newPos = player.getCurrentPosition() - 30000;
-                player.seekTo(newPos);
-                seekBar.setProgress(newPos);
+            int newPos = player.getCurrentPosition() - 30000;
+            player.seekTo(newPos);
+            seekBar.setProgress(newPos);
 //            }
         }
     };
@@ -948,9 +958,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected View.OnClickListener ffwdListener = new View.OnClickListener() {
         public void onClick(View sender) {
 //            if (isPlaying) {
-                int newPos = player.getCurrentPosition() + 30000;
-                player.seekTo(newPos);
-                seekBar.setProgress(newPos);
+            int newPos = player.getCurrentPosition() + 30000;
+            player.seekTo(newPos);
+            seekBar.setProgress(newPos);
 //            }
         }
     };
@@ -984,10 +994,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
     protected void enableDisableSeekButtons() {
-            forwardButton.setAlpha(1f);
-            forwardButton.setEnabled(true);
-            rewindButton.setAlpha(1f);
-            rewindButton.setEnabled(true);
+        forwardButton.setAlpha(1f);
+        forwardButton.setEnabled(true);
+        rewindButton.setAlpha(1f);
+        rewindButton.setEnabled(true);
 //        if(player.isPlaying()) {
 //            forwardButton.setAlpha(1f);
 //            forwardButton.setEnabled(true);
@@ -1023,7 +1033,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                         waveformView.setPlayback(xPlayPos);
                         updateDisplay();
                     }
-                }else{
+                } else {
                     if (player != null) { //TODO JJ THIS IS NEW, TEST IT with other marker options (copy, paste, delete, ...)
                         seekBar.setProgress(progress);
                         int xPlayPos = waveformView.millisecsToPixels(progress * NEW_WIDTH);
@@ -1032,10 +1042,12 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     }
                 }
             }
+
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
                 isSeekBarTouched = true;
             }
+
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 isSeekBarTouched = false;
@@ -1064,10 +1076,12 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     tvTimePassPreview.setText(Commons.getLengthFromEpochForPlayer(progress));
                 }
             }
+
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
                 isSeekBarTouchedPreview = true;
             }
+
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 isSeekBarTouchedPreview = false;
@@ -1187,7 +1201,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected abstract String getFileName();
 
     protected abstract void populateMarkers();
-
 
 
 }
