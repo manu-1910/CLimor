@@ -36,6 +36,8 @@ import com.limor.app.scenes.utils.waveform.soundfile.SoundFile;
 import com.limor.app.scenes.utils.waveform.view.MarkerView;
 import com.limor.app.scenes.utils.waveform.view.WaveformView;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -46,7 +48,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import me.kareluo.ui.OptionMenu;
-import me.kareluo.ui.OptionMenuView;
 import me.kareluo.ui.PopupMenuView;
 import me.kareluo.ui.PopupView;
 
@@ -108,12 +109,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected boolean isPlaying;
     protected boolean isPlayingPreview;
     private int playStartOffset;
-    private int playEndMsec;
-    private int playStartMsec;
     private SeekBar seekBar;
     private boolean isSeekBarTouched;
     private ImageView ivPlayPreview;
-    private RelativeLayout rlPreview, rlPreviewSection;
+    private RelativeLayout rlPreviewSection;
     private SeekBar seekBarPreview;
     private boolean isSeekBarTouchedPreview;
     protected boolean shouldReloadPreview;
@@ -122,21 +121,20 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected StepManager stepManager;
     public static boolean isEditMode;
     protected boolean isInitialised;
-    private boolean isMovingTooMuch;
     private View rootView;
 
-    private final int ALLOWED_PIXEL_OFFSET = 18;
+//    private final int ALLOWED_PIXEL_OFFSET = 18; // unused, I don't know what was it for
     public static final int NEW_WIDTH = 20;
 
     private enum MenuOption {
-        Copy, Paste, Delete, Dismiss, Preview, Cancel;
+        Copy, Paste, Delete, Dismiss, Preview, Cancel
     }
 
     // endregion
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_waveform, container, false);
@@ -217,7 +215,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         offsetGoal = offset;
         long elapsedMsec = System.currentTimeMillis() - waveformTouchStartMsec;
         if (elapsedMsec < 200 && y < Commons.dpToPx(getActivity(), 48) && x < waveformView.maxPos() && isAvailableArea(x) && !isEditMode) {
-            int seekMsec = waveformView.pixelsToMillisecs((int) (touchStart + offset));
+//            int seekMsec = waveformView.pixelsToMillisecs((int) (touchStart + offset));
             int startPos = trap((int) (touchStart + offset));
             int endPos = startPos + (100);
             addMarker(startPos, endPos, false, null);
@@ -261,7 +259,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     @Override
     public void markerTouchStart(MarkerView marker, float x) {
-        isMovingTooMuch = false;
         if (isEditMode && !marker.getMarkerSet().isEditMarker()) {
             return;
         }
@@ -285,9 +282,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         if (isEditMode && !marker.getMarkerSet().isEditMarker()) {
             return;
         }
-        if ((x > touchStart && x - touchStart > ALLOWED_PIXEL_OFFSET) || (x < touchStart && touchStart - x > ALLOWED_PIXEL_OFFSET)) {
-            isMovingTooMuch = true;
-        }
+
+        // unused, I don't know what was it for
+//        if ((x > touchStart && x - touchStart > ALLOWED_PIXEL_OFFSET) || (x < touchStart && touchStart - x > ALLOWED_PIXEL_OFFSET)) {
+//        }
         touchDragging = true;
         if (shouldDisableTouch) {
             return;
@@ -331,8 +329,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         if (isEditMode && !marker.getMarkerSet().isEditMarker()) {
             return;
         }
-        long elapsedMsec = System.currentTimeMillis() - markerTouchStartMsec;
 
+//        long elapsedMsec = System.currentTimeMillis() - markerTouchStartMsec;
 //        if (elapsedMsec > 350 && marker.getType() == MarkerView.MIDDLE_MARKER && !isMovingTooMuch) { //TODO JJ ORIGINAL LINES
 //            showPopUpMenu(marker);
 //        }
@@ -341,24 +339,23 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             showPopUpMenu(marker);
         }
 
-        isMovingTooMuch = false;
         touchDragging = false;
     }
 
 
     @Override
     public void markerFocus(MarkerView marker) {
-        if (isEditMode && !marker.getMarkerSet().isEditMarker()) {
-            //TODO JJ New the app explote copying and pasting multiple markers, I add try/catch to avoid ANR and investigate later
-            //marker.clearFocus();
-        }
+        //TODO JJ New the app explote copying and pasting multiple markers, I add try/catch to avoid ANR and investigate later
+//        if (isEditMode && !marker.getMarkerSet().isEditMarker()) {
+//            marker.clearFocus();
+//        }
     }
 
 
     protected void addMarker(int startPos, int endPos, boolean isEditMarker, Integer color) {
 
         //Only 1 marker is available at same time, except when copy and paste marker is selected
-        if (markerSets.size() >= 1 && isEditMarker == false) {
+        if (markerSets.size() >= 1 && !isEditMarker) {
             removeMarker(markerSets.get(0));
             //return;
         }
@@ -478,31 +475,28 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         //menuView.setSites(PopupView.SITE_BOTTOM, PopupView.SITE_LEFT, PopupView.SITE_TOP, PopupView.SITE_RIGHT);
         menuView.setSites(PopupView.SITE_BOTTOM);
 
-        menuView.setOnMenuClickListener(new OptionMenuView.OnOptionMenuClickListener() {
-            @Override
-            public boolean onOptionMenuClick(int position, OptionMenu menu) {
-                MenuOption menuOption = MenuOption.valueOf(menu.getTitle().toString());
-                switch (menuOption) {
-                    case Copy:
-                        tvCopy.performClick();
-                        break;
-                    case Paste:
-                        tvPaste.performClick();
-                        break;
-                    case Delete:
-                        tvDelete.performClick();
-                        break;
-                    case Dismiss:
-                    case Cancel:
-                        removeMarker(marker.getMarkerSet());
-                        break;
-                    case Preview:
-                        //ivPlayPreview.performClick();
-                        saveNewFileFromMarkers(true);
-                        break;
-                }
-                return true;
+        menuView.setOnMenuClickListener((position, menu) -> {
+            MenuOption menuOption = MenuOption.valueOf(menu.getTitle().toString());
+            switch (menuOption) {
+                case Copy:
+                    tvCopy.performClick();
+                    break;
+                case Paste:
+                    tvPaste.performClick();
+                    break;
+                case Delete:
+                    tvDelete.performClick();
+                    break;
+                case Dismiss:
+                case Cancel:
+                    removeMarker(marker.getMarkerSet());
+                    break;
+                case Preview:
+                    //ivPlayPreview.performClick();
+                    saveNewFileFromMarkers(true);
+                    break;
             }
+            return true;
         });
 
         menuView.show(marker);
@@ -616,9 +610,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         tvTimePassPreview = view.findViewById(R.id.tvTimePassPreview);
         tvDurationPreview = view.findViewById(R.id.tvDurationPreview);
         ivPlayPreview = view.findViewById(R.id.ivPlayPreview);
-        rlPreview = view.findViewById(R.id.rlPreview);
+
         rlPreviewSection = view.findViewById(R.id.rlPreviewSection);
-        rlPreview.setOnClickListener(playListener);
+
 
         closeButton = view.findViewById(R.id.btnClose);
         infoButton = view.findViewById(R.id.btnInfo);
@@ -719,13 +713,13 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected synchronized void updateDisplay() {
         if (isPlaying) {
             int now = player.getCurrentPosition() + playStartOffset;
-            int frames = waveformView.millisecsToPixels(now * NEW_WIDTH);
+            int playbackPosition = waveformView.millisecsToPixels(now * NEW_WIDTH);
 
             if (waveformView != null) {
-                waveformView.setPlayback(frames);
+                waveformView.setPlayback(playbackPosition);
             }
 
-            setOffsetGoalNoUpdate(frames - width / 2); //The offset is the responsible of scrolling velocity and keep the yellow play line inside the width of the screen
+            setOffsetGoalNoUpdate(playbackPosition - width / 2); //The offset is the responsible of scrolling velocity and keep the yellow play line inside the width of the screen
             int offsetDelta = offsetGoal - offset;
 
             int CORRECTION = 10; //TODO JJ había un 10
@@ -760,6 +754,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
 
+    /**
+     * this method updates the positions of the markers
+     */
     private synchronized void updateMarkers() {
 
         if (markerSets != null && markerSets.size() > 0) {
@@ -852,9 +849,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
     }
 
-    /*
+
+    /**
      * This function is the responsible to set the offsetGoal in the center of the screen
-     * */
+     */
     private void setOffsetGoalNoUpdate(int offset) {
         if (touchDragging) {
             return;
@@ -876,19 +874,19 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         if (pos < 0) {
             return 0;
         }
-        if (pos > maxPos) {
-            return maxPos;
-        }
-        return pos;
+        return Math.min(pos, maxPos);
     }
 
     protected synchronized void handlePause() {
         if (player != null && player.isPlaying()) {
             player.pause();
         }
-        if (waveformView != null) {
-            //waveformView.setPlayback(-1); //Do not hide the yellow play line when pause is clicked
-        }
+
+        // this piece of code hid the yellow play line when paused, but we don't want that to happen anymore
+//        if (waveformView != null) {
+//            waveformView.setPlayback(-1);
+//        }
+
         isPlaying = false;
         enableDisableButtons();
         enableDisableSeekButtons();
@@ -910,7 +908,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         if (player == null) {
             return;
         }
-        playStartMsec = waveformView.pixelsToMillisecs(0);
+        int playStartMsec = waveformView.pixelsToMillisecs(0);
         playStartOffset = 0;
         try {
             isPlaying = true;
@@ -1151,7 +1149,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                 outputMovie.addTrack(new AppendTrack(listTracks.toArray(new Track[listTracks.size()])));
             }
             Container container = new DefaultMp4Builder().build(outputMovie);
-            FileChannel fileChannel = new RandomAccessFile(String.format(editedWithMarkersFileName), "rws").getChannel();
+            FileChannel fileChannel = new RandomAccessFile(editedWithMarkersFileName, "rws").getChannel();
             container.writeContainer(fileChannel);
             fileChannel.close();
 

@@ -401,4 +401,5 @@
     <string name="error_memory_full">You don\'t have enough free memory</string>
     <string name="title_error">Error</string>
     <string name="error_loading_audio_file">There was an error trying to load your audio file</string>
+    <string name="play_preview">Play preview</string>
 </resources>

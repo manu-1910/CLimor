@@ -205,6 +205,7 @@ class EditFragment2 : WaveformFragment() {
         ) { _: DialogInterface?, _: Int -> pasteMarkedChunk() }
     }
 
+    // this method doens't actually copy anything. This just shows the edit marker
     private fun copyClick() {
         if (selectedMarker == null) {
             showAlertOK(
@@ -215,6 +216,10 @@ class EditFragment2 : WaveformFragment() {
             )
             return
         }
+
+        // This checks that there won't be two edit markers at the same time.
+        // This should never happen because you don't allow the copy button to be clicked
+        // if an editMarker is set. But I'll leave it here just in case
         for (markerSet in markerSets) {
             if (markerSet.isEditMarker) {
                 showAlertOK(
@@ -226,7 +231,9 @@ class EditFragment2 : WaveformFragment() {
                 return
             }
         }
-        //AnalyticsManager.getInstance().recordEditEvent(AnalyticsManager.RecordingEditEventType.RECORDING_EDIT_COPY_PASTE);
+
+
+        // then we set an edit marker
         addMarker(selectedMarker.startPos, selectedMarker.startPos + 2, true, null)
     }
 
