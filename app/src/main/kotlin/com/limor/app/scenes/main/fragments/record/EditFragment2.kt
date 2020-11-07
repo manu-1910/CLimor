@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -31,7 +32,6 @@ import com.limor.app.uimodels.UIDraft
 import com.limor.app.uimodels.UITimeStamp
 import kotlinx.android.synthetic.main.fragment_waveform.*
 import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
-import org.jetbrains.anko.bundleOf
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -51,6 +51,7 @@ class EditFragment2 : WaveformFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var draftViewModel: DraftViewModel
     private var uiDraft: UIDraft? = null
+    private var initialUIDraft: UIDraft? = null
     private var initialFilePath: String? = null
     private var initialLength: Long = 0
     private var initialTimeStamps: ArrayList<UITimeStamp>? = null
@@ -87,7 +88,9 @@ class EditFragment2 : WaveformFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        uiDraft = arguments!!["recordingItem"] as UIDraft
+        val receivedDraft = arguments!!["recordingItem"] as UIDraft
+        uiDraft = receivedDraft
+        initialUIDraft = receivedDraft.copy()
     }
 
     override fun onDestroy() {
@@ -330,7 +333,7 @@ class EditFragment2 : WaveformFragment() {
             val endTimeRight = player.duration / 1000.0f
 
             // this list will hold the filenames of the audio chunks that will be merged in a single file later
-            audioFilePaths = ArrayList()
+            val audioFilePaths = ArrayList<String>()
             try {
                 // endTimeLeft will be 0 when the user wants to paste just at the beginning of the audio.
                 // This check is because if the user wants to paste just in the beginning of the audio, there won't be a "left" side, because
@@ -364,7 +367,6 @@ class EditFragment2 : WaveformFragment() {
             }
 
             // and finally, we have to merge all those 3 chunks in one single file
-            fileName = activity?.externalCacheDir!!.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
             try {
                 // in order to achieve that, we have to create a list of movies from the previous created files
                 val listMovies = ArrayList<Movie>()
@@ -403,10 +405,14 @@ class EditFragment2 : WaveformFragment() {
 
 
                 // and after that, then we build the outputfile
+
+
+                val newFileName = activity?.externalCacheDir!!.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
                 val container = DefaultMp4Builder().build(outputMovie)
-                val fileChannel = RandomAccessFile(String.format(fileName), "rws").channel
+                val fileChannel = RandomAccessFile(String.format(newFileName), "rws").channel
                 container.writeContainer(fileChannel)
                 fileChannel.close()
+                fileName = newFileName
 
                 // and finally, we delete all the temporary files used before
                 Commons.deleteFiles(audioFilePaths)
@@ -492,7 +498,7 @@ class EditFragment2 : WaveformFragment() {
                 updateRecordingItem()
                 dismissProgress()
                 loadFromFile(fileName)
-                activity!!.sendBroadcast(Intent(BROADCAST_UPDATE_DRAFTS))
+                activity!!.sendBroadcast(Intent(BROADCAST_UPDATE_DRAFTS)) // I think this is not doing anything and should be deleted
                 stepManager.resetRedoSteps()
                 isEditMode = false
                 editMarker = null
@@ -563,7 +569,7 @@ class EditFragment2 : WaveformFragment() {
         )
         showProgress(getString(R.string.progress_please_wait))
         Thread(Runnable {
-            audioFilePaths = ArrayList()
+            var audioFilePaths = ArrayList<String>()
             for (i in 0..1) {
                 val outPath =
                         activity!!.externalCacheDir!!.absolutePath + "/limor_record_chunk_" + i + ".m4a"
@@ -749,7 +755,7 @@ class EditFragment2 : WaveformFragment() {
         return from.parentFile.exists() && from.exists() && from.renameTo(to)
     }
 
-    private fun restoreToInitialState() {
+    private fun restoreToInitialStateOld() {
         //TODO JJ Esto había antes
 //        recordingItem!!.timeStamps = initialTimeStamps
 //        recordingItem!!.length = initialLength
@@ -842,6 +848,15 @@ class EditFragment2 : WaveformFragment() {
             findNavController().popBackStack()
         }
         handlePausePreview()
+    }
+
+
+    private fun restoreToInitialState() {
+        handlePause()
+        handlePausePreview()
+        draftViewModel.uiDraft = initialUIDraft!!
+        draftViewModel.continueRecording = true
+        findNavController().popBackStack()
     }
 
 

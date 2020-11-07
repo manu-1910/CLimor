@@ -2,9 +2,13 @@ package com.limor.app.audio.wav
 
 import android.media.AudioFormat
 import android.media.AudioRecord
+import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+
 
 class WavHelper {
 
@@ -14,49 +18,49 @@ class WavHelper {
         private const val BYTES_PER_SAMPLE = 2
         private const val BITS_PER_SAMPLE = BYTES_PER_SAMPLE * 8
 
-        fun combineWaveFile(
-            file1: String,
-            file2: String,
-            outPutFile: String,
-            skipFirst: Boolean,
-            skipSecond: Boolean
+
+        @Deprecated("") // this one is wrong, shouldn't be used
+        fun combineWaveFile2(
+                file1: String,
+                file2: String,
+                outPutFile: String,
+                skipFirst: Boolean,
+                skipSecond: Boolean
         ): Boolean {
+
+
+            // we'll assume that both wav files have the same properties
+            // like sample rate, num channels, etc
+
             val aux = AudioRecord.getMinBufferSize(
-                SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_STEREO,
-                AudioFormat.ENCODING_PCM_16BIT
+                    SAMPLE_RATE,
+                    AudioFormat.CHANNEL_IN_STEREO,
+                    AudioFormat.ENCODING_PCM_16BIT
             )
 //            val bufferSize = aux * 3
             val bufferSize = SAMPLE_RATE * NUM_CHANNELS * BYTES_PER_SAMPLE
-            val in1: FileInputStream
-            val in2: FileInputStream
-            val out: FileOutputStream
-            val totalAudioLen: Long
-            val totalDataLen: Long
             val longSampleRate = SAMPLE_RATE.toLong()
-            val sizein1: Long
-            val sizein2: Long
             val byteRate = BYTES_PER_SAMPLE * SAMPLE_RATE * NUM_CHANNELS.toLong()
             println("--------- byterate is: $byteRate")
 
             val data = ByteArray(bufferSize)
             //byte[] data = new byte[4096];
             try {
-                in1 = FileInputStream(file1)
-                in2 = FileInputStream(file2)
-                out = FileOutputStream(outPutFile)
-                sizein1 = in1.channel.size()
-                sizein2 = in2.channel.size()
-                totalAudioLen = sizein1 + sizein2
-                totalDataLen = totalAudioLen + 36
+                val in1 = FileInputStream(file1)
+                val in2 = FileInputStream(file2)
+                val out = FileOutputStream(outPutFile)
+                val sizein1 = in1.channel.size()
+                val sizein2 = in2.channel.size()
+                val totalAudioLen = sizein1 + sizein2
+                val totalDataLen = totalAudioLen + 36
                 writeWaveFileHeader(
-                    out,
-                    totalAudioLen,
-                    totalDataLen,
-                    longSampleRate,
-                    NUM_CHANNELS,
-                    byteRate,
-                    BITS_PER_SAMPLE
+                        out,
+                        totalAudioLen,
+                        totalDataLen,
+                        longSampleRate,
+                        NUM_CHANNELS,
+                        byteRate,
+                        BITS_PER_SAMPLE
                 )
 
                 //Skip the blip noise at start of the first audio file
@@ -91,15 +95,110 @@ class WavHelper {
             return true
         }
 
+
+        fun combineWaveFile(
+                file1: String,
+                file2: String,
+                outPutFile: String
+        ): Boolean {
+
+
+            val bytes = ByteArray(44)
+
+            // let's read the wav header of the first file.
+            try {
+
+                val stream = File(file1).inputStream()
+                stream.read(bytes)
+                stream.close()
+            } catch (ex: IOException) {
+                return false
+            }
+
+            // we'll assume that both wav files have the same properties
+            // like sample rate, num channels, etc
+            val buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+            val numChannels = buffer.getShort(22) // the num channel is a short located in the 22th position
+            val sampleRate = buffer.getInt(24) // the sample rate is an int located in the 24th position
+            val bitsPerSample = buffer.getShort(34) // bits per sample is a short located in the 34th position
+            val bytesPerSample = bitsPerSample / 8 // bits per sample is a short located in the 34th position
+
+
+            var audioFormatChannel = AudioFormat.CHANNEL_IN_STEREO
+            if (numChannels.toInt() == 1)
+                audioFormatChannel = AudioFormat.CHANNEL_IN_MONO
+
+            var audioFormatEncoding = AudioFormat.ENCODING_PCM_16BIT
+            if (bitsPerSample.toInt() == 8)
+                audioFormatEncoding = AudioFormat.ENCODING_PCM_8BIT
+
+
+            val bufferSize = AudioRecord.getMinBufferSize(
+                    sampleRate,
+                    audioFormatChannel,
+                    audioFormatEncoding
+            )
+            val longSampleRate = sampleRate.toLong()
+            val byteRate = bytesPerSample * sampleRate * numChannels.toLong()
+            println("--------- byterate is: $byteRate")
+
+            val data = ByteArray(bufferSize)
+            try {
+                val in1 = FileInputStream(file1)
+                val in2 = FileInputStream(file2)
+                val out = FileOutputStream(outPutFile)
+                val sizein1 = in1.channel.size()
+                val sizein2 = in2.channel.size()
+                val totalAudioLen = sizein1 + sizein2
+                val totalDataLen = totalAudioLen + 44
+                writeWaveFileHeader(
+                        out,
+                        totalAudioLen,
+                        totalDataLen,
+                        longSampleRate,
+                        numChannels.toInt(),
+                        byteRate,
+                        bitsPerSample.toInt()
+                )
+
+                //Skip the header of the first file because it's already written manually
+                in1.skip(44)
+                println("Skipping 44 in first file")
+                //***********************************************
+                while (in1.read(data) != -1) {
+                    out.write(data)
+                }
+
+                //Skip the header of the second file because if not, it will be heard as audio
+                in2.skip(44)
+                println("Skipping 44 in second file")
+                //***********************************************
+                while (in2.read(data) != -1) {
+                    out.write(data)
+                }
+                out.close()
+                in1.close()
+                in2.close()
+                out.close()
+                out.flush()
+                println("Done")
+            } catch (e: IOException) {
+                e.printStackTrace()
+                return false
+            }
+            return true
+        }
+
+
         @Throws(IOException::class)
         fun writeWaveFileHeader(
-            out: FileOutputStream,
-            totalAudioLen: Long,
-            totalDataLen: Long,
-            longSampleRate: Long,
-            channels: Int,
-            byteRate: Long,
-            RECORDER_BPP: Int
+                out: FileOutputStream,
+                totalAudioLen: Long,
+                totalDataLen: Long,
+                longSampleRate: Long,
+                channels: Int,
+                byteRate: Long,
+                RECORDER_BPP: Int
         ) {
             val header = ByteArray(44)
             header[0] = 'R'.toByte()

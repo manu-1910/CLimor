@@ -326,7 +326,7 @@ class EditFragment : WaveformFragment() {
             val endTimeRight = player.duration / 1000.0f
 
             // this list will hold the filenames of the audio chunks that will be merged in a single file later
-            audioFilePaths = ArrayList()
+            val audioFilePaths = ArrayList<String>()
             try {
                 // endTimeLeft will be 0 when the user wants to paste just at the beginning of the audio.
                 // This check is because if the user wants to paste just in the beginning of the audio, there won't be a "left" side, because
@@ -560,7 +560,7 @@ class EditFragment : WaveformFragment() {
         )
         showProgress(getString(R.string.progress_please_wait))
         Thread(Runnable {
-            audioFilePaths = ArrayList()
+            var audioFilePaths = ArrayList<String>()
             for (i in 0..1) {
                 val outPath =
                     activity!!.externalCacheDir!!.absolutePath + "/limor_record_chunk_" + i + ".m4a"

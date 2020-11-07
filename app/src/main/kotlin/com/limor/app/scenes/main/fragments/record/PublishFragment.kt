@@ -707,7 +707,7 @@ class PublishFragment : BaseFragment() {
                     )
                 )
                 run = Runnable {
-                    // Updateing SeekBar every 100 miliseconds
+                    // Updating SeekBar every 100 miliseconds
 
                     //For Showing time of audio(inside runnable)
                     val miliSeconds = mediaPlayer.currentPosition

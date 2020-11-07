@@ -30,7 +30,7 @@ class AudioFacadeWav : AudioFacade() {
         skipFirst: Boolean,
         skipSecond: Boolean
     ): Boolean {
-        return WavHelper.combineWaveFile(file1, file2, outputFile, skipFirst, skipSecond)
+        return WavHelper.combineWaveFile(file1, file2, outputFile)
     }
 
 }

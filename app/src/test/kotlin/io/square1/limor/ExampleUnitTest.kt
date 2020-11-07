@@ -28,10 +28,10 @@ class ExampleUnitTest {
 
     @Test
     fun mergeWavFiles() {
-        val file1 = "C:\\Users\\jose.v\\Desktop\\audacity_wav_1.wav"
-        val file2 = "C:\\Users\\jose.v\\Desktop\\audacity_wav_2.wav"
-        val outputFile = "C:\\Users\\jose.v\\Desktop\\audacity_wav_output.wav"
-        val result = WavHelper.combineWaveFile(file1, file2, outputFile,
+        val file1 = "/home/jose/limor audios/1604750436196.wav"
+        val file2 = "/home/jose/limor audios/1604750696477.wav"
+        val outputFile = "/home/jose/limor audios/output.wav"
+        val result = WavHelper.combineWaveFile2(file1, file2, outputFile,
             skipFirst = false,
             skipSecond = false
         )

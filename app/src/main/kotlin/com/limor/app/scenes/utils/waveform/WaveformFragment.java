@@ -77,7 +77,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected SoundFile soundFile;
     protected File file;
     protected String fileName;
-    protected String editedWithMarkersFileName;
+    protected String editedWithMarkersFileName; // TODO: Jose -> this possibly doesn't do anything now
     protected WaveformView waveformView;
     protected ImageButton playButton, rewindButton, forwardButton;
     protected ImageButton closeButton, infoButton;
@@ -117,7 +117,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     private boolean isSeekBarTouchedPreview;
     protected boolean shouldReloadPreview;
     protected MarkerSet selectedMarker, editMarker;
-    protected ArrayList<String> audioFilePaths = new ArrayList<>();
+//    protected ArrayList<String> audioFilePaths = new ArrayList<>();
     protected StepManager stepManager;
     public static boolean isEditMode;
     protected boolean isInitialised;
@@ -661,11 +661,11 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     player.prepare();
                     enableDisableSeekButtons();
                 } catch (final IOException e) {
-                    new AlertDialog.Builder(getContext())
+                    getActivity().runOnUiThread(() -> new AlertDialog.Builder(getContext())
                             .setTitle(getContext().getString(R.string.title_error))
                             .setMessage(getContext().getString(R.string.error_loading_audio_file))
                             .setPositiveButton(getContext().getString(R.string.yes), null)
-                            .show();
+                            .show());
                     e.printStackTrace();
                 }
             }
@@ -1112,6 +1112,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             return;
         }
 
+        List<String> audioFilePaths = new ArrayList<>();
         for (MarkerSet markerSet : markerSets) {
             final String outPath = getActivity().getExternalCacheDir().getAbsolutePath() + "/limor_record" + markerSet.getId() + ".m4a";
             double startTime = waveformView.pixelsToSeconds(markerSet.getStartPos() / NEW_WIDTH); //Seems to be ok with the time of the marker

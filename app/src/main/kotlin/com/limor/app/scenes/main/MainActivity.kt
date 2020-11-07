@@ -20,6 +20,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.iid.FirebaseInstanceId
 import com.limor.app.App
 import com.limor.app.R
+import com.limor.app.audio.wav.WavHelper
 import com.limor.app.common.BaseActivity
 import com.limor.app.common.SessionManager
 import com.limor.app.scenes.main.fragments.*
@@ -64,6 +65,14 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         app = applicationContext as App
+
+        // Jose -> This is just a test, can be deleted
+//        val file1 = "/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/1604750436196.wav"
+//        val file2 = "/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/1604750696477.wav"
+//        val outputFile = "/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/output.wav"
+//        val result = WavHelper.combineWaveFile(file1, file2, outputFile)
+
+
 
         //Initialize Shared Preferences to store device firebase token
         sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
