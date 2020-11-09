@@ -17,6 +17,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
@@ -42,13 +43,12 @@ import com.limor.app.uimodels.UIDraft
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_record.*
 import kotlinx.android.synthetic.main.toolbar_default.*
-import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.runOnUiThread
 import org.jetbrains.anko.support.v4.toast
-import org.jetbrains.anko.textColor
-import org.jetbrains.anko.uiThread
+import timber.log.Timber
 import java.io.File
 import java.util.*
 import javax.inject.Inject
@@ -284,61 +284,65 @@ class RecordFragment : BaseFragment() {
     private fun onEditClicked() {
         stopAudio()
 
-        //Merge audios and delete all them except the Audio Merged
-        when (draftViewModel.filesArray.size) {
-            0 -> {
-                insertDraftInRealm(uiDraft!!, false)
+        // this will happen when we first record an audio in the record fragment.
+        // I mean, if I just come to the RecordFragment and start a recording, this would
+        // be my only recording and my only file. This is this specific case.
+        if(draftViewModel.filesArray.size == 1) {
+            uiDraft?.filePath = draftViewModel.filesArray[0].absolutePath
+            uiDraft?.editedFilePath = draftViewModel.filesArray[0].absolutePath
+            insertDraftInRealm(uiDraft!!, false)
 
-                val bundle = bundleOf("recordingItem" to uiDraft)
-                findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
-            }
-            1 -> {
-                uiDraft?.filePath = draftViewModel.filesArray[0].absolutePath
-                uiDraft?.editedFilePath = draftViewModel.filesArray[0].absolutePath
-                insertDraftInRealm(uiDraft!!, false)
+            val bundle = bundleOf("recordingItem" to uiDraft)
+            //findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
+            findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
 
-                val bundle = bundleOf("recordingItem" to uiDraft)
-                //findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
-                findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
-            }
-            else -> {
-                doAsync {
-                    val finalAudio = File(context?.getExternalFilesDir(null)?.absolutePath, "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
-                    if (WavHelper.combineWaveFile(draftViewModel.filesArray[0].absolutePath, draftViewModel.filesArray[1].absolutePath, finalAudio.absolutePath)) {
-                        // let's delete the old files, we don't need them anymore
-                        draftViewModel.filesArray.forEach {
-                            it.delete()
-                        }
 
-                        // let's empty the filesArray
-                        draftViewModel.filesArray.clear()
-                        // and let's add the combined audio, that is now the ONLY audio
-                        draftViewModel.filesArray.add(finalAudio)
 
-                        //The recording item will be passed to EditFragment as Argument inside a bundle
-                        uiDraft?.filePath = finalAudio.absolutePath
-
-                        insertDraftInRealm(uiDraft!!, false)
-
-                        continueRecording = true
-                    } else {
-                        println("Fail merge audios")
+            // this will happen when I have come back from edit fragment and then, I have my previous recording
+            // and my new recording that should be merged now.
+        } else if(draftViewModel.filesArray.size == 2) {
+            doAsync {
+                val finalAudio = File(context?.getExternalFilesDir(null)?.absolutePath, "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
+                if (WavHelper.combineWaveFile(draftViewModel.filesArray[0].absolutePath, draftViewModel.filesArray[1].absolutePath, finalAudio.absolutePath)) {
+                    // let's delete the old files, we don't need them anymore
+                    draftViewModel.filesArray.forEach {
+                        it.delete()
                     }
+
+                    // let's empty the filesArray
+                    draftViewModel.filesArray.clear()
+                    // and let's add the combined audio, that is now the ONLY audio
+                    draftViewModel.filesArray.add(finalAudio)
+
+                    //The recording item will be passed to EditFragment as Argument inside a bundle
+                    uiDraft?.filePath = finalAudio.absolutePath
+
+                    insertDraftInRealm(uiDraft!!, false)
+
+                    continueRecording = true
+
                     uiThread {
                         //Go to Publish fragment
-                        try {
-                            val bundle = bundleOf("recordingItem" to uiDraft)
-                            findNavController().navigate(
-                                    R.id.action_record_fragment_to_record_edit,
-                                    bundle
-                            )
-                        } catch (e: Exception) {
-                        }
+                        // TODO: Jose -> maybe we don't need any bundle if we are using viewmodels
+                        val bundle = bundleOf("recordingItem" to uiDraft)
+                        findNavController().navigate(
+                                R.id.action_record_fragment_to_record_edit,
+                                bundle
+                        )
+                    }
+                } else {
+                    uiThread {
+                        activity?.alert(getString(R.string.error_merging_file)){
+                            okButton {  }
+                        }?.show()
                     }
                 }
             }
+        } else {
+            val errorMessage = "Error, you have -> ${draftViewModel.filesArray.size} items when merging audio"
+            alert(errorMessage) {okButton {  }}.show()
+            Timber.e(errorMessage)
         }
-
         continueRecording = false
     }
 

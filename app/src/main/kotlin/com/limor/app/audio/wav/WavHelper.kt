@@ -13,13 +13,9 @@ import java.nio.ByteOrder
 class WavHelper {
 
     companion object {
-        private const val SAMPLE_RATE = 44100
-        private const val NUM_CHANNELS = 2
-        private const val BYTES_PER_SAMPLE = 2
-        private const val BITS_PER_SAMPLE = BYTES_PER_SAMPLE * 8
 
 
-        @Deprecated("") // this one is wrong, shouldn't be used
+        @Deprecated("You should use combineWaveFile. This one is old and doesn't work properly") // this one is wrong, shouldn't be used
         fun combineWaveFile2(
                 file1: String,
                 file2: String,
@@ -28,6 +24,10 @@ class WavHelper {
                 skipSecond: Boolean
         ): Boolean {
 
+            val SAMPLE_RATE = 44100
+            val NUM_CHANNELS = 2
+            val BYTES_PER_SAMPLE = 2
+            val BITS_PER_SAMPLE = BYTES_PER_SAMPLE * 8
 
             // we'll assume that both wav files have the same properties
             // like sample rate, num channels, etc

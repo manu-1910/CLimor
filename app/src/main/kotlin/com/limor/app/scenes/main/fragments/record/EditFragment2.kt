@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
@@ -32,6 +33,7 @@ import com.limor.app.uimodels.UIDraft
 import com.limor.app.uimodels.UITimeStamp
 import kotlinx.android.synthetic.main.fragment_waveform.*
 import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -131,6 +133,48 @@ class EditFragment2 : WaveformFragment() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        requireActivity()
+                .onBackPressedDispatcher
+                .addCallback(this, object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        onBackPressed()
+                    }
+                })
+    }
+
+    private fun onBackPressed() {
+        activity?.alert(getString(R.string.confirmation_with_changes)){
+            positiveButton(getString(R.string.keep)) {
+                handlePause()
+                handlePausePreview()
+                val path = context?.getExternalFilesDir(null)?.absolutePath
+                val convertedFile = File(path, "/limorv2/" + System.currentTimeMillis() + ".wav")
+
+//                val commandToExecute1 = "-i ${uiDraft!!.filePath} -f s16le -ac 2 -ar 16000 $convertedFile"
+                //        val commandToExecute2 = "-i " + uiDraft!!.filePath + " -acodec pcm_s16le -ac 2 -ar 16000 " + convertedFile
+                val commandToExecute3 = "-i ${uiDraft!!.filePath} $convertedFile"
+
+                val rc: Int = FFmpeg.execute(commandToExecute3)
+                if(rc == RETURN_CODE_SUCCESS) {
+                    draftViewModel.uiDraft.filePath = convertedFile.absolutePath
+                    draftViewModel.filesArray.clear()
+                    draftViewModel.filesArray.add(convertedFile)
+                    draftViewModel.continueRecording = true
+                    findNavController().popBackStack()
+                } else {
+                    alert(getString(R.string.error_converting_audio)) {
+                        okButton {  }
+                    }.show()
+                }
+            }
+            negativeButton(getString(R.string.discard)) {
+                restoreToInitialState()
+            }
+        }?.show()
+    }
+
     private fun listeners() {
 
         tvToolbarTitle?.text = getString(R.string.edit)
@@ -142,7 +186,7 @@ class EditFragment2 : WaveformFragment() {
         tvDelete?.onClick { deleteClick() }
 
         closeButton.onClick {
-            restoreToInitialState()
+            onBackPressed()
         }
 
         infoButton.onClick {
@@ -518,30 +562,8 @@ class EditFragment2 : WaveformFragment() {
     }
 
     /**
-     * This method receives a path, start and endframes, and outputs a sound file in the specified path
-     * from the start to the end frame.
-     *
-     * It returns the absolute path of the created file
-     */
-    private fun writeSoundTemporaryFile(
-            path: String,
-            startFrame: Int,
-            endFrame: Int
-    ): String {
-        // we create the outputfile with the output path
-        val file = File(path)
-        val numFrames = endFrame - startFrame
-        soundFile.WriteFile(
-                file,
-                startFrame,
-                numFrames
-        )
-        return file.absolutePath
-    }
-
-    /**
-     * This method receives a path, start and endframes, and outputs a sound file in the specified path
-     * from the start to the end frame.
+     * This method receives a path, start and end second, and outputs a sound file in the specified path
+     * from the start to the end second.
      *
      * It returns the absolute path of the created file
      */
@@ -721,40 +743,11 @@ class EditFragment2 : WaveformFragment() {
     private fun openPublishFragment() {
         handlePause()
         handlePausePreview()
-        //DataManager.getInstance().setSkipRecordScreen(true);
-        val timeStamps = ArrayList<UITimeStamp>()
-        if (markerSets != null && markerSets.size > 0) {
-            for (markerSet in markerSets) {
-                if (!markerSet.isEditMarker) {
-                    val startPosMilliseconds =
-                            waveformView.pixelsToMillisecs(markerSet.startPos)
-                    val endPosMilliseconds =
-                            waveformView.pixelsToMillisecs(markerSet.endPos)
-                    val timeStamp = UITimeStamp()
-                    timeStamp.startSample = startPosMilliseconds
-                    timeStamp.endSample = endPosMilliseconds
-                    timeStamp.duration = endPosMilliseconds - startPosMilliseconds
-                    timeStamps.add(timeStamp)
-                }
-            }
-            saveNewFileFromMarkers(false)
-            uiDraft!!.editedFilePath = editedWithMarkersFileName
-        } else {
-            uiDraft!!.editedFilePath = ""
-        }
-
-        uiDraft!!.timeStamps = timeStamps
-        updateRecordingItem()
-
         val bundle = bundleOf("recordingItem" to uiDraft)
         findNavController().navigate(R.id.action_record_edit_to_record_publish, bundle)
-
     }
 
-    private fun rename(from: File, to: File): Boolean {
-        return from.parentFile.exists() && from.exists() && from.renameTo(to)
-    }
-
+    @Deprecated("This one shouldn't be used, you should use restoreToInitialState")
     private fun restoreToInitialStateOld() {
         //TODO JJ Esto había antes
 //        recordingItem!!.timeStamps = initialTimeStamps

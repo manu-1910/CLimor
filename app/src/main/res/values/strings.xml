@@ -402,4 +402,9 @@
     <string name="title_error">Error</string>
     <string name="error_loading_audio_file">There was an error trying to load your audio file</string>
     <string name="play_preview">Play preview</string>
+    <string name="error_merging_file">There was an error trying to merge file</string>
+    <string name="confirmation_with_changes">What do you want to do with the current changes?</string>
+    <string name="keep">Keep</string>
+    <string name="discard">Discard</string>
+    <string name="error_converting_audio">Error converting your audio</string>
 </resources>

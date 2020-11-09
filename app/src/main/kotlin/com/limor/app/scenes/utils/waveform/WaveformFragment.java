@@ -50,6 +50,7 @@ import java.util.List;
 import me.kareluo.ui.OptionMenu;
 import me.kareluo.ui.PopupMenuView;
 import me.kareluo.ui.PopupView;
+import timber.log.Timber;
 
 /*
  * Copyright (C) 2008 Google Inc.
@@ -666,6 +667,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                             .setMessage(getContext().getString(R.string.error_loading_audio_file))
                             .setPositiveButton(getContext().getString(R.string.yes), null)
                             .show());
+                    Timber.e("There was an error trying to load your audio file -> " + file.getAbsolutePath());
                     e.printStackTrace();
                 }
             }
