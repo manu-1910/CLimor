@@ -8,6 +8,8 @@ import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.media.AudioFormat
+import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.os.Bundle
 import android.os.SystemClock
 import android.text.Editable
@@ -49,6 +51,7 @@ import org.jetbrains.anko.support.v4.runOnUiThread
 import org.jetbrains.anko.support.v4.toast
 import timber.log.Timber
 import java.io.File
+import java.lang.Math.ceil
 import java.util.*
 import javax.inject.Inject
 
@@ -130,14 +133,34 @@ class RecordFragment : BaseFragment() {
             isFirstTapRecording = true
 
             //Put the seconds counter with the length of the draftitem
-            if (draftViewModel.durationOfLastAudio > 0) {
-                c_meter.base = SystemClock.elapsedRealtime() - draftViewModel.durationOfLastAudio
-                timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
-                draftViewModel.durationOfLastAudio = 0
-            }
+            updateChronoTimerFromDraft()
 
             resetAudioSetup()
             uiDraft = draftViewModel.uiDraft
+        }
+    }
+
+    private fun updateChronoTimerFromDraft() {
+        draftViewModel.uiDraft.filePath?.let {
+            val file = File(it)
+            if (file.exists()) {
+                val uri: Uri = Uri.parse(it)
+                val mmr = MediaMetadataRetriever()
+                try {
+                    mmr.setDataSource(context, uri)
+                    val durationStr =
+                        mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                    val currentDurationInMillis = durationStr.toInt()
+                    val currentDurationInSecondsFloat: Double = currentDurationInMillis / 1000.0
+                    val durationFloatRoundedUp = kotlin.math.ceil(currentDurationInSecondsFloat)
+                    val durationMillisRoundedUp = (durationFloatRoundedUp * 1000).toInt()
+                    c_meter.base = SystemClock.elapsedRealtime() - durationMillisRoundedUp
+                    timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Timber.d("Couldn't read metadata and duration. This could be because the file you're trying to access is corrupted")
+                }
+            }
         }
     }
 
