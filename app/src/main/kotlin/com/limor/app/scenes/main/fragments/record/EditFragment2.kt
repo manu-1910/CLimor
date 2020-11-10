@@ -741,8 +741,23 @@ class EditFragment2 : WaveformFragment() {
     private fun openPublishFragment() {
         handlePause()
         handlePausePreview()
-        val bundle = bundleOf("recordingItem" to uiDraft)
-        findNavController().navigate(R.id.action_record_edit_to_record_publish, bundle)
+        val convertedFile = WavHelper.convertToWav(requireContext(), uiDraft?.filePath!!)
+        if(convertedFile != null) {
+            draftViewModel.uiDraft.filePath = convertedFile.absolutePath
+
+            // these steps of clearing the array and adding the last recorded file are necessary to continuous recording
+            draftViewModel.filesArray.clear()
+            draftViewModel.filesArray.add(convertedFile)
+            draftViewModel.continueRecording = true
+
+            val bundle = bundleOf("recordingItem" to uiDraft)
+            findNavController().navigate(R.id.action_record_edit_to_record_publish, bundle)
+        } else {
+            alert(getString(R.string.error_converting_audio)) {
+                okButton {  }
+            }.show()
+        }
+
     }
 
     @Deprecated("This one shouldn't be used, you should use restoreToInitialState")

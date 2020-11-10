@@ -27,6 +27,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -188,10 +189,31 @@ class PublishFragment : BaseFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        uiDraft = UIDraft()
         uiDraft = arguments!!["recordingItem"] as UIDraft
     }
 
+
+    override fun onStart() {
+        super.onStart()
+        requireActivity()
+                .onBackPressedDispatcher
+                .addCallback(this, object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        onBackPressed()
+                    }
+                })
+    }
+
+    fun onBackPressed() {
+        addDataToRecordingItem()
+
+        draftViewModel.uiDraft = uiDraft
+        draftViewModel.filesArray.clear()
+        draftViewModel.filesArray.add(File(uiDraft.filePath))
+        draftViewModel.continueRecording = true
+
+        findNavController().popBackStack()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -199,9 +221,8 @@ class PublishFragment : BaseFragment() {
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 100f)
 
-        uiDraft = UIDraft()
         uiDraft = arguments!!["recordingItem"] as UIDraft
-        
+
         configureToolbar()
         listeners()
         loadExistingData()
@@ -339,22 +360,7 @@ class PublishFragment : BaseFragment() {
 
         //Toolbar Left
         btnClose.onClick {
-            addDataToRecordingItem()
-
-            try {
-                draftViewModel.uiDraft = uiDraft
-
-                draftViewModel.filesArray.clear()
-                if (!draftViewModel.filesArray.contains(File(uiDraft.filePath))) {
-                    draftViewModel.filesArray.add(File(uiDraft.filePath))
-                }
-
-                draftViewModel.continueRecording = true
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            findNavController().popBackStack()
+            onBackPressed()
         }
 
         //Toolbar Right
