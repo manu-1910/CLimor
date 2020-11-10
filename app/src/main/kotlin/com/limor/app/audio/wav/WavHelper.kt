@@ -1,7 +1,9 @@
 package com.limor.app.audio.wav
 
+import android.content.Context
 import android.media.AudioFormat
 import android.media.AudioRecord
+import com.arthenica.mobileffmpeg.FFmpeg
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -191,7 +193,7 @@ class WavHelper {
 
 
         @Throws(IOException::class)
-        fun writeWaveFileHeader(
+        private fun writeWaveFileHeader(
                 out: FileOutputStream,
                 totalAudioLen: Long,
                 totalDataLen: Long,
@@ -246,6 +248,21 @@ class WavHelper {
             header[42] = (totalAudioLen shr 16 and 0xff).toByte()
             header[43] = (totalAudioLen shr 24 and 0xff).toByte()
             out.write(header, 0, 44)
+        }
+
+
+        // receives a file path and tries to convert it to wav.
+        // it will return the new generated file if success or null if error
+        fun convertToWav(context: Context, fileToConvert : String) : File? {
+            val path = context.getExternalFilesDir(null)?.absolutePath
+            val convertedFile = File(path, "/limorv2/" + System.currentTimeMillis() + ".wav")
+            val commandToExecute3 = "-i $fileToConvert $convertedFile"
+
+            val rc: Int = FFmpeg.execute(commandToExecute3)
+            if(rc == FFmpeg.RETURN_CODE_SUCCESS) {
+                return convertedFile
+            }
+            return null
         }
     }
 

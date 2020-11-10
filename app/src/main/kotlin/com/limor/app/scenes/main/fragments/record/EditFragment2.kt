@@ -22,6 +22,7 @@ import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack
 import com.limor.app.App
 import com.limor.app.R
+import com.limor.app.audio.wav.WavHelper
 import com.limor.app.scenes.main.viewmodels.DraftViewModel
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.Commons.deleteFile
@@ -149,16 +150,11 @@ class EditFragment2 : WaveformFragment() {
             positiveButton(getString(R.string.keep)) {
                 handlePause()
                 handlePausePreview()
-                val path = context?.getExternalFilesDir(null)?.absolutePath
-                val convertedFile = File(path, "/limorv2/" + System.currentTimeMillis() + ".wav")
-
-//                val commandToExecute1 = "-i ${uiDraft!!.filePath} -f s16le -ac 2 -ar 16000 $convertedFile"
-                //        val commandToExecute2 = "-i " + uiDraft!!.filePath + " -acodec pcm_s16le -ac 2 -ar 16000 " + convertedFile
-                val commandToExecute3 = "-i ${uiDraft!!.filePath} $convertedFile"
-
-                val rc: Int = FFmpeg.execute(commandToExecute3)
-                if(rc == RETURN_CODE_SUCCESS) {
+                val convertedFile = WavHelper.convertToWav(requireContext(), uiDraft?.filePath!!)
+                if(convertedFile != null) {
                     draftViewModel.uiDraft.filePath = convertedFile.absolutePath
+
+                    // these steps of clearing the array and adding the last recorded file are necessary to continuous recording
                     draftViewModel.filesArray.clear()
                     draftViewModel.filesArray.add(convertedFile)
                     draftViewModel.continueRecording = true
@@ -174,6 +170,8 @@ class EditFragment2 : WaveformFragment() {
             }
         }?.show()
     }
+
+
 
     private fun listeners() {
 
@@ -817,8 +815,9 @@ class EditFragment2 : WaveformFragment() {
 
                 draftViewModel.uiDraft = uiDraft!!
 
+                // these two steps of clearing the array and putting the first item with the current file are necessary to keep recording after this file
                 draftViewModel.filesArray.clear()
-                draftViewModel.filesArray.add(File(uiDraft?.filePath))
+                draftViewModel.filesArray.add(File(uiDraft?.filePath!!))
                 draftViewModel.durationOfLastAudio = player.duration.toLong()
                 draftViewModel.continueRecording = true
 
@@ -848,6 +847,10 @@ class EditFragment2 : WaveformFragment() {
         handlePause()
         handlePausePreview()
         draftViewModel.uiDraft = initialUIDraft!!
+
+        // these two steps of clearing the array and putting the first item with the current file are necessary to keep recording after this file
+        draftViewModel.filesArray.clear()
+        draftViewModel.filesArray.add(File(draftViewModel.uiDraft.filePath!!))
         draftViewModel.continueRecording = true
         findNavController().popBackStack()
     }
