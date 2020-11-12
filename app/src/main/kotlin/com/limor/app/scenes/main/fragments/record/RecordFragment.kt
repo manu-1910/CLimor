@@ -19,6 +19,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
@@ -139,6 +140,17 @@ class RecordFragment : BaseFragment() {
             resetAudioSetup()
             uiDraft = draftViewModel.uiDraft
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    onBackPressed()
+                }
+            })
     }
 
     private fun updateChronoTimerFromDraft() {
@@ -314,19 +326,7 @@ class RecordFragment : BaseFragment() {
         //Toolbar Left
         btnToolbarLeft.text = getString(R.string.btn_cancel)
         btnToolbarLeft.onClick { //Here the user has start recording
-            alert(
-                    getString(R.string.alert_cancel_record_descr),
-                    getString(R.string.alert_cancel_record_title)
-            ) {
-                positiveButton(getString(R.string.alert_cancel_record_save)) {
-                    it.dismiss()
-                    showSaveDraftAlert()
-                }
-                negativeButton(getString(R.string.alert_cancel_record_do_not_save)) {
-                    deleteDraftInRealm(uiDraft!!)
-                    activity?.finish()
-                }
-            }.show()
+            onBackPressed()
         }
 
         //Toolbar Right
@@ -334,6 +334,22 @@ class RecordFragment : BaseFragment() {
         btnToolbarRight.onClick {
             onEditClicked()
         }
+    }
+
+    private fun onBackPressed() {
+        alert(
+                getString(R.string.alert_cancel_record_descr),
+                getString(R.string.alert_cancel_record_title)
+        ) {
+            positiveButton(getString(R.string.alert_cancel_record_save)) {
+                it.dismiss()
+                showSaveDraftAlert()
+            }
+            negativeButton(getString(R.string.alert_cancel_record_do_not_save)) {
+                deleteDraftInRealm(uiDraft!!)
+                activity?.finish()
+            }
+        }.show()
     }
 
     private fun onEditClicked() {

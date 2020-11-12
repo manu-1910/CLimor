@@ -157,14 +157,6 @@ class DraftsFragment : BaseFragment() {
                 }
             }
 
-            try {
-                if(adapter?.mediaPlayer!!.isPlaying){
-                    adapter?.mediaPlayer!!.stop()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
             rvDrafts?.adapter?.notifyDataSetChanged()
         }
 
