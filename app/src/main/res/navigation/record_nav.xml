@@ -31,8 +31,8 @@
 
    <fragment
        android:id="@+id/record_edit"
-       android:name="com.limor.app.scenes.main.fragments.record.EditFragment"
-       android:label="EditFragment"
+       android:name="com.limor.app.scenes.main.fragments.record.EditFragment2"
+       android:label="EditFragment2"
        tools:layout="@layout/fragment_edit">
       <argument
           android:name="audioFilename"

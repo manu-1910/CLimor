@@ -27,6 +27,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -94,7 +95,7 @@ class PublishFragment : BaseFragment() {
     private lateinit var locationsViewModel: LocationsViewModel
     private lateinit var tagsViewModel: TagsViewModel
 
-    lateinit var recordingItem: UIDraft
+    lateinit var uiDraft: UIDraft
     private lateinit var mediaPlayer: MediaPlayer
     private var seekHandler = Handler()
     private var run: Runnable? = null
@@ -188,10 +189,31 @@ class PublishFragment : BaseFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        recordingItem = UIDraft()
-        recordingItem = arguments!!["recordingItem"] as UIDraft
+        uiDraft = arguments!!["recordingItem"] as UIDraft
     }
 
+
+    override fun onStart() {
+        super.onStart()
+        requireActivity()
+                .onBackPressedDispatcher
+                .addCallback(this, object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        onBackPressed()
+                    }
+                })
+    }
+
+    fun onBackPressed() {
+        addDataToRecordingItem()
+
+        draftViewModel.uiDraft = uiDraft
+        draftViewModel.filesArray.clear()
+        draftViewModel.filesArray.add(File(uiDraft.filePath))
+        draftViewModel.continueRecording = true
+
+        findNavController().popBackStack()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -199,16 +221,15 @@ class PublishFragment : BaseFragment() {
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 100f)
 
-        recordingItem = UIDraft()
-        recordingItem = arguments!!["recordingItem"] as UIDraft
-        
+        uiDraft = arguments!!["recordingItem"] as UIDraft
+
         configureToolbar()
         listeners()
         loadExistingData()
         multiCompleteText()
 
-        listTagsString = HashtagArrayAdapter<Hashtag>(context!!)
-        setupRecyclerTags(listTagsString!!)
+        listTagsString = HashtagArrayAdapter(context!!)
+        setupRecyclerTags()
     }
 
 
@@ -220,12 +241,12 @@ class PublishFragment : BaseFragment() {
 
         if (!podcastLocation.address.isNullOrEmpty()) {
             tvSelectedLocation?.text = podcastLocation.address
-            recordingItem.location = podcastLocation
+            uiDraft.location = podcastLocation
         }
         if (!publishViewModel.categorySelected.isNullOrEmpty()) {
             tvSelectedCategory?.text = publishViewModel.categorySelected
-            recordingItem.category = publishViewModel.categorySelected
-            recordingItem.categoryId = publishViewModel.categorySelectedId
+            uiDraft.category = publishViewModel.categorySelected
+            uiDraft.categoryId = publishViewModel.categorySelectedId
         }
 
         //update database
@@ -339,22 +360,7 @@ class PublishFragment : BaseFragment() {
 
         //Toolbar Left
         btnClose.onClick {
-            addDataToRecordingItem()
-
-            try {
-                draftViewModel.uiDraft = recordingItem
-
-                draftViewModel.filesArray.clear()
-                if (!draftViewModel.filesArray.contains(File(recordingItem.filePath))) {
-                    draftViewModel.filesArray.add(File(recordingItem.filePath))
-                }
-
-                draftViewModel.continueRecording = true
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            findNavController().popBackStack()
+            onBackPressed()
         }
 
         //Toolbar Right
@@ -400,7 +406,7 @@ class PublishFragment : BaseFragment() {
         twCaption = object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
-                recordingItem.caption = editable.toString()
+                uiDraft.caption = editable.toString()
                 callToUpdateDraft()
             }
             override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {
@@ -438,7 +444,7 @@ class PublishFragment : BaseFragment() {
         twTitle = object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
-                recordingItem.title = editable.toString()
+                uiDraft.title = editable.toString()
                 callToUpdateDraft()
             }
             override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
@@ -484,7 +490,7 @@ class PublishFragment : BaseFragment() {
         //Upload audio file to AWS
         Commons.getInstance().uploadAudio(
             context,
-            File(Uri.parse(recordingItem.filePath).path!!),
+            File(Uri.parse(uiDraft.filePath).path!!),
             Constants.AUDIO_TYPE_PODCAST,
             object : Commons.AudioUploadCallback {
                 override fun onSuccess(audioUrl: String?) {
@@ -542,7 +548,7 @@ class PublishFragment : BaseFragment() {
                 }, Commons.IMAGE_TYPE_ATTACHMENT
             )
         } else {
-            val imageFile = File(recordingItem.tempPhotoPath)
+            val imageFile = File(uiDraft.tempPhotoPath)
             Commons.getInstance().handleImage(
                 context,
                 Commons.IMAGE_TYPE_PODCAST,
@@ -586,19 +592,19 @@ class PublishFragment : BaseFragment() {
     private fun loadExistingData() {
 
         //recordingItem
-        if (!recordingItem.title.toString().trim().isNullOrEmpty()) {
+        if (!uiDraft.title.toString().trim().isNullOrEmpty()) {
             //val autosaveText = draftViewModel.uiDraft.title?.toEditable()
-            if (!recordingItem.title.toString().trim().equals(getString(R.string.autosave))) {
-                etDraftTitle?.text = recordingItem.title?.toEditable()
+            if (!uiDraft.title.toString().trim().equals(getString(R.string.autosave))) {
+                etDraftTitle?.text = uiDraft.title?.toEditable()
             }
         }
-        if (!recordingItem.caption.toString().trim().isNullOrEmpty()) {
-            etDraftCaption?.text = recordingItem.caption?.toEditable()
+        if (!uiDraft.caption.toString().trim().isNullOrEmpty()) {
+            etDraftCaption?.text = uiDraft.caption?.toEditable()
         }
-        if (!recordingItem.tempPhotoPath.toString().trim().isNullOrEmpty()) {
+        if (!uiDraft.tempPhotoPath.toString().trim().isNullOrEmpty()) {
             //Glide.with(context!!).load(draftViewModel.uiDraft.tempPhotoPath).into(draftImage!!)
 
-            val imageFile = File(recordingItem.tempPhotoPath)
+            val imageFile = File(uiDraft.tempPhotoPath)
             if (!imageFile.path.isNullOrEmpty()) {
                 podcastHasImage = true
                 Commons.getInstance().handleImage(
@@ -615,18 +621,18 @@ class PublishFragment : BaseFragment() {
             lytImagePlaceholder?.visibility = View.VISIBLE
             lytImage?.visibility = View.GONE
         }
-        if (!recordingItem.category.toString().isNullOrEmpty()) {
-            tvSelectedCategory?.text = recordingItem.category
+        if (!uiDraft.category.toString().isNullOrEmpty()) {
+            tvSelectedCategory?.text = uiDraft.category
         } else {
             tvSelectedCategory?.text = publishViewModel.categorySelected
-            recordingItem.category = publishViewModel.categorySelected
-            recordingItem.categoryId = publishViewModel.categorySelectedId
+            uiDraft.category = publishViewModel.categorySelected
+            uiDraft.categoryId = publishViewModel.categorySelectedId
         }
-        if (!recordingItem.location?.address.toString().isNullOrEmpty()) {
-            tvSelectedLocation?.text = recordingItem.location?.address
+        if (!uiDraft.location?.address.toString().isNullOrEmpty()) {
+            tvSelectedLocation?.text = uiDraft.location?.address
         } else {
             tvSelectedLocation?.text = publishViewModel.locationSelectedItem.address
-            recordingItem.location = publishViewModel.locationSelectedItem
+            uiDraft.location = publishViewModel.locationSelectedItem
         }
     }
 
@@ -634,12 +640,12 @@ class PublishFragment : BaseFragment() {
     private fun addDataToRecordingItem() {
         //Compose the local object
         if (!etDraftTitle?.text.toString().isNullOrEmpty()) {
-            recordingItem.title = etDraftTitle?.text.toString()
+            uiDraft.title = etDraftTitle?.text.toString()
         } else {
-            recordingItem.title = getString(R.string.autosave)
+            uiDraft.title = getString(R.string.autosave)
         }
 
-        recordingItem.caption = etDraftCaption?.text.toString()
+        uiDraft.caption = etDraftCaption?.text.toString()
 
         //Update Realm
         callToUpdateDraft()
@@ -666,7 +672,7 @@ class PublishFragment : BaseFragment() {
         mediaPlayer = MediaPlayer()
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
         try {
-            mediaPlayer.setDataSource(recordingItem.filePath)
+            mediaPlayer.setDataSource(uiDraft.filePath)
             mediaPlayer.prepare() // might take long for buffering.
         } catch (e: Exception) {
             //e.printStackTrace()
@@ -707,7 +713,7 @@ class PublishFragment : BaseFragment() {
                     )
                 )
                 run = Runnable {
-                    // Updateing SeekBar every 100 miliseconds
+                    // Updating SeekBar every 100 miliseconds
 
                     //For Showing time of audio(inside runnable)
                     val miliSeconds = mediaPlayer.currentPosition
@@ -867,27 +873,25 @@ class PublishFragment : BaseFragment() {
 
 
     private fun checkEmptyFields(): Boolean {
-        var titleNotEmpty = false
-        var captionNotEmpty = false
 
         //Check the Title of the cast
-        if (!etDraftTitle?.text.isNullOrEmpty()) {
-            titleNotEmpty = true
+        val titleNotEmpty : Boolean = if (!etDraftTitle?.text.isNullOrEmpty()) {
+            true
         } else {
             alert(getString(R.string.title_cannot_be_empty)) {
                 okButton {}
             }.show()
-            titleNotEmpty = false
+            false
         }
 
         //Check the Caption of the cast
-        if (!etDraftCaption?.text.isNullOrEmpty()) {
-            captionNotEmpty = true
+        val captionNotEmpty : Boolean = if (!etDraftCaption?.text.isNullOrEmpty()) {
+            true
         } else {
             alert(getString(R.string.caption_cannot_be_empty)) {
                 okButton {}
             }.show()
-            captionNotEmpty = false
+            false
         }
 
         return titleNotEmpty && captionNotEmpty
@@ -994,7 +998,7 @@ class PublishFragment : BaseFragment() {
         etDraftCaption?.isMentionEnabled = false
         etDraftCaption?.hashtagColor = ContextCompat.getColor(context!!, R.color.brandPrimary500)
         etDraftCaption?.hashtagAdapter = listTagsString
-        etDraftCaption?.setHashtagTextChangedListener { view, text ->
+        etDraftCaption?.setHashtagTextChangedListener { _, text ->
             println("setHashtagTextChangedListener -> $text")
             callToTagsApiAndShowRecyclerView(text.toString())
         }
@@ -1024,7 +1028,7 @@ class PublishFragment : BaseFragment() {
     }
 
 
-    private fun setupRecyclerTags(tagList: HashtagArrayAdapter<Hashtag>) {
+    private fun setupRecyclerTags() {
         rvTags?.layoutManager = LinearLayoutManager(context)
         rvTags?.adapter = listTagsString?.let {
             HashtagAdapter(it, object : HashtagAdapter.OnItemClickListener {
@@ -1048,7 +1052,7 @@ class PublishFragment : BaseFragment() {
                                 ) + " "
 
                     etCaption.setText(finalString)
-                    etCaption.setSelection(etCaption.text.length); //This places cursor to end of EditText.
+                    etCaption.setSelection(etCaption.text.length) //This places cursor to end of EditText.
                     rvTags?.adapter?.notifyDataSetChanged()
                 }
             })
@@ -1061,8 +1065,6 @@ class PublishFragment : BaseFragment() {
         val regex = Regex("#\\w+")
         val pattern: Pattern = Pattern.compile(regex.pattern)
         val matcher: Matcher = pattern.matcher(textSpan)
-        var start = 0
-        var end = 0
         var currentWord = ""
         while (matcher.find()) {
             currentWord = matcher.group(matcher.groupCount())
@@ -1079,13 +1081,13 @@ class PublishFragment : BaseFragment() {
 
 
     private fun callToDeleteDraft() {
-        draftViewModel.uiDraft = recordingItem
+        draftViewModel.uiDraft = uiDraft
         deleteDraftsTrigger.onNext(Unit)
     }
 
 
     private fun callToUpdateDraft(){
-        draftViewModel.uiDraft = recordingItem
+        draftViewModel.uiDraft = uiDraft
         updateDraftTrigger.onNext(Unit)
     }
 
@@ -1123,13 +1125,6 @@ class PublishFragment : BaseFragment() {
             listener
         }
     }
-
-
-    fun View.dpToPx(dp: Float) = TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        dp,
-        resources.displayMetrics
-    ).roundToInt()
 
 
     open class KeyboardToggleListener(

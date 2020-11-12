@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/brandSecondary400"
     android:clickable="true"
     android:focusable="true"
@@ -22,7 +22,7 @@
         android:id="@+id/absoluteLayout"
         android:layout_width="match_parent"
         android:layout_marginTop="2dp"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@color/colorPrimary">
 
@@ -36,7 +36,6 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_alignParentBottom="true"
         android:background="@color/brandSecondary300"/>
 
     <LinearLayout
@@ -59,13 +58,13 @@
 
                 <TextView
                     android:id="@+id/tvCopy"
-                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_width="60dp"
                     android:layout_height="30dp"
                     android:textSize="@dimen/textSizeNormal"
                     android:textColor="@color/white"
                     android:gravity="center"
-                    android:text="Copy"/>
+                    android:text="@string/menu_copy"/>
 
                 <TextView
                     android:id="@+id/tvPaste"
@@ -74,18 +73,18 @@
                     android:textSize="@dimen/textSizeNormal"
                     android:gravity="center"
                     android:textColor="@color/white"
-                    android:text="Paste"/>
+                    android:text="@string/menu_paste"/>
 
                 <TextView
                     android:id="@+id/tvDelete"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
                     android:layout_width="60dp"
                     android:layout_height="30dp"
                     android:padding="4dp"
                     android:textSize="@dimen/textSizeNormal"
                     android:gravity="center"
                     android:textColor="@color/white"
-                    android:text="Delete"/>
+                    android:text="@string/menu_delete"/>
             </LinearLayout>
         </RelativeLayout>
 
@@ -108,13 +107,14 @@
                     android:layout_marginStart="4dp"
                     android:padding="4dp"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/play"/>
+                    android:src="@drawable/play"
+                    android:contentDescription="@string/play_preview" />
 
                 <TextView
                     android:id="@+id/tvPreview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Preview"
+                    android:text="@string/menu_preview"
                     android:textColor="@color/white"
                     android:textSize="@dimen/textSizeNormal"
                     android:layout_centerVertical="true"
@@ -141,7 +141,8 @@
                 android:gravity="end"
                 android:layout_centerVertical="true"
                 android:textSize="@dimen/textSizeVerySmall"
-                android:text="00:00"/>
+                android:text="00:00"
+                tools:ignore="HardcodedText" />
 
             <SeekBar
                 android:id="@+id/seekBarPreview"
@@ -159,7 +160,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:textSize="@dimen/textSizeVerySmall"
-                android:text="00:00"/>
+                android:text="00:00"
+                tools:ignore="HardcodedText" />
 
         </RelativeLayout>
 
@@ -194,8 +196,9 @@
             android:layout_alignParentStart="true"
             android:layout_marginStart="@dimen/marginSmall"
             android:layout_marginTop="@dimen/marginSmall"
-            android:gravity="left"
-            android:text="00:00"/>
+            android:gravity="start"
+            android:text="00:00"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/tvDuration"
@@ -208,8 +211,9 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="@dimen/marginSmall"
             android:layout_marginTop="@dimen/marginSmall"
-            android:gravity="right"
-            android:text="00:00"/>
+            android:gravity="end"
+            android:text="00:00"
+            tools:ignore="HardcodedText" />
 
     </RelativeLayout>
 
@@ -219,7 +223,7 @@
 
         <TextView
             android:id="@+id/tvUndo"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_width="60dp"
             android:layout_height="30dp"
@@ -231,7 +235,7 @@
             android:textSize="@dimen/textSizeNormal" />
 
         <ImageButton android:id="@+id/rew"
-            android:layout_toLeftOf="@id/play"
+            android:layout_toStartOf="@id/play"
             android:layout_width="64dip"
             android:layout_height="52dip"
             android:layout_marginTop="6dip"
@@ -251,10 +255,10 @@
             android:src="@drawable/play" />
 
         <ImageButton android:id="@+id/ffwd"
-            android:layout_toRightOf="@id/play"
+            android:layout_toEndOf="@id/play"
             android:layout_width="64dip"
             android:layout_height="52dip"
-            android:layout_marginRight="5dip"
+            android:layout_marginEnd="5dip"
             android:layout_marginTop="6dip"
             android:layout_marginBottom="6dip"
             style="@android:style/MediaButton"
@@ -263,7 +267,7 @@
 
         <TextView
             android:id="@+id/tvRedo"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_width="60dp"
             android:layout_height="30dp"

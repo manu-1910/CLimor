@@ -195,6 +195,16 @@ public class Commons {
         showAlertCustomButtons(context, title, message, listener, context.getString(R.string.yes), null, context.getString(R.string.no));
     }
 
+    public static void showAlertOkButton(Context context, String title, String message, DialogInterface.OnClickListener listener) {
+        showAlertCustomButtons(context, title, message, listener, context.getString(R.string.ok), null, context.getString(R.string.no));
+    }
+
+    public static void showAlertOkButton(Context context, int resourceTitle, int resourceMessage, DialogInterface.OnClickListener listener) {
+        String title = context.getString(resourceTitle);
+        String message = context.getString(resourceMessage);
+        showAlertCustomButtons(context, title, message, listener, context.getString(R.string.ok), null, context.getString(R.string.no));
+    }
+
     public static void showAlertCustomButtons(Context context, String title, String message, DialogInterface.OnClickListener listenerPositive, String stringButtonPositive,
                                               DialogInterface.OnClickListener listenerNegative, String stringButtonNegative) {
         if (context != null) {
@@ -1006,7 +1016,7 @@ public class Commons {
 
 
     public static boolean CombineWaveFile(String file1, String file2, String outPutFile, boolean skipFirst, boolean skipSecond) {
-        int RECORDER_SAMPLERATE = 16000;
+        int RECORDER_SAMPLERATE = 44100;
         int RECORDER_BPP = 16;
         int bufferSize = 1024;
         boolean retorno = true;

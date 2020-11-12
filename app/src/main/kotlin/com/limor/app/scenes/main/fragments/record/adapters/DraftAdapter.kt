@@ -1,6 +1,5 @@
 package com.limor.app.scenes.main.fragments.record.adapters
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
@@ -142,10 +141,15 @@ class DraftAdapter(
             val f = File(it)
             if(f.exists()) {
                 val mmr = MediaMetadataRetriever()
-                mmr.setDataSource(context, uri)
-                val durationStr =
-                    mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                currentDurationInMillis = durationStr.toInt()
+                try {
+                    mmr.setDataSource(context, uri)
+                    val durationStr =
+                        mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                    currentDurationInMillis = durationStr.toInt()
+                } catch (e : Exception) {
+                    e.printStackTrace()
+                    Timber.d("Couldn't read metadata and duration. This could be because the file you're trying to access is corrupted")
+                }
             }
         }
 
@@ -354,7 +358,16 @@ class DraftAdapter(
                 onCompletionListener()
             }
             mediaPlayer.setDataSource(currentDraft.filePath)
-            mediaPlayer.prepare()
+            try{
+                mediaPlayer.prepare()
+            } catch (e : Exception) {
+                e.printStackTrace()
+                Timber.d("The mediaplayer could not be prepared, probably because the file is corrupted")
+                context.alert(context.getString(R.string.error_file_corrupted)) {
+                    okButton {  }
+                }
+                return
+            }
             mediaPlayer.setOnPreparedListener {
                 it.start()
                 currentSeekbarPlaying?.progress?.let {newProgress ->
