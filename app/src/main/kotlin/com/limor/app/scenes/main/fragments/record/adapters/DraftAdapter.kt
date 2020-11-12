@@ -129,7 +129,9 @@ class DraftAdapter(
         // edit mode
         if (currentDraft.isEditMode!!) {
             holder.ivDraftDelete.setImageResource(R.drawable.delete_symbol)
-            holder.ivDraftDelete.onClick { deleteListener.onDeleteItemClick(position) }
+            holder.ivDraftDelete.onClick {
+                deleteClicked(position)
+            }
         } else {
             holder.ivDraftDelete.setImageResource(android.R.color.transparent)
         }
@@ -292,15 +294,12 @@ class DraftAdapter(
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.menu_duplicate_cast -> {
-                    //Toast.makeText(context, "duplicate cast", Toast.LENGTH_SHORT).show()
                     stopMediaPlayer()
                     duplicateListener.onDuplicateItemClick(position)
                     true
                 }
                 R.id.menu_delete_cast -> {
-                    //Toast.makeText(context, "delete cast", Toast.LENGTH_SHORT).show()
-                    stopMediaPlayer()
-                    deleteListener.onDeleteItemClick(position)
+                    deleteClicked(position)
                     true
                 }
                 else -> false
@@ -432,6 +431,17 @@ class DraftAdapter(
         } catch (e: Exception) {
             println("Exception stopping media player inside DraftAdapter")
         }
+    }
+
+    private fun deleteClicked(position: Int) {
+        stopMediaPlayer()
+        if(position == currentPlayingItemPosition) {
+            currentPlayingItemPosition = -1
+        }
+        if(position == currentClickedItemPosition) {
+            currentClickedItemPosition = -1
+        }
+        deleteListener.onDeleteItemClick(position)
     }
 
 
