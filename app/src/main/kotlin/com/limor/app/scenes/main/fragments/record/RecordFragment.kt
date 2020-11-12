@@ -31,15 +31,15 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.limor.app.App
 import com.limor.app.R
+import com.limor.app.audio.wav.WavHelper
+import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.common.BaseFragment
 import com.limor.app.scenes.main.viewmodels.DraftViewModel
 import com.limor.app.scenes.main.viewmodels.LocationsViewModel
 import com.limor.app.scenes.utils.CommonsKt.Companion.audioFileFormat
 import com.limor.app.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import com.limor.app.scenes.utils.VisualizerView
-import com.limor.app.audio.wav.WavHelper
 import com.limor.app.scenes.utils.location.MyLocation
-import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.uimodels.UIDraft
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_record.*
@@ -51,9 +51,9 @@ import org.jetbrains.anko.support.v4.runOnUiThread
 import org.jetbrains.anko.support.v4.toast
 import timber.log.Timber
 import java.io.File
-import java.lang.Math.ceil
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 class RecordFragment : BaseFragment() {
@@ -109,6 +109,7 @@ class RecordFragment : BaseFragment() {
 
 
         bindViewModel()
+        deleteUnusedAudioFiles()
         configureToolbar()
         audioSetup()
         listeners()
@@ -169,6 +170,39 @@ class RecordFragment : BaseFragment() {
         ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
 
+    private fun deleteUnusedAudioFiles() {
+        // let's fill a paths list with all the file paths that should be in the storage
+        draftViewModel.loadDraftRealm()?.observe(this@RecordFragment, Observer<List<UIDraft>> {
+            val paths = ArrayList<String>()
+            it.forEach { draft ->
+                draft.filePath?.let {path ->
+                    paths.add(path)
+                }
+            }
+            // and now, let's delete all zombie files that are not linked to any draft anymore but,
+            // for some reason, they were not deleted
+            val audioDirectory = File(context?.getExternalFilesDir(null)?.absolutePath, "/limorv2/")
+            if(audioDirectory.exists() && audioDirectory.isDirectory) {
+                val files = audioDirectory.listFiles()
+                files?.forEach {file ->
+                    if(!paths.contains(file.absolutePath))
+                        file.delete()
+                }
+            }
+        })
+
+
+        // and now, let's clean cache too
+        context?.externalCacheDir?.absolutePath?.let {
+            val cacheDirectory = File(it)
+            if(cacheDirectory.exists() && cacheDirectory.isDirectory) {
+                val cacheFiles = cacheDirectory.listFiles()
+                cacheFiles?.forEach {file ->
+                    file.delete()
+                }
+            }
+        }
+    }
 
     private fun configureToolbar() {
         //Toolbar title
