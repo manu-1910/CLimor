@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.AudioFormat
 import android.media.AudioRecord
 import com.arthenica.mobileffmpeg.FFmpeg
+import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -18,7 +19,7 @@ class WavHelper {
 
 
         @Deprecated("You should use combineWaveFile. This one is old and doesn't work properly") // this one is wrong, shouldn't be used
-        fun combineWaveFile2(
+        fun combineWaveFile3(
                 file1: String,
                 file2: String,
                 outPutFile: String,
@@ -97,8 +98,35 @@ class WavHelper {
             return true
         }
 
+        fun isWavExtension(path : String) : Boolean {
+            val components = path.split(".")
+            val lastComponent = components.last()
+            return lastComponent.equals("wav", true)
+        }
+
 
         fun combineWaveFile(
+                file1: String,
+                file2: String,
+                outPutFile: String
+        ): Boolean {
+            val f1 = File(file1)
+            val parentFolder = f1.parentFile?.absolutePath
+            val tempTextFile = File(parentFolder, "files.txt")
+            tempTextFile.delete()
+            tempTextFile.createNewFile()
+            tempTextFile.appendText("file '$file1'\n")
+            tempTextFile.appendText("file '$file2'\n")
+
+            val ffmpegCommand = "-f concat -safe 0 -i ${tempTextFile.absolutePath} -c copy $outPutFile"
+            val result = FFmpeg.execute(ffmpegCommand)
+            if(result == FFmpeg.RETURN_CODE_SUCCESS)
+                return true
+            return false
+        }
+
+
+        fun combineWaveFile2(
                 file1: String,
                 file2: String,
                 outPutFile: String
@@ -114,6 +142,8 @@ class WavHelper {
                 stream.read(bytes)
                 stream.close()
             } catch (ex: IOException) {
+                Timber.e("Error opening file1 stream when merging audio files $ex")
+                ex.printStackTrace()
                 return false
             }
 
@@ -185,6 +215,7 @@ class WavHelper {
                 out.flush()
                 println("Done")
             } catch (e: IOException) {
+                Timber.e("Error merging audio files $e")
                 e.printStackTrace()
                 return false
             }

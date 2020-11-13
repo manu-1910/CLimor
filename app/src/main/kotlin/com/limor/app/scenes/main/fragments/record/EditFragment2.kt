@@ -146,31 +146,40 @@ class EditFragment2 : WaveformFragment() {
     }
 
     private fun onBackPressed() {
-        activity?.alert(getString(R.string.confirmation_with_changes)){
-            positiveButton(getString(R.string.keep)) {
-                handlePause()
-                handlePausePreview()
-                val convertedFile = WavHelper.convertToWav(requireContext(), uiDraft?.filePath!!)
-                if(convertedFile != null) {
-                    draftViewModel.uiDraft.filePath = convertedFile.absolutePath
+        // if the current filePath is wav, it's because it hasn't been any changes, so let's just go back
+        if (WavHelper.isWavExtension(uiDraft?.filePath!!)) {
+            draftViewModel.continueRecording = true
+            findNavController().popBackStack()
 
-                    // these steps of clearing the array and adding the last recorded file are necessary to continuous recording
-                    draftViewModel.filesArray.clear()
-                    draftViewModel.filesArray.add(convertedFile)
-                    draftViewModel.continueRecording = true
-                    findNavController().popBackStack()
-                } else {
-                    alert(getString(R.string.error_converting_audio)) {
-                        okButton {  }
-                    }.show()
+            // it the current filePath is not wav, then some changes happened. So we have to
+            // ask the user what he wants to do
+        } else {
+            activity?.alert(getString(R.string.confirmation_with_changes)) {
+                positiveButton(getString(R.string.keep)) {
+                    handlePause()
+                    handlePausePreview()
+
+                    val convertedFile = WavHelper.convertToWav(requireContext(), uiDraft?.filePath!!)
+                    if (convertedFile != null) {
+                        draftViewModel.uiDraft.filePath = convertedFile.absolutePath
+
+                        // these steps of clearing the array and adding the last recorded file are necessary to continuous recording
+                        draftViewModel.filesArray.clear()
+                        draftViewModel.filesArray.add(convertedFile)
+                        draftViewModel.continueRecording = true
+                        findNavController().popBackStack()
+                    } else {
+                        alert(getString(R.string.error_converting_audio)) {
+                            okButton { }
+                        }.show()
+                    }
                 }
-            }
-            negativeButton(getString(R.string.discard)) {
-                restoreToInitialState()
-            }
-        }?.show()
+                negativeButton(getString(R.string.discard)) {
+                    restoreToInitialState()
+                }
+            }?.show()
+        }
     }
-
 
 
     private fun listeners() {
@@ -742,7 +751,7 @@ class EditFragment2 : WaveformFragment() {
         handlePause()
         handlePausePreview()
         val convertedFile = WavHelper.convertToWav(requireContext(), uiDraft?.filePath!!)
-        if(convertedFile != null) {
+        if (convertedFile != null) {
             draftViewModel.uiDraft.filePath = convertedFile.absolutePath
 
             // these steps of clearing the array and adding the last recorded file are necessary to continuous recording
@@ -754,7 +763,7 @@ class EditFragment2 : WaveformFragment() {
             findNavController().navigate(R.id.action_record_edit_to_record_publish, bundle)
         } else {
             alert(getString(R.string.error_converting_audio)) {
-                okButton {  }
+                okButton { }
             }.show()
         }
 

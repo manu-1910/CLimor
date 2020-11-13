@@ -110,7 +110,7 @@ class RecordFragment : BaseFragment() {
 
 
         bindViewModel()
-        deleteUnusedAudioFiles()
+//        deleteUnusedAudioFiles()
         configureToolbar()
         audioSetup()
         listeners()
@@ -353,7 +353,12 @@ class RecordFragment : BaseFragment() {
     }
 
     private fun onEditClicked() {
-        stopAudio()
+
+        val resultStopAudio = stopAudio()
+        if(!resultStopAudio) {
+            alert(getString(R.string.error_stopping_audio)) { okButton {  } }
+            return
+        }
 
         // --------------- Read this carefully: -----------------
         // - filesArray will have size 1 when we first record an audio in the record fragment.
@@ -497,53 +502,11 @@ class RecordFragment : BaseFragment() {
 
         // Next Button
         nextButton.onClick {
-
-//            isRecording = false
-//            stopAudio()
-//
-//            //Merge audios and delete all them except the Audio Merged
-//            when (draftViewModel.filesArray.size) {
-//                0 -> {
-//                    insertDraftInRealm(uiDraft!!, false)
-//
-//                    val bundle = bundleOf("recordingItem" to uiDraft)
-//                    findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
-//                }
-//                1 -> {
-//                    uiDraft?.filePath = draftViewModel.filesArray[0].absolutePath
-//                    uiDraft?.editedFilePath = draftViewModel.filesArray[0].absolutePath
-//                    insertDraftInRealm(uiDraft!!, false)
-//
-//                    val bundle = bundleOf("recordingItem" to uiDraft)
-//                    findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
-//                }
-//                else -> {
-//                    doAsync {
-//                        val finalAudio = File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
-//
-//                        if (WavHelper.combineWaveFile(draftViewModel.filesArray[0].absolutePath, draftViewModel.filesArray[1].absolutePath, finalAudio.absolutePath)) {
-//                            draftViewModel.filesArray.clear()
-//                            draftViewModel.filesArray.add(finalAudio)
-//
-//                            //The recording item will be passed to EditFragment as Argument inside a bundle
-//                            uiDraft?.filePath = finalAudio.absolutePath
-//                            insertDraftInRealm(uiDraft!!, false)
-//                        } else {
-//                            println("Fail merge audios")
-//                        }
-//                        uiThread {
-//                            //Go to Publish fragment
-//                            try {
-//                                val bundle = bundleOf("recordingItem" to uiDraft)
-//                                findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
-//                            } catch (e: Exception) {
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-
-            stopAudio()
+            val resultStop = stopAudio()
+            if(!resultStop) {
+                alert (getString(R.string.error_stopping_audio)){ okButton {  } }
+                return@onClick
+            }
 
             // --------------- Read this carefully: -----------------
             // - filesArray will have size 1 when we first record an audio in the record fragment.
@@ -717,23 +680,19 @@ class RecordFragment : BaseFragment() {
     }
 
 
-    private fun stopAudio() {
+    private fun stopAudio() : Boolean {
         println("RECORD --> STOP")
-        var stopAndMergeOk: Boolean
         try {
             mRecorder.stopRecording()
-            stopAndMergeOk = true
             isRecording = false
         } catch (e: Exception) {
-            stopAndMergeOk = false
             e.printStackTrace()
+            return false
         }
         updateRecordButton()
-        if (stopAndMergeOk) {
-            val fileChosen = File(fileRecording)
-            if (!draftViewModel.filesArray.contains(fileChosen)) {
-                draftViewModel.filesArray.add(fileChosen)
-            }
+        val fileChosen = File(fileRecording)
+        if (!draftViewModel.filesArray.contains(fileChosen)) {
+            draftViewModel.filesArray.add(fileChosen)
         }
 
 
@@ -743,6 +702,7 @@ class RecordFragment : BaseFragment() {
 
         //Stop timer
         c_meter.stop()
+        return true
     }
 
 

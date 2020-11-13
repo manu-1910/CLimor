@@ -4,6 +4,9 @@ package com.limor.app.scenes.main
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.media.AudioAttributes
+import android.media.AudioManager
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.provider.Settings.Secure
 import android.view.View
@@ -39,6 +42,8 @@ import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.toast
+import java.io.File
+import java.io.FileInputStream
 import javax.inject.Inject
 
 
@@ -71,6 +76,28 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 //        val file2 = "/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/1604750696477.wav"
 //        val outputFile = "/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/output.wav"
 //        val result = WavHelper.combineWaveFile(file1, file2, outputFile)
+
+//        val file1 = File("/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/1605267046265_new.wav")
+//        WavHelper.combineWaveFile(file1.absolutePath, file1.absolutePath, file1.absolutePath)
+//
+//        if (file1.exists()) {
+//            try {
+//                val fis = FileInputStream(file1)
+//                val player = MediaPlayer()
+////                player.setDataSource(file1.absolutePath)
+//                val fileDescriptor = fis.fd
+//                player.setDataSource(fileDescriptor)
+////                player.setAudioStreamType(AudioManager.STREAM_MUSIC)
+//                player.setAudioAttributes(
+//                        AudioAttributes.Builder()
+//                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+//                                .build())
+//                player.prepare()
+//                player.start()
+//            }catch (e: java.lang.Exception) {
+//                e.printStackTrace()
+//            }
+//        }
 
 
 
