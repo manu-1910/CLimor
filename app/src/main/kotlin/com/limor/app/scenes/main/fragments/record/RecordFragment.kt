@@ -139,6 +139,9 @@ class RecordFragment : BaseFragment() {
 
             resetAudioSetup()
             uiDraft = draftViewModel.uiDraft
+
+            changeToEditToolbar()
+            updateRecordButton()
         }
     }
 

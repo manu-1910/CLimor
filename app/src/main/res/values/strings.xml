@@ -408,4 +408,6 @@
     <string name="discard">Discard</string>
     <string name="error_converting_audio">Error converting your audio</string>
     <string name="error_stopping_audio">Error stopping your audio</string>
+    <string name="resume">Resume</string>
+    <string name="go_to_publish">Go to publish</string>
 </resources>

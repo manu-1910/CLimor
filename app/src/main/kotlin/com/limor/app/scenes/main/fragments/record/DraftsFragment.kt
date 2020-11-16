@@ -263,6 +263,8 @@ class DraftsFragment : BaseFragment() {
                         }
                     }
                 },
+
+                    // This is deprecated, it's old code. This will never be called.
                 object : DraftAdapter.OnEditItemClickListener {
                     override fun onEditItemClick(item: UIDraft) {
                         pbDrafts?.visibility = View.VISIBLE
@@ -283,6 +285,28 @@ class DraftsFragment : BaseFragment() {
 
                         val bundle = bundleOf("recordingItem" to draftViewModel.uiDraft)
                         findNavController().navigate(R.id.action_record_drafts_to_record_edit, bundle)
+                    }
+                },
+                object : DraftAdapter.OnResumeItemClickListener {
+                    override fun onResumeItemClick(position: Int, item: UIDraft) {
+                        pbDrafts?.visibility = View.VISIBLE
+
+                        try {
+                            if(adapter?.mediaPlayer!!.isPlaying){
+                                adapter?.mediaPlayer!!.stop()
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+
+                        //Go to record fragment to continue recording
+                        draftViewModel.uiDraft = item
+                        draftViewModel.filesArray.add(File(item.filePath))
+                        draftViewModel.continueRecording = true
+                        //draftViewModel.durationOfLastAudio = item.length!!
+
+                        val bundle = bundleOf("recordingItem" to draftViewModel.uiDraft)
+                        findNavController().navigate(R.id.action_record_drafts_to_record_fragment, bundle)
                     }
                 }
             )

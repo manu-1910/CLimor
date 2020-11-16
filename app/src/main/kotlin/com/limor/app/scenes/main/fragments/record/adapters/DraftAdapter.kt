@@ -28,7 +28,8 @@ class DraftAdapter(
     private val listener: OnItemClickListener,
     private val deleteListener: OnDeleteItemClickListener,
     private val duplicateListener: OnDuplicateItemClickListener,
-    private val editListener: OnEditItemClickListener
+    private val editListener: OnEditItemClickListener,
+    private val resumeListener: OnResumeItemClickListener
 ) : RecyclerView.Adapter<DraftAdapter.ViewHolder>() {
     private var lastVisiblePlayerLayout: LinearLayout? = null
     var inflator: LayoutInflater = LayoutInflater.from(context)
@@ -224,11 +225,11 @@ class DraftAdapter(
 
 
         // Go to Edit button
-        holder.tvEditItem.onClick {
+        holder.tvResumeItem.onClick {
             stopMediaPlayer()
 
             currentDraft.length = currentDurationInMillis.toLong()
-            editListener.onEditItemClick(currentDraft)
+            resumeListener.onResumeItemClick(position, currentDraft)
         }
 
     }
@@ -457,9 +458,10 @@ class DraftAdapter(
         var ivDraftDelete: ImageView = itemView.findViewById(R.id.ivDraftDelete) as ImageView
         var playerLayout: LinearLayout = itemView.findViewById(R.id.itemPlayer) as LinearLayout
         var btnMore: ImageButton = itemView.findViewById<View>(R.id.btnMore) as ImageButton
-        var tvEditItem: TextView = itemView.findViewById<View>(R.id.tvEditItem) as TextView
+        var tvResumeItem: TextView = itemView.findViewById<View>(R.id.tvResumeRecording) as TextView
     }
 
+    @Deprecated("In the new version of the app, you cannot go from a draft to edit directly, so this listener will never be triggered")
     interface OnEditItemClickListener {
         fun onEditItemClick(item: UIDraft)
     }
@@ -474,6 +476,10 @@ class DraftAdapter(
 
     interface OnDuplicateItemClickListener {
         fun onDuplicateItemClick(position: Int)
+    }
+
+    interface OnResumeItemClickListener {
+        fun onResumeItemClick(position: Int, item: UIDraft)
     }
 
 
