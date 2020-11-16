@@ -207,6 +207,9 @@ class PublishFragment : BaseFragment() {
     fun onBackPressed() {
         addDataToRecordingItem()
 
+        if(mediaPlayer.isPlaying)
+            mediaPlayer.stop()
+
         draftViewModel.uiDraft = uiDraft
         draftViewModel.filesArray.clear()
         draftViewModel.filesArray.add(File(uiDraft.filePath))
@@ -688,10 +691,12 @@ class PublishFragment : BaseFragment() {
                 }
                 if (mediaPlayer.duration <= progress) {
                     btnPlayPause?.setImageDrawable(
-                        ContextCompat.getDrawable(
-                            context!!,
-                            R.drawable.play
-                        )
+                        context?.let {
+                            ContextCompat.getDrawable(
+                                    it,
+                                    R.drawable.play
+                            )
+                        }
                     )
                 }
             }
