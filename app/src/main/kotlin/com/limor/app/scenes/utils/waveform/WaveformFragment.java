@@ -12,14 +12,16 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 
 import com.coremedia.iso.boxes.Container;
@@ -82,7 +84,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected WaveformView waveformView;
     protected ImageButton playButton, rewindButton, forwardButton;
     protected ImageButton closeButton, infoButton;
-    protected Button nextButton;
+    protected ImageButton btnClosePreview;
+    protected AppCompatButton nextButton;
     protected TextView tvTimePass, tvDuration, tvTimePassPreview, tvDurationPreview, tvDelete, tvCopy, tvPaste, tvUndo, tvRedo;
     protected Handler handler;
     protected Handler seekBarHandler = new Handler();
@@ -113,18 +116,18 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     private SeekBar seekBar;
     private boolean isSeekBarTouched;
     private ImageView ivPlayPreview;
-    private RelativeLayout rlPreviewSection;
+    private LinearLayout rlPreviewSection;
     private SeekBar seekBarPreview;
     private boolean isSeekBarTouchedPreview;
     protected boolean shouldReloadPreview;
     protected MarkerSet selectedMarker, editMarker;
-//    protected ArrayList<String> audioFilePaths = new ArrayList<>();
+    //    protected ArrayList<String> audioFilePaths = new ArrayList<>();
     protected StepManager stepManager;
     public static boolean isEditMode;
     protected boolean isInitialised;
     private View rootView;
 
-//    private final int ALLOWED_PIXEL_OFFSET = 18; // unused, I don't know what was it for
+    //    private final int ALLOWED_PIXEL_OFFSET = 18; // unused, I don't know what was it for
     public static final int NEW_WIDTH = 20;
 
     private enum MenuOption {
@@ -420,10 +423,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         shouldReloadPreview = true;
         isEditMode = isEditMarker;
         updateDisplay();
-        if (markerSets.size() > 0) {
-            //rlPreviewSection.setAlpha(1.0f);
-            rlPreviewSection.setAlpha(0.4f); //Set alpha to 60% of visibility
-        }
     }
 
 
@@ -493,14 +492,18 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     removeMarker(marker.getMarkerSet());
                     break;
                 case Preview:
-                    //ivPlayPreview.performClick();
-                    saveNewFileFromMarkers(true);
+                    onPreviewClicked();
                     break;
             }
             return true;
         });
 
         menuView.show(marker);
+    }
+
+    private void onPreviewClicked() {
+        showPreviewLayout(true);
+        saveNewFileFromMarkers(true);
     }
 
 
@@ -525,9 +528,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         selectedMarker = null;
         updateDisplay();
         shouldReloadPreview = true;
-        if (markerSets.size() <= 0) {
-            rlPreviewSection.setAlpha(0.4f);
-        }
+        showPreviewLayout(false);
     }
 
 
@@ -590,7 +591,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         markerInset = (int) (18 * density);
         markerTopOffset = (int) (10 * density);
 
-        absoluteLayout = view.findViewById(R.id.absoluteLayout);
+        absoluteLayout = view.findViewById(R.id.layWaveform);
         playButton = view.findViewById(R.id.play);
         playButton.setOnClickListener(playListener);
         rewindButton = view.findViewById(R.id.rew);
@@ -605,12 +606,21 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         tvDuration = view.findViewById(R.id.tvDuration);
         tvUndo = view.findViewById(R.id.tvUndo);
         tvRedo = view.findViewById(R.id.tvRedo);
-        tvDelete = view.findViewById(R.id.tvDelete);
-        tvPaste = view.findViewById(R.id.tvPaste);
-        tvCopy = view.findViewById(R.id.tvCopy);
+//        tvDelete = view.findViewById(R.id.tvDelete);
+//        tvPaste = view.findViewById(R.id.tvPaste);
+//        tvCopy = view.findViewById(R.id.tvCopy);
+        tvDelete = new TextView(getContext());
+        tvDelete.setText(getString(R.string.menu_delete));
+        tvPaste = new TextView(getContext());
+        tvPaste.setText(getString(R.string.menu_paste));
+        tvCopy = new TextView(getContext());
+        tvCopy.setText(getString(R.string.menu_copy));
         tvTimePassPreview = view.findViewById(R.id.tvTimePassPreview);
         tvDurationPreview = view.findViewById(R.id.tvDurationPreview);
         ivPlayPreview = view.findViewById(R.id.ivPlayPreview);
+        ivPlayPreview.setOnClickListener(onPlayPreviewListener);
+        btnClosePreview = view.findViewById(R.id.btnClosePreview);
+        btnClosePreview.setOnClickListener(onClosePreviewListener);
 
         rlPreviewSection = view.findViewById(R.id.rlPreviewSection);
 
@@ -627,7 +637,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
         updateDisplay();
     }
-
 
 
     // this method loads the received filename into the mediaplayer, to be heard, and
@@ -851,6 +860,31 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
     }
 
+    private void showPreviewLayout(boolean visible) {
+        if (visible) {
+            rlPreviewSection.setVisibility(View.VISIBLE);
+            TranslateAnimation animate = new TranslateAnimation(
+                    0,                 // fromXDelta
+                    0,                 // toXDelta
+                    rlPreviewSection.getHeight(),  // fromYDelta
+                    0);                // toYDelta
+            animate.setDuration(500);
+            animate.setFillAfter(true);
+            rlPreviewSection.startAnimation(animate);
+        } else {
+            rlPreviewSection.setVisibility(View.VISIBLE);
+            TranslateAnimation animate = new TranslateAnimation(
+                    0,                 // fromXDelta
+                    0,
+                    0,// toXDelta
+                    rlPreviewSection.getHeight()
+            );
+            animate.setDuration(500);
+            animate.setFillAfter(true);
+            rlPreviewSection.startAnimation(animate);
+        }
+    }
+
 
     /**
      * This function is the responsible to set the offsetGoal in the center of the screen
@@ -899,7 +933,15 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             playerPreview.pause();
         }
         isPlayingPreview = false;
-        enableDisableButtonsPreview();
+        updateButtonsPreview();
+    }
+
+    private void updateButtonsPreview() {
+        if (playerPreview != null && playerPreview.isPlaying()) {
+            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.pause));
+        } else if (playerPreview != null) {
+            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.play));
+        }
     }
 
     protected synchronized void onPlay() {
@@ -931,7 +973,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         try {
             isPlayingPreview = true;
             playerPreview.start();
-            enableDisableButtonsPreview();
+//            enableDisableButtonsPreview();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -943,6 +985,26 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         } /*else if (sender.getId() == R.id.rlPreview){
             saveNewFileFromMarkers(true);
         }*/
+    };
+
+    protected View.OnClickListener onClosePreviewListener = sender -> {
+        if (sender.getId() == R.id.btnClosePreview) {
+            if (playerPreview != null && playerPreview.isPlaying())
+                playerPreview.stop();
+            showPreviewLayout(false);
+        }
+    };
+
+    protected View.OnClickListener onPlayPreviewListener = sender -> {
+        if (sender.getId() == R.id.ivPlayPreview) {
+            if (playerPreview != null && !playerPreview.isPlaying()) {
+                playerPreview.start();
+            } else if (playerPreview != null) {
+                playerPreview.pause();
+            }
+
+            updateButtonsPreview();
+        }
     };
 
     protected View.OnClickListener rewindListener = new View.OnClickListener() {
@@ -985,13 +1047,14 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
     }
 
-    protected void enableDisableButtonsPreview() {
-        if (isPlayingPreview) {
-            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.record));
-        } else {
-            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.play));
-        }
-    }
+//    @Deprecated
+//    protected void enableDisableButtonsPreview() {
+//        if (isPlayingPreview) {
+//            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.record));
+//        } else {
+//            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.play));
+//        }
+//    }
 
     protected void enableDisableSeekButtons() {
         forwardButton.setAlpha(1f);
