@@ -5,8 +5,10 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.core.os.HandlerCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
@@ -143,6 +145,11 @@ class EditFragment2 : WaveformFragment() {
                         onBackPressed()
                     }
                 })
+
+        HandlerCompat.postDelayed(Handler(),
+                { hidePreviewLayoutQuickly() },
+                null,
+                10.toLong())
     }
 
     private fun onBackPressed() {

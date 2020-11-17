@@ -82,7 +82,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected String fileName;
     protected String editedWithMarkersFileName; // TODO: Jose -> this possibly doesn't do anything now
     protected WaveformView waveformView;
-    protected ImageButton playButton, rewindButton, forwardButton;
+    protected ImageButton playButton, rewindButton, forwardButton, btnRewindPreview, btnForwardPreview;
     protected ImageButton closeButton, infoButton;
     protected ImageButton btnClosePreview;
     protected AppCompatButton nextButton;
@@ -168,6 +168,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         soundFile = null;
         handler = new Handler();
     }
+
 
     @Override
     public void onDestroy() {
@@ -621,6 +622,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         ivPlayPreview.setOnClickListener(onPlayPreviewListener);
         btnClosePreview = view.findViewById(R.id.btnClosePreview);
         btnClosePreview.setOnClickListener(onClosePreviewListener);
+        btnRewindPreview = view.findViewById(R.id.rewPreview);
+        btnRewindPreview.setOnClickListener(onRewindPreviewListener);
+        btnForwardPreview = view.findViewById(R.id.ffwdPreview);
+        btnForwardPreview.setOnClickListener(onForwardReviewListener);
 
         rlPreviewSection = view.findViewById(R.id.rlPreviewSection);
 
@@ -860,7 +865,23 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
     }
 
-    private void showPreviewLayout(boolean visible) {
+    /**
+     * As the preview layoutThis method is used to hide the preview layout when the screen loads. It hides it
+     * fast so the user cannot see the first hidding.
+     */
+    protected void hidePreviewLayoutQuickly() {
+        TranslateAnimation animate = new TranslateAnimation(
+                0,                 // fromXDelta
+                0,
+                0,// toXDelta
+                rlPreviewSection.getHeight()
+        );
+        animate.setDuration(100);
+        animate.setFillAfter(true);
+        rlPreviewSection.startAnimation(animate);
+    }
+
+    protected void showPreviewLayout(boolean visible) {
         if (visible) {
             rlPreviewSection.setVisibility(View.VISIBLE);
             TranslateAnimation animate = new TranslateAnimation(
@@ -993,6 +1014,20 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                 playerPreview.stop();
             showPreviewLayout(false);
         }
+    };
+
+    protected View.OnClickListener onRewindPreviewListener = sender -> {
+        int newPos = playerPreview.getCurrentPosition() - 30000;
+        playerPreview.seekTo(newPos);
+        seekBarPreview.setProgress(newPos);
+    };
+
+    protected View.OnClickListener onForwardReviewListener = sender -> {
+        int newPos = playerPreview.getCurrentPosition() + 30000;
+//        if(newPos > playerPreview.getDuration())
+//            newPos = playerPreview.getDuration();
+        playerPreview.seekTo(newPos);
+        seekBarPreview.setProgress(newPos);
     };
 
     protected View.OnClickListener onPlayPreviewListener = sender -> {
