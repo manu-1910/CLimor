@@ -335,7 +335,7 @@ class EditFragment : WaveformFragment() {
     }
 
     private fun pasteMarkedChunk() {
-        if (markerSets == null || markerSets.size == 0 || isPlayingPreview || isPlaying || selectedMarker == null) {
+        if (markerSets == null || markerSets.size == 0 || (playerPreview != null && playerPreview.isPlaying) || isPlaying || selectedMarker == null) {
             return
         }
         stepManager.addNewUndoStep(
@@ -591,7 +591,7 @@ class EditFragment : WaveformFragment() {
     }
 
     private fun deleteMarkedChunk() {
-        if (markerSets == null || markerSets.size == 0 || isPlayingPreview || isPlaying || selectedMarker == null) {
+        if (markerSets == null || markerSets.size == 0 || (playerPreview != null && playerPreview.isPlaying) || isPlaying || selectedMarker == null) {
             return
         }
         stepManager.addNewUndoStep(
