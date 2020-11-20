@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/brandSecondary500"
@@ -11,12 +12,52 @@
         android:id="@+id/toolbar"
         layout="@layout/toolbar_default" />
 
-    <com.limor.app.scenes.utils.VisualizerView
-        android:id="@+id/graphVisualizer"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="@dimen/marginMedium"
-        android:layout_weight="1"/>
+        android:layout_weight="1">
+
+        <com.limor.app.scenes.utils.VisualizerView
+            android:id="@+id/graphVisualizer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <RelativeLayout
+            android:id="@+id/layCountdownAnimation"
+            android:background="@drawable/rectangle_rounded_corners"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_marginTop="@dimen/marginMedium"
+                android:textColor="@color/white"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:minLines="2"
+                android:textSize="24sp"
+                android:layout_centerHorizontal="true"
+                android:text="@string/recording_starts_in"/>
+
+            <TextView
+                android:id="@+id/tvCountdown"
+                android:textColor="@color/white"
+                android:textSize="64sp"
+                android:gravity="center"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/marginMedium"
+                android:text="3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:ignore="HardcodedText" />
+        </RelativeLayout>
+
+    </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
