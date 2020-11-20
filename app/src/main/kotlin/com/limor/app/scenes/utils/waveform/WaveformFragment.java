@@ -12,22 +12,18 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 
-import com.coremedia.iso.boxes.Container;
-import com.googlecode.mp4parser.authoring.Movie;
-import com.googlecode.mp4parser.authoring.Track;
-import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
-import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
-import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
 import com.limor.app.R;
 import com.limor.app.common.BaseFragment;
 import com.limor.app.scenes.utils.Commons;
@@ -40,12 +36,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 import me.kareluo.ui.OptionMenu;
 import me.kareluo.ui.PopupMenuView;
@@ -80,9 +72,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected String fileName;
     protected String editedWithMarkersFileName; // TODO: Jose -> this possibly doesn't do anything now
     protected WaveformView waveformView;
-    protected ImageButton playButton, rewindButton, forwardButton;
+    protected ImageButton playButton, rewindButton, forwardButton, btnRewindPreview, btnForwardPreview;
     protected ImageButton closeButton, infoButton;
-    protected Button nextButton;
+    protected ImageButton btnClosePreview;
+    protected AppCompatButton nextButton;
     protected TextView tvTimePass, tvDuration, tvTimePassPreview, tvDurationPreview, tvDelete, tvCopy, tvPaste, tvUndo, tvRedo;
     protected Handler handler;
     protected Handler seekBarHandler = new Handler();
@@ -108,23 +101,25 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     private boolean shouldDisableTouch;
     private boolean newMarkerAdded;
     protected boolean isPlaying;
-    protected boolean isPlayingPreview;
     private int playStartOffset;
     private SeekBar seekBar;
     private boolean isSeekBarTouched;
     private ImageView ivPlayPreview;
-    private RelativeLayout rlPreviewSection;
+    private LinearLayout rlPreviewSection;
     private SeekBar seekBarPreview;
     private boolean isSeekBarTouchedPreview;
     protected boolean shouldReloadPreview;
     protected MarkerSet selectedMarker, editMarker;
-//    protected ArrayList<String> audioFilePaths = new ArrayList<>();
+    //    protected ArrayList<String> audioFilePaths = new ArrayList<>();
     protected StepManager stepManager;
     public static boolean isEditMode;
     protected boolean isInitialised;
     private View rootView;
 
-//    private final int ALLOWED_PIXEL_OFFSET = 18; // unused, I don't know what was it for
+
+    private Runnable updaterPreview;
+
+    //    private final int ALLOWED_PIXEL_OFFSET = 18; // unused, I don't know what was it for
     public static final int NEW_WIDTH = 20;
 
     private enum MenuOption {
@@ -164,7 +159,22 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         fileName = getFileName();
         soundFile = null;
         handler = new Handler();
+        updaterPreview = new Runnable() {
+            public boolean shouldStop = false;
+            @Override
+            public void run() {
+                if (playerPreview != null && playerPreview.isPlaying() && !isSeekBarTouchedPreview) {
+                    int posMarkerStart = selectedMarker.getStartPos();
+                    int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+                    seekBarPreview.setProgress(playerPreview.getCurrentPosition() - currentStartMillis);
+                    tvTimePassPreview.setText(Commons.getLengthFromEpochForPlayer(seekBarPreview.getProgress()));
+                }
+                if(!shouldStop)
+                    seekBarHandler.postDelayed(this, 10);
+            }
+        };
     }
+
 
     @Override
     public void onDestroy() {
@@ -198,6 +208,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     @Override
     public void waveformTouchStart(float x) {
+        Timber.d("waveformTouchStart");
         touchDragging = true;
         touchStart = x;
         touchInitialOffset = offset;
@@ -206,12 +217,14 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     @Override
     public void waveformTouchMove(float x) {
+        Timber.d("waveformTouchMove");
         offset = trap((int) (touchInitialOffset + (touchStart - x)));
         updateDisplay();
     }
 
     @Override
     public void waveformTouchEnd(float x, float y) {
+        Timber.d("waveformTouchEnd");
         touchDragging = false;
         offsetGoal = offset;
         long elapsedMsec = System.currentTimeMillis() - waveformTouchStartMsec;
@@ -327,9 +340,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     @Override
     public void markerTouchEnd(MarkerView marker) {
-        if (isEditMode && !marker.getMarkerSet().isEditMarker()) {
-            return;
-        }
+//        if (isEditMode && !marker.getMarkerSet().isEditMarker()) {
+//            return;
+//        }
 
 //        long elapsedMsec = System.currentTimeMillis() - markerTouchStartMsec;
 //        if (elapsedMsec > 350 && marker.getType() == MarkerView.MIDDLE_MARKER && !isMovingTooMuch) { //TODO JJ ORIGINAL LINES
@@ -341,6 +354,22 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
 
         touchDragging = false;
+
+        if(playerPreview != null) {
+            try {
+                preparePlayerPreview(false);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Timber.e("Error trying to load preview");
+                new AlertDialog.Builder(getContext())
+                        .setMessage("Error trying to load preview")
+                        .setPositiveButton(R.string.ok, null)
+                        .show();
+            }
+            seekBarPreview.setProgress(0);
+            updateButtonsPreview();
+            updateDurationsPreview();
+        }
     }
 
 
@@ -420,10 +449,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         shouldReloadPreview = true;
         isEditMode = isEditMarker;
         updateDisplay();
-        if (markerSets.size() > 0) {
-            //rlPreviewSection.setAlpha(1.0f);
-            rlPreviewSection.setAlpha(0.4f); //Set alpha to 60% of visibility
-        }
     }
 
 
@@ -483,9 +508,11 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     tvCopy.performClick();
                     break;
                 case Paste:
+                    showPreviewLayout(false);
                     tvPaste.performClick();
                     break;
                 case Delete:
+                    showPreviewLayout(false);
                     tvDelete.performClick();
                     break;
                 case Dismiss:
@@ -493,14 +520,30 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     removeMarker(marker.getMarkerSet());
                     break;
                 case Preview:
-                    //ivPlayPreview.performClick();
-                    saveNewFileFromMarkers(true);
+                    onPreviewClicked();
                     break;
             }
             return true;
         });
 
         menuView.show(marker);
+    }
+
+
+
+    private void onPreviewClicked() {
+        showPreviewLayout(true);
+        try {
+            preparePlayerPreview(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Timber.e("Error trying to load preview");
+            new AlertDialog.Builder(getContext())
+                    .setMessage("Error trying to load preview")
+                    .setPositiveButton(R.string.ok, null)
+                    .show();
+        }
+        updateButtonsPreview();
     }
 
 
@@ -525,9 +568,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         selectedMarker = null;
         updateDisplay();
         shouldReloadPreview = true;
-        if (markerSets.size() <= 0) {
-            rlPreviewSection.setAlpha(0.4f);
-        }
+        showPreviewLayout(false);
     }
 
 
@@ -590,7 +631,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         markerInset = (int) (18 * density);
         markerTopOffset = (int) (10 * density);
 
-        absoluteLayout = view.findViewById(R.id.absoluteLayout);
+        absoluteLayout = view.findViewById(R.id.layWaveform);
         playButton = view.findViewById(R.id.play);
         playButton.setOnClickListener(playListener);
         rewindButton = view.findViewById(R.id.rew);
@@ -605,12 +646,25 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         tvDuration = view.findViewById(R.id.tvDuration);
         tvUndo = view.findViewById(R.id.tvUndo);
         tvRedo = view.findViewById(R.id.tvRedo);
-        tvDelete = view.findViewById(R.id.tvDelete);
-        tvPaste = view.findViewById(R.id.tvPaste);
-        tvCopy = view.findViewById(R.id.tvCopy);
+//        tvDelete = view.findViewById(R.id.tvDelete);
+//        tvPaste = view.findViewById(R.id.tvPaste);
+//        tvCopy = view.findViewById(R.id.tvCopy);
+        tvDelete = new TextView(getContext());
+        tvDelete.setText(getString(R.string.menu_delete));
+        tvPaste = new TextView(getContext());
+        tvPaste.setText(getString(R.string.menu_paste));
+        tvCopy = new TextView(getContext());
+        tvCopy.setText(getString(R.string.menu_copy));
         tvTimePassPreview = view.findViewById(R.id.tvTimePassPreview);
         tvDurationPreview = view.findViewById(R.id.tvDurationPreview);
         ivPlayPreview = view.findViewById(R.id.ivPlayPreview);
+        ivPlayPreview.setOnClickListener(onPlayPreviewListener);
+        btnClosePreview = view.findViewById(R.id.btnClosePreview);
+        btnClosePreview.setOnClickListener(onClosePreviewListener);
+        btnRewindPreview = view.findViewById(R.id.rewPreview);
+        btnRewindPreview.setOnClickListener(onRewindPreviewListener);
+        btnForwardPreview = view.findViewById(R.id.ffwdPreview);
+        btnForwardPreview.setOnClickListener(onForwardReviewListener);
 
         rlPreviewSection = view.findViewById(R.id.rlPreviewSection);
 
@@ -627,7 +681,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
         updateDisplay();
     }
-
 
 
     // this method loads the received filename into the mediaplayer, to be heard, and
@@ -851,6 +904,47 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
     }
 
+    /**
+     * As the preview layoutThis method is used to hide the preview layout when the screen loads. It hides it
+     * fast so the user cannot see the first hidding.
+     */
+    protected void hidePreviewLayoutQuickly() {
+        TranslateAnimation animate = new TranslateAnimation(
+                0,                 // fromXDelta
+                0,
+                0,// toXDelta
+                rlPreviewSection.getHeight()
+        );
+        animate.setDuration(100);
+        animate.setFillAfter(true);
+        rlPreviewSection.startAnimation(animate);
+    }
+
+    protected void showPreviewLayout(boolean visible) {
+        if (visible) {
+            rlPreviewSection.setVisibility(View.VISIBLE);
+            TranslateAnimation animate = new TranslateAnimation(
+                    0,                 // fromXDelta
+                    0,                 // toXDelta
+                    rlPreviewSection.getHeight(),  // fromYDelta
+                    0);                // toYDelta
+            animate.setDuration(500);
+            animate.setFillAfter(true);
+            rlPreviewSection.startAnimation(animate);
+        } else {
+            rlPreviewSection.setVisibility(View.VISIBLE);
+            TranslateAnimation animate = new TranslateAnimation(
+                    0,                 // fromXDelta
+                    0,
+                    0,// toXDelta
+                    rlPreviewSection.getHeight()
+            );
+            animate.setDuration(500);
+            animate.setFillAfter(true);
+            rlPreviewSection.startAnimation(animate);
+        }
+    }
+
 
     /**
      * This function is the responsible to set the offsetGoal in the center of the screen
@@ -898,8 +992,15 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         if (playerPreview != null && playerPreview.isPlaying()) {
             playerPreview.pause();
         }
-        isPlayingPreview = false;
-        enableDisableButtonsPreview();
+        updateButtonsPreview();
+    }
+
+    private void updateButtonsPreview() {
+        if (playerPreview != null && playerPreview.isPlaying()) {
+            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.pause));
+        } else if (playerPreview != null) {
+            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.play));
+        }
     }
 
     protected synchronized void onPlay() {
@@ -924,25 +1025,97 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
     }
 
-    protected void onPlayPreview() {
-        if (playerPreview == null) {
-            return;
-        }
-        try {
-            isPlayingPreview = true;
-            playerPreview.start();
-            enableDisableButtonsPreview();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     protected View.OnClickListener playListener = sender -> {
         if (sender.getId() == R.id.play) {
             onPlay();
         } /*else if (sender.getId() == R.id.rlPreview){
             saveNewFileFromMarkers(true);
         }*/
+    };
+
+    protected View.OnClickListener onClosePreviewListener = sender -> {
+        if (sender.getId() == R.id.btnClosePreview) {
+            if (playerPreview != null && playerPreview.isPlaying())
+                playerPreview.stop();
+            showPreviewLayout(false);
+        }
+    };
+
+    protected View.OnClickListener onRewindPreviewListener = sender -> {
+        // we calculate the start previewPosition
+        int posMarkerStart = selectedMarker.getStartPos();
+        int currentPreviewStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+
+        // we get the progress of the seekBar and substract 30seconds
+        int newProgress = seekBarPreview.getProgress() - 30000;
+        // let's do this to not to get negative progress
+        if(newProgress < 0) {
+            newProgress = 0;
+        }
+
+        // let's set the new progress to the seekbar
+        seekBarPreview.setProgress(newProgress);
+
+        // we have to add the currentPreviewStartMillis because the player has loaded all the audio, not just
+        // the small piece of preview selected, so, for example:
+        // - if you have a total audio of 10 secs
+        // - and you have selected from second 2 to 6, 4 seconds selected in total
+        // - the seekbarWill have 4000ms of progress
+        // - but the playerPreview will have 10000ms of progress
+        // - so if the user puts the seekbar to 0, it's actually not 0 in the player, it's 0 + 2 seconds
+        //      of the start preview selected
+        playerPreview.seekTo(newProgress + currentPreviewStartMillis);
+    };
+
+    protected View.OnClickListener onForwardReviewListener = sender -> {
+        // we calculate the start previewPosition
+        int posMarkerStart = selectedMarker.getStartPos();
+        int currentPreviewStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+
+        // let's get the progress of the seekbar and add 30 seconds
+        int newProgress = seekBarPreview.getProgress() + 30000;
+
+        // let's do this to not overflow the seekbar
+        if(newProgress > seekBarPreview.getMax()) {
+            newProgress = seekBarPreview.getMax();
+        }
+        seekBarPreview.setProgress(newProgress);
+
+
+
+
+        // this specific case is to control that if the user clicks forward and gets to the end of
+        // the audio, it will go back to the beginning
+        if(newProgress >= seekBarPreview.getMax()) {
+            playerPreview.pause();
+            playerPreview.seekTo(currentPreviewStartMillis);
+            updateButtonsPreview();
+        } else {
+
+
+            // we have to add the currentPreviewStartMillis because the player has loaded all the audio, not just
+            // the small piece of preview selected, so, for example:
+            // - if you have a total audio of 10 secs
+            // - and you have selected from second 2 to 6, 4 seconds selected in total
+            // - the seekbarWill have 4000ms of progress
+            // - but the playerPreview will have 10000ms of progress
+            // - so if the user puts the seekbar to 3, it's actually not 3 in the player, it's 3 + 2 seconds
+            //      of the start preview selected
+            playerPreview.seekTo(newProgress + currentPreviewStartMillis);
+        }
+    };
+
+    protected View.OnClickListener onPlayPreviewListener = sender -> {
+        if (sender.getId() == R.id.ivPlayPreview) {
+            if (playerPreview != null && !playerPreview.isPlaying()) {
+                seekPreviewPlayerToSeekbarPosition();
+                playerPreview.start();
+            } else if (playerPreview != null) {
+                playerPreview.pause();
+            }
+
+            updateButtonsPreview();
+        }
     };
 
     protected View.OnClickListener rewindListener = new View.OnClickListener() {
@@ -985,30 +1158,11 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
     }
 
-    protected void enableDisableButtonsPreview() {
-        if (isPlayingPreview) {
-            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.record));
-        } else {
-            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.play));
-        }
-    }
-
     protected void enableDisableSeekButtons() {
         forwardButton.setAlpha(1f);
         forwardButton.setEnabled(true);
         rewindButton.setAlpha(1f);
         rewindButton.setEnabled(true);
-//        if(player.isPlaying()) {
-//            forwardButton.setAlpha(1f);
-//            forwardButton.setEnabled(true);
-//            rewindButton.setAlpha(1f);
-//            rewindButton.setEnabled(true);
-//        } else {
-//            forwardButton.setAlpha(0.6f);
-//            forwardButton.setEnabled(false);
-//            rewindButton.setAlpha(0.6f);
-//            rewindButton.setEnabled(false);
-//        }
     }
 
     private boolean isAvailableArea(float x) {
@@ -1067,114 +1221,174 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         });
     }
 
+    private void seekPreviewPlayerToStartPosition() {
+        seekBarPreview.setProgress(0);
+        seekPreviewPlayerToSeekbarPosition();
+    }
+
+    private void seekPreviewPlayerToSeekbarPosition() {
+        int posMarkerStart = selectedMarker.getStartPos();
+        int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+        playerPreview.seekTo(currentStartMillis + seekBarPreview.getProgress());
+    }
+
     private void setupSeekBarPreview() {
-        seekBarPreview.setMax(playerPreview.getDuration());
+        int posMarkerStart = selectedMarker.getStartPos();
+        int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+
+        int posMarkerEnd = selectedMarker.getEndPos();
+        int currentEndMillis = (int)(waveformView.pixelsToSeconds(posMarkerEnd / NEW_WIDTH) * 1000);
+
+        int currentDuration = currentEndMillis - currentStartMillis;
+
+        seekBarPreview.setMax(currentDuration);
+        seekBarPreview.setProgress(0);
         seekBarPreview.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                if (isSeekBarTouchedPreview) {
-                    tvTimePassPreview.setText(Commons.getLengthFromEpochForPlayer(progress));
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(currentStartMillis + progress >= currentEndMillis) {
+                    playerPreview.pause();
+                    seekPreviewPlayerToStartPosition();
+                    updateButtonsPreview();
+                } else {
+                    if(fromUser) {
+                        seekPreviewPlayerToSeekbarPosition();
+                    }
                 }
+                tvTimePassPreview.setText(Commons.getLengthFromEpochForPlayer(progress));
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                isSeekBarTouchedPreview = true;
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                isSeekBarTouchedPreview = false;
-                playerPreview.seekTo(seekBarPreview.getProgress());
+
             }
         });
-        tvDurationPreview.setText(Commons.getLengthFromEpochForPlayer(playerPreview.getDuration()));
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (playerPreview != null && playerPreview.isPlaying() && !isSeekBarTouchedPreview) {
-                    seekBarPreview.setProgress(playerPreview.getCurrentPosition());
-                    tvTimePassPreview.setText(Commons.getLengthFromEpochForPlayer(playerPreview.getCurrentPosition()));
-                }
-                seekBarHandler.postDelayed(this, 10);
-            }
-        });
+
+        updateDurationsPreview();
+        getActivity().runOnUiThread(updaterPreview);
     }
 
-    protected void saveNewFileFromMarkers(boolean shouldPlay) {
+    private void updateDurationsPreview() {
+        int posMarkerStart = selectedMarker.getStartPos();
+        int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+
+        int posMarkerEnd = selectedMarker.getEndPos();
+        int currentEndMillis = (int)(waveformView.pixelsToSeconds(posMarkerEnd / NEW_WIDTH) * 1000);
+
+        int currentDuration = currentEndMillis - currentStartMillis;
+        tvTimePassPreview.setText(Commons.getLengthFromEpochForPlayer(seekBarPreview.getProgress()));
+        tvDurationPreview.setText(Commons.getLengthFromEpochForPlayer(currentDuration));
+    }
+
+    protected void preparePlayerPreview(boolean shouldPlay) throws IOException {
         if (markerSets == null || markerSets.size() == 0) {
             return;
         }
-        if (isPlayingPreview) {
+        if (playerPreview != null && playerPreview.isPlaying()) {
             handlePausePreview();
             return;
         }
-        if (!shouldReloadPreview) {
-            onPlayPreview();
-            return;
+
+        if (playerPreview != null) {
+            playerPreview.release();
+            seekBarHandler.removeCallbacks(updaterPreview);
         }
 
-        List<String> audioFilePaths = new ArrayList<>();
-        for (MarkerSet markerSet : markerSets) {
-            final String outPath = getActivity().getExternalCacheDir().getAbsolutePath() + "/limor_record" + markerSet.getId() + ".m4a";
-            double startTime = waveformView.pixelsToSeconds(markerSet.getStartPos() / NEW_WIDTH); //Seems to be ok with the time of the marker
-            double endTime = waveformView.pixelsToSeconds(markerSet.getEndPos() / NEW_WIDTH);    //Seems to be ok with the time of the marker
-            final int startFrame = waveformView.secondsToFrames(startTime);
-            final int endFrame = waveformView.secondsToFrames(endTime);
-            final File outFile = new File(outPath);
-            try {
-                soundFile.WriteFile(outFile, startFrame, endFrame - startFrame);
-                audioFilePaths.add(outFile.getAbsolutePath());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        int posMarkerStart = selectedMarker.getStartPos();
+        int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
 
-        editedWithMarkersFileName = getActivity().getExternalCacheDir().getAbsolutePath();
-        editedWithMarkersFileName += "/limor_record" + System.currentTimeMillis() + "_marked.m4a";
-
-        try {
-            String mediaKey = "soun";
-            List<Movie> listMovies = new ArrayList<>();
-            for (String filename : audioFilePaths) {
-                listMovies.add(MovieCreator.build(filename));
-            }
-            List<Track> listTracks = new LinkedList<>();
-            for (Movie movie : listMovies) {
-                for (Track track : movie.getTracks()) {
-                    if (track.getHandler().equals(mediaKey)) {
-                        listTracks.add(track);
-                    }
-                }
-            }
-            Movie outputMovie = new Movie();
-            if (!listTracks.isEmpty()) {
-                outputMovie.addTrack(new AppendTrack(listTracks.toArray(new Track[listTracks.size()])));
-            }
-            Container container = new DefaultMp4Builder().build(outputMovie);
-            FileChannel fileChannel = new RandomAccessFile(editedWithMarkersFileName, "rws").getChannel();
-            container.writeContainer(fileChannel);
-            fileChannel.close();
-
-            if (shouldPlay) {
-                if (playerPreview != null) {
-                    playerPreview.release();
-                }
-                playerPreview = null;
-                playerPreview = new MediaPlayer();
-                playerPreview.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                playerPreview.setDataSource(editedWithMarkersFileName);
-                playerPreview.setOnCompletionListener((MediaPlayer mediaPlayer) -> handlePausePreview());
-                playerPreview.prepare();
-                onPlayPreview();
-                setupSeekBarPreview();
-                audioFilePaths = new ArrayList<>();
-                shouldReloadPreview = false;
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        playerPreview = null;
+        playerPreview = new MediaPlayer();
+        playerPreview.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        playerPreview.setDataSource(file.getAbsolutePath());
+        playerPreview.setOnCompletionListener((MediaPlayer mediaPlayer) -> handlePausePreview());
+        playerPreview.prepare();
+        playerPreview.seekTo(currentStartMillis);
+        if(shouldPlay)
+            playerPreview.start();
+        setupSeekBarPreview();
+        shouldReloadPreview = false;
     }
+
+//    @Deprecated
+//    protected void saveNewFileFromMarkers(boolean shouldPlay) {
+//        if (markerSets == null || markerSets.size() == 0) {
+//            return;
+//        }
+//        if (isPlayingPreview) {
+//            handlePausePreview();
+//            return;
+//        }
+//        if (!shouldReloadPreview) {
+//            onPlayPreview();
+//            return;
+//        }
+//
+//        List<String> audioFilePaths = new ArrayList<>();
+//        for (MarkerSet markerSet : markerSets) {
+//            final String outPath = getActivity().getExternalCacheDir().getAbsolutePath() + "/limor_record" + markerSet.getId() + ".m4a";
+//            double startTime = waveformView.pixelsToSeconds(markerSet.getStartPos() / NEW_WIDTH); //Seems to be ok with the time of the marker
+//            double endTime = waveformView.pixelsToSeconds(markerSet.getEndPos() / NEW_WIDTH);    //Seems to be ok with the time of the marker
+//            final int startFrame = waveformView.secondsToFrames(startTime);
+//            final int endFrame = waveformView.secondsToFrames(endTime);
+//            final File outFile = new File(outPath);
+//            try {
+//                soundFile.WriteFile(outFile, startFrame, endFrame - startFrame);
+//                audioFilePaths.add(outFile.getAbsolutePath());
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        editedWithMarkersFileName = getActivity().getExternalCacheDir().getAbsolutePath();
+//        editedWithMarkersFileName += "/limor_record" + System.currentTimeMillis() + "_marked.m4a";
+//
+//        try {
+//            String mediaKey = "soun";
+//            List<Movie> listMovies = new ArrayList<>();
+//            for (String filename : audioFilePaths) {
+//                listMovies.add(MovieCreator.build(filename));
+//            }
+//            List<Track> listTracks = new LinkedList<>();
+//            for (Movie movie : listMovies) {
+//                for (Track track : movie.getTracks()) {
+//                    if (track.getHandler().equals(mediaKey)) {
+//                        listTracks.add(track);
+//                    }
+//                }
+//            }
+//            Movie outputMovie = new Movie();
+//            if (!listTracks.isEmpty()) {
+//                outputMovie.addTrack(new AppendTrack(listTracks.toArray(new Track[listTracks.size()])));
+//            }
+//            Container container = new DefaultMp4Builder().build(outputMovie);
+//            FileChannel fileChannel = new RandomAccessFile(editedWithMarkersFileName, "rws").getChannel();
+//            container.writeContainer(fileChannel);
+//            fileChannel.close();
+//
+//            if (shouldPlay) {
+//                if (playerPreview != null) {
+//                    playerPreview.release();
+//                }
+//                playerPreview = null;
+//                playerPreview = new MediaPlayer();
+//                playerPreview.setAudioStreamType(AudioManager.STREAM_MUSIC);
+//                playerPreview.setDataSource(editedWithMarkersFileName);
+//                playerPreview.setOnCompletionListener((MediaPlayer mediaPlayer) -> handlePausePreview());
+//                playerPreview.prepare();
+//                onPlayPreview();
+//                setupSeekBarPreview();
+//                audioFilePaths = new ArrayList<>();
+//                shouldReloadPreview = false;
+//            }
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
+//    }
 
     protected void updateUndoRedoButtons() {
         if (stepManager.canUndo()) {
