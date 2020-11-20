@@ -366,8 +366,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                         .setPositiveButton(R.string.ok, null)
                         .show();
             }
-            updateButtonsPreview();
             seekBarPreview.setProgress(0);
+            updateButtonsPreview();
             updateDurationsPreview();
         }
     }
@@ -1108,6 +1108,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected View.OnClickListener onPlayPreviewListener = sender -> {
         if (sender.getId() == R.id.ivPlayPreview) {
             if (playerPreview != null && !playerPreview.isPlaying()) {
+                seekPreviewPlayerToSeekbarPosition();
                 playerPreview.start();
             } else if (playerPreview != null) {
                 playerPreview.pause();
@@ -1220,6 +1221,17 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         });
     }
 
+    private void seekPreviewPlayerToStartPosition() {
+        seekBarPreview.setProgress(0);
+        seekPreviewPlayerToSeekbarPosition();
+    }
+
+    private void seekPreviewPlayerToSeekbarPosition() {
+        int posMarkerStart = selectedMarker.getStartPos();
+        int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+        playerPreview.seekTo(currentStartMillis + seekBarPreview.getProgress());
+    }
+
     private void setupSeekBarPreview() {
         int posMarkerStart = selectedMarker.getStartPos();
         int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
@@ -1230,17 +1242,17 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         int currentDuration = currentEndMillis - currentStartMillis;
 
         seekBarPreview.setMax(currentDuration);
+        seekBarPreview.setProgress(0);
         seekBarPreview.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(currentStartMillis + progress >= currentEndMillis) {
                     playerPreview.pause();
-                    playerPreview.seekTo(currentStartMillis);
-                    seekBarPreview.setProgress(0);
+                    seekPreviewPlayerToStartPosition();
                     updateButtonsPreview();
                 } else {
                     if(fromUser) {
-                        playerPreview.seekTo(progress + currentStartMillis);
+                        seekPreviewPlayerToSeekbarPosition();
                     }
                 }
                 tvTimePassPreview.setText(Commons.getLengthFromEpochForPlayer(progress));
@@ -1280,10 +1292,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             handlePausePreview();
             return;
         }
-//        if (!shouldReloadPreview) {
-//            onPlayPreview();
-//            return;
-//        }
 
         if (playerPreview != null) {
             playerPreview.release();
@@ -1304,7 +1312,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             playerPreview.start();
         setupSeekBarPreview();
         shouldReloadPreview = false;
-
     }
 
 //    @Deprecated
