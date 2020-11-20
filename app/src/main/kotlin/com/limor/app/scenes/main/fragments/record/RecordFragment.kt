@@ -1,6 +1,8 @@
 package com.limor.app.scenes.main.fragments.record
 
 import android.Manifest
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
@@ -11,6 +13,7 @@ import android.media.AudioFormat
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.os.SystemClock
 import android.text.Editable
 import android.text.TextWatcher
@@ -26,6 +29,7 @@ import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -61,6 +65,7 @@ class RecordFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+
     private lateinit var draftViewModel: DraftViewModel
     private lateinit var locationsViewModel: LocationsViewModel
     private var isRecording = false
@@ -76,6 +81,7 @@ class RecordFragment : BaseFragment() {
     private lateinit var locationResult: MyLocation.LocationResult
     private var fileRecording = ""
     private var continueRecording = false
+    private var isAnimatingCountdown: Boolean = false
 
 
     companion object {
@@ -83,16 +89,20 @@ class RecordFragment : BaseFragment() {
         fun newInstance() = RecordFragment()
         private const val PERMISSION_ALL = 1
         private val PERMISSIONS = arrayOf(
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
         )
     }
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_record, container, false)
             voiceGraph = rootView?.findViewById(R.id.graphVisualizer)
@@ -181,26 +191,27 @@ class RecordFragment : BaseFragment() {
     }
 
 
-    private fun hasPermissions(context: Context, vararg permissions: String): Boolean = permissions.all {
-        ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
-    }
+    private fun hasPermissions(context: Context, vararg permissions: String): Boolean =
+        permissions.all {
+            ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+        }
 
     private fun deleteUnusedAudioFiles() {
         // let's fill a paths list with all the file paths that should be in the storage
         draftViewModel.loadDraftRealm()?.observe(this@RecordFragment, Observer<List<UIDraft>> {
             val paths = ArrayList<String>()
             it.forEach { draft ->
-                draft.filePath?.let {path ->
+                draft.filePath?.let { path ->
                     paths.add(path)
                 }
             }
             // and now, let's delete all zombie files that are not linked to any draft anymore but,
             // for some reason, they were not deleted
             val audioDirectory = File(context?.getExternalFilesDir(null)?.absolutePath, "/limorv2/")
-            if(audioDirectory.exists() && audioDirectory.isDirectory) {
+            if (audioDirectory.exists() && audioDirectory.isDirectory) {
                 val files = audioDirectory.listFiles()
-                files?.forEach {file ->
-                    if(!paths.contains(file.absolutePath))
+                files?.forEach { file ->
+                    if (!paths.contains(file.absolutePath))
                         file.delete()
                 }
             }
@@ -210,9 +221,9 @@ class RecordFragment : BaseFragment() {
         // and now, let's clean cache too
         context?.externalCacheDir?.absolutePath?.let {
             val cacheDirectory = File(it)
-            if(cacheDirectory.exists() && cacheDirectory.isDirectory) {
+            if (cacheDirectory.exists() && cacheDirectory.isDirectory) {
                 val cacheFiles = cacheDirectory.listFiles()
-                cacheFiles?.forEach {file ->
+                cacheFiles?.forEach { file ->
                     file.delete()
                 }
             }
@@ -286,12 +297,12 @@ class RecordFragment : BaseFragment() {
     private fun bindViewModel() {
         activity?.let {
             draftViewModel = ViewModelProviders
-                    .of(it, viewModelFactory)
-                    .get(DraftViewModel::class.java)
+                .of(it, viewModelFactory)
+                .get(DraftViewModel::class.java)
 
             locationsViewModel = ViewModelProviders
-                    .of(it, viewModelFactory)
-                    .get(LocationsViewModel::class.java)
+                .of(it, viewModelFactory)
+                .get(LocationsViewModel::class.java)
         }
     }
 
@@ -341,8 +352,8 @@ class RecordFragment : BaseFragment() {
 
     private fun onBackPressed() {
         alert(
-                getString(R.string.alert_cancel_record_descr),
-                getString(R.string.alert_cancel_record_title)
+            getString(R.string.alert_cancel_record_descr),
+            getString(R.string.alert_cancel_record_title)
         ) {
             positiveButton(getString(R.string.alert_cancel_record_save)) {
                 it.dismiss()
@@ -358,8 +369,8 @@ class RecordFragment : BaseFragment() {
     private fun onEditClicked() {
 
         val resultStopAudio = stopAudio()
-        if(!resultStopAudio) {
-            alert(getString(R.string.error_stopping_audio)) { okButton {  } }
+        if (!resultStopAudio) {
+            alert(getString(R.string.error_stopping_audio)) { okButton { } }
             return
         }
 
@@ -375,7 +386,8 @@ class RecordFragment : BaseFragment() {
         //
         // In both cases, we just have to set the only useful filePath and send it to the next fragment. Without merging anything.
         if (draftViewModel.filesArray.size == 1
-                || draftViewModel.filesArray.size == 2 && !draftViewModel.filesArray[1].exists()) {
+            || draftViewModel.filesArray.size == 2 && !draftViewModel.filesArray[1].exists()
+        ) {
             uiDraft?.filePath = draftViewModel.filesArray[0].absolutePath
             uiDraft?.editedFilePath = draftViewModel.filesArray[0].absolutePath
             insertDraftInRealm(uiDraft!!, false)
@@ -385,15 +397,21 @@ class RecordFragment : BaseFragment() {
             findNavController().navigate(R.id.action_record_fragment_to_record_edit, bundle)
 
 
-
-
             // This situation will happen when I came back from edit or publish fragment and then,
             // I have my previous recording that I received from the previous fragment (edit or publish),
             // and the new recording the user just recorded. Both files should be merged now.
         } else if (draftViewModel.filesArray.size == 2) {
             doAsync {
-                val finalAudio = File(context?.getExternalFilesDir(null)?.absolutePath, "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
-                if (WavHelper.combineWaveFile(draftViewModel.filesArray[0].absolutePath, draftViewModel.filesArray[1].absolutePath, finalAudio.absolutePath)) {
+                val finalAudio = File(
+                    context?.getExternalFilesDir(null)?.absolutePath,
+                    "/limorv2/" + System.currentTimeMillis() + audioFileFormat
+                )
+                if (WavHelper.combineWaveFile(
+                        draftViewModel.filesArray[0].absolutePath,
+                        draftViewModel.filesArray[1].absolutePath,
+                        finalAudio.absolutePath
+                    )
+                ) {
                     // let's delete the old files, we don't need them anymore
                     draftViewModel.filesArray.forEach {
                         it.delete()
@@ -416,8 +434,8 @@ class RecordFragment : BaseFragment() {
                         // TODO: Jose -> maybe we don't need any bundle if we are using viewmodels
                         val bundle = bundleOf("recordingItem" to uiDraft)
                         findNavController().navigate(
-                                R.id.action_record_fragment_to_record_edit,
-                                bundle
+                            R.id.action_record_fragment_to_record_edit,
+                            bundle
                         )
                     }
                 } else {
@@ -430,7 +448,8 @@ class RecordFragment : BaseFragment() {
 
             }
         } else {
-            val errorMessage = "Error, you have -> ${draftViewModel.filesArray.size} items when merging audio"
+            val errorMessage =
+                "Error, you have -> ${draftViewModel.filesArray.size} items when merging audio"
             alert(errorMessage) { okButton { } }.show()
             Timber.e(errorMessage)
         }
@@ -450,7 +469,8 @@ class RecordFragment : BaseFragment() {
             changeToEditToolbar()
         } else {
             //Setup audio recorder
-            fileRecording = recordingDirectory.absolutePath + "/" + System.currentTimeMillis() + audioFileFormat
+            fileRecording =
+                recordingDirectory.absolutePath + "/" + System.currentTimeMillis() + audioFileFormat
             mRecorder = WaveRecorder(fileRecording)
             mRecorder.waveConfig.sampleRate = 16000
             mRecorder.waveConfig.channels = AudioFormat.CHANNEL_IN_STEREO
@@ -481,12 +501,14 @@ class RecordFragment : BaseFragment() {
     private fun resetAudioSetup() {
 
         // Note: this is not the audio file name, it's a directory.
-        val recordingDirectory = File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/")
+        val recordingDirectory =
+            File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/")
         if (!recordingDirectory.exists()) {
             recordingDirectory.mkdir()
         }
 
-        fileRecording = recordingDirectory.absolutePath + "/" + System.currentTimeMillis() + audioFileFormat
+        fileRecording =
+            recordingDirectory.absolutePath + "/" + System.currentTimeMillis() + audioFileFormat
         mRecorder = WaveRecorder(fileRecording)
         mRecorder.onAmplitudeListener = {
             runOnUiThread {
@@ -506,8 +528,8 @@ class RecordFragment : BaseFragment() {
         // Next Button
         nextButton.onClick {
             val resultStop = stopAudio()
-            if(!resultStop) {
-                alert (getString(R.string.error_stopping_audio)){ okButton {  } }
+            if (!resultStop) {
+                alert(getString(R.string.error_stopping_audio)) { okButton { } }
                 return@onClick
             }
 
@@ -523,7 +545,8 @@ class RecordFragment : BaseFragment() {
             //
             // In both cases, we just have to set the only useful filePath and send it to the next fragment. Without merging anything.
             if (draftViewModel.filesArray.size == 1
-                    || draftViewModel.filesArray.size == 2 && !draftViewModel.filesArray[1].exists()) {
+                || draftViewModel.filesArray.size == 2 && !draftViewModel.filesArray[1].exists()
+            ) {
                 uiDraft?.filePath = draftViewModel.filesArray[0].absolutePath
                 uiDraft?.editedFilePath = draftViewModel.filesArray[0].absolutePath
                 insertDraftInRealm(uiDraft!!, false)
@@ -533,15 +556,21 @@ class RecordFragment : BaseFragment() {
                 findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
 
 
-
-
                 // This situation will happen when I came back from edit or publish fragment and then,
                 // I have my previous recording that I received from the previous fragment (edit or publish),
                 // and the new recording the user just recorded. Both files should be merged now.
             } else if (draftViewModel.filesArray.size == 2) {
                 doAsync {
-                    val finalAudio = File(context?.getExternalFilesDir(null)?.absolutePath, "/limorv2/" + System.currentTimeMillis() + audioFileFormat)
-                    if (WavHelper.combineWaveFile(draftViewModel.filesArray[0].absolutePath, draftViewModel.filesArray[1].absolutePath, finalAudio.absolutePath)) {
+                    val finalAudio = File(
+                        context?.getExternalFilesDir(null)?.absolutePath,
+                        "/limorv2/" + System.currentTimeMillis() + audioFileFormat
+                    )
+                    if (WavHelper.combineWaveFile(
+                            draftViewModel.filesArray[0].absolutePath,
+                            draftViewModel.filesArray[1].absolutePath,
+                            finalAudio.absolutePath
+                        )
+                    ) {
                         // let's delete the old files, we don't need them anymore
                         draftViewModel.filesArray.forEach {
                             it.delete()
@@ -564,8 +593,8 @@ class RecordFragment : BaseFragment() {
                             // TODO: Jose -> maybe we don't need any bundle if we are using viewmodels
                             val bundle = bundleOf("recordingItem" to uiDraft)
                             findNavController().navigate(
-                                    R.id.action_record_fragment_to_record_publish,
-                                    bundle
+                                R.id.action_record_fragment_to_record_publish,
+                                bundle
                             )
                         }
                     } else {
@@ -578,7 +607,8 @@ class RecordFragment : BaseFragment() {
 
                 }
             } else {
-                val errorMessage = "Error, you have -> ${draftViewModel.filesArray.size} items when merging audio"
+                val errorMessage =
+                    "Error, you have -> ${draftViewModel.filesArray.size} items when merging audio"
                 alert(errorMessage) { okButton { } }.show()
                 Timber.e(errorMessage)
             }
@@ -590,10 +620,49 @@ class RecordFragment : BaseFragment() {
             if (isRecording) {
                 pauseRecording()
             } else {
-                startRecording()
+                if(!isAnimatingCountdown) {
+                    showCountdownAnimation {
+                        startRecording()
+                    }
+                }
             }
         }
 
+    }
+
+    private fun showCountdownAnimation(callback: () -> Unit) {
+        isAnimatingCountdown = true
+        val animatorCountDown = ObjectAnimator.ofPropertyValuesHolder(
+            layCountdownAnimation,
+            PropertyValuesHolder.ofFloat("scaleX", 1.1f),
+            PropertyValuesHolder.ofFloat("scaleY", 1.1f)
+        )
+
+        animatorCountDown.duration = 50
+        animatorCountDown.repeatCount = 1
+        animatorCountDown.interpolator = FastOutSlowInInterpolator()
+        animatorCountDown.repeatMode = ObjectAnimator.REVERSE
+
+        var count = 3
+        val handlerCountdown = Handler()
+        val runnableAnim = object : Runnable {
+            override fun run() {
+                if(count > 0) {
+                    animatorCountDown.start()
+                    handlerCountdown.postDelayed(this, 1000)
+                    count--
+                    tvCountdown.text = count.toString()
+                } else {
+                    layCountdownAnimation.visibility = View.GONE
+                    tvCountdown.text = "3"
+                    isAnimatingCountdown = false
+                    callback()
+                }
+
+            }
+        }
+        layCountdownAnimation.visibility = View.VISIBLE
+        handlerCountdown.postDelayed(runnableAnim, 1000)
     }
 
     private fun pauseRecording() {
@@ -618,11 +687,12 @@ class RecordFragment : BaseFragment() {
             nextButton.visibility = View.VISIBLE
 
             recordButton.background = ContextCompat.getDrawable(
-                    requireContext(),
-                    R.drawable.pause_red
+                requireContext(),
+                R.drawable.pause_red
             )
         } else {
-            recordButton.background = ContextCompat.getDrawable(requireContext(), R.drawable.record_red)
+            recordButton.background =
+                ContextCompat.getDrawable(requireContext(), R.drawable.record_red)
 
             // Enable next button
             nextButton.visibility = View.VISIBLE
@@ -683,7 +753,7 @@ class RecordFragment : BaseFragment() {
     }
 
 
-    private fun stopAudio() : Boolean {
+    private fun stopAudio(): Boolean {
         println("RECORD --> STOP")
         try {
             mRecorder.stopRecording()
@@ -738,9 +808,9 @@ class RecordFragment : BaseFragment() {
 
     private fun insertDraft() {
         val output = draftViewModel.insertDraftRealm(
-                DraftViewModel.InputInsert(
-                        insertDraftTrigger
-                )
+            DraftViewModel.InputInsert(
+                insertDraftTrigger
+            )
         )
 
         output.response.observe(this, Observer {
@@ -765,9 +835,9 @@ class RecordFragment : BaseFragment() {
 
     private fun deleteDraft() {
         val output = draftViewModel.deleteDraftRealm(
-                DraftViewModel.InputDelete(
-                        deleteDraftTrigger
-                )
+            DraftViewModel.InputDelete(
+                deleteDraftTrigger
+            )
         )
 
         output.response.observe(this, Observer {
@@ -855,12 +925,12 @@ class RecordFragment : BaseFragment() {
     private fun requestForLocation() {
 
         if (ActivityCompat.checkSelfPermission(
-                        context!!,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        context!!,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
+                context!!,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                context!!,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
             // Consider calling ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -880,9 +950,9 @@ class RecordFragment : BaseFragment() {
                     val geoCoder = Geocoder(it, Locale.getDefault()) //it is Geocoder
                     try {
                         val address: List<Address> = geoCoder.getFromLocation(
-                                location!!.latitude,
-                                location.longitude,
-                                1
+                            location!!.latitude,
+                            location.longitude,
+                            1
                         )
                         when {
                             address[0].locality != null -> {

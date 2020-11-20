@@ -410,4 +410,5 @@
     <string name="error_stopping_audio">Error stopping your audio</string>
     <string name="resume">Resume</string>
     <string name="go_to_publish">Go to publish</string>
+    <string name="recording_starts_in">Recording\nstarts in</string>
 </resources>
