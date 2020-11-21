@@ -32,7 +32,7 @@ data class NWFeedItems(
     @Optional
     val created_at: Int = 0
 
-    // TODO JOSE add ad again
+
     //@Optional
     //val ad: String = "" // caution, in this example response the value returned is always null, so I don't know which value type it really is
 )
