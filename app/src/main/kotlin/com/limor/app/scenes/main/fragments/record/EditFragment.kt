@@ -298,6 +298,10 @@ class EditFragment : WaveformFragment() {
             )
             return
         }
+
+        handlePause()
+        handlePausePreview()
+
         Commons.showAlertYesNo(
             activity,
             getString(R.string.paste),
