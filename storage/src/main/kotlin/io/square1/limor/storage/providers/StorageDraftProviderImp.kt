@@ -27,4 +27,8 @@ class StorageDraftProviderImp @Inject constructor(
         return storageDraftRepositoryImp.deleteRealmDraft(draftEntity.asStorageEntity())
     }
 
+    override fun findByPrimaryKey(id: Int): Flowable<DraftEntity> {
+        return storageDraftRepositoryImp.findByPrimaryKey(id).map { it.asDataEntity() }
+    }
+
 }

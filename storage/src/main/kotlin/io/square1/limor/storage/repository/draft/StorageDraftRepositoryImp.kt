@@ -17,6 +17,10 @@ class StorageDraftRepositoryImp @Inject constructor() : StorageDraftRepository{
         return storageDraftService.findAll()
     }
 
+    override fun findByPrimaryKey(id : Int): Flowable<RLMDraft> {
+        return storageDraftService.findByPrimaryKey(id)
+    }
+
     override fun deleteRealmDraft(realmDraft: RLMDraft): Completable {
         return storageDraftService.delete(Realm.getDefaultInstance().where(RLMDraft::class.java).equalTo("id", realmDraft.id))
     }

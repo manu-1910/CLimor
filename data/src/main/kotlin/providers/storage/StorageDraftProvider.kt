@@ -8,4 +8,5 @@ interface StorageDraftProvider {
     fun insertRealmDraft(draftEntity: DraftEntity): Completable
     fun loadRealmDrafts(): Flowable<List<DraftEntity>>
     fun deleteRealmDraft(draftEntity: DraftEntity): Completable
+    fun findByPrimaryKey(id : Int): Flowable<DraftEntity>
 }

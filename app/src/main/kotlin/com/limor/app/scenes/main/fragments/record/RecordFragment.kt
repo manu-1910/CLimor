@@ -123,7 +123,7 @@ class RecordFragment : BaseFragment() {
         configureToolbar()
         audioSetup()
         listeners()
-        insertDraft()
+        initApiCallInsertDraft()
         deleteDraft()
 
         //Check Permissions
@@ -270,7 +270,7 @@ class RecordFragment : BaseFragment() {
             uiDraft?.date = getDateTimeFormatted()
 
             //Inserting in Realm
-            insertDraftInRealm(uiDraft!!, false)
+            insertDraftInRealm(uiDraft!!)
 
             toast(getString(R.string.draft_inserted))
 
@@ -356,10 +356,10 @@ class RecordFragment : BaseFragment() {
 
     private fun onBackPressed() {
         // if the drafts is not null, it means that we have recorded something
-        uiDraft?.let {draft ->
+        if(uiDraft != null) {
 
 
-            // if we are in this fragment recording some audio for the first time
+            // this means that we are in this fragment recording some audio for the first time
             if( ! draftViewModel.continueRecording) {
 
                 // let's show the dialog to show if they want to save the current recorded audio or discard it
@@ -376,7 +376,7 @@ class RecordFragment : BaseFragment() {
 
                     // if CANCEL, then let's delete the temporary draft that it's now created
                     negativeButton(getString(R.string.alert_cancel_record_do_not_save)) {
-                        deleteDraftInRealm(draft)
+                        deleteDraftInRealm(uiDraft!!)
                         activity?.finish()
                     }
                 }.show()
@@ -384,11 +384,11 @@ class RecordFragment : BaseFragment() {
 
 
 
-                // if we are in this fragment because we come from another fragment that sent us some draft
-                // to continue recording it
+                // if we are here, this means that we are in this fragment because we come from
+                // another fragment that sent us some draft to continue recording it
             } else {
 
-                // this situation means that we are actually recorded anything new after coming to this fragment
+                // this situation means that we have actually recorded something new after coming to this fragment
                 // so we have to ask the user if he wants to keep the new changes or discard
                 if(draftViewModel.filesArray.size == 2 && draftViewModel.filesArray[1].exists()) {
                     alert(getString(R.string.do_you_want_to_save_changes)) {
@@ -403,30 +403,16 @@ class RecordFragment : BaseFragment() {
                     }.show()
 
 
-                    // TODO: jose -> CAUTION!
-                    // this means that there is nothing new recorded, BUT we have to ask the user
-                    // if he wants to save all the possible changes that comes from the edit fragment, for example,
-                    // and, if OK, then we have to save the draft in realm
-                    // The insert in realm shouldn't be here, it should be done in the edit fragment, but we will
-                    // do it there when we are working in the task LIM-394: control that drafts are just created when necessary
+                    // this means that we received a draft from another fragment, but we didn't record anything new in it
+                    // so we don't have to save, we just close the activity
                 } else {
-                    alert(getString(R.string.do_you_want_to_save_changes)) {
-                        positiveButton(getString(R.string.save)) {
-                            insertDraftInRealm(draftViewModel.uiDraft, false)
-                            activity?.finish()
-                        }
-
-
-                        negativeButton(getString(R.string.discard)) {
-                            activity?.finish()
-                        }
-                    }.show()
+                    activity?.finish()
                 }
             }
 
 
             // if the draft is null, it means that we didn't even record anything, so we just close the activity
-        } ?: run {
+        } else {
             activity?.finish()
         }
     }
@@ -456,7 +442,7 @@ class RecordFragment : BaseFragment() {
         ) {
             uiDraft?.filePath = draftViewModel.filesArray[0].absolutePath
             uiDraft?.editedFilePath = draftViewModel.filesArray[0].absolutePath
-            insertDraftInRealm(uiDraft!!, false)
+            insertDraftInRealm(uiDraft!!)
 
             val bundle = bundleOf("recordingItem" to uiDraft)
             //findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
@@ -506,7 +492,7 @@ class RecordFragment : BaseFragment() {
                 //The recording item will be passed to EditFragment as Argument inside a bundle
                 uiDraft?.filePath = finalAudio.absolutePath
 
-                insertDraftInRealm(uiDraft!!, false)
+                insertDraftInRealm(uiDraft!!)
 
 
 
@@ -627,7 +613,7 @@ class RecordFragment : BaseFragment() {
             ) {
                 uiDraft?.filePath = draftViewModel.filesArray[0].absolutePath
                 uiDraft?.editedFilePath = draftViewModel.filesArray[0].absolutePath
-                insertDraftInRealm(uiDraft!!, false)
+                insertDraftInRealm(uiDraft!!)
 
                 val bundle = bundleOf("recordingItem" to uiDraft)
                 //findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
@@ -752,24 +738,28 @@ class RecordFragment : BaseFragment() {
             if (isFirstTapRecording) {
                 isFirstTapRecording = false
                 println("RECORD --> START")
-                //mRecorder.start()
                 resetAudioSetup()
                 mRecorder.startRecording()
 
                 //This is the recorded audio file saved in storage
                 val fileChosen: File? = File(fileRecording)
-                if (uiDraft != null) {
-                    uiDraft?.filePath = fileChosen?.absolutePath
-                    insertDraftInRealm(uiDraft!!, false)
-                } else {
+
+                // this won't be null when the draft is received from another fragment
+                uiDraft?.let {
+                    it.filePath = fileChosen?.absolutePath
+                    insertDraftInRealm(it)
+
+
+                    // this will be null when this is the first time that we record something
+                    // That's why here should be the only place where we actually call a new UIDraft()
+                } ?: run {
                     uiDraft = UIDraft()
-                    //recordingItem?.id = System.currentTimeMillis()/1000000
                     uiDraft?.id = System.currentTimeMillis()
                     uiDraft?.filePath = fileChosen?.absolutePath
-                    //Insert/Create Draft
-                    insertDraftInRealm(uiDraft!!, true)
+                    uiDraft?.title = getString(R.string.autosaved_draft)
+                    uiDraft?.date = getDateTimeFormatted()
                 }
-                draftViewModel.filesArray.add(File(uiDraft?.filePath))
+                draftViewModel.filesArray.add(File(uiDraft?.filePath!!))
 
             } else {
                 println("RECORD --> RESUME")
@@ -839,7 +829,7 @@ class RecordFragment : BaseFragment() {
         voiceGraph?.clear()
     }
 
-    private fun insertDraft() {
+    private fun initApiCallInsertDraft() {
         val output = draftViewModel.insertDraftRealm(
             DraftViewModel.InputInsert(
                 insertDraftTrigger
@@ -893,33 +883,32 @@ class RecordFragment : BaseFragment() {
     }
 
 
-    private fun getLastModified(): File? {
-        val directoryFilePath = context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/"
-        val directory = File(directoryFilePath)
-        val files = directory.listFiles { obj: File -> obj.isFile }
-        var lastModifiedTime = Long.MIN_VALUE
-        var chosenFile: File? = null
-        if (files != null) {
-            for (file in files) {
-                if (file.lastModified() > lastModifiedTime) {
-                    chosenFile = file
-                    lastModifiedTime = file.lastModified()
-                }
-            }
-        }
-        return chosenFile
-    }
+//    private fun getLastModified(): File? {
+//        val directoryFilePath = context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/"
+//        val directory = File(directoryFilePath)
+//        val files = directory.listFiles { obj: File -> obj.isFile }
+//        var lastModifiedTime = Long.MIN_VALUE
+//        var chosenFile: File? = null
+//        if (files != null) {
+//            for (file in files) {
+//                if (file.lastModified() > lastModifiedTime) {
+//                    chosenFile = file
+//                    lastModifiedTime = file.lastModified()
+//                }
+//            }
+//        }
+//        return chosenFile
+//    }
 
 
-    private fun insertDraftInRealm(item: UIDraft, isNew: Boolean) {
+    @Deprecated("")
+    private fun insertDraftInRealm2(item: UIDraft, isNew: Boolean) {
         //Model to save in Realm
 
         if (isNew) { //Create new Item
             val newItem = UIDraft()
             newItem.id = System.currentTimeMillis()
             newItem.filePath = item.filePath
-
-            draftViewModel.uiDraft = UIDraft()
 
             if (item.title.isNullOrEmpty()) {
                 newItem.title = getString(R.string.autosaved_draft)
@@ -943,6 +932,11 @@ class RecordFragment : BaseFragment() {
 
 
         //Insert in Realm
+        insertDraftTrigger.onNext(Unit)
+    }
+
+    private fun insertDraftInRealm(item: UIDraft) {
+        draftViewModel.uiDraft = item
         insertDraftTrigger.onNext(Unit)
     }
 

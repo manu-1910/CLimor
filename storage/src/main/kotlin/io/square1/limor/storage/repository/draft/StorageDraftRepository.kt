@@ -9,4 +9,5 @@ interface StorageDraftRepository {
     fun insertRealmDraft(realmDraft: RLMDraft): Completable
     fun loadRealmDrafts(): Flowable<List<RLMDraft>>
     fun deleteRealmDraft(realmDraft: RLMDraft): Completable
+    fun findByPrimaryKey(id : Int): Flowable<RLMDraft>
 }
