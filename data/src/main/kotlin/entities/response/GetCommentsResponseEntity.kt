@@ -32,9 +32,6 @@ data class CommentEntity(
     var podcast_id: Int?,
     var links: LinksEntity,
     var comment_count: Int
-
-    // TODO Jose add ad again
-    //var ad: String // caution, in this example response the value returned is always null, so I don't know which value type it really is
 )
 
 data class CommentAudioEntity(

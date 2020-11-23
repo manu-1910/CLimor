@@ -33,7 +33,7 @@ fun NWFeedItems.asDataEntity(): FeedsItemsEntity{
         recasted,
         created_at
 
-        // TODO Jose add ad again
+
         //ad
     )
 }

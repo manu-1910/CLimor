@@ -11,6 +11,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.os.HandlerCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
@@ -29,6 +30,7 @@ import com.limor.app.scenes.utils.waveform.MarkerSet
 import com.limor.app.scenes.utils.waveform.WaveformFragment
 import com.limor.app.uimodels.UIDraft
 import com.limor.app.uimodels.UITimeStamp
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_waveform.*
 import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
 import org.jetbrains.anko.alert
@@ -36,6 +38,7 @@ import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.runOnUiThread
+import org.jetbrains.anko.support.v4.toast
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
@@ -55,6 +58,7 @@ class EditFragment : WaveformFragment() {
     private var initialLength: Long = 0
     private var initialTimeStamps: ArrayList<UITimeStamp>? = null
     private var progressDialogQueue: Queue<ProgressDialog> = LinkedList()
+    private val insertDraftTrigger = PublishSubject.create<Unit>()
     var app: App? = null
     private var hasAnythingChanged = false
 
@@ -75,15 +79,19 @@ class EditFragment : WaveformFragment() {
 
         listeners()
         bindViewModel()
+        initApiCallInsertDraft()
     }
 
     private fun bindViewModel() {
         activity?.let {
             draftViewModel = ViewModelProviders
-                    .of(it, viewModelFactory)
-                    .get(DraftViewModel::class.java)
+                .of(it, viewModelFactory)
+                .get(DraftViewModel::class.java)
         }
     }
+
+
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -102,14 +110,47 @@ class EditFragment : WaveformFragment() {
         return uiDraft?.filePath!!
     }
 
+
+
+    private fun initApiCallInsertDraft() {
+        val output = draftViewModel.insertDraftRealm(
+            DraftViewModel.InputInsert(
+                insertDraftTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if (it) {
+                //toast(getString(R.string.draft_inserted))
+                println("Draft inserted succesfully")
+            } else {
+                //toast(getString(R.string.draft_not_inserted))
+                println("Error inserting draft in Realm")
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            toast(getString(R.string.draft_not_inserted_error))
+        })
+    }
+
+    private fun insertDraftInRealm(item: UIDraft) {
+        draftViewModel.uiDraft = item
+        insertDraftTrigger.onNext(Unit)
+    }
+
     override fun populateMarkers() {
         if (uiDraft != null && uiDraft!!.timeStamps!!.size > 0) {
             for ((_, startSample, endSample) in uiDraft!!.timeStamps!!) {
                 if (startSample!! > 0 && endSample!! < player.duration) {
                     addMarker(
-                            waveformView.millisecsToPixels(startSample), waveformView.millisecsToPixels(
+                        waveformView.millisecsToPixels(startSample), waveformView.millisecsToPixels(
                             endSample
-                    ), false, R.color.white
+                        ), false, R.color.white
                     )
                 }
             }
@@ -133,17 +174,19 @@ class EditFragment : WaveformFragment() {
     override fun onStart() {
         super.onStart()
         requireActivity()
-                .onBackPressedDispatcher
-                .addCallback(this, object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        onBackPressed()
-                    }
-                })
+            .onBackPressedDispatcher
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    onBackPressed()
+                }
+            })
 
-        HandlerCompat.postDelayed(Handler(),
-                { hidePreviewLayoutQuickly() },
-                null,
-                10.toLong())
+        HandlerCompat.postDelayed(
+            Handler(),
+            { hidePreviewLayoutQuickly() },
+            null,
+            10.toLong()
+        )
     }
 
     private fun onBackPressed() {
@@ -160,7 +203,8 @@ class EditFragment : WaveformFragment() {
                     handlePause()
                     handlePausePreview()
 
-                    val convertedFile = WavHelper.convertToWav(requireContext(), uiDraft?.filePath!!)
+                    val convertedFile =
+                        WavHelper.convertToWav(requireContext(), uiDraft?.filePath!!)
                     if (convertedFile != null) {
                         draftViewModel.uiDraft.filePath = convertedFile.absolutePath
 
@@ -168,6 +212,7 @@ class EditFragment : WaveformFragment() {
                         draftViewModel.filesArray.clear()
                         draftViewModel.filesArray.add(convertedFile)
                         draftViewModel.continueRecording = true
+                        insertDraftInRealm(draftViewModel.uiDraft)
                         findNavController().popBackStack()
                     } else {
                         alert(getString(R.string.error_converting_audio)) {
@@ -210,11 +255,11 @@ class EditFragment : WaveformFragment() {
     private fun redoClick() {
         if (stepManager.lastRedoStep != null && stepManager.stepsToRedo.size > 0) {
             stepManager.addNewUndoStep(
-                    Step(
-                            System.currentTimeMillis(),
-                            fileName,
-                            uiDraft!!.timeStamps
-                    )
+                Step(
+                    System.currentTimeMillis(),
+                    fileName,
+                    uiDraft!!.timeStamps
+                )
             )
             uiDraft!!.timeStamps = stepManager.lastRedoStep.timeStamps
             fileName = stepManager.lastRedoStep.filePath
@@ -227,11 +272,11 @@ class EditFragment : WaveformFragment() {
     private fun undoClick() {
         if (stepManager.lastUndoStep != null && stepManager.stepsToUndo.size > 0) {
             stepManager.addNewRedoStep(
-                    Step(
-                            System.currentTimeMillis(),
-                            fileName,
-                            uiDraft!!.timeStamps
-                    )
+                Step(
+                    System.currentTimeMillis(),
+                    fileName,
+                    uiDraft!!.timeStamps
+                )
             )
             fileName = stepManager.lastUndoStep.filePath
             loadFromFile(fileName)
@@ -246,17 +291,17 @@ class EditFragment : WaveformFragment() {
         }
         if (editMarker == null || editMarker.startPos >= selectedMarker.startPos && editMarker.startPos <= selectedMarker.endPos) {
             showAlertOK(
-                    activity,
-                    getString(R.string.alert_title_oops),
-                    getString(R.string.paste_overlap_alert),
-                    null
+                activity,
+                getString(R.string.alert_title_oops),
+                getString(R.string.paste_overlap_alert),
+                null
             )
             return
         }
         Commons.showAlertYesNo(
-                activity,
-                getString(R.string.paste),
-                getString(R.string.paste_prompt)
+            activity,
+            getString(R.string.paste),
+            getString(R.string.paste_prompt)
         ) { _: DialogInterface?, _: Int -> pasteMarkedChunk() }
     }
 
@@ -264,10 +309,10 @@ class EditFragment : WaveformFragment() {
     private fun copyClick() {
         if (selectedMarker == null) {
             showAlertOK(
-                    activity,
-                    getString(R.string.alert_title_oops),
-                    getString(R.string.select_marker_firs_prompt),
-                    null
+                activity,
+                getString(R.string.alert_title_oops),
+                getString(R.string.select_marker_firs_prompt),
+                null
             )
             return
         }
@@ -278,10 +323,10 @@ class EditFragment : WaveformFragment() {
         for (markerSet in markerSets) {
             if (markerSet.isEditMarker) {
                 showAlertOK(
-                        activity,
-                        getString(R.string.alert_title_oops),
-                        getString(R.string.cant_create_more_than_one_marker_prompt),
-                        null
+                    activity,
+                    getString(R.string.alert_title_oops),
+                    getString(R.string.cant_create_more_than_one_marker_prompt),
+                    null
                 )
                 return
             }
@@ -295,18 +340,18 @@ class EditFragment : WaveformFragment() {
     private fun deleteClick() {
         if (selectedMarker == null) {
             showAlertOK(
-                    activity,
-                    getString(R.string.alert_title_oops),
-                    getString(R.string.select_marker_firs_prompt),
-                    null
+                activity,
+                getString(R.string.alert_title_oops),
+                getString(R.string.select_marker_firs_prompt),
+                null
             )
             return
         }
         showAlertOkCancel(
-                activity,
-                getString(R.string.remove),
-                getString(R.string.remove_piece_of_audio_prompt),
-                DialogInterface.OnClickListener { _: DialogInterface?, _: Int -> deleteMarkedChunk() }
+            activity,
+            getString(R.string.remove),
+            getString(R.string.remove_piece_of_audio_prompt),
+            DialogInterface.OnClickListener { _: DialogInterface?, _: Int -> deleteMarkedChunk() }
         )
     }
 
@@ -322,15 +367,15 @@ class EditFragment : WaveformFragment() {
 
     private fun getEndFrameCopied(): Int {
         return waveformView.secondsToFrames(
-                waveformView.pixelsToSeconds(
-                        selectedMarker.endPos / NEW_WIDTH
-                )
+            waveformView.pixelsToSeconds(
+                selectedMarker.endPos / NEW_WIDTH
+            )
         )
     }
 
     private fun getEndSecondCopied(): Double {
         return waveformView.pixelsToSeconds(
-                selectedMarker.endPos / NEW_WIDTH
+            selectedMarker.endPos / NEW_WIDTH
         )
     }
 
@@ -339,17 +384,18 @@ class EditFragment : WaveformFragment() {
             return
         }
         stepManager.addNewUndoStep(
-                Step(
-                        System.currentTimeMillis(),
-                        fileName,
-                        uiDraft!!.timeStamps
-                )
+            Step(
+                System.currentTimeMillis(),
+                fileName,
+                uiDraft!!.timeStamps
+            )
         )
         showProgress(getString(R.string.progress_please_wait))
 
         Thread(Runnable {
             // we prepare an output path to copy
-            val copiedChunkPath = activity?.externalCacheDir?.absolutePath + "/limor_record_chunk_copied.m4a"
+            val copiedChunkPath =
+                activity?.externalCacheDir?.absolutePath + "/limor_record_chunk_copied.m4a"
 
             // we get first frame where we have to copy
             val startSecondCopied = getStartSecondCopied().toFloat()
@@ -377,10 +423,13 @@ class EditFragment : WaveformFragment() {
             // now we have to split the audio in 2 files:
             // the left side of the paste position
             // the right side of the paste position
-            val outPathLeft = activity?.externalCacheDir!!.absolutePath + "/limor_record_chunk_0.m4a"
-            val outPathRight = activity?.externalCacheDir!!.absolutePath + "/limor_record_chunk_1.m4a"
+            val outPathLeft =
+                activity?.externalCacheDir!!.absolutePath + "/limor_record_chunk_0.m4a"
+            val outPathRight =
+                activity?.externalCacheDir!!.absolutePath + "/limor_record_chunk_1.m4a"
             val startTimeLeft = 0f
-            val endTimeLeft = waveformView.pixelsToSeconds(editMarker.startPos / NEW_WIDTH).toFloat()
+            val endTimeLeft =
+                waveformView.pixelsToSeconds(editMarker.startPos / NEW_WIDTH).toFloat()
             val startTimeRight = endTimeLeft + 0.1f
             val endTimeRight = player.duration / 1000.0f
 
@@ -459,7 +508,8 @@ class EditFragment : WaveformFragment() {
                 // and after that, then we build the outputfile
 
 
-                val newFileName = activity?.externalCacheDir!!.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
+                val newFileName =
+                    activity?.externalCacheDir!!.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
                 val container = DefaultMp4Builder().build(outputMovie)
                 val fileChannel = RandomAccessFile(String.format(newFileName), "rws").channel
                 container.writeContainer(fileChannel)
@@ -485,9 +535,9 @@ class EditFragment : WaveformFragment() {
 
             // all of the following code is intended to put the markers in the correct place
             val startPosMilliseconds =
-                    waveformView.pixelsToMillisecs(selectedMarker.startPos / NEW_WIDTH)
+                waveformView.pixelsToMillisecs(selectedMarker.startPos / NEW_WIDTH)
             val endPosMilliseconds =
-                    waveformView.pixelsToMillisecs(selectedMarker.endPos / NEW_WIDTH)
+                waveformView.pixelsToMillisecs(selectedMarker.endPos / NEW_WIDTH)
             val copiedLength = endPosMilliseconds - startPosMilliseconds
             activity?.runOnUiThread {
                 val timeStamps = ArrayList<UITimeStamp>()
@@ -499,28 +549,28 @@ class EditFragment : WaveformFragment() {
                             var startPosMillisecondsAdjusted: Int
                             var endPosMillisecondsAdjusted: Int
                             if (waveformView.pixelsToMillisecs(markerSet.startPos / NEW_WIDTH) < waveformView.pixelsToMillisecs(
-                                            editMarker.startPos / NEW_WIDTH
-                                    )
+                                    editMarker.startPos / NEW_WIDTH
+                                )
                             ) {
                                 startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
-                                        markerSet.startPos / NEW_WIDTH
+                                    markerSet.startPos / NEW_WIDTH
                                 )
                                 endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
-                                        markerSet.endPos / NEW_WIDTH
+                                    markerSet.endPos / NEW_WIDTH
                                 )
                             } else {
                                 startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
-                                        markerSet.startPos / NEW_WIDTH
+                                    markerSet.startPos / NEW_WIDTH
                                 ) + copiedLength
                                 endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
-                                        markerSet.endPos / NEW_WIDTH
+                                    markerSet.endPos / NEW_WIDTH
                                 ) + copiedLength
                             }
                             handleTimeStamps(
-                                    markerSet,
-                                    timeStamps,
-                                    startPosMillisecondsAdjusted,
-                                    endPosMillisecondsAdjusted
+                                markerSet,
+                                timeStamps,
+                                startPosMillisecondsAdjusted,
+                                endPosMillisecondsAdjusted
                             )
                             iterator.remove()
                         } else if (markerSet.isEditMarker) {
@@ -576,16 +626,16 @@ class EditFragment : WaveformFragment() {
      * It returns the absolute path of the created file
      */
     private fun writeSoundTemporaryFile(
-            path: String,
-            startSecond: Float,
-            endSecond: Float
+        path: String,
+        startSecond: Float,
+        endSecond: Float
     ): String {
         // we create the outputfile with the output path
         val file = File(path)
         soundFile.WriteFile(
-                file,
-                startSecond,
-                endSecond
+            file,
+            startSecond,
+            endSecond
         )
         return file.absolutePath
     }
@@ -595,20 +645,20 @@ class EditFragment : WaveformFragment() {
             return
         }
         stepManager.addNewUndoStep(
-                Step(System.currentTimeMillis(), fileName, uiDraft!!.timeStamps)
+            Step(System.currentTimeMillis(), fileName, uiDraft!!.timeStamps)
         )
         showProgress(getString(R.string.progress_please_wait))
         Thread(Runnable {
             var audioFilePaths = ArrayList<String>()
             for (i in 0..1) {
                 val outPath =
-                        activity!!.externalCacheDir!!.absolutePath + "/limor_record_chunk_" + i + ".m4a"
+                    activity!!.externalCacheDir!!.absolutePath + "/limor_record_chunk_" + i + ".m4a"
                 val startTime =
-                        waveformView.pixelsToSeconds(if (i == 0) 0 else (selectedMarker.endPos / NEW_WIDTH))
+                    waveformView.pixelsToSeconds(if (i == 0) 0 else (selectedMarker.endPos / NEW_WIDTH))
                 val endTime = waveformView.pixelsToSeconds(
-                        if (i == 0) (selectedMarker.startPos / NEW_WIDTH) else waveformView.millisecsToPixels(
-                                player.duration - 10
-                        )
+                    if (i == 0) (selectedMarker.startPos / NEW_WIDTH) else waveformView.millisecsToPixels(
+                        player.duration - 10
+                    )
                 )
                 val startFrame = waveformView.secondsToFrames(startTime)
                 val endFrame = waveformView.secondsToFrames(endTime)
@@ -620,7 +670,8 @@ class EditFragment : WaveformFragment() {
                     e.printStackTrace()
                 }
             }
-            fileName = activity!!.externalCacheDir!!.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
+            fileName =
+                activity!!.externalCacheDir!!.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
             try {
                 val listMovies: MutableList<Movie> = ArrayList()
                 for (filename in audioFilePaths) {
@@ -647,16 +698,16 @@ class EditFragment : WaveformFragment() {
                 audioFilePaths = ArrayList()
                 val deletedLength: Int
                 val startPosMilliseconds =
-                        waveformView.pixelsToMillisecs(selectedMarker.startPos / NEW_WIDTH)
+                    waveformView.pixelsToMillisecs(selectedMarker.startPos / NEW_WIDTH)
                 val endPosMilliseconds =
-                        waveformView.pixelsToMillisecs(selectedMarker.endPos / NEW_WIDTH)
+                    waveformView.pixelsToMillisecs(selectedMarker.endPos / NEW_WIDTH)
                 deletedLength = endPosMilliseconds - startPosMilliseconds
                 activity!!.runOnUiThread {
                     removeMarker(selectedMarker)
                     val timeStamps = ArrayList<UITimeStamp>()
                     if (markerSets != null && markerSets.size > 0) {
                         val iterator =
-                                markerSets.iterator()
+                            markerSets.iterator()
                         while (iterator.hasNext()) {
                             val markerSet = iterator.next()
                             if (!markerSet.isEditMarker) {
@@ -664,24 +715,24 @@ class EditFragment : WaveformFragment() {
                                 var endPosMillisecondsAdjusted: Int
                                 if (waveformView.pixelsToMillisecs(markerSet.startPos / NEW_WIDTH) < startPosMilliseconds) {
                                     startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
-                                            markerSet.startPos / NEW_WIDTH
+                                        markerSet.startPos / NEW_WIDTH
                                     )
                                     endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
-                                            markerSet.endPos / NEW_WIDTH
+                                        markerSet.endPos / NEW_WIDTH
                                     )
                                 } else {
                                     startPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
-                                            markerSet.startPos / NEW_WIDTH
+                                        markerSet.startPos / NEW_WIDTH
                                     ) - deletedLength
                                     endPosMillisecondsAdjusted = waveformView.pixelsToMillisecs(
-                                            markerSet.endPos / NEW_WIDTH
+                                        markerSet.endPos / NEW_WIDTH
                                     ) - deletedLength
                                 }
                                 handleTimeStamps(
-                                        markerSet,
-                                        timeStamps,
-                                        startPosMillisecondsAdjusted,
-                                        endPosMillisecondsAdjusted
+                                    markerSet,
+                                    timeStamps,
+                                    startPosMillisecondsAdjusted,
+                                    endPosMillisecondsAdjusted
                                 )
                                 iterator.remove()
                                 shouldReloadPreview = true
@@ -708,10 +759,10 @@ class EditFragment : WaveformFragment() {
     }
 
     private fun handleTimeStamps(
-            markerSet: MarkerSet,
-            timeStamps: ArrayList<UITimeStamp>,
-            startPos: Int,
-            endPos: Int
+        markerSet: MarkerSet,
+        timeStamps: ArrayList<UITimeStamp>,
+        startPos: Int,
+        endPos: Int
     ) {
         val timeStamp = UITimeStamp()
         timeStamp.duration = startPos
@@ -741,10 +792,10 @@ class EditFragment : WaveformFragment() {
 
     private fun openHowToEdit() {
         showAlertOK(
-                activity,
-                getString(R.string.how_to_edit_title),
-                getString(R.string.how_to_edit_description),
-                null
+            activity,
+            getString(R.string.how_to_edit_title),
+            getString(R.string.how_to_edit_description),
+            null
         )
     }
 
@@ -825,38 +876,38 @@ class EditFragment : WaveformFragment() {
     }
 
     private fun showAlertOK(
-            context: Context?,
-            title: String?,
-            message: String?,
-            listener: DialogInterface.OnClickListener?
+        context: Context?,
+        title: String?,
+        message: String?,
+        listener: DialogInterface.OnClickListener?
     ) {
         Commons.showAlertCustomButtons(
-                context,
-                title,
-                message,
-                listener,
-                context!!.getString(R.string.ok),
-                null,
-                null
+            context,
+            title,
+            message,
+            listener,
+            context!!.getString(R.string.ok),
+            null,
+            null
         )
     }
 
     private fun showAlertOkCancel(
-            context: Context?,
-            title: String?,
-            message: String?,
-            listener: DialogInterface.OnClickListener?
+        context: Context?,
+        title: String?,
+        message: String?,
+        listener: DialogInterface.OnClickListener?
     ) {
         Commons.showAlertCustomButtons(
-                context,
-                title,
-                message,
-                listener,
-                context!!.getString(R.string.ok),
-                null,
-                context.getString(
-                        R.string.cancel
-                )
+            context,
+            title,
+            message,
+            listener,
+            context!!.getString(R.string.ok),
+            null,
+            context.getString(
+                R.string.cancel
+            )
         )
     }
 

@@ -70,7 +70,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected SoundFile soundFile;
     protected File file;
     protected String fileName;
-    protected String editedWithMarkersFileName; // TODO: Jose -> this possibly doesn't do anything now
     protected WaveformView waveformView;
     protected ImageButton playButton, rewindButton, forwardButton, btnRewindPreview, btnForwardPreview;
     protected ImageButton closeButton, infoButton;
@@ -107,7 +106,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     private ImageView ivPlayPreview;
     private LinearLayout rlPreviewSection;
     private SeekBar seekBarPreview;
-    private boolean isSeekBarTouchedPreview;
     protected boolean shouldReloadPreview;
     protected MarkerSet selectedMarker, editMarker;
     //    protected ArrayList<String> audioFilePaths = new ArrayList<>();
@@ -160,17 +158,15 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         soundFile = null;
         handler = new Handler();
         updaterPreview = new Runnable() {
-            public boolean shouldStop = false;
             @Override
             public void run() {
-                if (playerPreview != null && playerPreview.isPlaying() && !isSeekBarTouchedPreview) {
+                if (playerPreview != null && playerPreview.isPlaying()) {
                     int posMarkerStart = selectedMarker.getStartPos();
                     int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
                     seekBarPreview.setProgress(playerPreview.getCurrentPosition() - currentStartMillis);
                     tvTimePassPreview.setText(Commons.getLengthFromEpochForPlayer(seekBarPreview.getProgress()));
                 }
-                if(!shouldStop)
-                    seekBarHandler.postDelayed(this, 10);
+                seekBarHandler.postDelayed(this, 10);
             }
         };
     }

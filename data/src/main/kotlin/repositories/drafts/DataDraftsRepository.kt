@@ -22,4 +22,8 @@ class DataDraftsRepository @Inject constructor(private val storageProvider: Stor
     override fun deleteRealmDraft(draftEntity: DraftEntity): Completable {
         return storageProvider.deleteRealmDraft(draftEntity)
     }
+
+    override fun findByPrimaryKey(id : Int): Flowable<DraftEntity> {
+        return storageProvider.findByPrimaryKey(id)
+    }
 }

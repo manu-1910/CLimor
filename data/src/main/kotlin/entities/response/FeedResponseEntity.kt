@@ -17,8 +17,5 @@ data class FeedsItemsEntity(
     var user: UserEntity,
     var recasted: Boolean,
     var created_at: Int
-
-    // TODO Jose add ad again
-    //var ad: String // caution, in this example response the value returned is always null, so I don't know which value type it really is
 )
 

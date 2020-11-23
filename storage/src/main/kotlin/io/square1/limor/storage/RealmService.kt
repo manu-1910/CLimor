@@ -5,6 +5,7 @@ import io.reactivex.Flowable
 import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.RealmQuery
+import io.square1.limor.storage.entities.RLMDraft
 import io.square1.limor.storage.extensions.*
 
 abstract class RealmService<T : RealmObject, ID> {
