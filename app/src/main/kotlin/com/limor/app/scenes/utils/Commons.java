@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import it.sauronsoftware.jave.AudioAttributes;
 import it.sauronsoftware.jave.Encoder;
@@ -136,7 +137,18 @@ public class Commons {
         return (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dps, context.getResources().getDisplayMetrics()));
     }
 
-    public static String getLengthFromEpochForPlayer(long milliSeconds) {
+    public static String getLengthFromEpochForPlayer(long millis) {
+        return String.format("%02d:%02d", TimeUnit.MILLISECONDS.toMinutes(millis),
+                TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+
+        // this one would be to HH:MM:SS
+//        return String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
+//                TimeUnit.MILLISECONDS.toMinutes(millis) % TimeUnit.HOURS.toMinutes(1),
+//                TimeUnit.MILLISECONDS.toSeconds(millis) % TimeUnit.MINUTES.toSeconds(1));
+    }
+
+    @Deprecated
+    public static String getLengthFromEpochForPlayer2(long milliSeconds) {
         DateTime time = new DateTime(milliSeconds);
         final DateTime hour = time.secondOfMinute().roundHalfCeilingCopy();
         Date date = new Date(milliSeconds);

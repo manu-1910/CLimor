@@ -26,6 +26,8 @@ import android.media.MediaRecorder;
 import android.os.Build;
 import android.util.Log;
 
+import com.arthenica.mobileffmpeg.FFmpeg;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -36,7 +38,12 @@ import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+
+import timber.log.Timber;
 
 public class SoundFile {
     private ProgressListener mProgressListener = null;
@@ -58,7 +65,7 @@ public class SoundFile {
 
     // Member variables for hack (making it work with old version, until app just uses the samples).
     private int mNumFrames;
-    private int[] mFrameGains;
+    private int[] mFrameGains; // this is the array containing all the gains
     private int[] mFrameLens;
     private int[] mFrameOffsets;
 
@@ -231,8 +238,8 @@ public class SoundFile {
 
         int decodedSamplesSize = 0;  // size of the output buffer containing decoded samples.
         byte[] decodedSamples = null;
-        ByteBuffer[] inputBuffers = codec.getInputBuffers();
-        ByteBuffer[] outputBuffers = codec.getOutputBuffers();
+//        ByteBuffer[] inputBuffers = codec.getInputBuffers();
+//        ByteBuffer[] outputBuffers = codec.getOutputBuffers();
         int sample_size;
         MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
         long presentation_time;
@@ -249,7 +256,7 @@ public class SoundFile {
             // read data from file and feed it to the decoder input buffers.
             int inputBufferIndex = codec.dequeueInputBuffer(100);
             if (!done_reading && inputBufferIndex >= 0) {
-                sample_size = extractor.readSampleData(inputBuffers[inputBufferIndex], 0);
+                sample_size = extractor.readSampleData(codec.getInputBuffer(inputBufferIndex), 0);
                 if (firstSampleData && format.getString(MediaFormat.KEY_MIME).equals("audio/mp4a-latm") && sample_size == 2) {
                     // For some reasons on some devices (e.g. the Samsung S3) you should not
                     // provide the first two bytes of an AAC stream, otherwise the MediaCodec will
@@ -292,14 +299,15 @@ public class SoundFile {
                     decodedSamplesSize = info.size;
                     decodedSamples = new byte[decodedSamplesSize];
                 }
-                outputBuffers[outputBufferIndex].get(decodedSamples, 0, info.size);
-                outputBuffers[outputBufferIndex].clear();
+                codec.getOutputBuffer(outputBufferIndex).get(decodedSamples, 0, info.size);
+                codec.getOutputBuffer(outputBufferIndex).clear();
                 // Check if buffer is big enough. Resize it if it's too small.
                 if (mDecodedBytes.remaining() < info.size) {
                     // Getting a rough estimate of the total size, allocate 20% more, and
                     // make sure to allocate at least 5MB more than the initial size.
                     int position = mDecodedBytes.position();
                     int newSize = (int)((position * (1.0 * mFileSize / tot_size_read)) * 1.2);
+                    newSize = mFileSize;
                     if (newSize - position < info.size + 5 * (1<<20)) {
                         newSize = position + info.size + 5 * (1<<20);
                     }
@@ -330,7 +338,7 @@ public class SoundFile {
                 mDecodedBytes.put(decodedSamples, 0, info.size);
                 codec.releaseOutputBuffer(outputBufferIndex, false);
             } else if (outputBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                outputBuffers = codec.getOutputBuffers();
+//                outputBuffers = codec.getOutputBuffers();
             } else if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 // Subsequent data will conform to new format.
                 // We could check that codec.getOutputFormat(), which is the new output format,
@@ -367,8 +375,8 @@ public class SoundFile {
             mNumFrames++;
         }
         mFrameGains = new int[mNumFrames * NEW_WIDTH];
-        mFrameLens = new int[mNumFrames * NEW_WIDTH];
-        mFrameOffsets = new int[mNumFrames * NEW_WIDTH];
+//        mFrameLens = new int[mNumFrames * NEW_WIDTH];
+//        mFrameOffsets = new int[mNumFrames * NEW_WIDTH];
 
         int j;
         int gain, value;
@@ -387,14 +395,140 @@ public class SoundFile {
                     gain = value;
                 }
             }
-            mFrameGains[i] = (int)Math.sqrt(gain);  // here gain = sqrt(max value of 1st channel)...
-            mFrameLens[i] = frameLens;  // totally not accurate...
-            mFrameOffsets[i] = (int)(i * (1000 * mAvgBitRate / 8) *  //  = i * frameLens
-                    ((float)getSamplesPerFrame() / mSampleRate));
+            int gainToSave = (int)Math.sqrt(gain);  // here gain = sqrt(max value of 1st channel)...
+            mFrameGains[i] = gainToSave;
+//            mFrameLens[i] = frameLens;  // totally not accurate...
+//            int offsetToSave = (int)(i * (1000 * mAvgBitRate / 8) *  //  = i * frameLens
+//                    ((float)getSamplesPerFrame() / mSampleRate));
+//            mFrameOffsets[i] = offsetToSave;
         }
         mDecodedSamples.rewind();
         // DumpSamples();  // Uncomment this line to dump the samples in a TSV file.
     }
+
+
+    private void ReadFile2(File inputFile) throws java.io.FileNotFoundException, IOException, InvalidInputException {
+        MediaExtractor extractor = new MediaExtractor();
+        MediaFormat format = null;
+        int i;
+
+        mInputFile = inputFile;
+        String[] components = mInputFile.getPath().split("\\.");
+        mFileType = components[components.length - 1];
+        mFileSize = (int)mInputFile.length();
+        try {
+            extractor.setDataSource(mInputFile.getPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        int numTracks = extractor.getTrackCount();
+        // find and select the first audio track present in the file.
+        for (i=0; i<numTracks; i++) {
+            format = extractor.getTrackFormat(i);
+            if (format.getString(MediaFormat.KEY_MIME).startsWith("audio/")) {
+                extractor.selectTrack(i);
+                break;
+            }
+        }
+        if (i == numTracks) {
+            throw new InvalidInputException("No audio track found in " + mInputFile);
+        }
+        mChannels = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
+        mSampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+        // Expected total number of samples per channel.
+        int expectedNumSamples =
+                (int)((format.getLong(MediaFormat.KEY_DURATION) / 1000000.f) * mSampleRate + 0.5f);
+
+        MediaCodec codec = MediaCodec.createDecoderByType(format.getString(MediaFormat.KEY_MIME));
+        codec.configure(format, null, null, 0);
+        codec.start();
+
+        int decodedSamplesSize = 0;  // size of the output buffer containing decoded samples.
+        byte[] decodedSamples = null;
+//        ByteBuffer[] inputBuffers = codec.getInputBuffers();
+//        ByteBuffer[] outputBuffers = codec.getOutputBuffers();
+        int sample_size;
+        MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
+        long presentation_time;
+        int tot_size_read = 0;
+        boolean done_reading = false;
+
+        // Set the size of the decoded samples buffer to 1MB (~6sec of a stereo stream at 44.1kHz).
+        // For longer streams, the buffer size will be increased later on, calculating a rough
+        // estimate of the total size needed to store all the samples in order to resize the buffer
+        // only once.
+
+        Boolean firstSampleData = true;
+
+        String parentPath = inputFile.getParent();
+        String outputFile = parentPath + "/gains.txt";
+        String command = "-i " + inputFile.getAbsolutePath() + " -af asetnsamples=44100,astats=metadata=1:reset=1,ametadata=print:key=lavfi.astats.Overall.RMS_level:file="+outputFile+" -f null -";
+//        String command = "-i " + inputFile.getAbsolutePath() + " -af astats=metadata=1:reset=44,ametadata=print:key=lavfi.astats.Overall.RMS_level:file="+outputFile+" -f null -";
+        int result = FFmpeg.execute(command);
+        if(result != FFmpeg.RETURN_CODE_SUCCESS) {
+            Timber.e("ERROR GETTING GAINS");
+            return;
+        }
+
+        File f = new File(outputFile);
+
+        List<Byte> gains = new ArrayList<>();
+        Scanner scanner = new Scanner(f);
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            if(line.contains("RMS_level")) {
+                String value = line.substring(line.lastIndexOf("=") + 1);
+                byte currentGain = 0;
+                if(!value.equals("-inf")) {
+                    float valueInDbfs = Float.parseFloat(value);
+                    // we apply this formula to convert between values dBfs (0 to -100db) to 0-255
+                    // ((valueInDbfs + 100) * 255) / 100
+                    byte valueInByteScale = (byte) (((valueInDbfs + 100) * 255) / 100); // todo: Jose -> this is untested. This is the last thing I did before I got assigned to another task
+                    currentGain = valueInByteScale;
+                }
+                gains.add(currentGain);
+            }
+        }
+        scanner.close();
+
+//        mNumSamples = mDecodedBytes.position() / (mChannels * 2);  // One sample = 2 bytes.
+        mNumSamples = gains.size();
+//        mDecodedBytes.rewind();
+//        mDecodedBytes.order(ByteOrder.LITTLE_ENDIAN);
+//        mDecodedSamples = mDecodedBytes.asShortBuffer();
+        mAvgBitRate = (int)((mFileSize * 8) * ((float)mSampleRate / mNumSamples) / 1000);
+
+        extractor.release();
+        extractor = null;
+        codec.stop();
+        codec.release();
+        codec = null;
+
+        // Temporary hack to make it work with the old version.
+//        mNumFrames = mNumSamples / getSamplesPerFrame();
+        mNumFrames = gains.size();
+        if (mNumSamples % getSamplesPerFrame() != 0){
+            mNumFrames++;
+        }
+        mFrameGains = new int[mNumFrames * NEW_WIDTH];
+//        mFrameLens = new int[mNumFrames * NEW_WIDTH];
+//        mFrameOffsets = new int[mNumFrames * NEW_WIDTH];
+
+        int j;
+        int gain, value;
+        int frameLens = (int)((1000 * mAvgBitRate / 8) * ((float)getSamplesPerFrame() / mSampleRate));
+        for (i=0; i<mNumFrames; i++){
+            gain = gains.get(i).intValue();
+            mFrameGains[i] = (int)Math.sqrt(gain);  // here gain = sqrt(max value of 1st channel)...
+//            mFrameLens[i] = frameLens;  // totally not accurate...
+//            mFrameOffsets[i] = (int)(i * (1000 * mAvgBitRate / 8) *  //  = i * frameLens
+//                    ((float)getSamplesPerFrame() / mSampleRate));
+        }
+        mDecodedSamples.rewind();
+        // DumpSamples();  // Uncomment this line to dump the samples in a TSV file.
+    }
+
+
 
     private void RecordAudio() {
         if (mProgressListener ==  null) {
