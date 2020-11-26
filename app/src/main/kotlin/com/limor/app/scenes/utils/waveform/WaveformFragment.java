@@ -564,6 +564,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         selectedMarker = null;
         updateDisplay();
         shouldReloadPreview = true;
+
         showPreviewLayout(false);
     }
 
@@ -917,7 +918,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
     protected void showPreviewLayout(boolean visible) {
-        if (visible) {
+        // we check if the layout is clickable to avoid showing or hiding it twice
+        if (visible && !rlPreviewSection.isClickable()) {
             rlPreviewSection.setVisibility(View.VISIBLE);
             TranslateAnimation animate = new TranslateAnimation(
                     0,                 // fromXDelta
@@ -927,7 +929,14 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             animate.setDuration(500);
             animate.setFillAfter(true);
             rlPreviewSection.startAnimation(animate);
-        } else {
+            rlPreviewSection.setClickable(true);
+            btnClosePreview.setClickable(true);
+            btnForwardPreview.setClickable(true);
+            btnRewindPreview.setClickable(true);
+            seekBarPreview.setClickable(true);
+
+            // we check if the layout is clickable to avoid showing or hiding it twice
+        } else if(!visible && rlPreviewSection.isClickable()){
             rlPreviewSection.setVisibility(View.VISIBLE);
             TranslateAnimation animate = new TranslateAnimation(
                     0,                 // fromXDelta
@@ -938,6 +947,11 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             animate.setDuration(500);
             animate.setFillAfter(true);
             rlPreviewSection.startAnimation(animate);
+            rlPreviewSection.setClickable(false);
+            btnClosePreview.setClickable(false);
+            btnForwardPreview.setClickable(false);
+            btnRewindPreview.setClickable(false);
+            seekBarPreview.setClickable(false);
         }
     }
 
@@ -1269,6 +1283,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
     private void updateDurationsPreview() {
+        if(selectedMarker == null)
+            return;
+
+
         int posMarkerStart = selectedMarker.getStartPos();
         int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
 
@@ -1281,7 +1299,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
     protected void preparePlayerPreview(boolean shouldPlay) throws IOException {
-        if (markerSets == null || markerSets.size() == 0) {
+        if (markerSets == null || markerSets.size() == 0 || selectedMarker == null) {
             return;
         }
         if (playerPreview != null && playerPreview.isPlaying()) {
