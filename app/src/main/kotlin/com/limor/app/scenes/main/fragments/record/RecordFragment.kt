@@ -81,6 +81,7 @@ class RecordFragment : BaseFragment() {
     private lateinit var locationResult: MyLocation.LocationResult
     private var fileRecording = ""
     private var isAnimatingCountdown: Boolean = false
+    private lateinit var handlerCountdown : Handler
 
 
     companion object {
@@ -643,10 +644,20 @@ class RecordFragment : BaseFragment() {
                     showCountdownAnimation {
                         startRecording()
                     }
+                } else {
+                    stopCountdownAnimationAndStartRecordingInstantly()
                 }
             }
         }
 
+    }
+
+
+    private fun stopCountdownAnimationAndStartRecordingInstantly() {
+        handlerCountdown.removeCallbacksAndMessages(null)
+        layCountdownAnimation.visibility = View.GONE
+        isAnimatingCountdown = false
+        startRecording()
     }
 
     private fun showCountdownAnimation(callback: () -> Unit) {
@@ -663,7 +674,7 @@ class RecordFragment : BaseFragment() {
         animatorCountDown.repeatMode = ObjectAnimator.REVERSE
 
         var count = 3
-        val handlerCountdown = Handler()
+        handlerCountdown = Handler()
         val runnableAnim = object : Runnable {
             override fun run() {
                 if(count > 0) {
@@ -673,7 +684,6 @@ class RecordFragment : BaseFragment() {
                     tvCountdown.text = count.toString()
                 } else {
                     layCountdownAnimation.visibility = View.GONE
-                    tvCountdown.text = "3"
                     isAnimatingCountdown = false
                     callback()
                 }
@@ -681,6 +691,7 @@ class RecordFragment : BaseFragment() {
             }
         }
         layCountdownAnimation.visibility = View.VISIBLE
+        tvCountdown.text = "3"
         handlerCountdown.postDelayed(runnableAnim, 1000)
     }
 
