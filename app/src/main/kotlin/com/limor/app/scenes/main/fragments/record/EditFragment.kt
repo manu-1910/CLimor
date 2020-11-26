@@ -193,6 +193,8 @@ class EditFragment : WaveformFragment() {
         // if the current filePath is wav, it's because it hasn't been any changes, so let's just go back
         if (WavHelper.isWavExtension(uiDraft?.filePath!!)) {
             draftViewModel.continueRecording = true
+            draftViewModel.filesArray.clear()
+            draftViewModel.filesArray.add(File(uiDraft?.filePath))
             findNavController().popBackStack()
 
             // it the current filePath is not wav, then some changes happened. So we have to
