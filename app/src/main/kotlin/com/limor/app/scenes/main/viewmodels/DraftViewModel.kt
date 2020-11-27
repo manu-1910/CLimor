@@ -24,11 +24,9 @@ class DraftViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val compositeDispose = CompositeDisposable()
-    var uiDraft = UIDraft()
-    var mainAudioFilePath: String = ""
+    var uiDraft : UIDraft? = null
     var filesArray: ArrayList<File> = ArrayList()
-    var continueRecording:Boolean = false
-    var durationOfLastAudio: Long = 0
+//    var continueRecording:Boolean = false
 
     /************************************
     INSERT A DRAFT INTO REALM
@@ -49,8 +47,12 @@ class DraftViewModel @Inject constructor(
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
 
         input.trigger.subscribe({
-            draftInsertRealmUseCase.execute(uiDraft)
-                .subscribe({ response.value = true }, { errorTracker.postValue(ErrorMessageFactory.create(it)) })
+            uiDraft?.let {
+                draftInsertRealmUseCase.execute(it)
+                    .subscribe({ response.value = true }, { errorTracker.postValue(ErrorMessageFactory.create(it)) })
+            } ?: run {
+                throw Exception("The draft shouldn't be null")
+            }
         }, {}).addTo(compositeDispose)
         return OutPutInsert(response, backgroundWorkingProgress, errorTracker)
     }
@@ -74,9 +76,13 @@ class DraftViewModel @Inject constructor(
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
 
         input.trigger.subscribe({
-            draftDeleteRealmUseCase.execute(uiDraft).subscribe(
-                { response.value = true },
-                { errorTracker.postValue(ErrorMessageFactory.create(it)) })
+            uiDraft?.let {
+                draftDeleteRealmUseCase.execute(it).subscribe(
+                    { response.value = true },
+                    { errorTracker.postValue(ErrorMessageFactory.create(it)) })
+            } ?: run {
+                throw Exception("The draft shouldn't be null")
+            }
         }, {
             Timber.e(it.toString())
         }).addTo(compositeDispose)

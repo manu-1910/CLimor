@@ -59,7 +59,8 @@ fun DraftEntity.asUIModel(): UIDraft {
         date,
         categoryId,
         category,
-        location?.asUIModel()
+        location?.asUIModel(),
+        parentDraft?.asUIModel()
     )
 }
 
@@ -89,7 +90,8 @@ fun UIDraft.asDataEntity(): DraftEntity {
         date,
         categoryId,
         category,
-        location?.asDataEntity()
+        location?.asDataEntity(),
+        draftParent?.asDataEntity()
     )
 }
 

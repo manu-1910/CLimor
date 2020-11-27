@@ -19,8 +19,8 @@ data class DraftEntity(
     val date: String?,
     val categoryId: Int?,
     val category: String?,
-    val location: LocationsEntity?
-
+    val location: LocationsEntity?,
+    val parentDraft : DraftEntity?
 )
 
 
