@@ -413,4 +413,9 @@
     <string name="recording_starts_in">Recording\nstarts in</string>
     <string name="do_you_want_to_save_changes">Do you want to save the current changes?</string>
     <string name="save">Save</string>
+    <string name="save_as_new_draft">Save as a new draft</string>
+    <string name="overwrite">Overwrite</string>
+    <string name="error_copying_file">There was an error trying to copy this file</string>
+    <string name="file_doesnt_exist">Error, the file that we received from the previous fragment doesn\'t exist</string>
+    <string name="file_not_received">Error, we didn\'t receive any audio from the previous fragment</string>
 </resources>

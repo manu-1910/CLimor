@@ -84,7 +84,7 @@ class RecordFragment : BaseFragment() {
     private var isAnimatingCountdown: Boolean = false
     private lateinit var handlerCountdown : Handler
     private var isNewRecording = false
-    private var anythingRecorded = false
+    private var anythingToSave = false
 
 
     companion object {
@@ -147,6 +147,7 @@ class RecordFragment : BaseFragment() {
 
             isFirstTapRecording = true
             isNewRecording = false
+            anythingToSave = true
 
             //Put the seconds counter with the length of the draftitem
             updateChronoTimerFromDraft()
@@ -154,23 +155,32 @@ class RecordFragment : BaseFragment() {
             // this means that we come from edit or publish fragment, so we just assign the
             // received draft to the current uiDraft
             if(it.draftParent != null) {
+
                 uiDraft = draftViewModel.uiDraft
 
 
                 // this means that we come from drafts list fragment, so we have to create a new autosave
                 // draft and assign the parent as the uiDraft received from this fragment
             } else {
-                createNewAutosavedDraft()
+                uiDraft = it.copy()
+                uiDraft?.id = System.currentTimeMillis()
+                uiDraft?.title = getString(R.string.autosave)
                 if(it.filePath != null) {
                     val fileFromParent = File(it.filePath!!)
                     if(fileFromParent.exists()) {
-                        draftViewModel.filesArray.clear()
-                        draftViewModel.filesArray.add(fileFromParent)
+                        val copiedFilePath = getNewFileName()
+                        val copiedFile = fileFromParent.copyTo(File(copiedFilePath), true)
+                        if(copiedFile.exists()) {
+                            draftViewModel.filesArray.clear()
+                            draftViewModel.filesArray.add(fileFromParent)
+                        } else {
+                            alert(getString(R.string.error_copying_file))
+                        }
                     } else {
-                        alert("Error, the file that we received from the previous fragment doesn't exist").show()
+                        alert(getString(R.string.file_doesnt_exist)).show()
                     }
                 } else {
-                    alert("Error, we didn't receive any audio from the previous fragment").show()
+                    alert(getString(R.string.file_not_received)).show()
                 }
 
                 uiDraft?.draftParent = it
@@ -195,7 +205,7 @@ class RecordFragment : BaseFragment() {
 
     private fun onBackPressed() {
         // if the drafts is null, it means that we haven't even recorded anything, so we just exit the activity
-        if (!anythingRecorded) {
+        if (!anythingToSave) {
             uiDraft = null
             activity?.finish()
 
@@ -231,30 +241,58 @@ class RecordFragment : BaseFragment() {
                 // another fragment that sent us some draft to continue recording it
             } else {
 
-                // this situation means that we have actually recorded something new after coming to this fragment
-                // so we have to ask the user if he wants to keep the new changes or discard
-                if(draftViewModel.filesArray.size == 2 && draftViewModel.filesArray[1].exists()) {
-                    alert(getString(R.string.do_you_want_to_save_changes)) {
-                        positiveButton(getString(R.string.save)) {
-                            mergeFilesAndCloseActivity()
+                alert(getString(R.string.do_you_want_to_save_changes)) {
+                    positiveButton(getString(R.string.save_as_new_draft)) {
+                        showSaveDraftAlert {title ->
+                            mergeFilesIfNecessary {
+                                uiDraft?.title = title
+                                insertDraftInRealm(uiDraft!!)
+                                activity?.finish()
+                            }
                         }
+                    }
 
-
-                        negativeButton(getString(R.string.discard)) {
+                    neutralPressed(getString(R.string.overwrite)) {
+                        mergeFilesIfNecessary {
+                            uiDraft?.title = uiDraft?.draftParent?.title
+                            insertDraftInRealm(uiDraft!!)
+                            deleteDraftInRealm(uiDraft?.draftParent!!)
                             activity?.finish()
                         }
-                    }.show()
+                    }
+
+                    negativeButton(getString(R.string.discard)) {
+                        deleteDraftInRealm(uiDraft!!)
+                        activity?.finish()
+                    }
+                }.show()
 
 
-                    // this means that we received a draft from another fragment, but we didn't record anything new in it
-                    // so we don't have to save, we just close the activity
-                } else {
-                    activity?.finish()
-                }
+
+
+//                // this situation means that we have actually recorded something new after coming to this fragment
+//                // so we have to ask the user if he wants to keep the new changes or discard
+//                if(draftViewModel.filesArray.size == 2 && draftViewModel.filesArray[1].exists()) {
+//                    alert(getString(R.string.do_you_want_to_save_changes)) {
+//                        positiveButton(getString(R.string.save)) {
+//                            mergeFilesAndCloseActivity()
+//                        }
+//
+//
+//                        negativeButton(getString(R.string.discard)) {
+//                            activity?.finish()
+//                        }
+//                    }.show()
+//
+//
+//                    // this means that we received a draft from another fragment, but we didn't record anything new in it
+//                    // so we don't have to save, we just close the activity
+//                } else {
+//                    activity?.finish()
+//                }
             }
         }
     }
-
 
 
     private fun createNewAutosavedDraft() : UIDraft {
@@ -364,8 +402,7 @@ class RecordFragment : BaseFragment() {
         }
     }
 
-
-    private fun showSaveDraftAlert() {
+    private fun showSaveDraftAlert(onPositiveClicked: (title: String) -> Unit) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = layoutInflater
         dialogBuilder.setTitle(getString(R.string.save_draft_dialog_title))
@@ -378,17 +415,7 @@ class RecordFragment : BaseFragment() {
         val dialog: AlertDialog = dialogBuilder.show()
 
         positiveButton.onClick {
-
-            uiDraft?.title = editText.text.toString()
-            uiDraft?.date = getDateTimeFormatted()
-
-            //Inserting in Realm
-            insertDraftInRealm(uiDraft!!)
-
-            toast(getString(R.string.draft_inserted))
-
-            activity?.finish()
-
+            onPositiveClicked(editText.text.toString())
             dialog.dismiss()
         }
 
@@ -408,6 +435,21 @@ class RecordFragment : BaseFragment() {
                 positiveButton.isEnabled = !p0.isNullOrEmpty()
             }
         })
+    }
+
+
+    private fun showSaveDraftAlert() {
+       showSaveDraftAlert {
+           uiDraft?.title = it
+           uiDraft?.date = getDateTimeFormatted()
+
+           //Inserting in Realm
+           insertDraftInRealm(uiDraft!!)
+
+           toast(getString(R.string.draft_inserted))
+
+           activity?.finish()
+       }
     }
 
 
@@ -568,6 +610,55 @@ class RecordFragment : BaseFragment() {
         }
     }
 
+    private fun mergeFilesIfNecessary(callback: () -> Unit) {
+        doAsync {
+            val finalAudio = File(
+                context?.getExternalFilesDir(null)?.absolutePath,
+                "/limorv2/" + System.currentTimeMillis() + audioFileFormat
+            )
+
+            // this means that there is only one file and there is no need to merge anything
+            if(draftViewModel.filesArray.size == 1) {
+                uiDraft?.filePath = draftViewModel.filesArray[0].absolutePath
+                uiThread { callback() }
+
+                // this means that there are actually two files to merge
+            } else if(draftViewModel.filesArray.size == 2) {
+                if (WavHelper.combineWaveFile(
+                        draftViewModel.filesArray[0].absolutePath,
+                        draftViewModel.filesArray[1].absolutePath,
+                        finalAudio.absolutePath
+                    )
+                ) {
+                    // let's delete the old files, we don't need them anymore
+                    draftViewModel.filesArray.forEach {
+                        it.delete()
+                    }
+
+                    // let's empty the filesArray
+                    draftViewModel.filesArray.clear()
+                    // and let's add the combined audio, that is now the ONLY audio
+                    draftViewModel.filesArray.add(finalAudio)
+
+                    uiDraft?.filePath = finalAudio.absolutePath
+
+                    uiThread {
+                        callback()
+                    }
+                } else {
+                    uiThread {
+                        activity?.alert(getString(R.string.error_merging_file)) {
+                            okButton { }
+                        }?.show()
+                    }
+                }
+            } else {
+                uiThread {
+                    alert("There are three files in the list, it shouldn't") {  }.show()
+                }
+            }
+        }
+    }
 
     private fun initGui() {
         configureToolbar()
@@ -787,7 +878,7 @@ class RecordFragment : BaseFragment() {
                 println("RECORD --> RESUME")
                 mRecorder?.resumeRecording()
             }
-            anythingRecorded = true
+            anythingToSave = true
 
             //Update times in digital clock
             c_meter.base = SystemClock.elapsedRealtime() + timeWhenStopped
