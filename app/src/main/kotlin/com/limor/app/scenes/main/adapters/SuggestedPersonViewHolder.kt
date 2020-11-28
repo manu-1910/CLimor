@@ -37,21 +37,24 @@ class SuggestedPersonViewHolder(
 
         tvSubtitle.text = currentItem.username
 
-        if (currentItem.first_name != null && currentItem.last_name != null) {
-            try {
-                val firstNameChar =
-                    currentItem.first_name?.substring(0, 1)?.toUpperCase(Locale.ROOT)
-                val secondNameChar =
-                    currentItem.last_name?.substring(0, 1)?.toUpperCase(Locale.ROOT)
-                val text = firstNameChar + secondNameChar
-                tvTitle.text = text
-            } catch (e: Exception) {
-                e.printStackTrace()
-                setTitleFromUsername(currentItem)
-            }
-        } else {
+        // NOTE: I commented all of this because I was told to not tu use first and last name anymore
+        //      I must use username from now on, but this code is actually good, so I won't delete it
+        //      just in case we need to go back
+//        if (currentItem.first_name != null && currentItem.last_name != null) {
+//            try {
+//                val firstNameChar =
+//                    currentItem.first_name?.substring(0, 1)?.toUpperCase(Locale.ROOT)
+//                val secondNameChar =
+//                    currentItem.last_name?.substring(0, 1)?.toUpperCase(Locale.ROOT)
+//                val text = firstNameChar + secondNameChar
+//                tvTitle.text = text
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//                setTitleFromUsername(currentItem)
+//            }
+//        } else {
             setTitleFromUsername(currentItem)
-        }
+//        }
 
         Glide.with(context)
             .load(currentItem.images.small_url)

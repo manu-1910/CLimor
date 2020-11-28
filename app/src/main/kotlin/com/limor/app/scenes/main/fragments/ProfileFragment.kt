@@ -596,16 +596,16 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun printUserData() {
-        var firstName = ""
-        viewModelGetUser.user?.first_name?.let {
-            firstName = it
-        }
-        var lastName = ""
-        viewModelGetUser.user?.last_name?.let {
-            lastName = it
-        }
-        val fullname = "$firstName $lastName".trim()
-        tvToolbarUsername?.text = fullname
+//        var firstName = ""
+//        viewModelGetUser.user?.first_name?.let {
+//            firstName = it
+//        }
+//        var lastName = ""
+//        viewModelGetUser.user?.last_name?.let {
+//            lastName = it
+//        }
+//        val fullname = "$firstName $lastName".trim()
+        tvToolbarUsername?.text = viewModelGetUser.user?.username
         viewModelGetUser.user?.followers_count?.let {
             tvNumberFollowers?.text = formatSocialMediaQuantity(it)
         }
