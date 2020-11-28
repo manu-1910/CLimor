@@ -413,4 +413,11 @@
     <string name="recording_starts_in">Recording\nstarts in</string>
     <string name="do_you_want_to_save_changes">Do you want to save the current changes?</string>
     <string name="save">Save</string>
+    <string name="btn_skip">Skip</string>
+    <string name="onboarding_title1">Create premium casts for your community</string>
+    <string name="onboarding_title2">Freedom to monetize your content</string>
+    <string name="lets_go">Let\'s Go</string>
+    <string name="onboarding_title3">Create AMA DM\'s and more with your fans</string>
+    <string name="learm_more"><![CDATA[Learm More >]]></string>
+    <string name="onboarding_item_title">Find out what premium features can do for you.</string>
 </resources>
