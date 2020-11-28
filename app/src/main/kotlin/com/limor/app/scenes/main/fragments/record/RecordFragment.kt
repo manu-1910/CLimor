@@ -83,7 +83,6 @@ class RecordFragment : BaseFragment() {
     private var fileRecording = ""
     private var isAnimatingCountdown: Boolean = false
     private lateinit var handlerCountdown : Handler
-    private var isNewRecording = false
     private var anythingToSave = false
 
 
@@ -146,44 +145,60 @@ class RecordFragment : BaseFragment() {
         draftViewModel.uiDraft?.let {
 
             isFirstTapRecording = true
-            isNewRecording = false
             anythingToSave = true
 
             //Put the seconds counter with the length of the draftitem
             updateChronoTimerFromDraft()
 
-            // this means that we come from edit or publish fragment, so we just assign the
-            // received draft to the current uiDraft
+            // this means that we come from another fragment and that this is an autosave from
+            // another draft, so we just assign the received draft to the current uiDraft
             if(it.draftParent != null) {
 
                 uiDraft = draftViewModel.uiDraft
 
 
+                // this means that we come from another fragment but we are not yet an autosave.
+                // we could come from draft list fragment, so we have to make an autosave from this
+                // or we could come from another fragment but we are a new recording that just navigated
+                // to another fragment to edit that new recording and came back, for example
+            } else {
+
+
                 // this means that we come from drafts list fragment, so we have to create a new autosave
                 // draft and assign the parent as the uiDraft received from this fragment
-            } else {
-                uiDraft = it.copy()
-                uiDraft?.id = System.currentTimeMillis()
-                uiDraft?.title = getString(R.string.autosave)
-                if(it.filePath != null) {
-                    val fileFromParent = File(it.filePath!!)
-                    if(fileFromParent.exists()) {
-                        val copiedFilePath = getNewFileName()
-                        val copiedFile = fileFromParent.copyTo(File(copiedFilePath), true)
-                        if(copiedFile.exists()) {
-                            draftViewModel.filesArray.clear()
-                            draftViewModel.filesArray.add(fileFromParent)
+                if( ! it.isNewRecording) {
+
+                    uiDraft = it.copy()
+                    uiDraft?.id = System.currentTimeMillis()
+                    uiDraft?.title = getString(R.string.autosave)
+                    if(it.filePath != null) {
+                        val fileFromParent = File(it.filePath!!)
+                        if(fileFromParent.exists()) {
+                            val copiedFilePath = getNewFileName()
+                            val copiedFile = fileFromParent.copyTo(File(copiedFilePath), true)
+                            if(copiedFile.exists()) {
+                                uiDraft?.filePath = copiedFilePath
+                                draftViewModel.filesArray.clear()
+                                draftViewModel.filesArray.add(copiedFile)
+                            } else {
+                                alert(getString(R.string.error_copying_file))
+                            }
                         } else {
-                            alert(getString(R.string.error_copying_file))
+                            alert(getString(R.string.file_doesnt_exist)).show()
                         }
                     } else {
-                        alert(getString(R.string.file_doesnt_exist)).show()
+                        alert(getString(R.string.file_not_received)).show()
                     }
-                } else {
-                    alert(getString(R.string.file_not_received)).show()
-                }
 
-                uiDraft?.draftParent = it
+                    uiDraft?.draftParent = it
+
+
+                    // this means that we are a new recording that just navigated to another fragment to edit
+                    // the audio for example and then we came back to the record fragment, so we just assign the received
+                    // draft to the local uiDraft of this fragment
+                } else {
+                    uiDraft = draftViewModel.uiDraft
+                }
             }
 
 
@@ -197,7 +212,7 @@ class RecordFragment : BaseFragment() {
         } ?: run {
 
             createNewAutosavedDraft()
-            isNewRecording = true
+            uiDraft?.isNewRecording = true
         }
     }
 
@@ -215,7 +230,7 @@ class RecordFragment : BaseFragment() {
 
 
             // this means that we are in this fragment recording some audio for the first time
-            if(isNewRecording) {
+            if(uiDraft?.isNewRecording == true) {
 
                 // let's show the dialog to show if they want to save the current recorded audio or discard it
                 alert(
@@ -242,7 +257,25 @@ class RecordFragment : BaseFragment() {
             } else {
 
                 alert(getString(R.string.do_you_want_to_save_changes)) {
-                    positiveButton(getString(R.string.save_as_new_draft)) {
+
+                    // NOTE: don't keep in mind if buttons are positive, negative or neutral, any of them
+                    //  do different actions that aren't either positive or negative or so. I just
+                    //  choose those actions to get the order on screen that I wanted.
+                    //  I insist, they are neither positive or negative, they just simply do different actions
+
+
+                    // OVERWRITE
+                    positiveButton(getString(R.string.overwrite)) {
+                        mergeFilesIfNecessary {
+                            uiDraft?.title = uiDraft?.draftParent?.title
+                            insertDraftInRealm(uiDraft!!)
+                            deleteDraftInRealm(uiDraft?.draftParent!!)
+                            activity?.finish()
+                        }
+                    }
+
+                    // SAVE AS NEW
+                    negativeButton(getString(R.string.save_as_new_draft)) {
                         showSaveDraftAlert {title ->
                             mergeFilesIfNecessary {
                                 uiDraft?.title = title
@@ -252,44 +285,13 @@ class RecordFragment : BaseFragment() {
                         }
                     }
 
-                    neutralPressed(getString(R.string.overwrite)) {
-                        mergeFilesIfNecessary {
-                            uiDraft?.title = uiDraft?.draftParent?.title
-                            insertDraftInRealm(uiDraft!!)
-                            deleteDraftInRealm(uiDraft?.draftParent!!)
-                            activity?.finish()
-                        }
-                    }
-
-                    negativeButton(getString(R.string.discard)) {
+                    // DISCARD
+                    neutralPressed(getString(R.string.discard)) {
                         deleteDraftInRealm(uiDraft!!)
                         activity?.finish()
                     }
                 }.show()
 
-
-
-
-//                // this situation means that we have actually recorded something new after coming to this fragment
-//                // so we have to ask the user if he wants to keep the new changes or discard
-//                if(draftViewModel.filesArray.size == 2 && draftViewModel.filesArray[1].exists()) {
-//                    alert(getString(R.string.do_you_want_to_save_changes)) {
-//                        positiveButton(getString(R.string.save)) {
-//                            mergeFilesAndCloseActivity()
-//                        }
-//
-//
-//                        negativeButton(getString(R.string.discard)) {
-//                            activity?.finish()
-//                        }
-//                    }.show()
-//
-//
-//                    // this means that we received a draft from another fragment, but we didn't record anything new in it
-//                    // so we don't have to save, we just close the activity
-//                } else {
-//                    activity?.finish()
-//                }
             }
         }
     }
@@ -441,6 +443,7 @@ class RecordFragment : BaseFragment() {
     private fun showSaveDraftAlert() {
        showSaveDraftAlert {
            uiDraft?.title = it
+           uiDraft?.isNewRecording = false
            uiDraft?.date = getDateTimeFormatted()
 
            //Inserting in Realm
@@ -830,6 +833,7 @@ class RecordFragment : BaseFragment() {
         if (isRecording) {
             nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
             nextButton.isEnabled = false
+            nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.white)
             nextButton.visibility = View.VISIBLE
 
             recordButton.background = ContextCompat.getDrawable(
@@ -844,6 +848,7 @@ class RecordFragment : BaseFragment() {
             nextButton.visibility = View.VISIBLE
             nextButton.background = requireContext().getDrawable(R.drawable.bg_round_yellow_ripple)
             nextButton.isEnabled = true
+            nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
         }
     }
 

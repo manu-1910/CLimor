@@ -60,7 +60,8 @@ fun DraftEntity.asUIModel(): UIDraft {
         categoryId,
         category,
         location?.asUIModel(),
-        parentDraft?.asUIModel()
+        parentDraft?.asUIModel(),
+        isNewRecording
     )
 }
 
@@ -91,7 +92,8 @@ fun UIDraft.asDataEntity(): DraftEntity {
         categoryId,
         category,
         location?.asDataEntity(),
-        draftParent?.asDataEntity()
+        draftParent?.asDataEntity(),
+        isNewRecording
     )
 }
 

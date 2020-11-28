@@ -25,9 +25,10 @@ data class UIDraft(
     var categoryId: Int?,
     var category: String?,
     var location: UILocations?,
-    var draftParent : UIDraft?
+    var draftParent : UIDraft?,
+    var isNewRecording : Boolean
 ): Serializable {
-    constructor() : this( 0,"", "", "", "", "", 0, 0, false, ArrayList(), "", 0, "", UILocations(), null)
+    constructor() : this( 0,"", "", "", "", "", 0, 0, false, ArrayList(), "", 0, "", UILocations(), null, false)
 }
 
 

@@ -20,7 +20,8 @@ data class DraftEntity(
     val categoryId: Int?,
     val category: String?,
     val location: LocationsEntity?,
-    val parentDraft : DraftEntity?
+    val parentDraft : DraftEntity?,
+    val isNewRecording : Boolean
 )
 
 

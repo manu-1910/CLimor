@@ -19,7 +19,8 @@ open class RLMDraft(
     var categoryId: Int? = 0,
     var category: String? = "",
     var location: RLMLocations? = RLMLocations(),
-    var parentDraft : RLMDraft? = null
+    var parentDraft : RLMDraft? = null,
+    var isNewRecording: Boolean = false
 ):RealmObject()
 
 
