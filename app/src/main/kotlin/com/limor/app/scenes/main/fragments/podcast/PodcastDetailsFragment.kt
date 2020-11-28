@@ -1052,23 +1052,24 @@ class PodcastDetailsFragment : BaseFragment() {
         if (podcastMode) {
             tvReplyingToCommentBar?.text = tvUserName.text
         } else {
-            var firstName = ""
-            uiMainCommentWithParent?.comment?.user?.first_name?.let { firstName = it }
-            var lastName = ""
-            uiMainCommentWithParent?.comment?.user?.last_name?.let { lastName = it }
-            val directParentFullname = "$firstName $lastName"
+//            var firstName = ""
+//            uiMainCommentWithParent?.comment?.user?.first_name?.let { firstName = it }
+//            var lastName = ""
+//            uiMainCommentWithParent?.comment?.user?.last_name?.let { lastName = it }
+//            val directParentFullname = "$firstName $lastName"
+            val directParentUsername = uiMainCommentWithParent?.comment?.user?.username
 
             val parentCount = uiMainCommentWithParent!!.getParentCount() + 1
             if (parentCount == 0) {
                 tvReplyingToCommentBar.text =
                     context?.resources?.getString(R.string.replying_to_name)?.let {
                         String.format(
-                            it, directParentFullname
+                            it, directParentUsername
                         )
                     }
             } else {
                 tvReplyingToCommentBar.text = context?.resources?.getQuantityString(
-                    R.plurals.replying_to_sufix, parentCount, directParentFullname, parentCount
+                    R.plurals.replying_to_sufix, parentCount, directParentUsername, parentCount
                 )
             }
         }
@@ -1747,12 +1748,12 @@ class PodcastDetailsFragment : BaseFragment() {
     private fun fillForm() {
         tvPodcastText?.text = uiPodcast?.caption
         tvPodcastTitle?.text = uiPodcast?.title
-        var firstName = ""
-        uiPodcast?.user?.first_name?.let { firstName = it }
-        var lastName = ""
-        uiPodcast?.user?.last_name?.let { lastName = it }
-        val fullname = "$firstName $lastName"
-        tvUserName?.text = fullname
+//        var firstName = ""
+//        uiPodcast?.user?.first_name?.let { firstName = it }
+//        var lastName = ""
+//        uiPodcast?.user?.last_name?.let { lastName = it }
+//        val fullname = "$firstName $lastName"
+        tvUserName?.text = uiPodcast?.user?.username
         tvUserName.onClick { onUserClicked() }
 
 

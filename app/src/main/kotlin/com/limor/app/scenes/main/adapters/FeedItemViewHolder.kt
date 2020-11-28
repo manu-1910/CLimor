@@ -68,12 +68,12 @@ class FeedItemViewHolder(
 
     fun bind(currentItem: UIFeedItem, position: Int, showPlayButton: Boolean) {
         // fullname
-        var firstName = ""
-        currentItem.podcast?.user?.first_name?.let { firstName = it }
-        var lastName = ""
-        currentItem.podcast?.user?.last_name?.let { lastName = it }
-        val fullname = "$firstName $lastName"
-        tvUserFullname.text = fullname
+//        var firstName = ""
+//        currentItem.podcast?.user?.first_name?.let { firstName = it }
+//        var lastName = ""
+//        currentItem.podcast?.user?.last_name?.let { lastName = it }
+//        val fullname = "$firstName $lastName"
+        tvUserFullname.text = currentItem.podcast?.user?.username
         tvUserFullname.onClick { feedClickListener.onUserClicked(currentItem, position) }
 
 
@@ -194,7 +194,7 @@ class FeedItemViewHolder(
                     val fullnameRecasted = if (userRecasted.id == userLoggedId)
                         context.getString(R.string.you)
                     else
-                        userRecasted.first_name + " " + userRecasted.last_name
+                        userRecasted.username
 
                     tvSomeoneRecasted.text = String.format(
                         context.resources.getString(R.string.someone_recasted), fullnameRecasted

@@ -84,12 +84,12 @@ class CommentItemViewHolder(
         position: Int
     ) {
         // fullname
-        var firstName = ""
-        currentItem.comment.user?.first_name?.let { firstName = it }
-        var lastName = ""
-        currentItem.comment.user?.last_name?.let { lastName = it }
-        val fullname = "$firstName $lastName"
-        tvUserFullname.text = fullname
+//        var firstName = ""
+//        currentItem.comment.user?.first_name?.let { firstName = it }
+//        var lastName = ""
+//        currentItem.comment.user?.last_name?.let { lastName = it }
+//        val fullname = "$firstName $lastName"
+        tvUserFullname.text = currentItem.comment.user?.username
         tvUserFullname.onClick { commentClickListener.onUserClicked(currentItem.comment, position) }
 
 
@@ -257,19 +257,21 @@ class CommentItemViewHolder(
         }
 
         // and write who are we replying accordingly
-        val directParentFullname: String
+        var directParentFullname = ""
         if(currentItem.parent == null) {
-            var firstName = ""
-            podcastParent.user.first_name?.let { firstName = it }
-            var lastName = ""
-            podcastParent.user.last_name?.let { lastName = it }
-            directParentFullname = "$firstName $lastName"
+//            var firstName = ""
+//            podcastParent.user.first_name?.let { firstName = it }
+//            var lastName = ""
+//            podcastParent.user.last_name?.let { lastName = it }
+//            directParentFullname = "$firstName $lastName"
+            podcastParent.user.username?.let { directParentFullname = it }
         } else {
-            var firstName = ""
-            currentItem.parent.comment.user?.first_name?.let { firstName = it }
-            var lastName = ""
-            currentItem.parent.comment.user?.last_name?.let { lastName = it }
-            directParentFullname = "$firstName $lastName"
+//            var firstName = ""
+//            currentItem.parent.comment.user?.first_name?.let { firstName = it }
+//            var lastName = ""
+//            currentItem.parent.comment.user?.last_name?.let { lastName = it }
+//            directParentFullname = "$firstName $lastName"
+            currentItem.parent.comment.user?.username?.let { directParentFullname = it }
         }
         if(parentCount == 0) {
             tvNameReplyingTo.text = String.format(
@@ -367,7 +369,8 @@ class CommentItemViewHolder(
         // if the parent is null, it means that we are a comment and that our parent is the main podcast
         if (currentItem.parent == null) {
             // we have to write the name who we reply to
-            val fullnameReply: String = podcastParent.user.first_name + " " + podcastParent.user.last_name
+//            val fullnameReply: String = podcastParent.user.first_name + " " + podcastParent.user.last_name
+            val fullnameReply = podcastParent.user.username
             tvNameReplyingTo.text = fullnameReply
             layReplyingTo.visibility = View.VISIBLE
             layMoreReplies.visibility = View.GONE
