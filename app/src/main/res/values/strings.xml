@@ -418,4 +418,14 @@
     <string name="error_copying_file">There was an error trying to copy this file</string>
     <string name="file_doesnt_exist">Error, the file that we received from the previous fragment doesn\'t exist</string>
     <string name="file_not_received">Error, we didn\'t receive any audio from the previous fragment</string>
+    <string name="btn_skip">Skip</string>
+    <string name="onboarding_title1">Create premium casts for your community</string>
+    <string name="onboarding_title2">Freedom to monetize your content</string>
+    <string name="lets_go">Let\'s Go</string>
+    <string name="onboarding_title3">Create AMA DM\'s and more with your fans</string>
+    <string name="learm_more"><![CDATA[Learm More >]]></string>
+    <string name="onboarding_item_title">Find out what premium features can do for you.</string>
+    <string name="casts">Casts</string>
+    <string name="limor_patron">Limor Patron</string>
+    <string name="banner_image">Banner image</string>
 </resources>

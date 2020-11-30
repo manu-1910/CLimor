@@ -191,13 +191,24 @@ class ProfileFragment : BaseFragment() {
             layViewPager?.visibility = View.GONE
         } else {
             layViewPager?.visibility = View.VISIBLE
-            val names = arrayOf("Casts", "Likes")
+            val names = arrayOf(
+                getString(R.string.casts),
+                getString(R.string.likes),
+                getString(R.string.limor_patron)
+            )
+
+            val isPatron = false // TODO: this should change when the api is done
 
             val adapter = object : FragmentStatePagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
                 override fun getItem(position: Int): Fragment {
                     return when (position) {
                         0 -> UserPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
                         1 -> UserLikedPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
+                        2 -> if(isPatron) {
+                            UserPatronPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
+                        } else {
+                            JoinToPatronFragment.newInstance()
+                        }
                         else -> UserPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
                     }
                 }
@@ -596,16 +607,16 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun printUserData() {
-        var firstName = ""
-        viewModelGetUser.user?.first_name?.let {
-            firstName = it
-        }
-        var lastName = ""
-        viewModelGetUser.user?.last_name?.let {
-            lastName = it
-        }
-        val fullname = "$firstName $lastName".trim()
-        tvToolbarUsername?.text = fullname
+//        var firstName = ""
+//        viewModelGetUser.user?.first_name?.let {
+//            firstName = it
+//        }
+//        var lastName = ""
+//        viewModelGetUser.user?.last_name?.let {
+//            lastName = it
+//        }
+//        val fullname = "$firstName $lastName".trim()
+        tvToolbarUsername?.text = viewModelGetUser.user?.username
         viewModelGetUser.user?.followers_count?.let {
             tvNumberFollowers?.text = formatSocialMediaQuantity(it)
         }
