@@ -11,6 +11,7 @@ import com.limor.app.scenes.main.fragments.profile.ReportActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.record.RecordActivity
 import com.limor.app.scenes.main.fragments.settings.SettingsActivity
+import com.limor.app.scenes.main.fragments.setup_patron.SetupPatronActivity
 import com.limor.app.scenes.splash.SplashActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -77,5 +78,10 @@ abstract class ActivitiesModule {
         (OnBoardingActivityFragmentsBuildersModule::class)
     ])
     abstract fun contributeOnBoardingActivityInjector(): OnBoardingActivity
+
+    @ContributesAndroidInjector(modules = [
+        (SetupPatronActivityFragmentsBuildersModule::class)
+    ])
+    abstract fun contributeSetupPatronActivityInjector(): SetupPatronActivity
 
 }

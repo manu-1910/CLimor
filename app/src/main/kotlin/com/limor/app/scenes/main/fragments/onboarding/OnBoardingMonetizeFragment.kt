@@ -1,11 +1,13 @@
 package com.limor.app.scenes.main.fragments.onboarding
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
+import com.limor.app.scenes.main.fragments.setup_patron.SetupPatronActivity
 import kotlinx.android.synthetic.main.fragment_on_boarding_monetize.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 
@@ -37,6 +39,8 @@ class OnBoardingMonetizeFragment : BaseFragment() {
 
     private fun listeners() {
         btn_let_go?.onClick {
+            val intent = Intent(activity, SetupPatronActivity::class.java)
+            startActivity(intent)
             activity?.finish()
         }
     }
