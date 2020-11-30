@@ -191,13 +191,24 @@ class ProfileFragment : BaseFragment() {
             layViewPager?.visibility = View.GONE
         } else {
             layViewPager?.visibility = View.VISIBLE
-            val names = arrayOf("Casts", "Likes")
+            val names = arrayOf(
+                getString(R.string.casts),
+                getString(R.string.likes),
+                getString(R.string.limor_patron)
+            )
+
+            val isPatron = false // TODO: this should change when the api is done
 
             val adapter = object : FragmentStatePagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
                 override fun getItem(position: Int): Fragment {
                     return when (position) {
                         0 -> UserPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
                         1 -> UserLikedPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
+                        2 -> if(isPatron) {
+                            UserPatronPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
+                        } else {
+                            JoinToPatronFragment.newInstance()
+                        }
                         else -> UserPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
                     }
                 }

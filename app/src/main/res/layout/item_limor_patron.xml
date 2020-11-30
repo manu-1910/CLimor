@@ -10,7 +10,7 @@
         android:id="@+id/container_info_patron"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/brandSecondary800"
+        android:background="@drawable/bg_item_limor_banner"
         tools:ignore="MissingConstraints">
 
 
@@ -58,7 +58,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
-            android:contentDescription="TODO" />
+            android:contentDescription="@string/banner_image" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>
