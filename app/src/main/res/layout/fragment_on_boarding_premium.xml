@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/brandSecondary400"
-    tools:context=".scenes.main.fragments.onboarding.OnBoardingCastsFragment">
+    tools:context=".scenes.main.fragments.onboarding.OnBoardingPremiumFragment">
 
     <TextView
         android:id="@+id/textView2"
@@ -52,17 +52,14 @@
     <Button
         android:id="@+id/btn_skip"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
+        android:layout_height="36dip"
+        android:layout_marginEnd="@dimen/marginMedium"
         android:layout_marginBottom="20dp"
         android:background="@color/transparent"
         android:text="@string/btn_skip"
+        android:textAllCaps="false"
         android:textColor="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.976" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

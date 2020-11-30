@@ -1,24 +1,23 @@
-package com.limor.app.scenes.main.fragments.profile
+package com.limor.app.scenes.main.fragments.onboarding
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
-import com.limor.app.scenes.main.fragments.onboarding.OnBoardingActivity
-import kotlinx.android.synthetic.main.fragment_join_to_limor.*
+import kotlinx.android.synthetic.main.fragment_on_boarding_premium.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 
-
-class JoinToPatronFragment : BaseFragment() {
+class OnBoardingPremiumFragment(private val skipPressedListener: OnBoardingFragment.OnSkipPressedListener) :
+    BaseFragment() {
 
     private var rootView: View? = null
 
     companion object {
-        val TAG: String = JoinToPatronFragment::class.java.simpleName
-        fun newInstance() = JoinToPatronFragment()
+        val TAG: String = OnBoardingPremiumFragment::class.java.simpleName
+        fun newInstance(skipPressedListener: OnBoardingFragment.OnSkipPressedListener) =
+            OnBoardingPremiumFragment(skipPressedListener)
     }
 
 
@@ -28,7 +27,7 @@ class JoinToPatronFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_join_to_limor, container, false)
+            rootView = inflater.inflate(R.layout.fragment_on_boarding_premium, container, false)
         }
         return rootView
     }
@@ -39,9 +38,8 @@ class JoinToPatronFragment : BaseFragment() {
     }
 
     private fun listeners() {
-        patronBanner.onClick {
-            val intent = Intent(activity, OnBoardingActivity::class.java)
-            startActivity(intent)
+        btn_skip?.onClick {
+            skipPressedListener.onSkipPressed()
         }
     }
 
