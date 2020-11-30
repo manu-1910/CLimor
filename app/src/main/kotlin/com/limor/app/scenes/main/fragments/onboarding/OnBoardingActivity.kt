@@ -40,6 +40,12 @@ class OnBoardingActivity : BaseActivity(), HasSupportFragmentInjector {
 
         setupNavigationController()
         listeners()
+        setupToolbar()
+    }
+
+
+    private fun setupToolbar() {
+        tvToolbarTitle?.text = getString(R.string.limor_patron)
     }
 
     private fun listeners() {

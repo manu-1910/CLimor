@@ -253,4 +253,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(CreatePodcastDropOffViewModel::class)
     abstract fun bindCreatePodcastDropOffViewModel(viewModel: CreatePodcastDropOffViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SetupPatronViewModel::class)
+    abstract fun bindSetupPatronViewModel(viewModel: SetupPatronViewModel): ViewModel
 }
