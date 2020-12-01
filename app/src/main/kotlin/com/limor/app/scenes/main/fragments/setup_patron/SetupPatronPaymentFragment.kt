@@ -5,19 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.scenes.main.viewmodels.SetupPatronViewModel
-import kotlinx.android.synthetic.main.fragment_setup_patron_settings.*
-import org.jetbrains.anko.sdk23.listeners.onClick
 import javax.inject.Inject
 
-
-class SetupPatronSettingsFragment : BaseFragment() {
+class SetupPatronPaymentFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -25,11 +24,12 @@ class SetupPatronSettingsFragment : BaseFragment() {
     private lateinit var setupPatronViewModel: SetupPatronViewModel
 
     private var rootView: View? = null
+
     var app: App? = null
 
     companion object {
-        val TAG: String = SetupPatronSettingsFragment::class.java.simpleName
-        fun newInstance() = SetupPatronSettingsFragment()
+        val TAG: String = SetupPatronPaymentFragment::class.java.simpleName
+        fun newInstance() = SetupPatronPaymentFragment()
     }
 
 
@@ -40,7 +40,7 @@ class SetupPatronSettingsFragment : BaseFragment() {
     ): View? {
         if (rootView == null) {
             rootView =
-                inflater.inflate(R.layout.fragment_setup_patron_settings, container, false)
+                inflater.inflate(R.layout.fragment_setup_patron_payment, container, false)
         }
 
         app = context?.applicationContext as App
@@ -59,21 +59,25 @@ class SetupPatronSettingsFragment : BaseFragment() {
         setupToolbar()
     }
 
-    override fun onResume() {
-        super.onResume()
-        fillFormFromViewModel()
+    override fun onStart() {
+        super.onStart()
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    onBackPressed()
+                }
+            })
     }
 
-    private fun fillFormFromViewModel() {
-        sw18Content.isChecked = setupPatronViewModel.plus18Activated
-        swEarningsVisibility.isChecked = setupPatronViewModel.earningsVisibleActivated
-        swPatronageVisibility.isChecked = setupPatronViewModel.patronageVisibleActivated
+    private fun onBackPressed() {
+        findNavController().popBackStack()
     }
 
 
     private fun setupToolbar() {
         val tvToolbarTitle = activity?.findViewById<TextView>(R.id.tvToolbarTitle)
-        tvToolbarTitle?.text = getString(R.string.title_settings)
+        tvToolbarTitle?.text = getString(R.string.title_payment)
     }
 
 
@@ -86,12 +90,7 @@ class SetupPatronSettingsFragment : BaseFragment() {
     }
 
     private fun listeners() {
-        btnSaveChanges?.onClick {
-            setupPatronViewModel.plus18Activated = sw18Content.isChecked
-            setupPatronViewModel.earningsVisibleActivated = swEarningsVisibility.isChecked
-            setupPatronViewModel.patronageVisibleActivated = swPatronageVisibility.isChecked
-            activity?.onBackPressed()
-        }
+
     }
 
 

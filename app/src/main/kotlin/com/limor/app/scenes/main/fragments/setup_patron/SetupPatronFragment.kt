@@ -111,7 +111,7 @@ class SetupPatronFragment : BaseFragment() {
         }
 
         layPayments?.onClick {
-            toast("You clicked on paymets").show()
+            findNavController().navigate(R.id.action_setup_patron_to_payment)
         }
 
         layTiers?.onClick {
