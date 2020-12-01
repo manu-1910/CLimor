@@ -243,4 +243,21 @@
         android:text="@string/select_currency_description"
         android:textColor="@color/brandSecondary200" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/btnSaveChanges"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="@dimen/marginMedium"
+            android:textColor="@color/brandSecondary400"
+            android:background="@drawable/bg_round_yellow_ripple"
+            android:text="@string/save"
+            android:textAllCaps="false" />
+    </RelativeLayout>
+
 </LinearLayout>

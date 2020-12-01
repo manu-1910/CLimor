@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -14,9 +14,16 @@ import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.scenes.main.viewmodels.SetupPatronViewModel
+import kotlinx.android.synthetic.main.fragment_setup_patron_payment.*
+import org.jetbrains.anko.sdk23.listeners.onClick
+import java.lang.Exception
 import javax.inject.Inject
 
 class SetupPatronPaymentFragment : BaseFragment() {
+
+    enum class Currency {
+        EURO, POUND, DOLLAR
+    }
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -25,7 +32,9 @@ class SetupPatronPaymentFragment : BaseFragment() {
 
     private var rootView: View? = null
 
-    var app: App? = null
+    private var app: App? = null
+
+    private var currentSelectedCurrency = Currency.EURO
 
     companion object {
         val TAG: String = SetupPatronPaymentFragment::class.java.simpleName
@@ -59,19 +68,18 @@ class SetupPatronPaymentFragment : BaseFragment() {
         setupToolbar()
     }
 
-    override fun onStart() {
-        super.onStart()
-        requireActivity()
-            .onBackPressedDispatcher
-            .addCallback(this, object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    onBackPressed()
-                }
-            })
+    override fun onResume() {
+        super.onResume()
+        fillForm()
     }
 
-    private fun onBackPressed() {
-        findNavController().popBackStack()
+    private fun fillForm() {
+        swAllowDonations.isChecked = setupPatronViewModel.isAllowDonationsEnabled
+        chkMonthly.isChecked = setupPatronViewModel.isMonthlyEnabled
+        chkPerCreation.isChecked = setupPatronViewModel.isPerCreationEnabled
+        showOrHidePricePerCast(chkPerCreation.isChecked)
+        etCastPrice.setText(setupPatronViewModel.castPrice.toString())
+        onCurrencyClicked(setupPatronViewModel.selectedCurrency)
     }
 
 
@@ -90,7 +98,70 @@ class SetupPatronPaymentFragment : BaseFragment() {
     }
 
     private fun listeners() {
+        chkPerCreation?.setOnCheckedChangeListener { buttonView, isChecked ->
+            run {
+                showOrHidePricePerCast(isChecked)
+            }
+        }
 
+        tvDollar.onClick {
+            onCurrencyClicked(Currency.DOLLAR)
+        }
+
+        tvEuro.onClick {
+            onCurrencyClicked(Currency.EURO)
+        }
+
+        tvPound.onClick {
+            onCurrencyClicked(Currency.POUND)
+        }
+
+        btnSaveChanges?.onClick {
+            if (validateForm()) {
+                setupPatronViewModel.isAllowDonationsEnabled = swAllowDonations.isChecked
+                setupPatronViewModel.isMonthlyEnabled = chkMonthly.isChecked
+                setupPatronViewModel.isPerCreationEnabled = chkPerCreation.isChecked
+                if (chkPerCreation.isChecked) {
+                    try {
+                        setupPatronViewModel.castPrice = etCastPrice.text.toString().toFloat()
+                    } catch (e: Exception) {
+                        setupPatronViewModel.castPrice = etCastPrice.text.toString().toFloat()
+                    }
+                } else {
+                    setupPatronViewModel.castPrice = 0f
+                }
+                setupPatronViewModel.selectedCurrency = currentSelectedCurrency
+                findNavController().popBackStack()
+            }
+        }
+    }
+
+    private fun showOrHidePricePerCast(show: Boolean) {
+        if (show)
+            layCastPrice.visibility = View.VISIBLE
+        else
+            layCastPrice.visibility = View.GONE
+    }
+
+    private fun validateForm(): Boolean {
+        return true
+    }
+
+    private fun onCurrencyClicked(currency: Currency) {
+        tvDollar.background = ContextCompat.getDrawable(context!!, R.drawable.bg_chip_category)
+        tvPound.background = ContextCompat.getDrawable(context!!, R.drawable.bg_chip_category)
+        tvEuro.background = ContextCompat.getDrawable(context!!, R.drawable.bg_chip_category)
+
+        when (currency) {
+            Currency.EURO -> tvEuro.background =
+                ContextCompat.getDrawable(context!!, R.drawable.bg_chip_category_selected)
+            Currency.POUND -> tvPound.background =
+                ContextCompat.getDrawable(context!!, R.drawable.bg_chip_category_selected)
+            Currency.DOLLAR -> tvDollar.background =
+                ContextCompat.getDrawable(context!!, R.drawable.bg_chip_category_selected)
+        }
+
+        currentSelectedCurrency = currency
     }
 
 
