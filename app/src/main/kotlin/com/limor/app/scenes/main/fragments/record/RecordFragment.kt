@@ -268,8 +268,13 @@ class RecordFragment : BaseFragment() {
                     positiveButton(getString(R.string.overwrite)) {
                         mergeFilesIfNecessary {
                             uiDraft?.title = uiDraft?.draftParent?.title
+                            val parentToDelete = uiDraft?.draftParent?.copy()
+                            uiDraft?.draftParent = null // this is necessary because if we don't do it
+                                                        // then when we retreive it from realm we may think that
+                                                        // this is still a children draft and it may not
                             insertDraftInRealm(uiDraft!!)
-                            deleteDraftInRealm(uiDraft?.draftParent!!)
+                            if(parentToDelete != null)
+                                deleteDraftInRealm(parentToDelete)
                             activity?.finish()
                         }
                     }
@@ -279,6 +284,9 @@ class RecordFragment : BaseFragment() {
                         showSaveDraftAlert {title ->
                             mergeFilesIfNecessary {
                                 uiDraft?.title = title
+                                uiDraft?.draftParent = null // this is necessary because if we don't do it
+                                                            // then when we retreive it from realm we may think that
+                                                            // this is still a children draft and it may not
                                 insertDraftInRealm(uiDraft!!)
                                 activity?.finish()
                             }
