@@ -42,13 +42,6 @@ class SetupPatronActivity : BaseActivity(), HasSupportFragmentInjector {
         listeners()
     }
 
-    override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 0)
-            navController.popBackStack()
-        else
-            finish()
-    }
-
     private fun listeners() {
         btnClose?.onClick {
             onBackPressed()
