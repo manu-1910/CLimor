@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/brandSecondary400"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Switch
+            android:id="@+id/sw18Content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:checked="true"
+            android:fontFamily="@font/roboto"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingTop="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium"
+            android:switchMinWidth="56dp"
+            android:text="@string/plus_18_content"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textSizeNormal" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:layout_below="@id/sw18Content"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:background="@color/brandSecondary200" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sw18Content"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium"
+            android:text="@string/plut_18_content_description"
+            android:textColor="@color/brandSecondary200" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Switch
+            android:id="@+id/swEarningsVisibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:checked="true"
+            android:fontFamily="@font/roboto"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingTop="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium"
+            android:switchMinWidth="56dp"
+            android:text="@string/earnings_visibility"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textSizeNormal" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:layout_below="@id/swEarningsVisibility"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:background="@color/brandSecondary200" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/swEarningsVisibility"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium"
+            android:text="@string/earnings_visibility_description"
+            android:textColor="@color/brandSecondary200" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Switch
+            android:id="@+id/swPatronageVisibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:checked="true"
+            android:fontFamily="@font/roboto"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingTop="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium"
+            android:switchMinWidth="56dp"
+            android:text="@string/patronage_visibility"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textSizeNormal" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:layout_below="@id/swPatronageVisibility"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:background="@color/brandSecondary200" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/swPatronageVisibility"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium"
+            android:text="@string/patronage_visibility_description"
+            android:textColor="@color/brandSecondary200" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/btnSaveChanges"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="@dimen/marginMedium"
+            android:textColor="@color/brandSecondary400"
+            android:background="@drawable/bg_round_yellow_ripple"
+            android:text="@string/save"
+            android:textAllCaps="false" />
+    </RelativeLayout>
+
+</LinearLayout>

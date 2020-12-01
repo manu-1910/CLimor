@@ -20,6 +20,13 @@
             app:enterAnim="@anim/push_up_in_enter_no_alpha"
             app:exitAnim="@anim/no_anim"
             app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha" />
+
+        <action
+            android:id="@+id/action_setup_patron_to_settings"
+            app:destination="@id/setup_patron_settings_fragment"
+            app:enterAnim="@anim/push_up_in_enter_no_alpha"
+            app:exitAnim="@anim/no_anim"
+            app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha" />
     </fragment>
 
 
@@ -28,6 +35,17 @@
         android:name="com.limor.app.scenes.main.fragments.setup_patron.SetupPatronSelectCategoryFragment"
         android:label="SetupPatronSelectCategoryFragment"
         tools:layout="@layout/fragment_setup_patron_select_category">
+
+        <argument
+            android:name="user"
+            app:type="com.limor.app.uimodels.UIUser" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/setup_patron_settings_fragment"
+        android:name="com.limor.app.scenes.main.fragments.setup_patron.SetupPatronSettingsFragment"
+        android:label="SetupPatronSettingsFragment"
+        tools:layout="@layout/fragment_setup_patron_settings">
 
         <argument
             android:name="user"
