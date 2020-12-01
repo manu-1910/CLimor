@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
@@ -28,13 +29,16 @@ class SetupPatronSelectCategoryFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private lateinit var categoriesViewModel: CategoriesViewModel
 
+    private lateinit var categoriesViewModel: CategoriesViewModel
     private lateinit var setupPatronViewModel: SetupPatronViewModel
 
     private var rootView: View? = null
+
     private val categoriesTrigger = PublishSubject.create<Unit>()
     var app: App? = null
+    private var lastSelectedChipId: Int = 0
+    private var lastSelectedChipName: String = ""
 
     companion object {
         val TAG: String = SetupPatronSelectCategoryFragment::class.java.simpleName
@@ -69,6 +73,22 @@ class SetupPatronSelectCategoryFragment : BaseFragment() {
         setupToolbar()
     }
 
+    override fun onStart() {
+        super.onStart()
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    onBackPressed()
+                }
+            })
+    }
+
+    private fun onBackPressed() {
+        setupPatronViewModel.categorySelectedId = lastSelectedChipId
+        setupPatronViewModel.categorySelectedName = lastSelectedChipName
+        findNavController().popBackStack()
+    }
 
 
     private fun setupToolbar() {
@@ -107,15 +127,18 @@ class SetupPatronSelectCategoryFragment : BaseFragment() {
                     )
                     tvChip.isEnabled = true
                     tvChip.padding = 24
+
+                    var colorBg = R.drawable.bg_chip_category
+                    if(item.id == setupPatronViewModel.categorySelectedId)
+                        colorBg = R.drawable.bg_chip_category_selected
+
                     tvChip.background = ContextCompat.getDrawable(
                         context!!,
-                        R.drawable.bg_chip_category
+                        colorBg
                     )
                     tvChip.layoutParams = params
                     tvChip.setOnClickListener {
-                        setupPatronViewModel.categorySelectedId = tvChip.id
-                        setupPatronViewModel.categorySelectedName = tvChip.text.toString()
-                        findNavController().popBackStack()
+                        selectChip(tvChip.id, tvChip.text.toString())
                     }
                     categoryChipsView?.addView(tvChip)
                 }
@@ -147,7 +170,32 @@ class SetupPatronSelectCategoryFragment : BaseFragment() {
             setupPatronViewModel = ViewModelProviders
                 .of(it, viewModelFactory)
                 .get(SetupPatronViewModel::class.java)
-            setupPatronViewModel.clearCategory()
+            lastSelectedChipId = setupPatronViewModel.categorySelectedId
+            lastSelectedChipName = setupPatronViewModel.categorySelectedName
+        }
+    }
+
+    private fun selectChip(id: Int, name: String) {
+        // let's unselect the last selected chip
+        if (lastSelectedChipId > 0) {
+            val lastSelectedChip = categoryChipsView?.findViewById<TextView>(lastSelectedChipId)
+            if (lastSelectedChip != null) {
+                lastSelectedChip.background = ContextCompat.getDrawable(
+                    context!!,
+                    R.drawable.bg_chip_category
+                )
+            }
+        }
+        lastSelectedChipId = id
+        lastSelectedChipName = name
+
+        // and now, let's select the current selected chip
+        val currentSelectedChip = categoryChipsView?.findViewById<TextView>(id)
+        if (currentSelectedChip != null) {
+            currentSelectedChip.background = ContextCompat.getDrawable(
+                context!!,
+                R.drawable.bg_chip_category_selected
+            )
         }
     }
 
