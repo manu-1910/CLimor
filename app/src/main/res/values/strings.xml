@@ -428,4 +428,8 @@
     <string name="casts">Casts</string>
     <string name="limor_patron">Limor Patron</string>
     <string name="banner_image">Banner image</string>
+    <string name="title_tiers">Tiers</string>
+    <string name="title_payment">Payment</string>
+    <string name="choose_category">Choose a category that best describes your content.</string>
+    <string name="create_patron">Create Patron</string>
 </resources>

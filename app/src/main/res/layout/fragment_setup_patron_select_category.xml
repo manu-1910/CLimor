@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/brandSecondary400">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/brandSecondary300"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginTop="@dimen/marginMedium"
+            android:textSize="@dimen/textSizeNormal"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:text="@string/categories_title"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginEnd="@dimen/marginMedium"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:layout_marginBottom="@dimen/marginSmall"
+            android:textSize="@dimen/textSizeSmall"
+            android:textColor="@color/brandSecondary100"
+            android:text="@string/categories_description"/>
+
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/categoryChipsView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+            app:chipSpacing="@dimen/marginMedium"
+            app:singleSelection="false"
+            app:itemSpacing="@dimen/marginMedium"
+            app:singleLine="false"
+            android:layout_margin="@dimen/marginMedium">
+
+        </com.google.android.material.chip.ChipGroup>
+
+
+
+    </LinearLayout>
+
+</ScrollView>

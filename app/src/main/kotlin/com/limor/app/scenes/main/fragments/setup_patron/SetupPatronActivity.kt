@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main.fragments.onboarding
+package com.limor.app.scenes.main.fragments.setup_patron
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -13,9 +13,9 @@ import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import javax.inject.Inject
 
-class OnBoardingActivity : BaseActivity(), HasSupportFragmentInjector {
+class SetupPatronActivity : BaseActivity(), HasSupportFragmentInjector {
 
-    var uiUser : UIUser? = null
+    var uiUser: UIUser? = null
 
 
     @Inject
@@ -23,8 +23,8 @@ class OnBoardingActivity : BaseActivity(), HasSupportFragmentInjector {
     lateinit var navController: NavController
 
     companion object {
-        val TAG: String = OnBoardingActivity::class.java.simpleName
-        fun newInstance() = OnBoardingActivity()
+        val TAG: String = SetupPatronActivity::class.java.simpleName
+        fun newInstance() = SetupPatronActivity()
     }
 
 
@@ -33,29 +33,24 @@ class OnBoardingActivity : BaseActivity(), HasSupportFragmentInjector {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_onboarding)
+        setContentView(R.layout.activity_setup_patron)
 
         val bundle = intent?.extras
         uiUser = bundle?.get("user") as UIUser?
 
         setupNavigationController()
         listeners()
-        setupToolbar()
-    }
-
-
-    private fun setupToolbar() {
-        tvToolbarTitle?.text = getString(R.string.limor_patron)
     }
 
     private fun listeners() {
         btnClose?.onClick {
-            finish()
+            onBackPressed()
         }
     }
 
     private fun setupNavigationController() {
-        navController = Navigation.findNavController(this, R.id.navigation_host_fragment_onboarding)
+        navController =
+            Navigation.findNavController(this, R.id.navigation_host_fragment_setup_patron)
     }
 
 }
