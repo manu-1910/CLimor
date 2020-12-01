@@ -427,4 +427,10 @@
     <string name="title_payment">Payment</string>
     <string name="choose_category">Choose a category that best describes your content.</string>
     <string name="create_patron">Create Patron</string>
+    <string name="plus_18_content">18+ content</string>
+    <string name="plut_18_content_description">Is your content not suitable for anyone under 18?</string>
+    <string name="earnings_visibility">Earnings visibility</string>
+    <string name="earnings_visibility_description">Users can see your earnings.</string>
+    <string name="patronage_visibility">Patronage visibility</string>
+    <string name="patronage_visibility_description">Users can see how many people support you.</string>
 </resources>

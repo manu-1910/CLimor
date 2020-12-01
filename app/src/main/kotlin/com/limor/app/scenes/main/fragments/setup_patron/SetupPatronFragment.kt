@@ -14,7 +14,6 @@ import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.scenes.main.viewmodels.SetupPatronViewModel
 import kotlinx.android.synthetic.main.fragment_setup_patron.*
-import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.textColor
@@ -108,8 +107,7 @@ class SetupPatronFragment : BaseFragment() {
         }
 
         layCategory?.onClick {
-            val navController = findNavController()
-            navController.navigate(R.id.action_setup_patron_to_select_category)
+            findNavController().navigate(R.id.action_setup_patron_to_select_category)
         }
 
         layPayments?.onClick {
@@ -121,7 +119,7 @@ class SetupPatronFragment : BaseFragment() {
         }
 
         laySettings?.onClick {
-            toast("You clicked on settings").show()
+            findNavController().navigate(R.id.action_setup_patron_to_settings)
         }
 
         btnCreatePatron?.onClick {
