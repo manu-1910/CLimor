@@ -438,4 +438,13 @@
     <string name="earnings_visibility_description">Users can see your earnings.</string>
     <string name="patronage_visibility">Patronage visibility</string>
     <string name="patronage_visibility_description">Users can see how many people support you.</string>
+    <string name="monthly">Monthly</string>
+    <string name="payment_monthly_description">Users pay every month</string>
+    <string name="per_creation">Per Creation</string>
+    <string name="cast_price">Cast Price</string>
+    <string name="cast_price_hint">e.g. €5</string>
+    <string name="allow_donations">Allow Donations</string>
+    <string name="allow_donations_description">Allow users to use one time payments</string>
+    <string name="choose_currency">Choose Currency</string>
+    <string name="select_currency_description">Choose a currency you would like to use to pay for your Limor Premium Subscription.</string>
 </resources>

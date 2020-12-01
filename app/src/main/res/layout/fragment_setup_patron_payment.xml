@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/brandSecondary400"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/marginMedium"
+        android:text="@string/title_payment"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_toStartOf="@id/chkMonthly"
+            android:text="@string/monthly"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <CheckBox
+            android:id="@+id/chkMonthly"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/marginMedium"
+            android:background="@drawable/rounded_checkbox"
+            android:button="@null"
+            android:checked="false"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:layout_below="@id/chkMonthly"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:background="@color/brandSecondary200" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/chkMonthly"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium"
+            android:text="@string/payment_monthly_description"
+            android:textColor="@color/brandSecondary200" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/marginAlmostLarge">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_toStartOf="@id/chkPerCreation"
+            android:text="@string/per_creation"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <CheckBox
+            android:id="@+id/chkPerCreation"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/marginMedium"
+            android:background="@drawable/rounded_checkbox"
+            android:button="@null"
+            android:checked="false"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:layout_below="@id/chkPerCreation"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:background="@color/brandSecondary200" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/chkPerCreation"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium"
+            android:text="@string/payment_monthly_description"
+            android:textColor="@color/brandSecondary200" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/layCastPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/marginMedium"
+        android:layout_marginTop="@dimen/marginMedium"
+        android:layout_marginEnd="@dimen/marginMedium"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cast_price"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/etCastPrice"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:background="@drawable/bg_round_brand_300_ripple"
+            android:hint="@string/cast_price_hint"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium"
+            android:textColorHint="@color/brandSecondary100" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_marginTop="@dimen/marginMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Switch
+            android:id="@+id/swAllowDonations"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:checked="true"
+            android:fontFamily="@font/roboto"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingTop="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium"
+            android:switchMinWidth="56dp"
+            android:text="@string/allow_donations"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textSizeNormal" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:layout_below="@id/swAllowDonations"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:background="@color/brandSecondary200" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/swAllowDonations"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium"
+            android:text="@string/allow_donations_description"
+            android:textColor="@color/brandSecondary200" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/marginMedium"
+        android:layout_marginTop="@dimen/marginAlmostLarge"
+        android:layout_marginEnd="@dimen/marginMedium"
+        android:text="@string/choose_currency"
+        android:textColor="@color/white"
+        android:textSize="@dimen/textSizeNormal" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:layout_marginStart="@dimen/marginMedium"
+        android:layout_marginTop="@dimen/marginSmall"
+        android:layout_marginEnd="@dimen/marginMedium"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvEuro"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/marginTiny"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chip_category"
+            android:gravity="center"
+            android:text="€"
+            android:textColor="@color/white"
+            tools:ignore="HardcodedText" />
+
+
+        <TextView
+            android:id="@+id/tvPound"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/marginSmall"
+            android:layout_marginEnd="@dimen/marginSmall"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chip_category"
+            android:gravity="center"
+            android:text="£"
+            android:textColor="@color/white"
+            tools:ignore="HardcodedText" />
+
+
+        <TextView
+            android:id="@+id/tvDollar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/marginTiny"
+            android:layout_weight="1"
+            android:background="@drawable/bg_chip_category"
+            android:gravity="center"
+            android:text="$"
+            android:textColor="@color/white"
+            tools:ignore="HardcodedText" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/marginMedium"
+        android:layout_marginTop="@dimen/marginSmall"
+        android:layout_marginEnd="@dimen/marginMedium"
+        android:text="@string/select_currency_description"
+        android:textColor="@color/brandSecondary200" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/btnSaveChanges"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="@dimen/marginMedium"
+            android:textColor="@color/brandSecondary400"
+            android:background="@drawable/bg_round_yellow_ripple"
+            android:text="@string/save"
+            android:textAllCaps="false" />
+    </RelativeLayout>
+
+</LinearLayout>

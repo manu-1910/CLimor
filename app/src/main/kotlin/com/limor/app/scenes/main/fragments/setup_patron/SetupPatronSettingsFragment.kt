@@ -82,7 +82,6 @@ class SetupPatronSettingsFragment : BaseFragment() {
             setupPatronViewModel = ViewModelProviders
                 .of(it, viewModelFactory)
                 .get(SetupPatronViewModel::class.java)
-            setupPatronViewModel.clearCategory()
         }
     }
 
