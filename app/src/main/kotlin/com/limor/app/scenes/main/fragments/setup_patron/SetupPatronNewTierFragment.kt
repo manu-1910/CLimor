@@ -9,10 +9,13 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.scenes.main.viewmodels.SetupPatronViewModel
+import kotlinx.android.synthetic.main.fragment_setup_patron_new_tier.*
+import org.jetbrains.anko.sdk23.listeners.onClick
 import javax.inject.Inject
 
 
@@ -60,8 +63,24 @@ class SetupPatronNewTierFragment : BaseFragment() {
         bindViewModel()
     }
 
-    private fun listeners() {
+    override fun onResume() {
+        super.onResume()
+        fillFormFromViewModel()
+    }
 
+    private fun fillFormFromViewModel() {
+        etTierPrice.setText(setupPatronViewModel.currentModifyingTier?.price.toString())
+        etTierBenefits.setText(setupPatronViewModel.currentModifyingTier?.benefits)
+        etTierName.setText(setupPatronViewModel.currentModifyingTier?.name)
+    }
+
+    private fun listeners() {
+        btnSaveChanges?.onClick {
+            setupPatronViewModel.currentModifyingTier?.price = etTierPrice.text.toString().toFloat()
+            setupPatronViewModel.currentModifyingTier?.benefits = etTierBenefits.text.toString()
+            setupPatronViewModel.currentModifyingTier?.name = etTierName.text.toString()
+            findNavController().popBackStack()
+        }
     }
 
 

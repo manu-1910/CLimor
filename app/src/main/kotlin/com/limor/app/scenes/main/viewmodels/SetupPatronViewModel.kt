@@ -2,6 +2,7 @@ package com.limor.app.scenes.main.viewmodels
 
 import androidx.lifecycle.ViewModel
 import com.limor.app.scenes.main.fragments.setup_patron.SetupPatronPaymentFragment
+import com.limor.app.scenes.main.fragments.setup_patron.SetupPatronTiersFragment
 import javax.inject.Inject
 
 class SetupPatronViewModel @Inject constructor() : ViewModel() {
@@ -18,6 +19,9 @@ class SetupPatronViewModel @Inject constructor() : ViewModel() {
     var plus18Activated: Boolean = false
     var earningsVisibleActivated: Boolean = false
     var patronageVisibleActivated: Boolean = false
+
+
+    var currentModifyingTier : SetupPatronTiersFragment.Tier? = null
 
 
 

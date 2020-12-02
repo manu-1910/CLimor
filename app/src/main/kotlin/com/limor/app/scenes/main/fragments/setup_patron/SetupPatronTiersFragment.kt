@@ -10,12 +10,17 @@ import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
+import com.limor.app.scenes.main.adapters.TiersAdapter
 import com.limor.app.scenes.main.viewmodels.SetupPatronViewModel
+import kotlinx.android.synthetic.main.fragment_podcast_details.*
+import kotlinx.android.synthetic.main.fragment_setup_patron_tiers.*
 import org.jetbrains.anko.imageResource
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
 
 
@@ -30,7 +35,8 @@ class SetupPatronTiersFragment : BaseFragment() {
     private var rootView: View? = null
     var app: App? = null
 
-    val listTiers = ArrayList<Tier>()
+    private val listTiers = ArrayList<Tier>()
+    private lateinit var tiersAdapter: TiersAdapter
 
     companion object {
         val TAG: String = SetupPatronSettingsFragment::class.java.simpleName
@@ -62,6 +68,72 @@ class SetupPatronTiersFragment : BaseFragment() {
         setupToolbar()
         listeners()
         bindViewModel()
+        configureAdapter()
+        createDummyTiers()
+    }
+
+
+    private fun configureAdapter() {
+        val layoutManager = LinearLayoutManager(context)
+        rvTiers?.layoutManager = layoutManager
+        context?.let { context ->
+            tiersAdapter = TiersAdapter(
+                context,
+                listTiers,
+                object : TiersAdapter.OnTierClickedListener {
+                    override fun onTierClicked(item: Tier, position: Int) {
+                        toast("You clicked on tier").show()
+                    }
+
+                    override fun onEditTierClicked(item: Tier, position: Int) {
+                        toast("You clicked on edit tier").show()
+                    }
+
+                    override fun onRemoveTierClicked(currentItem: Tier, position: Int) {
+                        toast("You clicked on remove tier").show()
+                    }
+                }
+            )
+
+        }
+
+        rvTiers?.adapter = tiersAdapter
+        rvTiers?.isNestedScrollingEnabled = true
+
+//        layNestedScroll.setOnScrollChangeListener { v: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
+//            v?.let {
+////                if(v.getChildAt(v.childCount - 5) != null) {
+////                    if ((scrollY >= (v.getChildAt(v.childCount - 5).measuredHeight - v.measuredHeight)) && scrollY > oldScrollY) {
+//                if (!isLastPage && !isWaitingForApiCall && rvComments != null && rvComments.visibility == View.VISIBLE) {
+//                    val goingDown = scrollY > oldScrollY
+//                    if (goingDown && (scrollY >= (rvComments.measuredHeight - v.measuredHeight))) {
+//
+////                        toast("We have to scroll more")
+//                        isWaitingForApiCall = true
+//                        if (podcastMode) {
+//                            viewModelGetPodcastComments.offset = currentOffset
+//                            getPodcastCommentsDataTrigger.onNext(Unit)
+//                        } else {
+//                            viewModelGetCommentComments.offset = currentOffset
+//                            getCommentCommentsDataTrigger.onNext(Unit)
+//                        }
+//                    }
+//                }
+//            }
+//        }
+        rvComments?.setHasFixedSize(true)
+    }
+
+
+    private fun createDummyTiers() {
+        val benefits = "• Premium Casts\\n• Access to Private DM"
+        val tier1 = Tier("Limor Patron Tier 1", benefits, 5.0f)
+        val tier2 = Tier("Limor Patron Tier 2", benefits, 50.0f)
+        val tier3 = Tier("Limor Patron Tier 3", benefits, 100.0f)
+        listTiers.add(tier1)
+        listTiers.add(tier2)
+        listTiers.add(tier3)
+        tiersAdapter.notifyDataSetChanged()
     }
 
 
@@ -84,11 +156,19 @@ class SetupPatronTiersFragment : BaseFragment() {
 
     private fun listeners() {
         btnAddTier.onClick {
+            setupPatronViewModel.currentModifyingTier = Tier()
             findNavController().navigate(R.id.action_setup_patron_tiers_to_new_tier)
         }
     }
 
 
-    class Tier(var name: String, var benefits: String, var price: Float)
+    class Tier(var name: String = "", var benefits: String = "", var price: Float = 0f, var currency: SetupPatronPaymentFragment.Currency = SetupPatronPaymentFragment.Currency.EURO) {
+
+        val id: Int = currentId++
+
+        companion object {
+            private var currentId = 0
+        }
+    }
 
 }

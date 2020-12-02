@@ -448,4 +448,5 @@
     <string name="tier_name_hint">e.g. Limor Patron Tier 1</string>
     <string name="tier_benefits_hint">• Premium Casts\n• Access to Private DM</string>
     <string name="tier_details">Tier Details</string>
+    <string name="edit_tier_btn_text"><![CDATA[Edit >]]></string>
 </resources>
