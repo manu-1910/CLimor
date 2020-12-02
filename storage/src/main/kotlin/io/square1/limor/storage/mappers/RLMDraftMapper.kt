@@ -25,7 +25,9 @@ fun RLMDraft.asDataEntity(): DraftEntity {
         date,
         categoryId,
         category,
-        location?.asDataEntity()
+        location?.asDataEntity(),
+        parentDraft?.asDataEntity(),
+        isNewRecording
     )
 }
 
@@ -48,7 +50,9 @@ fun DraftEntity.asStorageEntity(): RLMDraft {
         date,
         categoryId,
         category,
-        location?.asStorageEntity()
+        location?.asStorageEntity(),
+        parentDraft?.asStorageEntity(),
+        isNewRecording
     )
 }
 

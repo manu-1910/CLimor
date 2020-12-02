@@ -192,7 +192,6 @@ class EditFragment : WaveformFragment() {
     private fun onBackPressed() {
         // if the current filePath is wav, it's because it hasn't been any changes, so let's just go back
         if (WavHelper.isWavExtension(uiDraft?.filePath!!)) {
-            draftViewModel.continueRecording = true
             draftViewModel.filesArray.clear()
             draftViewModel.filesArray.add(File(uiDraft?.filePath))
             findNavController().popBackStack()
@@ -208,13 +207,12 @@ class EditFragment : WaveformFragment() {
                     val convertedFile =
                         WavHelper.convertToWav(requireContext(), uiDraft?.filePath!!)
                     if (convertedFile != null) {
-                        draftViewModel.uiDraft.filePath = convertedFile.absolutePath
+                        draftViewModel.uiDraft?.filePath = convertedFile.absolutePath
 
                         // these steps of clearing the array and adding the last recorded file are necessary to continuous recording
                         draftViewModel.filesArray.clear()
                         draftViewModel.filesArray.add(convertedFile)
-                        draftViewModel.continueRecording = true
-                        insertDraftInRealm(draftViewModel.uiDraft)
+                        insertDraftInRealm(draftViewModel.uiDraft!!)
                         findNavController().popBackStack()
                     } else {
                         alert(getString(R.string.error_converting_audio)) {
@@ -810,12 +808,11 @@ class EditFragment : WaveformFragment() {
         handlePausePreview()
         val convertedFile = WavHelper.convertToWav(requireContext(), uiDraft?.filePath!!)
         if (convertedFile != null) {
-            draftViewModel.uiDraft.filePath = convertedFile.absolutePath
+            draftViewModel.uiDraft?.filePath = convertedFile.absolutePath
 
             // these steps of clearing the array and adding the last recorded file are necessary to continuous recording
             draftViewModel.filesArray.clear()
             draftViewModel.filesArray.add(convertedFile)
-            draftViewModel.continueRecording = true
 
             val bundle = bundleOf("recordingItem" to uiDraft)
             findNavController().navigate(R.id.action_record_edit_to_record_publish, bundle)
@@ -835,8 +832,7 @@ class EditFragment : WaveformFragment() {
 
         // these two steps of clearing the array and putting the first item with the current file are necessary to keep recording after this file
         draftViewModel.filesArray.clear()
-        draftViewModel.filesArray.add(File(draftViewModel.uiDraft.filePath!!))
-        draftViewModel.continueRecording = true
+        draftViewModel.filesArray.add(File(draftViewModel.uiDraft?.filePath!!))
         findNavController().popBackStack()
     }
 
@@ -875,7 +871,6 @@ class EditFragment : WaveformFragment() {
                 draftViewModel.filesArray.add(File(uiDraft?.filePath))
             }
 
-            draftViewModel.continueRecording = true
         } catch (e: Exception) {
             e.printStackTrace()
         }

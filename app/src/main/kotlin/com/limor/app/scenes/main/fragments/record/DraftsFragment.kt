@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
@@ -74,7 +75,7 @@ class DraftsFragment : BaseFragment() {
     ): View? {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_drafts, container, false)
-            rvDrafts = rootView?.findViewById<RecyclerView>(R.id.rvDrafts)
+            rvDrafts = rootView?.findViewById(R.id.rvDrafts)
             pbDrafts = rootView?.findViewById(R.id.pbDrafts)
             emptyScenarioDraftsLayout = rootView?.findViewById(R.id.emptyScenarioDraftsLayout)
 
@@ -102,6 +103,32 @@ class DraftsFragment : BaseFragment() {
         ViewCompat.setTranslationZ(view, 20f)
     }
 
+    override fun onStart() {
+        super.onStart()
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    onBackPressed()
+                }
+            })
+    }
+
+    private fun onBackPressed() {
+        try {
+            if(adapter?.mediaPlayer!!.isPlaying){
+                adapter?.mediaPlayer!!.stop()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        // we delete it because we don't want the record fragment to receive any draft because we are
+        // quitting this fragment by close button, not by resuming any draft
+        draftViewModel.uiDraft = null
+        findNavController().popBackStack()
+    }
+
 
     private fun bindViewModel() {
         activity?.let {
@@ -120,15 +147,7 @@ class DraftsFragment : BaseFragment() {
         //Toolbar Left
         btnCloseToolbar?.let {
             it.onClick {
-                try {
-                    if(adapter?.mediaPlayer!!.isPlaying){
-                        adapter?.mediaPlayer!!.stop()
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-
-                findNavController().popBackStack()
+                onBackPressed()
             }
         }
 
@@ -280,7 +299,6 @@ class DraftsFragment : BaseFragment() {
                         //Go to record fragment to continue recording
                         draftViewModel.uiDraft = item
                         draftViewModel.filesArray.add(File(item.filePath))
-                        draftViewModel.continueRecording = true
                         //draftViewModel.durationOfLastAudio = item.length!!
 
                         val bundle = bundleOf("recordingItem" to draftViewModel.uiDraft)
@@ -302,7 +320,6 @@ class DraftsFragment : BaseFragment() {
                         //Go to record fragment to continue recording
                         draftViewModel.uiDraft = item
                         draftViewModel.filesArray.add(File(item.filePath))
-                        draftViewModel.continueRecording = true
                         //draftViewModel.durationOfLastAudio = item.length!!
 
                         val bundle = bundleOf("recordingItem" to draftViewModel.uiDraft)

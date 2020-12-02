@@ -63,6 +63,7 @@ import kotlin.collections.ArrayList
 
 class RecordFragment : BaseFragment() {
 
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -73,7 +74,7 @@ class RecordFragment : BaseFragment() {
     private var timeWhenStopped: Long = 0
     private var rootView: View? = null
     private var voiceGraph: VisualizerView? = null
-    private lateinit var mRecorder: WaveRecorder
+    private var mRecorder: WaveRecorder? = null
     private val insertDraftTrigger = PublishSubject.create<Unit>()
     private val deleteDraftTrigger = PublishSubject.create<Unit>()
     private var app: App? = null
@@ -82,6 +83,7 @@ class RecordFragment : BaseFragment() {
     private var fileRecording = ""
     private var isAnimatingCountdown: Boolean = false
     private lateinit var handlerCountdown : Handler
+    private var anythingToSave = false
 
 
     companion object {
@@ -121,11 +123,10 @@ class RecordFragment : BaseFragment() {
 
         bindViewModel()
 //        deleteUnusedAudioFiles()
-        configureToolbar()
-        audioSetup()
+        initGui()
         listeners()
         initApiCallInsertDraft()
-        deleteDraft()
+        initApiCallDeleteDraft()
 
         //Check Permissions
         if (!hasPermissions(requireContext(), *PERMISSIONS)) {
@@ -139,20 +140,192 @@ class RecordFragment : BaseFragment() {
 
         requestForLocation()
 
-        if (draftViewModel.continueRecording) {
-            //toast("Tap on record to continue recording the selected draft")
-//            draftViewModel.continueRecording = false
+
+        // this means that we come from another fragment to continue recording
+        draftViewModel.uiDraft?.let {
+
             isFirstTapRecording = true
+            anythingToSave = true
 
             //Put the seconds counter with the length of the draftitem
             updateChronoTimerFromDraft()
 
-            resetAudioSetup()
-            uiDraft = draftViewModel.uiDraft
+            // this means that we come from another fragment and that this is an autosave from
+            // another draft, so we just assign the received draft to the current uiDraft
+            if(it.draftParent != null) {
+
+                uiDraft = draftViewModel.uiDraft
+
+
+                // this means that we come from another fragment but we are not yet an autosave.
+                // we could come from draft list fragment, so we have to make an autosave from this
+                // or we could come from another fragment but we are a new recording that just navigated
+                // to another fragment to edit that new recording and came back, for example
+            } else {
+
+
+                // this means that we come from drafts list fragment, so we have to create a new autosave
+                // draft and assign the parent as the uiDraft received from this fragment
+                if( ! it.isNewRecording) {
+
+                    uiDraft = it.copy()
+                    uiDraft?.id = System.currentTimeMillis()
+                    uiDraft?.title = getString(R.string.autosave)
+                    if(it.filePath != null) {
+                        val fileFromParent = File(it.filePath!!)
+                        if(fileFromParent.exists()) {
+                            val copiedFilePath = getNewFileName()
+                            val copiedFile = fileFromParent.copyTo(File(copiedFilePath), true)
+                            if(copiedFile.exists()) {
+                                uiDraft?.filePath = copiedFilePath
+                                draftViewModel.filesArray.clear()
+                                draftViewModel.filesArray.add(copiedFile)
+                            } else {
+                                alert(getString(R.string.error_copying_file))
+                            }
+                        } else {
+                            alert(getString(R.string.file_doesnt_exist)).show()
+                        }
+                    } else {
+                        alert(getString(R.string.file_not_received)).show()
+                    }
+
+                    uiDraft?.draftParent = it
+
+
+                    // this means that we are a new recording that just navigated to another fragment to edit
+                    // the audio for example and then we came back to the record fragment, so we just assign the received
+                    // draft to the local uiDraft of this fragment
+                } else {
+                    uiDraft = draftViewModel.uiDraft
+                }
+            }
+
+
+
 
             changeToEditToolbar()
             updateRecordButton()
+
+
+            // this means that we come to this fragment to record something new
+        } ?: run {
+
+            createNewAutosavedDraft()
+            uiDraft?.isNewRecording = true
         }
+    }
+
+
+
+    private fun onBackPressed() {
+        // if the drafts is null, it means that we haven't even recorded anything, so we just exit the activity
+        if (!anythingToSave) {
+            uiDraft = null
+            activity?.finish()
+
+
+            // if we do have recorded anything...
+        } else {
+
+
+            // this means that we are in this fragment recording some audio for the first time
+            if(uiDraft?.isNewRecording == true) {
+
+                // let's show the dialog to show if they want to save the current recorded audio or discard it
+                alert(
+                    getString(R.string.alert_cancel_record_descr),
+                    getString(R.string.alert_cancel_record_title)
+                ) {
+
+                    // if OK, let's save it
+                    positiveButton(getString(R.string.alert_cancel_record_save)) {
+                        it.dismiss()
+                        showSaveDraftAlert()
+                    }
+
+                    // if CANCEL, then let's delete the temporary draft that it's now created
+                    negativeButton(getString(R.string.alert_cancel_record_do_not_save)) {
+                        deleteDraftInRealm(uiDraft!!)
+                        activity?.finish()
+                    }
+                }.show()
+
+
+                // if we are here, this means that we are in this fragment because we come from
+                // another fragment that sent us some draft to continue recording it
+            } else {
+
+                alert(getString(R.string.do_you_want_to_save_changes)) {
+
+                    // NOTE: don't keep in mind if buttons are positive, negative or neutral, any of them
+                    //  do different actions that aren't either positive or negative or so. I just
+                    //  choose those actions to get the order on screen that I wanted.
+                    //  I insist, they are neither positive or negative, they just simply do different actions
+
+
+                    // OVERWRITE
+                    positiveButton(getString(R.string.overwrite)) {
+
+                        val resultStop = stopAudio()
+                        if (!resultStop) {
+                            alert(getString(R.string.error_stopping_audio)) { okButton { } }
+                            return@positiveButton
+                        }
+
+                        mergeFilesIfNecessary {
+                            uiDraft?.title = uiDraft?.draftParent?.title
+                            val parentToDelete = uiDraft?.draftParent?.copy()
+                            uiDraft?.draftParent = null // this is necessary because if we don't do it
+                                                        // then when we retreive it from realm we may think that
+                                                        // this is still a children draft and it may not
+                            insertDraftInRealm(uiDraft!!)
+                            if(parentToDelete != null)
+                                deleteDraftInRealm(parentToDelete)
+                            activity?.finish()
+                        }
+                    }
+
+                    // SAVE AS NEW
+                    negativeButton(getString(R.string.save_as_new_draft)) {
+
+                        val resultStop = stopAudio()
+                        if (!resultStop) {
+                            alert(getString(R.string.error_stopping_audio)) { okButton { } }
+                            return@negativeButton
+                        }
+
+                        showSaveDraftAlert {title ->
+                            mergeFilesIfNecessary {
+                                uiDraft?.title = title
+                                uiDraft?.draftParent = null // this is necessary because if we don't do it
+                                                            // then when we retreive it from realm we may think that
+                                                            // this is still a children draft and it may not
+                                insertDraftInRealm(uiDraft!!)
+                                activity?.finish()
+                            }
+                        }
+                    }
+
+                    // DISCARD
+                    neutralPressed(getString(R.string.discard)) {
+                        deleteDraftInRealm(uiDraft!!)
+                        activity?.finish()
+                    }
+                }.show()
+
+            }
+        }
+    }
+
+
+    private fun createNewAutosavedDraft() : UIDraft {
+        val auxDraft = UIDraft()
+        auxDraft.id = System.currentTimeMillis()
+        auxDraft.title = getString(R.string.autosaved_draft)
+        auxDraft.date = getDateTimeFormatted()
+        uiDraft = auxDraft
+        return auxDraft
     }
 
     override fun onStart() {
@@ -167,7 +340,7 @@ class RecordFragment : BaseFragment() {
     }
 
     private fun updateChronoTimerFromDraft() {
-        draftViewModel.uiDraft.filePath?.let {
+        draftViewModel.uiDraft?.filePath?.let {
             val file = File(it)
             if (file.exists()) {
                 val uri: Uri = Uri.parse(it)
@@ -248,12 +421,12 @@ class RecordFragment : BaseFragment() {
         //Toolbar Right
         btnToolbarRight.text = getString(R.string.btn_drafts)
         btnToolbarRight.onClick {
+            uiDraft = null // this is necessary
             findNavController().navigate(R.id.action_record_fragment_to_record_drafts)
         }
     }
 
-
-    private fun showSaveDraftAlert() {
+    private fun showSaveDraftAlert(onPositiveClicked: (title: String) -> Unit) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = layoutInflater
         dialogBuilder.setTitle(getString(R.string.save_draft_dialog_title))
@@ -266,17 +439,7 @@ class RecordFragment : BaseFragment() {
         val dialog: AlertDialog = dialogBuilder.show()
 
         positiveButton.onClick {
-
-            uiDraft?.title = editText.text.toString()
-            uiDraft?.date = getDateTimeFormatted()
-
-            //Inserting in Realm
-            insertDraftInRealm(uiDraft!!)
-
-            toast(getString(R.string.draft_inserted))
-
-            activity?.finish()
-
+            onPositiveClicked(editText.text.toString())
             dialog.dismiss()
         }
 
@@ -296,6 +459,22 @@ class RecordFragment : BaseFragment() {
                 positiveButton.isEnabled = !p0.isNullOrEmpty()
             }
         })
+    }
+
+
+    private fun showSaveDraftAlert() {
+       showSaveDraftAlert {
+           uiDraft?.title = it
+           uiDraft?.isNewRecording = false
+           uiDraft?.date = getDateTimeFormatted()
+
+           //Inserting in Realm
+           insertDraftInRealm(uiDraft!!)
+
+           toast(getString(R.string.draft_inserted))
+
+           activity?.finish()
+       }
     }
 
 
@@ -355,72 +534,7 @@ class RecordFragment : BaseFragment() {
         }
     }
 
-    private fun onBackPressed() {
-        // if the drafts is not null, it means that we have recorded something
-        if(uiDraft != null) {
-
-
-            // this means that we are in this fragment recording some audio for the first time
-            if( ! draftViewModel.continueRecording) {
-
-                // let's show the dialog to show if they want to save the current recorded audio or discard it
-                alert(
-                    getString(R.string.alert_cancel_record_descr),
-                    getString(R.string.alert_cancel_record_title)
-                ) {
-
-                    // if OK, let's save it
-                    positiveButton(getString(R.string.alert_cancel_record_save)) {
-                        it.dismiss()
-                        showSaveDraftAlert()
-                    }
-
-                    // if CANCEL, then let's delete the temporary draft that it's now created
-                    negativeButton(getString(R.string.alert_cancel_record_do_not_save)) {
-                        deleteDraftInRealm(uiDraft!!)
-                        activity?.finish()
-                    }
-                }.show()
-
-
-
-
-                // if we are here, this means that we are in this fragment because we come from
-                // another fragment that sent us some draft to continue recording it
-            } else {
-
-                // this situation means that we have actually recorded something new after coming to this fragment
-                // so we have to ask the user if he wants to keep the new changes or discard
-                if(draftViewModel.filesArray.size == 2 && draftViewModel.filesArray[1].exists()) {
-                    alert(getString(R.string.do_you_want_to_save_changes)) {
-                        positiveButton(getString(R.string.save)) {
-                            mergeFilesAndCloseActivity()
-                        }
-
-
-                        negativeButton(getString(R.string.discard)) {
-                            activity?.finish()
-                        }
-                    }.show()
-
-
-                    // this means that we received a draft from another fragment, but we didn't record anything new in it
-                    // so we don't have to save, we just close the activity
-                } else {
-                    activity?.finish()
-                }
-            }
-
-
-            // if the draft is null, it means that we didn't even record anything, so we just close the activity
-        } else {
-            activity?.finish()
-        }
-    }
-
-
     private fun onEditClicked() {
-
         val resultStopAudio = stopAudio()
         if (!resultStopAudio) {
             alert(getString(R.string.error_stopping_audio)) { okButton { } }
@@ -521,61 +635,73 @@ class RecordFragment : BaseFragment() {
         }
     }
 
+    private fun mergeFilesIfNecessary(callback: () -> Unit) {
+        doAsync {
+            val finalAudio = File(
+                context?.getExternalFilesDir(null)?.absolutePath,
+                "/limorv2/" + System.currentTimeMillis() + audioFileFormat
+            )
 
-    private fun audioSetup() {
+            // this means that there is only one file and there is no need to merge anything
+            if(draftViewModel.filesArray.size == 1) {
+                uiDraft?.filePath = draftViewModel.filesArray[0].absolutePath
+                uiThread { callback() }
 
-        // Note: this is not the audio file name, it's a directory.
-        val recordingDirectory = File(context?.getExternalFilesDir(null)?.absolutePath, "/limorv2/")
-        if (!recordingDirectory.exists()) {
-            recordingDirectory.mkdir()
-        }
+                // this means that there are actually two files to merge
+            } else if(draftViewModel.filesArray.size == 2) {
+                if (WavHelper.combineWaveFile(
+                        draftViewModel.filesArray[0].absolutePath,
+                        draftViewModel.filesArray[1].absolutePath,
+                        finalAudio.absolutePath
+                    )
+                ) {
+                    // let's delete the old files, we don't need them anymore
+                    draftViewModel.filesArray.forEach {
+                        it.delete()
+                    }
 
-        if (uiDraft != null) {
-            changeToEditToolbar()
-        } else {
-            //Setup audio recorder
-            fileRecording =
-                recordingDirectory.absolutePath + "/" + System.currentTimeMillis() + audioFileFormat
-            mRecorder = WaveRecorder(fileRecording)
-            mRecorder.waveConfig.sampleRate = 16000
-            mRecorder.waveConfig.channels = AudioFormat.CHANNEL_IN_STEREO
-            mRecorder.waveConfig.audioEncoding = AudioFormat.ENCODING_PCM_16BIT
-            //mRecorder.noiseSuppressorActive = true
+                    // let's empty the filesArray
+                    draftViewModel.filesArray.clear()
+                    // and let's add the combined audio, that is now the ONLY audio
+                    draftViewModel.filesArray.add(finalAudio)
 
-            mRecorder.onAmplitudeListener = {
-                runOnUiThread {
-                    if (isRecording) {
-                        if (it != 0) {
-                            voiceGraph?.addAmplitude(it.toFloat())
-                            voiceGraph?.invalidate() // refresh the Visualizer
-                        }
+                    uiDraft?.filePath = finalAudio.absolutePath
+
+                    uiThread {
+                        callback()
+                    }
+                } else {
+                    uiThread {
+                        activity?.alert(getString(R.string.error_merging_file)) {
+                            okButton { }
+                        }?.show()
                     }
                 }
+            } else {
+                uiThread {
+                    alert("There are three files in the list, it shouldn't") {  }.show()
+                }
             }
-
-            // Disable next button
-            nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
-            nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.white)
-            nextButton.isEnabled = false
-            nextButton.visibility = View.GONE
         }
+    }
 
+    private fun initGui() {
+        configureToolbar()
+        // Disable next button
+        nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
+        nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.white)
+        nextButton.isEnabled = false
+        nextButton.visibility = View.GONE
     }
 
 
-    private fun resetAudioSetup() {
-
-        // Note: this is not the audio file name, it's a directory.
-        val recordingDirectory =
-            File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/")
-        if (!recordingDirectory.exists()) {
-            recordingDirectory.mkdir()
-        }
-
-        fileRecording =
-            recordingDirectory.absolutePath + "/" + System.currentTimeMillis() + audioFileFormat
+    private fun resetRecorderWithNewFile() {
+        fileRecording = getNewFileName()
         mRecorder = WaveRecorder(fileRecording)
-        mRecorder.onAmplitudeListener = {
+        mRecorder?.waveConfig?.sampleRate = 44100
+        mRecorder?.waveConfig?.channels = AudioFormat.CHANNEL_IN_STEREO
+        mRecorder?.waveConfig?.audioEncoding = AudioFormat.ENCODING_PCM_16BIT
+        mRecorder?.onAmplitudeListener = {
             runOnUiThread {
                 if (isRecording) {
                     if (it != 0) {
@@ -588,14 +714,29 @@ class RecordFragment : BaseFragment() {
     }
 
 
+    private fun getNewFileName() : String {
+        // Note: this is not the audio file name, it's a directory.
+        val recordingDirectory =
+            File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/")
+        if (!recordingDirectory.exists()) {
+            recordingDirectory.mkdir()
+        }
+
+
+        return recordingDirectory.absolutePath + "/" + System.currentTimeMillis() + audioFileFormat
+    }
+
+
     private fun listeners() {
 
         // Next Button
         nextButton.onClick {
-            val resultStop = stopAudio()
-            if (!resultStop) {
-                alert(getString(R.string.error_stopping_audio)) { okButton { } }
-                return@onClick
+            if(mRecorder != null) {
+                val resultStop = stopAudio()
+                if (!resultStop) {
+                    alert(getString(R.string.error_stopping_audio)) { okButton { } }
+                    return@onClick
+                }
             }
 
             // --------------- Read this carefully: -----------------
@@ -697,7 +838,7 @@ class RecordFragment : BaseFragment() {
 
     private fun pauseRecording() {
         println("RECORD --> PAUSE")
-        mRecorder.pauseRecording()
+        mRecorder?.pauseRecording()
         //Stop the chronometer and anotate the time when it is stopped
         timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
         isRecording = false
@@ -714,6 +855,7 @@ class RecordFragment : BaseFragment() {
         if (isRecording) {
             nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
             nextButton.isEnabled = false
+            nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.white)
             nextButton.visibility = View.VISIBLE
 
             recordButton.background = ContextCompat.getDrawable(
@@ -728,6 +870,7 @@ class RecordFragment : BaseFragment() {
             nextButton.visibility = View.VISIBLE
             nextButton.background = requireContext().getDrawable(R.drawable.bg_round_yellow_ripple)
             nextButton.isEnabled = true
+            nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
         }
     }
 
@@ -749,33 +892,20 @@ class RecordFragment : BaseFragment() {
             if (isFirstTapRecording) {
                 isFirstTapRecording = false
                 println("RECORD --> START")
-                resetAudioSetup()
-                mRecorder.startRecording()
+                resetRecorderWithNewFile()
+                mRecorder?.startRecording()
 
                 //This is the recorded audio file saved in storage
-                val fileChosen: File? = File(fileRecording)
-
-                // this won't be null when the draft is received from another fragment
-                uiDraft?.let {
-                    it.filePath = fileChosen?.absolutePath
-                    insertDraftInRealm(it)
-
-
-                    // this will be null when this is the first time that we record something
-                    // That's why here should be the only place where we actually call a new UIDraft()
-                } ?: run {
-                    uiDraft = UIDraft()
-                    uiDraft?.id = System.currentTimeMillis()
-                    uiDraft?.filePath = fileChosen?.absolutePath
-                    uiDraft?.title = getString(R.string.autosaved_draft)
-                    uiDraft?.date = getDateTimeFormatted()
-                }
-                draftViewModel.filesArray.add(File(uiDraft?.filePath!!))
+                val fileChosen = File(fileRecording)
+                uiDraft?.filePath = fileChosen.absolutePath
+                draftViewModel.filesArray.add(fileChosen)
+                insertDraftInRealm(uiDraft!!)
 
             } else {
                 println("RECORD --> RESUME")
-                mRecorder.resumeRecording()
+                mRecorder?.resumeRecording()
             }
+            anythingToSave = true
 
             //Update times in digital clock
             c_meter.base = SystemClock.elapsedRealtime() + timeWhenStopped
@@ -790,7 +920,7 @@ class RecordFragment : BaseFragment() {
     private fun stopAudio(): Boolean {
         println("RECORD --> STOP")
         try {
-            mRecorder.stopRecording()
+            mRecorder?.stopRecording()
             isRecording = false
         } catch (e: Exception) {
             e.printStackTrace()
@@ -831,7 +961,7 @@ class RecordFragment : BaseFragment() {
         super.onDestroyView()
 
         try {
-            mRecorder.stopRecording()
+            mRecorder?.stopRecording()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -867,7 +997,7 @@ class RecordFragment : BaseFragment() {
     }
 
 
-    private fun deleteDraft() {
+    private fun initApiCallDeleteDraft() {
         val output = draftViewModel.deleteDraftRealm(
             DraftViewModel.InputDelete(
                 deleteDraftTrigger

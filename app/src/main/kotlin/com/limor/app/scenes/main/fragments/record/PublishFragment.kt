@@ -213,7 +213,6 @@ class PublishFragment : BaseFragment() {
         draftViewModel.uiDraft = uiDraft
         draftViewModel.filesArray.clear()
         draftViewModel.filesArray.add(File(uiDraft.filePath))
-        draftViewModel.continueRecording = true
 
         findNavController().popBackStack()
     }
@@ -805,7 +804,7 @@ class PublishFragment : BaseFragment() {
             lytImagePlaceholder?.visibility = View.GONE
 
             //Add the photopath to recording item
-            draftViewModel.uiDraft.tempPhotoPath = resultUri?.path
+            draftViewModel.uiDraft?.tempPhotoPath = resultUri?.path
 
             Commons.getInstance().handleImage(
                 context,
