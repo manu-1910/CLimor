@@ -52,11 +52,23 @@ class SetupPatronTiersFragment : BaseFragment() {
         if (rootView == null) {
             rootView =
                 inflater.inflate(R.layout.fragment_setup_patron_tiers, container, false)
+            createDummyTiers()
         }
 
         app = context?.applicationContext as App
 
+
         return rootView
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setupPatronViewModel.currentModifyingTier?.let {
+            if(setupPatronViewModel.isCurrentModifyingTierNew) {
+                listTiers.add(it)
+                setupPatronViewModel.currentModifyingTier = null
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -65,11 +77,10 @@ class SetupPatronTiersFragment : BaseFragment() {
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 1f)
 
+        bindViewModel()
         setupToolbar()
         listeners()
-        bindViewModel()
         configureAdapter()
-        createDummyTiers()
     }
 
 
@@ -86,11 +97,14 @@ class SetupPatronTiersFragment : BaseFragment() {
                     }
 
                     override fun onEditTierClicked(item: Tier, position: Int) {
-                        toast("You clicked on edit tier").show()
+                        setupPatronViewModel.currentModifyingTier = item
+                        setupPatronViewModel.isCurrentModifyingTierNew = false
+                        findNavController().navigate(R.id.action_setup_patron_tiers_to_new_tier)
                     }
 
                     override fun onRemoveTierClicked(currentItem: Tier, position: Int) {
-                        toast("You clicked on remove tier").show()
+                        listTiers.remove(currentItem)
+                        tiersAdapter.notifyItemRemoved(position)
                     }
                 }
             )
@@ -133,7 +147,6 @@ class SetupPatronTiersFragment : BaseFragment() {
         listTiers.add(tier1)
         listTiers.add(tier2)
         listTiers.add(tier3)
-        tiersAdapter.notifyDataSetChanged()
     }
 
 
@@ -157,12 +170,18 @@ class SetupPatronTiersFragment : BaseFragment() {
     private fun listeners() {
         btnAddTier.onClick {
             setupPatronViewModel.currentModifyingTier = Tier()
+            setupPatronViewModel.isCurrentModifyingTierNew = true
             findNavController().navigate(R.id.action_setup_patron_tiers_to_new_tier)
         }
     }
 
 
-    class Tier(var name: String = "", var benefits: String = "", var price: Float = 0f, var currency: SetupPatronPaymentFragment.Currency = SetupPatronPaymentFragment.Currency.EURO) {
+    class Tier(
+        var name: String = "",
+        var benefits: String = "",
+        var price: Float = 0f,
+        var currency: SetupPatronPaymentFragment.Currency = SetupPatronPaymentFragment.Currency.EURO
+    ) {
 
         val id: Int = currentId++
 

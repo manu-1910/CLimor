@@ -1,14 +1,19 @@
 package com.limor.app.scenes.main.adapters
 
 import android.content.Context
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.R
 import com.limor.app.scenes.main.fragments.setup_patron.SetupPatronPaymentFragment
 import com.limor.app.scenes.main.fragments.setup_patron.SetupPatronTiersFragment
 import org.jetbrains.anko.sdk23.listeners.onClick
+
 
 class TiersViewHolder(
     inflater: LayoutInflater,
@@ -35,7 +40,26 @@ class TiersViewHolder(
         tvRemoveTier.onClick { tierClickedListener.onRemoveTierClicked(currentItem, position) }
 
         tvTierBenefits.text = currentItem.benefits
-        tvTierName.text = currentItem.name
+
+        val pieces = currentItem.name.split(" ", ignoreCase = true, limit = 2)
+        if(pieces.size <= 1) {
+            tvTierName.text = currentItem.name
+        } else {
+            val firstWord = pieces[0]
+            val restOfText = " ${pieces[1]}"
+            val restOfTextYellow = SpannableString(restOfText)
+            restOfTextYellow.setSpan(
+                ForegroundColorSpan(ContextCompat.getColor(context, R.color.brandPrimary500)),
+                0,
+                restOfText.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+
+            tvTierName.text = firstWord
+            tvTierName.append(restOfTextYellow)
+        }
+
+
         val currencyChar = getCurrencyChar(currentItem.currency)
         val twoDigitsStringPrice = String.format("%.2f", currentItem.price)
         val priceText = "$currencyChar $twoDigitsStringPrice"

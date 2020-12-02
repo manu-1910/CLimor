@@ -21,7 +21,9 @@ class SetupPatronViewModel @Inject constructor() : ViewModel() {
     var patronageVisibleActivated: Boolean = false
 
 
+    var isCurrentModifyingTierNew = false
     var currentModifyingTier : SetupPatronTiersFragment.Tier? = null
+    var tierSaved: Boolean = false
 
 
 

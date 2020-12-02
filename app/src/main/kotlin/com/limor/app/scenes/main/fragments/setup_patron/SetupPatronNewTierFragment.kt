@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -29,7 +30,6 @@ class SetupPatronNewTierFragment : BaseFragment() {
     private var rootView: View? = null
     var app: App? = null
 
-    private lateinit var tier: SetupPatronTiersFragment.Tier
 
     companion object {
         val TAG: String = SetupPatronSettingsFragment::class.java.simpleName
@@ -68,6 +68,24 @@ class SetupPatronNewTierFragment : BaseFragment() {
         fillFormFromViewModel()
     }
 
+
+
+    override fun onStart() {
+        super.onStart()
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    onBackPressed()
+                }
+            })
+    }
+
+    private fun onBackPressed() {
+        setupPatronViewModel.tierSaved = false
+        activity?.onBackPressed()
+    }
+
     private fun fillFormFromViewModel() {
         etTierPrice.setText(setupPatronViewModel.currentModifyingTier?.price.toString())
         etTierBenefits.setText(setupPatronViewModel.currentModifyingTier?.benefits)
@@ -76,6 +94,7 @@ class SetupPatronNewTierFragment : BaseFragment() {
 
     private fun listeners() {
         btnSaveChanges?.onClick {
+            setupPatronViewModel.tierSaved = false
             setupPatronViewModel.currentModifyingTier?.price = etTierPrice.text.toString().toFloat()
             setupPatronViewModel.currentModifyingTier?.benefits = etTierBenefits.text.toString()
             setupPatronViewModel.currentModifyingTier?.name = etTierName.text.toString()
