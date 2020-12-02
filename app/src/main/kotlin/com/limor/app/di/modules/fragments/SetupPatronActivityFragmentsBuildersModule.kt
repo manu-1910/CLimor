@@ -18,7 +18,10 @@ abstract class SetupPatronActivityFragmentsBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeSetupPatronPaymentFragmentInjector(): SetupPatronPaymentFragment
-    
+
     @ContributesAndroidInjector
     abstract fun contributeSetupPatronTiersFragmentInjector(): SetupPatronTiersFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeSetupPatronNewTierFragmentInjector(): SetupPatronNewTierFragment
 }

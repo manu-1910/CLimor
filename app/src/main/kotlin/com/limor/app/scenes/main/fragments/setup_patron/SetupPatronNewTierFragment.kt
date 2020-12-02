@@ -9,28 +9,24 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.scenes.main.viewmodels.SetupPatronViewModel
-import org.jetbrains.anko.imageResource
-import org.jetbrains.anko.sdk23.listeners.onClick
 import javax.inject.Inject
 
 
-class SetupPatronTiersFragment : BaseFragment() {
+class SetupPatronNewTierFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var setupPatronViewModel: SetupPatronViewModel
-    private lateinit var btnAddTier: ImageButton
 
     private var rootView: View? = null
     var app: App? = null
 
-    val listTiers = ArrayList<Tier>()
+    private lateinit var tier: SetupPatronTiersFragment.Tier
 
     companion object {
         val TAG: String = SetupPatronSettingsFragment::class.java.simpleName
@@ -45,7 +41,7 @@ class SetupPatronTiersFragment : BaseFragment() {
     ): View? {
         if (rootView == null) {
             rootView =
-                inflater.inflate(R.layout.fragment_setup_patron_tiers, container, false)
+                inflater.inflate(R.layout.fragment_setup_patron_new_tier, container, false)
         }
 
         app = context?.applicationContext as App
@@ -64,13 +60,16 @@ class SetupPatronTiersFragment : BaseFragment() {
         bindViewModel()
     }
 
+    private fun listeners() {
+
+    }
+
 
     private fun setupToolbar() {
         val tvToolbarTitle = activity?.findViewById<TextView>(R.id.tvToolbarTitle)
-        tvToolbarTitle?.text = getString(R.string.title_tiers)
-        btnAddTier = activity?.findViewById(R.id.btnInfo)!!
-        btnAddTier.imageResource = R.drawable.add_yellow
-        btnAddTier.visibility = View.VISIBLE
+        tvToolbarTitle?.text = getString(R.string.tier_details)
+        val btnInfo = activity?.findViewById<ImageButton>(R.id.btnInfo)!!
+        btnInfo.visibility = View.GONE
     }
 
 
@@ -81,14 +80,5 @@ class SetupPatronTiersFragment : BaseFragment() {
                 .get(SetupPatronViewModel::class.java)
         }
     }
-
-    private fun listeners() {
-        btnAddTier.onClick {
-            findNavController().navigate(R.id.action_setup_patron_tiers_to_new_tier)
-        }
-    }
-
-
-    class Tier(var name: String, var benefits: String, var price: Float)
 
 }

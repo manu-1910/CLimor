@@ -71,36 +71,6 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
         setContentView(R.layout.activity_main)
         app = applicationContext as App
 
-        // Jose -> This is just a test, can be deleted
-//        val file1 = "/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/1604750436196.wav"
-//        val file2 = "/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/1604750696477.wav"
-//        val outputFile = "/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/output.wav"
-//        val result = WavHelper.combineWaveFile(file1, file2, outputFile)
-
-//        val file1 = File("/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/1605267046265_new.wav")
-//        WavHelper.combineWaveFile(file1.absolutePath, file1.absolutePath, file1.absolutePath)
-//
-//        if (file1.exists()) {
-//            try {
-//                val fis = FileInputStream(file1)
-//                val player = MediaPlayer()
-////                player.setDataSource(file1.absolutePath)
-//                val fileDescriptor = fis.fd
-//                player.setDataSource(fileDescriptor)
-////                player.setAudioStreamType(AudioManager.STREAM_MUSIC)
-//                player.setAudioAttributes(
-//                        AudioAttributes.Builder()
-//                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-//                                .build())
-//                player.prepare()
-//                player.start()
-//            }catch (e: java.lang.Exception) {
-//                e.printStackTrace()
-//            }
-//        }
-
-
-
         //Initialize Shared Preferences to store device firebase token
         sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 

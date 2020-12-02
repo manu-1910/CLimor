@@ -130,6 +130,7 @@
             android:background="@drawable/bg_round_brand_300_ripple"
             android:hint="@string/cast_price_hint"
             android:importantForAutofill="no"
+            android:textColor="@color/white"
             android:inputType="numberDecimal"
             android:paddingStart="@dimen/marginMedium"
             android:paddingEnd="@dimen/marginMedium"

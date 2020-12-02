@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/brandSecondary400"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/layTierName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/marginMedium"
+        android:layout_marginTop="@dimen/marginMedium"
+        android:layout_marginEnd="@dimen/marginMedium"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tier_name"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/etTierName"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:background="@drawable/bg_round_brand_300_ripple"
+            android:hint="@string/tier_name_hint"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:textColor="@color/white"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium"
+            android:textColorHint="@color/brandSecondary100" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layTierBenefits"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/marginMedium"
+        android:layout_marginTop="@dimen/marginMedium"
+        android:layout_marginEnd="@dimen/marginMedium"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tier_benefits"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/etTierBenefits"
+            android:layout_width="match_parent"
+            android:layout_height="142dp"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:background="@drawable/bg_round_brand_300_ripple"
+            android:hint="@string/tier_benefits_hint"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:gravity="top"
+            android:textColor="@color/white"
+            android:paddingTop="@dimen/marginSmall"
+            android:paddingBottom="@dimen/marginSmall"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium"
+            android:textColorHint="@color/brandSecondary100" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layTierPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/marginMedium"
+        android:layout_marginTop="@dimen/marginMedium"
+        android:layout_marginEnd="@dimen/marginMedium"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tier_price"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/etTierPrice"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:background="@drawable/bg_round_brand_300_ripple"
+            android:hint="@string/cast_price_hint"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:textColor="@color/white"
+            android:paddingStart="@dimen/marginMedium"
+            android:paddingEnd="@dimen/marginMedium"
+            android:textColorHint="@color/brandSecondary100" />
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/btnSaveChanges"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="@dimen/marginMedium"
+            android:textColor="@color/brandSecondary400"
+            android:background="@drawable/bg_round_yellow_ripple"
+            android:text="@string/save"
+            android:textAllCaps="false" />
+    </RelativeLayout>
+</LinearLayout>
