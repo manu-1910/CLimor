@@ -266,6 +266,13 @@ class RecordFragment : BaseFragment() {
 
                     // OVERWRITE
                     positiveButton(getString(R.string.overwrite)) {
+
+                        val resultStop = stopAudio()
+                        if (!resultStop) {
+                            alert(getString(R.string.error_stopping_audio)) { okButton { } }
+                            return@positiveButton
+                        }
+
                         mergeFilesIfNecessary {
                             uiDraft?.title = uiDraft?.draftParent?.title
                             val parentToDelete = uiDraft?.draftParent?.copy()
@@ -281,6 +288,13 @@ class RecordFragment : BaseFragment() {
 
                     // SAVE AS NEW
                     negativeButton(getString(R.string.save_as_new_draft)) {
+
+                        val resultStop = stopAudio()
+                        if (!resultStop) {
+                            alert(getString(R.string.error_stopping_audio)) { okButton { } }
+                            return@negativeButton
+                        }
+
                         showSaveDraftAlert {title ->
                             mergeFilesIfNecessary {
                                 uiDraft?.title = title
