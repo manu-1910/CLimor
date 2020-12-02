@@ -13,17 +13,18 @@ import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.scenes.main.viewmodels.SetupPatronViewModel
-import kotlinx.android.synthetic.main.fragment_setup_patron_settings.*
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
 
 
-class SetupPatronSettingsFragment : BaseFragment() {
+class SetupPatronTiersFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var setupPatronViewModel: SetupPatronViewModel
+    private lateinit var btnAddTier: ImageButton
 
     private var rootView: View? = null
     var app: App? = null
@@ -41,7 +42,7 @@ class SetupPatronSettingsFragment : BaseFragment() {
     ): View? {
         if (rootView == null) {
             rootView =
-                inflater.inflate(R.layout.fragment_setup_patron_settings, container, false)
+                inflater.inflate(R.layout.fragment_setup_patron_tiers, container, false)
         }
 
         app = context?.applicationContext as App
@@ -55,28 +56,17 @@ class SetupPatronSettingsFragment : BaseFragment() {
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 1f)
 
+        setupToolbar()
         listeners()
         bindViewModel()
-        setupToolbar()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        fillFormFromViewModel()
-    }
-
-    private fun fillFormFromViewModel() {
-        sw18Content.isChecked = setupPatronViewModel.plus18Activated
-        swEarningsVisibility.isChecked = setupPatronViewModel.earningsVisibleActivated
-        swPatronageVisibility.isChecked = setupPatronViewModel.patronageVisibleActivated
     }
 
 
     private fun setupToolbar() {
         val tvToolbarTitle = activity?.findViewById<TextView>(R.id.tvToolbarTitle)
-        tvToolbarTitle?.text = getString(R.string.title_settings)
-        val btnInfo = activity?.findViewById<ImageButton>(R.id.btnInfo)
-        btnInfo?.visibility = View.GONE
+        tvToolbarTitle?.text = getString(R.string.title_tiers)
+        btnAddTier = activity?.findViewById(R.id.btnInfo)!!
+        btnAddTier.visibility = View.VISIBLE
     }
 
 
@@ -89,11 +79,8 @@ class SetupPatronSettingsFragment : BaseFragment() {
     }
 
     private fun listeners() {
-        btnSaveChanges?.onClick {
-            setupPatronViewModel.plus18Activated = sw18Content.isChecked
-            setupPatronViewModel.earningsVisibleActivated = swEarningsVisibility.isChecked
-            setupPatronViewModel.patronageVisibleActivated = swPatronageVisibility.isChecked
-            activity?.onBackPressed()
+        btnAddTier.onClick {
+            toast("You clicked on add tier").show()
         }
     }
 

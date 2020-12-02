@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -22,8 +23,7 @@ import javax.inject.Inject
 
 class SetupPatronFragment : BaseFragment() {
 
-    @Suppress("ClassName")
-    private enum class FORM_PROGRESS {
+    private enum class FormProgress {
         NOTHING, CATEGORY, TIERS, PAYMENT
     }
 
@@ -69,6 +69,8 @@ class SetupPatronFragment : BaseFragment() {
     private fun setupToolbar() {
         val tvToolbarTitle = activity?.findViewById<TextView>(R.id.tvToolbarTitle)
         tvToolbarTitle?.text = getString(R.string.limor_patron)
+        val btnInfo = activity?.findViewById<ImageButton>(R.id.btnInfo)
+        btnInfo?.visibility = View.GONE
     }
 
     override fun onResume() {
@@ -78,9 +80,9 @@ class SetupPatronFragment : BaseFragment() {
 
     private fun checkProgressStatus() {
         if (setupPatronViewModel.categorySelectedId > 0) {
-            setFormProgress(FORM_PROGRESS.CATEGORY)
+            setFormProgress(FormProgress.CATEGORY)
         } else {
-            setFormProgress(FORM_PROGRESS.NOTHING)
+            setFormProgress(FormProgress.NOTHING)
         }
     }
 
@@ -99,9 +101,9 @@ class SetupPatronFragment : BaseFragment() {
                 currentProgress = 0
             }
             val currentProgressEnum = when (currentProgress) {
-                0 -> FORM_PROGRESS.CATEGORY
-                1 -> FORM_PROGRESS.TIERS
-                else -> FORM_PROGRESS.PAYMENT
+                0 -> FormProgress.CATEGORY
+                1 -> FormProgress.TIERS
+                else -> FormProgress.PAYMENT
             }
             setFormProgress(currentProgressEnum)
         }
@@ -115,7 +117,7 @@ class SetupPatronFragment : BaseFragment() {
         }
 
         layTiers?.onClick {
-            toast("You clicked on tiers").show()
+            findNavController().navigate(R.id.action_setup_patron_to_tiers)
         }
 
         laySettings?.onClick {
@@ -127,9 +129,9 @@ class SetupPatronFragment : BaseFragment() {
         }
     }
 
-    private fun setFormProgress(progress: FORM_PROGRESS) {
+    private fun setFormProgress(progress: FormProgress) {
         when (progress) {
-            FORM_PROGRESS.NOTHING -> {
+            FormProgress.NOTHING -> {
                 context?.let {
                     dotCategory.background =
                         ContextCompat.getDrawable(it, R.drawable.setup_patron_selector_default)
@@ -144,7 +146,7 @@ class SetupPatronFragment : BaseFragment() {
                     lblPayment.textColor = ContextCompat.getColor(it, R.color.brandSecondary200)
                 }
             }
-            FORM_PROGRESS.CATEGORY -> {
+            FormProgress.CATEGORY -> {
                 context?.let {
                     dotCategory.background =
                         ContextCompat.getDrawable(it, R.drawable.setup_patron_selector_selected)
@@ -159,7 +161,7 @@ class SetupPatronFragment : BaseFragment() {
                     lblPayment.textColor = ContextCompat.getColor(it, R.color.brandSecondary200)
                 }
             }
-            FORM_PROGRESS.TIERS -> {
+            FormProgress.TIERS -> {
                 context?.let {
                     dotCategory.background =
                         ContextCompat.getDrawable(it, R.drawable.setup_patron_selector_selected)
@@ -174,7 +176,7 @@ class SetupPatronFragment : BaseFragment() {
                     lblPayment.textColor = ContextCompat.getColor(it, R.color.brandSecondary200)
                 }
             }
-            FORM_PROGRESS.PAYMENT -> {
+            FormProgress.PAYMENT -> {
                 context?.let {
                     dotCategory.background =
                         ContextCompat.getDrawable(it, R.drawable.setup_patron_selector_selected)

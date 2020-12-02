@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
@@ -94,6 +95,8 @@ class SetupPatronSelectCategoryFragment : BaseFragment() {
     private fun setupToolbar() {
         val tvToolbarTitle = activity?.findViewById<TextView>(R.id.tvToolbarTitle)
         tvToolbarTitle?.text = getString(R.string.title_category)
+        val btnInfo = activity?.findViewById<ImageButton>(R.id.btnInfo)
+        btnInfo?.visibility = View.GONE
     }
 
     private fun initApiCallGetCategories() {
