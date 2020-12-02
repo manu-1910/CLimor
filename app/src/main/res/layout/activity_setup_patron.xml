@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/brandSecondary400">
 
-    <include layout="@layout/toolbar_with_back_arrow_icon" />
+    <include layout="@layout/toolbar_with_2_icons" />
 
     <fragment
         android:id="@+id/navigation_host_fragment_setup_patron"

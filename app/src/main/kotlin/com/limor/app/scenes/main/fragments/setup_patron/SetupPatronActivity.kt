@@ -1,6 +1,7 @@
 package com.limor.app.scenes.main.fragments.setup_patron
 
 import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -40,6 +41,11 @@ class SetupPatronActivity : BaseActivity(), HasSupportFragmentInjector {
 
         setupNavigationController()
         listeners()
+        setupToolbar()
+    }
+
+    private fun setupToolbar() {
+        btnInfo.visibility = View.GONE
     }
 
     private fun listeners() {

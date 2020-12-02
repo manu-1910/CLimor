@@ -447,4 +447,11 @@
     <string name="allow_donations_description">Allow users to use one time payments</string>
     <string name="choose_currency">Choose Currency</string>
     <string name="select_currency_description">Choose a currency you would like to use to pay for your Limor Premium Subscription.</string>
+    <string name="tier_price">Tier Price</string>
+    <string name="tier_benefits">Tier Benefits</string>
+    <string name="tier_name">Tier Name</string>
+    <string name="tier_name_hint">e.g. Limor Patron Tier 1</string>
+    <string name="tier_benefits_hint">• Premium Casts\n• Access to Private DM</string>
+    <string name="tier_details">Tier Details</string>
+    <string name="edit_tier_btn_text"><![CDATA[Edit >]]></string>
 </resources>

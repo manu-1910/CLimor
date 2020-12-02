@@ -6,19 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.scenes.main.viewmodels.SetupPatronViewModel
-import kotlinx.android.synthetic.main.fragment_setup_patron_settings.*
+import kotlinx.android.synthetic.main.fragment_setup_patron_new_tier.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import javax.inject.Inject
 
 
-class SetupPatronSettingsFragment : BaseFragment() {
+class SetupPatronNewTierFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -27,6 +29,7 @@ class SetupPatronSettingsFragment : BaseFragment() {
 
     private var rootView: View? = null
     var app: App? = null
+
 
     companion object {
         val TAG: String = SetupPatronSettingsFragment::class.java.simpleName
@@ -41,7 +44,7 @@ class SetupPatronSettingsFragment : BaseFragment() {
     ): View? {
         if (rootView == null) {
             rootView =
-                inflater.inflate(R.layout.fragment_setup_patron_settings, container, false)
+                inflater.inflate(R.layout.fragment_setup_patron_new_tier, container, false)
         }
 
         app = context?.applicationContext as App
@@ -55,9 +58,9 @@ class SetupPatronSettingsFragment : BaseFragment() {
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 1f)
 
+        setupToolbar()
         listeners()
         bindViewModel()
-        setupToolbar()
     }
 
     override fun onResume() {
@@ -65,18 +68,46 @@ class SetupPatronSettingsFragment : BaseFragment() {
         fillFormFromViewModel()
     }
 
+
+
+    override fun onStart() {
+        super.onStart()
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    onBackPressed()
+                }
+            })
+    }
+
+    private fun onBackPressed() {
+        setupPatronViewModel.tierSaved = false
+        activity?.onBackPressed()
+    }
+
     private fun fillFormFromViewModel() {
-        sw18Content.isChecked = setupPatronViewModel.plus18Activated
-        swEarningsVisibility.isChecked = setupPatronViewModel.earningsVisibleActivated
-        swPatronageVisibility.isChecked = setupPatronViewModel.patronageVisibleActivated
+        etTierPrice.setText(setupPatronViewModel.currentModifyingTier?.price.toString())
+        etTierBenefits.setText(setupPatronViewModel.currentModifyingTier?.benefits)
+        etTierName.setText(setupPatronViewModel.currentModifyingTier?.name)
+    }
+
+    private fun listeners() {
+        btnSaveChanges?.onClick {
+            setupPatronViewModel.tierSaved = false
+            setupPatronViewModel.currentModifyingTier?.price = etTierPrice.text.toString().toFloat()
+            setupPatronViewModel.currentModifyingTier?.benefits = etTierBenefits.text.toString()
+            setupPatronViewModel.currentModifyingTier?.name = etTierName.text.toString()
+            findNavController().popBackStack()
+        }
     }
 
 
     private fun setupToolbar() {
         val tvToolbarTitle = activity?.findViewById<TextView>(R.id.tvToolbarTitle)
-        tvToolbarTitle?.text = getString(R.string.title_settings)
-        val btnInfo = activity?.findViewById<ImageButton>(R.id.btnInfo)
-        btnInfo?.visibility = View.GONE
+        tvToolbarTitle?.text = getString(R.string.tier_details)
+        val btnInfo = activity?.findViewById<ImageButton>(R.id.btnInfo)!!
+        btnInfo.visibility = View.GONE
     }
 
 
@@ -87,15 +118,5 @@ class SetupPatronSettingsFragment : BaseFragment() {
                 .get(SetupPatronViewModel::class.java)
         }
     }
-
-    private fun listeners() {
-        btnSaveChanges?.onClick {
-            setupPatronViewModel.plus18Activated = sw18Content.isChecked
-            setupPatronViewModel.earningsVisibleActivated = swEarningsVisibility.isChecked
-            setupPatronViewModel.patronageVisibleActivated = swPatronageVisibility.isChecked
-            activity?.onBackPressed()
-        }
-    }
-
 
 }
