@@ -79,7 +79,11 @@ class SetupPatronFragment : BaseFragment() {
     }
 
     private fun checkProgressStatus() {
-        if (setupPatronViewModel.categorySelectedId > 0) {
+        if((setupPatronViewModel.isPerCreationEnabled || setupPatronViewModel.isMonthlyEnabled) && setupPatronViewModel.listTiers.size > 0 && setupPatronViewModel.categorySelectedId > 0) {
+            setFormProgress(FormProgress.PAYMENT)
+        } else if(setupPatronViewModel.listTiers.size > 0 && setupPatronViewModel.categorySelectedId > 0) {
+            setFormProgress(FormProgress.TIERS)
+        } else if(setupPatronViewModel.categorySelectedId > 0) {
             setFormProgress(FormProgress.CATEGORY)
         } else {
             setFormProgress(FormProgress.NOTHING)
@@ -97,12 +101,13 @@ class SetupPatronFragment : BaseFragment() {
     private fun listeners() {
         dotCategory?.onClick {
             currentProgress++
-            if (currentProgress > 2) {
+            if (currentProgress > 3) {
                 currentProgress = 0
             }
             val currentProgressEnum = when (currentProgress) {
-                0 -> FormProgress.CATEGORY
-                1 -> FormProgress.TIERS
+                0 -> FormProgress.NOTHING
+                1 -> FormProgress.CATEGORY
+                2 -> FormProgress.TIERS
                 else -> FormProgress.PAYMENT
             }
             setFormProgress(currentProgressEnum)
@@ -144,6 +149,12 @@ class SetupPatronFragment : BaseFragment() {
                     lblCategory.textColor = ContextCompat.getColor(it, R.color.brandSecondary200)
                     lblTiers.textColor = ContextCompat.getColor(it, R.color.brandSecondary200)
                     lblPayment.textColor = ContextCompat.getColor(it, R.color.brandSecondary200)
+
+                    tvTiers.textColor = ContextCompat.getColor(it, R.color.brandSecondary200)
+                    layTiers.isClickable = false
+
+                    tvPayments.textColor = ContextCompat.getColor(it, R.color.brandSecondary200)
+                    layPayments.isClickable = false
                 }
             }
             FormProgress.CATEGORY -> {
@@ -159,6 +170,13 @@ class SetupPatronFragment : BaseFragment() {
                     lblCategory.textColor = ContextCompat.getColor(it, R.color.white)
                     lblTiers.textColor = ContextCompat.getColor(it, R.color.brandSecondary200)
                     lblPayment.textColor = ContextCompat.getColor(it, R.color.brandSecondary200)
+
+
+                    tvTiers.textColor = ContextCompat.getColor(it, R.color.white)
+                    layTiers.isClickable = true
+
+                    tvPayments.textColor = ContextCompat.getColor(it, R.color.brandSecondary200)
+                    layPayments.isClickable = false
                 }
             }
             FormProgress.TIERS -> {
@@ -174,6 +192,13 @@ class SetupPatronFragment : BaseFragment() {
                     lblCategory.textColor = ContextCompat.getColor(it, R.color.brandSecondary200)
                     lblTiers.textColor = ContextCompat.getColor(it, R.color.white)
                     lblPayment.textColor = ContextCompat.getColor(it, R.color.brandSecondary200)
+
+
+                    tvTiers.textColor = ContextCompat.getColor(it, R.color.white)
+                    layTiers.isClickable = true
+
+                    tvPayments.textColor = ContextCompat.getColor(it, R.color.white)
+                    layPayments.isClickable = true
                 }
             }
             FormProgress.PAYMENT -> {
@@ -189,6 +214,13 @@ class SetupPatronFragment : BaseFragment() {
                     lblCategory.textColor = ContextCompat.getColor(it, R.color.brandSecondary200)
                     lblTiers.textColor = ContextCompat.getColor(it, R.color.brandSecondary200)
                     lblPayment.textColor = ContextCompat.getColor(it, R.color.white)
+
+
+                    tvTiers.textColor = ContextCompat.getColor(it, R.color.white)
+                    layTiers.isClickable = true
+
+                    tvPayments.textColor = ContextCompat.getColor(it, R.color.white)
+                    layPayments.isClickable = true
                 }
             }
         }
