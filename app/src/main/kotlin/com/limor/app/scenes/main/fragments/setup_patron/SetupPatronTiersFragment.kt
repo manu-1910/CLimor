@@ -35,8 +35,9 @@ class SetupPatronTiersFragment : BaseFragment() {
     private var rootView: View? = null
     var app: App? = null
 
-    private val listTiers = ArrayList<Tier>()
     private lateinit var tiersAdapter: TiersAdapter
+
+    private val dummyTiersList = ArrayList<Tier>()
 
     companion object {
         val TAG: String = SetupPatronSettingsFragment::class.java.simpleName
@@ -65,7 +66,7 @@ class SetupPatronTiersFragment : BaseFragment() {
         super.onResume()
         setupPatronViewModel.currentModifyingTier?.let {
             if(setupPatronViewModel.isCurrentModifyingTierNew) {
-                listTiers.add(it)
+                setupPatronViewModel.listTiers.add(it)
                 setupPatronViewModel.currentModifyingTier = null
             }
         }
@@ -85,12 +86,16 @@ class SetupPatronTiersFragment : BaseFragment() {
 
 
     private fun configureAdapter() {
+        setupPatronViewModel.listTiers.addAll(dummyTiersList)
+        dummyTiersList.clear()
+
+
         val layoutManager = LinearLayoutManager(context)
         rvTiers?.layoutManager = layoutManager
         context?.let { context ->
             tiersAdapter = TiersAdapter(
                 context,
-                listTiers,
+                setupPatronViewModel.listTiers,
                 object : TiersAdapter.OnTierClickedListener {
                     override fun onTierClicked(item: Tier, position: Int) {
                         toast("You clicked on tier").show()
@@ -103,7 +108,7 @@ class SetupPatronTiersFragment : BaseFragment() {
                     }
 
                     override fun onRemoveTierClicked(currentItem: Tier, position: Int) {
-                        listTiers.remove(currentItem)
+                        setupPatronViewModel.listTiers.remove(currentItem)
                         tiersAdapter.notifyItemRemoved(position)
                     }
                 }
@@ -144,9 +149,9 @@ class SetupPatronTiersFragment : BaseFragment() {
         val tier1 = Tier("Limor Patron Tier 1", benefits, 5.0f)
         val tier2 = Tier("Limor Patron Tier 2", benefits, 50.0f)
         val tier3 = Tier("Limor Patron Tier 3", benefits, 100.0f)
-        listTiers.add(tier1)
-        listTiers.add(tier2)
-        listTiers.add(tier3)
+        dummyTiersList.add(tier1)
+        dummyTiersList.add(tier2)
+        dummyTiersList.add(tier3)
     }
 
 

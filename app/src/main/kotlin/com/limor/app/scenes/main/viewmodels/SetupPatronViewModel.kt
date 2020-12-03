@@ -26,5 +26,11 @@ class SetupPatronViewModel @Inject constructor() : ViewModel() {
     var tierSaved: Boolean = false
 
 
+    var listTiers = ArrayList<SetupPatronTiersFragment.Tier>()
+
+
+
+
+
 
 }
