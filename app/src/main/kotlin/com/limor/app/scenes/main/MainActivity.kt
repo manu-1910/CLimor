@@ -93,6 +93,14 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
         // in some times of the code, so we download it everytime this activivty loads to have it updated
         // with all of his data
         getUserDataTrigger.onNext(Unit)
+
+        val extras = intent.extras
+        if(extras != null && !extras.isEmpty) {
+            val destination = extras.getString("destination")
+            if(destination != null && destination == "profile") {
+                navController.navigate(R.id.navigation_profile)
+            }
+        }
     }
 
 

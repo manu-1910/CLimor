@@ -34,9 +34,14 @@ class UserFeedFragment : FeedItemsListFragment() {
         if (rootView == null) {
             super.onCreateView(inflater, container, savedInstanceState)
             initApiCallGetFeed()
-            requestNewData()
+//            requestNewData()
         }
         return rootView
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requestNewData()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

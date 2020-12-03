@@ -456,4 +456,7 @@
     <string name="edit_tier_btn_text"><![CDATA[Edit >]]></string>
     <string name="record_a_cast">Record a Cast</string>
     <string name="home_empty_scenario_description">Follow other Limors to populate your home with fantastic content.</string>
+    <string name="empty_scenario_self_liked_casts_description">Like a cast and it will appear here.</string>
+    <string name="explore">Explore</string>
+    <string name="empty_scenario_liked_cast_description">The user doesn\'t have likes yet</string>
 </resources>
