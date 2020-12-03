@@ -96,5 +96,9 @@ class UserLikedPodcastsFragment(private val userID: Int) : FeedItemsListFragment
         viewModelGetLikedPodcasts.offset = feedItemsList.size
     }
 
+    override fun showEmptyScenario(show: Boolean) {
+
+    }
+
 
 }

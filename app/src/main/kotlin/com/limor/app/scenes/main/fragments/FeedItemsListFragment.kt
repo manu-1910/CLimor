@@ -740,6 +740,12 @@ abstract class FeedItemsListFragment : BaseFragment() {
             isReloading = false
         }
 
+        if(items.size == 0 && items.size == 0) {
+            showEmptyScenario(true)
+        } else {
+            showEmptyScenario(false)
+        }
+
         feedItemsList.addAll(items)
         if (items.size == 0)
             isLastPage = true
@@ -749,6 +755,8 @@ abstract class FeedItemsListFragment : BaseFragment() {
         pb_loading.visibility = View.GONE
         isRequestingNewData = false
     }
+
+    abstract fun showEmptyScenario(show: Boolean)
 
 
     protected open fun bindViewModel() {

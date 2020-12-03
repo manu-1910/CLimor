@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_centerVertical="true"
+    android:background="@color/brandSecondary400"
     android:gravity="center_vertical"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="@dimen/marginHuge">
+
+    <ImageView
+        android:id="@+id/ivEmptyScenario"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/home_icon_empty_scenario"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/tvTitleEmptyScenario"
@@ -15,13 +25,13 @@
         android:layout_marginEnd="@dimen/marginMedium"
         android:layout_marginBottom="@dimen/marginSmall"
         android:gravity="center"
-        android:text="@string/sorry_there_are_no_podcasts_right_now"
-        android:textColor="@color/brandSecondary100"
+        android:text="@string/title_home"
+        android:textColor="@color/brandSecondary200"
         android:textSize="@dimen/textSizeLarge"
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/tvCaptionEmptyScenario"
+        android:id="@+id/tvDescriptionEmptyScenario"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/marginMedium"
@@ -29,7 +39,17 @@
         android:layout_marginEnd="@dimen/marginMedium"
         android:layout_marginBottom="@dimen/marginMedium"
         android:gravity="center"
-        android:textColor="@color/brandSecondary100"
-        android:text="@string/maybe_you_could_try_later" />
+        android:text="@string/home_empty_scenario_description"
+        android:textColor="@color/brandSecondary200"
+        android:textSize="@dimen/textSizeNormal" />
 
+    <TextView
+        android:id="@+id/tvActionEmptyScenario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/roboto_medium"
+        android:text="@string/discover"
+        android:textColor="@color/brandPrimary500"
+        android:textSize="13sp" />
 </LinearLayout>

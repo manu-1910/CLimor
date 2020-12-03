@@ -1,32 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:gravity="center_vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/brandSecondary500"
+    android:background="@color/brandSecondary400"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
     android:padding="@dimen/marginHuge">
 
-    <TextView android:layout_width="match_parent"
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/record_icon_empty_scenario"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:textSize="@dimen/textSizeLarge"
-        android:layout_marginTop="@dimen/marginMedium"
         android:layout_marginStart="@dimen/marginMedium"
+        android:layout_marginTop="@dimen/marginMedium"
         android:layout_marginEnd="@dimen/marginMedium"
         android:layout_marginBottom="@dimen/marginSmall"
-        android:text="@string/no_drafts_saved_title"/>
-
-    <TextView android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="@color/white"
-        android:textSize="@dimen/textSizeNormal"
-        android:layout_marginTop="@dimen/marginSmall"
+        android:text="@string/title_drafts"
+        android:textColor="@color/brandSecondary200"
+        android:textSize="@dimen/textSizeLarge"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/marginMedium"
+        android:layout_marginTop="@dimen/marginSmall"
         android:layout_marginEnd="@dimen/marginMedium"
         android:layout_marginBottom="@dimen/marginMedium"
-        android:text="@string/no_drafts_saved_description"/>
+        android:gravity="center"
+        android:text="@string/no_drafts_saved_description"
+        android:textColor="@color/brandSecondary200"
+        android:textSize="@dimen/textSizeNormal" />
+
+    <TextView
+        android:id="@+id/tvRecordACast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/roboto_medium"
+        android:text="@string/record_a_cast"
+        android:textColor="@color/brandPrimary500"
+        android:textSize="13sp" />
 </LinearLayout>

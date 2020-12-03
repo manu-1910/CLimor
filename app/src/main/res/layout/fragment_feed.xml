@@ -28,7 +28,7 @@
             android:layout_centerInParent="true" />
 
         <include
-            android:id="@+id/emptyScenarioSearchFilteredLayout"
+            android:id="@+id/layEmptyScenario"
             layout="@layout/fragment_empty_scenario"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

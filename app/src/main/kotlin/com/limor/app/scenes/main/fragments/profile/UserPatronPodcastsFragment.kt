@@ -24,6 +24,10 @@ class UserPatronPodcastsFragment(private val userID: Int) : FeedItemsListFragmen
 
     }
 
+    override fun showEmptyScenario(show: Boolean) {
+
+    }
+
     override fun resetFeedViewModelVariables() {
 
     }
