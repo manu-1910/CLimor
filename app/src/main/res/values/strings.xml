@@ -72,7 +72,7 @@
     <string name="title_hashtags">Hashtags</string>
     <string name="title_category">Category</string>
     <string name="title_location">Location</string>
-    <string name="cast_published_ok_title">Published</string>
+    <string name="cast_published_ok_title">Cast Published</string>
     <string name="cast_published_ok_description">Your cast has been published successfully</string>
     <string name="hint_caption">Write your caption, # use for hashtags …</string>
     <string name="hint_title">Title</string>
@@ -462,4 +462,8 @@
     <string name="empty_scenario_self_casts_description">You need to record and publish a Cast to see it appear here.</string>
     <string name="empty_scenario_others_casts_description">The user doesn\'t have Casts yet</string>
     <string name="empty_scenario_notifications_description">You\'ll be notified about new followers, comments and more here.</string>
+    <string name="try_again">Try Again</string>
+    <string name="publish_cast_error_title">Cast was not Published</string>
+    <string name="session_expired_error_message">Your session expired</string>
+    <string name="publish_cast_error_message">There was an error trying to publish your cast</string>
 </resources>
