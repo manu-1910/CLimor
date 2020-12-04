@@ -1,10 +1,13 @@
 package com.limor.app.scenes.main.fragments.record.adapters
 
+import android.app.AlertDialog
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +19,7 @@ import com.limor.app.R
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UIDraft
 import org.jetbrains.anko.alert
+import org.jetbrains.anko.layoutInflater
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import timber.log.Timber
@@ -29,6 +33,7 @@ class DraftAdapter(
     private val deleteListener: OnDeleteItemClickListener,
     private val duplicateListener: OnDuplicateItemClickListener,
     private val editListener: OnEditItemClickListener,
+    private val changeNameListener: OnChangeNameClickListener,
     private val resumeListener: OnResumeItemClickListener
 ) : RecyclerView.Adapter<DraftAdapter.ViewHolder>() {
     private var lastVisiblePlayerLayout: LinearLayout? = null
@@ -220,7 +225,7 @@ class DraftAdapter(
 
         // More button -> show options menu
         holder.btnMore.onClick {
-            showMorePopupMenu(holder, position)
+            showMorePopupMenu(holder, currentDraft, position)
         }
 
 
@@ -285,6 +290,7 @@ class DraftAdapter(
 
     private fun showMorePopupMenu(
         holder: ViewHolder,
+        currentDraft: UIDraft,
         position: Int
     ) {
         //creating a popup menu
@@ -301,6 +307,10 @@ class DraftAdapter(
                 }
                 R.id.menu_delete_cast -> {
                     deleteClicked(position)
+                    true
+                }
+                R.id.menu_change_name_cast -> {
+                    changeNameClicked(currentDraft, position)
                     true
                 }
                 else -> false
@@ -445,6 +455,48 @@ class DraftAdapter(
         deleteListener.onDeleteItemClick(position)
     }
 
+    private fun changeNameClicked(currentDraft: UIDraft, position: Int) {
+        showSaveDraftAlert(currentDraft.title) {newName ->
+            changeNameListener.onNameChangedClick(currentDraft, position, newName)
+        }
+    }
+
+    private fun showSaveDraftAlert(currentName: String?, onPositiveClicked: (title: String) -> Unit) {
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = context.layoutInflater
+        dialogBuilder.setTitle(context.getString(R.string.edit_draft_title_dialog_title))
+        val dialogLayout = inflater.inflate(R.layout.dialog_with_edittext, null)
+        val positiveButton = dialogLayout.findViewById<Button>(R.id.saveButton)
+        val cancelButton = dialogLayout.findViewById<Button>(R.id.cancelButton)
+        val editText = dialogLayout.findViewById<EditText>(R.id.editText)
+        editText.setText(currentName)
+        dialogBuilder.setView(dialogLayout)
+        dialogBuilder.setCancelable(false)
+        val dialog: AlertDialog = dialogBuilder.show()
+
+        positiveButton.onClick {
+            onPositiveClicked(editText.text.toString())
+            dialog.dismiss()
+        }
+
+        cancelButton.onClick {
+            dialog.dismiss()
+        }
+
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                positiveButton.isEnabled = !p0.isNullOrEmpty()
+            }
+        })
+    }
+
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var btnPlay: ImageButton = itemView.findViewById<View>(R.id.ibPlayPause) as ImageButton
@@ -468,6 +520,14 @@ class DraftAdapter(
 
     interface OnItemClickListener {
         fun onItemClick(item: UIDraft)
+    }
+
+    interface OnChangeNameClickListener {
+        fun onNameChangedClick(
+            item: UIDraft,
+            position: Int,
+            newName: String
+        )
     }
 
     interface OnDeleteItemClickListener {
