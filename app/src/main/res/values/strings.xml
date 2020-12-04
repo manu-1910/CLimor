@@ -169,7 +169,7 @@
     <string name="draft_not_updated">Draft NOT updated</string>
     <string name="draft_not_updated_error">There was an error updating the draft</string>
     <string name="no_drafts_saved_title">There is no saved drafts</string>
-    <string name="no_drafts_saved_description">Here will appear a list with your saved drafts ready to use with the app</string>
+    <string name="no_drafts_saved_description">You can record and save a Cast as a Draft before publishing. </string>
     <string name="btnDone">Done</string>
     <string name="menu_delete_cast">Delete cast</string>
     <string name="menu_duplicate_cast">Duplicate cast</string>
@@ -454,4 +454,12 @@
     <string name="tier_benefits_hint">• Premium Casts\n• Access to Private DM</string>
     <string name="tier_details">Tier Details</string>
     <string name="edit_tier_btn_text"><![CDATA[Edit >]]></string>
+    <string name="record_a_cast">Record a Cast</string>
+    <string name="home_empty_scenario_description">Follow other Limors to populate your home with fantastic content.</string>
+    <string name="empty_scenario_self_liked_casts_description">Like a cast and it will appear here.</string>
+    <string name="explore">Explore</string>
+    <string name="empty_scenario_others_liked_cast_description">The user doesn\'t have likes yet</string>
+    <string name="empty_scenario_self_casts_description">You need to record and publish a Cast to see it appear here.</string>
+    <string name="empty_scenario_others_casts_description">The user doesn\'t have Casts yet</string>
+    <string name="empty_scenario_notifications_description">You\'ll be notified about new followers, comments and more here.</string>
 </resources>

@@ -28,6 +28,7 @@ import com.limor.app.scenes.utils.CommonsKt.Companion.copyFile
 import com.limor.app.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import com.limor.app.uimodels.UIDraft
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_drafts_empty_scenario.*
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -95,12 +96,20 @@ class DraftsFragment : BaseFragment() {
         return rootView
     }
 
+    private fun listeners() {
+        tvRecordACast?.onClick {
+            findNavController().popBackStack()
+        }
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 20f)
+
+        listeners()
     }
 
     override fun onStart() {
@@ -406,6 +415,7 @@ class DraftsFragment : BaseFragment() {
                 }
 
                 rvDrafts?.adapter?.notifyDataSetChanged()
+                hideEmptyScenario()
             }else{
                 showEmptyScenario()
             }

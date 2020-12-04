@@ -6,9 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
+import com.limor.app.R
 import com.limor.app.scenes.main.viewmodels.FeedViewModel
 import com.limor.app.scenes.utils.CommonsKt
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_empty_scenario.*
+import kotlinx.android.synthetic.main.fragment_feed.*
+import org.jetbrains.anko.sdk23.listeners.onClick
 
 class UserFeedFragment : FeedItemsListFragment() {
 
@@ -26,12 +31,29 @@ class UserFeedFragment : FeedItemsListFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if(rootView == null) {
+        if (rootView == null) {
             super.onCreateView(inflater, container, savedInstanceState)
             initApiCallGetFeed()
-            requestNewData()
+//            requestNewData()
         }
         return rootView
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requestNewData()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        showEmptyScenario(true)
+        listeners()
+    }
+
+    private fun listeners() {
+        tvActionEmptyScenario?.onClick {
+            findNavController().navigate(R.id.navigation_discover)
+        }
     }
 
     override fun bindViewModel() {
@@ -79,6 +101,14 @@ class UserFeedFragment : FeedItemsListFragment() {
     override fun setFeedViewModelVariablesOnScroll() {
         viewModelFeed.limit = FEED_LIMIT_REQUEST
         viewModelFeed.offset = feedItemsList.size
+    }
+
+    override fun showEmptyScenario(show: Boolean) {
+        if (show) {
+            layEmptyScenario?.visibility = View.VISIBLE
+        } else {
+            layEmptyScenario?.visibility = View.GONE
+        }
     }
 
 }

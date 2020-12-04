@@ -16,17 +16,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="100dp" />
 
-    <TextView
-        android:id="@+id/tv_no_results"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="100dp"
-        android:layout_marginEnd="30dp"
-        android:gravity="center"
-        android:text="@string/discover_no_users"
-        android:textColor="@color/white"
-        android:visibility="invisible" />
+    <include android:id="@+id/layEmptyScenario" layout="@layout/fragment_empty_scenario" />
+
 
 </RelativeLayout>

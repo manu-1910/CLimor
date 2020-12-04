@@ -28,7 +28,7 @@
         layout="@layout/fragment_drafts_empty_scenario"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"/>
+        android:visibility="visible"/>
 
 
     <ProgressBar
