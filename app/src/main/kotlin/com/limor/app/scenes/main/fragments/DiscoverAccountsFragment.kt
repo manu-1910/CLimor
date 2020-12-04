@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -23,6 +24,7 @@ import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UIUser
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_discover_accounts.*
+import kotlinx.android.synthetic.main.fragment_empty_scenario.*
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
 import javax.inject.Inject
@@ -70,13 +72,28 @@ class DiscoverAccountsFragment : BaseFragment(), DiscoverTabFragment {
         super.onViewCreated(view, savedInstanceState)
 
         app = context?.applicationContext as App
-
+        configureEmptyScenario()
         rvUsers = view.findViewById(R.id.rv_users)
         bindViewModel()
         apiCallCreateUser()
         apiCallDeleteUser()
         initApiCallGetNotifications()
         configureAdapter()
+    }
+
+
+
+    private fun configureEmptyScenario() {
+        tvActionEmptyScenario.visibility = View.GONE
+        context?.let {
+            ivEmptyScenario.setImageDrawable(
+                ContextCompat.getDrawable(
+                    it, R.drawable.search_icon_empty_scenario
+                )
+            )
+        }
+        tvTitleEmptyScenario.text = getString(R.string.search_empty_scenario_title)
+        tvDescriptionEmptyScenario.text = getString(R.string.search_empty_scenario_description)
     }
 
 
