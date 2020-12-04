@@ -468,4 +468,6 @@
     <string name="publish_cast_error_message">There was an error trying to publish your cast</string>
     <string name="change_name">Change name</string>
     <string name="edit_draft_title_dialog_title">Draft title</string>
+    <string name="search_empty_scenario_title">No matches found</string>
+    <string name="search_empty_scenario_description">Please try another search</string>
 </resources>
