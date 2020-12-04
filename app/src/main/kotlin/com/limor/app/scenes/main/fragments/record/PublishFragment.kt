@@ -277,7 +277,7 @@ class PublishFragment : BaseFragment() {
                     alert {
                         this.titleResource = R.string.cast_published_ok_title
                         this.messageResource = R.string.cast_published_ok_description
-                        okButton {
+                        positiveButton(getString(R.string.btnDone)) {
                             val mainIntent = Intent(context, MainActivity::class.java)
                             startActivity(mainIntent)
                             (activity as RecordActivity).finish()
@@ -302,11 +302,11 @@ class PublishFragment : BaseFragment() {
                 if (it.errorMessage!!.isNotEmpty()) {
                     message.append(it.errorMessage)
                 } else {
-                    message.append(R.string.some_error)
+                    message.append(getString(R.string.publish_cast_error_message))
                 }
 
                 if (it.code == 10) {  //Session expired
-                    alert(message.toString()) {
+                    alert(getString(R.string.session_expired_error_message), getString(R.string.publish_cast_error_title)) {
                         okButton {
                             val intent = Intent(context, SignActivity::class.java)
                             //intent.putExtra(getString(R.string.otherActivityKey), true)
@@ -317,8 +317,13 @@ class PublishFragment : BaseFragment() {
                         }
                     }.show()
                 } else {
-                    alert(message.toString()) {
-                        okButton { }
+                    alert(message.toString(), getString(R.string.publish_cast_error_title)) {
+                        positiveButton(getString(R.string.try_again)) {
+                            btnPublishDraft?.callOnClick()
+                        }
+                        negativeButton(getString(R.string.description_back)) {
+
+                        }
                     }.show()
                 }
 
