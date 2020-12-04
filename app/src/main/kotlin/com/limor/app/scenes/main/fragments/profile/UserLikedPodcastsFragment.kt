@@ -133,7 +133,7 @@ class UserLikedPodcastsFragment(private val userID: Int) : FeedItemsListFragment
                 tvActionEmptyScenario.visibility = View.VISIBLE
             } else {
                 tvDescriptionEmptyScenario.text =
-                    getString(R.string.empty_scenario_liked_cast_description)
+                    getString(R.string.empty_scenario_others_liked_cast_description)
                 tvActionEmptyScenario.visibility = View.GONE
             }
 

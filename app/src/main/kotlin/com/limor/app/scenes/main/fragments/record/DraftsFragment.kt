@@ -415,6 +415,7 @@ class DraftsFragment : BaseFragment() {
                 }
 
                 rvDrafts?.adapter?.notifyDataSetChanged()
+                hideEmptyScenario()
             }else{
                 showEmptyScenario()
             }

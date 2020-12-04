@@ -458,5 +458,8 @@
     <string name="home_empty_scenario_description">Follow other Limors to populate your home with fantastic content.</string>
     <string name="empty_scenario_self_liked_casts_description">Like a cast and it will appear here.</string>
     <string name="explore">Explore</string>
-    <string name="empty_scenario_liked_cast_description">The user doesn\'t have likes yet</string>
+    <string name="empty_scenario_others_liked_cast_description">The user doesn\'t have likes yet</string>
+    <string name="empty_scenario_self_casts_description">You need to record and publish a Cast to see it appear here.</string>
+    <string name="empty_scenario_others_casts_description">The user doesn\'t have Casts yet</string>
+    <string name="empty_scenario_notifications_description">You\'ll be notified about new followers, comments and more here.</string>
 </resources>

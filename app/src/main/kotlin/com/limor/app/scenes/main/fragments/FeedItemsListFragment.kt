@@ -238,6 +238,8 @@ abstract class FeedItemsListFragment : BaseFragment() {
             } else {
                 feedItemsList.removeAt(lastPodcastDeletedPosition)
                 rvFeed?.adapter?.notifyItemRemoved(lastPodcastDeletedPosition)
+                if(feedItemsList.size == 0)
+                    showEmptyScenario(true)
             }
         })
 

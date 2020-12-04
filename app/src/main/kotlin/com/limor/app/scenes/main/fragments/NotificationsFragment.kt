@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -23,10 +22,9 @@ import com.limor.app.scenes.main.viewmodels.NotificationsViewModel
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UINotificationItem
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_empty_scenario.*
 import kotlinx.android.synthetic.main.fragment_notifications.*
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.okButton
-import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
 import javax.inject.Inject
@@ -51,7 +49,6 @@ class NotificationsFragment : BaseFragment() {
 
     // views
     private var rvNotifications: RecyclerView? = null
-    private var tvNoNotifications: TextView? = null
 
     // infinite scroll variables
     private var isScrolling: Boolean = false
@@ -79,7 +76,8 @@ class NotificationsFragment : BaseFragment() {
         app = context?.applicationContext as App
 
         rvNotifications = view.findViewById(R.id.rv_notifications)
-        tvNoNotifications = view.findViewById(R.id.tv_no_notifications)
+
+        showEmptyScenario(true)
 
         bindViewModel()
         initApiCallGetNotifications()
@@ -91,9 +89,9 @@ class NotificationsFragment : BaseFragment() {
         if (viewModelNotifications.notificationList.size == 0) {
             getNotificationsTrigger.onNext(Unit)
         } else {
+            showEmptyScenario(false)
             showProgress(false)
         }
-
     }
 
     private fun initSwipeRefreshLayout() {
@@ -130,24 +128,19 @@ class NotificationsFragment : BaseFragment() {
 
         output.response.observe(this, Observer {
 
-            tvNoNotifications?.visibility = View.GONE
-
             val notificationsLength = it.data.notificationItems.size
 
             if (notificationsLength == 0 && viewModelNotifications.notificationList.size == 0) {
-                tvNoNotifications?.text = getString(R.string.no_notifications_message)
-                tvNoNotifications?.visibility = View.VISIBLE
+                showEmptyScenario(true)
             } else if (notificationsLength == 0) {
                 isLastPage = true
             } else {
-
                 doAsync {
 
                     viewModelNotifications.addItems(it.data.notificationItems)
 
                     uiThread {
-                        tvNoNotifications?.visibility = View.INVISIBLE
-
+                        showEmptyScenario(false)
                         rvNotifications?.adapter?.notifyItemRangeInserted(
                             viewModelNotifications.oldLength,
                             viewModelNotifications.newLength
@@ -163,12 +156,32 @@ class NotificationsFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            tvNoNotifications?.visibility = View.VISIBLE
-            tvNoNotifications?.text = getString(R.string.no_notifications_error_message)
+            showEmptyScenario(true)
             showProgress(false)
             CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
 
+    }
+
+
+    private fun showEmptyScenario(show: Boolean) {
+        if (show) {
+            context?.let {
+                ivEmptyScenario.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        it,
+                        R.drawable.notifications_icon_empty_scenario
+                    )
+                )
+            }
+            layEmptyScenario.visibility = View.VISIBLE
+            tvTitleEmptyScenario.text = getString(R.string.title_notifications)
+            tvDescriptionEmptyScenario.text =
+                getString(R.string.empty_scenario_notifications_description)
+            tvActionEmptyScenario.visibility = View.GONE
+        } else {
+            layEmptyScenario.visibility = View.GONE
+        }
     }
 
     private fun bindViewModel() {
@@ -213,10 +226,10 @@ class NotificationsFragment : BaseFragment() {
                         currentFollowItem = item
                         val userId = item.resources.owner.id
 
-                        if(item.resources.owner.followed){
+                        if (item.resources.owner.followed) {
                             viewModelDeleteFriend.idFriend = userId
                             deleteFriendDataTrigger.onNext(Unit)
-                        }else{
+                        } else {
                             viewModelCreateFriend.idNewFriend = userId
                             createFriendDataTrigger.onNext(Unit)
                         }
@@ -284,7 +297,7 @@ class NotificationsFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            if(it.code == 0) {
+            if (it.code == 0) {
                 revertUserFollowedState()
             }
         })
@@ -311,7 +324,7 @@ class NotificationsFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            if(it.code == 0) {
+            if (it.code == 0) {
                 revertUserFollowedState()
             }
         })
@@ -334,7 +347,7 @@ class NotificationsFragment : BaseFragment() {
 
             val index = viewModelNotifications.updateFollowedStatus(currentFollowItem!!)
 
-            if(index != -1){
+            if (index != -1) {
                 rvNotifications?.adapter?.notifyItemChanged(index)
             }
 
