@@ -338,6 +338,11 @@ class PodcastDetailsFragment : BaseFragment() {
                         uiPodcast?.number_of_comments = numberOfComments - 1
                     }
                     commentsAdapter?.notifyDataSetChanged()
+
+
+                    if(commentWithParentsItemsList.size == 0) {
+                        showEmptyScenario()
+                    }
                 }
                 fillFormNumberOfCommentsData()
             }

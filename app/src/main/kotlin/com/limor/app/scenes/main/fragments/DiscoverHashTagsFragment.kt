@@ -82,16 +82,16 @@ class DiscoverHashTagsFragment : BaseFragment(), DiscoverHashTagsAdapter.OnHashT
 
             rvHashTags?.adapter?.notifyDataSetChanged()
             if (it.data.tags.size == 0) {
-                tv_no_results.visibility = View.VISIBLE
+                layEmptyScenario.visibility = View.VISIBLE
             } else {
-                tv_no_results.visibility = View.INVISIBLE
+                layEmptyScenario.visibility = View.GONE
             }
             showProgress(false)
 
         })
 
         output.errorMessage.observe(this, Observer {
-            tv_no_results?.visibility = View.VISIBLE
+            layEmptyScenario.visibility = View.VISIBLE
             viewModelDiscoverHashTags.results.clear()
             rvHashTags?.adapter?.notifyDataSetChanged()
             showProgress(false)
