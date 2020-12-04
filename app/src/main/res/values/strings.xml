@@ -466,4 +466,6 @@
     <string name="publish_cast_error_title">Cast was not Published</string>
     <string name="session_expired_error_message">Your session expired</string>
     <string name="publish_cast_error_message">There was an error trying to publish your cast</string>
+    <string name="change_name">Change name</string>
+    <string name="edit_draft_title_dialog_title">Draft title</string>
 </resources>

@@ -292,7 +292,7 @@ class DraftsFragment : BaseFragment() {
                     }
                 },
 
-                    // This is deprecated, it's old code. This will never be called.
+                // This is deprecated, it's old code. This will never be called.
                 object : DraftAdapter.OnEditItemClickListener {
                     override fun onEditItemClick(item: UIDraft) {
                         pbDrafts?.visibility = View.VISIBLE
@@ -312,6 +312,16 @@ class DraftsFragment : BaseFragment() {
 
                         val bundle = bundleOf("recordingItem" to draftViewModel.uiDraft)
                         findNavController().navigate(R.id.action_record_drafts_to_record_edit, bundle)
+                    }
+                },
+
+                // This is deprecated, it's old code. This will never be called.
+                object : DraftAdapter.OnChangeNameClickListener {
+                    override fun onNameChangedClick(item: UIDraft, position: Int, newName: String) {
+                        item.title = newName
+                        adapter?.notifyItemChanged(position)
+                        draftViewModel.uiDraft = item
+                        insertDraftsTrigger.onNext(Unit)
                     }
                 },
                 object : DraftAdapter.OnResumeItemClickListener {
