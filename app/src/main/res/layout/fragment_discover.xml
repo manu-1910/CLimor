@@ -30,7 +30,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:layout_toLeftOf="@+id/tv_search_cancel"
+                android:layout_toStartOf="@+id/tv_search_cancel"
                 android:background="@drawable/bg_discover_search"
                 android:drawableStart="@drawable/discover_search"
                 android:drawablePadding="7dp"
@@ -56,9 +56,18 @@
 
         </RelativeLayout>
 
-        <FrameLayout
+
+        <View
+            android:background="@color/brandSecondary300"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="0.9dp"/>
+
+
+
+        <FrameLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
 
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/swipeRefreshLayout_discover"
@@ -279,6 +288,11 @@
             </LinearLayout>
 
         </FrameLayout>
+
+        <View
+            android:background="@color/brandSecondary300"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"/>
 
 
     </LinearLayout>
