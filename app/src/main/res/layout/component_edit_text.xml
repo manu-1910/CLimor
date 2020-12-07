@@ -48,10 +48,12 @@
             app:cardBackgroundColor="@color/brandSecondary400"
             app:cardCornerRadius="@dimen/cornerRadiusSmall">
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.limor.app.components.NoChangingBackgroundTextInputLayout
                 android:id="@+id/myEditLyt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:errorTextColor="@color/redError"
+                app:errorIconTint="@drawable/edittext_with_error"
                 app:hintEnabled="false"
                 app:passwordToggleDrawable="@drawable/toggle_pass"
                 app:passwordToggleEnabled="true"
@@ -70,7 +72,7 @@
                     android:paddingRight="@dimen/marginSmall"
                     android:saveEnabled="false"
                     android:textColorHint="@color/brandSecondary100" />
-            </com.google.android.material.textfield.TextInputLayout>
+            </com.limor.app.components.NoChangingBackgroundTextInputLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 </merge>
