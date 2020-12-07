@@ -16,6 +16,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.limor.app.R
 import kotlinx.android.synthetic.main.component_edit_text.view.*
+import kotlinx.android.synthetic.main.fragment_sign_in.*
 import org.jetbrains.anko.dimen
 import org.jetbrains.anko.singleLine
 import org.jetbrains.anko.textColor
@@ -71,18 +72,25 @@ class EditTextComponent(context: Context, attrs: AttributeSet) : LinearLayout(co
 
             try {
 
-                val hasShadow = getBoolean(R.styleable.edit_text_component_attributes_hasShadow, false)
-                val isPassword = getBoolean(R.styleable.edit_text_component_attributes_isPassword, false)
+                val hasShadow =
+                    getBoolean(R.styleable.edit_text_component_attributes_hasShadow, false)
+                val isPassword =
+                    getBoolean(R.styleable.edit_text_component_attributes_isPassword, false)
                 val fontColor = getString(R.styleable.edit_text_component_attributes_fontColor)
-                val topTitleLeft = getString(R.styleable.edit_text_component_attributes_topTitleLeft)
-                val topTextRight = getString(R.styleable.edit_text_component_attributes_topTextRight)
+                val topTitleLeft =
+                    getString(R.styleable.edit_text_component_attributes_topTitleLeft)
+                val topTextRight =
+                    getString(R.styleable.edit_text_component_attributes_topTextRight)
                 val eTextSize = getString(R.styleable.edit_text_component_attributes_etTextSize)
-                val isEditable = getBoolean(R.styleable.edit_text_component_attributes_isEditable, true)
+                val isEditable =
+                    getBoolean(R.styleable.edit_text_component_attributes_isEditable, true)
                 val lines = getInteger(R.styleable.edit_text_component_attributes_lines, 1)
                 val hintText = getString(R.styleable.edit_text_component_attributes_hintText)
                 val inputType = getInteger(R.styleable.edit_text_component_attributes_inputType, 0)
-                val hasArrow = getBoolean(R.styleable.edit_text_component_attributes_hasArrow, false)
-                val hasCheck = getBoolean(R.styleable.edit_text_component_attributes_hasCheck, false)
+                val hasArrow =
+                    getBoolean(R.styleable.edit_text_component_attributes_hasArrow, false)
+                val hasCheck =
+                    getBoolean(R.styleable.edit_text_component_attributes_hasCheck, false)
 
 
                 //Top Text align at left (title of edittext)
@@ -117,14 +125,14 @@ class EditTextComponent(context: Context, attrs: AttributeSet) : LinearLayout(co
                 }
 
                 //inputType
-                when (inputType){
+                when (inputType) {
                     1 -> myEdit.inputType = InputType.TYPE_CLASS_NUMBER
                     2 -> myEdit.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
                     3 -> myEdit.inputType = InputType.TYPE_NUMBER_FLAG_DECIMAL
                 }
 
                 //Number of lines (eight)
-                if(lines > 1){
+                if (lines > 1) {
                     myEdit.singleLine = false
                     myEdit.imeOptions = EditorInfo.IME_FLAG_NO_ENTER_ACTION
                     //myEdit.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
@@ -156,20 +164,27 @@ class EditTextComponent(context: Context, attrs: AttributeSet) : LinearLayout(co
                 myEdit.isEnabled = isEditable
 
                 //has arrow at the right?
-                if(hasArrow){
-                    val drawable = ResourcesCompat.getDrawable(resources, R.drawable.ic_rigth_arrow, null)
+                if (hasArrow) {
+                    val drawable =
+                        ResourcesCompat.getDrawable(resources, R.drawable.ic_rigth_arrow, null)
                     drawable!!.setBounds(0, 0, 50, 50)
 
-                    DrawableCompat.setTint(drawable, ContextCompat.getColor(context, R.color.brandSecondary100))
+                    DrawableCompat.setTint(
+                        drawable,
+                        ContextCompat.getColor(context, R.color.brandSecondary100)
+                    )
                     myEdit.setCompoundDrawables(null, null, drawable, null)
                 }
 
                 //has arrow at the right?
-                if(hasCheck){
+                if (hasCheck) {
                     val drawable = ResourcesCompat.getDrawable(resources, R.drawable.selected, null)
                     drawable!!.setBounds(0, 0, 50, 50)
 
-                    DrawableCompat.setTint(drawable, ContextCompat.getColor(context, R.color.green500))
+                    DrawableCompat.setTint(
+                        drawable,
+                        ContextCompat.getColor(context, R.color.green500)
+                    )
                     myEdit.setCompoundDrawables(null, null, drawable, null)
                 }
 
@@ -181,7 +196,20 @@ class EditTextComponent(context: Context, attrs: AttributeSet) : LinearLayout(co
     }
 
     fun setText(string: String) {
-        myEdit.text = string.toEditable()
+        myEdit.setText(string)
+    }
+
+    fun setError(text: String?) {
+        if (text == null) {
+            myEditLyt?.isErrorEnabled = false
+            myEditLyt?.error = null
+            myEdit?.background = resources.getDrawable(R.drawable.edittext, null)
+        } else {
+            myEditLyt?.isErrorEnabled = true
+            myEditLyt?.error = text
+            requestFocus()
+            myEdit?.background = resources.getDrawable(R.drawable.edittext_with_error, null)
+        }
     }
 
     private fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
