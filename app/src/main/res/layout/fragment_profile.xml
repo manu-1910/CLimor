@@ -59,12 +59,14 @@
                 android:text="Football and Rugby journalist bringing you the latest news."
                 android:textColor="@color/white"
                 android:textSize="@dimen/textSizeSmall"
+                android:layout_marginBottom="@dimen/marginMedium"
                 tools:ignore="HardcodedText" />
 
             <RelativeLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/marginMedium">
+                >
 
                 <TextView
                     android:id="@+id/tvNumberFollowers"
