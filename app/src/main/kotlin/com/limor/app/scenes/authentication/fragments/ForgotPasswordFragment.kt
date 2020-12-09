@@ -191,14 +191,10 @@ class ForgotPasswordFragment : BaseFragment() {
     //FIELDS VALIDATIONS
     private fun validatedEmail(email:String):Boolean{
         return if(email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            edtForgotPasswordEmail?.myEditLyt?.isErrorEnabled = false
-            edtForgotPasswordEmail?.myEditLyt?.error = null
+            edtForgotPasswordEmail?.setError(null)
             true
         }else{
-            edtForgotPasswordEmail?.myEditLyt?.isErrorEnabled = true
-            edtForgotPasswordEmail?.myEditLyt?.error = getString(R.string.error_not_valid_email)
-            edtForgotPasswordEmail?.requestFocus()
-            edtForgotPasswordEmail?.myEdit?.background = resources.getDrawable(R.drawable.edittext, null)
+            edtForgotPasswordEmail?.setError(getString(R.string.error_not_valid_email))
             false
         }
     }
