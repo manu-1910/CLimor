@@ -639,7 +639,12 @@ class ProfileFragment : BaseFragment() {
         }
 
 
-        tvBio?.text = viewModelGetUser.user?.description
+        if(viewModelGetUser.user?.description?.isEmpty() == false) {
+            tvBio?.visibility = View.VISIBLE
+            tvBio?.text = viewModelGetUser.user?.description
+        } else {
+            tvBio?.visibility = View.GONE
+        }
     }
 
 }
