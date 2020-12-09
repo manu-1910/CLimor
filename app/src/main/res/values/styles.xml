@@ -27,6 +27,11 @@
         <item name="colorAccent">@color/progress_bar_color</item>
     </style>
 
+    <!-- ProgressBar theme. -->
+    <style name="ProgressBarInButtonTheme" parent="Base.Widget.AppCompat.ProgressBar">
+        <item name="colorAccent">@color/brandSecondary500</item>
+    </style>
+
     <!-- Bottom Navigation Theme -->
     <style name="BottomNavigationTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="colorPrimary">@color/brandPrimary500</item>
