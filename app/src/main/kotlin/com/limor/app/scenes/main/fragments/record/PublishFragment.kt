@@ -21,7 +21,6 @@ import android.os.Handler
 import android.text.Editable
 import android.text.Spannable
 import android.text.TextWatcher
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,6 +47,7 @@ import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
+import com.limor.app.components.AlertProgressBar
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.MainActivity
@@ -82,7 +82,6 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlin.collections.ArrayList
-import kotlin.math.roundToInt
 
 
 class PublishFragment : BaseFragment() {
@@ -391,7 +390,6 @@ class PublishFragment : BaseFragment() {
 
         btnPublishDraft?.onClick {
             if (checkEmptyFields()) {
-                pbPublish.visibility = View.VISIBLE
 
                 //In the result of those calls I will call the method readyToPublish() to check their flags
                 if(podcastHasImage) {
@@ -493,7 +491,15 @@ class PublishFragment : BaseFragment() {
     }
 
 
+
     private fun publishPodcastAudio() {
+
+        val dialog = AlertProgressBar(context!!) {
+
+        }
+        dialog.show()
+
+
         //Upload audio file to AWS
         Commons.getInstance().uploadAudio(
             context,
@@ -504,15 +510,16 @@ class PublishFragment : BaseFragment() {
                     println("Audio upload to AWS succesfully")
                     audioUploaded = true
                     audioUrlFinal = audioUrl
+                    dialog.dismiss()
                     readyToPublish()
                 }
 
                 override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
-
+                    dialog.updateProgress(bytesCurrent.toInt(), bytesTotal.toInt())
                 }
 
                 override fun onError(error: String?) {
-                    pbPublish.visibility = View.GONE
+                    dialog.dismiss()
                     audioUploaded = false
                     alert(getString(R.string.error_uploading_audio)) {
                         okButton {  }
@@ -523,20 +530,31 @@ class PublishFragment : BaseFragment() {
     }
 
 
+
     private fun publishPodcastImage() {
 
         if (Commons.getInstance().isImageReadyForUpload) {
+
+            val dialog = AlertProgressBar(context!!) {
+
+            }
+            dialog.show()
+
+
             //Upload audio file to AWS
             Commons.getInstance().uploadImage(
                 context,
                 object : Commons.ImageUploadCallback {
-                    override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {}
+                    override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
+                        dialog.updateProgress(bytesCurrent.toInt(), bytesTotal.toInt())
+                    }
 
                     override fun onSuccess(imageUrl: String?) {
                         println("Image upload to AWS succesfully")
                         //var imageUploadedUrl = imageUrl
                         imageUploaded = true
                         imageUrlFinal = imageUrl
+                        dialog.dismiss()
                         readyToPublish()
                     }
 
@@ -545,7 +563,7 @@ class PublishFragment : BaseFragment() {
                     }
 
                     override fun onError(error: String?) {
-                        pbPublish.visibility = View.GONE
+                        dialog.dismiss()
                         imageUploaded = false
                         alert(getString(R.string.error_uploading_image)) {
                             okButton {  }

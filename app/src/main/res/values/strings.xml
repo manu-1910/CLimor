@@ -470,4 +470,5 @@
     <string name="edit_draft_title_dialog_title">Draft title</string>
     <string name="search_empty_scenario_title">No matches found</string>
     <string name="search_empty_scenario_description">Please try another search</string>
+    <string name="publishing_cast_dialog_title">Publishing your cast</string>
 </resources>
