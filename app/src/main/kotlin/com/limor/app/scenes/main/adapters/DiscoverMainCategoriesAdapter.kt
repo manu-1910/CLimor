@@ -4,26 +4,25 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.limor.app.uimodels.UITags
+import com.limor.app.uimodels.UICategory
 import org.jetbrains.anko.sdk23.listeners.onClick
 
-class DiscoverHashTagsAdapter(
+class DiscoverMainCategoriesAdapter(
     var context: Context,
-    list: ArrayList<UITags>,
-    private val hashtagClickListener: OnHashTagSearchClicked
+    list: ArrayList<UICategory>,
+    private val categoryClickedListener: OnDiscoverMainCategoryClicked
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var inflator: LayoutInflater
-    var list: ArrayList<UITags> = ArrayList()
+    var list: ArrayList<UICategory> = ArrayList()
 
     init {
         this.list = list
         inflator = LayoutInflater.from(context)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return DiscoverHashTagsViewHolder(inflator, parent)
+        return DiscoverMainCategoriesViewHolder(inflator, parent)
     }
 
     override fun getItemCount(): Int {
@@ -33,21 +32,20 @@ class DiscoverHashTagsAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = list[position]
 
-        val discoverHashTagsViewHolder: DiscoverHashTagsViewHolder =
-            holder as DiscoverHashTagsViewHolder
+        val headerViewHolder: DiscoverMainCategoriesViewHolder =
+            holder as DiscoverMainCategoriesViewHolder
 
+        headerViewHolder.bind(currentItem.name)
 
-        discoverHashTagsViewHolder.bind(currentItem.text)
-
-        discoverHashTagsViewHolder.itemView.onClick {
-            hashtagClickListener.onHashTagClicked(
+        headerViewHolder.itemView.onClick {
+            categoryClickedListener.onDiscoverCategoryClicked(
                 currentItem,
                 position
             )
         }
     }
 
-    interface OnHashTagSearchClicked {
-        fun onHashTagClicked(item: UITags, position: Int)
+    interface OnDiscoverMainCategoryClicked {
+        fun onDiscoverCategoryClicked(item: UICategory, position: Int)
     }
 }

@@ -29,20 +29,16 @@ import com.limor.app.common.BaseFragment
 import com.limor.app.common.SessionManager
 import com.limor.app.extensions.forceLayoutChanges
 import com.limor.app.extensions.hideKeyboard
-import com.limor.app.scenes.main.adapters.DiscoverMainTagsAdapter
-import com.limor.app.scenes.main.adapters.FeaturedItemAdapter
-import com.limor.app.scenes.main.adapters.SuggestedPersonAdapter
-import com.limor.app.scenes.main.adapters.TopCastAdapter
+import com.limor.app.scenes.main.adapters.*
 import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
-import com.limor.app.scenes.main.fragments.podcast.PodcastsByTagActivity
 import com.limor.app.scenes.main.fragments.profile.ReportActivity
 import com.limor.app.scenes.main.fragments.profile.TypeReport
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.service.AudioService
+import com.limor.app.uimodels.UICategory
 import com.limor.app.uimodels.UIPodcast
-import com.limor.app.uimodels.UITags
 import com.limor.app.uimodels.UIUser
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
@@ -58,10 +54,10 @@ import javax.inject.Inject
 const val BUNDLE_KEY_SEARCH_TEXT = "BUNDLE_KEY_SEARCH_TEXT"
 
 class DiscoverFragment : BaseFragment(),
-    DiscoverMainTagsAdapter.OnDiscoverMainTagClicked,
     SuggestedPersonAdapter.OnPersonClicked,
     FeaturedItemAdapter.OnFeaturedClicked,
-    TopCastAdapter.OnTopCastClicked {
+    TopCastAdapter.OnTopCastClicked,
+    DiscoverMainCategoriesAdapter.OnDiscoverMainCategoryClicked {
 
     private var lastPodcastDeletedPosition: Int = 0
     var app: App? = null
@@ -82,7 +78,7 @@ class DiscoverFragment : BaseFragment(),
     private lateinit var viewModelDeletePodcast: DeletePodcastViewModel
     private val deletePodcastDataTrigger = PublishSubject.create<Unit>()
 
-    private var discoverMainTagsAdapter: DiscoverMainTagsAdapter? = null
+    private var discoverMainCategoriesAdapter: DiscoverMainCategoriesAdapter? = null
     private var suggestedPersonAdapter: SuggestedPersonAdapter? = null
     private var featuredAdapter: FeaturedItemAdapter? = null
     private var topCastAdapter: TopCastAdapter? = null
@@ -131,7 +127,7 @@ class DiscoverFragment : BaseFragment(),
         viewModelDiscover.discoverState.observe(viewLifecycleOwner, discoverStateObserver())
 
         tv_see_all_featured_casts.onClick { toast("See all featured casts clicked") }
-        tv_see_all_hashtags.onClick { toast("See all hashtags clicked") }
+        tv_see_all_categories.onClick { toast("See all categories clicked") }
         tv_search_cancel.onClick {
             hideSearchingView()
             et_search.setText("")
@@ -395,11 +391,15 @@ class DiscoverFragment : BaseFragment(),
                 sv_main.visibility = View.VISIBLE
 
                 // set the adapters
-                setHashTagsAdapter(state.trendingTags)
                 setSuggestedPeopleAdapter(state.suggestedUsers)
                 setFeaturedAdapter(state.featuredPodcasts)
                 setTopCastAdapter(state.popularPodcasts)
+                var currentCategories = state.categories
+                if(currentCategories.size > 10) {
+                    currentCategories = ArrayList(currentCategories.subList(0, 10))
+                }
 
+                setCategoriesAdapter(currentCategories)
             }
 
             is DiscoverError -> {
@@ -414,19 +414,7 @@ class DiscoverFragment : BaseFragment(),
 
     }
 
-    private fun setHashTagsAdapter(tags: ArrayList<UITags>) {
-        val layoutManager = LinearLayoutManager(context)
-        layoutManager.orientation = RecyclerView.HORIZONTAL
-        rv_hashtags?.layoutManager = layoutManager
-        discoverMainTagsAdapter = context?.let {
-            DiscoverMainTagsAdapter(
-                requireContext(),
-                tags,
-                this
-            )
-        }
-        rv_hashtags.adapter = discoverMainTagsAdapter
-    }
+
 
     private fun setSuggestedPeopleAdapter(users: ArrayList<UIUser>) {
         val layoutManager = LinearLayoutManager(context)
@@ -454,6 +442,20 @@ class DiscoverFragment : BaseFragment(),
             )
         }
         rv_top_casts.adapter = topCastAdapter
+    }
+
+    private fun setCategoriesAdapter(categories: ArrayList<UICategory>) {
+        val layoutManager = LinearLayoutManager(context)
+        layoutManager.orientation = RecyclerView.HORIZONTAL
+        rv_categories?.layoutManager = layoutManager
+        discoverMainCategoriesAdapter = context?.let {
+            DiscoverMainCategoriesAdapter(
+                requireContext(),
+                categories,
+                this
+            )
+        }
+        rv_categories.adapter = discoverMainCategoriesAdapter
     }
 
     private fun setFeaturedAdapter(podcasts: ArrayList<UIPodcast>) {
@@ -511,14 +513,16 @@ class DiscoverFragment : BaseFragment(),
         }
     }
 
-    override fun onDiscoverTagClicked(item: UITags, position: Int) {
-        val podcastByTagIntent = Intent(context, PodcastsByTagActivity::class.java)
-        val text = "#" + item.text
-        podcastByTagIntent.putExtra(
-            PodcastsByTagActivity.BUNDLE_KEY_HASHTAG,
-            text
-        )
-        startActivity(podcastByTagIntent)
+
+    override fun onDiscoverCategoryClicked(item: UICategory, position: Int) {
+        toast("category clicked").show()
+//        val podcastByTagIntent = Intent(context, PodcastsByTagActivity::class.java)
+//        val text = "#" + item.text
+//        podcastByTagIntent.putExtra(
+//            PodcastsByTagActivity.BUNDLE_KEY_HASHTAG,
+//            text
+//        )
+//        startActivity(podcastByTagIntent)
     }
 
     override fun onPersonClicked(item: UIUser, position: Int) {

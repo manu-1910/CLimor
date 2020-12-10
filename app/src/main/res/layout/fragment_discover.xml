@@ -121,12 +121,12 @@
                                     android:layout_alignParentStart="true"
                                     android:letterSpacing="-0.02"
                                     android:lineSpacingExtra="5sp"
-                                    android:text="@string/title_hashtags"
-                                    android:textColor="#ffffff"
+                                    android:text="@string/title_categories"
+                                    android:textColor="@color/white"
                                     android:textSize="17sp" />
 
                                 <TextView
-                                    android:id="@+id/tv_see_all_hashtags"
+                                    android:id="@+id/tv_see_all_categories"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentEnd="true"
@@ -139,12 +139,12 @@
                                     android:text="@string/see_all"
                                     android:textColor="@color/colorAccent"
                                     android:textSize="13sp"
-                                    android:visibility="invisible" />
+                                    android:visibility="visible" />
 
                             </RelativeLayout>
 
                             <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/rv_hashtags"
+                                android:id="@+id/rv_categories"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
