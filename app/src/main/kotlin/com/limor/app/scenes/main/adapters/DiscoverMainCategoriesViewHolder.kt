@@ -6,7 +6,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.R
 
-class DiscoverHashTagsViewHolder(
+class DiscoverMainCategoriesViewHolder(
     inflater: LayoutInflater,
     parent: ViewGroup
 ) : RecyclerView.ViewHolder(
