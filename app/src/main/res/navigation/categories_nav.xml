@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/categories_fragment">
+
+    <fragment
+        android:id="@+id/categories_fragment"
+        android:name="com.limor.app.scenes.main.fragments.CategoriesFragment"
+        android:label="CategoriesFragment"
+        tools:layout="@layout/fragment_categories">
+
+    </fragment>
+
+</navigation>

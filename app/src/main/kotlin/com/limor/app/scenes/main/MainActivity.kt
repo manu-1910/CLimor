@@ -4,9 +4,6 @@ package com.limor.app.scenes.main
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.media.AudioAttributes
-import android.media.AudioManager
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.provider.Settings.Secure
 import android.view.View
@@ -23,10 +20,10 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.iid.FirebaseInstanceId
 import com.limor.app.App
 import com.limor.app.R
-import com.limor.app.audio.wav.WavHelper
 import com.limor.app.common.BaseActivity
 import com.limor.app.common.SessionManager
 import com.limor.app.scenes.main.fragments.*
+import com.limor.app.scenes.main.fragments.discover.DiscoverFragment
 import com.limor.app.scenes.main.fragments.record.RecordActivity
 import com.limor.app.scenes.main.viewmodels.GetUserViewModel
 import com.limor.app.scenes.notifications.PushNotificationsViewModel
@@ -42,8 +39,6 @@ import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.toast
-import java.io.File
-import java.io.FileInputStream
 import javax.inject.Inject
 
 

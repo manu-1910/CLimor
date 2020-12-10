@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main.fragments
+package com.limor.app.scenes.main.fragments.discover
 
 import android.content.Intent
 import android.os.Bundle
@@ -25,11 +25,10 @@ import com.limor.app.uimodels.UIUser
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_discover_accounts.*
 import kotlinx.android.synthetic.main.fragment_empty_scenario.*
-import org.jetbrains.anko.okButton
-import org.jetbrains.anko.support.v4.alert
 import javax.inject.Inject
 
-class DiscoverAccountsFragment : BaseFragment(), DiscoverTabFragment {
+class DiscoverAccountsFragment : BaseFragment(),
+    DiscoverTabFragment {
 
     var app: App? = null
 
@@ -53,7 +52,8 @@ class DiscoverAccountsFragment : BaseFragment(), DiscoverTabFragment {
     companion object {
         val TAG: String = DiscoverAccountsFragment::class.java.simpleName
 
-        fun newInstance(text: String) = DiscoverAccountsFragment().apply {
+        fun newInstance(text: String) = DiscoverAccountsFragment()
+            .apply {
             arguments = Bundle(1).apply {
                 putString(BUNDLE_KEY_SEARCH_TEXT, text)
             }
