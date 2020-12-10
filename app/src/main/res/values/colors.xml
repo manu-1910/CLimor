@@ -73,6 +73,7 @@
 
     <color name="toolbar_text">#ffffff</color>
     <color name="marker_time_text">#95959b</color>
+    <color name="progress_bar_color">#95959b</color>
 
     <!--<color name="colorRandomRed">#ff1744</color>
     <color name="colorRandomBlue">#2979ff</color>

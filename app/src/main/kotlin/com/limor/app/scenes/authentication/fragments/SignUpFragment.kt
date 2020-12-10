@@ -152,7 +152,7 @@ class SignUpFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
 
             if (it.code == 0) {
@@ -170,7 +170,7 @@ class SignUpFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
                 val message: StringBuilder = StringBuilder()
@@ -238,12 +238,22 @@ class SignUpFragment : BaseFragment() {
                 //validatedTermsAndConditions()
             ) {
                 saveVariablesIntoViewModel()
-                pbSignUp?.visibility = View.VISIBLE
+                showProgress(true)
                 signUpTrigger.onNext(Unit)
             }
         }
 
         tvTermsAndConditions?.onClick {}
+    }
+
+    private fun showProgress(show: Boolean) {
+        if(show) {
+            btnSignUpJoinLimor.text = ""
+            pbSignUp.visibility = View.VISIBLE
+        } else {
+            btnSignUpJoinLimor.text = getString(R.string.join_limor)
+            pbSignUp.visibility = View.GONE
+        }
     }
 
 
@@ -416,7 +426,7 @@ class SignUpFragment : BaseFragment() {
         )
 
         output?.response?.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
 
             var token = ""
@@ -451,7 +461,7 @@ class SignUpFragment : BaseFragment() {
         })
 
         output?.errorMessage?.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
                 if (it.code == Constants.ERROR_CODE_FACEBOOK_USER_DOES_NOT_EXISTS) {

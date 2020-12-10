@@ -163,9 +163,9 @@ class SignInFragment : BaseFragment() {
        output.backgroundWorkingProgress.observe(this, Observer {
             trackBackgroudProgress(it)
             if (it)
-                pbSignIn?.visibility = View.VISIBLE
+                showProgress(true)
             else {
-                pbSignIn?.visibility = View.GONE
+                showProgress(false)
                 view?.hideKeyboard()
             }
        })
@@ -324,7 +324,7 @@ class SignInFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            pbSignIn?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
 
             var token : String
@@ -359,7 +359,7 @@ class SignInFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            pbSignIn?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
                 if (it.code == Constants.ERROR_CODE_FACEBOOK_USER_DOES_NOT_EXISTS) {
@@ -409,7 +409,7 @@ class SignInFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            pbSignIn?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
             if (it.message == "Success") {
                 goToMainActivity()
@@ -421,7 +421,7 @@ class SignInFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            pbSignIn?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
                 val message: StringBuilder = StringBuilder()
@@ -439,6 +439,16 @@ class SignInFragment : BaseFragment() {
                 }.show()
             }
         })
+    }
+
+    private fun showProgress(show : Boolean) {
+        if(show) {
+            pbSignIn?.visibility = View.VISIBLE
+            btnSignIn.text = ""
+        } else {
+            pbSignIn?.visibility = View.GONE
+            btnSignIn.text = getString(R.string.sig_in)
+        }
     }
 
 
