@@ -47,7 +47,11 @@
                     app:isPassword="true"
                     app:topTitleLeft="@string/password" />
 
-            <androidx.appcompat.widget.AppCompatButton
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnSignUpJoinLimor"
                     style="@android:style/Widget.Material.Button.Borderless.Colored"
                     android:layout_width="match_parent"
@@ -59,6 +63,16 @@
                     android:textColor="@color/brandSecondary500"
                     android:textSize="@dimen/textSizeNormal" />
 
+                <ProgressBar
+                    android:id="@+id/pbSignUp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:theme="@style/ProgressBarInButtonTheme"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
            <TextView
                    android:id="@+id/tvTermsAndConditions"
                    android:layout_width="wrap_content"
@@ -105,12 +119,6 @@
 
         </LinearLayout>
 
-        <ProgressBar
-                android:id="@+id/pbSignUp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:theme="@style/ProgressBarTheme"
-                android:visibility="gone" />
+
     </RelativeLayout>
 </ScrollView>
