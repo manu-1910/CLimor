@@ -2,6 +2,9 @@ package com.limor.app.di.modules.fragments
 
 
 import com.limor.app.scenes.main.fragments.*
+import com.limor.app.scenes.main.fragments.discover.DiscoverAccountsFragment
+import com.limor.app.scenes.main.fragments.discover.DiscoverFragment
+import com.limor.app.scenes.main.fragments.discover.DiscoverHashTagsFragment
 import com.limor.app.scenes.main.fragments.profile.JoinToPatronFragment
 import com.limor.app.scenes.main.fragments.profile.UserLikedPodcastsFragment
 import com.limor.app.scenes.main.fragments.profile.UserPatronPodcastsFragment

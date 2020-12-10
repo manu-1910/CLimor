@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main.fragments
+package com.limor.app.scenes.main.fragments.discover
 
 import android.content.Intent
 import android.os.Bundle
@@ -43,7 +43,8 @@ class DiscoverHashTagsFragment : BaseFragment(), DiscoverHashTagsAdapter.OnHashT
     companion object {
         val TAG: String = DiscoverHashTagsFragment::class.java.simpleName
 
-        fun newInstance(text: String) = DiscoverHashTagsFragment().apply {
+        fun newInstance(text: String) = DiscoverHashTagsFragment()
+            .apply {
             arguments = Bundle(1).apply {
                 putString(BUNDLE_KEY_SEARCH_TEXT, text)
             }

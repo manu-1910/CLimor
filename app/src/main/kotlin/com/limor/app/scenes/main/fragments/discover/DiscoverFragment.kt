@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main.fragments
+package com.limor.app.scenes.main.fragments.discover
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
@@ -30,6 +30,7 @@ import com.limor.app.common.SessionManager
 import com.limor.app.extensions.forceLayoutChanges
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.main.adapters.*
+import com.limor.app.scenes.main.fragments.CategoriesActivity
 import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
 import com.limor.app.scenes.main.fragments.profile.ReportActivity
 import com.limor.app.scenes.main.fragments.profile.TypeReport
@@ -90,7 +91,8 @@ class DiscoverFragment : BaseFragment(),
 
     companion object {
         val TAG: String = DiscoverFragment::class.java.simpleName
-        fun newInstance() = DiscoverFragment()
+        fun newInstance() =
+            DiscoverFragment()
         private const val REQUEST_REPORT_PODCAST: Int = 1
         private const val REQUEST_REPORT_USER: Int = 0
     }
@@ -127,7 +129,12 @@ class DiscoverFragment : BaseFragment(),
         viewModelDiscover.discoverState.observe(viewLifecycleOwner, discoverStateObserver())
 
         tv_see_all_featured_casts.onClick { toast("See all featured casts clicked") }
-        tv_see_all_categories.onClick { toast("See all categories clicked") }
+
+        tv_see_all_categories.onClick {
+            val intent = Intent(activity, CategoriesActivity::class.java)
+            startActivity(intent)
+        }
+
         tv_search_cancel.onClick {
             hideSearchingView()
             et_search.setText("")
@@ -285,7 +292,9 @@ class DiscoverFragment : BaseFragment(),
 
                     }
                     else -> {
-                        DiscoverHashTagsFragment.newInstance(discoverText)
+                        DiscoverHashTagsFragment.newInstance(
+                            discoverText
+                        )
 
                     }
                 }
@@ -618,7 +627,9 @@ class DiscoverFragment : BaseFragment(),
             viewModelCreateUserReport.idUser = it.id
             val reportIntent = Intent(context, ReportActivity::class.java)
             reportIntent.putExtra("type", TypeReport.USER)
-            startActivityForResult(reportIntent, REQUEST_REPORT_USER)
+            startActivityForResult(reportIntent,
+                REQUEST_REPORT_USER
+            )
         }
     }
 
@@ -643,7 +654,9 @@ class DiscoverFragment : BaseFragment(),
             viewModelCreatePodcastReport.idPodcastToReport = it
             val reportIntent = Intent(context, ReportActivity::class.java)
             reportIntent.putExtra("type", TypeReport.CAST)
-            startActivityForResult(reportIntent, REQUEST_REPORT_PODCAST)
+            startActivityForResult(reportIntent,
+                REQUEST_REPORT_PODCAST
+            )
         }
     }
 

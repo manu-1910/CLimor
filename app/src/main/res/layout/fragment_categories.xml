@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/brandSecondary400">
 
 
@@ -19,45 +19,51 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/brandSecondary300"/>
+            android:background="@color/brandSecondary300" />
 
-        <TextView
+        <LinearLayout
+            android:id="@+id/layTitlesCategories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/marginMedium"
-            android:layout_marginTop="@dimen/marginMedium"
-            android:textSize="@dimen/textSizeNormal"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:text="@string/categories_title"/>
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/marginMedium"
-            android:layout_marginEnd="@dimen/marginMedium"
-            android:layout_marginTop="@dimen/marginSmall"
-            android:layout_marginBottom="@dimen/marginSmall"
-            android:textSize="@dimen/textSizeSmall"
-            android:textColor="@color/brandSecondary100"
-            android:text="@string/categories_description"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:layout_marginTop="@dimen/marginMedium"
+                android:text="@string/categories_title"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSizeNormal"
+                android:textStyle="bold" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:layout_marginTop="@dimen/marginSmall"
+                android:layout_marginEnd="@dimen/marginMedium"
+                android:layout_marginBottom="@dimen/marginSmall"
+                android:text="@string/categories_description"
+                android:textColor="@color/brandSecondary100"
+                android:textSize="@dimen/textSizeSmall" />
+
+        </LinearLayout>
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/categoryChipsView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/marginMedium"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
             app:chipSpacing="@dimen/marginMedium"
-            app:singleSelection="false"
             app:itemSpacing="@dimen/marginMedium"
             app:singleLine="false"
-            android:layout_margin="@dimen/marginMedium">
+            app:singleSelection="false">
 
         </com.google.android.material.chip.ChipGroup>
-
 
 
     </LinearLayout>
