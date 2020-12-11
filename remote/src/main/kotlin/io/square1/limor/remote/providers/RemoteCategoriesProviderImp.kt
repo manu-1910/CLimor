@@ -28,7 +28,7 @@ class RemoteCategoriesProviderImp @Inject constructor(private val provider: Cate
         limit: Int?,
         offset: Int?
     ): Single<GetPodcastsResponseEntity>? {
-        TODO("Not yet implemented")
+        return provider.getPodcastByCategory(id, limit, offset)?.asDataEntity()
     }
 
 }
