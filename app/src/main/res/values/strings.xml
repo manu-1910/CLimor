@@ -286,7 +286,11 @@
     <string name="user_reported_ok">User reported successfully</string>
     <string name="user_reported_error">We couldn\'t report the user. Please try again later.</string>
     <string name="no_notifications_message">Your notifications will show up here</string>
+    <string name="no_followers_message">Your followers will show up here</string>
+    <string name="no_following_message">Yours following will show up here</string>
     <string name="no_notifications_error_message">There was an error getting notifications. Please try again.</string>
+    <string name="no_followers_error_message">There was an error getting followers. Please try again.</string>
+    <string name="no_followings_error_message">There was an error getting followings. Please try again.</string>
     <string name="profile_casts_title">Casts</string>
     <string name="confirmation_block_user">Are you sure you want to block this user?</string>
     <string name="confirmation_unblock_user">Are you sure you want to unblock this user?</string>

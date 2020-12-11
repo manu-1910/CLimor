@@ -13,6 +13,8 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.tabs.TabLayout
@@ -107,7 +109,6 @@ class ProfileFragment : BaseFragment() {
             }
 
             viewModelGetUser.id = viewModelGetUser.user?.id
-
 
         }
         return rootView
@@ -337,6 +338,21 @@ class ProfileFragment : BaseFragment() {
                     createFriendDataTrigger.onNext(Unit)
                 }
             }
+        }
+
+        lytFollowers.onClick {
+            toast("Click on followers")
+            //val bundle = Bundle()
+            //bundle.putString(getString(R.string.moreWebViewKey), getString(R.string.faq_url))
+            //findNavController().navigate(R.id.action_profile_fragment_to_user_followers_followings_fragment)
+
+        }
+
+        lytFollowing.onClick {
+            toast("Click on followings")
+            //val bundle = Bundle()
+            //bundle.putString(getString(R.string.moreWebViewKey), getString(R.string.faq_url))
+            //findNavController().navigate(R.id.action_profile_fragment_to_user_followers_followings_fragment)
         }
     }
 
