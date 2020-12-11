@@ -98,7 +98,10 @@ class BlockedUsersFragment : BaseFragment() {
     }
 
     private fun configureEmptyScenario() {
-        tvTitleEmptyScenario.text = getString(R.string.empty_scenario_blocked_users)
+        ivEmptyScenario.visibility = View.GONE
+        tvTitleEmptyScenario.text = getString(R.string.title_blocked_users)
+        tvDescriptionEmptyScenario.text = getString(R.string.empty_scenario_blocked_users)
+        tvActionEmptyScenario.visibility = View.GONE
     }
 
     private fun initToolbar() {

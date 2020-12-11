@@ -13,6 +13,7 @@ import com.limor.app.R
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UIUser
 import org.jetbrains.anko.sdk23.listeners.onClick
+import java.util.*
 
 class BlockedUserViewHolder(
     inflater: LayoutInflater,
@@ -30,7 +31,7 @@ class BlockedUserViewHolder(
 
     private var ivUser: ImageView = itemView.findViewById(R.id.ivUser)
     private var btnBlock: Button = itemView.findViewById(R.id.btnBlock)
-    private var tvUserFullname: TextView = itemView.findViewById(R.id.tvUserFullname)
+    private var tvCapitals: TextView = itemView.findViewById(R.id.tvCapitals)
     private var tvUsername: TextView = itemView.findViewById(R.id.tvUsername)
 
     fun bind(currentItem: UIUser, position: Int) {
@@ -42,20 +43,31 @@ class BlockedUserViewHolder(
 
         btnBlock.onClick { listener.onBlockClicked(currentItem, position) }
 
-        var firstName = ""
-        currentItem.first_name?.let {
-            firstName = it
+//        var firstName = ""
+//        currentItem.first_name?.let {
+//            firstName = it
+//        }
+//
+//        var lastName = ""
+//        currentItem.last_name?.let {
+//            lastName = it
+//        }
+//        val fullname = context.getString(R.string.user_fullname, firstName, lastName)
+
+        var usernameCapitals = ""
+        var finalUsername = ""
+        currentItem.username?.let {
+            finalUsername = it
+            usernameCapitals = when {
+                it.length == 1 -> it.toUpperCase(Locale.getDefault())
+                it.length >= 2 -> it.substring(0, 2).toUpperCase(Locale.getDefault())
+                else -> ""
+            }
         }
+        tvCapitals.text = usernameCapitals
+        tvCapitals.onClick { listener.onUserClicked(currentItem, position) }
 
-        var lastName = ""
-        currentItem.last_name?.let {
-            lastName = it
-        }
-
-        tvUserFullname.text = context.getString(R.string.user_fullname, firstName, lastName)
-        tvUserFullname.onClick { listener.onUserClicked(currentItem, position) }
-
-        tvUsername.text = currentItem.username
+        tvUsername.text = finalUsername
         tvUsername.onClick { listener.onUserClicked(currentItem, position) }
 
 

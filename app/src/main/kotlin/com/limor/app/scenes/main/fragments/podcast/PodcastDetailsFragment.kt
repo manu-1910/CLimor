@@ -35,6 +35,7 @@ import com.limor.app.common.Constants
 import com.limor.app.common.SessionManager
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.extensions.showKeyboard
+import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.adapters.CommentsAdapter
 import com.limor.app.scenes.main.fragments.profile.ReportActivity
 import com.limor.app.scenes.main.fragments.profile.TypeReport
@@ -65,8 +66,9 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 
-data class CommentWithParent(val comment: UIComment, val parent: CommentWithParent?) : Serializable {
-    fun getParentCount() : Int {
+data class CommentWithParent(val comment: UIComment, val parent: CommentWithParent?) :
+    Serializable {
+    fun getParentCount(): Int {
         var parentCount = 0
         var auxComment = parent
         while (auxComment != null) {
@@ -156,7 +158,7 @@ class PodcastDetailsFragment : BaseFragment() {
     private lateinit var viewModelCreateBlockedUser: CreateBlockedUserViewModel
     private val createBlockedUserDataTrigger = PublishSubject.create<Unit>()
 
-    private lateinit var viewModelCreateCommentDropOff : CreateCommentDropOffViewModel
+    private lateinit var viewModelCreateCommentDropOff: CreateCommentDropOffViewModel
     private val createCommentDropOffDataTrigger = PublishSubject.create<Unit>()
 
 
@@ -177,15 +179,13 @@ class PodcastDetailsFragment : BaseFragment() {
 
     private var audioCommentPlayerController: AudioCommentPlayerController? = null
 
-    private var lastProgressTrackedComment : UIComment? = null
-    private var lastProgressTrackedTen : Int = 0
-    private lateinit var commentPlayerListener : AudioCommentPlayerController.CommentPlayerListener
-
+    private var lastProgressTrackedComment: UIComment? = null
+    private var lastProgressTrackedTen: Int = 0
+    private lateinit var commentPlayerListener: AudioCommentPlayerController.CommentPlayerListener
 
 
     @Inject
-    lateinit var sessionManager : SessionManager
-
+    lateinit var sessionManager: SessionManager
 
 
     private var isReloading = false
@@ -269,7 +269,7 @@ class PodcastDetailsFragment : BaseFragment() {
         fillForm()
         initListeners()
         activity?.startCommenting?.let {
-            if(it)
+            if (it)
                 openCommentBarTextAndFocusIt()
         }
     }
@@ -311,9 +311,9 @@ class PodcastDetailsFragment : BaseFragment() {
             } else {
                 // if the main comment is deleted, then we have to close the activity because you can't
                 // answer that comment anymore
-                if(lastCommentWithParentDeleted == uiMainCommentWithParent) {
+                if (lastCommentWithParentDeleted == uiMainCommentWithParent) {
                     toast(getString(R.string.comment_deleted_ok))
-                    uiPodcast?.number_of_comments?.let {numberOfComments ->
+                    uiPodcast?.number_of_comments?.let { numberOfComments ->
                         uiPodcast?.number_of_comments = numberOfComments - 1
                     }
                     activity?.finish()
@@ -327,12 +327,22 @@ class PodcastDetailsFragment : BaseFragment() {
                         parent.comments.remove(lastCommentWithParentDeleted?.comment)
                         parent.comment_count = parent.comment_count.dec()
                     }
-                    lastCommentWithParentDeleted?.let { deletedComment -> deleteAllChildComments(lastPositionCommentDeleted, deletedComment) }
+                    lastCommentWithParentDeleted?.let { deletedComment ->
+                        deleteAllChildComments(
+                            lastPositionCommentDeleted,
+                            deletedComment
+                        )
+                    }
                     commentWithParentsItemsList.removeAt(lastPositionCommentDeleted)
-                    uiPodcast?.number_of_comments?.let {numberOfComments ->
+                    uiPodcast?.number_of_comments?.let { numberOfComments ->
                         uiPodcast?.number_of_comments = numberOfComments - 1
                     }
                     commentsAdapter?.notifyDataSetChanged()
+
+
+                    if(commentWithParentsItemsList.size == 0) {
+                        showEmptyScenario()
+                    }
                 }
                 fillFormNumberOfCommentsData()
             }
@@ -362,17 +372,20 @@ class PodcastDetailsFragment : BaseFragment() {
         })
     }
 
-    private fun deleteAllChildComments(lastPositionCommentDeleted: Int, commentDeleted : CommentWithParent) {
+    private fun deleteAllChildComments(
+        lastPositionCommentDeleted: Int,
+        commentDeleted: CommentWithParent
+    ) {
         var itemsDeletedCount = 0
-        for(i in commentWithParentsItemsList.size - 1 downTo lastPositionCommentDeleted + 1) {
+        for (i in commentWithParentsItemsList.size - 1 downTo lastPositionCommentDeleted + 1) {
             val currentComment = commentWithParentsItemsList[i]
-            if(currentComment.parent == commentDeleted) {
+            if (currentComment.parent == commentDeleted) {
                 commentWithParentsItemsList.removeAt(i)
                 itemsDeletedCount++
             }
         }
 
-        uiPodcast?.number_of_comments?.let {numberOfComments ->
+        uiPodcast?.number_of_comments?.let { numberOfComments ->
             uiPodcast?.number_of_comments = numberOfComments - itemsDeletedCount
         }
     }
@@ -392,7 +405,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 toast(getString(R.string.success_blocking_user))
 
                 // you blocked a podcast user and not a comment user
-                if(isBlockingPodcastUser) {
+                if (isBlockingPodcastUser) {
                     activity?.finish()
 
 
@@ -545,7 +558,8 @@ class PodcastDetailsFragment : BaseFragment() {
             rvComments.viewTreeObserver.addOnGlobalLayoutListener {
                 if (firstTimePadding) {
                     firstTimePadding = false
-                    val newPadding = layNestedScroll.height - rvComments.getChildAt(commentWithParentsItemsList.size - 1).height
+                    val newPadding =
+                        layNestedScroll.height - rvComments.getChildAt(commentWithParentsItemsList.size - 1).height
                     rvComments?.setPadding(0, 0, 0, newPadding)
                     rvComments?.requestLayout()
                     val newY = rvComments.bottom
@@ -745,7 +759,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
 
     private fun addNewCommentToList(commentCreated: UIComment) {
-        if(podcastMode) {
+        if (podcastMode) {
             uiPodcast?.number_of_comments = uiPodcast?.number_of_comments!!.inc()
             tvComments.text = uiPodcast?.number_of_comments.toString()
             commentWithParentsItemsList.add(CommentWithParent(commentCreated, null))
@@ -755,12 +769,18 @@ class PodcastDetailsFragment : BaseFragment() {
 
             // let's recalculate number of comments
             var parent = uiMainCommentWithParent?.parent
-            while(parent != null) {
+            while (parent != null) {
                 parent.comment.comment_count = parent.comment.comment_count.inc()
                 parent = parent.parent
             }
-            uiMainCommentWithParent?.comment?.comment_count = uiMainCommentWithParent?.comment?.comment_count!!.inc()
-            commentWithParentsItemsList.add(CommentWithParent(commentCreated, uiMainCommentWithParent))
+            uiMainCommentWithParent?.comment?.comment_count =
+                uiMainCommentWithParent?.comment?.comment_count!!.inc()
+            commentWithParentsItemsList.add(
+                CommentWithParent(
+                    commentCreated,
+                    uiMainCommentWithParent
+                )
+            )
         }
 //        hideEmptyScenario()
 
@@ -787,11 +807,12 @@ class PodcastDetailsFragment : BaseFragment() {
         btnPost.onClick {
             var commentText = ""
             etCommentUp?.text?.let { text -> commentText = text.toString() }
-            if(commentText.isNotEmpty() || currentCommentRecordedFile != null) {
-                currentCommentRequest = UICreateCommentRequest(UICommentRequest(commentText, 0, null))
+            if (commentText.isNotEmpty() || currentCommentRecordedFile != null) {
+                currentCommentRequest =
+                    UICreateCommentRequest(UICommentRequest(commentText, 0, null))
                 isWaitingForApiCall = true
                 showProgressCreateComment()
-                if(currentCommentRecordedFile == null) {
+                if (currentCommentRecordedFile == null) {
                     publishTextComment()
                 } else {
                     publishAudioComment()
@@ -809,16 +830,17 @@ class PodcastDetailsFragment : BaseFragment() {
             //Check if all permissions are granted, if not, request again
             if (!hasPermissions(requireContext(), *PERMISSIONS)) {
                 try {
-                    ActivityCompat.requestPermissions(requireActivity(),
+                    ActivityCompat.requestPermissions(
+                        requireActivity(),
                         PERMISSIONS, PERMISSION_ALL
                     )
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-            }else{
+            } else {
                 if (!btnRecordClicked) {
                     btnRecordClicked = true
-                    if(!isCommentBarOpen())
+                    if (!isCommentBarOpen())
                         openCommentBarTextAndFocusIt()
 
                     btnRecord.setImageResource(R.drawable.record_red)
@@ -837,7 +859,7 @@ class PodcastDetailsFragment : BaseFragment() {
             override fun run() {
                 Timber.d("Inside updaterRunnable")
                 handlerRecordingComment.postDelayed(this, 150)
-                if(isRecording) {
+                if (isRecording) {
                     val maxAmplitude: Int = mRecorder.getMaxAmplitude()
                     visualizerComment?.addAmplitude(maxAmplitude.toFloat())
                     visualizerComment?.invalidate() // refresh the Visualizer
@@ -853,14 +875,15 @@ class PodcastDetailsFragment : BaseFragment() {
             //Check if all permissions are granted, if not, request again
             if (!hasPermissions(requireContext(), *PERMISSIONS)) {
                 try {
-                    ActivityCompat.requestPermissions(requireActivity(),
+                    ActivityCompat.requestPermissions(
+                        requireActivity(),
                         PERMISSIONS, PERMISSION_ALL
                     )
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-            }else{
-                if(mRecorder.isPlayerPlaying) {
+            } else {
+                if (mRecorder.isPlayerPlaying) {
                     btnPlayComment.setImageResource(R.drawable.play)
                     mRecorder.pausePlaying()
 
@@ -872,9 +895,11 @@ class PodcastDetailsFragment : BaseFragment() {
                     // it doesn't have a file loaded
                 } else {
                     currentCommentRecordedFile?.let {
-                        if(it.exists() && it.isFile) {
+                        if (it.exists() && it.isFile) {
                             btnPlayComment.setImageResource(R.drawable.pause)
-                            mRecorder.startPlaying(it.absolutePath, MediaPlayer.OnCompletionListener { onPlayingCommentFinished() })
+                            mRecorder.startPlaying(
+                                it.absolutePath,
+                                MediaPlayer.OnCompletionListener { onPlayingCommentFinished() })
                         }
                     }
                 }
@@ -885,7 +910,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
         commentPlayerListener = object : AudioCommentPlayerController.CommentPlayerListener {
             override fun onProgress(comment: UIComment, positionInMs: Int) {
-                comment.audio.duration?.let {duration ->
+                comment.audio.duration?.let { duration ->
                     val durationInMs = duration
                     val currentPercentage = positionInMs.toFloat() * 100f / durationInMs.toFloat()
 
@@ -895,10 +920,10 @@ class PodcastDetailsFragment : BaseFragment() {
                     //   27 out of 100 is 27%, it would return 2
                     //   40 out of 200 is 20%, it would return 2 again
                     val currentTen = (currentPercentage / 10).toInt()
-                    if(lastProgressTrackedComment != comment) {
+                    if (lastProgressTrackedComment != comment) {
                         lastProgressTrackedComment = comment
                     } else {
-                        if(currentTen > lastProgressTrackedTen) {
+                        if (currentTen > lastProgressTrackedTen) {
                             viewModelCreateCommentDropOff.idComment = comment.id
                             viewModelCreateCommentDropOff.percentage = currentPercentage
                             createCommentDropOffDataTrigger.onNext(Unit)
@@ -931,7 +956,7 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun publishTextComment() {
-        if(podcastMode) {
+        if (podcastMode) {
             viewModelCreatePodcastComment.uiCreateCommentRequest = currentCommentRequest!!
             createPodcastCommentDataTrigger.onNext(Unit)
         } else {
@@ -944,9 +969,10 @@ class PodcastDetailsFragment : BaseFragment() {
         btnPlayComment.setImageResource(R.drawable.play)
     }
 
-    private fun hasPermissions(context: Context, vararg permissions: String): Boolean = permissions.all {
-        ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
-    }
+    private fun hasPermissions(context: Context, vararg permissions: String): Boolean =
+        permissions.all {
+            ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+        }
 
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE", "UNUSED_VALUE")
     private fun audioSetup() {
@@ -955,7 +981,7 @@ class PodcastDetailsFragment : BaseFragment() {
         // val recordingDirectory  = File(context!!.getExternalFilesDir(null)?.absolutePath, "limorv2");
         val recordingDirectory = File(context?.getExternalFilesDir(null)?.absolutePath, "limorv2")
         var isDirectoryCreated = false
-        if(!recordingDirectory.exists()){
+        if (!recordingDirectory.exists()) {
             isDirectoryCreated = recordingDirectory.mkdirs()
         }
 
@@ -978,7 +1004,7 @@ class PodcastDetailsFragment : BaseFragment() {
         val filenameRecorded = filenameAndAudio.first
         currentCommentRecordedDurationMillis = filenameAndAudio.second
         currentCommentRecordedFile = File(filenameRecorded)
-        if(currentCommentRecordedDurationMillis > 0 && currentCommentRecordedFile!!.isFile && currentCommentRecordedFile!!.exists()) {
+        if (currentCommentRecordedDurationMillis > 0 && currentCommentRecordedFile!!.isFile && currentCommentRecordedFile!!.exists()) {
             showPlayButton()
             btnTrash?.visibility = View.VISIBLE
             visualizerComment.invalidate()
@@ -997,11 +1023,13 @@ class PodcastDetailsFragment : BaseFragment() {
                     Timber.d("Audio uploaded to AWS successfully")
                     currentCommentRequest?.comment?.audio_url = audioUrl
                     currentCommentRequest?.comment?.duration = currentCommentRecordedDurationMillis
-                    if(podcastMode) {
-                        viewModelCreatePodcastComment.uiCreateCommentRequest = currentCommentRequest!!
+                    if (podcastMode) {
+                        viewModelCreatePodcastComment.uiCreateCommentRequest =
+                            currentCommentRequest!!
                         createPodcastCommentDataTrigger.onNext(Unit)
                     } else {
-                        viewModelCreateCommentComment.uiCreateCommentRequest = currentCommentRequest!!
+                        viewModelCreateCommentComment.uiCreateCommentRequest =
+                            currentCommentRequest!!
                         createCommentCommentDataTrigger.onNext(Unit)
                     }
                 }
@@ -1017,14 +1045,13 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
 
-
     private fun showPlayButton() {
         btnRecord?.visibility = View.INVISIBLE
         btnPlayComment?.visibility = View.VISIBLE
     }
 
 
-    private fun isCommentBarOpen() : Boolean {
+    private fun isCommentBarOpen(): Boolean {
         return commentBarUpperSide.visibility == View.VISIBLE
     }
 
@@ -1114,7 +1141,7 @@ class PodcastDetailsFragment : BaseFragment() {
             val newItems = it.data.comments
 
 
-            if(newItems.size > 0)
+            if (newItems.size > 0)
                 hideEmptyScenario()
 
 
@@ -1122,7 +1149,11 @@ class PodcastDetailsFragment : BaseFragment() {
                 commentWithParentsItemsList.clear()
                 rvComments?.recycledViewPool?.clear()
                 isReloading = false
-                rvComments?.scrollToPosition(commentWithParentsItemsList.indexOf(uiMainCommentWithParent))
+                rvComments?.scrollToPosition(
+                    commentWithParentsItemsList.indexOf(
+                        uiMainCommentWithParent
+                    )
+                )
             }
 
 
@@ -1151,7 +1182,7 @@ class PodcastDetailsFragment : BaseFragment() {
             } else {
                 // if we don't receive more items and the last call was a comment call of the main comment,
                 // then we got to the last page
-                if(newItems.size == 0 && viewModelGetCommentComments.idComment == uiMainCommentWithParent?.comment?.id)
+                if (newItems.size == 0 && viewModelGetCommentComments.idComment == uiMainCommentWithParent?.comment?.id)
                     isLastPage = true
 
                 if (newItems.size > 0) {
@@ -1162,10 +1193,8 @@ class PodcastDetailsFragment : BaseFragment() {
                         currentOffset += newItems.size
 
 
-                        if(isWaitingForApiCall)
+                        if (isWaitingForApiCall)
                             isWaitingForApiCall = false
-
-
 
 
                         // if they are not comments of the main comment, that means that these new comments
@@ -1196,7 +1225,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
         output.errorMessage.observe(this, Observer {
             hideProgressBar()
-            val text = when(it.code) {
+            val text = when (it.code) {
                 4 -> getString(R.string.error_content_unavailable)
                 else -> getString(R.string.couldnt_get_feed)
             }
@@ -1357,7 +1386,7 @@ class PodcastDetailsFragment : BaseFragment() {
         output.response.observe(this, Observer {
             val newItems = it.data.comments
 
-            if(newItems.size > 0)
+            if (newItems.size > 0)
                 hideEmptyScenario()
 
             if (newItems.size == 0)
@@ -1371,7 +1400,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 rvComments?.scrollToPosition(0)
             }
 
-            if(isWaitingForApiCall)
+            if (isWaitingForApiCall)
                 isWaitingForApiCall = false
 
             fillCommentList(newItems)
@@ -1383,7 +1412,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
         output.errorMessage.observe(this, Observer {
             hideProgressBar()
-            val text = when(it.code) {
+            val text = when (it.code) {
                 4 -> getString(R.string.error_content_unavailable)
                 else -> getString(R.string.couldnt_get_feed)
             }
@@ -1433,36 +1462,51 @@ class PodcastDetailsFragment : BaseFragment() {
                         ibtnPlay: ImageButton
                     ) {
                         // if I click in the currently listening comment, then I just launch playclicked
-                        if (audioCommentPlayerController != null && audioCommentPlayerController?.comment == item.comment){
+                        if (audioCommentPlayerController != null && audioCommentPlayerController?.comment == item.comment) {
                             audioCommentPlayerController?.onPlayClicked()
 
                             // if you click in a different comment than the one that is currently being listened, we'll firts have to destroy de previous one
-                        } else if(audioCommentPlayerController != null && audioCommentPlayerController?.comment != item.comment){
+                        } else if (audioCommentPlayerController != null && audioCommentPlayerController?.comment != item.comment) {
 
                             // before swapping comment, we have to send a dropoff because the user is not listening to this comment anymore
-                            audioCommentPlayerController?.comment?.let {comment ->
+                            audioCommentPlayerController?.comment?.let { comment ->
                                 viewModelCreateCommentDropOff.idComment = comment.id
                                 val durationInMs = (comment.audio.duration ?: 0)
-                                val currentPlayPositionInMs = audioCommentPlayerController?.getCurrentPlayerPosition() ?: 0
-                                val currentPercentage = currentPlayPositionInMs.toFloat() * 100f / durationInMs.toFloat()
+                                val currentPlayPositionInMs =
+                                    audioCommentPlayerController?.getCurrentPlayerPosition() ?: 0
+                                val currentPercentage =
+                                    currentPlayPositionInMs.toFloat() * 100f / durationInMs.toFloat()
                                 viewModelCreateCommentDropOff.percentage = currentPercentage
                             }
                             audioCommentPlayerController?.destroy()
-                            audioCommentPlayerController = AudioCommentPlayerController(item.comment, seekBar, ibtnPlay, context!!, commentPlayerListener)
+                            audioCommentPlayerController = AudioCommentPlayerController(
+                                item.comment,
+                                seekBar,
+                                ibtnPlay,
+                                context!!,
+                                commentPlayerListener
+                            )
 
                             // if there isn't any comment being listened, just launch this one
                         } else {
                             if (!hasPermissions(requireContext(), *PERMISSIONS)) {
                                 try {
-                                    ActivityCompat.requestPermissions(requireActivity(),
+                                    ActivityCompat.requestPermissions(
+                                        requireActivity(),
                                         PERMISSIONS, PERMISSION_ALL
                                     )
                                 } catch (e: Exception) {
                                     e.printStackTrace()
                                 }
-                            }else {
+                            } else {
                                 audioCommentPlayerController =
-                                    AudioCommentPlayerController(item.comment, seekBar, ibtnPlay, context!!, commentPlayerListener)
+                                    AudioCommentPlayerController(
+                                        item.comment,
+                                        seekBar,
+                                        ibtnPlay,
+                                        context!!,
+                                        commentPlayerListener
+                                    )
                             }
                         }
                     }
@@ -1527,9 +1571,15 @@ class PodcastDetailsFragment : BaseFragment() {
                     }
 
                     override fun onUserClicked(item: UIComment, position: Int) {
-                        val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-                        userProfileIntent.putExtra("user", item.user)
-                        startActivity(userProfileIntent)
+                        if (item.user?.id == sessionManager.getStoredUser()?.id) {
+                            val intent = Intent(requireActivity(), MainActivity::class.java)
+                            intent.putExtra("destination", "profile")
+                            startActivity(intent)
+                        } else {
+                            val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+                            userProfileIntent.putExtra("user", item.user)
+                            startActivity(userProfileIntent)
+                        }
                     }
 
                     override fun onMoreClicked(item: CommentWithParent, position: Int, v: View) {
@@ -1567,7 +1617,7 @@ class PodcastDetailsFragment : BaseFragment() {
                         currentItem: CommentWithParent,
                         position: Int
                     ) {
-                        if(fromUser && audioCommentPlayerController?.comment == currentItem.comment) {
+                        if (fromUser && audioCommentPlayerController?.comment == currentItem.comment) {
                             audioCommentPlayerController?.onSeekProgressChanged(progress)
                         }
                     }
@@ -1580,12 +1630,12 @@ class PodcastDetailsFragment : BaseFragment() {
 
         rvComments?.adapter = commentsAdapter
         rvComments?.isNestedScrollingEnabled = true
-        
+
         layNestedScroll.setOnScrollChangeListener { v: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
-            v?.let{
+            v?.let {
 //                if(v.getChildAt(v.childCount - 5) != null) {
 //                    if ((scrollY >= (v.getChildAt(v.childCount - 5).measuredHeight - v.measuredHeight)) && scrollY > oldScrollY) {
-                if(!isLastPage && !isWaitingForApiCall && rvComments != null && rvComments.visibility == View.VISIBLE) {
+                if (!isLastPage && !isWaitingForApiCall && rvComments != null && rvComments.visibility == View.VISIBLE) {
                     val goingDown = scrollY > oldScrollY
                     if (goingDown && (scrollY >= (rvComments.measuredHeight - v.measuredHeight))) {
 
@@ -1718,7 +1768,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 .get(CreatePodcastReportViewModel::class.java)
 
             viewModelCreateUserReport = ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                .of(fragmentActivity, viewModelFactory)
                 .get(CreateUserReportViewModel::class.java)
 
             viewModelDeletePodcast = ViewModelProviders
@@ -1909,7 +1959,7 @@ class PodcastDetailsFragment : BaseFragment() {
         inflater.inflate(R.menu.menu_popup_comment, popup.menu)
 
         val loggedUser = sessionManager.getStoredUser()
-        if(comment.comment.user?.id != loggedUser?.id) {
+        if (comment.comment.user?.id != loggedUser?.id) {
             // you cannot delete another person's comment
             popup.menu.findItem(R.id.menu_delete_comment).isVisible = false
         } else {
@@ -1921,8 +1971,8 @@ class PodcastDetailsFragment : BaseFragment() {
 
 
         //set menu item click listener here
-        popup.setOnMenuItemClickListener {menuItem ->
-            when(menuItem.itemId) {
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
                 R.id.menu_delete_comment -> onDeleteCommentClicked(comment, position)
                 R.id.menu_report_comment -> onReportCommentClicked(comment.comment)
                 R.id.menu_report_user -> onReportUserClicked(comment.comment.user)
@@ -1941,7 +1991,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 lastCommentWithParentDeleted = comment
                 deleteCommentDataTrigger.onNext(Unit)
             }
-            cancelButton {  }
+            cancelButton { }
         }.show()
     }
 
@@ -1971,7 +2021,7 @@ class PodcastDetailsFragment : BaseFragment() {
         inflater.inflate(R.menu.menu_popup_podcast, popup.menu)
 
         val loggedUser = sessionManager.getStoredUser()
-        if(uiPodcast?.user?.id != loggedUser?.id) {
+        if (uiPodcast?.user?.id != loggedUser?.id) {
             val menuToHide = popup.menu.findItem(R.id.menu_delete_cast)
             menuToHide.isVisible = false
         } else {
@@ -1984,8 +2034,8 @@ class PodcastDetailsFragment : BaseFragment() {
         }
 
         //set menu item click listener here
-        popup.setOnMenuItemClickListener {menuItem ->
-            when(menuItem.itemId) {
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
                 R.id.menu_share -> onSharePodcastClicked()
                 R.id.menu_report_cast -> onReportPodcastClicked()
                 R.id.menu_report_user -> onReportUserClicked(uiPodcast?.user)
@@ -2004,7 +2054,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 isBlockingPodcastUser = true
                 createBlockedUserDataTrigger.onNext(Unit)
             }
-            cancelButton {  }
+            cancelButton { }
         }.show()
     }
 
@@ -2014,7 +2064,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 viewModelDeletePodcast.podcast = uiPodcast
                 deletePodcastDataTrigger.onNext(Unit)
             }
-            cancelButton {  }
+            cancelButton { }
         }.show()
     }
 
@@ -2037,7 +2087,7 @@ class PodcastDetailsFragment : BaseFragment() {
     }
 
     private fun onSharePodcastClicked() {
-        uiPodcast?.sharing_url?.let {url ->
+        uiPodcast?.sharing_url?.let { url ->
             val text = getString(R.string.check_out_this_cast)
             val finalText = "$text $url"
             val sendIntent: Intent = Intent().apply {
@@ -2108,9 +2158,15 @@ class PodcastDetailsFragment : BaseFragment() {
 
     private fun onUserClicked() {
         uiPodcast?.user?.let {
-            val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-            userProfileIntent.putExtra("user", it)
-            startActivity(userProfileIntent)
+            if (it.id == sessionManager.getStoredUser()?.id) {
+                val userProfileIntent = Intent(context, MainActivity::class.java)
+                userProfileIntent.putExtra("destination", "profile")
+                startActivity(userProfileIntent)
+            } else {
+                val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+                userProfileIntent.putExtra("user", it)
+                startActivity(userProfileIntent)
+            }
         }
     }
 
@@ -2122,7 +2178,6 @@ class PodcastDetailsFragment : BaseFragment() {
             activity?.finish()
         }
     }
-
 
 
     private fun onHashtagClicked(clickedTag: String) {
@@ -2163,8 +2218,10 @@ class PodcastDetailsFragment : BaseFragment() {
                         ds.isUnderlineText = true
                     }
                 }
-                hashtaggedString.setSpan(clickableSpan, startIndex, endIndex,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                hashtaggedString.setSpan(
+                    clickableSpan, startIndex, endIndex,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
                 //println("Hemos encontrado el texto $textFound que empieza en $startIndex y acaba en $endIndex")
             }
             return hashtaggedString
@@ -2183,7 +2240,7 @@ class PodcastDetailsFragment : BaseFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
             val reason = data?.getStringExtra("reason")
             when (requestCode) {
                 REQUEST_REPORT_COMMENT -> {
@@ -2214,9 +2271,6 @@ class PodcastDetailsFragment : BaseFragment() {
         }
 //        reloadComments()
     }
-
-
-
 
 
 //    private fun reloadComments() {

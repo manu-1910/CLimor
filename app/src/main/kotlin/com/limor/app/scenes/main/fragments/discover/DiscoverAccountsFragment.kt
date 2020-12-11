@@ -1,10 +1,11 @@
-package com.limor.app.scenes.main.fragments
+package com.limor.app.scenes.main.fragments.discover
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -23,11 +24,11 @@ import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UIUser
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_discover_accounts.*
-import org.jetbrains.anko.okButton
-import org.jetbrains.anko.support.v4.alert
+import kotlinx.android.synthetic.main.fragment_empty_scenario.*
 import javax.inject.Inject
 
-class DiscoverAccountsFragment : BaseFragment(), DiscoverTabFragment {
+class DiscoverAccountsFragment : BaseFragment(),
+    DiscoverTabFragment {
 
     var app: App? = null
 
@@ -51,7 +52,8 @@ class DiscoverAccountsFragment : BaseFragment(), DiscoverTabFragment {
     companion object {
         val TAG: String = DiscoverAccountsFragment::class.java.simpleName
 
-        fun newInstance(text: String) = DiscoverAccountsFragment().apply {
+        fun newInstance(text: String) = DiscoverAccountsFragment()
+            .apply {
             arguments = Bundle(1).apply {
                 putString(BUNDLE_KEY_SEARCH_TEXT, text)
             }
@@ -70,13 +72,28 @@ class DiscoverAccountsFragment : BaseFragment(), DiscoverTabFragment {
         super.onViewCreated(view, savedInstanceState)
 
         app = context?.applicationContext as App
-
+        configureEmptyScenario()
         rvUsers = view.findViewById(R.id.rv_users)
         bindViewModel()
         apiCallCreateUser()
         apiCallDeleteUser()
         initApiCallGetNotifications()
         configureAdapter()
+    }
+
+
+
+    private fun configureEmptyScenario() {
+        tvActionEmptyScenario.visibility = View.GONE
+        context?.let {
+            ivEmptyScenario.setImageDrawable(
+                ContextCompat.getDrawable(
+                    it, R.drawable.search_icon_empty_scenario
+                )
+            )
+        }
+        tvTitleEmptyScenario.text = getString(R.string.search_empty_scenario_title)
+        tvDescriptionEmptyScenario.text = getString(R.string.search_empty_scenario_description)
     }
 
 
@@ -102,16 +119,16 @@ class DiscoverAccountsFragment : BaseFragment(), DiscoverTabFragment {
 
             rvUsers?.adapter?.notifyDataSetChanged()
             if(it.data.users.size == 0){
-                tv_no_results.visibility = View.VISIBLE
+                layEmptyScenario.visibility = View.VISIBLE
             }else{
-                tv_no_results.visibility = View.INVISIBLE
+                layEmptyScenario.visibility = View.GONE
             }
             showProgress(false)
 
         })
 
         output.errorMessage.observe(this, Observer {
-            tv_no_results?.visibility = View.VISIBLE
+            layEmptyScenario.visibility = View.VISIBLE
             viewModelDiscoverAccounts.results.clear()
             rvUsers?.adapter?.notifyDataSetChanged()
             showProgress(false)

@@ -28,6 +28,7 @@ import com.limor.app.scenes.utils.CommonsKt.Companion.copyFile
 import com.limor.app.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import com.limor.app.uimodels.UIDraft
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_drafts_empty_scenario.*
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -95,12 +96,20 @@ class DraftsFragment : BaseFragment() {
         return rootView
     }
 
+    private fun listeners() {
+        tvRecordACast?.onClick {
+            findNavController().popBackStack()
+        }
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 20f)
+
+        listeners()
     }
 
     override fun onStart() {
@@ -283,7 +292,7 @@ class DraftsFragment : BaseFragment() {
                     }
                 },
 
-                    // This is deprecated, it's old code. This will never be called.
+                // This is deprecated, it's old code. This will never be called.
                 object : DraftAdapter.OnEditItemClickListener {
                     override fun onEditItemClick(item: UIDraft) {
                         pbDrafts?.visibility = View.VISIBLE
@@ -303,6 +312,16 @@ class DraftsFragment : BaseFragment() {
 
                         val bundle = bundleOf("recordingItem" to draftViewModel.uiDraft)
                         findNavController().navigate(R.id.action_record_drafts_to_record_edit, bundle)
+                    }
+                },
+
+                // This is deprecated, it's old code. This will never be called.
+                object : DraftAdapter.OnChangeNameClickListener {
+                    override fun onNameChangedClick(item: UIDraft, position: Int, newName: String) {
+                        item.title = newName
+                        adapter?.notifyItemChanged(position)
+                        draftViewModel.uiDraft = item
+                        insertDraftsTrigger.onNext(Unit)
                     }
                 },
                 object : DraftAdapter.OnResumeItemClickListener {
@@ -406,6 +425,7 @@ class DraftsFragment : BaseFragment() {
                 }
 
                 rvDrafts?.adapter?.notifyDataSetChanged()
+                hideEmptyScenario()
             }else{
                 showEmptyScenario()
             }

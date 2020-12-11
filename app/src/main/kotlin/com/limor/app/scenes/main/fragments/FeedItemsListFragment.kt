@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,7 @@ import com.limor.app.common.BaseActivity
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.SessionManager
 import com.limor.app.extensions.hideKeyboard
+import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.adapters.FeedAdapter
 import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
 import com.limor.app.scenes.main.fragments.podcast.PodcastsByTagActivity
@@ -164,7 +166,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
     }
 
     protected fun requestNewData() {
-        if(!isRequestingNewData) {
+        if (!isRequestingNewData) {
             isRequestingNewData = true
             callTriggerForNewData()
         }
@@ -236,6 +238,8 @@ abstract class FeedItemsListFragment : BaseFragment() {
             } else {
                 feedItemsList.removeAt(lastPodcastDeletedPosition)
                 rvFeed?.adapter?.notifyItemRemoved(lastPodcastDeletedPosition)
+                if(feedItemsList.size == 0)
+                    showEmptyScenario(true)
             }
         })
 
@@ -379,9 +383,28 @@ abstract class FeedItemsListFragment : BaseFragment() {
                     }
 
                     override fun onUserClicked(item: UIFeedItem, position: Int) {
-                        val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-                        userProfileIntent.putExtra("user", item.podcast?.user)
-                        startActivity(userProfileIntent)
+                        if (item.podcast?.user?.id == sessionManager.getStoredUser()?.id) {
+                            if(activity is MainActivity)
+                                findNavController().navigate(R.id.navigation_profile)
+                            else if(activity is UserProfileActivity) {
+                                val intent = Intent(requireActivity(), MainActivity::class.java)
+                                intent.putExtra("destination", "profile")
+                                startActivity(intent)
+                                // TODO -> Jose: you are in anothers person profile in UserProfileActivity
+                                //      and you clicked in you own user, so now you have to show your own profile
+                                //      but if you open a new UserProfileActivity with your user, you won't be able
+                                //      to navigate to the actions of the empty views, because you are not in the
+                                //      main activity. For example, if you don't have any like, you won't be able
+                                //      to navigate to discover fragment from UserProfileActivity
+                                //      Maybe the right choice could be to navigate to mainActivity
+                                //      and to show your profile there ¿?
+                                //      Waiting for Martin's answer
+                            }
+                        } else {
+                            val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+                            userProfileIntent.putExtra("user", item.podcast?.user)
+                            startActivity(userProfileIntent)
+                        }
                     }
 
                     override fun onMoreClicked(
@@ -450,7 +473,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
         inflater.inflate(R.menu.menu_popup_podcast, popup.menu)
 
         val loggedUser = sessionManager.getStoredUser()
-        if(item.podcast?.user?.id != loggedUser?.id) {
+        if (item.podcast?.user?.id != loggedUser?.id) {
             val menuToHide = popup.menu.findItem(R.id.menu_delete_cast)
             menuToHide.isVisible = false
         } else {
@@ -503,7 +526,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
                 viewModelDeletePodcast.podcast = item.podcast
                 deletePodcastDataTrigger.onNext(Unit)
             }
-            cancelButton {  }
+            cancelButton { }
         }.show()
     }
 
@@ -599,7 +622,6 @@ abstract class FeedItemsListFragment : BaseFragment() {
             CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
-
 
 
     private fun initApiCallCreateUserReport() {
@@ -740,6 +762,12 @@ abstract class FeedItemsListFragment : BaseFragment() {
             isReloading = false
         }
 
+        if (items.size == 0 && feedItemsList.size == 0) {
+            showEmptyScenario(true)
+        } else {
+            showEmptyScenario(false)
+        }
+
         feedItemsList.addAll(items)
         if (items.size == 0)
             isLastPage = true
@@ -749,6 +777,8 @@ abstract class FeedItemsListFragment : BaseFragment() {
         pb_loading.visibility = View.GONE
         isRequestingNewData = false
     }
+
+    abstract fun showEmptyScenario(show: Boolean)
 
 
     protected open fun bindViewModel() {
@@ -817,7 +847,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 REQUEST_REPORT_PODCAST -> {
                     data?.let {
@@ -838,7 +868,9 @@ abstract class FeedItemsListFragment : BaseFragment() {
 //                        val podcast = data.getSerializableExtra("podcast") as UIPodcast
                         val position = data.getIntExtra("position", 0)
                         lastPodcastByIdRequestedPosition = position
-                        feedItemsList[position].podcast?.id?.let { viewModelGetPodcastById.idPodcast = it }
+                        feedItemsList[position].podcast?.id?.let {
+                            viewModelGetPodcastById.idPodcast = it
+                        }
                         showProgressBar()
                         getPodcastByIdDataTrigger.onNext(Unit)
 //                        val changedItem = feedItemsList[position]

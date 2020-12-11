@@ -152,7 +152,7 @@ class SignUpFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
 
             if (it.code == 0) {
@@ -170,7 +170,7 @@ class SignUpFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
                 val message: StringBuilder = StringBuilder()
@@ -238,12 +238,22 @@ class SignUpFragment : BaseFragment() {
                 //validatedTermsAndConditions()
             ) {
                 saveVariablesIntoViewModel()
-                pbSignUp?.visibility = View.VISIBLE
+                showProgress(true)
                 signUpTrigger.onNext(Unit)
             }
         }
 
         tvTermsAndConditions?.onClick {}
+    }
+
+    private fun showProgress(show: Boolean) {
+        if(show) {
+            btnSignUpJoinLimor.text = ""
+            pbSignUp.visibility = View.VISIBLE
+        } else {
+            btnSignUpJoinLimor.text = getString(R.string.join_limor)
+            pbSignUp.visibility = View.GONE
+        }
     }
 
 
@@ -286,48 +296,30 @@ class SignUpFragment : BaseFragment() {
     //FIELDS VALIDATIONS
     private fun validatedUsername(username: String): Boolean {
         return if (username.trim().isNotBlank()) {
-            edtSignUpUsername?.myEditLyt?.isErrorEnabled = false
-            edtSignUpUsername?.myEditLyt?.error = null
-
+            edtSignUpUsername.setError(null)
             true
         } else {
-            edtSignUpUsername?.myEditLyt?.isErrorEnabled = true
-            edtSignUpUsername?.myEditLyt?.error = getString(R.string.error_empty_field_template, getString(R.string.username))
-            edtSignUpUsername?.requestFocus()
-            edtSignUpUsername?.myEdit?.background = resources.getDrawable(R.drawable.edittext, null)
-
+            edtSignUpUsername.setError(getString(R.string.error_empty_field_template, getString(R.string.username)))
             false
         }
     }
 
     private fun validatedEmail(email: String): Boolean {
         return if (email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            edtSignUpEmail?.myEditLyt?.isErrorEnabled = false
-            edtSignUpEmail?.myEditLyt?.error = null
-
+            edtSignUpEmail.setError(null)
             true
         } else {
-            edtSignUpEmail?.myEditLyt?.isErrorEnabled = true
-            edtSignUpEmail?.myEditLyt?.error = getString(R.string.error_not_valid_email)
-            edtSignUpEmail?.requestFocus()
-            edtSignUpEmail?.myEdit?.background = resources.getDrawable(R.drawable.edittext, null)
-
+            edtSignUpEmail.setError(getString(R.string.error_not_valid_email))
             false
         }
     }
 
     private fun validatedPassword(password: String): Boolean {
         return if (password.isNotBlank() && password.count() >= resources.getInteger(R.integer.PASSWORD_MIN_LENGTH)) {
-            edtSignUpPassword?.myEditLyt?.isErrorEnabled = false
-            edtSignUpPassword?.myEditLyt?.error = null
-
+            edtSignUpPassword.setError(null)
             true
         } else {
-            edtSignUpPassword?.myEditLyt?.isErrorEnabled = true
-            edtSignUpPassword?.myEditLyt?.error = getString(R.string.error_not_valid_password)
-            edtSignUpPassword?.requestFocus()
-            edtSignUpPassword?.myEdit?.background = resources.getDrawable(R.drawable.edittext, null)
-
+            edtSignUpPassword.setError(getString(R.string.error_not_valid_password))
             false
         }
     }
@@ -434,7 +426,7 @@ class SignUpFragment : BaseFragment() {
         )
 
         output?.response?.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
 
             var token = ""
@@ -469,7 +461,7 @@ class SignUpFragment : BaseFragment() {
         })
 
         output?.errorMessage?.observe(this, Observer {
-            pbSignUp?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
                 if (it.code == Constants.ERROR_CODE_FACEBOOK_USER_DOES_NOT_EXISTS) {

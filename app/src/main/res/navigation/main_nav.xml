@@ -12,7 +12,7 @@
     </fragment>
     <fragment
         android:id="@+id/navigation_discover"
-        android:name="com.limor.app.scenes.main.fragments.DiscoverFragment"
+        android:name="com.limor.app.scenes.main.fragments.discover.DiscoverFragment"
         android:label="DiscoverFragment"
         tools:layout="@layout/fragment_discover">
 

@@ -4,15 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
+import com.limor.app.R
 import com.limor.app.scenes.main.fragments.FeedItemsListFragment
 import com.limor.app.scenes.main.fragments.UserFeedFragment
 import com.limor.app.scenes.main.viewmodels.GetUserLikedPodcastsViewModel
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UIFeedItem
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_empty_scenario.*
 import kotlinx.android.synthetic.main.fragment_feed.*
+import org.jetbrains.anko.sdk23.listeners.onClick
 
 class UserLikedPodcastsFragment(private val userID: Int) : FeedItemsListFragment() {
 
@@ -35,6 +40,20 @@ class UserLikedPodcastsFragment(private val userID: Int) : FeedItemsListFragment
         return rootView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        showEmptyScenario(true)
+        listeners()
+    }
+
+    private fun listeners() {
+        if (userID == sessionManager.getStoredUser()?.id) {
+            tvActionEmptyScenario?.onClick {
+                findNavController().navigate(R.id.navigation_discover)
+            }
+        }
+    }
+
     override fun bindViewModel() {
         super.bindViewModel()
         activity?.let { fragmentActivity ->
@@ -48,8 +67,6 @@ class UserLikedPodcastsFragment(private val userID: Int) : FeedItemsListFragment
     override fun callTriggerForNewData() {
         getPodcastsDataTrigger.onNext(Unit)
     }
-
-
 
 
     private fun initApiCallGetPodcasts() {
@@ -94,6 +111,35 @@ class UserLikedPodcastsFragment(private val userID: Int) : FeedItemsListFragment
     override fun setFeedViewModelVariablesOnScroll() {
         viewModelGetLikedPodcasts.limit = FEED_LIMIT_REQUEST
         viewModelGetLikedPodcasts.offset = feedItemsList.size
+    }
+
+    override fun showEmptyScenario(show: Boolean) {
+        if (show) {
+            layEmptyScenario?.visibility = View.VISIBLE
+            context?.let {
+                ivEmptyScenario.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        it,
+                        R.drawable.like_icon_empty_scenario
+                    )
+                )
+            }
+            tvTitleEmptyScenario.text = getString(R.string.likes)
+
+            if (userID == sessionManager.getStoredUser()?.id) {
+                tvDescriptionEmptyScenario.text =
+                    getString(R.string.empty_scenario_self_liked_casts_description)
+                tvActionEmptyScenario.text = getString(R.string.explore)
+                tvActionEmptyScenario.visibility = View.VISIBLE
+            } else {
+                tvDescriptionEmptyScenario.text =
+                    getString(R.string.empty_scenario_others_liked_cast_description)
+                tvActionEmptyScenario.visibility = View.GONE
+            }
+
+        } else {
+            layEmptyScenario?.visibility = View.GONE
+        }
     }
 
 

@@ -100,4 +100,8 @@ class PodcastsByTagFragment : FeedItemsListFragment() {
         viewModelFeedByTag.offset = feedItemsList.size
     }
 
+    override fun showEmptyScenario(show: Boolean) {
+
+    }
+
 }

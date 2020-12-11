@@ -68,9 +68,12 @@
     <color name="brandPrimary500">#f7bb3d</color>
     <color name="brandSecondary600withTransparency">#66333333</color>
 
+    <color name="redError">#f56565</color>
+
 
     <color name="toolbar_text">#ffffff</color>
     <color name="marker_time_text">#95959b</color>
+    <color name="progress_bar_color">#95959b</color>
 
     <!--<color name="colorRandomRed">#ff1744</color>
     <color name="colorRandomBlue">#2979ff</color>

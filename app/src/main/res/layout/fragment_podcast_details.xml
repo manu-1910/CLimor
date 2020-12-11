@@ -51,6 +51,13 @@
                     android:gravity="center_vertical"
                     android:orientation="vertical">
 
+
+                    <!--
+                    I hid the following views because at first, we used to show the empty scenario
+                    but lately Martin decided that we wouldn't use it anymore.
+                    I just setted the visibility to gone just in case we would want
+                    to use it again in the future
+                    -->
                     <TextView
                         android:id="@+id/tvTitleEmptyScenario"
                         android:layout_width="match_parent"
@@ -62,7 +69,8 @@
                         android:text="@string/sorry_there_are_no_podcasts_right_now"
                         android:textColor="@color/brandSecondary100"
                         android:textSize="@dimen/textSizeLarge"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:visibility="gone"/>
 
                     <TextView
                         android:id="@+id/tvCaptionEmptyScenario"
@@ -73,7 +81,8 @@
                         android:layout_marginBottom="@dimen/marginMedium"
                         android:gravity="center"
                         android:text="@string/maybe_you_could_try_later"
-                        android:textColor="@color/brandSecondary100" />
+                        android:textColor="@color/brandSecondary100"
+                        android:visibility="gone" />
 
                 </LinearLayout>
 

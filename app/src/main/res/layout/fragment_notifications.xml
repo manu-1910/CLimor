@@ -5,8 +5,18 @@
     android:background="@color/brandSecondary400"
     android:orientation="vertical">
 
+
+    <View
+        android:id="@+id/upperDivider"
+        android:layout_alignParentTop="true"
+        android:background="@color/brandSecondary300"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"/>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout_notifications"
+        android:layout_below="@id/upperDivider"
+        android:layout_above="@id/lowerDivider"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -22,18 +32,26 @@
         android:id="@+id/pb_notifications"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:theme="@style/ProgressBarTheme"
         android:layout_centerInParent="true" />
 
-    <TextView
-        android:id="@+id/tv_no_notifications"
+
+    <include
+        android:layout_below="@id/upperDivider"
+        android:layout_above="@id/lowerDivider"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:gravity="center"
-        android:text="@string/no_notifications_message"
-        android:textColor="@color/white"
-        android:visibility="invisible" />
+        android:id="@+id/layEmptyScenario"
+        layout="@layout/fragment_empty_scenario"
+        android:visibility="visible" />
+
+
+
+    <View
+        android:id="@+id/lowerDivider"
+        android:layout_alignParentBottom="true"
+        android:background="@color/brandSecondary300"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"/>
 
 </RelativeLayout>

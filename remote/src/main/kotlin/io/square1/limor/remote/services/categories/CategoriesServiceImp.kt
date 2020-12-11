@@ -24,4 +24,15 @@ class CategoriesServiceImp @Inject constructor(private val serviceConfig: Remote
             }
     }
 
+    fun getCategories(limit: Int, offset: Int): Single<NWCategoriesResponse>? {
+        return service.getCategories(limit, offset)
+            .map { response -> response.parseSuccessResponse(NWCategoriesResponse.serializer()) }
+            .doOnSuccess {
+                    success -> println("SUCCESS: $success")
+            }
+            .doOnError{
+                    error -> println("ERROR: $error")
+            }
+    }
+
 }

@@ -1,10 +1,11 @@
-package com.limor.app.scenes.main.fragments
+package com.limor.app.scenes.main.fragments.discover
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -21,6 +22,7 @@ import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UITags
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_discover_accounts.*
+import kotlinx.android.synthetic.main.fragment_empty_scenario.*
 import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
 
@@ -41,7 +43,8 @@ class DiscoverHashTagsFragment : BaseFragment(), DiscoverHashTagsAdapter.OnHashT
     companion object {
         val TAG: String = DiscoverHashTagsFragment::class.java.simpleName
 
-        fun newInstance(text: String) = DiscoverHashTagsFragment().apply {
+        fun newInstance(text: String) = DiscoverHashTagsFragment()
+            .apply {
             arguments = Bundle(1).apply {
                 putString(BUNDLE_KEY_SEARCH_TEXT, text)
             }
@@ -66,9 +69,23 @@ class DiscoverHashTagsFragment : BaseFragment(), DiscoverHashTagsAdapter.OnHashT
 
         initApiCallSearchHashTags()
         configureAdapter()
+        configureEmptyScenario()
         arguments?.getString(BUNDLE_KEY_SEARCH_TEXT, "")?.let { setSearchText(it) }
 
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    private fun configureEmptyScenario() {
+        tvActionEmptyScenario.visibility = View.GONE
+        context?.let {
+            ivEmptyScenario.setImageDrawable(
+                ContextCompat.getDrawable(
+                    it, R.drawable.search_icon_empty_scenario
+                )
+            )
+        }
+        tvTitleEmptyScenario.text = getString(R.string.search_empty_scenario_title)
+        tvDescriptionEmptyScenario.text = getString(R.string.search_empty_scenario_description)
     }
 
     private fun initApiCallSearchHashTags() {
@@ -82,16 +99,16 @@ class DiscoverHashTagsFragment : BaseFragment(), DiscoverHashTagsAdapter.OnHashT
 
             rvHashTags?.adapter?.notifyDataSetChanged()
             if (it.data.tags.size == 0) {
-                tv_no_results.visibility = View.VISIBLE
+                layEmptyScenario.visibility = View.VISIBLE
             } else {
-                tv_no_results.visibility = View.INVISIBLE
+                layEmptyScenario.visibility = View.GONE
             }
             showProgress(false)
 
         })
 
         output.errorMessage.observe(this, Observer {
-            tv_no_results?.visibility = View.VISIBLE
+            layEmptyScenario.visibility = View.VISIBLE
             viewModelDiscoverHashTags.results.clear()
             rvHashTags?.adapter?.notifyDataSetChanged()
             showProgress(false)

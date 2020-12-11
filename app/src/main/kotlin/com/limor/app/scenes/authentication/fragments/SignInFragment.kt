@@ -29,7 +29,6 @@ import com.limor.app.scenes.authentication.viewmodels.SignUpFBViewModel
 import com.limor.app.scenes.authentication.viewmodels.SignViewModel
 import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.viewmodels.CreateFriendViewModel
-import com.limor.app.scenes.utils.CommonsKt.Companion.toEditable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.component_edit_text.view.*
 import kotlinx.android.synthetic.main.fragment_sign_in.*
@@ -98,7 +97,7 @@ class SignInFragment : BaseFragment() {
         if (arguments?.containsKey("email")!!){
             emailFromForgotPassword = arguments?.get("email") as String
             if(!emailFromForgotPassword.isNullOrEmpty()){
-                edtSignInEmail.myEdit.text = emailFromForgotPassword.toEditable()
+                edtSignInEmail.setText(emailFromForgotPassword)
             }
         }
 
@@ -164,9 +163,9 @@ class SignInFragment : BaseFragment() {
        output.backgroundWorkingProgress.observe(this, Observer {
             trackBackgroudProgress(it)
             if (it)
-                pbSignIn?.visibility = View.VISIBLE
+                showProgress(true)
             else {
-                pbSignIn?.visibility = View.GONE
+                showProgress(false)
                 view?.hideKeyboard()
             }
        })
@@ -229,31 +228,19 @@ class SignInFragment : BaseFragment() {
     //FIELDS VALIDATIONS
     private fun validatedEmail(email: String): Boolean {
         return if (email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            edtSignInEmail?.myEditLyt?.isErrorEnabled = false
-            edtSignInEmail?.myEditLyt?.error = null
-
+            edtSignInEmail.setError(null)
             true
         } else {
-            edtSignInEmail?.myEditLyt?.isErrorEnabled = true
-            edtSignInEmail?.myEditLyt?.error = getString(R.string.error_not_valid_email)
-            edtSignInEmail?.requestFocus()
-            edtSignInEmail?.myEdit?.background = resources.getDrawable(R.drawable.edittext, null)
-
+            edtSignInEmail.setError(getString(R.string.error_not_valid_email))
             false
         }
     }
     private fun validatedPassword(password: String): Boolean {
         return if (password.isNotBlank() && password.count() >= resources.getInteger(R.integer.PASSWORD_MIN_LENGTH)) {
-            edtSignInPassword?.myEditLyt?.isErrorEnabled = false
-            edtSignInPassword?.myEditLyt?.error = null
-
+            edtSignInEmail.setError(null)
             true
         } else {
-            edtSignInPassword?.myEditLyt?.isErrorEnabled = true
-            edtSignInPassword?.myEditLyt?.error = getString(R.string.error_not_valid_password)
-            edtSignInPassword?.requestFocus()
-            edtSignInPassword?.myEdit?.background = resources.getDrawable(R.drawable.edittext, null)
-
+            edtSignInPassword?.setError(getString(R.string.error_not_valid_password))
             false
         }
     }
@@ -275,10 +262,10 @@ class SignInFragment : BaseFragment() {
                                 //startActivity(Intent(context, MainActivity::class.java))
                                 val fbUid: String = AccessToken.getCurrentAccessToken().userId
                                 val fbToken: String = AccessToken.getCurrentAccessToken().token
-                                var firstName: String = ""
-                                var lastName: String = ""
-                                var email: String = ""
-                                var userImageUrl: String = ""
+                                var firstName = ""
+                                var lastName = ""
+                                var email = ""
+                                var userImageUrl = ""
                                 try {
                                     firstName = data.getString("first_name")
                                     lastName = data.getString("last_name")
@@ -337,10 +324,10 @@ class SignInFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            pbSignIn?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
 
-            var token: String = ""
+            var token : String
             try{
                 token = it.data.token.access_token
                 viewModelSignInFB.tokenInApp = token
@@ -372,7 +359,7 @@ class SignInFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            pbSignIn?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
                 if (it.code == Constants.ERROR_CODE_FACEBOOK_USER_DOES_NOT_EXISTS) {
@@ -422,7 +409,7 @@ class SignInFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
-            pbSignIn?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
             if (it.message == "Success") {
                 goToMainActivity()
@@ -434,7 +421,7 @@ class SignInFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            pbSignIn?.visibility = View.GONE
+            showProgress(false)
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
                 val message: StringBuilder = StringBuilder()
@@ -452,6 +439,16 @@ class SignInFragment : BaseFragment() {
                 }.show()
             }
         })
+    }
+
+    private fun showProgress(show : Boolean) {
+        if(show) {
+            pbSignIn?.visibility = View.VISIBLE
+            btnSignIn.text = ""
+        } else {
+            pbSignIn?.visibility = View.GONE
+            btnSignIn.text = getString(R.string.sig_in)
+        }
     }
 
 
