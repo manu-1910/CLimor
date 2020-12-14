@@ -258,4 +258,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(SetupPatronViewModel::class)
     abstract fun bindSetupPatronViewModel(viewModel: SetupPatronViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(GetPodcastsByCategoryViewModel::class)
+    abstract fun bindGetPodcastsByCategoryViewModel(viewModel: GetPodcastsByCategoryViewModel): ViewModel
 }

@@ -19,7 +19,6 @@ class DiscoverMainCategoriesViewHolder(
     private var tvTitle: TextView = itemView.findViewById(R.id.tv_tag)
 
     fun bind(currentItem: String) {
-        val text = String.format("#%s", currentItem)
-        tvTitle.text = text
+        tvTitle.text = currentItem
     }
 }

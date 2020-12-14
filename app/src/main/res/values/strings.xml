@@ -473,4 +473,6 @@
     <string name="publishing_cast_dialog_title">Publishing your cast</string>
     <string name="title_categories">Categories</string>
     <string name="couldnt_get_categories">Couldn\'t get categories</string>
+    <string name="error_getting_category">There was an error getting category</string>
+    <string name="error_getting_podcasts">There was an error obtaining the podcasts</string>
 </resources>
