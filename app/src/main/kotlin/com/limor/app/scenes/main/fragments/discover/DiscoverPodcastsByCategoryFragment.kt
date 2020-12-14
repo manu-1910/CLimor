@@ -1,6 +1,8 @@
 package com.limor.app.scenes.main.fragments.discover
 
+import android.content.res.Resources
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +12,12 @@ import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
+import com.limor.app.components.GridSpacingItemDecoration
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.main.adapters.PodcastsGridAdapter
 import com.limor.app.scenes.main.viewmodels.GetPodcastsByCategoryViewModel
@@ -22,10 +25,7 @@ import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UICategory
 import com.limor.app.uimodels.UIPodcast
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.fragment_categories.*
 import kotlinx.android.synthetic.main.fragment_podcasts_by_category.*
-import kotlinx.android.synthetic.main.fragment_users_blocked.*
-import kotlinx.android.synthetic.main.fragment_users_blocked.layEmptyScenario
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
 import org.jetbrains.anko.okButton
@@ -34,6 +34,7 @@ import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.onRefresh
 import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
+
 
 class DiscoverPodcastsByCategoryFragment : BaseFragment() {
 
@@ -87,6 +88,7 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
             initApiCallGetPodcasts()
             initRecyclerView()
             initSwipeAndRefreshLayout()
+            showEmptyScenario(true)
             getPodcastsDataTrigger.onNext(Unit)
         } ?: run {
             alert(getString(R.string.error_getting_category)) {
@@ -108,7 +110,6 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
     }
 
 
-
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
             viewModelGetPodcastsByCategory = ViewModelProviders
@@ -119,7 +120,8 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
 
 
     private fun initRecyclerView() {
-        val layoutManager = LinearLayoutManager(context)
+        val layoutManager = GridLayoutManager(context, 2)
+
         rvPodcasts?.layoutManager = layoutManager
         podcastsGridAdapter = PodcastsGridAdapter(
             context!!,
@@ -143,6 +145,11 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
 
             })
 
+        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return podcastsGridAdapter.getSpanByPosition(position)
+            }
+        }
         rvPodcasts?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -176,6 +183,15 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
         })
         rvPodcasts.adapter = podcastsGridAdapter
         rvPodcasts?.setHasFixedSize(false)
+
+        val dip = 16f
+        val r: Resources = resources
+        val pxMedium = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dip,
+            r.displayMetrics
+        )
+        rvPodcasts?.addItemDecoration(GridSpacingItemDecoration(pxMedium.toInt()))
     }
 
     private fun requestNewData(showProgress: Boolean) {
@@ -185,21 +201,21 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
     }
 
     private fun initSwipeAndRefreshLayout() {
-        laySwipeRefresh?.setProgressBackgroundColorSchemeColor(
+        swipeRefreshLayout?.setProgressBackgroundColorSchemeColor(
             ContextCompat.getColor(
                 requireContext(),
                 R.color.colorPrimaryDark
             )
         )
 
-        laySwipeRefresh?.setColorSchemeColors(
+        swipeRefreshLayout?.setColorSchemeColors(
             ContextCompat.getColor(
                 requireContext(),
                 R.color.brandPrimary500
             )
         )
 
-        laySwipeRefresh?.onRefresh {
+        swipeRefreshLayout?.onRefresh {
             reload()
         }
     }
@@ -208,10 +224,9 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
     private fun reload() {
         isLastPage = false
         viewModelGetPodcastsByCategory.offset = 0
-        showEmptyScenario(true)
         podcasts.clear()
-        rvBlockedUsers?.recycledViewPool?.clear()
-        rvBlockedUsers.adapter?.notifyDataSetChanged()
+        rvPodcasts?.recycledViewPool?.clear()
+        rvPodcasts.adapter?.notifyDataSetChanged()
         requestNewData(true)
     }
 
@@ -245,6 +260,7 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
                 toast(getString(R.string.error_getting_podcasts)).show()
             } else {
                 if (it.data.podcasts.size > 0) {
+                    showEmptyScenario(false)
                     val previousSize = podcasts.size
                     podcasts.addAll(it.data.podcasts)
                     setViewModelVariables()

@@ -8,6 +8,8 @@
     <include layout="@layout/toolbar_with_back_arrow_icon" />
 
     <RelativeLayout
+        android:layout_marginStart="@dimen/marginMedium"
+        android:layout_marginEnd="@dimen/marginMedium"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

@@ -33,6 +33,11 @@ class PodcastsGridAdapter(
         podcastGridViewHolder.bind(currentItem, position)
     }
 
+    fun getSpanByPosition(position: Int) : Int {
+        return if(position == 0 || position % 5 == 0) 2
+        else 1
+    }
+
     interface OnPodcastClickListener {
         fun onItemClicked(item: UIPodcast, position: Int)
         fun onPlayClicked(item: UIPodcast, position: Int)
