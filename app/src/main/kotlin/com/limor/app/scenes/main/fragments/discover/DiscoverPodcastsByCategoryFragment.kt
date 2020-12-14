@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main.fragments.discover
 
+import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.TypedValue
@@ -16,12 +17,19 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.App
 import com.limor.app.R
+import com.limor.app.common.BaseActivity
 import com.limor.app.common.BaseFragment
+import com.limor.app.common.SessionManager
 import com.limor.app.components.GridSpacingItemDecoration
 import com.limor.app.extensions.hideKeyboard
+import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.adapters.PodcastsGridAdapter
+import com.limor.app.scenes.main.fragments.FeedItemsListFragment
+import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.GetPodcastsByCategoryViewModel
 import com.limor.app.scenes.utils.CommonsKt
+import com.limor.app.service.AudioService
 import com.limor.app.uimodels.UICategory
 import com.limor.app.uimodels.UIPodcast
 import io.reactivex.subjects.PublishSubject
@@ -46,6 +54,9 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    @Inject
+    lateinit var sessionManager: SessionManager
 
     private lateinit var viewModelGetPodcastsByCategory: GetPodcastsByCategoryViewModel
 
@@ -128,19 +139,36 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
             podcasts,
             object : PodcastsGridAdapter.OnPodcastClickListener {
                 override fun onItemClicked(item: UIPodcast, position: Int) {
-
+                    val podcastDetailsIntent =
+                        Intent(context, PodcastDetailsActivity::class.java)
+                    podcastDetailsIntent.putExtra("podcast", item)
+                    podcastDetailsIntent.putExtra("position", position)
+                    startActivity(podcastDetailsIntent)
                 }
 
                 override fun onPlayClicked(item: UIPodcast, position: Int) {
-
+                    AudioService.newIntent(requireContext(), item, 1L)
+                        .also { intent ->
+                            requireContext().startService(intent)
+                            val activity = requireActivity() as BaseActivity
+                            activity.showMiniPlayer()
+                        }
                 }
 
                 override fun onUserClicked(item: UIPodcast, position: Int) {
-
+                    if (item.user.id == sessionManager.getStoredUser()?.id) {
+                        val intent = Intent(requireActivity(), MainActivity::class.java)
+                        intent.putExtra("destination", "profile")
+                        startActivity(intent)
+                    } else {
+                        val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+                        userProfileIntent.putExtra("user", item.user)
+                        startActivity(userProfileIntent)
+                    }
                 }
 
                 override fun onMoreClicked(item: UIPodcast, position: Int, view: View) {
-
+                    toast("You clicked on more item ${item.title}").show()
                 }
 
             })
