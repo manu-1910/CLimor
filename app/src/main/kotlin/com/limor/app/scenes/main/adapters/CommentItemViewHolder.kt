@@ -76,6 +76,7 @@ class CommentItemViewHolder(
     private var layComment: View = itemView.findViewById(R.id.layComment)
 
     private var seekBar: SeekBar = itemView.findViewById(R.id.seekBar)
+    private var layListens: View = itemView.findViewById(R.id.layListens)
 
 
 
@@ -175,11 +176,14 @@ class CommentItemViewHolder(
             val duration = currentItem.comment.audio.duration
             val audioUrl = currentItem.comment.audio.url
             if(duration != null && audioUrl != null) {
+                layListens.visibility = View.VISIBLE
                 showPlayer(currentItem, position)
             } else {
+                layListens.visibility = View.GONE
                 layPlayer.visibility = View.GONE
             }
         } else {
+            layListens.visibility = View.GONE
             layPlayer.visibility = View.GONE
         }
 
