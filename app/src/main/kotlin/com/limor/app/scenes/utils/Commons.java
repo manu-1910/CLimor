@@ -84,7 +84,7 @@ public class Commons {
     public static final int AUDIO_TYPE_ATTACHMENT = 6;
 
     //public static final String audioFileFormat = ".amr";
-    public static final String audioFileFormat = ".wav";
+    public static final String audioFileFormat = ".m4a";
 
 
     public static final String APP_TITLE = "Limor";
