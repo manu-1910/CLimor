@@ -45,6 +45,7 @@ import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter
 import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
 import com.limor.app.App
 import com.limor.app.R
+import com.limor.app.audio.wav.WavHelper
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.components.AlertProgressBar
@@ -141,6 +142,7 @@ class PublishFragment : BaseFragment() {
     private var imageUploaded: Boolean = false
     private var podcastHasImage: Boolean = false
     private var isShowingTagsRecycler = false
+    private var convertedFile : File? = null
 
 
     companion object {
@@ -272,23 +274,20 @@ class PublishFragment : BaseFragment() {
 
             if (it.code == 0) { //Publish Ok
 
+                convertedFile?.delete()
                 callToDeleteDraft()
 
                 isPublished = true
 
-                try {
-                    alert {
-                        this.titleResource = R.string.cast_published_ok_title
-                        this.messageResource = R.string.cast_published_ok_description
-                        positiveButton(getString(R.string.btnDone)) {
-                            val mainIntent = Intent(context, MainActivity::class.java)
-                            startActivity(mainIntent)
-                            (activity as RecordActivity).finish()
-                        }
-                    }.show()
-                } catch (e: Exception) {
-                }
-
+                alert {
+                    this.titleResource = R.string.cast_published_ok_title
+                    this.messageResource = R.string.cast_published_ok_description
+                    positiveButton(getString(R.string.btnDone)) {
+                        val mainIntent = Intent(context, MainActivity::class.java)
+                        startActivity(mainIntent)
+                        activity?.finish()
+                    }
+                }.show()
             }
         })
 
@@ -504,34 +503,38 @@ class PublishFragment : BaseFragment() {
         val dialog = AlertProgressBar(context!!)
         dialog.show()
 
+        convertedFile = WavHelper.convertWavToM4a(context!!, uiDraft.filePath!!)
+        convertedFile?.let {
+            //Upload audio file to AWS
+            Commons.getInstance().uploadAudio(
+                context,
+                it,
+                Constants.AUDIO_TYPE_PODCAST,
+                object : Commons.AudioUploadCallback {
+                    override fun onSuccess(audioUrl: String?) {
+                        println("Audio upload to AWS succesfully")
+                        audioUploaded = true
+                        audioUrlFinal = audioUrl
+                        dialog.dismiss()
+                        readyToPublish()
+                    }
 
-        //Upload audio file to AWS
-        Commons.getInstance().uploadAudio(
-            context,
-            File(Uri.parse(uiDraft.filePath).path!!),
-            Constants.AUDIO_TYPE_PODCAST,
-            object : Commons.AudioUploadCallback {
-                override fun onSuccess(audioUrl: String?) {
-                    println("Audio upload to AWS succesfully")
-                    audioUploaded = true
-                    audioUrlFinal = audioUrl
-                    dialog.dismiss()
-                    readyToPublish()
-                }
+                    override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
+                        dialog.updateProgress(bytesCurrent.toInt(), bytesTotal.toInt())
+                    }
 
-                override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
-                    dialog.updateProgress(bytesCurrent.toInt(), bytesTotal.toInt())
-                }
+                    override fun onError(error: String?) {
+                        dialog.dismiss()
+                        audioUploaded = false
+                        alert(getString(R.string.error_uploading_audio)) {
+                            okButton { }
+                        }.show()
+                        Timber.d("Audio upload to AWS error: $error")
+                    }
+                })
+        }
 
-                override fun onError(error: String?) {
-                    dialog.dismiss()
-                    audioUploaded = false
-                    alert(getString(R.string.error_uploading_audio)) {
-                        okButton { }
-                    }.show()
-                    Timber.d("Audio upload to AWS error: $error")
-                }
-            })
+
     }
 
 

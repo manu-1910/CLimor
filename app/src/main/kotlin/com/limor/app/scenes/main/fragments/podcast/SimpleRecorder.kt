@@ -29,8 +29,8 @@ class SimpleRecorder(private val folderPath: String) {
         lastFileName = directory.absolutePath + "/" + Date().time + Commons.audioFileFormat
         recorder = MediaRecorder()
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC)
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB)
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.HE_AAC)
         recorder.setOutputFile(lastFileName)
         try {
             recorder.prepare()
