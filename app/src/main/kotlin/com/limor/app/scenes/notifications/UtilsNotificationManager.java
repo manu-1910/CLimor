@@ -14,7 +14,7 @@ import com.limor.app.uimodels.UIPodcast;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-
+@Deprecated
 public class UtilsNotificationManager {
 
     public static final String NOTIFICATION_TYPE_GENERAL = "general";
@@ -29,6 +29,9 @@ public class UtilsNotificationManager {
     public static final String NOTIFICATION_TYPE_CONVERSATION_REQUEST = "conversation_request";
     public static final String NOTIFICATION_TYPE_CONVERSATION_PARTICIPANT = "conversation_participant";
     public static final String NOTIFICATION_TYPE_MESSAGE_SENT = "message_sent";
+    public static final String NOTIFICATION_TYPE_COMMENT_COMMENT = "comment_comment";
+    public static final String NOTIFICATION_TYPE_FACEBOOK_FRIEND = "facebook_friend";  //Not needed now
+
 
     public static void handleNotificationList(UINotificationItem notification, CircleImageView ivAvatar, ImageView ivNotification, TextView tvMessage, TextView tvTime, RelativeLayout rlAllArea) {
         ivNotification.setBackground(null);
