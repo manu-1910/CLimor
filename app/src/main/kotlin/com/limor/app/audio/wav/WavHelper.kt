@@ -125,7 +125,7 @@ class WavHelper {
             return false
         }
 
-
+        @Deprecated("You should use combineWaveFile. This one is old and doesn't work properly") // this one is wrong, shouldn't be used
         fun combineWaveFile2(
                 file1: String,
                 file2: String,
@@ -287,6 +287,21 @@ class WavHelper {
         fun convertToWav(context: Context, fileToConvert : String) : File? {
             val path = context.getExternalFilesDir(null)?.absolutePath
             val convertedFile = File(path, "/limorv2/" + System.currentTimeMillis() + ".wav")
+            val commandToExecute3 = "-i $fileToConvert $convertedFile"
+
+            val rc: Int = FFmpeg.execute(commandToExecute3)
+            if(rc == FFmpeg.RETURN_CODE_SUCCESS) {
+                return convertedFile
+            }
+            return null
+        }
+
+
+        // receives a file path and tries to convert it to wav.
+        // it will return the new generated file if success or null if error
+        fun convertWavToM4a(context: Context, fileToConvert : String) : File? {
+            val path = context.getExternalFilesDir(null)?.absolutePath
+            val convertedFile = File(path, "/limorv2/" + System.currentTimeMillis() + ".m4a")
             val commandToExecute3 = "-i $fileToConvert $convertedFile"
 
             val rc: Int = FFmpeg.execute(commandToExecute3)
