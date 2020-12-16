@@ -14,6 +14,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.limor.app.R
 import com.limor.app.scenes.main.MainActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.utils.Commons
 import org.json.JSONObject
 import timber.log.Timber
@@ -125,17 +126,66 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
 
     fun getNotificationIntent(pushNote: JSONObject): Intent? {
-        val pushNoteExtra = pushNote.getJSONObject("extra")
-        val type = pushNoteExtra.getString("type")
-        val resultIntent = Intent(this, MainActivity::class.java)
-        resultIntent.putExtra(Commons.NOTIFICATION_TYPE, type)
-        if (type == UtilsNotificationManager.NOTIFICATION_TYPE_MESSAGE_SENT) {
-            resultIntent.putExtra(
-                UtilsNotificationManager.NOTIFICATION_TYPE_MESSAGE_SENT,
-                pushNoteExtra.getInt("conversation_id")
-            )
+        val pushNotificationExtra = pushNote.getJSONObject("extra")
+        val type = pushNotificationExtra.getString("type")
+        val notificationType = getNotificationTypeByValue(type)
+        return when(notificationType) {
+            NotificationType.NOTIFICATION_TYPE_GENERAL -> {
+                getDefaultIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_FOLLOW -> {
+                getUserIntent(pushNotificationExtra)
+            }
+            NotificationType.NOTIFICATION_TYPE_MENTION -> {
+                getDefaultIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_PODCAST_BOOKMARK_SHARE -> {
+                getDefaultIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_PODCAST_LIKE -> {
+                getDefaultIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_PODCAST_RECAST -> {
+                getDefaultIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_PODCAST_COMMENT -> {
+                getDefaultIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_COMMENT_LIKE -> {
+                getDefaultIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_AD_COMMENT -> {
+                getDefaultIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_CONVERSATION_REQUEST -> {
+                getDefaultIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_CONVERSATION_PARTICIPANT -> {
+                getDefaultIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_MESSAGE_SENT -> {
+                getDefaultIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_COMMENT_COMMENT -> {
+                getDefaultIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_FACEBOOK_FRIEND -> {
+                getDefaultIntent()
+            }
+            null -> {
+                getDefaultIntent()
+            }
         }
-        return resultIntent
+    }
+
+    private fun getUserIntent(pushNotificationExtra: JSONObject): Intent {
+        val intent = Intent(this, UserProfileActivity::class.java)
+        intent.putExtra("user_id", pushNotificationExtra.getInt("owner_id"))
+        return intent
+    }
+
+    private fun getDefaultIntent(): Intent {
+        return Intent(this, MainActivity::class.java)
     }
 
 }

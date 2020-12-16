@@ -95,7 +95,7 @@ class ProfileFragment : BaseFragment() {
             apiCallGetUser()
 
             if (!isMyProfileMode) {
-                viewModelGetUser.user = (activity as UserProfileActivity).uiUser
+                viewModelGetUser.id = activity?.intent?.extras?.getInt("user_id")
                 apiCallReportUser()
                 apiCallCreateFriend()
                 apiCallDeleteFriend()
@@ -105,10 +105,6 @@ class ProfileFragment : BaseFragment() {
             } else {
                 viewModelGetUser.user = sessionManager.getStoredUser()
             }
-
-            viewModelGetUser.id = viewModelGetUser.user?.id
-
-
         }
         return rootView
     }
@@ -118,11 +114,8 @@ class ProfileFragment : BaseFragment() {
         initToolbarViews()
 
         listeners()
-        initViewPager()
         configureToolbar()
         configureScreen()
-        printUserData()
-
     }
 
     private fun apiCallDeleteBlockedUser() {
@@ -187,7 +180,7 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun initViewPager() {
-        if(viewModelGetUser.user?.blocked == true) {
+        if (viewModelGetUser.user?.blocked == true) {
             layViewPager?.visibility = View.GONE
         } else {
             layViewPager?.visibility = View.VISIBLE
@@ -199,63 +192,75 @@ class ProfileFragment : BaseFragment() {
 
             val isPatron = false // TODO: this should change when the api is done
 
-            val adapter = object : FragmentStatePagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-                override fun getItem(position: Int): Fragment {
-                    return when (position) {
-                        0 -> UserPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
-                        1 -> UserLikedPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
-                        2 -> if(isPatron) {
-                            UserPatronPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
-                        } else {
-                            JoinToPatronFragment.newInstance()
+
+            viewModelGetUser.user?.id?.let {
+                val adapter = object : FragmentStatePagerAdapter(
+                    childFragmentManager,
+                    BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
+                ) {
+                    override fun getItem(position: Int): Fragment {
+
+                        return when (position) {
+                            0 -> UserPodcastsFragment.newInstance(it)
+                            1 -> UserLikedPodcastsFragment.newInstance(it)
+                            2 -> if (isPatron) {
+                                UserPatronPodcastsFragment.newInstance(it)
+                            } else {
+                                JoinToPatronFragment.newInstance()
+                            }
+                            else -> UserPodcastsFragment.newInstance(it)
                         }
-                        else -> UserPodcastsFragment.newInstance(viewModelGetUser.user?.id!!)
                     }
-                }
 
-                override fun getCount() : Int {
-                    return names.size
-                }
+                    override fun getCount(): Int {
+                        return names.size
+                    }
 
-                override fun getPageTitle(position: Int): CharSequence {
-                    return names[position]
-                }
+                    override fun getPageTitle(position: Int): CharSequence {
+                        return names[position]
+                    }
 
-                // this is necessary. Without this, app will crash when you are in a different fragment
-                // and then push back and it goes back to this fragment.
-                // the fragmentstatepageradapter saves states between different fragments of the adapter itself
-                // but if you go to a different fragment, for example home, and the push back and the navigation
-                // goes back to this profile fragment, the fragmentstatepageradapter will try to restore the
-                // state of the adapter fragments but they are not alive anymore.
-                override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
-                    try {
-                        super.restoreState(state, loader)
-                    } catch (e: Exception) {
+                    // this is necessary. Without this, app will crash when you are in a different fragment
+                    // and then push back and it goes back to this fragment.
+                    // the fragmentstatepageradapter saves states between different fragments of the adapter itself
+                    // but if you go to a different fragment, for example home, and the push back and the navigation
+                    // goes back to this profile fragment, the fragmentstatepageradapter will try to restore the
+                    // state of the adapter fragments but they are not alive anymore.
+                    override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
+                        try {
+                            super.restoreState(state, loader)
+                        } catch (e: Exception) {
 //                        Timber.e("Error Restore State of Fragment : %s", e.message)
-                    }
-                }
-            }
-            viewPager?.adapter = adapter
-
-            tab_layout?.setupWithViewPager(viewPager)
-            tab_layout?.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                override fun onTabReselected(tab: TabLayout.Tab?) {
-                    tab?.let {
-                        val myFragment = adapter.instantiateItem(viewPager, it.position)
-                        if (myFragment is FeedItemsListFragment) {
-                            myFragment.scrollToTop()
                         }
                     }
                 }
+                viewPager?.adapter = adapter
 
-                override fun onTabUnselected(tab: TabLayout.Tab?) {
+                tab_layout?.setupWithViewPager(viewPager)
+                tab_layout?.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                    override fun onTabReselected(tab: TabLayout.Tab?) {
+                        tab?.let { layoutTab ->
+                            val myFragment = adapter.instantiateItem(viewPager, layoutTab.position)
+                            if (myFragment is FeedItemsListFragment) {
+                                myFragment.scrollToTop()
+                            }
+                        }
+                    }
 
-                }
+                    override fun onTabUnselected(tab: TabLayout.Tab?) {
 
-                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    }
 
-                }
-            })
+                    override fun onTabSelected(tab: TabLayout.Tab?) {
+
+                    }
+                })
+
+            } ?: run {
+                toast(getString(R.string.no_user_id_error)).show()
+            }
+
+
         }
     }
 
@@ -264,8 +269,8 @@ class ProfileFragment : BaseFragment() {
             true
         } else {
             val loggedUser = sessionManager.getStoredUser()
-            val user = (activity as UserProfileActivity).uiUser
-            loggedUser?.id == user?.id
+            val id = activity?.intent?.extras?.getInt("user_id")
+            loggedUser?.id == id
         }
     }
 
@@ -277,7 +282,7 @@ class ProfileFragment : BaseFragment() {
         } else {
             btnSettings?.visibility = View.GONE
             btnMore?.visibility = View.VISIBLE
-            if(viewModelGetUser.user?.blocked == true) {
+            if (viewModelGetUser.user?.blocked == true) {
                 layFollows?.visibility = View.GONE
                 btnBlock?.visibility = View.VISIBLE
                 setStyleToBlockButton()
@@ -302,7 +307,6 @@ class ProfileFragment : BaseFragment() {
     }
 
 
-
     private fun listeners() {
 
         btnBlock?.onClick {
@@ -323,19 +327,17 @@ class ProfileFragment : BaseFragment() {
         }
 
         btnFollow?.onClick {
-            viewModelGetUser.user?.followed?.let {
-                revertUserFollowedState()
+            revertUserFollowedState()
 
-                // if the user is followed now, we must unfollow him
-                if (it) {
-                    viewModelDeleteFriend.idFriend = viewModelGetUser.user!!.id
-                    deleteFriendDataTrigger.onNext(Unit)
+            // if the user is followed now, we must unfollow him
+            if (viewModelGetUser.user?.followed == true) {
+                viewModelDeleteFriend.idFriend = viewModelGetUser.user!!.id
+                deleteFriendDataTrigger.onNext(Unit)
 
-                    // if the user is unfollowed now, we must follow him
-                } else {
-                    viewModelCreateFriend.idNewFriend = viewModelGetUser.user!!.id
-                    createFriendDataTrigger.onNext(Unit)
-                }
+                // if the user is unfollowed now, we must follow him
+            } else {
+                viewModelCreateFriend.idNewFriend = viewModelGetUser.user!!.id
+                createFriendDataTrigger.onNext(Unit)
             }
         }
     }
@@ -388,7 +390,7 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun setStyleToBlockButton() {
-        if(viewModelGetUser.user?.blocked == true) {
+        if (viewModelGetUser.user?.blocked == true) {
             CommonsKt.setButtonLimorStylePressed(btnBlock, false, R.string.block, R.string.unblock)
         } else {
             CommonsKt.setButtonLimorStylePressed(btnBlock, true, R.string.block, R.string.unblock)
@@ -396,12 +398,21 @@ class ProfileFragment : BaseFragment() {
     }
 
 
-
     private fun setStyleToFollowButton() {
-        if(viewModelGetUser.user?.followed == true) {
-            CommonsKt.setButtonLimorStylePressed(btnFollow, false, R.string.follow, R.string.unfollow)
+        if (viewModelGetUser.user?.followed == true) {
+            CommonsKt.setButtonLimorStylePressed(
+                btnFollow,
+                false,
+                R.string.follow,
+                R.string.unfollow
+            )
         } else {
-            CommonsKt.setButtonLimorStylePressed(btnFollow, true, R.string.follow, R.string.unfollow)
+            CommonsKt.setButtonLimorStylePressed(
+                btnFollow,
+                true,
+                R.string.follow,
+                R.string.unfollow
+            )
         }
     }
 
@@ -431,15 +442,13 @@ class ProfileFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        viewModelGetUser.user?.let {
-            getUserDataTrigger.onNext(Unit)
-        }
+        getUserDataTrigger.onNext(Unit)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode == Activity.RESULT_OK) {
-            when(requestCode) {
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
                 REQUEST_REPORT_USER -> {
                     data?.let {
                         val reason = data.getStringExtra("reason")
@@ -565,6 +574,7 @@ class ProfileFragment : BaseFragment() {
         output.response.observe(this, Observer {
             view?.hideKeyboard()
             viewModelGetUser.user = it.data.user
+            initViewPager()
             printUserData()
         })
 
@@ -639,7 +649,7 @@ class ProfileFragment : BaseFragment() {
         }
 
 
-        if(viewModelGetUser.user?.description?.isEmpty() == false) {
+        if (viewModelGetUser.user?.description?.isEmpty() == false) {
             tvBio?.visibility = View.VISIBLE
             tvBio?.text = viewModelGetUser.user?.description
         } else {

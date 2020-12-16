@@ -6,7 +6,6 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
-import com.limor.app.uimodels.UIUser
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
@@ -14,7 +13,7 @@ import javax.inject.Inject
 
 class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector {
 
-    var uiUser : UIUser? = null
+//    var uiUser : UIUser? = null
 
 
     @Inject
@@ -34,8 +33,8 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        val bundle = intent?.extras
-        uiUser = bundle?.get("user") as UIUser?
+//        val bundle = intent?.extras
+//        uiUser = bundle?.get("user") as UIUser?
 
         setupNavigationController()
     }

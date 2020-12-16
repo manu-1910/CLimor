@@ -199,7 +199,7 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
                         startActivity(intent)
                     } else {
                         val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-                        userProfileIntent.putExtra("user", item.user)
+                        userProfileIntent.putExtra("user_id", item.user.id)
                         startActivity(userProfileIntent)
                     }
                 }

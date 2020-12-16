@@ -1577,7 +1577,7 @@ class PodcastDetailsFragment : BaseFragment() {
                             startActivity(intent)
                         } else {
                             val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-                            userProfileIntent.putExtra("user", item.user)
+                            userProfileIntent.putExtra("user_id", item.user?.id)
                             startActivity(userProfileIntent)
                         }
                     }
@@ -2164,7 +2164,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 startActivity(userProfileIntent)
             } else {
                 val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-                userProfileIntent.putExtra("user", it)
+                userProfileIntent.putExtra("user_id", it.id)
                 startActivity(userProfileIntent)
             }
         }

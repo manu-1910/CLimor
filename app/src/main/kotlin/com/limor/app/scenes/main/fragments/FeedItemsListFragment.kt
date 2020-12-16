@@ -402,7 +402,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
                             }
                         } else {
                             val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-                            userProfileIntent.putExtra("user", item.podcast?.user)
+                            userProfileIntent.putExtra("user_id", item.podcast?.user?.id)
                             startActivity(userProfileIntent)
                         }
                     }
