@@ -31,7 +31,6 @@ import com.limor.app.extensions.forceLayoutChanges
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.main.adapters.*
 import com.limor.app.scenes.main.fragments.CategoriesActivity
-import com.limor.app.scenes.main.fragments.discover.DiscoverPodcastsByCategoryActivity
 import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
 import com.limor.app.scenes.main.fragments.profile.ReportActivity
 import com.limor.app.scenes.main.fragments.profile.TypeReport
@@ -532,7 +531,7 @@ class DiscoverFragment : BaseFragment(),
 
     override fun onPersonClicked(item: UIUser, position: Int) {
         val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-        userProfileIntent.putExtra("user", item)
+        userProfileIntent.putExtra("user_id", item.id)
         startActivity(userProfileIntent)
     }
 

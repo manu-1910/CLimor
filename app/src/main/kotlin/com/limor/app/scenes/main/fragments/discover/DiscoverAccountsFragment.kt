@@ -146,7 +146,7 @@ class DiscoverAccountsFragment : BaseFragment(),
                 object : DiscoverUsersAdapter.OnUserSearchClicked {
                     override fun onUserClicked(item: UIUser, position: Int) {
                         val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-                        userProfileIntent.putExtra("user", item)
+                        userProfileIntent.putExtra("user_id", item.id)
                         startActivity(userProfileIntent)
                     }
 

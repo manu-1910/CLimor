@@ -40,7 +40,7 @@ class GetUserViewModel @Inject constructor(private val getUserUseCase: GetUserUs
         input.getUserTrigger.subscribe({
             getUserUseCase.execute(id).subscribe({
                 response.value = it
-                user = it.data?.user
+                user = it.data.user
 
 
             }, {
