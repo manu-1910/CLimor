@@ -21,8 +21,8 @@ android {
         targetSdkVersion build_versions.target_sdk
 
         applicationId globalConfiguration.androidApplicationId
-        versionCode 29
-        versionName "0.0.29"
+        versionCode 30
+        versionName "0.0.30"
 
         testInstrumentationRunner globalConfiguration.testInstrumentationRunner
         testApplicationId globalConfiguration.testApplicationId
