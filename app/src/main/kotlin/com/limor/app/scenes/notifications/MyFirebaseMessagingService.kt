@@ -14,6 +14,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.limor.app.R
 import com.limor.app.scenes.main.MainActivity
+import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.utils.Commons
 import org.json.JSONObject
@@ -134,7 +135,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 getDefaultIntent()
             }
             NotificationType.NOTIFICATION_TYPE_FOLLOW -> {
-                getUserIntent(pushNotificationExtra)
+                getUserProfileIntent(pushNotificationExtra)
             }
             NotificationType.NOTIFICATION_TYPE_MENTION -> {
                 getDefaultIntent()
@@ -143,16 +144,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 getDefaultIntent()
             }
             NotificationType.NOTIFICATION_TYPE_PODCAST_LIKE -> {
-                getDefaultIntent()
+                getPodcastDetailsIntent(pushNotificationExtra)
             }
             NotificationType.NOTIFICATION_TYPE_PODCAST_RECAST -> {
-                getDefaultIntent()
+                getPodcastDetailsIntent(pushNotificationExtra)
             }
             NotificationType.NOTIFICATION_TYPE_PODCAST_COMMENT -> {
-                getDefaultIntent()
+                getPodcastDetailsIntent(pushNotificationExtra)
             }
             NotificationType.NOTIFICATION_TYPE_COMMENT_LIKE -> {
-                getDefaultIntent()
+                getPodcastDetailsIntent(pushNotificationExtra)
             }
             NotificationType.NOTIFICATION_TYPE_AD_COMMENT -> {
                 getDefaultIntent()
@@ -167,7 +168,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 getDefaultIntent()
             }
             NotificationType.NOTIFICATION_TYPE_COMMENT_COMMENT -> {
-                getDefaultIntent()
+                getPodcastDetailsIntent(pushNotificationExtra)
             }
             NotificationType.NOTIFICATION_TYPE_FACEBOOK_FRIEND -> {
                 getDefaultIntent()
@@ -178,9 +179,17 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
     }
 
-    private fun getUserIntent(pushNotificationExtra: JSONObject): Intent {
+    private fun getUserProfileIntent(pushNotificationExtra: JSONObject): Intent {
         val intent = Intent(this, UserProfileActivity::class.java)
         intent.putExtra("user_id", pushNotificationExtra.getInt("owner_id"))
+        return intent
+    }
+
+    private fun getPodcastDetailsIntent(pushNotificationExtra: JSONObject): Intent {
+        val notifId = pushNotificationExtra.getInt("notification_id")
+        val intent = Intent(this, PodcastDetailsActivity::class.java)
+//        intent.putExtra("podcast_id", pushNotificationExtra.getInt("owner_id"))
+        intent.putExtra("podcast_id", notifId)
         return intent
     }
 
