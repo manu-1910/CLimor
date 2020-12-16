@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar
+    android:id="@+id/toolbar_with_searchview"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:elevation="2dp"
+    app:contentInsetEnd="0dp"
+    app:contentInsetStart="0dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/btnClose"
+            style="?android:attr/buttonBarButtonStyle"
+            android:src="@drawable/chevron_left"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:gravity="center_vertical"
+            android:textAllCaps="false"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tvToolbarTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/marginMedium"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/toolbar_text"
+            android:textSize="@dimen/textSizeNormal"
+            android:textStyle="bold" />
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvToolbarTitle"
+            android:background="@color/colorPrimaryDark">
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/search_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/marginMedium"
+                android:background="@drawable/shape_background_search_view"
+                android:imeOptions="actionSearch|flagNoExtractUi"
+                app:queryBackground="@color/transparent"
+                android:theme="@style/SearchViewToolbarTheme"
+                app:iconifiedByDefault="false"
+                app:queryHint="@string/search"
+                app:searchIcon="@drawable/search"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+</androidx.appcompat.widget.Toolbar>

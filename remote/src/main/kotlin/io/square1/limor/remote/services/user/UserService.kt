@@ -18,6 +18,8 @@ const val FRIENDS_PATH = "/api/v1/users/{id}/friends"
 const val REPORT_USER_PATH = "/api/v1/users/{id}/reports"
 const val NOTIFICATIONS_PATH = "/api/v1/users/notifications"
 const val USER_DEVICE_PATH = "/api/v1/users/devices"
+const val USER_FOLLOWINGS = "/api/v1/users/me/friends"
+const val USER_FOLLOWERS = "/api/v1/users/{id}/followers"
 
 
 
@@ -71,4 +73,10 @@ interface UserService {
 
     @POST(USER_DEVICE_PATH)
     fun sendUserDevice(@Body request: RequestBody): Single<ResponseBody>
+
+    @GET(USER_FOLLOWINGS)
+    fun getFollowings(@Query ("limit") limit : Int?, @Query("offset") offset : Int?): Single<ResponseBody>
+
+    @GET(USER_FOLLOWERS)
+    fun getFollowers(@Path("id") id: Int, @Query ("limit") limit : Int?, @Query("offset") offset : Int?): Single<ResponseBody>
 }

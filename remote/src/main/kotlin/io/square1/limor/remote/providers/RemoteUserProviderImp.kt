@@ -81,6 +81,14 @@ class RemoteUserProviderImp @Inject constructor(private val provider: UserServic
     override fun sendUserDevice(userDeviceRequestEntity: DataUserDeviceRequest): Single<UserDeviceResponseEntity> {
         return provider.sendUserDevice(userDeviceRequestEntity.asRemoteEntity()).asDataEntity()!!
     }
+
+    override fun getFollowings(limit: Int, offset: Int): Single<GetFollowingsUsersResponseEntity> {
+        return provider.getFollowings(limit, offset).asDataEntity()
+    }
+
+    override fun getFollowers(id: Int, limit: Int, offset: Int): Single<GetFollowersUsersResponseEntity> {
+        return provider.getFollowers(id, limit, offset).asDataEntity()
+    }
 }
 
 

@@ -10,7 +10,7 @@
         android:name="com.limor.app.scenes.main.fragments.ProfileFragment"
         android:label="ProfileFragment"
         tools:layout="@layout/fragment_profile">
-
     </fragment>
 
 </navigation>
+
