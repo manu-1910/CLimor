@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main.fragments.profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,205 +11,215 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
-import com.limor.app.scenes.main.adapters.NotificationsAdapter
+import com.limor.app.common.SessionManager
+import com.limor.app.extensions.hideKeyboard
+import com.limor.app.scenes.main.MainActivity
+import com.limor.app.scenes.main.fragments.profile.adapters.UserFollowersAdapter
 import com.limor.app.scenes.main.viewmodels.CreateFriendViewModel
 import com.limor.app.scenes.main.viewmodels.DeleteFriendViewModel
-import com.limor.app.scenes.main.viewmodels.NotificationsViewModel
+import com.limor.app.scenes.main.viewmodels.GetUserFollowersViewModel
 import com.limor.app.scenes.utils.CommonsKt
-import com.limor.app.uimodels.UINotificationItem
-import kotlinx.android.synthetic.main.fragment_notifications.*
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.support.v4.toast
-import org.jetbrains.anko.uiThread
+import com.limor.app.uimodels.UIUser
+import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.activity_followers_followings.*
+import kotlinx.android.synthetic.main.activity_followers_followings.view.*
+import kotlinx.android.synthetic.main.fragment_user_followers.*
+import kotlinx.android.synthetic.main.toolbar_discover.view.*
 import javax.inject.Inject
 
 
-class UserFollowersFragment : BaseFragment() {
+class UserFollowersFragment(private val uiUser: UIUser) : BaseFragment() {
 
-    var app: App? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-//    private lateinit var viewModelNotifications: NotificationsViewModel
-//    private lateinit var viewModelCreateFriend: CreateFriendViewModel
-//    private lateinit var viewModelDeleteFriend: DeleteFriendViewModel
-//
-//    private val getNotificationsTrigger = PublishSubject.create<Unit>()
-//    private val createFriendDataTrigger = PublishSubject.create<Unit>()
-//    private val deleteFriendDataTrigger = PublishSubject.create<Unit>()
+    @Inject
+    lateinit var sessionManager: SessionManager
 
-    private var followersAdapter: NotificationsAdapter? = null
+    var app: App? = null
+
+    private lateinit var viewModelFollowers: GetUserFollowersViewModel
+    private lateinit var viewModelCreateFriend: CreateFriendViewModel
+    private lateinit var viewModelDeleteFriend: DeleteFriendViewModel
+
+    private val getFollowersTrigger = PublishSubject.create<Unit>()
+    private val createFriendDataTrigger = PublishSubject.create<Unit>()
+    private val deleteFriendDataTrigger = PublishSubject.create<Unit>()
+
+    private var followersAdapter: UserFollowersAdapter? = null
+    protected var rootView: View? = null
 
     // views
     private var rvFollowers: RecyclerView? = null
     private var tvNoFollowers: TextView? = null
+    private var swipeRefreshLayout: SwipeRefreshLayout? = null
 
     // infinite scroll variables
     private var isScrolling: Boolean = false
     private var isLastPage: Boolean = false
 
-//    private var currentFollowItem: UINotificationItem? = null
+
 
     companion object {
         val TAG: String = UserFollowersFragment::class.java.simpleName
-        fun newInstance() = UserFollowersFragment()
+        fun newInstance(user: UIUser) = UserFollowersFragment(user)
         private const val OFFSET_INFINITE_SCROLL = 2
         private const val FEED_LIMIT_REQUEST = 15
     }
 
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_user_followers, container, false)
+        if (rootView == null) {
+            rootView = inflater.inflate(R.layout.fragment_user_followers, container, false)
+
+            rvFollowers = rootView?.findViewById(R.id.rv_followers)
+            tvNoFollowers = rootView?.findViewById(R.id.tv_no_followers)
+            swipeRefreshLayout = rootView?.findViewById(R.id.swipeRefreshLayout_followers)
+
+            bindViewModel()
+            initApiCallGetFollowers()
+            apiCallCreateFriend()
+            apiCallDeleteFriend()
+            configureAdapter()
+        }
+        return rootView
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         app = context?.applicationContext as App
 
-        rvFollowers = view.findViewById(R.id.rv_followers)
-        tvNoFollowers = view.findViewById(R.id.tv_no_followers)
-
-        bindViewModel()
-        initApiCallGetNotifications()
-//        apiCallCreateUser()
-//        apiCallDeleteUser()
-        configureAdapter()
         initSwipeRefreshLayout()
 
-//        if (viewModelNotifications.notificationList.size == 0) {
-//            getNotificationsTrigger.onNext(Unit)
-//        } else {
-//            showProgress(false)
-//        }
+        if (followersAdapter?.list?.size == 0) {
+            getFollowersTrigger.onNext(Unit)
+        } else {
+            showProgress(false)
+        }
 
     }
 
-    private fun initSwipeRefreshLayout() {
 
-        swipeRefreshLayout_notifications.setProgressBackgroundColorSchemeColor(
+    private fun initSwipeRefreshLayout() {
+        swipeRefreshLayout?.setProgressBackgroundColorSchemeColor(
             ContextCompat.getColor(
                 requireContext(),
                 R.color.colorPrimaryDark
             )
         )
 
-        swipeRefreshLayout_notifications.setColorSchemeColors(
+        swipeRefreshLayout?.setColorSchemeColors(
             ContextCompat.getColor(
                 requireContext(),
                 R.color.brandPrimary500
             )
         )
 
-        swipeRefreshLayout_notifications.setOnRefreshListener {
+        swipeRefreshLayout?.setOnRefreshListener {
             isLastPage = false
-//            viewModelNotifications.notificationList.clear()
-//            viewModelNotifications.notificationMap.clear()
-//            setNotificationViewModelVariables(0)
-//            getNotificationsTrigger.onNext(Unit)
+            followersAdapter?.list?.clear()
+            swipeRefreshLayout?.isRefreshing = true
+            getFollowersTrigger.onNext(Unit)
         }
     }
 
-    private fun initApiCallGetNotifications() {
-//        val output = viewModelNotifications.transform(
-//            NotificationsViewModel.Input(
-//                getNotificationsTrigger
-//            )
-//        )
-//
-//        output.response.observe(this, Observer {
-//            tvNoFollowers?.visibility = View.GONE
-//            val notificationsLength = it.data.notificationItems.size
-//            if (notificationsLength == 0 && viewModelNotifications.notificationList.size == 0) {
-//                tvNoFollowers?.text = getString(R.string.no_notifications_message)
-//                tvNoFollowers?.visibility = View.VISIBLE
-//            } else if (notificationsLength == 0) {
-//                isLastPage = true
-//            } else {
-//                doAsync {
-//                    viewModelNotifications.addItems(it.data.notificationItems)
-//
-//                    uiThread {
-//                        tvNoFollowers?.visibility = View.INVISIBLE
-//                        rvFollowers?.adapter?.notifyItemRangeInserted(
-//                            viewModelNotifications.oldLength,
-//                            viewModelNotifications.newLength
-//                        )
-//                    }
-//                }
-//            }
-//            showProgress(false)
-//        })
-//
-//        output.errorMessage.observe(this, Observer {
-//            tvNoFollowers?.visibility = View.VISIBLE
-//            tvNoFollowers?.text = getString(R.string.no_followers_error_message)
-//            showProgress(false)
-//            CommonsKt.handleOnApiError(app!!, context!!, this, it)
-//        })
+
+    private fun initApiCallGetFollowers() {
+        val output = viewModelFollowers.transform(
+            GetUserFollowersViewModel.Input(
+                getFollowersTrigger, uiUser.id
+            )
+        )
+
+        output.response.observe(this, Observer {
+            tvNoFollowers?.visibility = View.GONE
+            val followersLength = it.data.following_users.size
+            if (followersLength == 0 && followersAdapter?.list?.size == 0) {
+                tvNoFollowers?.text = getString(R.string.no_notifications_message)
+                tvNoFollowers?.visibility = View.VISIBLE
+            } else if (followersLength == 0) {
+                isLastPage = true
+            } else {
+                followersAdapter?.list?.addAll(it.data.following_users)
+                followersAdapter?.notifyDataSetChanged()
+            }
+            showProgress(false)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            tvNoFollowers?.visibility = View.VISIBLE
+            tvNoFollowers?.text = getString(R.string.no_followers_error_message)
+            showProgress(false)
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+        })
 
     }
+
 
     private fun bindViewModel() {
-//        activity?.let { fragmentActivity ->
-//            viewModelNotifications = ViewModelProviders
-//                .of(fragmentActivity, viewModelFactory)
-//                .get(NotificationsViewModel::class.java)
-//
-//            viewModelCreateFriend = ViewModelProviders
-//                .of(fragmentActivity, viewModelFactory)
-//                .get(CreateFriendViewModel::class.java)
-//
-//            viewModelDeleteFriend = ViewModelProviders
-//                .of(fragmentActivity, viewModelFactory)
-//                .get(DeleteFriendViewModel::class.java)
-//        }
+        activity?.let { fragmentActivity ->
+            viewModelFollowers = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(GetUserFollowersViewModel::class.java)
+
+            viewModelCreateFriend = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreateFriendViewModel::class.java)
+
+            viewModelDeleteFriend = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(DeleteFriendViewModel::class.java)
+        }
     }
+
 
     private fun showProgress(show: Boolean) {
         if (show) {
-            pb_notifications.visibility = View.VISIBLE
+            pb_followers.visibility = View.VISIBLE
         } else {
-            swipeRefreshLayout_notifications.isRefreshing = false
-            pb_notifications.visibility = View.INVISIBLE
+            swipeRefreshLayout?.isRefreshing = false
+            pb_followers.visibility = View.INVISIBLE
         }
     }
+
 
     private fun configureAdapter() {
         val layoutManager = LinearLayoutManager(context)
         rvFollowers?.layoutManager = layoutManager
         followersAdapter = context?.let {
-            NotificationsAdapter(
+            UserFollowersAdapter(
                 requireContext(),
-                //viewModelNotifications.notificationList,
-                arrayListOf(),
-                object : NotificationsAdapter.OnNotificationClicked {
-                    override fun onNotificationClicked(item: UINotificationItem, position: Int) {
-                        toast("You clicked on a notification")
+                ArrayList(),
+                object : UserFollowersAdapter.OnFollowerClickListener {
+                    override fun onUserClicked(item: UIUser, position: Int) {
+                        goToUserProfile(item)
                     }
 
-                    override fun onFollowClicked(item: UINotificationItem, position: Int) {
+                    override fun onFollowClicked(item: UIUser, position: Int) {
+                        val userId = item.id
 
-                        //currentFollowItem = item
-                        val userId = item.resources.owner.id
-
-                        if(item.resources.owner.followed){
-                            //viewModelDeleteFriend.idFriend = userId
-                            //deleteFriendDataTrigger.onNext(Unit)
+                        if(item.followed){
+                            viewModelDeleteFriend.idFriend = userId
+                            deleteFriendDataTrigger.onNext(Unit)
                         }else{
-                            //viewModelCreateFriend.idNewFriend = userId
-                            //createFriendDataTrigger.onNext(Unit)
+                            viewModelCreateFriend.idNewFriend = userId
+                            createFriendDataTrigger.onNext(Unit)
                         }
-
                         showProgress(true)
                     }
                 }
@@ -228,22 +239,20 @@ class UserFollowersFragment : BaseFragment() {
 
                 // if we scroll down...
                 if (dy > 0) {
-
                     // those are the items that we have already passed in the list, the items we already saw
                     val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
-
                     // this are the items that are currently showing on screen
                     val visibleItemsCount = layoutManager.childCount
-
                     // this are the total amount of items
                     val totalItemsCount = layoutManager.itemCount
-
                     // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
                     if (isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
                         isScrolling = false
-                        //setNotificationViewModelVariables(viewModelNotifications.notificationList.size - 1)
+                        followersAdapter?.list?.size?.minus(1)?.let {
+                            setNotificationViewModelVariables(it)
+                        }
                         showProgress(true)
-                        //getNotificationsTrigger.onNext(Unit)
+                        getFollowersTrigger.onNext(Unit)
                     }
                 }
             }
@@ -259,79 +268,115 @@ class UserFollowersFragment : BaseFragment() {
 
     }
 
-//    private fun setNotificationViewModelVariables(newOffset: Int = 0) {
-//        viewModelNotifications.limit = FEED_LIMIT_REQUEST
-//        viewModelNotifications.offset = newOffset
-//    }
 
-//    private fun apiCallCreateUser() {
-//        val output = viewModelCreateFriend.transform(
-//            CreateFriendViewModel.Input(
-//                createFriendDataTrigger
-//            )
-//        )
-//
-//        output.response.observe(this, Observer {
-//            if(it.code == 0) {
-//                revertUserFollowedState()
+    private fun setNotificationViewModelVariables(newOffset: Int = 0) {
+        viewModelFollowers.limit = FEED_LIMIT_REQUEST
+        viewModelFollowers.offset = newOffset
+    }
+
+
+
+    private fun apiCallCreateFriend() {
+        val output = viewModelCreateFriend.transform(
+            CreateFriendViewModel.Input(
+                createFriendDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if (it.code != 0) {
+                revertUserFollowedState()
+            }else{
+                showProgress(false)
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            //pbSignUp?.visibility = View.GONE
+            view?.hideKeyboard()
+            revertUserFollowedState()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+        })
+    }
+
+
+    private fun apiCallDeleteFriend() {
+        val output = viewModelDeleteFriend.transform(
+            DeleteFriendViewModel.Input(
+                deleteFriendDataTrigger
+            )
+        )
+
+        output.response.observe(this, Observer {
+            if (it.code != 0) {
+                revertUserFollowedState()
+            }else{
+                showProgress(false)
+            }
+        })
+
+        output.backgroundWorkingProgress.observe(this, Observer {
+            trackBackgroudProgress(it)
+        })
+
+        output.errorMessage.observe(this, Observer {
+            //pbSignUp?.visibility = View.GONE
+            view?.hideKeyboard()
+            revertUserFollowedState()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+        })
+    }
+
+
+    private fun revertUserFollowedState() {
+//        viewModelGetUser.user?.followed?.let {
+//            if (it) {
+//                viewModelGetUser.user!!.followers_count =
+//                    viewModelGetUser.user!!.followers_count?.dec()
+//            } else {
+//                viewModelGetUser.user!!.followers_count =
+//                    viewModelGetUser.user!!.followers_count?.inc()
 //            }
-//        })
 //
-//        output.backgroundWorkingProgress.observe(this, Observer {
-//            trackBackgroudProgress(it)
-//        })
-//
-//        output.errorMessage.observe(this, Observer {
-//
-//            CommonsKt.handleOnApiError(app!!, context!!, this, it)
-//
-//            showProgress(false)
-//
-//        })
-//    }
-
-
-//    private fun apiCallDeleteUser() {
-//        val output = viewModelDeleteFriend.transform(
-//            DeleteFriendViewModel.Input(
-//                deleteFriendDataTrigger
-//            )
-//        )
-//
-//        output.response.observe(this, Observer {
-//            if(it.code == 0) {
-//                revertUserFollowedState()
-//            }
-//        })
-//
-//        output.backgroundWorkingProgress.observe(this, Observer {
-//            trackBackgroudProgress(it)
-//        })
-//
-//        output.errorMessage.observe(this, Observer {
-//
-//            CommonsKt.handleOnApiError(app!!, context!!, this, it)
-//
-//            showProgress(false)
-//        })
-//    }
-
-//    private fun revertUserFollowedState() {
-//
-//        currentFollowItem?.let {
-//
-//            val index = viewModelNotifications.updateFollowedStatus(currentFollowItem!!)
-//
-//            if(index != -1){
-//                rvNotifications?.adapter?.notifyItemChanged(index)
-//            }
-//
-//
+//            tvNumberFollowers.text =
+//                CommonsKt.formatSocialMediaQuantity(viewModelGetUser.user!!.followers_count!!)
+//            viewModelGetUser.user?.followed = !it
+//            setStyleToFollowButton()
 //        }
-//
-//        showProgress(false)
-//
-//    }
 
+        showProgress(false)
+    }
+
+
+    private fun goToUserProfile(item: UIUser){
+
+            if (item.id == sessionManager.getStoredUser()?.id) {
+                if(activity is MainActivity)
+                    findNavController().navigate(R.id.navigation_profile)
+                else if(activity is UserProfileActivity) {
+                    val intent = Intent(requireActivity(), MainActivity::class.java)
+                    intent.putExtra("destination", "profile")
+                    startActivity(intent)
+                    // TODO -> Jose: you are in anothers person profile in UserProfileActivity
+                    //      and you clicked in you own user, so now you have to show your own profile
+                    //      but if you open a new UserProfileActivity with your user, you won't be able
+                    //      to navigate to the actions of the empty views, because you are not in the
+                    //      main activity. For example, if you don't have any like, you won't be able
+                    //      to navigate to discover fragment from UserProfileActivity
+                    //      Maybe the right choice could be to navigate to mainActivity
+                    //      and to show your profile there ¿?
+                    //      Waiting for Martin's answer
+                }
+            } else {
+                val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+                userProfileIntent.putExtra("user", item)
+                startActivity(userProfileIntent)
+            }
+
+    }
 
 }

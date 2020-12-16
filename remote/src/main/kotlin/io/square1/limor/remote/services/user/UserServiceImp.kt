@@ -1,6 +1,7 @@
 package io.square1.limor.remote.services.user
 
 
+import entities.response.GetBlockedUsersResponseEntity
 import io.reactivex.Single
 import io.square1.limor.remote.entities.requests.*
 import io.square1.limor.remote.entities.responses.*
@@ -257,6 +258,38 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
             .doOnSuccess { success -> println("SUCCESS: $success") }
             .doOnError { error ->
                 println("ERROR: $error")
+            }
+    }
+
+
+    fun getFollowings(limit: Int, offset: Int): Single<NWGetFollowingsUsersResponse> {
+        return service.getFollowings(limit, offset)
+            .map { response -> response.parseSuccessResponse(NWGetFollowingsUsersResponse.serializer()) }
+            .doOnSuccess { response ->
+                run {
+                    println("SUCCESS: $response")
+                }
+            }
+            .doOnError { error ->
+                run {
+                    println("ERROR: $error")
+                }
+            }
+    }
+
+
+    fun getFollowers(id: Int, limit: Int, offset: Int): Single<NWGetFollowersUsersResponse> {
+        return service.getFollowers(id, limit, offset)
+            .map { response -> response.parseSuccessResponse(NWGetFollowersUsersResponse.serializer()) }
+            .doOnSuccess { response ->
+                run {
+                    println("SUCCESS: $response")
+                }
+            }
+            .doOnError { error ->
+                run {
+                    println("ERROR: $error")
+                }
             }
     }
 

@@ -10,21 +10,6 @@
         android:name="com.limor.app.scenes.main.fragments.ProfileFragment"
         android:label="ProfileFragment"
         tools:layout="@layout/fragment_profile">
-
-        <action
-            android:id="@+id/action_profile_fragment_to_user_followers_followings_fragment"
-            app:destination="@id/user_followers_followings_fragment"
-            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
-            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
-            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
-            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
-    </fragment>
-
-    <fragment
-        android:id="@+id/user_followers_followings_fragment"
-        android:name="com.limor.app.scenes.main.fragments.profile.UserFollowersFollowingsFragment"
-        android:label="UserFollowersFollowingsFragment"
-        tools:layout="@layout/fragment_followers_followings">
     </fragment>
 
 </navigation>

@@ -32,5 +32,6 @@ abstract class UserProfileActivityFragmentsBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeUserFollowingsFragmentInjector(): UserFollowingsFragment
+
 }
 

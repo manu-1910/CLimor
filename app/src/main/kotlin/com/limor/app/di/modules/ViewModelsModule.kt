@@ -258,4 +258,14 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(SetupPatronViewModel::class)
     abstract fun bindSetupPatronViewModel(viewModel: SetupPatronViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(GetUserFollowingsViewModel::class)
+    abstract fun bindGetUserFollowingsViewModel(viewModel: GetUserFollowingsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(GetUserFollowersViewModel::class)
+    abstract fun bindGetUserFollowersViewModel(viewModel: GetUserFollowersViewModel): ViewModel
 }

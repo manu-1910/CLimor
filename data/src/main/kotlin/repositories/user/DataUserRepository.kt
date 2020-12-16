@@ -80,4 +80,12 @@ class DataUserRepository @Inject constructor(private val remoteProvider: RemoteU
         return remoteProvider.sendUserDevice(dataUserDeviceRequest)
     }
 
+    override fun getFollowings(limit: Int, offset: Int): Single<GetFollowingsUsersResponseEntity> {
+        return remoteProvider.getFollowings(limit, offset)
+    }
+
+    override fun getFollowers(id: Int, limit: Int, offset: Int): Single<GetFollowersUsersResponseEntity> {
+        return remoteProvider.getFollowers(id, limit, offset)
+    }
+
 }

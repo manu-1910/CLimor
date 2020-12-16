@@ -9,6 +9,7 @@ import com.limor.app.scenes.main.fragments.player.AudioPlayerActivity
 import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
 import com.limor.app.scenes.main.fragments.podcast.PodcastsByTagActivity
 import com.limor.app.scenes.main.fragments.profile.ReportActivity
+import com.limor.app.scenes.main.fragments.profile.UserFollowersFollowingsActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.record.RecordActivity
 import com.limor.app.scenes.main.fragments.settings.SettingsActivity
@@ -89,5 +90,10 @@ abstract class ActivitiesModule {
         (SetupCategoriesActivityFragmentsBuildersModule::class)
     ])
     abstract fun contributeCategoriesActivityInjector(): CategoriesActivity
+
+    @ContributesAndroidInjector(modules = [
+        (UserFollowersFollowingsFragmentsBuildersModule::class)
+    ])
+    abstract fun contributeUserFollowersFollingActivityInjector(): UserFollowersFollowingsActivity
 
 }

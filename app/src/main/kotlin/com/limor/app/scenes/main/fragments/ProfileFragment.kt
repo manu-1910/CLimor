@@ -13,8 +13,6 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.tabs.TabLayout
@@ -40,7 +38,6 @@ import javax.inject.Inject
 
 class ProfileFragment : BaseFragment() {
 
-
     private var rootView: View? = null
 
     @Inject
@@ -56,7 +53,6 @@ class ProfileFragment : BaseFragment() {
     private val deleteFriendDataTrigger = PublishSubject.create<Unit>()
     private val createBlockedUserDataTrigger = PublishSubject.create<Unit>()
     private val deleteBlockedUserDataTrigger = PublishSubject.create<Unit>()
-
 
     @Inject
     lateinit var sessionManager: SessionManager
@@ -79,6 +75,7 @@ class ProfileFragment : BaseFragment() {
         fun newInstance() = ProfileFragment()
         private const val REQUEST_SETTINGS: Int = 0
         private const val REQUEST_REPORT_USER: Int = 1
+        private const val REQUEST_FOLLOWINGS_FOLLOWERS: Int = 2
     }
 
 
@@ -341,19 +338,19 @@ class ProfileFragment : BaseFragment() {
         }
 
         lytFollowers.onClick {
-            toast("Click on followers")
-            //val bundle = Bundle()
-            //bundle.putString(getString(R.string.moreWebViewKey), getString(R.string.faq_url))
-            //findNavController().navigate(R.id.action_profile_fragment_to_user_followers_followings_fragment)
-
+            goToFollowersFollowingsActivity()
         }
 
         lytFollowing.onClick {
-            toast("Click on followings")
-            //val bundle = Bundle()
-            //bundle.putString(getString(R.string.moreWebViewKey), getString(R.string.faq_url))
-            //findNavController().navigate(R.id.action_profile_fragment_to_user_followers_followings_fragment)
+            goToFollowersFollowingsActivity()
         }
+    }
+
+
+    private fun goToFollowersFollowingsActivity(){
+        val followersFollowersIntent = Intent(context, UserFollowersFollowingsActivity::class.java)
+        followersFollowersIntent.putExtra("user", viewModelGetUser.user)
+        startActivityForResult(followersFollowersIntent, REQUEST_FOLLOWINGS_FOLLOWERS)
     }
 
 
@@ -382,7 +379,6 @@ class ProfileFragment : BaseFragment() {
         popup.show()
     }
 
-
     private fun onBlockClicked() {
         viewModelGetUser.user?.blocked?.let {
             if (it) {
@@ -410,8 +406,6 @@ class ProfileFragment : BaseFragment() {
             CommonsKt.setButtonLimorStylePressed(btnBlock, true, R.string.block, R.string.unblock)
         }
     }
-
-
 
     private fun setStyleToFollowButton() {
         if(viewModelGetUser.user?.followed == true) {
@@ -447,6 +441,7 @@ class ProfileFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+
         viewModelGetUser.user?.let {
             getUserDataTrigger.onNext(Unit)
         }
@@ -470,7 +465,6 @@ class ProfileFragment : BaseFragment() {
             }
         }
     }
-
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
@@ -527,7 +521,6 @@ class ProfileFragment : BaseFragment() {
         })
     }
 
-
     private fun apiCallDeleteFriend() {
         val output = viewModelDeleteFriend.transform(
             DeleteFriendViewModel.Input(
@@ -570,7 +563,6 @@ class ProfileFragment : BaseFragment() {
         }
     }
 
-
     private fun apiCallGetUser() {
         val output = viewModelGetUser.transform(
             GetUserViewModel.Input(
@@ -594,7 +586,6 @@ class ProfileFragment : BaseFragment() {
             CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
     }
-
 
     private fun apiCallReportUser() {
         val output = viewModelCreateUserReport.transform(
@@ -623,6 +614,7 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun printUserData() {
+        println("Entro en printUserData")
 //        var firstName = ""
 //        viewModelGetUser.user?.first_name?.let {
 //            firstName = it
@@ -639,12 +631,12 @@ class ProfileFragment : BaseFragment() {
         viewModelGetUser.user?.following_count?.let {
             tvNumberFollowing?.text = formatSocialMediaQuantity(it)
         }
-        context?.let {
-            Glide.with(it)
-                .load(viewModelGetUser.user?.images?.medium_url)
-                .apply(RequestOptions.circleCropTransform())
-                .into(ivUser)
-        }
+
+        Glide.with(context!!)
+            .load(viewModelGetUser.user?.images?.medium_url)
+            .apply(RequestOptions.circleCropTransform())
+            .into(ivUser)
+
         viewModelGetUser.user?.verified?.let {
             if (it)
                 ivVerifiedUser?.visibility = View.VISIBLE
