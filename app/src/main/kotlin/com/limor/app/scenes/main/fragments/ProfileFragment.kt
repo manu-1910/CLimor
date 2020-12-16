@@ -330,7 +330,7 @@ class ProfileFragment : BaseFragment() {
             revertUserFollowedState()
 
             // if the user is followed now, we must unfollow him
-            if (viewModelGetUser.user?.followed == true) {
+            if (viewModelGetUser.user?.followed == false) {
                 viewModelDeleteFriend.idFriend = viewModelGetUser.user!!.id
                 deleteFriendDataTrigger.onNext(Unit)
 

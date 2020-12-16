@@ -132,49 +132,49 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val notificationType = getNotificationTypeByValue(type)
         return when(notificationType) {
             NotificationType.NOTIFICATION_TYPE_GENERAL -> {
-                getDefaultIntent()
+                getNotificationsScreenIntent()
             }
             NotificationType.NOTIFICATION_TYPE_FOLLOW -> {
                 getUserProfileIntent(pushNotificationExtra)
             }
             NotificationType.NOTIFICATION_TYPE_MENTION -> {
-                getDefaultIntent()
+                getNotificationsScreenIntent()
             }
             NotificationType.NOTIFICATION_TYPE_PODCAST_BOOKMARK_SHARE -> {
-                getDefaultIntent()
+                getNotificationsScreenIntent()
             }
             NotificationType.NOTIFICATION_TYPE_PODCAST_LIKE -> {
-                getPodcastDetailsIntent(pushNotificationExtra)
+                getNotificationsScreenIntent()
             }
             NotificationType.NOTIFICATION_TYPE_PODCAST_RECAST -> {
-                getPodcastDetailsIntent(pushNotificationExtra)
+                getNotificationsScreenIntent()
             }
             NotificationType.NOTIFICATION_TYPE_PODCAST_COMMENT -> {
-                getPodcastDetailsIntent(pushNotificationExtra)
+                getNotificationsScreenIntent()
             }
             NotificationType.NOTIFICATION_TYPE_COMMENT_LIKE -> {
-                getPodcastDetailsIntent(pushNotificationExtra)
+                getNotificationsScreenIntent()
             }
             NotificationType.NOTIFICATION_TYPE_AD_COMMENT -> {
-                getDefaultIntent()
+                getNotificationsScreenIntent()
             }
             NotificationType.NOTIFICATION_TYPE_CONVERSATION_REQUEST -> {
-                getDefaultIntent()
+                getNotificationsScreenIntent()
             }
             NotificationType.NOTIFICATION_TYPE_CONVERSATION_PARTICIPANT -> {
-                getDefaultIntent()
+                getNotificationsScreenIntent()
             }
             NotificationType.NOTIFICATION_TYPE_MESSAGE_SENT -> {
-                getDefaultIntent()
+                getNotificationsScreenIntent()
             }
             NotificationType.NOTIFICATION_TYPE_COMMENT_COMMENT -> {
-                getPodcastDetailsIntent(pushNotificationExtra)
+                getNotificationsScreenIntent()
             }
             NotificationType.NOTIFICATION_TYPE_FACEBOOK_FRIEND -> {
-                getDefaultIntent()
+                getNotificationsScreenIntent()
             }
             null -> {
-                getDefaultIntent()
+                getNotificationsScreenIntent()
             }
         }
     }
@@ -182,6 +182,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     private fun getUserProfileIntent(pushNotificationExtra: JSONObject): Intent {
         val intent = Intent(this, UserProfileActivity::class.java)
         intent.putExtra("user_id", pushNotificationExtra.getInt("owner_id"))
+        return intent
+    }
+
+    private fun getNotificationsScreenIntent(): Intent {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("destination", "notifications")
         return intent
     }
 
