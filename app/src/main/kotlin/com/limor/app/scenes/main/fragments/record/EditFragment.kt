@@ -23,6 +23,7 @@ import com.googlecode.mp4parser.authoring.tracks.AppendTrack
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
+import com.limor.app.common.SessionManager
 import com.limor.app.scenes.main.viewmodels.DraftViewModel
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.statemanager.Step

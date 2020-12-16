@@ -524,19 +524,14 @@ class DiscoverFragment : BaseFragment(),
 
 
     override fun onDiscoverCategoryClicked(item: UICategory, position: Int) {
-        toast("category clicked").show()
-//        val podcastByTagIntent = Intent(context, PodcastsByTagActivity::class.java)
-//        val text = "#" + item.text
-//        podcastByTagIntent.putExtra(
-//            PodcastsByTagActivity.BUNDLE_KEY_HASHTAG,
-//            text
-//        )
-//        startActivity(podcastByTagIntent)
+        val intent = Intent(requireActivity(), DiscoverPodcastsByCategoryActivity::class.java)
+        intent.putExtra("category", item)
+        startActivity(intent)
     }
 
     override fun onPersonClicked(item: UIUser, position: Int) {
         val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-        userProfileIntent.putExtra("user", item)
+        userProfileIntent.putExtra("user_id", item.id)
         startActivity(userProfileIntent)
     }
 

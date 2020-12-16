@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,16 +10,21 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
+import com.limor.app.common.SessionManager
 import com.limor.app.scenes.main.adapters.NotificationsAdapter
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.CreateFriendViewModel
 import com.limor.app.scenes.main.viewmodels.DeleteFriendViewModel
 import com.limor.app.scenes.main.viewmodels.NotificationsViewModel
+import com.limor.app.scenes.notifications.NotificationManagerHelper
+import com.limor.app.scenes.notifications.NotificationType
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UINotificationItem
 import io.reactivex.subjects.PublishSubject
@@ -36,6 +42,9 @@ class NotificationsFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    @Inject
+    lateinit var sessionManager: SessionManager
 
     private lateinit var viewModelNotifications: NotificationsViewModel
     private lateinit var viewModelCreateFriend: CreateFriendViewModel
@@ -218,11 +227,12 @@ class NotificationsFragment : BaseFragment() {
                 viewModelNotifications.notificationList,
                 object : NotificationsAdapter.OnNotificationClicked {
                     override fun onNotificationClicked(item: UINotificationItem, position: Int) {
-                        toast("You clicked on a notification")
+                        context?.let {
+                            NotificationManagerHelper.handleClickedNotification(it, item)
+                        }
                     }
 
                     override fun onFollowClicked(item: UINotificationItem, position: Int) {
-
                         currentFollowItem = item
                         val userId = item.resources.owner.id
 
@@ -235,6 +245,19 @@ class NotificationsFragment : BaseFragment() {
                         }
 
                         showProgress(true)
+                    }
+
+                    override fun onUserClicked(item: UINotificationItem, position: Int) {
+                        item.resources.owner.let {
+                            if (it.id == sessionManager.getStoredUser()?.id) {
+                                findNavController().navigate(R.id.navigation_profile)
+                            } else {
+                                val userProfileIntent =
+                                    Intent(context, UserProfileActivity::class.java)
+                                userProfileIntent.putExtra("user_id", it.id)
+                                startActivity(userProfileIntent)
+                            }
+                        }
                     }
                 }
             )

@@ -64,5 +64,6 @@ class NotificationsAdapter(
     interface OnNotificationClicked {
         fun onNotificationClicked(item: UINotificationItem, position: Int)
         fun onFollowClicked(item: UINotificationItem, position: Int)
+        fun onUserClicked(item: UINotificationItem, position: Int)
     }
 }

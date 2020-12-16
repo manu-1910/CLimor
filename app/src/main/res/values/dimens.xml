@@ -3,6 +3,7 @@
     <!-- Margins -->
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="marginMedium">16dp</dimen>
+    <dimen name="marginMediumSmall">12dp</dimen>
     <dimen name="marginSmall">8dp</dimen>
     <dimen name="marginVerySmall">4dp</dimen>
     <dimen name="marginTiny">2dp</dimen>

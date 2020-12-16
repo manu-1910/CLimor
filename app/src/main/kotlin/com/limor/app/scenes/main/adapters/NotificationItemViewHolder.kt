@@ -12,11 +12,12 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.limor.app.R
+import com.limor.app.scenes.notifications.UtilsNotificationManager.*
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.uimodels.UINotificationItem
 import org.jetbrains.anko.sdk23.listeners.onClick
 
-const val NOTIFICATION_TYPE_GENERAL = "general"  //Not sure if we need this?
+/*const val NOTIFICATION_TYPE_GENERAL = "general"  //Not sure if we need this?
 const val NOTIFICATION_TYPE_FOLLOW = "follow"
 const val NOTIFICATION_TYPE_MENTION = "mention" //Not sure
 const val NOTIFICATION_TYPE_PODCAST_BOOKMARK_SHARE = "podcast_bookmark_share"
@@ -29,7 +30,7 @@ const val NOTIFICATION_TYPE_CONVERSATION_REQUEST = "conversation_request" //Not 
 const val NOTIFICATION_TYPE_CONVERSATION_PARTICIPANT = "conversation_participant" //Not needed now
 const val NOTIFICATION_TYPE_MESSAGE_SENT = "message_sent" //Not needed now
 const val NOTIFICATION_TYPE_COMMENT_COMMENT = "comment_comment"
-const val NOTIFICATION_TYPE_FACEBOOK_FRIEND = "facebook_friend"  //Not needed now
+const val NOTIFICATION_TYPE_FACEBOOK_FRIEND = "facebook_friend"  //Not needed now*/
 
 class NotificationItemViewHolder(
     inflater: LayoutInflater,
@@ -54,6 +55,10 @@ class NotificationItemViewHolder(
     fun bind(currentItem: UINotificationItem, position: Int) {
 
         rlRoot.onClick { notificationClickListener.onNotificationClicked(currentItem, position) }
+
+
+        tvTitle.onClick { notificationClickListener.onUserClicked(currentItem, position) }
+        ivUser.onClick { notificationClickListener.onUserClicked(currentItem, position) }
 
         btnFollow.visibility = View.GONE
         tvSubtitle.visibility = View.VISIBLE

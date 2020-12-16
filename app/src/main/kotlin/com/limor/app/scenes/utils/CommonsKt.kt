@@ -17,6 +17,7 @@ import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.uimodels.UIErrorResponse
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.toast
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -257,6 +258,7 @@ class CommonsKt {
                         }
                     }.show()
                 } else {
+                    context.toast(message).show()
 //                    fragment.alert(message.toString()) {
 //                        okButton { }
 //                    }.show()

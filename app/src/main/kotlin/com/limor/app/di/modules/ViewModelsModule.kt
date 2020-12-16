@@ -261,6 +261,11 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(GetPodcastsByCategoryViewModel::class)
+    abstract fun bindGetPodcastsByCategoryViewModel(viewModel: GetPodcastsByCategoryViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(GetUserFollowingsViewModel::class)
     abstract fun bindGetUserFollowingsViewModel(viewModel: GetUserFollowingsViewModel): ViewModel
 

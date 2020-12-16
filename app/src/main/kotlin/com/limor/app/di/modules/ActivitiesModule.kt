@@ -4,6 +4,7 @@ import com.limor.app.di.modules.fragments.*
 import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.fragments.CategoriesActivity
+import com.limor.app.scenes.main.fragments.discover.DiscoverPodcastsByCategoryActivity
 import com.limor.app.scenes.main.fragments.onboarding.OnBoardingActivity
 import com.limor.app.scenes.main.fragments.player.AudioPlayerActivity
 import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
@@ -90,6 +91,11 @@ abstract class ActivitiesModule {
         (SetupCategoriesActivityFragmentsBuildersModule::class)
     ])
     abstract fun contributeCategoriesActivityInjector(): CategoriesActivity
+
+    @ContributesAndroidInjector(modules = [
+        (DiscoverPodcastsByCategoryActivityFragmentsBuildersModule::class)
+    ])
+    abstract fun contributeDiscoverPodcastsByCategoryActivityInjector(): DiscoverPodcastsByCategoryActivity
 
     @ContributesAndroidInjector(modules = [
         (UserFollowersFollowingsFragmentsBuildersModule::class)

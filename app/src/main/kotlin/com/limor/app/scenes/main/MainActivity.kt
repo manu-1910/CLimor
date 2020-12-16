@@ -92,8 +92,11 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
         val extras = intent.extras
         if(extras != null && !extras.isEmpty) {
             val destination = extras.getString("destination")
-            if(destination != null && destination == "profile") {
-                navController.navigate(R.id.navigation_profile)
+            destination?.let {
+                when(destination) {
+                    "profile" -> navController.navigate(R.id.navigation_profile)
+                    "notifications" -> navController.navigate(R.id.navigation_notifications)
+                }
             }
         }
     }

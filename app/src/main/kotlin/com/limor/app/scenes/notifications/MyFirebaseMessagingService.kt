@@ -14,6 +14,8 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.limor.app.R
 import com.limor.app.scenes.main.MainActivity
+import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.utils.Commons
 import org.json.JSONObject
 import timber.log.Timber
@@ -125,17 +127,80 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
 
     fun getNotificationIntent(pushNote: JSONObject): Intent? {
-        val pushNoteExtra = pushNote.getJSONObject("extra")
-        val type = pushNoteExtra.getString("type")
-        val resultIntent = Intent(this, MainActivity::class.java)
-        resultIntent.putExtra(Commons.NOTIFICATION_TYPE, type)
-        if (type == UtilsNotificationManager.NOTIFICATION_TYPE_MESSAGE_SENT) {
-            resultIntent.putExtra(
-                UtilsNotificationManager.NOTIFICATION_TYPE_MESSAGE_SENT,
-                pushNoteExtra.getInt("conversation_id")
-            )
+        val pushNotificationExtra = pushNote.getJSONObject("extra")
+        val type = pushNotificationExtra.getString("type")
+        val notificationType = getNotificationTypeByValue(type)
+        return when(notificationType) {
+            NotificationType.NOTIFICATION_TYPE_GENERAL -> {
+                getNotificationsScreenIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_FOLLOW -> {
+                getUserProfileIntent(pushNotificationExtra)
+            }
+            NotificationType.NOTIFICATION_TYPE_MENTION -> {
+                getNotificationsScreenIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_PODCAST_BOOKMARK_SHARE -> {
+                getNotificationsScreenIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_PODCAST_LIKE -> {
+                getNotificationsScreenIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_PODCAST_RECAST -> {
+                getNotificationsScreenIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_PODCAST_COMMENT -> {
+                getNotificationsScreenIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_COMMENT_LIKE -> {
+                getNotificationsScreenIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_AD_COMMENT -> {
+                getNotificationsScreenIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_CONVERSATION_REQUEST -> {
+                getNotificationsScreenIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_CONVERSATION_PARTICIPANT -> {
+                getNotificationsScreenIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_MESSAGE_SENT -> {
+                getNotificationsScreenIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_COMMENT_COMMENT -> {
+                getNotificationsScreenIntent()
+            }
+            NotificationType.NOTIFICATION_TYPE_FACEBOOK_FRIEND -> {
+                getNotificationsScreenIntent()
+            }
+            null -> {
+                getNotificationsScreenIntent()
+            }
         }
-        return resultIntent
+    }
+
+    private fun getUserProfileIntent(pushNotificationExtra: JSONObject): Intent {
+        val intent = Intent(this, UserProfileActivity::class.java)
+        intent.putExtra("user_id", pushNotificationExtra.getInt("owner_id"))
+        return intent
+    }
+
+    private fun getNotificationsScreenIntent(): Intent {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("destination", "notifications")
+        return intent
+    }
+
+    private fun getPodcastDetailsIntent(pushNotificationExtra: JSONObject): Intent {
+        val notifId = pushNotificationExtra.getInt("notification_id")
+        val intent = Intent(this, PodcastDetailsActivity::class.java)
+//        intent.putExtra("podcast_id", pushNotificationExtra.getInt("owner_id"))
+        intent.putExtra("podcast_id", notifId)
+        return intent
+    }
+
+    private fun getDefaultIntent(): Intent {
+        return Intent(this, MainActivity::class.java)
     }
 
 }

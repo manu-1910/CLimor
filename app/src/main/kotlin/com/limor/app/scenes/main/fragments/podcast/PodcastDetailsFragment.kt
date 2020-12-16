@@ -18,6 +18,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.*
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.widget.NestedScrollView
@@ -183,6 +184,9 @@ class PodcastDetailsFragment : BaseFragment() {
     private var lastProgressTrackedTen: Int = 0
     private lateinit var commentPlayerListener: AudioCommentPlayerController.CommentPlayerListener
 
+    private var feedPosition: Int? = 0
+
+
 
     @Inject
     lateinit var sessionManager: SessionManager
@@ -229,13 +233,24 @@ class PodcastDetailsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         ViewCompat.setTranslationZ(view, 1f)
 
-
-        val activity = activity as PodcastDetailsActivity?
-        // we get the main podcast we receive from the previous activity. It should be non null always
-        uiPodcast = activity?.uiPodcast
-
-
         bindViewModel()
+
+//        val activity = activity as PodcastDetailsActivity?
+        // we get the main podcast we receive from the previous activity. It should be non null always
+        val auxUiPodcast = activity?.intent?.extras?.get("podcast")
+        if(auxUiPodcast != null) {
+            uiPodcast = auxUiPodcast as UIPodcast
+        } else {
+            val idPodcast = activity?.intent?.extras?.getInt("podcast_id")
+            idPodcast?.let {
+                viewModelGetPodcastById.idPodcast = idPodcast
+                getPodcastByIdDataTrigger.onNext(Unit)
+            }
+        }
+
+        feedPosition = activity?.intent?.extras?.getInt("position")
+
+
         initEmptyScenario()
         showEmptyScenario()
         initApiCallGetPodcastComments()
@@ -258,20 +273,41 @@ class PodcastDetailsFragment : BaseFragment() {
         configureToolbar()
 
         // we get the possible comment clicked from the previous activity.
-        uiMainCommentWithParent = activity?.commentWithParent
-        configureAdapter()
+        uiMainCommentWithParent = activity?.intent?.extras?.get("model") as CommentWithParent?
+        if(uiPodcast != null)
+            configureAdapter() // it will crash if uiPodcast is null
 
         showProgressBar()
 
-        initPodcastOrCommentMode()
+        initPodcastOrCommentMode() // be careful
         audioSetup()
 
         fillForm()
         initListeners()
-        activity?.startCommenting?.let {
-            if (it)
-                openCommentBarTextAndFocusIt()
+        if(activity?.intent?.extras?.getBoolean("commenting") == true) {
+            openCommentBarTextAndFocusIt()
         }
+    }
+
+
+
+    override fun onStart() {
+        super.onStart()
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    onBackPressed()
+                }
+            })
+    }
+
+    private fun onBackPressed() {
+        val resultIntent = Intent()
+        resultIntent.putExtra("podcast", uiPodcast)
+        resultIntent.putExtra("position", feedPosition)
+        activity?.setResult(Activity.RESULT_OK, resultIntent)
+        activity?.finish()
     }
 
 
@@ -286,7 +322,16 @@ class PodcastDetailsFragment : BaseFragment() {
             hideProgressBar()
             val code = response.code
             if (code == 0) {
+                // if podcast was null before, it means that adapter is not configured yet, so
+                // we will have to configure it now
+                val podcastWasNotSet = uiPodcast == null
                 uiPodcast = response.data.podcast
+
+                // as I told you in the previous comment, if podcast was not ser before,
+                // then we have to configure the adapter now
+                if(podcastWasNotSet)
+                    configureAdapter()
+
                 fillFormLikePodcastData()
                 fillFormRecastPodcastData()
                 fillFormNumberOfCommentsData()
@@ -1577,7 +1622,7 @@ class PodcastDetailsFragment : BaseFragment() {
                             startActivity(intent)
                         } else {
                             val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-                            userProfileIntent.putExtra("user", item.user)
+                            userProfileIntent.putExtra("user_id", item.user?.id)
                             startActivity(userProfileIntent)
                         }
                     }
@@ -2164,7 +2209,7 @@ class PodcastDetailsFragment : BaseFragment() {
                 startActivity(userProfileIntent)
             } else {
                 val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-                userProfileIntent.putExtra("user", it)
+                userProfileIntent.putExtra("user_id", it.id)
                 startActivity(userProfileIntent)
             }
         }
@@ -2200,7 +2245,7 @@ class PodcastDetailsFragment : BaseFragment() {
             val matcher: Matcher = pattern.matcher(caption)
 
             while (matcher.find()) {
-                val textFound = matcher.group(0)
+//                val textFound = matcher.group(0)
                 val startIndex = matcher.start(0)
                 val endIndex = matcher.end(0)
                 val clickableSpan: ClickableSpan = object : ClickableSpan() {
