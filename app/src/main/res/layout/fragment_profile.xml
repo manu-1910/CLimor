@@ -64,7 +64,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto"
-                android:text="Football and Rugby journalist bringing you the latest news."
                 android:textColor="@color/white"
                 android:textSize="@dimen/textSizeSmall"
                 android:layout_marginBottom="@dimen/marginMedium"
@@ -87,9 +86,8 @@
                         android:id="@+id/tvNumberFollowers"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         android:fontFamily="@font/roboto_medium"
-                        android:text="16.7k"
+                        android:text="0"
                         android:textColor="@color/white"
                         android:textSize="@dimen/textSizeSmall"
                         tools:ignore="HardcodedText" />
@@ -116,7 +114,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_medium"
-                        android:text="16.7k"
+                        android:text="0"
                         android:textColor="@color/white"
                         android:textSize="@dimen/textSizeSmall"
                         tools:ignore="HardcodedText" />
