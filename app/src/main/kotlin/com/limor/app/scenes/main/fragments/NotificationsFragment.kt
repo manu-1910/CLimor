@@ -254,7 +254,7 @@ class NotificationsFragment : BaseFragment() {
                             } else {
                                 val userProfileIntent =
                                     Intent(context, UserProfileActivity::class.java)
-                                userProfileIntent.putExtra("user_id", it.id)
+                                userProfileIntent.putExtra("user", it)
                                 startActivity(userProfileIntent)
                             }
                         }

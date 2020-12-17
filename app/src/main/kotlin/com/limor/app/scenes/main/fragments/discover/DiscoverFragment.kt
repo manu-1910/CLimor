@@ -531,7 +531,7 @@ class DiscoverFragment : BaseFragment(),
 
     override fun onPersonClicked(item: UIUser, position: Int) {
         val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-        userProfileIntent.putExtra("user_id", item.id)
+        userProfileIntent.putExtra("user", item)
         startActivity(userProfileIntent)
     }
 
