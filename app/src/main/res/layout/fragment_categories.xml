@@ -65,6 +65,11 @@
 
         </com.google.android.material.chip.ChipGroup>
 
+        <include
+            android:id="@+id/layEmptyScenario"
+            layout="@layout/fragment_empty_scenario"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 

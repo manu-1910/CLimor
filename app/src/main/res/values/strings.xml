@@ -485,4 +485,6 @@
     <string name="error_getting_podcasts">There was an error obtaining the podcasts</string>
     <string name="not_valid_notification_error">This is not a valid type of notification</string>
     <string name="no_user_id_error">We don\'t have a user id so we can\'t show user data</string>
+    <string name="no_categories_yet">There are no categories yet</string>
+    <string name="no_content_with_this_category">There’s no content related to this category</string>
 </resources>

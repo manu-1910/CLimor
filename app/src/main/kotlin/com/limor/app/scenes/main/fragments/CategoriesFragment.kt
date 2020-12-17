@@ -22,6 +22,7 @@ import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UICategory
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_categories.*
+import kotlinx.android.synthetic.main.fragment_empty_scenario.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
 import org.jetbrains.anko.padding
@@ -67,12 +68,28 @@ class CategoriesFragment : BaseFragment() {
 
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 100f)
-
+        showEmptyScenario(true)
         bindViewModel()
         configureToolbar()
+        configureEmptyScenario()
         hideTitle()
         initApiCallGetCategories()
         getCategoriesDataTrigger.onNext(Unit)
+    }
+
+    private fun showEmptyScenario(show: Boolean) {
+        if (show) {
+            layEmptyScenario.visibility = View.VISIBLE
+        } else {
+            layEmptyScenario.visibility = View.GONE
+        }
+    }
+
+    private fun configureEmptyScenario() {
+        tvActionEmptyScenario.visibility = View.GONE
+        ivEmptyScenario.visibility = View.GONE
+        tvTitleEmptyScenario.text = getString(R.string.categories_title)
+        tvDescriptionEmptyScenario.text = getString(R.string.no_categories_yet)
     }
 
     private fun configureToolbar() {
@@ -111,36 +128,38 @@ class CategoriesFragment : BaseFragment() {
                 toast(getString(R.string.couldnt_get_categories)).show()
             } else {
                 categories = it.data.categories
-
-                val params: LinearLayout.LayoutParams =
-                    LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                    )
-                params.setMargins(16, 16, 16, 16)
-
-
-                for (item in it.data.categories) {
-                    val tvChip = TextView(context)
-                    tvChip.id = item.id
-                    tvChip.text = item.name
-                    tvChip.setTextColor(
-                        ContextCompat.getColorStateList(
-                            context!!,
-                            R.color.chip_textcolor
+                if (categories.size > 0) {
+                    showEmptyScenario(false)
+                    val params: LinearLayout.LayoutParams =
+                        LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
                         )
-                    )
-                    tvChip.isEnabled = true
-                    tvChip.padding = 24
-                    tvChip.background = ContextCompat.getDrawable(
-                        context!!,
-                        R.drawable.bg_chip_category
-                    )
-                    tvChip.layoutParams = params
-                    tvChip.setOnClickListener {
-                        onCategoryClicked(item)
+                    params.setMargins(16, 16, 16, 16)
+
+
+                    for (item in it.data.categories) {
+                        val tvChip = TextView(context)
+                        tvChip.id = item.id
+                        tvChip.text = item.name
+                        tvChip.setTextColor(
+                            ContextCompat.getColorStateList(
+                                context!!,
+                                R.color.chip_textcolor
+                            )
+                        )
+                        tvChip.isEnabled = true
+                        tvChip.padding = 24
+                        tvChip.background = ContextCompat.getDrawable(
+                            context!!,
+                            R.drawable.bg_chip_category
+                        )
+                        tvChip.layoutParams = params
+                        tvChip.setOnClickListener {
+                            onCategoryClicked(item)
+                        }
+                        categoryChipsView?.addView(tvChip)
                     }
-                    categoryChipsView?.addView(tvChip)
                 }
             }
         })
