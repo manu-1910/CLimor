@@ -26,6 +26,7 @@ import com.limor.app.scenes.main.fragments.settings.SettingsActivity
 import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.CommonsKt.Companion.formatSocialMediaQuantity
+import com.limor.app.uimodels.UIUser
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_profile.*
 import org.jetbrains.anko.cancelButton
@@ -94,7 +95,12 @@ class ProfileFragment : BaseFragment() {
             apiCallGetUser()
 
             if (!isMyProfileMode) {
-                viewModelGetUser.id = activity?.intent?.extras?.getInt("user_id")
+                activity?.intent?.extras?.get("user")?.let {
+                    viewModelGetUser.user = it as UIUser
+                    viewModelGetUser.id = viewModelGetUser.user?.id
+                } ?: run {
+                    viewModelGetUser.id = activity?.intent?.extras?.getInt("user_id")
+                }
                 apiCallReportUser()
                 apiCallCreateFriend()
                 apiCallDeleteFriend()
@@ -115,6 +121,11 @@ class ProfileFragment : BaseFragment() {
         listeners()
         configureToolbar()
         configureScreen()
+
+        if(viewModelGetUser.user != null) {
+            initViewPager()
+            printUserData()
+        }
     }
 
     private fun apiCallDeleteBlockedUser() {
@@ -455,10 +466,7 @@ class ProfileFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-
-        viewModelGetUser.user?.let {
-            getUserDataTrigger.onNext(Unit)
-        }
+        getUserDataTrigger.onNext(Unit)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
