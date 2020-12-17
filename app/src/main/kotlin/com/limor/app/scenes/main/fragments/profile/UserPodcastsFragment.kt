@@ -34,16 +34,22 @@ class UserPodcastsFragment(private val userID: Int) : FeedItemsListFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
-        initApiCallGetPodcasts()
-        requestNewData()
+        if (rootView == null) {
+            super.onCreateView(inflater, container, savedInstanceState)
+            initApiCallGetPodcasts()
+        }
         return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        showEmptyScenario(true)
+//        showEmptyScenario(true)
         listeners()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requestNewData()
     }
 
     private fun listeners() {
@@ -65,6 +71,7 @@ class UserPodcastsFragment(private val userID: Int) : FeedItemsListFragment() {
     }
 
     override fun callTriggerForNewData() {
+        showProgressBar()
         getPodcastsByUserIDDataTrigger.onNext(Unit)
     }
 
