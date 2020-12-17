@@ -69,12 +69,21 @@ class CategoriesFragment : BaseFragment() {
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 100f)
         showEmptyScenario(true)
+        showProgress(true)
         bindViewModel()
         configureToolbar()
         configureEmptyScenario()
         hideTitle()
         initApiCallGetCategories()
         getCategoriesDataTrigger.onNext(Unit)
+    }
+
+    private fun showProgress(show: Boolean) {
+        if(show) {
+            progressBar.visibility = View.VISIBLE
+        } else {
+            progressBar.visibility = View.GONE
+        }
     }
 
     private fun showEmptyScenario(show: Boolean) {
@@ -124,6 +133,7 @@ class CategoriesFragment : BaseFragment() {
         )
 
         output.response.observe(this, Observer {
+            showProgress(false)
             if (it.code != 0) {
                 toast(getString(R.string.couldnt_get_categories)).show()
             } else {

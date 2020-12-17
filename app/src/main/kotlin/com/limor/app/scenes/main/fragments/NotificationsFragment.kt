@@ -87,6 +87,7 @@ class NotificationsFragment : BaseFragment() {
         rvNotifications = view.findViewById(R.id.rv_notifications)
 
         showEmptyScenario(true)
+        showProgress(true)
 
         bindViewModel()
         initApiCallGetNotifications()
