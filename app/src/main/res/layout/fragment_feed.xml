@@ -29,13 +29,6 @@
             android:scrollbars="vertical"
             tools:listitem="@layout/fragment_feed_item_recycler_view" />
 
-        <ProgressBar
-            android:id="@+id/pb_loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:theme="@style/ProgressBarTheme"
-            android:layout_centerInParent="true" />
-
         <include
             android:id="@+id/layEmptyScenario"
             layout="@layout/fragment_empty_scenario"
@@ -44,12 +37,12 @@
             android:visibility="visible" />
 
         <ProgressBar
-            android:id="@+id/pbFeed"
+            android:id="@+id/pb_loading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:theme="@style/ProgressBarTheme"
-            android:visibility="gone" />
+            android:visibility="visible"
+            android:layout_centerInParent="true" />
 
 
 

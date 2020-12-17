@@ -123,6 +123,7 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
             initRecyclerView()
             initSwipeAndRefreshLayout()
             showEmptyScenario(true)
+            showProgress(true)
             getPodcastsDataTrigger.onNext(Unit)
         } ?: run {
             alert(getString(R.string.error_getting_category)) {
@@ -466,7 +467,12 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
     }
 
     private fun showProgress(show: Boolean) {
-        swipeRefreshLayout.isRefreshing = show
+//        swipeRefreshLayout.isRefreshing = show
+        progressBar?.visibility = if(show) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
     }
 
     private fun showEmptyScenario(show: Boolean) {
