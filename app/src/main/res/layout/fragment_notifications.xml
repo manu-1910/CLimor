@@ -36,7 +36,7 @@
         android:layout_height="match_parent"
         android:id="@+id/layEmptyScenario"
         layout="@layout/fragment_empty_scenario"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
 
 

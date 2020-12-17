@@ -52,6 +52,7 @@ class PodcastsByTagFragment : FeedItemsListFragment() {
     }
 
     override fun callTriggerForNewData() {
+        showProgressBar()
         getFeedDataTrigger.onNext(Unit)
     }
 
@@ -98,10 +99,6 @@ class PodcastsByTagFragment : FeedItemsListFragment() {
     override fun setFeedViewModelVariablesOnScroll() {
         viewModelFeedByTag.limit = FEED_LIMIT_REQUEST
         viewModelFeedByTag.offset = feedItemsList.size
-    }
-
-    override fun showEmptyScenario(show: Boolean) {
-
     }
 
 }

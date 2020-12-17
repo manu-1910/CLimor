@@ -46,7 +46,7 @@ class UserFeedFragment : FeedItemsListFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        showEmptyScenario(true)
+//        showEmptyScenario(true)
         listeners()
     }
 
@@ -67,6 +67,7 @@ class UserFeedFragment : FeedItemsListFragment() {
     }
 
     override fun callTriggerForNewData() {
+        showProgressBar()
         getFeedDataTrigger.onNext(Unit)
     }
 
@@ -101,14 +102,6 @@ class UserFeedFragment : FeedItemsListFragment() {
     override fun setFeedViewModelVariablesOnScroll() {
         viewModelFeed.limit = FEED_LIMIT_REQUEST
         viewModelFeed.offset = feedItemsList.size
-    }
-
-    override fun showEmptyScenario(show: Boolean) {
-        if (show) {
-            layEmptyScenario?.visibility = View.VISIBLE
-        } else {
-            layEmptyScenario?.visibility = View.GONE
-        }
     }
 
 }

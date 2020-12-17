@@ -122,7 +122,7 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
             initApiCallDeletePodcast()
             initRecyclerView()
             initSwipeAndRefreshLayout()
-            showEmptyScenario(true)
+//            showEmptyScenario(true)
             showProgress(true)
             getPodcastsDataTrigger.onNext(Unit)
         } ?: run {

@@ -196,8 +196,8 @@ class ProfileFragment : BaseFragment() {
             layViewPager?.visibility = View.VISIBLE
             val names = arrayOf(
                 getString(R.string.casts),
-                getString(R.string.likes),
-                getString(R.string.limor_patron)
+                getString(R.string.likes)
+//                getString(R.string.limor_patron)
             )
 
             val isPatron = false // TODO: this should change when the api is done
@@ -213,11 +213,11 @@ class ProfileFragment : BaseFragment() {
                         return when (position) {
                             0 -> UserPodcastsFragment.newInstance(it)
                             1 -> UserLikedPodcastsFragment.newInstance(it)
-                            2 -> if (isPatron) {
-                                UserPatronPodcastsFragment.newInstance(it)
-                            } else {
-                                JoinToPatronFragment.newInstance()
-                            }
+//                            2 -> if (isPatron) {
+//                                UserPatronPodcastsFragment.newInstance(it)
+//                            } else {
+//                                JoinToPatronFragment.newInstance()
+//                            }
                             else -> UserPodcastsFragment.newInstance(it)
                         }
                     }

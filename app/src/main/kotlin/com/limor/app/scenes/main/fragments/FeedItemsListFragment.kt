@@ -238,7 +238,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
             } else {
                 feedItemsList.removeAt(lastPodcastDeletedPosition)
                 rvFeed?.adapter?.notifyItemRemoved(lastPodcastDeletedPosition)
-                if(feedItemsList.size == 0)
+                if (feedItemsList.size == 0)
                     showEmptyScenario(true)
             }
         })
@@ -384,9 +384,9 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
                     override fun onUserClicked(item: UIFeedItem, position: Int) {
                         if (item.podcast?.user?.id == sessionManager.getStoredUser()?.id) {
-                            if(activity is MainActivity)
+                            if (activity is MainActivity)
                                 findNavController().navigate(R.id.navigation_profile)
-                            else if(activity is UserProfileActivity) {
+                            else if (activity is UserProfileActivity) {
                                 val intent = Intent(requireActivity(), MainActivity::class.java)
                                 intent.putExtra("destination", "profile")
                                 startActivity(intent)
@@ -778,7 +778,13 @@ abstract class FeedItemsListFragment : BaseFragment() {
         isRequestingNewData = false
     }
 
-    abstract fun showEmptyScenario(show: Boolean)
+    protected open fun showEmptyScenario(show: Boolean) {
+        if (show) {
+            layEmptyScenario?.visibility = View.VISIBLE
+        } else {
+            layEmptyScenario?.visibility = View.GONE
+        }
+    }
 
 
     protected open fun bindViewModel() {
@@ -837,12 +843,14 @@ abstract class FeedItemsListFragment : BaseFragment() {
         rvFeed?.scrollToPosition(0)
     }
 
-    private fun showProgressBar() {
-        swipeRefreshLayout?.isRefreshing = true
+    protected fun showProgressBar() {
+        pb_loading?.visibility = View.VISIBLE
+//        swipeRefreshLayout?.isRefreshing = true
     }
 
-    private fun hideProgressBar() {
-        swipeRefreshLayout?.isRefreshing = false
+    protected fun hideProgressBar() {
+        pb_loading.visibility = View.GONE
+//        swipeRefreshLayout?.isRefreshing = false
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
