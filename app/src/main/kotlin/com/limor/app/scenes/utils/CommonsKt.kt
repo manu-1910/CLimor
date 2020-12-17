@@ -198,10 +198,10 @@ class CommonsKt {
             textSecondary: Int
         ) {
             if (primaryStatus) {
-                button.background =
-                    ContextCompat.getDrawable(button.context, R.drawable.bg_round_yellow_ripple)
-                button.setTextColor(ContextCompat.getColor(button.context, R.color.black))
-                button.text = button.context.getString(textPrimary)
+                button.background = ContextCompat.getDrawable(
+                    button.context, R.drawable.bg_round_yellow_ripple)
+                    button.setTextColor(ContextCompat.getColor(button.context, R.color.brandSecondary500))
+                    button.text = button.context.getString(textPrimary)
             } else {
                 button.text = button.context.getString(textSecondary)
                 button.background = ContextCompat.getDrawable(

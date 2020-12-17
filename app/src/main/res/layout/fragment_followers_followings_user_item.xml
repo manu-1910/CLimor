@@ -53,6 +53,7 @@
         android:layout_marginEnd="@dimen/marginMedium"
         android:text="@string/follow"
         android:textAllCaps="false"
+        android:textColor="@color/brandSecondary500"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
