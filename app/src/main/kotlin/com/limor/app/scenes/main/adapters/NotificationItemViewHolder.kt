@@ -79,8 +79,8 @@ class NotificationItemViewHolder(
                 btnFollow.visibility = View.VISIBLE
 
                 if(currentItem.resources.owner.followed){
-                    btnFollow.background = ContextCompat.getDrawable(context, R.drawable.bg_round_brand_500_ripple)
-                    btnFollow.setTextColor(ContextCompat.getColor(context, R.color.white))
+                    btnFollow.background = ContextCompat.getDrawable(context, R.drawable.bg_round_brand_400_ripple)
+                    btnFollow.setTextColor(ContextCompat.getColor(context, R.color.brandPrimary500))
                     btnFollow.text = context.getString(R.string.unfollow)
                 }else{
                     btnFollow.background = ContextCompat.getDrawable(context, R.drawable.bg_round_yellow_ripple)
