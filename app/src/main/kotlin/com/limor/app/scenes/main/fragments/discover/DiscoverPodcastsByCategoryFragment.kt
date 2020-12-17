@@ -36,6 +36,7 @@ import com.limor.app.uimodels.UICategory
 import com.limor.app.uimodels.UIPodcast
 import com.limor.app.uimodels.UIUser
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_empty_scenario.*
 import kotlinx.android.synthetic.main.fragment_podcasts_by_category.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
@@ -113,6 +114,7 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
             category = it.getSerializable("category") as UICategory
             bindViewModel()
             configureToolbar()
+            configureEmptyScenario()
             initApiCallGetPodcasts()
             initApiCallCreatePodcastReport()
             initApiCallCreateUserReport()
@@ -129,6 +131,13 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
                 }
             }
         }
+    }
+
+    private fun configureEmptyScenario() {
+        tvActionEmptyScenario.visibility = View.GONE
+        ivEmptyScenario.visibility = View.GONE
+        tvTitleEmptyScenario.text = category.name
+        tvDescriptionEmptyScenario.text = getString(R.string.no_content_with_this_category)
     }
 
     private fun configureToolbar() {
