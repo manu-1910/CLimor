@@ -136,7 +136,7 @@ class UserFollowingsFragment(private val uiUser: UIUser) : BaseFragment() {
     private fun initApiCallGetFollowings() {
         val output = viewModelFollowings.transform(
             GetUserFollowingsViewModel.Input(
-                getFollowingsTrigger
+                getFollowingsTrigger, uiUser.id
             )
         )
 

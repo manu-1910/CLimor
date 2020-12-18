@@ -15,8 +15,8 @@ class GetUserFollowingsUseCase @Inject constructor(
     private val postExecutionThread: PostExecutionThread,
     private val jobExecutor: JobExecutor
 ) {
-    fun execute(limit: Int, offset: Int): Single<UIGetFollowingsUsersResponse> {
-        return userRepository.getFollowings(limit, offset)
+    fun execute(id: Int, limit: Int, offset: Int): Single<UIGetFollowingsUsersResponse> {
+        return userRepository.getFollowings(id, limit, offset)
             .asUIModel()
             .observeOn(postExecutionThread.getScheduler())
             ?.subscribeOn(jobExecutor.getScheduler())!!
