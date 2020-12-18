@@ -262,8 +262,8 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
     }
 
 
-    fun getFollowings(limit: Int, offset: Int): Single<NWGetFollowingsUsersResponse> {
-        return service.getFollowings(limit, offset)
+    fun getFollowings(id: Int, limit: Int, offset: Int): Single<NWGetFollowingsUsersResponse> {
+        return service.getFollowings(id, limit, offset)
             .map { response -> response.parseSuccessResponse(NWGetFollowingsUsersResponse.serializer()) }
             .doOnSuccess { response ->
                 run {

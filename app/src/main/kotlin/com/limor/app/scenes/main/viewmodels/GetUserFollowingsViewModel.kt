@@ -25,7 +25,8 @@ class GetUserFollowingsViewModel @Inject constructor(private val getUserFollowin
     var offset: Int = 0
 
     data class Input(
-        val getFollowingsTrigger: Observable<Unit>
+        val getFollowingsTrigger: Observable<Unit>,
+        val idUser: Int
     )
 
     data class Output(
@@ -40,7 +41,7 @@ class GetUserFollowingsViewModel @Inject constructor(private val getUserFollowin
         val response = MutableLiveData<UIGetFollowingsUsersResponse>()
 
         input.getFollowingsTrigger.subscribe({
-            getUserFollowingsUseCase.execute(limit, offset).subscribe({
+            getUserFollowingsUseCase.execute(input.idUser, limit, offset).subscribe({
                 response.value = it
 
             }, {
