@@ -134,6 +134,7 @@ class UserFollowersFragment(private val uiUser: UIUser) : BaseFragment() {
             isLastPage = false
             followersAdapter?.list?.clear()
             swipeRefreshLayout?.isRefreshing = true
+            viewModelFollowers.offset = 0
             getFollowersTrigger.onNext(Unit)
         }
     }
@@ -376,6 +377,8 @@ class UserFollowersFragment(private val uiUser: UIUser) : BaseFragment() {
                 userProfileIntent.putExtra("user", item)
                 startActivity(userProfileIntent)
             }
+
+
 
     }
 

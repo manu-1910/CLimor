@@ -24,6 +24,7 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
 
     var rootView: View? = null
     private var uiUser: UIUser? = null
+    private var tabToShow: String = ""
 
     @Inject
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -46,6 +47,7 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
 
         val bundle = intent?.extras
         uiUser = bundle?.get("user") as UIUser
+        tabToShow = bundle?.getString("tabToShow").toString()
 
         configureToolbar()
 
@@ -70,9 +72,10 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
         }
 
         //Search View
-        search_view.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+        search_view.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
-                if (newText.isNotEmpty() && newText.length > 3){
+                if (newText.isNotEmpty() && newText.length > 3) {
                     //searchLocations(newText)
                     println(newText)
                 }
@@ -80,10 +83,10 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
             }
 
             override fun onQueryTextSubmit(query: String): Boolean {
-                if (query.isNotEmpty() && query.length > 3){
+                if (query.isNotEmpty() && query.length > 3) {
                     //searchLocations(query)
                     println(query)
-                }else{
+                } else {
                     toast(getString(R.string.min_3_chars))
                 }
                 return false
@@ -100,7 +103,10 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
             getString(R.string.followings_count, uiUser?.following_count)
         )
 
-        val adapter = object : FragmentStatePagerAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+        val adapter = object : FragmentStatePagerAdapter(
+            supportFragmentManager,
+            BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
+        ) {
             override fun getItem(position: Int): Fragment {
                 if(position == 0){
                     return UserFollowersFragment.newInstance(uiUser!!)
@@ -153,7 +159,15 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
             }
         })
 
-
+        if (!tabToShow.isNullOrEmpty()){
+            if(tabToShow.trim().equals("followers")){
+                val tab: TabLayout.Tab? = tabs.getTabAt(0)
+                tab?.select()
+            }else{
+                val tab: TabLayout.Tab? = tabs.getTabAt(1)
+                tab?.select()
+            }
+        }
 
     }
 

@@ -129,8 +129,28 @@ class UserFollowingsFragment(private val uiUser: UIUser) : BaseFragment() {
             isLastPage = false
             followingsAdapter?.list?.clear()
             swipeRefreshLayout?.isRefreshing = true
+
+            viewModelFollowings.offset = 0
             getFollowingsTrigger.onNext(Unit)
         }
+
+        /*
+        swipeRefreshLayout?.setOnRefreshListener {
+    isLastPage = false
+    listPublications.clear()
+    swipeRefreshLayout?.isRefreshing = true
+    //listener?.onRefreshPublications()
+    //Reset saved filter models page to num 1
+    val filters = preferences.getFiltersModel()
+    filters.keyWords = ""
+    filters.page = 1
+    preferences.setFiltersModel(filters) //Save filtersmodel again in preferences with the page num updated
+
+
+    closePresenter.getPublicationsClose(locationResult, filters)
+}
+
+         */
     }
 
     private fun initApiCallGetFollowings() {
