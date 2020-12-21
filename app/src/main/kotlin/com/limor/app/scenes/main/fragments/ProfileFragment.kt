@@ -352,18 +352,19 @@ class ProfileFragment : BaseFragment() {
         }
 
         lytFollowers.onClick {
-            goToFollowersFollowingsActivity()
+            goToFollowersFollowingsActivity("followers")
         }
 
         lytFollowing.onClick {
-            goToFollowersFollowingsActivity()
+            goToFollowersFollowingsActivity("followings")
         }
     }
 
 
-    private fun goToFollowersFollowingsActivity(){
+    private fun goToFollowersFollowingsActivity(tabToShow: String){
         val followersFollowersIntent = Intent(context, UserFollowersFollowingsActivity::class.java)
         followersFollowersIntent.putExtra("user", viewModelGetUser.user)
+        followersFollowersIntent.putExtra("tabToShow", tabToShow)
         startActivityForResult(followersFollowersIntent, REQUEST_FOLLOWINGS_FOLLOWERS)
     }
 
