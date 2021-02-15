@@ -828,7 +828,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
     }
 
 
-    private fun reloadFeed() {
+    protected fun reloadFeed() {
         isLastPage = false
         isReloading = true
         resetFeedViewModelVariables()

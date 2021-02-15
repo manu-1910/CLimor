@@ -78,6 +78,8 @@ versions.javax_inject = "1"
 versions.timber = "4.7.1"
 versions.crashlytics = "2.10.1@aar"
 versions.kotlinx_converter = "0.2.0"
+versions.event_bus = "3.2.0"
+
 
 //Unit Testing
 versions.robolectric = '4.0.2'
@@ -274,4 +276,5 @@ deps.navigation_fragment = "android.arch.navigation:navigation-fragment-ktx:$ver
 deps.skeleton = "com.ethanhua:skeleton:$versions.skeleton"
 deps.shimmerlayout = "io.supercharge:shimmerlayout:$versions.shimmerlayout"
 deps.merlin = "com.novoda:merlin:$versions.merlin"
+deps.event_bus = "org.greenrobot:eventbus:$versions.event_bus"
 ext.deps = deps

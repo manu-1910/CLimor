@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_share"
+        android:title="@string/share_cast"/>
+
+    <item
+        android:id="@+id/menu_report_cast"
+        android:title="@string/report_cast"/>
+
+    <item
+        android:id="@+id/menu_delete_cast"
+        android:title="@string/delete_cast"/>
+
+</menu>

@@ -8,28 +8,32 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.limor.app.R
+import com.limor.app.events.Event
 import com.limor.app.scenes.main.viewmodels.FeedViewModel
 import com.limor.app.scenes.utils.CommonsKt
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_empty_scenario.*
-import kotlinx.android.synthetic.main.fragment_feed.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.jetbrains.anko.sdk23.listeners.onClick
+
 
 class UserFeedFragment : FeedItemsListFragment() {
 
     private lateinit var viewModelFeed: FeedViewModel
     private val getFeedDataTrigger = PublishSubject.create<Unit>()
 
-
     companion object {
         val TAG: String = UserFeedFragment::class.java.simpleName
         fun newInstance() = UserFeedFragment()
     }
 
+
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         if (rootView == null) {
             super.onCreateView(inflater, container, savedInstanceState)
@@ -42,6 +46,12 @@ class UserFeedFragment : FeedItemsListFragment() {
     override fun onResume() {
         super.onResume()
         requestNewData()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -75,9 +85,9 @@ class UserFeedFragment : FeedItemsListFragment() {
     private fun initApiCallGetFeed() {
 
         val output = viewModelFeed.transform(
-            FeedViewModel.Input(
-                getFeedDataTrigger
-            )
+                FeedViewModel.Input(
+                        getFeedDataTrigger
+                )
         )
 
         output.response.observe(this, Observer {
@@ -102,6 +112,16 @@ class UserFeedFragment : FeedItemsListFragment() {
     override fun setFeedViewModelVariablesOnScroll() {
         viewModelFeed.limit = FEED_LIMIT_REQUEST
         viewModelFeed.offset = feedItemsList.size
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    fun onRefreshFeedEvent(event: Event.RefreshFeed) {
+        reloadFeed()
+        EventBus.getDefault().removeStickyEvent(Event.RefreshFeed)
     }
 
 }
