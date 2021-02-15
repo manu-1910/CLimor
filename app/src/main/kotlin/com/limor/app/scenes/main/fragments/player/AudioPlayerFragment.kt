@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main.fragments.player
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
@@ -19,6 +20,8 @@ import com.limor.app.events.Event
 import com.limor.app.scenes.main.adapters.FeedAdapter
 import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
 import com.limor.app.scenes.main.fragments.podcast.PodcastsByTagActivity
+import com.limor.app.scenes.main.fragments.profile.ReportActivity
+import com.limor.app.scenes.main.fragments.profile.TypeReport
 import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.service.AudioService
@@ -47,11 +50,14 @@ class AudioPlayerFragment : BaseFragment() {
     private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
 
     private lateinit var viewModelDeletePodcast: DeletePodcastViewModel
+    private val deletePodcastDataTrigger = PublishSubject.create<Unit>()
+
+
+    private lateinit var viewModelCreatePodcastReport: CreatePodcastReportViewModel
+    private val createPodcastReportDataTrigger = PublishSubject.create<Unit>()
 
     private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
-    private val deletePodcastDataTrigger = PublishSubject.create<Unit>()
-
 
     // views
     private var rootView: View? = null
@@ -71,6 +77,7 @@ class AudioPlayerFragment : BaseFragment() {
 
     companion object {
         val TAG: String = AudioPlayerFragment::class.java.simpleName
+        private const val REQUEST_REPORT_PODCAST: Int = 1
         fun newInstance() = AudioPlayerFragment()
     }
 
@@ -105,6 +112,7 @@ class AudioPlayerFragment : BaseFragment() {
             initApiCallCreateLike()
             initApiCallDeleteLike()
             initApiCallDeletePodcast()
+            initApiCallCreatePodcastReport()
         }
         return rootView
     }
@@ -294,6 +302,40 @@ class AudioPlayerFragment : BaseFragment() {
         })
     }
 
+    private fun initApiCallCreatePodcastReport() {
+        val output = viewModelCreatePodcastReport.transform(
+                CreatePodcastReportViewModel.Input(
+                        createPodcastReportDataTrigger
+                )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                Toast.makeText(
+                        context,
+                        getString(R.string.podcast_already_reported),
+                        Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                        context,
+                        getString(R.string.podcast_reported_ok),
+                        Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            Toast.makeText(
+                    context,
+                    getString(R.string.error_report),
+                    Toast.LENGTH_SHORT
+            ).show()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+        })
+    }
+
     private fun undoLike() {
         Toast.makeText(context, getString(R.string.error_liking_podcast), Toast.LENGTH_SHORT).show()
         val item = feedItemsList[lastLikedItemPosition]
@@ -328,7 +370,7 @@ class AudioPlayerFragment : BaseFragment() {
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_share -> onShareClicked(item)
-               // R.id.menu_report_cast -> onPodcastReportClicked(item)
+                R.id.menu_report_cast -> onPodcastReportClicked(item)
                 R.id.menu_delete_cast -> onDeletePodcastClicked(item)
             }
             true
@@ -363,6 +405,15 @@ class AudioPlayerFragment : BaseFragment() {
         }
     }
 
+    private fun onPodcastReportClicked(item: UIFeedItem){
+        item.podcast?.id?.let {
+            viewModelCreatePodcastReport.idPodcastToReport = it
+            val reportIntent = Intent(context, ReportActivity::class.java)
+            reportIntent.putExtra("type", TypeReport.CAST)
+            startActivityForResult(reportIntent, REQUEST_REPORT_PODCAST)
+        }
+    }
+
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
             viewModelFeed = ViewModelProviders
@@ -393,7 +444,31 @@ class AudioPlayerFragment : BaseFragment() {
                     .of(fragmentActivity, viewModelFactory)
                     .get(DeletePodcastViewModel::class.java)
         }
+
+        activity?.let {
+            fragmentActivity ->
+            viewModelCreatePodcastReport = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreatePodcastReportViewModel::class.java)
+        }
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                REQUEST_REPORT_PODCAST -> {
+                    data?.let {
+                        val reason = data.getStringExtra("reason")
+                        viewModelCreatePodcastReport.reason = reason
+                        createPodcastReportDataTrigger.onNext(Unit)
+                    }
+                }
+            }
+        }
+    }
+
+
 
 
 }
