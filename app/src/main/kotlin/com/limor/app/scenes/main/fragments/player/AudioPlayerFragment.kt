@@ -127,6 +127,7 @@ class AudioPlayerFragment : BaseFragment() {
             } else {
                 val activity = requireActivity() as AudioPlayerActivity
                 activity.closePlayer()
+                //Post event to update home feed
                 EventBus.getDefault().postSticky(Event.RefreshFeed)
             }
         })
@@ -241,7 +242,7 @@ class AudioPlayerFragment : BaseFragment() {
                                 position: Int,
                                 view: View
                         ) {
-                            showMorePopupMenu(view, item, position)
+                            showMorePopupMenu(view, item)
                         }
                     },
                     sessionManager,
@@ -350,8 +351,7 @@ class AudioPlayerFragment : BaseFragment() {
 
     private fun showMorePopupMenu(
             view: View?,
-            item: UIFeedItem,
-            position: Int
+            item: UIFeedItem
     ) {
         val popup = PopupMenu(context, view, Gravity.TOP)
         val inflater: MenuInflater = popup.menuInflater
@@ -405,7 +405,7 @@ class AudioPlayerFragment : BaseFragment() {
         }
     }
 
-    private fun onPodcastReportClicked(item: UIFeedItem){
+    private fun onPodcastReportClicked(item: UIFeedItem) {
         item.podcast?.id?.let {
             viewModelCreatePodcastReport.idPodcastToReport = it
             val reportIntent = Intent(context, ReportActivity::class.java)
@@ -445,11 +445,10 @@ class AudioPlayerFragment : BaseFragment() {
                     .get(DeletePodcastViewModel::class.java)
         }
 
-        activity?.let {
-            fragmentActivity ->
+        activity?.let { fragmentActivity ->
             viewModelCreatePodcastReport = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
-                .get(CreatePodcastReportViewModel::class.java)
+                    .of(fragmentActivity, viewModelFactory)
+                    .get(CreatePodcastReportViewModel::class.java)
         }
     }
 
@@ -467,8 +466,6 @@ class AudioPlayerFragment : BaseFragment() {
             }
         }
     }
-
-
 
 
 }
