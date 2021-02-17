@@ -202,6 +202,10 @@ class AudioPlayerFragment : BaseFragment() {
                     ) {
                         Toast.makeText(context, "You clicked on more", Toast.LENGTH_SHORT).show()
                     }
+
+                    override fun onRecastedUserClicked(item: UIFeedItem) {
+
+                    }
                 },
                 sessionManager,
                 false
