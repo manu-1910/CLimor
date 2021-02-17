@@ -383,28 +383,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
                     }
 
                     override fun onUserClicked(item: UIFeedItem, position: Int) {
-                        if (item.podcast?.user?.id == sessionManager.getStoredUser()?.id) {
-                            if (activity is MainActivity)
-                                findNavController().navigate(R.id.navigation_profile)
-                            else if (activity is UserProfileActivity) {
-                                val intent = Intent(requireActivity(), MainActivity::class.java)
-                                intent.putExtra("destination", "profile")
-                                startActivity(intent)
-                                // TODO -> Jose: you are in anothers person profile in UserProfileActivity
-                                //      and you clicked in you own user, so now you have to show your own profile
-                                //      but if you open a new UserProfileActivity with your user, you won't be able
-                                //      to navigate to the actions of the empty views, because you are not in the
-                                //      main activity. For example, if you don't have any like, you won't be able
-                                //      to navigate to discover fragment from UserProfileActivity
-                                //      Maybe the right choice could be to navigate to mainActivity
-                                //      and to show your profile there ¿?
-                                //      Waiting for Martin's answer
-                            }
-                        } else {
-                            val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-                            userProfileIntent.putExtra("user", item.podcast?.user)
-                            startActivity(userProfileIntent)
-                        }
+                        navigateToUserProfile(item.podcast?.user)
                     }
 
                     override fun onMoreClicked(
@@ -413,6 +392,10 @@ abstract class FeedItemsListFragment : BaseFragment() {
                         view: View
                     ) {
                         showPopupMenu(view, item, position)
+                    }
+
+                    override fun onRecastedUserClicked(item: UIFeedItem) {
+                       navigateToUserProfile(item.user)
                     }
                 },
                 sessionManager,
@@ -833,6 +816,22 @@ abstract class FeedItemsListFragment : BaseFragment() {
         isReloading = true
         resetFeedViewModelVariables()
         requestNewData()
+    }
+
+    private fun navigateToUserProfile(user: UIUser?){
+        if (user?.id == sessionManager.getStoredUser()?.id) {
+            if (activity is MainActivity)
+                findNavController().navigate(R.id.navigation_profile)
+            else if (activity is UserProfileActivity) {
+                val intent = Intent(requireActivity(), MainActivity::class.java)
+                intent.putExtra("destination", "profile")
+                startActivity(intent)
+            }
+        } else {
+            val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+            userProfileIntent.putExtra("user", user)
+            startActivity(userProfileIntent)
+        }
     }
 
 

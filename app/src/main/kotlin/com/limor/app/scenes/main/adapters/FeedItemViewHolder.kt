@@ -199,6 +199,10 @@ class FeedItemViewHolder(
                     tvSomeoneRecasted.text = String.format(
                         context.resources.getString(R.string.someone_recasted), fullnameRecasted
                     )
+
+                    tvSomeoneRecasted.setOnClickListener {
+                        feedClickListener.onRecastedUserClicked(currentItem)
+                    }
                 }
 
             } else {

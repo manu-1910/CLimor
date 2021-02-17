@@ -61,5 +61,6 @@ class FeedAdapter(
             position: Int,
             view: View
         )
+        fun onRecastedUserClicked(item: UIFeedItem)
     }
 }
