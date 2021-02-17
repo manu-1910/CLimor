@@ -82,9 +82,9 @@ class AudioPlayerFragment : BaseFragment() {
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_audio_player, container, false)
@@ -93,15 +93,15 @@ class AudioPlayerFragment : BaseFragment() {
             val bundle = requireActivity().intent?.extras
             if (bundle != null && bundle.containsKey(AudioPlayerActivity.BUNDLE_KEY_PODCAST)) {
                 uiPodcast =
-                        bundle.getSerializable(AudioPlayerActivity.BUNDLE_KEY_PODCAST) as UIPodcast
+                    bundle.getSerializable(AudioPlayerActivity.BUNDLE_KEY_PODCAST) as UIPodcast
 
                 // Wrap the podcast with a UIFeedItem so that we can use the feedAdapter here...
                 val uiFeedItem = UIFeedItem(
-                        uiPodcast!!.id.toString(),
-                        uiPodcast,
-                        uiPodcast!!.user,
-                        false,
-                        uiPodcast!!.created_at
+                    uiPodcast!!.id.toString(),
+                    uiPodcast,
+                    uiPodcast!!.user,
+                    false,
+                    uiPodcast!!.created_at
                 )
 
                 feedItemsList.add(uiFeedItem)
@@ -144,109 +144,113 @@ class AudioPlayerFragment : BaseFragment() {
         rvFeed?.layoutManager = layoutManager
         feedAdapter = context?.let {
             FeedAdapter(
-                    it,
-                    feedItemsList,
-                    object : FeedAdapter.OnFeedClickListener {
-                        override fun onItemClicked(item: UIFeedItem, position: Int) {
-                            val podcastDetailsIntent =
-                                    Intent(context, PodcastDetailsActivity::class.java)
-                            podcastDetailsIntent.putExtra("podcast", item.podcast)
-                            startActivity(podcastDetailsIntent)
-                        }
+                it,
+                feedItemsList,
+                object : FeedAdapter.OnFeedClickListener {
+                    override fun onItemClicked(item: UIFeedItem, position: Int) {
+                        val podcastDetailsIntent =
+                            Intent(context, PodcastDetailsActivity::class.java)
+                        podcastDetailsIntent.putExtra("podcast", item.podcast)
+                        startActivity(podcastDetailsIntent)
+                    }
 
-                        override fun onPlayClicked(item: UIFeedItem, position: Int) {
+                    override fun onPlayClicked(item: UIFeedItem, position: Int) {
 
-                            item.podcast?.audio?.audio_url?.let { _ ->
+                        item.podcast?.audio?.audio_url?.let { _ ->
 
-                                AudioService.newIntent(requireContext(), item.podcast!!, 1L)
-                                        .also { intent ->
-                                            requireContext().startService(intent)
-                                            val activity = requireActivity() as BaseActivity
-                                            activity.showMiniPlayer()
-                                        }
-
-                            }
-
-                        }
-
-                        override fun onListenClicked(item: UIFeedItem, position: Int) {
-                            Toast.makeText(context, "You clicked on listen", Toast.LENGTH_SHORT).show()
-                        }
-
-                        override fun onCommentClicked(item: UIFeedItem, position: Int) {
-                            val podcastDetailsIntent =
-                                    Intent(context, PodcastDetailsActivity::class.java)
-                            podcastDetailsIntent.putExtra("podcast", item.podcast)
-                            podcastDetailsIntent.putExtra("commenting", true)
-                            startActivity(podcastDetailsIntent)
-                        }
-
-                        override fun onLikeClicked(item: UIFeedItem, position: Int) {
-                            item.podcast?.let { podcast ->
-                                changeItemLikeStatus(
-                                        item,
-                                        position,
-                                        !podcast.liked
-                                ) // careful, it will change an item to be from like to dislike and viceversa
-                                lastLikedItemPosition = position
-
-                                // if now it's liked, let's call the api
-                                if (podcast.liked) {
-                                    viewModelCreatePodcastLike.idPodcast = podcast.id
-                                    createPodcastLikeDataTrigger.onNext(Unit)
-
-                                    // if now it's not liked, let's call the api
-                                } else {
-                                    viewModelDeletePodcastLike.idPodcast = podcast.id
-                                    deletePodcastLikeDataTrigger.onNext(Unit)
+                            AudioService.newIntent(requireContext(), item.podcast!!, 1L)
+                                .also { intent ->
+                                    requireContext().startService(intent)
+                                    val activity = requireActivity() as BaseActivity
+                                    activity.showMiniPlayer()
                                 }
+
+                        }
+
+                    }
+
+                    override fun onListenClicked(item: UIFeedItem, position: Int) {
+                        Toast.makeText(context, "You clicked on listen", Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun onCommentClicked(item: UIFeedItem, position: Int) {
+                        val podcastDetailsIntent =
+                            Intent(context, PodcastDetailsActivity::class.java)
+                        podcastDetailsIntent.putExtra("podcast", item.podcast)
+                        podcastDetailsIntent.putExtra("commenting", true)
+                        startActivity(podcastDetailsIntent)
+                    }
+
+                    override fun onLikeClicked(item: UIFeedItem, position: Int) {
+                        item.podcast?.let { podcast ->
+                            changeItemLikeStatus(
+                                item,
+                                position,
+                                !podcast.liked
+                            ) // careful, it will change an item to be from like to dislike and viceversa
+                            lastLikedItemPosition = position
+
+                            // if now it's liked, let's call the api
+                            if (podcast.liked) {
+                                viewModelCreatePodcastLike.idPodcast = podcast.id
+                                createPodcastLikeDataTrigger.onNext(Unit)
+
+                                // if now it's not liked, let's call the api
+                            } else {
+                                viewModelDeletePodcastLike.idPodcast = podcast.id
+                                deletePodcastLikeDataTrigger.onNext(Unit)
                             }
                         }
+                    }
 
-                        override fun onRecastClicked(item: UIFeedItem, position: Int) {
-                            Toast.makeText(context, "You clicked on recast", Toast.LENGTH_SHORT).show()
+                    override fun onRecastClicked(item: UIFeedItem, position: Int) {
+                        Toast.makeText(context, "You clicked on recast", Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun onHashtagClicked(hashtag: String) {
+
+                        val podcastByTagIntent = Intent(context, PodcastsByTagActivity::class.java)
+                        podcastByTagIntent.putExtra(
+                            PodcastsByTagActivity.BUNDLE_KEY_HASHTAG,
+                            hashtag
+                        )
+                        startActivity(podcastByTagIntent)
+
+                        val activity = requireActivity() as AudioPlayerActivity
+                        activity.finish()
+
+                    }
+
+                    override fun onSendClicked(item: UIFeedItem, position: Int) {
+                        Toast.makeText(context, "You clicked on share", Toast.LENGTH_SHORT).show()
+                        val sendIntent: Intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, "This is my text to send.")
+                            type = "text/plain"
                         }
 
-                        override fun onHashtagClicked(hashtag: String) {
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        startActivity(shareIntent)
+                    }
 
-                            val podcastByTagIntent = Intent(context, PodcastsByTagActivity::class.java)
-                            podcastByTagIntent.putExtra(
-                                    PodcastsByTagActivity.BUNDLE_KEY_HASHTAG,
-                                    hashtag
-                            )
-                            startActivity(podcastByTagIntent)
+                    override fun onUserClicked(item: UIFeedItem, position: Int) {
+                        Toast.makeText(context, "You clicked on user", Toast.LENGTH_SHORT).show()
+                    }
 
-                            val activity = requireActivity() as AudioPlayerActivity
-                            activity.finish()
+                    override fun onMoreClicked(
+                        item: UIFeedItem,
+                        position: Int,
+                        view: View
+                    ) {
+                        showMorePopupMenu(view, item)
+                    }
 
-                        }
+                    override fun onRecastedUserClicked(item: UIFeedItem) {
 
-                        override fun onSendClicked(item: UIFeedItem, position: Int) {
-                            Toast.makeText(context, "You clicked on share", Toast.LENGTH_SHORT).show()
-                            val sendIntent: Intent = Intent().apply {
-                                action = Intent.ACTION_SEND
-                                putExtra(Intent.EXTRA_TEXT, "This is my text to send.")
-                                type = "text/plain"
-                            }
-
-                            val shareIntent = Intent.createChooser(sendIntent, null)
-                            startActivity(shareIntent)
-                        }
-
-                        override fun onUserClicked(item: UIFeedItem, position: Int) {
-                            Toast.makeText(context, "You clicked on user", Toast.LENGTH_SHORT).show()
-                        }
-
-                        override fun onMoreClicked(
-                                item: UIFeedItem,
-                                position: Int,
-                                view: View
-                        ) {
-                            showMorePopupMenu(view, item)
-                        }
-                    },
-                    sessionManager,
-                    false
+                    }
+                },
+                sessionManager,
+                false
             )
         }
         rvFeed?.adapter = feedAdapter
@@ -267,9 +271,9 @@ class AudioPlayerFragment : BaseFragment() {
 
     private fun initApiCallCreateLike() {
         val output = viewModelCreatePodcastLike.transform(
-                CreatePodcastLikeViewModel.Input(
-                        createPodcastLikeDataTrigger
-                )
+            CreatePodcastLikeViewModel.Input(
+                createPodcastLikeDataTrigger
+            )
         )
 
         output.response.observe(this, Observer { response ->
@@ -286,9 +290,9 @@ class AudioPlayerFragment : BaseFragment() {
 
     private fun initApiCallDeleteLike() {
         val output = viewModelDeletePodcastLike.transform(
-                DeletePodcastLikeViewModel.Input(
-                        deletePodcastLikeDataTrigger
-                )
+            DeletePodcastLikeViewModel.Input(
+                deletePodcastLikeDataTrigger
+            )
         )
 
         output.response.observe(this, Observer { response ->
@@ -305,33 +309,33 @@ class AudioPlayerFragment : BaseFragment() {
 
     private fun initApiCallCreatePodcastReport() {
         val output = viewModelCreatePodcastReport.transform(
-                CreatePodcastReportViewModel.Input(
-                        createPodcastReportDataTrigger
-                )
+            CreatePodcastReportViewModel.Input(
+                createPodcastReportDataTrigger
+            )
         )
 
         output.response.observe(this, Observer { response ->
             val code = response.code
             if (code != 0) {
                 Toast.makeText(
-                        context,
-                        getString(R.string.podcast_already_reported),
-                        Toast.LENGTH_SHORT
+                    context,
+                    getString(R.string.podcast_already_reported),
+                    Toast.LENGTH_SHORT
                 ).show()
             } else {
                 Toast.makeText(
-                        context,
-                        getString(R.string.podcast_reported_ok),
-                        Toast.LENGTH_SHORT
+                    context,
+                    getString(R.string.podcast_reported_ok),
+                    Toast.LENGTH_SHORT
                 ).show()
             }
         })
 
         output.errorMessage.observe(this, Observer {
             Toast.makeText(
-                    context,
-                    getString(R.string.error_report),
-                    Toast.LENGTH_SHORT
+                context,
+                getString(R.string.error_report),
+                Toast.LENGTH_SHORT
             ).show()
             CommonsKt.handleOnApiError(app!!, context!!, this, it)
         })
@@ -342,16 +346,16 @@ class AudioPlayerFragment : BaseFragment() {
         val item = feedItemsList[lastLikedItemPosition]
         item.podcast?.let { podcast ->
             changeItemLikeStatus(
-                    item,
-                    lastLikedItemPosition,
-                    !podcast.liked
+                item,
+                lastLikedItemPosition,
+                !podcast.liked
             )
         }
     }
 
     private fun showMorePopupMenu(
-            view: View?,
-            item: UIFeedItem
+        view: View?,
+        item: UIFeedItem
     ) {
         val popup = PopupMenu(context, view, Gravity.TOP)
         val inflater: MenuInflater = popup.menuInflater
@@ -417,38 +421,38 @@ class AudioPlayerFragment : BaseFragment() {
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
             viewModelFeed = ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
-                    .get(FeedViewModel::class.java)
+                .of(fragmentActivity, viewModelFactory)
+                .get(FeedViewModel::class.java)
         }
 
         activity?.let { fragmentActivity ->
             viewModelFeedByTag = ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
-                    .get(FeedByTagViewModel::class.java)
+                .of(fragmentActivity, viewModelFactory)
+                .get(FeedByTagViewModel::class.java)
         }
 
         activity?.let { fragmentActivity ->
             viewModelCreatePodcastLike = ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
-                    .get(CreatePodcastLikeViewModel::class.java)
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreatePodcastLikeViewModel::class.java)
         }
 
         activity?.let { fragmentActivity ->
             viewModelDeletePodcastLike = ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
-                    .get(DeletePodcastLikeViewModel::class.java)
+                .of(fragmentActivity, viewModelFactory)
+                .get(DeletePodcastLikeViewModel::class.java)
         }
 
         activity?.let { fragmentActivity ->
             viewModelDeletePodcast = ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
-                    .get(DeletePodcastViewModel::class.java)
+                .of(fragmentActivity, viewModelFactory)
+                .get(DeletePodcastViewModel::class.java)
         }
 
         activity?.let { fragmentActivity ->
             viewModelCreatePodcastReport = ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
-                    .get(CreatePodcastReportViewModel::class.java)
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreatePodcastReportViewModel::class.java)
         }
     }
 
