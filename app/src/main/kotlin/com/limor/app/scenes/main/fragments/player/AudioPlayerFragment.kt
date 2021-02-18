@@ -17,16 +17,19 @@ import com.limor.app.common.BaseActivity
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.SessionManager
 import com.limor.app.events.Event
+import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.adapters.FeedAdapter
 import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
 import com.limor.app.scenes.main.fragments.podcast.PodcastsByTagActivity
 import com.limor.app.scenes.main.fragments.profile.ReportActivity
 import com.limor.app.scenes.main.fragments.profile.TypeReport
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.service.AudioService
 import com.limor.app.uimodels.UIFeedItem
 import com.limor.app.uimodels.UIPodcast
+import com.limor.app.uimodels.UIUser
 import io.reactivex.subjects.PublishSubject
 import org.greenrobot.eventbus.EventBus
 import org.jetbrains.anko.cancelButton
@@ -234,7 +237,7 @@ class AudioPlayerFragment : BaseFragment() {
                     }
 
                     override fun onUserClicked(item: UIFeedItem, position: Int) {
-                        Toast.makeText(context, "You clicked on user", Toast.LENGTH_SHORT).show()
+                        navigateToUserProfile(item.podcast?.user)
                     }
 
                     override fun onMoreClicked(
@@ -468,6 +471,18 @@ class AudioPlayerFragment : BaseFragment() {
                     }
                 }
             }
+        }
+    }
+
+    private fun navigateToUserProfile(user: UIUser?){
+        if (user?.id == sessionManager.getStoredUser()?.id) {
+            val intent = Intent(requireActivity(), MainActivity::class.java)
+            intent.putExtra("destination", "profile")
+            startActivity(intent)
+        } else {
+            val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+            userProfileIntent.putExtra("user", user)
+            startActivity(userProfileIntent)
         }
     }
 
