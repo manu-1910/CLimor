@@ -17,22 +17,26 @@ import com.limor.app.common.BaseActivity
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.SessionManager
 import com.limor.app.events.Event
+import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.adapters.FeedAdapter
 import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
 import com.limor.app.scenes.main.fragments.podcast.PodcastsByTagActivity
 import com.limor.app.scenes.main.fragments.profile.ReportActivity
 import com.limor.app.scenes.main.fragments.profile.TypeReport
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.service.AudioService
 import com.limor.app.uimodels.UIFeedItem
 import com.limor.app.uimodels.UIPodcast
+import com.limor.app.uimodels.UIUser
 import io.reactivex.subjects.PublishSubject
 import org.greenrobot.eventbus.EventBus
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
+import timber.log.Timber
 import javax.inject.Inject
 
 class AudioPlayerFragment : BaseFragment() {
@@ -48,6 +52,8 @@ class AudioPlayerFragment : BaseFragment() {
     private lateinit var viewModelFeedByTag: FeedByTagViewModel
     private lateinit var viewModelCreatePodcastLike: CreatePodcastLikeViewModel
     private lateinit var viewModelDeletePodcastLike: DeletePodcastLikeViewModel
+    private lateinit var viewModelCreatePodcastRecast: CreatePodcastRecastViewModel
+    private lateinit var viewModelDeletePodcastRecast: DeletePodcastRecastViewModel
 
     private lateinit var viewModelDeletePodcast: DeletePodcastViewModel
     private val deletePodcastDataTrigger = PublishSubject.create<Unit>()
@@ -58,6 +64,8 @@ class AudioPlayerFragment : BaseFragment() {
 
     private val createPodcastLikeDataTrigger = PublishSubject.create<Unit>()
     private val deletePodcastLikeDataTrigger = PublishSubject.create<Unit>()
+    private val createPodcastRecastDataTrigger = PublishSubject.create<Unit>()
+    private val deletePodcastRecastDataTrigger = PublishSubject.create<Unit>()
 
     // views
     private var rootView: View? = null
@@ -68,6 +76,8 @@ class AudioPlayerFragment : BaseFragment() {
 
     // like variables
     private var lastLikedItemPosition: Int = 0
+    private var lastRecastedItemPosition: Int = 0
+
 
     private var uiPodcast: UIPodcast? = null
 
@@ -113,8 +123,63 @@ class AudioPlayerFragment : BaseFragment() {
             initApiCallDeleteLike()
             initApiCallDeletePodcast()
             initApiCallCreatePodcastReport()
+            initApiCallCreateRecast()
+            initApiCallDeleteRecast()
         }
         return rootView
+    }
+
+    private fun undoRecast() {
+        Toast.makeText(context, getString(R.string.error_recasting_podcast), Toast.LENGTH_SHORT)
+                .show()
+        val item = feedItemsList[lastRecastedItemPosition]
+        item.podcast?.let { podcast ->
+            changeItemRecastStatus(
+                    item,
+                    lastLikedItemPosition,
+                    !podcast.liked
+            )
+        }
+    }
+
+    private fun initApiCallCreateRecast() {
+        val output = viewModelCreatePodcastRecast.transform(
+                CreatePodcastRecastViewModel.Input(
+                        createPodcastRecastDataTrigger
+                )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                undoRecast()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            undoRecast()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+        })
+    }
+
+    private fun initApiCallDeleteRecast() {
+        val output = viewModelDeletePodcastRecast.transform(
+                DeletePodcastRecastViewModel.Input(
+                        deletePodcastRecastDataTrigger
+                )
+        )
+
+        output.response.observe(this, Observer { response ->
+            val code = response.code
+            if (code != 0) {
+                undoRecast()
+            }
+        })
+
+        output.errorMessage.observe(this, Observer {
+            undoRecast()
+            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+        })
     }
 
     private fun initApiCallDeletePodcast() {
@@ -204,7 +269,26 @@ class AudioPlayerFragment : BaseFragment() {
                     }
 
                     override fun onRecastClicked(item: UIFeedItem, position: Int) {
-                        Toast.makeText(context, "You clicked on recast", Toast.LENGTH_SHORT).show()
+                        item.podcast?.let { podcast ->
+                            changeItemRecastStatus(
+                                    item,
+                                    position,
+                                    !podcast.recasted
+                            ) // careful, it will change an item to be from like to dislike and viceversa
+                            lastRecastedItemPosition = position
+
+                            // if now it's liked, let's call the api
+                            Timber.d("${item.id} is recasted ${podcast.recasted}")
+                            if (podcast.recasted) {
+                                viewModelCreatePodcastRecast.idPodcast = podcast.id
+                                createPodcastRecastDataTrigger.onNext(Unit)
+
+                                // if now it's not liked, let's call the api
+                            } else {
+                                viewModelDeletePodcastRecast.idPodcast = podcast.id
+                                deletePodcastRecastDataTrigger.onNext(Unit)
+                            }
+                        }
                     }
 
                     override fun onHashtagClicked(hashtag: String) {
@@ -234,7 +318,7 @@ class AudioPlayerFragment : BaseFragment() {
                     }
 
                     override fun onUserClicked(item: UIFeedItem, position: Int) {
-                        Toast.makeText(context, "You clicked on user", Toast.LENGTH_SHORT).show()
+                        navigateToUserProfile(item.podcast?.user)
                     }
 
                     override fun onMoreClicked(
@@ -454,6 +538,16 @@ class AudioPlayerFragment : BaseFragment() {
                 .of(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastReportViewModel::class.java)
         }
+
+        activity?.let { fragmentActivity ->
+            viewModelCreatePodcastRecast = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(CreatePodcastRecastViewModel::class.java) }
+
+        activity?.let { fragmentActivity ->
+            viewModelDeletePodcastRecast = ViewModelProviders
+                .of(fragmentActivity, viewModelFactory)
+                .get(DeletePodcastRecastViewModel::class.java) }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -471,5 +565,29 @@ class AudioPlayerFragment : BaseFragment() {
         }
     }
 
+    private fun navigateToUserProfile(user: UIUser?){
+        if (user?.id == sessionManager.getStoredUser()?.id) {
+            val intent = Intent(requireActivity(), MainActivity::class.java)
+            intent.putExtra("destination", "profile")
+            startActivity(intent)
+        } else {
+            val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+            userProfileIntent.putExtra("user", user)
+            startActivity(userProfileIntent)
+        }
+    }
+
+    private fun changeItemRecastStatus(item: UIFeedItem, position: Int, recasted: Boolean) {
+        item.podcast?.let { podcast ->
+            Timber.d("${item.id} is recasted $recasted")
+            if (recasted) {
+                podcast.number_of_recasts++
+            } else {
+                podcast.number_of_recasts--
+            }
+            item.podcast?.recasted = recasted
+            feedAdapter?.notifyItemChanged(position, item)
+        }
+    }
 
 }
