@@ -114,10 +114,6 @@ class UserFeedFragment : FeedItemsListFragment() {
         viewModelFeed.offset = feedItemsList.size
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     fun onRefreshFeedEvent(event: Event.RefreshFeed) {
         reloadFeed()
