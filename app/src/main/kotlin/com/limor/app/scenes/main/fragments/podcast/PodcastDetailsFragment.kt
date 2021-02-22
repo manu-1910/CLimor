@@ -249,6 +249,7 @@ class PodcastDetailsFragment : BaseFragment() {
         }
 
         feedPosition = activity?.intent?.extras?.getInt("position")
+        Timber.d("PodcastPosition $feedPosition")
 
 
         initEmptyScenario()
@@ -2219,6 +2220,7 @@ class PodcastDetailsFragment : BaseFragment() {
         btnClose?.onClick {
             val resultIntent = Intent()
             resultIntent.putExtra("podcast", uiPodcast)
+            resultIntent.putExtra("position", feedPosition)
             activity?.setResult(Activity.RESULT_OK, resultIntent)
             activity?.finish()
         }

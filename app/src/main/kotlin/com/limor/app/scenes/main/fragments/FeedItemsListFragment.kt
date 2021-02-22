@@ -42,6 +42,7 @@ import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.onRefresh
 import org.jetbrains.anko.support.v4.toast
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -675,6 +676,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
     }
 
     private fun initApiCallGetPodcastById() {
+        Timber.d("GetPodcastInfo")
         val output = viewModelGetPodcastById.transform(
             GetPodcastByIdViewModel.Input(
                 getPodcastByIdDataTrigger
@@ -818,6 +820,14 @@ abstract class FeedItemsListFragment : BaseFragment() {
         requestNewData()
     }
 
+    protected fun updateCommentCount(id: String, commentCount: Int){
+        feedAdapter?.list?.firstOrNull { feedItem -> feedItem.id == id }?.let { feedItem ->
+            val itemPosition = feedAdapter?.list?.indexOf(feedItem)!!
+            feedAdapter!!.list[itemPosition].podcast?.number_of_comments = commentCount
+            feedAdapter?.notifyItemChanged(itemPosition)
+        }
+    }
+
     private fun navigateToUserProfile(user: UIUser?){
         if (user?.id == sessionManager.getStoredUser()?.id) {
             if (activity is MainActivity)
@@ -872,7 +882,6 @@ abstract class FeedItemsListFragment : BaseFragment() {
                 }
                 REQUEST_PODCAST_DETAILS -> {
                     data?.let {
-//                        val podcast = data.getSerializableExtra("podcast") as UIPodcast
                         val position = data.getIntExtra("position", 0)
                         lastPodcastByIdRequestedPosition = position
                         feedItemsList[position].podcast?.id?.let {
