@@ -224,8 +224,13 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         touchDragging = false;
         offsetGoal = offset;
         long elapsedMsec = System.currentTimeMillis() - waveformTouchStartMsec;
-        if (elapsedMsec < 200 && y < Commons.dpToPx(getActivity(), 48) && x < waveformView.maxPos() && isAvailableArea(x) && !isEditMode) {
+        //We check could we create marker or not
+        if (elapsedMsec < 200 &&
+                //y < Commons.dpToPx(getActivity(), 48) &&
+                x < waveformView.maxPos() && isAvailableArea(x) &&
+                !isEditMode) {
 //            int seekMsec = waveformView.pixelsToMillisecs((int) (touchStart + offset));
+
             int startPos = trap((int) (touchStart + offset));
             int endPos = startPos + (100);
             addMarker(startPos, endPos, false, null);
