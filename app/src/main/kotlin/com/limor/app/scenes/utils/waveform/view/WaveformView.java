@@ -35,16 +35,24 @@ import com.limor.app.scenes.utils.waveform.soundfile.SoundFile;
 
 import java.util.ArrayList;
 
+import timber.log.Timber;
+
 
 public class WaveformView extends View {
 
     public interface WaveformListener {
         void waveformTouchStart(float x);
+
         void waveformTouchMove(float x);
+
         void waveformTouchEnd(float x, float y);
+
         void waveformFling(float x);
+
         void waveformDraw();
+
         void waveformZoomIn();
+
         void waveformZoomOut();
     }
 
@@ -94,6 +102,9 @@ public class WaveformView extends View {
     public static final int TEXT_SIZE_8 = 8;
     public static final int NEW_WIDTH = 20;
     public static final int LINE_WIDTH = 10;
+    public static final int ZOOM_LEVELS_COUNT = 20;
+    public static final float ZOOM_LEVEL_INITIAL_FACTOR = 1.2f;
+    public static final float ZOOM_LEVEL_ADDED_FACTOR = 0.05f;
 
     // endregion
 
@@ -113,7 +124,7 @@ public class WaveformView extends View {
         selectedLinePaint.setStyle(Paint.Style.STROKE);       // set to STOKE
         selectedLinePaint.setStrokeJoin(Paint.Join.ROUND);    // set the join to round you want
         selectedLinePaint.setStrokeCap(Paint.Cap.ROUND);      // set the paint cap to round too
-        selectedLinePaint.setPathEffect(new CornerPathEffect(LINE_WIDTH) );   // set the path effect when they join.
+        selectedLinePaint.setPathEffect(new CornerPathEffect(LINE_WIDTH));   // set the path effect when they join.
         selectedLinePaint.setAntiAlias(false);
 
         unselectedLinePaint = new Paint();
@@ -166,33 +177,34 @@ public class WaveformView extends View {
 
 
         gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-                    public boolean onFling(MotionEvent e1, MotionEvent e2, float vx, float vy) {
-                        listener.waveformFling(vx);
-                        return true;
-                    }
-                });
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float vx, float vy) {
+                listener.waveformFling(vx);
+                return true;
+            }
+        });
         scaleGestureDetector = new ScaleGestureDetector(context, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
-                    public boolean onScaleBegin(ScaleGestureDetector d) {
-                        initialScaleSpanX = Math.abs(d.getCurrentSpanX());
-                        initialScaleSpanY = Math.abs(d.getCurrentSpanY());
-                        return true;
-                    }
-                    public boolean onScale(ScaleGestureDetector d) {
-                        float scaleX = Math.abs(d.getCurrentSpanX());
-                        float scaleY = Math.abs(d.getCurrentSpanY());
-                        if (scaleX - initialScaleSpanX > 20 || scaleY - initialScaleSpanY > 20) {
-                            listener.waveformZoomIn();
-                            initialScaleSpanX = scaleX;
-                            initialScaleSpanY = scaleY;
-                        }
-                        if (scaleX - initialScaleSpanX < -20 || scaleY - initialScaleSpanY < -20) {
-                            listener.waveformZoomOut();
-                            initialScaleSpanX = scaleX;
-                            initialScaleSpanY = scaleY;
-                        }
-                        return true;
-                    }
-                });
+            public boolean onScaleBegin(ScaleGestureDetector d) {
+                initialScaleSpanX = Math.abs(d.getCurrentSpanX());
+                initialScaleSpanY = Math.abs(d.getCurrentSpanY());
+                return true;
+            }
+
+            public boolean onScale(ScaleGestureDetector d) {
+                float scaleX = Math.abs(d.getCurrentSpanX());
+                float scaleY = Math.abs(d.getCurrentSpanY());
+                if (scaleX - initialScaleSpanX > 20 || scaleY - initialScaleSpanY > 20) {
+                    listener.waveformZoomIn();
+                    initialScaleSpanX = scaleX;
+                    initialScaleSpanY = scaleY;
+                }
+                if (scaleX - initialScaleSpanX < -20 || scaleY - initialScaleSpanY < -20) {
+                    listener.waveformZoomOut();
+                    initialScaleSpanX = scaleX;
+                    initialScaleSpanY = scaleY;
+                }
+                return true;
+            }
+        });
 
         soundFile = null;
         lenByZoomLevel = null;
@@ -245,7 +257,9 @@ public class WaveformView extends View {
         return zoomLevel;
     }
 
-    public float getZoomFactorActual() { return zoomFactorByZoomLevel[zoomLevel]; }
+    public float getZoomFactorActual() {
+        return zoomFactorByZoomLevel[zoomLevel];
+    }
 
     public void setZoomLevel(int zoomLevel) {
         this.zoomLevel = zoomLevel;
@@ -260,14 +274,14 @@ public class WaveformView extends View {
             zoomLevel++;
             float factor = lenByZoomLevel[zoomLevel] / (float) lenByZoomLevel[zoomLevel - 1];
             for (MarkerSet markerSet : markerSets) {
-                int mSelectionStart = (int)(markerSet.getStartPos() * factor);
+                int mSelectionStart = (int) (markerSet.getStartPos() * factor);
                 markerSet.setStartPos(mSelectionStart);
-                int mSelectionMiddle = (int)(markerSet.getMiddlePos() * factor);
+                int mSelectionMiddle = (int) (markerSet.getMiddlePos() * factor);
                 markerSet.setMiddlePos(mSelectionMiddle);
-                int mSelectionEnd = (int)(markerSet.getEndPos() * factor);
+                int mSelectionEnd = (int) (markerSet.getEndPos() * factor);
                 markerSet.setEndPos(mSelectionEnd);
             }
-            int offsetCenter = offset + (int)(getMeasuredWidth() / factor); //This line is the responsible to maintain the play line in the middle of the waveform
+            int offsetCenter = offset + (int) (getMeasuredWidth() / factor); //This line is the responsible to maintain the play line in the middle of the waveform
             offsetCenter *= factor;
             offset = offsetCenter - (int) (getMeasuredWidth() / factor);
             if (offset < 0) {
@@ -283,14 +297,15 @@ public class WaveformView extends View {
 
     public void zoomOut() {
         if (canZoomOut()) {
+            Timber.d("Zoom Level " + zoomLevel);
             zoomLevel--;
             float factor = lenByZoomLevel[zoomLevel + 1] / (float) lenByZoomLevel[zoomLevel];
             for (MarkerSet markerSet : markerSets) {
-                int mSelectionStart = (int)(markerSet.getStartPos() / factor);
+                int mSelectionStart = (int) (markerSet.getStartPos() / factor);
                 markerSet.setStartPos(mSelectionStart);
-                int mSelectionMiddle = (int)(markerSet.getMiddlePos() / factor);
+                int mSelectionMiddle = (int) (markerSet.getMiddlePos() / factor);
                 markerSet.setMiddlePos(mSelectionMiddle);
-                int mSelectionEnd = (int)(markerSet.getEndPos() / factor);
+                int mSelectionEnd = (int) (markerSet.getEndPos() / factor);
                 markerSet.setEndPos(mSelectionEnd);
             }
             int offsetCenter = (int) (offset + getMeasuredWidth() / factor);
@@ -311,7 +326,7 @@ public class WaveformView extends View {
         return (int) (1.0 * seconds * sampleRate / samplesPerFrame + 0.5);
     }
 
-    public int getNumFramesByZoomlevel(){
+    public int getNumFramesByZoomlevel() {
         return lenByZoomLevel[zoomLevel];
     }
 
@@ -390,14 +405,14 @@ public class WaveformView extends View {
         //Waveform white bars
         int i = 0; //TODO JJ 270820
         //int newWidth = width/NEW_WIDTH;  //Adjust the total width of the white bars of the waveform //TODO JJ 270820 original line
-        int newWidth = width/NEW_WIDTH;  //Adjust the total width of the white bars of the waveform
-        int newOffset = start/20;   //Adjust the offset to paint only the lenght of the audio file
+        int newWidth = width / NEW_WIDTH;  //Adjust the total width of the white bars of the waveform
+        int newOffset = start / 20;   //Adjust the offset to paint only the lenght of the audio file
 
         // TODO: Jose -> here we are painting the gains
         while (i < newWidth) {
 
-            double h = (getScaledHeight(zoomFactorByZoomLevel[zoomLevel],  newOffset + i) * getMeasuredHeight() / 2) * 0.5; // scale the wave here
-            int height = (int)h;
+            double h = (getScaledHeight(zoomFactorByZoomLevel[zoomLevel], newOffset + i) * getMeasuredHeight() / 2) * 0.5; // scale the wave here
+            int height = (int) h;
             canvas.drawLine(i * NEW_WIDTH, ctr + height, i * NEW_WIDTH, ctr - height, selectedLinePaint);
 
             i++;
@@ -407,14 +422,14 @@ public class WaveformView extends View {
         int play = 0;
         while (play < width) {
             if (play + start == playbackPos) {
-                canvas.drawRect(play, topOffset * 2 , play + Commons.dpToPx(getContext(), 2), measuredHeight - topOffset, playbackLinePaint);
+                canvas.drawRect(play, topOffset * 2, play + Commons.dpToPx(getContext(), 2), measuredHeight - topOffset, playbackLinePaint);
             }
             play++;
         }
 
         //Background color when a marker is created
         int j = 0;
-        while (j < width){
+        while (j < width) {
             // Waveform background
             //drawWaveformLine(canvas, i, 0, measuredHeight, unselectedBackgroundPaint);  //Background negro del waveform
 
@@ -423,9 +438,9 @@ public class WaveformView extends View {
                 if (j + start >= markerSet.getStartPos() && j + start < markerSet.getEndPos()) {
                     selectedBackgroundPaint.setAntiAlias(false);
                     selectedBackgroundPaint.setColor(getResources().getColor(markerSet.getBackgroundColor()));  //This is the background when you select a marker
-                    selectedBackgroundPaint.setAlpha(WaveformFragment.isEditMode && ! markerSet.isEditMarker() ? 60 : 120);
+                    selectedBackgroundPaint.setAlpha(WaveformFragment.isEditMode && !markerSet.isEditMarker() ? 60 : 120);
                     //drawWaveformLine(canvas, j, topOffset, measuredHeight - topOffset, selectedBackgroundPaint);
-                    canvas.drawLine( j, topOffset,  j, measuredHeight - topOffset, selectedBackgroundPaint);
+                    canvas.drawLine(j, topOffset, j, measuredHeight - topOffset, selectedBackgroundPaint);
                 }
             }
             j++;
@@ -438,7 +453,7 @@ public class WaveformView extends View {
             if (!markerSet.isEditMarker()) {
                 canvas.drawLine(markerSet.getStartPos() - offset + 1f, 0, markerSet.getStartPos() - offset + 1f, measuredHeight - topOffset, borderLinePaint);
                 canvas.drawLine(markerSet.getEndPos() - offset + 1f, 0, markerSet.getEndPos() - offset + 1f, measuredHeight - topOffset, borderLinePaint);
-            }else{
+            } else {
                 canvas.drawLine(markerSet.getStartPos() - offset + 1f, 0, markerSet.getStartPos() - offset + 1f, measuredHeight - topOffset, borderLinePaintEdit);
                 canvas.drawLine(markerSet.getEndPos() - offset + 1f, 0, markerSet.getEndPos() - offset + 1f, measuredHeight - topOffset, borderLinePaintEdit);
             }
@@ -447,7 +462,7 @@ public class WaveformView extends View {
             if (!markerSet.isEditMarker()) {
                 float leftEnd = markerSet.getEndPos() - offset + Commons.dpToPx(getContext(), 16);
                 float topEnd = measuredHeight - topOffset + Commons.dpToPx(getContext(), 16);
-                String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getEndPos()/NEW_WIDTH));
+                String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getEndPos() / NEW_WIDTH));
                 //String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getEndPos()));
                 canvas.drawText(timeCode, leftEnd, topEnd, timeCodePaintBlack);
             }
@@ -455,22 +470,22 @@ public class WaveformView extends View {
             // Left bottom timestamp (is always visible, for normal marker and for edit marker
             float leftStart = markerSet.getStartPos() - offset - Commons.dpToPx(getContext(), 44);
             float topStart = measuredHeight - topOffset + Commons.dpToPx(getContext(), 16);
-            String timeCodeStart = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getStartPos()/NEW_WIDTH));
+            String timeCodeStart = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(markerSet.getStartPos() / NEW_WIDTH));
             canvas.drawText(timeCodeStart, leftStart, topStart, timeCodePaintBlack);
         }
 
         // Top background
-        canvas.drawRect(0f, 0f, (float)getMeasuredWidth(), topOffset * 2, greyBackgroundPaint);
-        canvas.drawRect(0f, topOffset - 3, (float)getMeasuredWidth(), topOffset - 1, dividerBackgroundPaint);
+        canvas.drawRect(0f, 0f, (float) getMeasuredWidth(), topOffset * 2, greyBackgroundPaint);
+        canvas.drawRect(0f, topOffset - 3, (float) getMeasuredWidth(), topOffset - 1, dividerBackgroundPaint);
 
         //Light grey separator lines
-        canvas.drawLine(0f, topOffset, (float)getMeasuredWidth(), topOffset, separatorLine);
-        canvas.drawLine(0f, topOffset * 2, (float)getMeasuredWidth(), topOffset * 2, separatorLine);
-        canvas.drawLine(0f, measuredHeight - topOffset - 1f, (float)getMeasuredWidth(), measuredHeight - topOffset - 1f, separatorLine);
+        canvas.drawLine(0f, topOffset, (float) getMeasuredWidth(), topOffset, separatorLine);
+        canvas.drawLine(0f, topOffset * 2, (float) getMeasuredWidth(), topOffset * 2, separatorLine);
+        canvas.drawLine(0f, measuredHeight - topOffset - 1f, (float) getMeasuredWidth(), measuredHeight - topOffset - 1f, separatorLine);
 
         // Bottom background
         //canvas.drawRect(0f, measuredHeight - topOffset / 2, (float)getMeasuredWidth(), measuredHeight, greyBackgroundPaint); //greyBackgroundPaint
-        canvas.drawRect(0f, measuredHeight, (float)getMeasuredWidth(), measuredHeight, playbackLinePaint); //greyBackgroundPaint
+        canvas.drawRect(0f, measuredHeight, (float) getMeasuredWidth(), measuredHeight, playbackLinePaint); //greyBackgroundPaint
 
         // Grid
         float quarter = getMeasuredWidth() / 4;
@@ -478,9 +493,9 @@ public class WaveformView extends View {
         // Draw text
         for (int count = 1; count < 8; count++) {
             //String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(((int)(eight * count) + offset)/ NEW_WIDTH));
-            String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(((int)(eight * count) + offset)/ NEW_WIDTH ));
+            String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(((int) (eight * count) + offset) / NEW_WIDTH));
             float offsetText = (float) (0.5 * timeCodePaint.measureText(timeCode));
-            canvas.drawText(timeCode, eight * count - offsetText , (int) (16 * density), timeCodePaint);
+            canvas.drawText(timeCode, eight * count - offsetText, (int) (16 * density), timeCodePaint);
 
         }
 
@@ -488,7 +503,6 @@ public class WaveformView extends View {
             listener.waveformDraw();
         }
     }
-
 
 
     protected float getGain(int i, int numFrames, int[] frameGains) {
@@ -532,7 +546,7 @@ public class WaveformView extends View {
             }
         }
         scaleFactor = 1.0f;
-        if (maxGain > 255.0 ) {
+        if (maxGain > 255.0) {
             scaleFactor = 255 / maxGain;
         }
         // Build histogram of 256 bins and figure out the new scaled max
@@ -569,37 +583,28 @@ public class WaveformView extends View {
         }
 
         range = maxGain - minGain;
-        numZoomLevels = 5;
-        lenByZoomLevel = new int[5];
-        zoomFactorByZoomLevel = new float[5];
+        numZoomLevels = 20;
+        lenByZoomLevel = new int[20];
+        zoomFactorByZoomLevel = new float[20];
 
         float ratio = getMeasuredWidth() / (float) numFrames;
-
         if (ratio < 1) {
-            lenByZoomLevel[0] = Math.round(numFrames * ratio);
-            zoomFactorByZoomLevel[0] = ratio;
-            lenByZoomLevel[1] = numFrames;
-            zoomFactorByZoomLevel[1] = 1.0f;
-            lenByZoomLevel[2] = numFrames * 2;
-            zoomFactorByZoomLevel[2] = 2.0f;
-            lenByZoomLevel[3] = numFrames * 3;
-            zoomFactorByZoomLevel[3] = 3.0f;
-            lenByZoomLevel[4] = numFrames * 4;
-            zoomFactorByZoomLevel[4] = 4.0f;
+            //lenByZoomLevel[0] = Math.round(numFrames * ratio);
+            //zoomFactorByZoomLevel[0] = ratio;
+            for (int i = 0; i < 20; i++) {
+
+                lenByZoomLevel[i] = Math.round(numFrames * ratio * (ZOOM_LEVEL_INITIAL_FACTOR + ZOOM_LEVEL_ADDED_FACTOR * i));
+                zoomFactorByZoomLevel[i] = ratio * (ZOOM_LEVEL_INITIAL_FACTOR + ZOOM_LEVEL_ADDED_FACTOR * i);
+            }
             zoomLevel = 0;
         } else {
-            lenByZoomLevel[0] = numFrames;
-            zoomFactorByZoomLevel[0] = 1.0f;
-            lenByZoomLevel[1] = numFrames * 2;
-            zoomFactorByZoomLevel[1] = 2f;
-            lenByZoomLevel[2] = numFrames * 3;
-            zoomFactorByZoomLevel[2] = 3.0f;
-            lenByZoomLevel[3] = numFrames * 4;
-            zoomFactorByZoomLevel[3] = 4.0f;
-            lenByZoomLevel[4] = numFrames * 5;
-            zoomFactorByZoomLevel[4] = 5.0f;
-            zoomLevel = 0;
-            for (int i = 0; i < 5; i++) {
+            //lenByZoomLevel[0] = numFrames;
+            //zoomFactorByZoomLevel[0] = 1.0f;
+            for (int i = 0; i < ZOOM_LEVELS_COUNT; i++) {
+                lenByZoomLevel[i] = Math.round(numFrames * (ZOOM_LEVEL_INITIAL_FACTOR + ZOOM_LEVEL_ADDED_FACTOR * i));
+                zoomFactorByZoomLevel[i] = (ZOOM_LEVEL_INITIAL_FACTOR + ZOOM_LEVEL_ADDED_FACTOR) * i;
+            }
+            for (int i = 0; i < ZOOM_LEVELS_COUNT; i++) {
                 if (lenByZoomLevel[zoomLevel] - getMeasuredWidth() > 0) {
                     break;
                 } else {
