@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.R
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UIDraft
+import kotlinx.android.synthetic.main.fragment_drafts_item.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.layoutInflater
 import org.jetbrains.anko.okButton
@@ -30,11 +31,11 @@ class DraftAdapter(
     var context: Context,
     var list: ArrayList<UIDraft>,
     private val listener: OnItemClickListener,
-    private val deleteListener: OnDeleteItemClickListener,
-    private val duplicateListener: OnDuplicateItemClickListener,
+    val deleteListener: OnDeleteItemClickListener,
+    val duplicateListener: OnDuplicateItemClickListener,
     private val editListener: OnEditItemClickListener,
-    private val changeNameListener: OnChangeNameClickListener,
-    private val resumeListener: OnResumeItemClickListener
+    val changeNameListener: OnChangeNameClickListener,
+    val resumeListener: OnResumeItemClickListener
 ) : RecyclerView.Adapter<DraftAdapter.ViewHolder>() {
     private var lastVisiblePlayerLayout: LinearLayout? = null
     var inflator: LayoutInflater = LayoutInflater.from(context)
@@ -55,6 +56,8 @@ class DraftAdapter(
     // seekbar and current time
     private val seekUpdater: Runnable
     private val seekHandler: Handler = Handler()
+
+    private var lastSelectedDraftPosition = -1
 
 
     init {
@@ -98,14 +101,18 @@ class DraftAdapter(
         val currentDraft = list[position]
 
         // we will just show the player layout of the last item clicked
-        if(currentClickedItemPosition == position){
+      /*  if(currentClickedItemPosition == position){
             lastVisiblePlayerLayout = holder.playerLayout
             holder.playerLayout.visibility = View.VISIBLE
         }else{
             holder.playerLayout.visibility = View.GONE
-        }
+        }*/
 
-        // we have to make sure that the references to the currentViews playing are always updated
+        // we have to make sure that the references to the currentViews playing are always
+        if(lastSelectedDraftPosition == position){
+            holder.itemView.llDraftItem.setBackgroundColor(ContextCompat.getColor(context, R.color.brandPrimary500))
+        } else holder.itemView.llDraftItem.setBackgroundColor(ContextCompat.getColor(context, R.color.brandSecondary400))
+
         if(position == currentPlayingItemPosition) {
             // these variables should be updated here, and onOtherDraftPlayClicked and in onCurrentDraftPlayClicked
             currentSeekbarPlaying = holder.seekBar
@@ -123,13 +130,17 @@ class DraftAdapter(
 
         // itemClick listener
         holder.itemView.setOnClickListener {
-            if(currentClickedItemPosition != position) {
-                currentClickedItemPosition = position
-                listener.onItemClick(currentDraft)
-                lastVisiblePlayerLayout?.visibility = View.GONE
-                holder.playerLayout.visibility = View.VISIBLE
-                lastVisiblePlayerLayout = holder.playerLayout
-            }
+            val copyOfLastSelectedDraftPosition = lastSelectedDraftPosition
+            lastSelectedDraftPosition = position
+            notifyItemChanged(copyOfLastSelectedDraftPosition)
+            notifyItemChanged(lastSelectedDraftPosition)
+            listener.onItemClick(currentDraft, position)
+            /* if(currentClickedItemPosition != position) {
+                 currentClickedItemPosition = position
+                 lastVisiblePlayerLayout?.visibility = View.GONE
+                 holder.playerLayout.visibility = View.VISIBLE
+                 lastVisiblePlayerLayout = holder.playerLayout
+             }*/
         }
 
         // edit mode
@@ -519,7 +530,7 @@ class DraftAdapter(
     }
 
     interface OnItemClickListener {
-        fun onItemClick(item: UIDraft)
+        fun onItemClick(item: UIDraft, position: Int)
     }
 
     interface OnChangeNameClickListener {
