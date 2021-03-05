@@ -43,6 +43,7 @@
         android:theme="@style/ProgressBarTheme"
         android:visibility="gone"/>
 
+
     <LinearLayout
         android:id="@+id/itemAudioPlayer"
         android:layout_width="match_parent"
@@ -51,6 +52,11 @@
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/brandSecondary300" />
 
         <RelativeLayout
             android:layout_width="match_parent"
