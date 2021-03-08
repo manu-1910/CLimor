@@ -21,6 +21,7 @@ import com.limor.app.scenes.utils.Commons
 import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerStatus
 import dagger.android.AndroidInjection
+import kotlinx.android.synthetic.main.mini_player_view.*
 import kotlinx.android.synthetic.main.mini_player_view.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
@@ -42,6 +43,8 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         AndroidInjection.inject(this)
     }
+
+    private var lastPlayingPosition = 0
 
     private val connection = object : ServiceConnection {
 
@@ -66,12 +69,14 @@ abstract class BaseActivity : AppCompatActivity() {
                         }
 
                         setPlayerUiPlaying()
+
                     }
                     is PlayerStatus.Paused -> {
                         setPlayerUiPaused()
                     }
                     is PlayerStatus.Ended -> {
                         setPlayerUiPaused()
+
                     }
                     is PlayerStatus.Error -> {
                         toast(getString(R.string.audio_player_error_msg))
@@ -79,6 +84,14 @@ abstract class BaseActivity : AppCompatActivity() {
                 }
 
             })
+
+            audioService?.currentPlayingPosition?.observe(this@BaseActivity, Observer { playingPosition ->
+                lastPlayingPosition = playingPosition.toInt()
+                try {
+                    progress_audio_playback.progress = lastPlayingPosition
+                } catch (ex: Exception) { ex.printStackTrace() }
+            })
+
 
             // Show player after config change.
             val podcast = audioService?.uiPodcast
@@ -100,7 +113,10 @@ abstract class BaseActivity : AppCompatActivity() {
             miniPlayerView!!.tv_audio_title.text = audioService?.uiPodcast?.caption
 
             val durationMillis = audioService?.uiPodcast?.audio?.total_length?.toInt()
-//            val durationMillis = audioService?.uiPodcast?.audio?.duration
+
+            miniPlayerView!!.progress_audio_playback.max = durationMillis ?: 0
+            miniPlayerView!!.progress_audio_playback.progress = lastPlayingPosition
+
             miniPlayerView!!.tv_duration.text = Commons.getHumanReadableTimeFromMillis(durationMillis!!)
         } catch (e: Exception) {
             e.printStackTrace()

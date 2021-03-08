@@ -40,12 +40,19 @@
 
     </FrameLayout>
 
+    <ProgressBar
+        android:id="@+id/progress_audio_playback"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_alignParentTop="true"/>
+
     <FrameLayout
         android:id="@+id/fl_launch_maximised_player"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_toLeftOf="@+id/ll_close"
-        android:layout_toRightOf="@+id/fl_play_pause">
+        android:layout_toStartOf="@+id/ll_close"
+        android:layout_toEndOf="@+id/fl_play_pause">
 
         <LinearLayout
             android:layout_width="wrap_content"
