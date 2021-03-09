@@ -46,7 +46,9 @@ class UserFeedFragment : FeedItemsListFragment() {
     override fun onResume() {
         super.onResume()
         requestNewData()
-        EventBus.getDefault().register(this)
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
     }
 
     override fun onStop() {

@@ -42,7 +42,7 @@ import java.util.*
 private const val PLAYBACK_CHANNEL_ID = "io.square1.limor.playback_channel"
 private const val MEDIA_SESSION_TAG = "io.square1.limor.audio"
 private const val PLAYBACK_NOTIFICATION_ID = 1
-private const val PLAYBACK_TIMER_DELAY = 500L
+private const val PLAYBACK_TIMER_DELAY = 100L
 private const val PLAYBACK_SKIP_INCREMENTS = 30000L
 private const val ARG_PODCAST = "ARG_PODCAST"
 private const val ARG_START_POSITION = "ARG_START_POSITION"
@@ -93,6 +93,7 @@ class AudioService : Service() {
     private val _playerStatusLiveData = MutableLiveData<PlayerStatus>()
     val playerStatusLiveData: LiveData<PlayerStatus>
         get() = _playerStatusLiveData
+
 
     override fun onCreate() {
         super.onCreate()
