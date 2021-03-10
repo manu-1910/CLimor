@@ -131,7 +131,7 @@ class SetupPatronSelectCategoryFragment : BaseFragment() {
                     tvChip.isEnabled = true
                     tvChip.padding = 24
 
-                    var colorBg = R.drawable.bg_chip_category
+                    var colorBg = R.drawable.bg_chip_category_unselected
                     if(item.id == setupPatronViewModel.categorySelectedId)
                         colorBg = R.drawable.bg_chip_category_selected
 
@@ -185,7 +185,7 @@ class SetupPatronSelectCategoryFragment : BaseFragment() {
             if (lastSelectedChip != null) {
                 lastSelectedChip.background = ContextCompat.getDrawable(
                     context!!,
-                    R.drawable.bg_chip_category
+                    R.drawable.bg_chip_category_unselected
                 )
             }
         }

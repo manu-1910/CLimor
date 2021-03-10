@@ -162,7 +162,7 @@ class CategoriesFragment : BaseFragment() {
                         tvChip.padding = 24
                         tvChip.background = ContextCompat.getDrawable(
                             context!!,
-                            R.drawable.bg_chip_category
+                            R.drawable.bg_chip_category_unselected
                         )
                         tvChip.layoutParams = params
                         tvChip.setOnClickListener {
