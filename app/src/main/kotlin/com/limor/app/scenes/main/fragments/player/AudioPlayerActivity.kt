@@ -8,6 +8,7 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -193,8 +194,8 @@ class AudioPlayerActivity : AppCompatActivity(), HasSupportFragmentInjector {
         super.onStart()
 
         playerControlView = findViewById(R.id.player_control_view)
-
         if (playerControlView != null) {
+            playerControlView?.exo_progress?.setPlayedColor(ContextCompat.getColor(this, R.color.brandPrimary500))
             if (isServiceRunning(AudioService::class.java)) {
                 bindToAudioService()
             }
