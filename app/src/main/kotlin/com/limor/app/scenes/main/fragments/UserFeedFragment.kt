@@ -119,7 +119,7 @@ class UserFeedFragment : FeedItemsListFragment() {
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     fun onRefreshFeedEvent(event: Event.RefreshFeed) {
         reloadFeed()
-        EventBus.getDefault().removeStickyEvent(Event.RefreshFeed)
+        EventBus.getDefault().removeStickyEvent(event)
     }
 
 }

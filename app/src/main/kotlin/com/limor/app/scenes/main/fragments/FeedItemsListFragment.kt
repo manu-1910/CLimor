@@ -110,6 +110,8 @@ abstract class FeedItemsListFragment : BaseFragment() {
         private const val REQUEST_REPORT_USER: Int = 0
         private const val REQUEST_REPORT_PODCAST: Int = 1
         private const val REQUEST_PODCAST_DETAILS: Int = 2
+        private const val REQUEST_AUDIO_PLAYER: Int = 4
+
     }
 
     override fun onCreateView(
@@ -820,6 +822,20 @@ abstract class FeedItemsListFragment : BaseFragment() {
         requestNewData()
     }
 
+    protected fun reloadPodcast(id: Int) {
+        val cast = feedAdapter?.list?.firstOrNull { cast -> cast.podcast?.id == id }
+        cast?.let {
+            val position = feedAdapter?.list?.indexOf(cast) ?: 0
+            lastPodcastByIdRequestedPosition = position
+            feedItemsList[position].podcast?.id?.let {
+                viewModelGetPodcastById.idPodcast = it
+            }
+            showProgressBar()
+            getPodcastByIdDataTrigger.onNext(Unit)
+        }
+        requestNewData()
+    }
+
     protected fun updateCommentCount(id: String, commentCount: Int){
         feedAdapter?.list?.firstOrNull { feedItem -> feedItem.id == id }?.let { feedItem ->
             val itemPosition = feedAdapter?.list?.indexOf(feedItem)!!
@@ -897,5 +913,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
             }
         }
     }
+
+
 
 }
