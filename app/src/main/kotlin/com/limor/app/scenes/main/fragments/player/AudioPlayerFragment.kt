@@ -80,6 +80,7 @@ class AudioPlayerFragment : BaseFragment() {
 
 
     private var uiPodcast: UIPodcast? = null
+    lateinit var uiFeedItem: UIFeedItem
 
     val app: App? by lazy {
         requireContext().applicationContext as App
@@ -88,6 +89,8 @@ class AudioPlayerFragment : BaseFragment() {
     companion object {
         val TAG: String = AudioPlayerFragment::class.java.simpleName
         private const val REQUEST_REPORT_PODCAST: Int = 1
+        private const val REQUEST_PODCAST_DETAIL: Int = 3
+
         fun newInstance() = AudioPlayerFragment()
     }
 
@@ -106,7 +109,7 @@ class AudioPlayerFragment : BaseFragment() {
                     bundle.getSerializable(AudioPlayerActivity.BUNDLE_KEY_PODCAST) as UIPodcast
 
                 // Wrap the podcast with a UIFeedItem so that we can use the feedAdapter here...
-                val uiFeedItem = UIFeedItem(
+                uiFeedItem = UIFeedItem(
                     uiPodcast!!.id.toString(),
                     uiPodcast,
                     uiPodcast!!.user,
@@ -243,7 +246,7 @@ class AudioPlayerFragment : BaseFragment() {
                             Intent(context, PodcastDetailsActivity::class.java)
                         podcastDetailsIntent.putExtra("podcast", item.podcast)
                         podcastDetailsIntent.putExtra("commenting", true)
-                        startActivity(podcastDetailsIntent)
+                        startActivityForResult(podcastDetailsIntent, REQUEST_PODCAST_DETAIL)
                     }
 
                     override fun onLikeClicked(item: UIFeedItem, position: Int) {
@@ -553,6 +556,7 @@ class AudioPlayerFragment : BaseFragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
+            Timber.d("Player $requestCode")
             when (requestCode) {
                 REQUEST_REPORT_PODCAST -> {
                     data?.let {
@@ -561,6 +565,16 @@ class AudioPlayerFragment : BaseFragment() {
                         createPodcastReportDataTrigger.onNext(Unit)
                     }
                 }
+                REQUEST_PODCAST_DETAIL -> {
+                    data?.let {
+                        val podcast = data.getSerializableExtra("podcast") as UIPodcast
+                        feedAdapter?.let {
+                            it.list[0].podcast = podcast
+                            it.notifyDataSetChanged()
+                        }
+                    }
+                }
+
             }
         }
     }
@@ -589,5 +603,7 @@ class AudioPlayerFragment : BaseFragment() {
             feedAdapter?.notifyItemChanged(position, item)
         }
     }
+
+
 
 }
