@@ -17,7 +17,6 @@ import com.limor.app.common.BaseFragment
 import com.limor.app.scenes.main.viewmodels.SetupPatronViewModel
 import kotlinx.android.synthetic.main.fragment_setup_patron_payment.*
 import org.jetbrains.anko.sdk23.listeners.onClick
-import java.lang.Exception
 import javax.inject.Inject
 
 class SetupPatronPaymentFragment : BaseFragment() {
@@ -151,9 +150,9 @@ class SetupPatronPaymentFragment : BaseFragment() {
     }
 
     private fun onCurrencyClicked(currency: Currency) {
-        tvDollar.background = ContextCompat.getDrawable(context!!, R.drawable.bg_chip_category)
-        tvPound.background = ContextCompat.getDrawable(context!!, R.drawable.bg_chip_category)
-        tvEuro.background = ContextCompat.getDrawable(context!!, R.drawable.bg_chip_category)
+        tvDollar.background = ContextCompat.getDrawable(context!!, R.drawable.bg_chip_category_unselected)
+        tvPound.background = ContextCompat.getDrawable(context!!, R.drawable.bg_chip_category_unselected)
+        tvEuro.background = ContextCompat.getDrawable(context!!, R.drawable.bg_chip_category_unselected)
 
         when (currency) {
             Currency.EURO -> tvEuro.background =
