@@ -1,6 +1,7 @@
 package com.limor.app.scenes.main
 
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -28,6 +29,7 @@ import com.limor.app.scenes.main.fragments.record.RecordActivity
 import com.limor.app.scenes.main.viewmodels.GetUserViewModel
 import com.limor.app.scenes.notifications.PushNotificationsViewModel
 import com.limor.app.scenes.notifications.UtilsRegistrationIntentService
+import com.limor.app.uimodels.UIPodcast
 import com.limor.app.uimodels.UIUserDeviceData
 import com.limor.app.uimodels.UIUserDeviceRequest
 import dagger.android.DispatchingAndroidInjector
@@ -60,6 +62,9 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
     private lateinit var pushNotificationsViewModel: PushNotificationsViewModel
     lateinit var sharedPref: SharedPreferences
 
+    companion object {
+        const val REQUEST_AUDIO_PLAYER = 45
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -412,6 +417,34 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
     private fun setupPushNotifications() {
         val intent = Intent(this, UtilsRegistrationIntentService::class.java)
         startService(intent)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            if(requestCode == REQUEST_AUDIO_PLAYER){
+                //Get current fragment
+                val hostFragment =
+                    supportFragmentManager.findFragmentById(R.id.navigation_host_fragment)
+                val currentFragment = hostFragment?.childFragmentManager?.fragments?.get(0)
+
+                //Check if current fragment is Feed screen
+                if (currentFragment != null && currentFragment is UserFeedFragment && currentFragment.isVisible) {
+                    val position = data?.getIntExtra("position", -1)  ?: -1 //position of cast in feed
+                    currentFragment.reloadCast(position) // reload cast
+
+                    val podcast = data?.getSerializableExtra("podcast") as UIPodcast? //get podcast
+                    podcast?.let {
+                        //update podcast in audio service
+                        updatePodcast(it)
+                    }
+                }
+
+            }
+        }
+
+
+
     }
 
 

@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main.fragments.player
 
+import android.app.Activity
 import android.app.ActivityManager
 import android.content.ComponentName
 import android.content.Context
@@ -266,13 +267,31 @@ class AudioPlayerActivity : AppCompatActivity(), HasSupportFragmentInjector {
     private fun configureToolbar() {
         //Toolbar Left
         btnClose.onClick {
-            finish()
+            Timber.d("Feed request code sent back")
+            exitScreen()
         }
-
     }
 
     fun closePlayer(){
         stopAudioService()
+        finish()
+    }
+
+    override fun onBackPressed() {
+       exitScreen()
+    }
+
+    private fun exitScreen(){
+        val resultIntent = Intent()
+        resultIntent.putExtra("position", audioService?.feedPosition)
+        val hostFragment =
+            supportFragmentManager.findFragmentById(R.id.navigation_host_fragment_audio_player)
+        val currentFragment = hostFragment?.childFragmentManager?.fragments?.get(0)
+        if (currentFragment != null && currentFragment is AudioPlayerFragment && currentFragment.isVisible) {
+            resultIntent.putExtra("podcast", currentFragment.currentPodcast)
+        }
+        setResult(Activity.RESULT_OK, resultIntent)
+
         finish()
     }
 

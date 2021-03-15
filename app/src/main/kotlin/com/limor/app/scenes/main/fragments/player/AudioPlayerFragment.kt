@@ -605,5 +605,9 @@ class AudioPlayerFragment : BaseFragment() {
     }
 
 
+    val currentPodcast: UIPodcast
+        get() = feedAdapter?.list?.first()?.podcast!!
+
+
 
 }
