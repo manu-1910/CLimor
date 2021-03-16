@@ -43,12 +43,14 @@ class UserFeedFragment : FeedItemsListFragment() {
         return rootView
     }
 
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
     override fun onResume() {
         super.onResume()
         requestNewData()
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this)
-        }
     }
 
     override fun onStop() {
@@ -120,6 +122,10 @@ class UserFeedFragment : FeedItemsListFragment() {
     fun onRefreshFeedEvent(event: Event.RefreshFeed) {
         reloadFeed()
         EventBus.getDefault().removeStickyEvent(event)
+    }
+
+    fun reloadCast(position: Int){
+        if(position != -1) reloadPodcast(position)
     }
 
 }

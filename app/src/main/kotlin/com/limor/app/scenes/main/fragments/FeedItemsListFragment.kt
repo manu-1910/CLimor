@@ -110,8 +110,6 @@ abstract class FeedItemsListFragment : BaseFragment() {
         private const val REQUEST_REPORT_USER: Int = 0
         private const val REQUEST_REPORT_PODCAST: Int = 1
         private const val REQUEST_PODCAST_DETAILS: Int = 2
-        private const val REQUEST_AUDIO_PLAYER: Int = 4
-
     }
 
     override fun onCreateView(
@@ -305,7 +303,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
                         item.podcast?.audio?.audio_url?.let { _ ->
 
-                            AudioService.newIntent(requireContext(), item.podcast!!, 1L)
+                            AudioService.newIntent(requireContext(), item.podcast!!, 1L, position)
                                 .also { intent ->
                                     requireContext().startService(intent)
                                     val activity = requireActivity() as BaseActivity
@@ -324,8 +322,9 @@ abstract class FeedItemsListFragment : BaseFragment() {
                         val podcastDetailsIntent =
                             Intent(context, PodcastDetailsActivity::class.java)
                         podcastDetailsIntent.putExtra("podcast", item.podcast)
+                        podcastDetailsIntent.putExtra("position", position)
                         podcastDetailsIntent.putExtra("commenting", true)
-                        startActivity(podcastDetailsIntent)
+                        startActivityForResult(podcastDetailsIntent, REQUEST_PODCAST_DETAILS)
                     }
 
                     override fun onLikeClicked(item: UIFeedItem, position: Int) {
@@ -692,6 +691,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
                 val receivedPodcast = response.data.podcast
                 feedItemsList[lastPodcastByIdRequestedPosition].podcast = receivedPodcast
                 feedAdapter?.notifyItemChanged(lastPodcastByIdRequestedPosition)
+
             }
         })
 
@@ -822,27 +822,16 @@ abstract class FeedItemsListFragment : BaseFragment() {
         requestNewData()
     }
 
-    protected fun reloadPodcast(id: Int) {
-        val cast = feedAdapter?.list?.firstOrNull { cast -> cast.podcast?.id == id }
-        cast?.let {
-            val position = feedAdapter?.list?.indexOf(cast) ?: 0
-            lastPodcastByIdRequestedPosition = position
-            feedItemsList[position].podcast?.id?.let {
-                viewModelGetPodcastById.idPodcast = it
-            }
-            showProgressBar()
-            getPodcastByIdDataTrigger.onNext(Unit)
+    protected fun reloadPodcast(position: Int) {
+        Timber.d("ReloadPodcast position=$position")
+        lastPodcastByIdRequestedPosition = position
+        feedItemsList[position].podcast?.id?.let {
+            viewModelGetPodcastById.idPodcast = it
         }
-        requestNewData()
+        showProgressBar()
+        getPodcastByIdDataTrigger.onNext(Unit)
     }
 
-    protected fun updateCommentCount(id: String, commentCount: Int){
-        feedAdapter?.list?.firstOrNull { feedItem -> feedItem.id == id }?.let { feedItem ->
-            val itemPosition = feedAdapter?.list?.indexOf(feedItem)!!
-            feedAdapter!!.list[itemPosition].podcast?.number_of_comments = commentCount
-            feedAdapter?.notifyItemChanged(itemPosition)
-        }
-    }
 
     private fun navigateToUserProfile(user: UIUser?){
         if (user?.id == sessionManager.getStoredUser()?.id) {
@@ -880,6 +869,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        Timber.d("Feed request code fragment $requestCode")
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 REQUEST_REPORT_PODCAST -> {
@@ -898,6 +888,7 @@ abstract class FeedItemsListFragment : BaseFragment() {
                 }
                 REQUEST_PODCAST_DETAILS -> {
                     data?.let {
+                        Timber.d("Request Podcast details")
                         val position = data.getIntExtra("position", 0)
                         lastPodcastByIdRequestedPosition = position
                         feedItemsList[position].podcast?.id?.let {
@@ -910,6 +901,9 @@ abstract class FeedItemsListFragment : BaseFragment() {
 //                        feedAdapter?.notifyItemChanged(position)
                     }
                 }
+
+
+
             }
         }
     }

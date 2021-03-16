@@ -15,11 +15,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.limor.app.R
+import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.fragments.player.AudioPlayerActivity
 import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerStatus
+import com.limor.app.uimodels.UIPodcast
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.mini_player_view.*
 import kotlinx.android.synthetic.main.mini_player_view.view.*
@@ -35,7 +37,7 @@ abstract class BaseActivity : AppCompatActivity() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     // For the AudioService
-    private var audioService: AudioService? = null
+    var audioService: AudioService? = null
     private var miniPlayerView: RelativeLayout? = null
     private var playerStatus: PlayerStatus? = null
 
@@ -45,6 +47,8 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     private var lastPlayingPosition = 0
+    private var podcast: UIPodcast? = null
+
 
     private val connection = object : ServiceConnection {
 
@@ -146,7 +150,8 @@ abstract class BaseActivity : AppCompatActivity() {
                     Intent(it?.context, PodcastDetailsActivity::class.java)
                 podcastDetailsIntent.putExtra("podcast", audioService?.uiPodcast)
                 podcastDetailsIntent.putExtra("commenting", true)
-                startActivity(podcastDetailsIntent)
+                podcastDetailsIntent.putExtra("position", audioService?.feedPosition)
+                startActivityForResult(podcastDetailsIntent, MainActivity.REQUEST_AUDIO_PLAYER)
             }
 
             miniPlayerView!!.iv_play_pause.onClick {
@@ -173,13 +178,15 @@ abstract class BaseActivity : AppCompatActivity() {
             }
 
             miniPlayerView!!.fl_launch_maximised_player.onClick {
-
+                audioService?.let {
+                    if(podcast != null) it.uiPodcast = podcast
+                }
                 val audioPlayerIntent = Intent(this, AudioPlayerActivity::class.java)
                 audioPlayerIntent.putExtra(
                     AudioPlayerActivity.BUNDLE_KEY_PODCAST,
                     audioService?.uiPodcast
                 )
-                startActivity(audioPlayerIntent)
+                startActivityForResult(audioPlayerIntent, MainActivity.REQUEST_AUDIO_PLAYER)
                 overridePendingTransition(R.anim.push_up_in_enter_no_alpha, 0)
             }
         }
@@ -252,6 +259,10 @@ abstract class BaseActivity : AppCompatActivity() {
         if (miniPlayerView != null) {
             bindToAudioService()
         }
+    }
+
+    fun updatePodcast(podcast: UIPodcast){
+        this.podcast = podcast
     }
 
     protected fun trackBackgroudProgress(isRunning: Boolean) {

@@ -46,6 +46,8 @@ private const val PLAYBACK_TIMER_DELAY = 100L
 private const val PLAYBACK_SKIP_INCREMENTS = 30000L
 private const val ARG_PODCAST = "ARG_PODCAST"
 private const val ARG_START_POSITION = "ARG_START_POSITION"
+private const val ARG_FEED_POSITION = "ARG_FEED_POSITION"
+
 
 class AudioService : Service() {
 
@@ -63,11 +65,13 @@ class AudioService : Service() {
         fun newIntent(
             context: Context,
             podcast: UIPodcast,
-            startPosition: Long
+            startPosition: Long,
+            position: Int = -1
         ) =
             Intent(context, AudioService::class.java).apply {
                 putExtra(ARG_PODCAST, podcast)
                 putExtra(ARG_START_POSITION, startPosition)
+                putExtra(ARG_FEED_POSITION, position)
             }
 
         @MainThread
@@ -93,6 +97,8 @@ class AudioService : Service() {
     private val _playerStatusLiveData = MutableLiveData<PlayerStatus>()
     val playerStatusLiveData: LiveData<PlayerStatus>
         get() = _playerStatusLiveData
+
+    var feedPosition = -1
 
 
     override fun onCreate() {
@@ -246,6 +252,7 @@ class AudioService : Service() {
                 val playbackSpeed = 1f
 
                 play(uiPodcast?.audio?.audio_url, startPosition, playbackSpeed)
+                feedPosition = intent.getIntExtra(ARG_FEED_POSITION, -1)
 
                 Timber.w("AudioService - Playing podcast id %d", uiPodcast?.id)
             }
