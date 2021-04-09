@@ -165,8 +165,8 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
             }
         }
 
-        navController.addOnNavigatedListener { _, _ ->
-            when (navController.currentDestination.label) {
+        navController.addOnDestinationChangedListener { _, _, _ ->
+            when (navController.currentDestination?.label) {
                 HomeFragment.TAG -> {
                     showHomeToolbar(getString(R.string.title_home))
                 }

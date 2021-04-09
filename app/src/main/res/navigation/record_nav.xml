@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/record_nav"
     app:startDestination="@id/record_fragment">
+
    <fragment
        android:id="@+id/record_fragment"
        android:name="com.limor.app.scenes.main.fragments.record.RecordFragment"
@@ -34,9 +35,8 @@
        android:name="com.limor.app.scenes.main.fragments.record.EditFragment"
        android:label="EditFragment"
        tools:layout="@layout/fragment_edit">
-      <argument
-          android:name="audioFilename"
-          app:type="com.limor.app.uimodels.UIRecordingItem" />
+
+
       <action
           android:id="@+id/action_record_edit_to_record_publish"
           app:destination="@id/record_publish"
@@ -50,9 +50,8 @@
        android:name="com.limor.app.scenes.main.fragments.record.PublishFragment"
        android:label="PublishFragment"
        tools:layout="@layout/fragment_publish">
-      <argument
-          android:name="audioFilename"
-          app:type="com.limor.app.uimodels.UIRecordingItem" />
+
+
       <action
           android:id="@+id/action_record_publish_to_record_drafts"
           app:destination="@id/record_drafts"

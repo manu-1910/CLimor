@@ -4,21 +4,26 @@ package com.limor.app.scenes.main.fragments.record
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
+import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.scenes.main.viewmodels.LocationsViewModel
 import com.limor.app.scenes.utils.location.MyLocation
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
+import kotlinx.android.synthetic.main.activity_record.*
 import java.util.*
 import javax.inject.Inject
 
@@ -52,19 +57,9 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_record)
-
+        initBottomSheetBehavior()
+        window.setBackgroundDrawable(ColorDrawable(Color.parseColor("#99000000")))
         bindViewModel()
-
-//
-//        AndroidAudioConverter.load(this, object : ILoadCallback {
-//            override fun onSuccess() {
-//                // Great!
-//            }
-//
-//            override fun onFailure(error: java.lang.Exception) {
-//                // FFmpeg is not supported by device
-//            }
-//        })
 
         //Check Permissions
         if (!hasPermissions(applicationContext, *PERMISSIONS)) {
@@ -75,8 +70,28 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
             requestForLocation()
         }
 
-
         setupNavigationController()
+    }
+
+    private fun initBottomSheetBehavior() {
+        val bottomSheetBehavior = BottomSheetBehavior.from(detail_container)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetBehavior.skipCollapsed = true
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    finish()
+                    overridePendingTransition(0, 0)
+                }
+                if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+                }
+            }
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+
+            }
+        })
     }
 
 
@@ -92,8 +107,7 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
     }
 
 
-    fun requestForLocation(){
-
+    private fun requestForLocation(){
         if (ActivityCompat.checkSelfPermission(
                 applicationContext,
                 Manifest.permission.ACCESS_FINE_LOCATION

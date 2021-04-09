@@ -298,6 +298,8 @@ dependencies {
     //PhotoView visor with zoom
     //implementation deps.photo_view
 
+    implementation deps.super_bottom_sheet
+
     // Date, Time & Money
     implementation 'joda-time:joda-time:2.9.9'
     implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
