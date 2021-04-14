@@ -18,10 +18,15 @@
     <dimen name="textSizeVeryTiny">10sp</dimen>
     <dimen name="textSizeTiny">12sp</dimen>
     <dimen name="textSizeVerySmall">13sp</dimen>
+    <dimen name="textSize14">13sp</dimen>
     <dimen name="textSizeSmall">15sp</dimen>
+    <dimen name="textSize16">16sp</dimen>
+
     <dimen name="textSizeNormal">17sp</dimen>
     <dimen name="textSizeLarge">22sp</dimen>
     <dimen name="textSizeVeryLarge">28sp</dimen>
+    <dimen name="textSize20">20sp</dimen>
+
 
     <dimen name="imageSizeMedium">150dp</dimen>
     <dimen name="imageSizeTiny">100dp</dimen>

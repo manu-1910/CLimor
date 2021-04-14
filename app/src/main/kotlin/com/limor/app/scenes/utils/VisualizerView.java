@@ -25,7 +25,7 @@ public class VisualizerView extends View {
     public VisualizerView(Context context, AttributeSet attrs) {
         super(context, attrs); // call superclass constructor
         linePaint = new Paint(); // create Paint for lines
-        linePaint.setColor(getResources().getColor(R.color.brandPrimary500)); // set color to green
+        linePaint.setColor(getResources().getColor(R.color.waveFormColor)); // set color to green
         linePaint.setStrokeWidth(LINE_WIDTH); // set stroke width
         linePaint.setDither(true);                    // set the dither to true
         linePaint.setStyle(Paint.Style.STROKE);       // set to STOKE

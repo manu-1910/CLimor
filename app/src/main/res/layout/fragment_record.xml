@@ -3,77 +3,73 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/brandSecondary500"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
     android:keepScreenOn="true"
     android:orientation="vertical">
 
-
+    <View
+        android:layout_width="60dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_round_grey_ripple_new"/>
+    
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar_default" />
 
-    <View
-        android:background="@color/brandSecondary300"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"/>
+        layout="@layout/toolbar_default_light" />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="220dp"
+        android:background="#F0F3F8"
         android:layout_marginBottom="@dimen/marginMedium"
-        android:layout_weight="1">
+        >
 
         <com.limor.app.scenes.utils.VisualizerView
             android:id="@+id/graphVisualizer"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layCountdownAnimation"
             android:background="@drawable/rectangle_rounded_corners"
             android:layout_width="180dp"
             android:layout_height="180dp"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
+            tools:visibility="visible"
             android:visibility="gone">
 
             <TextView
-                android:layout_marginTop="@dimen/marginMedium"
-                android:textColor="@color/white"
-                android:layout_width="160dp"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:minLines="2"
-                android:textSize="24sp"
-                android:layout_centerHorizontal="true"
-                android:text="@string/recording_starts_in"/>
-
-            <TextView
                 android:id="@+id/tvCountdown"
-                android:textColor="@color/white"
-                android:textSize="64sp"
-                android:gravity="center"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="@dimen/marginMedium"
-                android:text="3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="3"
+                android:textColor="@color/white"
+                android:textSize="64sp"
+                android:fontFamily="@font/roboto_bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:includeFontPadding="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="HardcodedText" />
-        </RelativeLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/brandSecondary300" />
+        android:background="@color/white" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@color/brandSecondary400"
+        android:background="@color/white"
         android:gravity="center_horizontal"
         android:padding="@dimen/marginMedium">
 
@@ -85,40 +81,44 @@
             android:layout_centerHorizontal="true"
             android:fontFamily="@font/roboto_bold"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="@color/white"
-            android:textSize="28sp" />
-
-
-        <Button
-            android:id="@+id/recordButton"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_below="@id/c_meter"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/marginMedium"
-            android:background="@drawable/record_red" />
+            android:textColor="@color/textPrimary"
+            android:textStyle="bold"
+            android:textSize="24sp" />
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/recordButton"
-            android:layout_margin="@dimen/marginMedium"
-            android:orientation="horizontal">
+            android:layout_below="@id/c_meter"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginTop="@dimen/marginMedium"
+            android:layout_marginEnd="@dimen/marginMedium"
+            android:layout_marginBottom="@dimen/marginMedium"
+            android:gravity="bottom"
+            android:orientation="vertical">
 
+            <Button
+                android:id="@+id/recordButton"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/marginMedium"
+                android:background="@drawable/record_red_btn" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/nextButton"
                 style="@android:style/Widget.Material.Button.Borderless.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:background="@drawable/bg_round_yellow_ripple"
+                android:background="@drawable/bg_round_yellow_ripple_new"
                 android:fontFamily="@font/roboto_medium"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:layout_marginTop="40dp"
                 android:text="@string/go_to_publish"
                 android:textAllCaps="false"
                 android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/textSizeNormal" />
+                android:textSize="@dimen/textSize14" />
 
         </LinearLayout>
 

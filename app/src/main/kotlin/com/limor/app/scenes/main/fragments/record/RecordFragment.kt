@@ -688,10 +688,9 @@ class RecordFragment : BaseFragment() {
     private fun initGui() {
         configureToolbar()
         // Disable next button
-        nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
-        nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.white)
+        nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple_new)
+        nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.textSecondary)
         nextButton.isEnabled = false
-        nextButton.visibility = View.GONE
     }
 
 
@@ -853,24 +852,24 @@ class RecordFragment : BaseFragment() {
 
     private fun updateRecordButton() {
         if (isRecording) {
-            nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
+            nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple_new)
             nextButton.isEnabled = false
-            nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.white)
+            nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.textSecondary)
             nextButton.visibility = View.VISIBLE
 
             recordButton.background = ContextCompat.getDrawable(
                 requireContext(),
-                R.drawable.pause_red
+                R.drawable.pause_red_btn
             )
         } else {
             recordButton.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.record_red)
+                ContextCompat.getDrawable(requireContext(), R.drawable.record_red_btn)
 
             // Enable next button
             nextButton.visibility = View.VISIBLE
-            nextButton.background = requireContext().getDrawable(R.drawable.bg_round_yellow_ripple)
+            nextButton.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_round_yellow_ripple_new)
             nextButton.isEnabled = true
-            nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
+            nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.textPrimary)
         }
     }
 
@@ -977,7 +976,7 @@ class RecordFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it) {
                 //toast(getString(R.string.draft_inserted))
                 println("Draft inserted succesfully")
@@ -987,7 +986,7 @@ class RecordFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -1004,7 +1003,7 @@ class RecordFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it) {
                 //toast(getString(R.string.draft_deleted))
                 println("Draft deleted in realm")
@@ -1014,7 +1013,7 @@ class RecordFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -1023,23 +1022,6 @@ class RecordFragment : BaseFragment() {
         })
     }
 
-
-//    private fun getLastModified(): File? {
-//        val directoryFilePath = context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/"
-//        val directory = File(directoryFilePath)
-//        val files = directory.listFiles { obj: File -> obj.isFile }
-//        var lastModifiedTime = Long.MIN_VALUE
-//        var chosenFile: File? = null
-//        if (files != null) {
-//            for (file in files) {
-//                if (file.lastModified() > lastModifiedTime) {
-//                    chosenFile = file
-//                    lastModifiedTime = file.lastModified()
-//                }
-//            }
-//        }
-//        return chosenFile
-//    }
 
 
     @Deprecated("")
@@ -1092,23 +1074,15 @@ class RecordFragment : BaseFragment() {
 
     private fun requestForLocation() {
 
-        if (ActivityCompat.checkSelfPermission(
-                context!!,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                context!!,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // Consider calling ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
+        val isPermissionsNotGranted = ActivityCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
 
+        if(isPermissionsNotGranted) return
 
         locationResult = object : MyLocation.LocationResult() {
             override fun gotLocation(location: Location?) {
@@ -1144,7 +1118,7 @@ class RecordFragment : BaseFragment() {
             }
         }
         val myLocation = MyLocation()
-        myLocation.getLocation(context!!, locationResult)
+        myLocation.getLocation(requireContext(), locationResult)
     }
 
 }

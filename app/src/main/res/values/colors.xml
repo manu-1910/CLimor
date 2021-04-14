@@ -72,6 +72,8 @@
 
 
     <color name="toolbar_text">#ffffff</color>
+    <color name="toolbar_text_dark">#262735</color>
+
     <color name="marker_time_text">#95959b</color>
     <color name="progress_bar_color">#95959b</color>
 
@@ -127,4 +129,10 @@
     <color name="border_discover_chip">#6F6F6F</color>
     <color name="discover_transparent_overlay">#9a000000</color>
 
+
+    <!--Redesign colors -->
+    <color name="textPrimary">#262735</color>
+    <color name="textSecondary">#91A2B2</color>
+    <color name="textAccent">#ED9D0C</color>
+    <color name="waveFormColor">#148DFF</color>
 </resources>
