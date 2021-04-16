@@ -672,7 +672,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
 
         closeButton = view.findViewById(R.id.btnClose);
-        infoButton = view.findViewById(R.id.btnInfo);
+        //infoButton = view.findViewById(R.id.btnInfo);
         nextButton = view.findViewById(R.id.nextButtonEdit);
 
         maxPos = 0;
@@ -1014,7 +1014,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         if (playerPreview != null && playerPreview.isPlaying()) {
             ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.pause));
         } else if (playerPreview != null) {
-            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.play));
+            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
         }
     }
 
@@ -1155,7 +1155,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     protected void enableDisableButtons() {
         if (isPlaying) {
-            playButton.setImageDrawable(getResources().getDrawable(R.drawable.pause));
+            playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
             tvDelete.setAlpha(0.6f);
             tvDelete.setEnabled(false);
             tvCopy.setAlpha(0.6f);
@@ -1163,7 +1163,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             tvPaste.setAlpha(0.6f);
             tvPaste.setEnabled(false);
         } else {
-            playButton.setImageDrawable(getResources().getDrawable(R.drawable.play));
+            playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_play));
             tvDelete.setAlpha(1f);
             tvDelete.setEnabled(true);
             tvCopy.setAlpha(1f);

@@ -5,26 +5,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/brandSecondary400"
+    android:background="@color/white"
     android:clickable="true"
     android:focusable="true"
     android:orientation="vertical">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar_with_2_icons"
+    <View
+        android:id="@+id/dialog_divider"
+        android:layout_width="60dp"
+        android:layout_height="4dp"
+        android:background="@drawable/bg_round_grey_ripple_new"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/brandSecondary300"
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_with_back_arrow_icon_light"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/dialog_divider" />
+
 
     <RelativeLayout
         android:id="@+id/layWaveform"
@@ -32,7 +35,7 @@
         android:layout_height="wrap_content"
         app:layout_constrainedHeight="true"
         android:layout_marginTop="2dp"
-        android:background="@color/colorPrimary"
+        android:background="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
@@ -64,8 +67,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:background="@color/brandSecondary400"
             android:layout_height="wrap_content"
+            android:background="@color/white"
             android:orientation="vertical">
 
             <RelativeLayout
@@ -74,7 +77,7 @@
                 android:layout_marginStart="@dimen/marginMedium"
                 android:layout_marginTop="@dimen/marginSmall"
                 android:layout_marginEnd="@dimen/marginMedium"
-                android:background="@color/brandSecondary400">
+                android:background="@color/white">
 
                 <SeekBar
                     android:id="@+id/seekBar"
@@ -144,7 +147,7 @@
                     android:layout_marginBottom="6dip"
                     android:layout_toStartOf="@id/play"
                     android:contentDescription="@string/rewind"
-                    android:src="@drawable/rewind" />
+                    android:src="@drawable/rewind_5" />
 
                 <ImageButton
                     android:id="@+id/play"
@@ -155,7 +158,7 @@
                     android:layout_marginTop="6dip"
                     android:layout_marginBottom="6dip"
                     android:contentDescription="@string/play"
-                    android:src="@drawable/play" />
+                    android:src="@drawable/ic_play" />
 
                 <ImageButton
                     android:id="@+id/ffwd"
@@ -167,7 +170,7 @@
                     android:layout_marginBottom="6dip"
                     android:layout_toEndOf="@id/play"
                     android:contentDescription="@string/ffwd"
-                    android:src="@drawable/forward" />
+                    android:src="@drawable/forward_5" />
 
                 <TextView
                     android:id="@+id/tvRedo"
@@ -199,12 +202,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:background="@drawable/bg_round_yellow_ripple"
+                    android:background="@drawable/bg_round_yellow_ripple_new"
                     android:fontFamily="@font/roboto_medium"
                     android:text="@string/go_to_publish"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp"
                     android:textAllCaps="false"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/textSizeNormal" />
+                    android:textColor="@color/textPrimary"
+                    android:textSize="@dimen/textSize14" />
 
             </LinearLayout>
         </LinearLayout>
@@ -214,7 +219,7 @@
             android:paddingTop="@dimen/marginMedium"
             android:paddingBottom="50dp"
             android:layout_centerVertical="true"
-            android:background="@color/brandSecondary400"
+            android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -252,7 +257,7 @@
                 android:layout_marginStart="@dimen/marginMedium"
                 android:layout_marginTop="@dimen/marginSmall"
                 android:layout_marginEnd="@dimen/marginMedium"
-                android:background="@color/brandSecondary400">
+                android:background="@color/white">
 
                 <SeekBar
                     android:id="@+id/seekBarPreview"
@@ -309,7 +314,7 @@
                     android:layout_marginBottom="6dip"
                     android:layout_toStartOf="@id/ivPlayPreview"
                     android:contentDescription="@string/rewind"
-                    android:src="@drawable/rewind" />
+                    app:srcCompat="@drawable/rewind_5" />
 
                 <ImageButton
                     android:id="@+id/ivPlayPreview"
@@ -320,7 +325,7 @@
                     android:layout_marginTop="6dip"
                     android:layout_marginBottom="6dip"
                     android:contentDescription="@string/play"
-                    android:src="@drawable/play" />
+                    android:src="@drawable/ic_play" />
 
                 <ImageButton
                     android:id="@+id/ffwdPreview"
@@ -332,7 +337,7 @@
                     android:layout_marginBottom="6dip"
                     android:layout_toEndOf="@id/ivPlayPreview"
                     android:contentDescription="@string/ffwd"
-                    android:src="@drawable/forward" />
+                    app:srcCompat="@drawable/forward_5" />
 
 
             </RelativeLayout>

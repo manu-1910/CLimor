@@ -16,7 +16,6 @@
     
     <include
         android:id="@+id/toolbar"
-
         layout="@layout/toolbar_default_light" />
 
     <RelativeLayout

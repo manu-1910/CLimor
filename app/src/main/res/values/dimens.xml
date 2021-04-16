@@ -18,7 +18,7 @@
     <dimen name="textSizeVeryTiny">10sp</dimen>
     <dimen name="textSizeTiny">12sp</dimen>
     <dimen name="textSizeVerySmall">13sp</dimen>
-    <dimen name="textSize14">13sp</dimen>
+    <dimen name="textSize14">14sp</dimen>
     <dimen name="textSizeSmall">15sp</dimen>
     <dimen name="textSize16">16sp</dimen>
 

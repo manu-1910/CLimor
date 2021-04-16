@@ -417,7 +417,7 @@
     <string name="error_converting_audio">Error converting your audio</string>
     <string name="error_stopping_audio">Error stopping your audio</string>
     <string name="resume">Resume</string>
-    <string name="go_to_publish">Go to publish</string>
+    <string name="go_to_publish">Next</string>
     <string name="recording_starts_in">Recording\nstarts in</string>
     <string name="do_you_want_to_save_changes">Do you want to save the current changes?</string>
     <string name="save">Save</string>
