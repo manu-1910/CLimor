@@ -1012,9 +1012,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     private void updateButtonsPreview() {
         if (playerPreview != null && playerPreview.isPlaying()) {
-            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.pause));
-        } else if (playerPreview != null) {
             ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
+        } else if (playerPreview != null) {
+            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.ic_play));
         }
     }
 
