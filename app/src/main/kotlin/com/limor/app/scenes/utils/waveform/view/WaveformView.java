@@ -38,8 +38,6 @@ import com.limor.app.scenes.utils.waveform.soundfile.SoundFile;
 
 import java.util.ArrayList;
 
-import timber.log.Timber;
-
 
 public class WaveformView extends View {
 
@@ -309,7 +307,6 @@ public class WaveformView extends View {
 
     public void zoomOut() {
         if (canZoomOut()) {
-            Timber.d("Zoom Level " + zoomLevel);
             zoomLevel--;
             float factor = lenByZoomLevel[zoomLevel + 1] / (float) lenByZoomLevel[zoomLevel];
             for (MarkerSet markerSet : markerSets) {

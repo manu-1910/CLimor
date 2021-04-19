@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.limor.app.scenes.utils.popupMenu.CustomOptionItemView xmlns:tools="http://schemas.android.com/tools"
+    style="@style/CustomOptionMenuStyle"
+    tools:ignore="ResourceName" />

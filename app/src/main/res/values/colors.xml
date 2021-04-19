@@ -135,4 +135,6 @@
     <color name="textSecondary">#91A2B2</color>
     <color name="textAccent">#ED9D0C</color>
     <color name="waveFormColor">#148DFF</color>
+    <color name="lightBlueColor">#F0F3F8</color>
+    <color name="primaryYellowColor">#F9BB4B</color>
 </resources>

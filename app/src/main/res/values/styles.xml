@@ -1,4 +1,4 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:ns1="http://schemas.android.com/apk/res-auto">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -8,7 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
 
     </style>
-    <style name="AppTheme.NoActionBar" parent="Theme.MaterialComponents.Light.Bridge" >
+
+    <style name="AppTheme.NoActionBar" parent="Theme.MaterialComponents.Light.Bridge">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="homeAsUpIndicator">@drawable/ic_navigate_before</item>
@@ -106,4 +107,21 @@
 
     </style>
 
+    <style name="CustomOptionMenuStyle" parent="android:Widget.Material.TextView" ns1:ignore="ResourceName">
+        <item name="android:clickable">true</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:drawablePadding">2dp</item>
+        <item name="android:background">@drawable/bg_popup_menu</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
 </resources>

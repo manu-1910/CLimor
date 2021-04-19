@@ -27,6 +27,7 @@ import androidx.core.content.ContextCompat;
 import com.limor.app.R;
 import com.limor.app.common.BaseFragment;
 import com.limor.app.scenes.utils.Commons;
+import com.limor.app.scenes.utils.popupMenu.CustomPopupMenuView;
 import com.limor.app.scenes.utils.statemanager.StepManager;
 import com.limor.app.scenes.utils.waveform.soundfile.SoundFile;
 import com.limor.app.scenes.utils.waveform.view.MarkerView;
@@ -40,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import me.kareluo.ui.OptionMenu;
-import me.kareluo.ui.PopupMenuView;
 import me.kareluo.ui.PopupView;
 import timber.log.Timber;
 
@@ -482,10 +482,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         // Be careful with this SupressLint, this is intended to avoid a false error that android studio reports
         // with the following line but it's not real. But I insist, be careful, if this fails in the future, take a look at it.
         @SuppressLint("RestrictedApi")
-        PopupMenuView menuView = new PopupMenuView(getContext(), R.menu.menu_popup_edit, new MenuBuilder(getActivity()));
-
+        CustomPopupMenuView menuView = new CustomPopupMenuView(requireContext(), R.menu.menu_popup_edit, new MenuBuilder(requireActivity()));
         if (marker.getMarkerSet().isMiddleVisible() && marker.getMarkerSet().isEditMarker()) {
-            //If is the Paste marker I only will show the "paste" option menu
             menuView.setMenuItems(Arrays.asList(
                     new OptionMenu(getString(R.string.menu_paste)),
                     new OptionMenu(getString(R.string.menu_cancel))
@@ -1413,20 +1411,20 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         if (stepManager.canUndo()) {
             tvUndo.setEnabled(true);
             //tvUndo.setAlpha(1f);
-            tvUndo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandPrimary500));
+            tvUndo.setTextColor(ContextCompat.getColor(requireContext(), R.color.textAccent));
         } else {
             tvUndo.setEnabled(false);
             //tvUndo.setAlpha(0.5f);
-            tvUndo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandSecondary100));
+            tvUndo.setTextColor(ContextCompat.getColor(requireContext(), R.color.textSecondary));
         }
         if (stepManager.canRedo()) {
             tvRedo.setEnabled(true);
             //tvRedo.setAlpha(1f);
-            tvRedo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandPrimary500));
+            tvRedo.setTextColor(ContextCompat.getColor(requireContext(), R.color.textAccent));
         } else {
             tvRedo.setEnabled(false);
             //tvRedo.setAlpha(0.5f);
-            tvRedo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandSecondary100));
+            tvRedo.setTextColor(ContextCompat.getColor(requireContext(), R.color.textSecondary));
         }
     }
 
