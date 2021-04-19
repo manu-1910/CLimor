@@ -49,7 +49,6 @@ import com.limor.app.audio.wav.WavHelper
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.components.AlertProgressBar
-import com.limor.app.components.AlertProgressBarWithCancel
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.MainActivity
@@ -243,6 +242,8 @@ class PublishFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
 
+        val act = requireActivity() as RecordActivity
+        act.initScreenBehaviour()
         //Load selected location
         podcastLocation = locationsViewModel.locationSelectedItem
 

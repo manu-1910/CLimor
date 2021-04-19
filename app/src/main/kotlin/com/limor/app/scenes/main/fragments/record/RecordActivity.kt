@@ -11,7 +11,10 @@ import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
@@ -19,6 +22,7 @@ import androidx.navigation.Navigation
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
+import com.limor.app.extensions.px
 import com.limor.app.scenes.main.viewmodels.LocationsViewModel
 import com.limor.app.scenes.utils.location.MyLocation
 import dagger.android.DispatchingAndroidInjector
@@ -45,6 +49,8 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
+    lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+
     companion object {
         val TAG: String = RecordActivity::class.java.simpleName
         fun newInstance() = RecordActivity()
@@ -57,8 +63,8 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_record)
-        initBottomSheetBehavior()
         window.setBackgroundDrawable(ColorDrawable(Color.parseColor("#99000000")))
+        if (savedInstanceState == null) initSlideBehaviour()
         bindViewModel()
 
         //Check Permissions
@@ -66,34 +72,52 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                 requestPermissions(PERMISSIONS, PERMISSION_ALL)
             }
-        }else{
+        } else {
             requestForLocation()
         }
 
         setupNavigationController()
     }
 
-    private fun initBottomSheetBehavior() {
+
+    fun initScreenBehaviour() {
+        val layoutParams = coordinatorLayout.layoutParams as FrameLayout.LayoutParams
+        layoutParams.setMargins(0, 0, 0, 0)
+        coordinatorLayout.layoutParams = layoutParams
+        mainContainer.background = ColorDrawable(Color.WHITE)
+
         val bottomSheetBehavior = BottomSheetBehavior.from(detail_container)
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetBehavior.isDraggable = false
         bottomSheetBehavior.skipCollapsed = true
-        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+    }
+
+    fun initSlideBehaviour() {
+        val layoutParams = coordinatorLayout.layoutParams as FrameLayout.LayoutParams
+        layoutParams.setMargins(0, 56.px, 0, 0)
+        coordinatorLayout.layoutParams = layoutParams
+        mainContainer.background =
+            ContextCompat.getDrawable(this, R.drawable.bottom_sheet_screen_background)
+        val bottomSheetBehavior = BottomSheetBehavior.from(detail_container)
+        bottomSheetBehavior.isDraggable = true
+        bottomSheetBehavior.skipCollapsed = true
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_HIDDEN) {
                     finish()
                     overridePendingTransition(0, 0)
                 }
-                if (newState == BottomSheetBehavior.STATE_DRAGGING) {
-                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-
-                }
             }
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
 
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
             }
         })
-    }
 
+    }
 
     private fun bindViewModel() {
         locationsViewModel = ViewModelProviders
@@ -161,5 +185,6 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
     private fun hasPermissions(context: Context, vararg permissions: String): Boolean = permissions.all {
         ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
+
 
 }

@@ -137,7 +137,7 @@ class RecordFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-
+        (requireActivity() as RecordActivity).initSlideBehaviour()
         requestForLocation()
 
 
