@@ -40,6 +40,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
+import com.google.android.material.textfield.TextInputEditText
 import com.hendraanggrian.appcompat.widget.Hashtag
 import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter
 import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
@@ -122,8 +123,10 @@ class PublishFragment : BaseFragment() {
     private var btnPublishDraft: Button? = null
 
     //Form vars
-    private var etDraftTitle: EditText? = null
-    private var etDraftCaption: SocialAutoCompleteTextView? = null
+    private var etDraftTitle: TextInputEditText? = null
+    private var etDraftCaption: TextInputEditText? = null
+    private var etDraftTags: SocialAutoCompleteTextView? = null
+
     private var podcastLocation: UILocations = UILocations("", 0.0, 0.0, false)
     private var imageUrlFinal: String? = ""
     private var audioUrlFinal: String? = ""
@@ -171,6 +174,7 @@ class PublishFragment : BaseFragment() {
             btnPublishDraft = rootView?.findViewById(R.id.btnPublish)
             etDraftTitle = rootView?.findViewById(R.id.etTitle)
             etDraftCaption = rootView?.findViewById(R.id.etCaption)
+            etDraftTags = rootView?.findViewById(R.id.etHashtags)
             tvSelectedLocation = rootView?.findViewById(R.id.tvSelectedLocation)
             tvSelectedCategory = rootView?.findViewById(R.id.tvSelectedCategory)
             lytWithoutTagsRecycler = rootView?.findViewById(R.id.lytWithoutTagsRecycler)
@@ -193,7 +197,7 @@ class PublishFragment : BaseFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        uiDraft = arguments!!["recordingItem"] as UIDraft
+        uiDraft = requireArguments()["recordingItem"] as UIDraft
     }
 
 
@@ -227,14 +231,14 @@ class PublishFragment : BaseFragment() {
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 100f)
 
-        uiDraft = arguments!!["recordingItem"] as UIDraft
+        uiDraft = requireArguments()["recordingItem"] as UIDraft
 
         configureToolbar()
         listeners()
         loadExistingData()
         multiCompleteText()
 
-        listTagsString = HashtagArrayAdapter(context!!)
+        listTagsString = HashtagArrayAdapter(requireContext())
         setupRecyclerTags()
     }
 
@@ -269,7 +273,7 @@ class PublishFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             pbPublish?.visibility = View.GONE
             view?.hideKeyboard()
 
@@ -292,7 +296,7 @@ class PublishFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -449,7 +453,7 @@ class PublishFragment : BaseFragment() {
                 }
             }
         }
-        etCaption.addTextChangedListener(twCaption)
+        etHashtags.addTextChangedListener(twCaption)
 
 
         //Used for show or hide the recyclerview of the hashtags
@@ -501,10 +505,10 @@ class PublishFragment : BaseFragment() {
 
     private fun publishPodcastAudio() {
 
-        val dialog = AlertProgressBar(context!!)
+        val dialog = AlertProgressBar(requireContext())
         dialog.show()
 
-        convertedFile = WavHelper.convertWavToM4a(context!!, uiDraft.filePath!!)
+        convertedFile = WavHelper.convertWavToM4a(requireContext(), uiDraft.filePath!!)
         convertedFile?.let {
             //Upload audio file to AWS
             Commons.getInstance().uploadAudio(
@@ -543,7 +547,7 @@ class PublishFragment : BaseFragment() {
 
         if (Commons.getInstance().isImageReadyForUpload) {
 
-            val dialog = AlertProgressBar(context!!)
+            val dialog = AlertProgressBar(requireContext())
             dialog.show()
 
 
@@ -645,12 +649,12 @@ class PublishFragment : BaseFragment() {
                     "podcast_photo"
                 )
             }
-            Glide.with(context!!).load(imageFile).into(draftImage!!)  // Uri of the picture
-            lytImagePlaceholder?.visibility = View.GONE
+            Glide.with(requireContext()).load(imageFile).into(draftImage!!)  // Uri of the picture
+            lytImagePlaceholder?.visibility = View.INVISIBLE
             lytImage?.visibility = View.VISIBLE
         } else {
             lytImagePlaceholder?.visibility = View.VISIBLE
-            lytImage?.visibility = View.GONE
+            lytImage?.visibility = View.INVISIBLE
         }
         if (!uiDraft.category.toString().isNullOrEmpty()) {
             tvSelectedCategory?.text = uiDraft.category
@@ -741,7 +745,7 @@ class PublishFragment : BaseFragment() {
                 mediaPlayer.start()
                 btnPlayPause?.setImageDrawable(
                     ContextCompat.getDrawable(
-                        context!!,
+                        requireContext(),
                         R.drawable.pause
                     )
                 )
@@ -764,7 +768,7 @@ class PublishFragment : BaseFragment() {
                 mediaPlayer.pause()
                 btnPlayPause?.setImageDrawable(
                     ContextCompat.getDrawable(
-                        context!!,
+                        requireContext(),
                         R.drawable.play
                     )
                 )
@@ -820,7 +824,7 @@ class PublishFragment : BaseFragment() {
                 // and then, we'll perform the crop itself
                 performCrop(filesSelected[0].path, outputFile)
             } else {
-                lytImage?.visibility = View.GONE
+                lytImage?.visibility = View.INVISIBLE
                 lytImagePlaceholder?.visibility = View.VISIBLE
             }
 
@@ -829,9 +833,9 @@ class PublishFragment : BaseFragment() {
         } else if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             val resultUri = UCrop.getOutput(data!!)
             podcastHasImage = true
-            Glide.with(context!!).load(resultUri).into(draftImage!!)
+            Glide.with(requireContext()).load(resultUri).into(draftImage!!)
             lytImage?.visibility = View.VISIBLE
-            lytImagePlaceholder?.visibility = View.GONE
+            lytImagePlaceholder?.visibility = View.INVISIBLE
 
             //Add the photopath to recording item
             draftViewModel.uiDraft?.tempPhotoPath = resultUri?.path
@@ -850,7 +854,7 @@ class PublishFragment : BaseFragment() {
         } else if (resultCode == UCrop.RESULT_ERROR) {
             val cropError = UCrop.getError(data!!)
             Timber.d(cropError)
-            lytImage?.visibility = View.GONE
+            lytImage?.visibility = View.INVISIBLE
             lytImagePlaceholder?.visibility = View.VISIBLE
         }
 
@@ -870,8 +874,8 @@ class PublishFragment : BaseFragment() {
         val destinationUri = Uri.fromFile(destination)
         context?.let {
             UCrop.of(sourceUri, destinationUri)
-                .withAspectRatio(1.0f, 1.0f)
-                .withMaxResultSize(1000, 1000)
+                .withAspectRatio(2.5f, 1.0f)
+                .withMaxResultSize(2500, 1000)
                 .start(it, this, UCrop.REQUEST_CROP)
         }
     }
@@ -884,7 +888,7 @@ class PublishFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it) {
 
 //                toast(getString(R.string.draft_saved_ok))
@@ -895,7 +899,7 @@ class PublishFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -935,10 +939,10 @@ class PublishFragment : BaseFragment() {
     private fun getCityOfDevice() {
 
         if (ActivityCompat.checkSelfPermission(
-                context!!,
+                requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                context!!,
+                requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -980,7 +984,7 @@ class PublishFragment : BaseFragment() {
             }
         }
         val myLocation = MyLocation()
-        myLocation.getLocation(context!!, locationResult)
+        myLocation.getLocation(requireContext(), locationResult)
 
     }
 
@@ -998,7 +1002,7 @@ class PublishFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it.code == 0) {
                 if (it.data.tags.size > 0) {
                     listTagsString?.clear()
@@ -1018,21 +1022,22 @@ class PublishFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
         output.errorMessage.observe(this, Observer {
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+            CommonsKt.handleOnApiError(app!!, requireContext(), this, it)
         })
     }
 
 
     private fun multiCompleteText() {
-        etDraftCaption?.isMentionEnabled = false
-        etDraftCaption?.hashtagColor = ContextCompat.getColor(context!!, R.color.brandPrimary500)
-        etDraftCaption?.hashtagAdapter = listTagsString
-        etDraftCaption?.setHashtagTextChangedListener { _, text ->
+        etDraftTags?.isMentionEnabled = false
+        etDraftTags?.hashtagColor =
+            ContextCompat.getColor(requireContext(), R.color.brandPrimary500)
+        etDraftTags?.hashtagAdapter = listTagsString
+        etDraftTags?.setHashtagTextChangedListener { _, text ->
             println("setHashtagTextChangedListener -> $text")
             callToTagsApiAndShowRecyclerView(text.toString())
         }
@@ -1041,7 +1046,7 @@ class PublishFragment : BaseFragment() {
 
     private fun bitmapToFile(bitmap: Bitmap): Uri {
         // Get the context wrapper
-        val wrapper = ContextWrapper(context!!)
+        val wrapper = ContextWrapper(requireContext())
 
         // Initialize a new file instance to save bitmap object
         var file = wrapper.getDir("Images", Context.MODE_PRIVATE)
@@ -1067,12 +1072,12 @@ class PublishFragment : BaseFragment() {
         rvTags?.adapter = listTagsString?.let {
             HashtagAdapter(it, object : HashtagAdapter.OnItemClickListener {
                 override fun onItemClick(item: Hashtag) {
-                    val actualString = etCaption.text
+                    val actualString = etHashtags.text
                     val finalString: String =
                         actualString.substring(
                             0, actualString.lastIndexOf(
                                 getCurrentWord(
-                                    etCaption
+                                    etHashtags
                                 )!!
                             )
                         ) +
@@ -1080,13 +1085,13 @@ class PublishFragment : BaseFragment() {
                                 actualString.substring(
                                     actualString.lastIndexOf(
                                         getCurrentWord(
-                                            etCaption
+                                            etHashtags
                                         )!!
-                                    ) + getCurrentWord(etCaption)!!.length, actualString.length
+                                    ) + getCurrentWord(etHashtags)!!.length, actualString.length
                                 ) + " "
 
-                    etCaption.setText(finalString)
-                    etCaption.setSelection(etCaption.text.length) //This places cursor to end of EditText.
+                    etHashtags.setText(finalString)
+                    etHashtags.setSelection(etHashtags.text.length) //This places cursor to end of EditText.
                     rvTags?.adapter?.notifyDataSetChanged()
                 }
             })
@@ -1136,7 +1141,7 @@ class PublishFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it) {
                 println(getString(R.string.draft_deleted))
             } else {
@@ -1144,7 +1149,7 @@ class PublishFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
         output.errorMessage.observe(this, Observer {

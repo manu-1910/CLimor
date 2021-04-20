@@ -137,4 +137,7 @@
     <color name="waveFormColor">#148DFF</color>
     <color name="lightBlueColor">#F0F3F8</color>
     <color name="primaryYellowColor">#F9BB4B</color>
+    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">
+        @color/textSecondary
+    </color>
 </resources>

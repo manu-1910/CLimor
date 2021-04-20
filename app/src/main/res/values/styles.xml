@@ -124,4 +124,12 @@
         <item name="android:fontFamily">@font/roboto_medium</item>
         <item name="android:gravity">center_vertical</item>
     </style>
+
+    <style name="TextInputLayout" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+    </style>
+
+    <style name="TextHintStyle" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/textAccent</item>
+    </style>
 </resources>

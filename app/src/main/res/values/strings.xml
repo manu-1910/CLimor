@@ -74,8 +74,8 @@
     <string name="title_location">Location</string>
     <string name="cast_published_ok_title">Cast Published</string>
     <string name="cast_published_ok_description">Your cast has been published successfully</string>
-    <string name="hint_caption">Write your caption, # use for hashtags …</string>
-    <string name="hint_title">Title</string>
+    <string name="hint_caption">Caption here</string>
+    <string name="hint_title">Title here</string>
 
 
     <!-- Edit Screen -->
@@ -487,4 +487,5 @@
     <string name="no_user_id_error">We don\'t have a user id so we can\'t show user data</string>
     <string name="no_categories_yet">There are no categories yet</string>
     <string name="no_content_with_this_category">There’s no content related to this category</string>
+    <string name="hint_tags">Tags here</string>
 </resources>

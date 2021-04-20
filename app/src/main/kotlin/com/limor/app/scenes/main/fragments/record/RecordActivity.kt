@@ -111,6 +111,9 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
                     finish()
                     overridePendingTransition(0, 0)
                 }
+                if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                }
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {

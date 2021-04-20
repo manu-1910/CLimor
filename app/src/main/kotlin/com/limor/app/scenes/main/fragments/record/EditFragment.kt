@@ -10,7 +10,6 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.HandlerCompat
 import androidx.core.os.bundleOf
-import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -75,11 +74,17 @@ class EditFragment : WaveformFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //Setup animation transition
-        ViewCompat.setTranslationZ(view, 40f)
+        //ViewCompat.setTranslationZ(view, 40f)
 
         listeners()
         bindViewModel()
         initApiCallInsertDraft()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val act = requireActivity() as RecordActivity
+        act.initSlideBehaviour()
     }
 
     private fun bindViewModel() {
