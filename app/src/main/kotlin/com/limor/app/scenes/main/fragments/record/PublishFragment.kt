@@ -726,7 +726,7 @@ class PublishFragment : BaseFragment() {
                         context?.let {
                             ContextCompat.getDrawable(
                                 it,
-                                R.drawable.play
+                                R.drawable.ic_play
                             )
                         }
                     )
@@ -746,7 +746,7 @@ class PublishFragment : BaseFragment() {
                 btnPlayPause?.setImageDrawable(
                     ContextCompat.getDrawable(
                         requireContext(),
-                        R.drawable.pause
+                        R.drawable.ic_pause
                     )
                 )
                 run = Runnable {
@@ -769,7 +769,7 @@ class PublishFragment : BaseFragment() {
                 btnPlayPause?.setImageDrawable(
                     ContextCompat.getDrawable(
                         requireContext(),
-                        R.drawable.play
+                        R.drawable.ic_play
                     )
                 )
             }
@@ -779,7 +779,7 @@ class PublishFragment : BaseFragment() {
         //Forward button
         btnFfwd?.onClick {
             try {
-                val nextPosition = mediaPlayer.currentPosition + 30000
+                val nextPosition = mediaPlayer.currentPosition + 5000
                 if (nextPosition < mediaPlayer.duration)
                     mediaPlayer.seekTo(nextPosition)
                 else if (mediaPlayer.currentPosition < mediaPlayer.duration)
@@ -793,7 +793,7 @@ class PublishFragment : BaseFragment() {
         //Rew button
         btnRew?.onClick {
             try {
-                mediaPlayer.seekTo(mediaPlayer.currentPosition - 30000)
+                mediaPlayer.seekTo(mediaPlayer.currentPosition - 5000)
             } catch (e: Exception) {
                 Timber.d("mediaPlayer.seekTo rewind overflow")
             }
@@ -874,8 +874,8 @@ class PublishFragment : BaseFragment() {
         val destinationUri = Uri.fromFile(destination)
         context?.let {
             UCrop.of(sourceUri, destinationUri)
-                .withAspectRatio(2.5f, 1.0f)
-                .withMaxResultSize(2500, 1000)
+                .withAspectRatio(1f, 1.0f)
+                .withMaxResultSize(1000, 1000)
                 .start(it, this, UCrop.REQUEST_CROP)
         }
     }

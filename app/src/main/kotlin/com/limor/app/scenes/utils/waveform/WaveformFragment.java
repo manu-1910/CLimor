@@ -1060,7 +1060,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         int currentPreviewStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
 
         // we get the progress of the seekBar and substract 30seconds
-        int newProgress = seekBarPreview.getProgress() - 30000;
+        int newProgress = seekBarPreview.getProgress() - 5000;
         // let's do this to not to get negative progress
         if(newProgress < 0) {
             newProgress = 0;
@@ -1086,7 +1086,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         int currentPreviewStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
 
         // let's get the progress of the seekbar and add 30 seconds
-        int newProgress = seekBarPreview.getProgress() + 30000;
+        int newProgress = seekBarPreview.getProgress() + 5000;
 
         // let's do this to not overflow the seekbar
         if(newProgress > seekBarPreview.getMax()) {
@@ -1134,7 +1134,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected View.OnClickListener rewindListener = new View.OnClickListener() {
         public void onClick(View sender) {
 //            if (isPlaying) {
-            int newPos = player.getCurrentPosition() - 30000;
+            int newPos = player.getCurrentPosition() - 5000;
             player.seekTo(newPos);
             seekBar.setProgress(newPos);
 //            }
@@ -1144,7 +1144,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected View.OnClickListener ffwdListener = new View.OnClickListener() {
         public void onClick(View sender) {
 //            if (isPlaying) {
-            int newPos = player.getCurrentPosition() + 30000;
+            int newPos = player.getCurrentPosition() + 5000;
             player.seekTo(newPos);
             seekBar.setProgress(newPos);
 //            }
