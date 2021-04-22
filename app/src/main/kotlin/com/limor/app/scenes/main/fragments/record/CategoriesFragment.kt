@@ -1,29 +1,33 @@
 package com.limor.app.scenes.main.fragments.record
 
 
-import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.shape.CornerFamily
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.extensions.hideKeyboard
+import com.limor.app.extensions.px
 import com.limor.app.scenes.main.viewmodels.CategoriesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UICategory
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_record_categories.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.btnClose
 import org.jetbrains.anko.padding
@@ -46,7 +50,6 @@ class CategoriesFragment : BaseFragment() {
     var app: App? = null
 
 
-
     companion object {
         val TAG: String = CategoriesFragment::class.java.simpleName
         fun newInstance() = CategoriesFragment()
@@ -59,7 +62,7 @@ class CategoriesFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_categories, container, false)
+            rootView = inflater.inflate(R.layout.fragment_record_categories, container, false)
         }
         chipGroup = rootView!!.findViewById(R.id.categoryChipsView)
         app = context?.applicationContext as App
@@ -76,6 +79,12 @@ class CategoriesFragment : BaseFragment() {
         bindViewModel()
         configureToolbar()
         apiCallGetCategories()
+
+        btnContinue.onClick {
+            if (publishViewModel.categorySelected.isNotEmpty()) {
+                findNavController().popBackStack()
+            }
+        }
     }
 
 
@@ -121,57 +130,55 @@ class CategoriesFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             view?.hideKeyboard()
             if (it.code == 0) { //Tags Response Ok
 
                 val params: LinearLayout.LayoutParams =
-                    LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
                 params.setMargins(16, 16, 16, 16)
 
-                val states = arrayOf(
-                    intArrayOf(android.R.attr.state_enabled),
-                    intArrayOf(-android.R.attr.state_enabled),
-                    intArrayOf(-android.R.attr.state_checked),
-                    intArrayOf(android.R.attr.state_pressed)
-                )
-
-                val colors = intArrayOf(
-                    Color.BLACK,
-                    Color.RED,
-                    Color.GREEN,
-                    Color.BLUE
-                )
-
                 for (item in it.data.categories) {
-                    val tvChip = TextView(context)
+                    val tvChip = Chip(context)
                     tvChip.id = item.id
                     tvChip.text = item.name
-                    tvChip.setTextColor(ContextCompat.getColorStateList(context!!, R.color.chip_textcolor))
                     tvChip.isEnabled = true
                     tvChip.padding = 24
-                    tvChip.background = ContextCompat.getDrawable(
-                        context!!,
-                        R.drawable.bg_chip_category
+                    tvChip.isCheckable = true
+                    tvChip.setTextAppearance(requireContext(), R.style.ChipTextStyle)
+                    tvChip.isClickable = true
+                    tvChip.isFocusable = true
+                    tvChip.checkedIcon = null
+                    tvChip.gravity = Gravity.CENTER
+
+                    val shapeAppearanceModel = ShapeAppearanceModel()
+                        .toBuilder()
+                        .setAllCorners(CornerFamily.ROUNDED, 4.px.toFloat())
+                        .build()
+                    tvChip.shapeAppearanceModel = shapeAppearanceModel
+                    tvChip.chipBackgroundColor = ContextCompat.getColorStateList(
+                        requireContext(),
+                        R.color.chip_backgroundcolor
                     )
-                    tvChip.layoutParams = params
                     tvChip.setOnClickListener {
                         publishViewModel.categorySelected = tvChip.text.toString()
                         publishViewModel.categorySelectedId = tvChip.id
-                        findNavController().popBackStack()
                     }
                     chipGroup!!.addView(tvChip)
                 }
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
         output.errorMessage.observe(this, Observer {
             view?.hideKeyboard()
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+            CommonsKt.handleOnApiError(app!!, requireContext(), this, it)
         })
     }
 

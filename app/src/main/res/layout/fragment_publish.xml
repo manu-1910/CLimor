@@ -217,6 +217,16 @@
                             android:visibility="gone"
                             tools:listitem="@layout/tag_item" />
 
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Use “#” for hashtags"
+                            android:textColor="@color/textSecondary"
+                            android:fontFamily="@font/roboto"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:textSize="12sp" />
+
 
                     </LinearLayout>
 
