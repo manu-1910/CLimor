@@ -63,8 +63,9 @@
 
     <!-- SearchViewToolbar theme. -->
     <style name="SearchViewToolbarTheme" parent="ThemeOverlay.MaterialComponents.Light">
-        <item name="android:editTextColor">@color/white</item>
-        <item name="android:textColorHint">@color/brandSecondary100</item>
+        <item name="android:editTextColor">@color/textPrimary</item>
+        <item name="android:textColorHint">@color/textSecondary</item>
+        <item name="android:textSize">@dimen/textSize14</item>
     </style>
 
     <!-- Chipview style-->
