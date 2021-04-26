@@ -1077,7 +1077,7 @@ class PublishFragment : BaseFragment() {
 
 
     private fun setupRecyclerTags() {
-        rvTags?.layoutManager = LinearLayoutManager(context)
+        rvTags?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         rvTags?.adapter = listTagsString?.let {
             HashtagAdapter(it, object : HashtagAdapter.OnItemClickListener {
                 override fun onItemClick(item: Hashtag) {

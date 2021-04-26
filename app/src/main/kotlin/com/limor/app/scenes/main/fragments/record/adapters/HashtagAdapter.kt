@@ -71,7 +71,7 @@ class HashtagAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.tvTag.text = tagsList.getItem(position)?.toString()
+        holder.tvTag.text = "#${tagsList.getItem(position)?.toString()}"
         holder.itemView.setOnClickListener { listener.onItemClick(tagsList.getItem(position)!!) }
     }
 
