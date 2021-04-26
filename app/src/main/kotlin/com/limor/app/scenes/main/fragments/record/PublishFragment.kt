@@ -255,10 +255,15 @@ class PublishFragment : BaseFragment() {
             tvSelectedLocation?.text = podcastLocation.address
             uiDraft.location = podcastLocation
         }
+
         if (!publishViewModel.categorySelected.isNullOrEmpty()) {
             tvSelectedCategory?.text = publishViewModel.categorySelected
             uiDraft.category = publishViewModel.categorySelected
             uiDraft.categoryId = publishViewModel.categorySelectedId
+        }
+
+        if (!publishViewModel.languageSelected.isNullOrEmpty()) {
+            tvSelectedLanguage?.text = publishViewModel.languageSelected
         }
 
         //update database
@@ -416,6 +421,10 @@ class PublishFragment : BaseFragment() {
 
         lytTvLocation?.onClick {
             findNavController().navigate(R.id.action_record_publish_to_record_locations)
+        }
+
+        lytTvLanguages?.onClick {
+            findNavController().navigate(R.id.action_record_publish_to_record_languages)
         }
 
         //Used for show or hide the recyclerview of the hashtags

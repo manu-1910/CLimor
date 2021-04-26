@@ -279,6 +279,46 @@
 
 
                         <RelativeLayout
+                            android:id="@+id/lytTvLanguages"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            android:visibility="visible">
+
+                            <TextView
+                                android:id="@+id/tvLanguage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:fontFamily="@font/roboto_medium"
+                                android:text="@string/title_language"
+                                android:layout_marginBottom="@dimen/marginMedium"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSize16" />
+
+                            <TextView
+                                android:id="@+id/tvSelectedLanguage"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_toEndOf="@id/tvLanguage"
+                                android:fontFamily="@font/roboto_medium"
+                                android:gravity="end"
+                                android:textColor="@color/textSecondary"
+                                android:textSize="@dimen/textSize16"
+                                app:drawableEndCompat="@drawable/chevron_right_light_grey" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_alignParentBottom="true"
+                                android:background="@color/lightBlueColor" />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
                             android:id="@+id/lytTvLocation"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
