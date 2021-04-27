@@ -39,13 +39,13 @@ android {
     }
 
     signingConfigs {
-        debug {
-            storeFile file("${System.env.HOME}/dev/keystores/limor_dev.jks")
-            storeFile file("keystores/limor_dev.jks")
-            storePassword DEV_PASSWORD
-            keyAlias DEV_KEY_ALIAS
-            keyPassword DEV_KEY_PASSWORD
-        }
+//        debug {
+//            storeFile file("${System.env.HOME}/dev/keystores/limor_dev.jks")
+//            storeFile file("keystores/limor_dev.jks")
+//            storePassword DEV_PASSWORD
+//            keyAlias DEV_KEY_ALIAS
+//            keyPassword DEV_KEY_PASSWORD
+//        }
 
         beta {
             storeFile file("${System.env.HOME}/dev/keystores/limor_beta.jks")
@@ -86,7 +86,7 @@ android {
             zipAlignEnabled true
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.debug
+//            signingConfig signingConfigs.debug
         }
 
         beta {

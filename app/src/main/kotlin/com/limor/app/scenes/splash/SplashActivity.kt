@@ -6,7 +6,7 @@ import android.os.Handler
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.common.SessionManager
-import com.limor.app.scenes.authentication.SignActivity
+import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.main.MainActivity
 import javax.inject.Inject
 
@@ -25,7 +25,7 @@ class SplashActivity : BaseActivity() {
                 startActivity(mainIntent)
                 this.finish()
             }else{
-                startActivity(Intent(applicationContext, SignActivity::class.java))
+                startActivity(Intent(applicationContext, AuthActivityNew::class.java))
                 finish()
             }
         }

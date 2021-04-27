@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sign_new_navigation"
+    app:startDestination="@id/fragment_new_auth_sign_in_or_up">
+
+    <fragment
+        android:id="@+id/fragment_new_auth_sign_in_or_up"
+        android:name="com.limor.app.scenes.auth_new.fragments.FragmentSignInOrUp"
+        android:label="Sing In or Up"
+        tools:layout="@layout/fragment_new_auth_sign_in_or_up" >
+        <action
+            android:id="@+id/action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_in"
+            app:destination="@id/fragment_new_auth_sign_in"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+        <action
+            android:id="@+id/action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_up"
+            app:destination="@id/fragment_new_auth_sign_up"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_new_auth_sign_in"
+        android:name="com.limor.app.scenes.auth_new.fragments.FragmentSignIn"
+        android:label="Sing In or Up"
+        tools:layout="@layout/fragment_new_auth_sign_in" />
+
+    <fragment
+        android:id="@+id/fragment_new_auth_sign_up"
+        android:name="com.limor.app.scenes.auth_new.fragments.FragmentSignUp"
+        android:label="Sing In or Up"
+        tools:layout="@layout/fragment_new_auth_sign_up" />
+</navigation>

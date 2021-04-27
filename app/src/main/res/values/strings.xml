@@ -487,4 +487,7 @@
     <string name="no_user_id_error">We don\'t have a user id so we can\'t show user data</string>
     <string name="no_categories_yet">There are no categories yet</string>
     <string name="no_content_with_this_category">There’s no content related to this category</string>
+    <string name="welcome_to_limor">Welcome to Limor</string>
+    <string name="welcome_to_limor_description">It’s the simplest and safest way to podcast and build your career</string>
+    <string name="sign_up">Sign up</string>
 </resources>
