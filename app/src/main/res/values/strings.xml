@@ -490,4 +490,12 @@
     <string name="welcome_to_limor">Welcome to Limor</string>
     <string name="welcome_to_limor_description">It’s the simplest and safest way to podcast and build your career</string>
     <string name="sign_up">Sign up</string>
+    <string name="continue_with_prefered_method">Continue with your preferred method</string>
+    <string name="sign_up_use_phone">Use your phone number</string>
+    <string name="sig_up_continue_with_google">Continue with Google</string>
+    <string name="sig_up_continue_with_facebook">Continue with Facebook</string>
+    <string name="sign_up_terms_part1">By signing up, you agree to our</string>
+    <string name="sign_up_terms_part2"><u>terms and conditions</u></string>
+    <string name="sig_up_already_have_account">Already have an account?</string>
+    <string name="sign_in_underline"><u>Sign in</u></string>
 </resources>

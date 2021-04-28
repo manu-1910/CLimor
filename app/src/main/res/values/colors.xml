@@ -127,4 +127,7 @@
     <color name="border_discover_chip">#6F6F6F</color>
     <color name="discover_transparent_overlay">#9a000000</color>
 
+    <color name="subtitle_text_color">#91A2B2</color>
+    <color name="sign_in_new_background">#F0F3F8</color>
+
 </resources>
