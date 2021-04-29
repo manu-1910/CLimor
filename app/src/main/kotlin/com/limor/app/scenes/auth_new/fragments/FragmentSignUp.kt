@@ -1,7 +1,5 @@
 package com.limor.app.scenes.auth_new.fragments
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,8 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import com.limor.app.R
+import com.limor.app.scenes.auth_new.AuthActivityNew
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_up.*
-import timber.log.Timber
 
 class FragmentSignUp : Fragment() {
     override fun onCreateView(
@@ -38,17 +36,7 @@ class FragmentSignUp : Fragment() {
         }
 
         tvSingUpTerms.setOnClickListener{
-            val uri = Uri.parse(TERMS_URL)
-            val intent = Intent(Intent.ACTION_VIEW, uri)
-            try {
-                startActivity(intent)
-            } catch (e: Exception){
-                Timber.e(e)
-            }
+            (activity as AuthActivityNew).launchTermsUrl()
         }
-    }
-
-    companion object{
-        private const val TERMS_URL = "https://www.limor.ie/terms-and-conditions-of-use";
     }
 }

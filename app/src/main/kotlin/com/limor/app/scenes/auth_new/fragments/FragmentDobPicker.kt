@@ -27,7 +27,9 @@ class FragmentDobPicker : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btnDobPickerContinue.setOnClickListener {}
+        btnDobPickerContinue.setOnClickListener {
+            it.findNavController().navigate(R.id.action_fragment_new_auth_dob_picker_to_fragment_new_auth_phone_enter)
+        }
 
         btnDobPickerBack.setOnClickListener {
             it.findNavController().popBackStack()

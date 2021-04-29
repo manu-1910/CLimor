@@ -502,4 +502,9 @@
     <string name="enterBirthHint">Enter Birth Date</string>
     <string name="back">Back</string>
     <string name="continue_button">Continue</string>
+    <string name="provide_your_phone_number">Provide your Phone Number</string>
+    <string name="enter_phone_hint">Enter Phone Number</string>
+    <string name="why_we_need_phone">why we need your number?</string>
+    <string name="why_we_need_phone_explanation">We take our users privacy very seriously, in order to protect you and other users we require your device to be registered to your profile.</string>
+    <string name="why_we_need_phone_know_more">To know more, please visit our</string>
 </resources>

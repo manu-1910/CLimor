@@ -58,12 +58,20 @@
         android:name="com.limor.app.scenes.auth_new.fragments.FragmentDobPicker"
         android:label="DOB picker"
         tools:layout="@layout/fragment_new_auth_dob_picker" >
-<!--        <action-->
-<!--            android:id="@+id/action_fragment_new_auth_dob_picker_to_fragment_new_auth_sign_up"-->
-<!--            app:destination="@id/fragment_new_auth_sign_up"-->
-<!--            app:enterAnim="@anim/slide_in_left_pop_enter_no_alpha"-->
-<!--            app:exitAnim="@anim/slide_out_right_pop_exit_no_alpha"-->
-<!--            app:popEnterAnim="@anim/slide_in_right_enter_no_alpha"-->
-<!--            app:popExitAnim="@anim/slide_out_left_exit_no_alpha"/>-->
+        <action
+            android:id="@+id/action_fragment_new_auth_dob_picker_to_fragment_new_auth_phone_enter"
+            app:destination="@id/fragment_new_auth_phone_enter"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/fragment_new_auth_phone_enter"
+        android:name="com.limor.app.scenes.auth_new.fragments.FragmentSignEnterPhone"
+        android:label="Enter Phone"
+        tools:layout="@layout/fragment_new_auth_phone_enter" >
+    </fragment>
+
 </navigation>
