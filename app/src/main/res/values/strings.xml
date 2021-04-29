@@ -498,4 +498,8 @@
     <string name="sign_up_terms_part2"><u>terms and conditions</u></string>
     <string name="sig_up_already_have_account">Already have an account?</string>
     <string name="sign_in_underline"><u>Sign in</u></string>
+    <string name="when_your_birthday">When’s your Birthday?</string>
+    <string name="enterBirthHint">Enter Birth Date</string>
+    <string name="back">Back</string>
+    <string name="continue_button">Continue</string>
 </resources>

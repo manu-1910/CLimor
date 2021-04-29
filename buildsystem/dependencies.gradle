@@ -45,7 +45,7 @@ versions.firebase_jobdispatcher = "0.8.5"
 versions.firebase_ads = "17.2.1"
 
 //Kotlin
-versions.kotlin = "1.3.21"
+versions.kotlin = "1.3.50"
 versions.rx_kotlin = "2.3.0"
 versions.anko = "0.10.8"
 versions.serialization_runtime = "0.10.0"
