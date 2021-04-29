@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/content"
-    android:background="@color/brandSecondary400"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar_with_back_arrow_icon"/>
+        layout="@layout/toolbar_with_back_arrow_icon_light" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvDrafts"
@@ -28,6 +28,7 @@
         android:id="@+id/emptyScenarioDraftsLayout"
         layout="@layout/fragment_drafts_empty_scenario"
         android:layout_width="match_parent"
+        tools:visibility="gone"
         android:layout_height="match_parent"
         android:visibility="visible"/>
 

@@ -116,6 +116,7 @@ versions.merlin = '1.2.0'
 
 versions.navigation = '2.3.2'
 versions.superbottomsheet = '2.0.0'
+versions.circle_progress_bar = '3.0.3'
 
 def support = [:]
 support.annotations = "androidx.annotation:annotation:$versions.support"
@@ -279,4 +280,6 @@ deps.shimmerlayout = "io.supercharge:shimmerlayout:$versions.shimmerlayout"
 deps.merlin = "com.novoda:merlin:$versions.merlin"
 deps.event_bus = "org.greenrobot:eventbus:$versions.event_bus"
 deps.super_bottom_sheet = "com.github.andrefrsousa:SuperBottomSheet:$versions.superbottomsheet"
+deps.circular_progress_bar = "com.mikhaellopez:circularprogressbar:$versions.circle_progress_bar"
+
 ext.deps = deps

@@ -121,8 +121,8 @@
                             android:layout_marginStart="20dp"
                             android:layout_marginTop="24dp"
                             android:layout_marginEnd="20dp"
-                            app:boxStrokeWidth="2dp"
                             app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeWidth="2dp"
                             app:hintTextAppearance="@style/TextHintStyle"
                             app:hintTextColor="@color/colorAccent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -156,11 +156,11 @@
                             android:layout_marginStart="20dp"
                             android:layout_marginTop="20dp"
                             android:layout_marginEnd="20dp"
-                            app:counterEnabled="true"
-                            app:boxStrokeWidth="2dp"
-                            app:counterTextColor="@color/textSecondary"
-                            app:counterMaxLength="120"
                             app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeWidth="2dp"
+                            app:counterEnabled="true"
+                            app:counterMaxLength="120"
+                            app:counterTextColor="@color/textSecondary"
                             app:hintTextAppearance="@style/TextHintStyle"
                             app:hintTextColor="@color/colorAccent">
 
@@ -187,8 +187,8 @@
                             android:layout_marginStart="20dp"
                             android:layout_marginTop="20dp"
                             android:layout_marginEnd="20dp"
-                            app:boxStrokeWidth="2dp"
                             app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeWidth="2dp"
                             app:hintTextAppearance="@style/TextHintStyle"
                             app:hintTextColor="@color/colorAccent">
 
@@ -198,14 +198,14 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/roboto_medium"
+                                android:hint="@string/hint_tags"
+                                android:inputType="textNoSuggestions"
                                 android:lines="1"
                                 android:paddingStart="12dp"
+                                android:paddingTop="16dp"
+
                                 android:paddingEnd="12dp"
                                 android:paddingBottom="16dp"
-                                android:inputType="textNoSuggestions"
-
-                                android:paddingTop="16dp"
-                                android:hint="@string/hint_tags"
                                 android:textColor="@color/textPrimary"
                                 android:textSize="@dimen/textSizeNormal"
                                 app:hyperlinkColor="@color/textAccent"
@@ -216,20 +216,20 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Use “#” for hashtags"
-                            android:textColor="@color/textSecondary"
-                            android:fontFamily="@font/roboto"
                             android:layout_marginStart="20dp"
                             android:layout_marginEnd="20dp"
+                            android:fontFamily="@font/roboto"
+                            android:text="Use “#” for hashtags"
+                            android:textColor="@color/textSecondary"
                             android:textSize="12sp" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvTags"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:visibility="gone"
                             android:layout_marginStart="12dp"
                             android:layout_marginEnd="12dp"
+                            android:visibility="gone"
                             tools:listitem="@layout/tag_item" />
 
 
@@ -246,8 +246,8 @@
                             android:id="@+id/lytTvCategory"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/marginTwenty"
                             android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
                             android:layout_marginEnd="@dimen/marginTwenty"
                             android:visibility="visible">
 
@@ -266,12 +266,12 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
+                                android:layout_marginBottom="@dimen/marginMedium"
                                 android:layout_toEndOf="@id/tvCategory"
                                 android:fontFamily="@font/roboto_medium"
                                 android:gravity="end"
                                 android:textColor="@color/textSecondary"
                                 android:textSize="@dimen/textSize16"
-                                android:layout_marginBottom="@dimen/marginMedium"
                                 app:drawableEndCompat="@drawable/chevron_right_light_grey" />
 
 
@@ -287,8 +287,8 @@
                             android:id="@+id/lytTvLanguages"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/marginTwenty"
                             android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
                             android:layout_marginEnd="@dimen/marginTwenty"
                             android:visibility="visible">
 
@@ -297,9 +297,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
+                                android:layout_marginBottom="@dimen/marginMedium"
                                 android:fontFamily="@font/roboto_medium"
                                 android:text="@string/title_language"
-                                android:layout_marginBottom="@dimen/marginMedium"
                                 android:textColor="@color/textPrimary"
                                 android:textSize="@dimen/textSize16" />
 
@@ -327,8 +327,8 @@
                             android:id="@+id/lytTvLocation"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/marginTwenty"
                             android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
                             android:layout_marginEnd="@dimen/marginTwenty"
                             android:visibility="visible">
 
@@ -337,9 +337,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
+                                android:layout_marginBottom="@dimen/marginMedium"
                                 android:fontFamily="@font/roboto_medium"
                                 android:text="@string/title_location"
-                                android:layout_marginBottom="@dimen/marginMedium"
                                 android:textColor="@color/textPrimary"
                                 android:textSize="@dimen/textSize16" />
 
@@ -386,9 +386,9 @@
                                     android:maxHeight="4dp"
                                     android:minHeight="4dp"
                                     android:paddingTop="8dp"
-                                    android:thumb="@drawable/seekbar_thumb"
                                     android:progress="50"
-                                    android:progressDrawable="@drawable/custom_seekbar_progress" />
+                                    android:progressDrawable="@drawable/custom_seekbar_progress"
+                                    android:thumb="@drawable/seekbar_thumb" />
 
                                 <TextView
                                     android:id="@+id/tvTimePass"
@@ -497,8 +497,8 @@
                                 android:layout_weight="1"
                                 android:background="@drawable/bg_round_yellow_ripple_new"
                                 android:fontFamily="@font/roboto_medium"
-                                android:text="@string/btn_publish"
                                 android:padding="15dp"
+                                android:text="@string/btn_publish"
                                 android:textAllCaps="false"
                                 android:textColor="@color/textPrimary"
                                 android:textSize="@dimen/textSize14" />
@@ -522,4 +522,41 @@
 
 
     </androidx.core.widget.NestedScrollView>
+
+    <FrameLayout
+        android:id="@+id/progressPb"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black60"
+        android:visibility="gone">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <com.mikhaellopez.circularprogressbar.CircularProgressBar
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                app:cpb_round_border="true"
+                app:cpb_indeterminate_mode="true"
+                app:cpb_progressbar_color="@color/white"
+                app:cpb_background_progressbar_color="@android:color/transparent"
+                app:cpb_progressbar_width="5dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="13dp"
+                android:fontFamily="@font/roboto_medium"
+                android:text="Publishing your cast"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+
+    </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

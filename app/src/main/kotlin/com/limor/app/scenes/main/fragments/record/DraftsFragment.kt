@@ -210,6 +210,7 @@ class DraftsFragment : BaseFragment() {
     }
 
 
+
     private fun configureAdapter() {
         val layoutManager = LinearLayoutManager(context)
         rvDrafts?.layoutManager = layoutManager
@@ -778,6 +779,8 @@ class DraftsFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+        val act = requireActivity() as RecordActivity
+        act.initScreenBehaviour()
         pbDrafts?.visibility = View.VISIBLE
         getDraftsTrigger.onNext(Unit)
     }

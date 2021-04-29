@@ -49,7 +49,6 @@ import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
-import com.limor.app.components.AlertProgressBar
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.MainActivity
@@ -279,16 +278,13 @@ class PublishFragment : BaseFragment() {
         )
 
         output.response.observe(viewLifecycleOwner, Observer {
-            pbPublish?.visibility = View.GONE
+            progressPb.visibility = View.GONE
             view?.hideKeyboard()
 
             if (it.code == 0) { //Publish Ok
-
                 convertedFile?.delete()
                 callToDeleteDraft()
-
                 isPublished = true
-
                 alert {
                     this.titleResource = R.string.cast_published_ok_title
                     this.messageResource = R.string.cast_published_ok_description
@@ -306,7 +302,8 @@ class PublishFragment : BaseFragment() {
         })
 
         output.errorMessage.observe(this, Observer {
-            pbPublish?.visibility = View.GONE
+            progressPb.visibility = View.GONE
+
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
 
@@ -514,8 +511,9 @@ class PublishFragment : BaseFragment() {
 
     private fun publishPodcastAudio() {
 
-        val dialog = AlertProgressBar(requireContext())
-        dialog.show()
+        /*  val dialog = AlertProgressBar(requireContext())
+          dialog.show()*/
+        progressPb.visibility = View.VISIBLE
 
         convertedFile = WavHelper.convertWavToM4a(requireContext(), uiDraft.filePath!!)
         convertedFile?.let {
@@ -529,16 +527,18 @@ class PublishFragment : BaseFragment() {
                         println("Audio upload to AWS succesfully")
                         audioUploaded = true
                         audioUrlFinal = audioUrl
-                        dialog.dismiss()
+                        //  dialog.dismiss()
+                        progressPb.visibility = View.GONE
                         readyToPublish()
                     }
 
                     override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
-                        dialog.updateProgress(bytesCurrent.toInt(), bytesTotal.toInt())
+                        //dialog.updateProgress(bytesCurrent.toInt(), bytesTotal.toInt())
                     }
 
                     override fun onError(error: String?) {
-                        dialog.dismiss()
+                        //  dialog.dismiss()
+                        progressPb.visibility = View.GONE
                         audioUploaded = false
                         alert(getString(R.string.error_uploading_audio)) {
                             okButton { }
@@ -553,11 +553,11 @@ class PublishFragment : BaseFragment() {
 
 
     private fun publishPodcastImage() {
-
+        progressPb.visibility = View.VISIBLE
         if (Commons.getInstance().isImageReadyForUpload) {
 
-            val dialog = AlertProgressBar(requireContext())
-            dialog.show()
+            // val dialog = AlertProgressBar(requireContext())
+            // dialog.show()
 
 
             //Upload audio file to AWS
@@ -565,7 +565,7 @@ class PublishFragment : BaseFragment() {
                 context,
                 object : Commons.ImageUploadCallback {
                     override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
-                        dialog.updateProgress(bytesCurrent.toInt(), bytesTotal.toInt())
+                        //  dialog.updateProgress(bytesCurrent.toInt(), bytesTotal.toInt())
                     }
 
                     override fun onSuccess(imageUrl: String?) {
@@ -573,7 +573,9 @@ class PublishFragment : BaseFragment() {
                         //var imageUploadedUrl = imageUrl
                         imageUploaded = true
                         imageUrlFinal = imageUrl
-                        dialog.dismiss()
+                        //dialog.dismiss()
+                        progressPb.visibility = View.GONE
+
                         readyToPublish()
                     }
 
@@ -582,7 +584,8 @@ class PublishFragment : BaseFragment() {
                     }
 
                     override fun onError(error: String?) {
-                        dialog.dismiss()
+                        progressPb.visibility = View.GONE
+                        //  dialog.dismiss()
                         imageUploaded = false
                         alert(getString(R.string.error_uploading_image)) {
                             okButton { }
@@ -605,7 +608,8 @@ class PublishFragment : BaseFragment() {
 
 
     private fun apiCallPublish() {
-        pbPublish?.visibility = View.VISIBLE
+        progressPb.visibility = View.VISIBLE
+
 
         val uiPublishRequest = UIPublishRequest(
             podcast = UIPodcastRequest(
