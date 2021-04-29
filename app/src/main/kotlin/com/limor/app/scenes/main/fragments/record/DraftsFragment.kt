@@ -1,20 +1,15 @@
 package com.limor.app.scenes.main.fragments.record
 
 
-import android.app.AlertDialog
-import android.media.MediaMetadataRetriever
-import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
@@ -33,16 +28,12 @@ import com.limor.app.scenes.utils.CommonsKt.Companion.copyFile
 import com.limor.app.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import com.limor.app.uimodels.UIDraft
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.fragment_drafts.*
 import kotlinx.android.synthetic.main.fragment_drafts_empty_scenario.*
-import org.jetbrains.anko.alert
 import org.jetbrains.anko.cancelButton
-import org.jetbrains.anko.layoutInflater
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
-import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -60,19 +51,13 @@ class DraftsFragment : BaseFragment() {
     private val deleteDraftsTrigger = PublishSubject.create<Unit>()
     private val insertDraftsTrigger = PublishSubject.create<Unit>()
     private var draftsLocalList: ArrayList<UIDraft> = ArrayList()
-    private lateinit var adapter: DraftAdapter
+    private var adapter: DraftAdapter? = null
     private var comesFromEditMode = false
     private var btnEditToolbarUpdate: Button? = null
     private var btnCloseToolbar: ImageButton? = null
     private var tvTitleToolbar: TextView? = null
     var app: App? = null
 
-    private lateinit var seekUpdater: Runnable
-    private val seekHandler: Handler = Handler()
-
-    var mediaPlayer = MediaPlayer()
-
-    var currentPlayingDraftId = 0L
 
     companion object {
         val TAG: String = DraftsFragment::class.java.simpleName
@@ -85,9 +70,9 @@ class DraftsFragment : BaseFragment() {
 
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_drafts, container, false)
@@ -104,18 +89,6 @@ class DraftsFragment : BaseFragment() {
             loadDrafts()
             deleteDraft()
             insertDraft()
-        }
-        seekUpdater = object : Runnable {
-            override fun run() {
-                seekHandler.postDelayed(this, 150)
-                mediaPlayer.let { player ->
-                    if (player.isPlaying) {
-                        val currentPosition = player.currentPosition
-                        sbAudioProgress.progress = currentPosition
-                        tvAudioTimePass.text = CommonsKt.calculateDurationMediaPlayer(currentPosition)
-                    }
-                }
-            }
         }
         configureToolbar()
         app = context?.applicationContext as App
@@ -142,18 +115,18 @@ class DraftsFragment : BaseFragment() {
     override fun onStart() {
         super.onStart()
         requireActivity()
-                .onBackPressedDispatcher
-                .addCallback(this, object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        onBackPressed()
-                    }
-                })
+            .onBackPressedDispatcher
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    onBackPressed()
+                }
+            })
     }
 
     private fun onBackPressed() {
         try {
-            if (mediaPlayer.isPlaying) {
-                mediaPlayer.stop()
+            if (adapter?.mediaPlayer!!.isPlaying) {
+                adapter?.mediaPlayer!!.stop()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -169,27 +142,32 @@ class DraftsFragment : BaseFragment() {
     private fun bindViewModel() {
         activity?.let {
             draftViewModel = ViewModelProviders
-                    .of(it, viewModelFactory)
-                    .get(DraftViewModel::class.java)
+                .of(it, viewModelFactory)
+                .get(DraftViewModel::class.java)
         }
     }
 
 
     private fun configureToolbar() {
+
         //Toolbar title
         tvTitleToolbar?.text = getString(R.string.title_drafts)
+
         //Toolbar Left
         btnCloseToolbar?.let {
             it.onClick {
                 onBackPressed()
             }
         }
+
         //Toolbar Right
         btnEditToolbarUpdate?.visibility = View.VISIBLE
         btnEditToolbarUpdate?.text = getText(R.string.edit)
         btnEditToolbarUpdate?.onClick {
+
             //Setup animation transition
             ViewCompat.setTranslationZ(view!!, 1f)
+
             if (comesFromEditMode) {
                 comesFromEditMode = false
                 btnEditToolbarUpdate?.text = getString(R.string.edit)
@@ -197,6 +175,7 @@ class DraftsFragment : BaseFragment() {
                 for (draft in draftsLocalList) {
                     draft.isEditMode = false
                 }
+
             } else {
                 comesFromEditMode = true
                 btnEditToolbarUpdate?.text = getString(R.string.btnDone)
@@ -205,21 +184,24 @@ class DraftsFragment : BaseFragment() {
                     draft.isEditMode = true
                 }
             }
+
             rvDrafts?.adapter?.notifyDataSetChanged()
         }
-    }
 
+    }
 
 
     private fun configureAdapter() {
         val layoutManager = LinearLayoutManager(context)
         rvDrafts?.layoutManager = layoutManager
-        adapter = DraftAdapter(
-                requireContext(),
+        adapter = context?.let {
+            DraftAdapter(
+                it,
                 draftsLocalList,
                 object : DraftAdapter.OnItemClickListener {
-                    override fun onItemClick(item: UIDraft, position: Int) {
-                        initPlayerView(item, position)
+                    override fun onItemClick(item: UIDraft) {
+                        if (!comesFromEditMode) {
+                        }
                     }
                 },
                 object : DraftAdapter.OnDeleteItemClickListener {
@@ -229,8 +211,8 @@ class DraftsFragment : BaseFragment() {
                                 pbDrafts?.visibility = View.VISIBLE
 
                                 try {
-                                    if (adapter.mediaPlayer.isPlaying) {
-                                        adapter.mediaPlayer.stop()
+                                    if (adapter?.mediaPlayer!!.isPlaying) {
+                                        adapter?.mediaPlayer!!.stop()
                                     }
                                 } catch (e: Exception) {
                                     e.printStackTrace()
@@ -241,7 +223,7 @@ class DraftsFragment : BaseFragment() {
 
                                 //Remove the audio file from the folder
                                 try {
-                                    val file = File(draftsLocalList[position].filePath!!)
+                                    val file = File(draftsLocalList[position].filePath)
                                     file.delete()
                                 } catch (e: Exception) {
                                     e.printStackTrace()
@@ -276,8 +258,8 @@ class DraftsFragment : BaseFragment() {
                             pbDrafts?.visibility = View.VISIBLE
 
                             try {
-                                if (adapter.mediaPlayer.isPlaying) {
-                                    adapter.mediaPlayer.stop()
+                                if (adapter?.mediaPlayer!!.isPlaying) {
+                                    adapter?.mediaPlayer!!.stop()
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()
@@ -292,7 +274,7 @@ class DraftsFragment : BaseFragment() {
 
                             val originalFile = File(draftsLocalList[position].filePath)
                             val destFile =
-                                    File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/" + System.currentTimeMillis() + CommonsKt.audioFileFormat)
+                                File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/" + System.currentTimeMillis() + CommonsKt.audioFileFormat)
                             try {
                                 copyFile(originalFile, destFile)
                             } catch (e: Exception) {
@@ -312,21 +294,13 @@ class DraftsFragment : BaseFragment() {
                 },
 
                 // This is deprecated, it's old code. This will never be called.
-                object : DraftAdapter.OnChangeNameClickListener {
-                    override fun onNameChangedClick(item: UIDraft, position: Int, newName: String) {
-                        item.title = newName
-                        adapter.notifyItemChanged(position)
-                        draftViewModel.uiDraft = item
-                        insertDraftsTrigger.onNext(Unit)
-                    }
-                },
-                object : DraftAdapter.OnResumeItemClickListener {
-                    override fun onResumeItemClick(position: Int, item: UIDraft) {
+                object : DraftAdapter.OnEditItemClickListener {
+                    override fun onEditItemClick(item: UIDraft) {
                         pbDrafts?.visibility = View.VISIBLE
 
                         try {
-                            if (adapter.mediaPlayer.isPlaying) {
-                                adapter?.mediaPlayer.stop()
+                            if (adapter?.mediaPlayer!!.isPlaying) {
+                                adapter?.mediaPlayer!!.stop()
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -338,312 +312,50 @@ class DraftsFragment : BaseFragment() {
                         //draftViewModel.durationOfLastAudio = item.length!!
 
                         val bundle = bundleOf("recordingItem" to draftViewModel.uiDraft)
-                        findNavController().navigate(R.id.action_record_drafts_to_record_fragment, bundle)
+                        findNavController().navigate(
+                            R.id.action_record_drafts_to_record_edit,
+                            bundle
+                        )
+                    }
+                },
+
+                // This is deprecated, it's old code. This will never be called.
+                object : DraftAdapter.OnChangeNameClickListener {
+                    override fun onNameChangedClick(item: UIDraft, position: Int, newName: String) {
+                        item.title = newName
+                        adapter?.notifyItemChanged(position)
+                        draftViewModel.uiDraft = item
+                        insertDraftsTrigger.onNext(Unit)
+                    }
+                },
+                object : DraftAdapter.OnResumeItemClickListener {
+                    override fun onResumeItemClick(position: Int, item: UIDraft) {
+                        pbDrafts?.visibility = View.VISIBLE
+
+                        try {
+                            if (adapter?.mediaPlayer!!.isPlaying) {
+                                adapter?.mediaPlayer!!.stop()
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+
+                        //Go to record fragment to continue recording
+                        draftViewModel.uiDraft = item
+                        draftViewModel.filesArray.add(File(item.filePath))
+                        //draftViewModel.durationOfLastAudio = item.length!!
+
+                        val bundle = bundleOf("recordingItem" to draftViewModel.uiDraft)
+                        findNavController().navigate(
+                            R.id.action_record_drafts_to_record_fragment,
+                            bundle
+                        )
                     }
                 }
-        )
+            )
+        }
         rvDrafts?.adapter = adapter
         rvDrafts?.setHasFixedSize(false)
-    }
-
-    private fun initPlayerView(draft: UIDraft, position: Int) {
-        if (!comesFromEditMode) {
-            if (adapter.getLastSelectedDraftPosition() == DraftAdapter.DRAFT_NOT_SELECTED) {
-                stopMediaPlayer()
-                itemAudioPlayer.visibility = View.GONE
-                currentPlayingDraftId = 0L
-                return
-            }
-
-            var currentDurationInMillis = 0
-            val uri: Uri = Uri.parse(draft.filePath)
-            uri.path?.let {
-                val f = File(it)
-                if (f.exists()) {
-                    val mmr = MediaMetadataRetriever()
-                    try {
-                        mmr.setDataSource(context, uri)
-                        val durationStr =
-                                mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                        currentDurationInMillis = durationStr.toInt()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        Timber.d("Couldn't read metadata and duration. This could be because the file you're trying to access is corrupted")
-                    }
-                }
-            }
-
-            stopMediaPlayer()
-            imageButtonPlayPause?.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.play))
-
-            // seekBar
-            sbAudioProgress.max = currentDurationInMillis
-            if (draft.id == currentPlayingDraftId) {
-                sbAudioProgress.progress = mediaPlayer.currentPosition
-            } else {
-                sbAudioProgress.progress = 0
-            }
-
-            sbAudioProgress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                    // if we click on the current playing item seekbar, then we'll seek the audio position
-                    updateFwdButton()
-                    updateRewButton()
-                    if (fromUser && draft.id == currentPlayingDraftId) {
-                        mediaPlayer.seekTo(progress)
-                    }
-                }
-
-                override fun onStartTrackingTouch(seekBar: SeekBar) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar) {}
-            })
-
-            updateRewButton()
-            updateFwdButton()
-
-            // textViews
-            if (draft.id == currentPlayingDraftId) {
-                tvAudioTimePass.text = CommonsKt.calculateDurationMediaPlayer(mediaPlayer.currentPosition)
-            } else {
-                tvAudioTimePass.text = "00:00"
-            }
-            tvAudioDuration.text = CommonsKt.calculateDurationMediaPlayer(currentDurationInMillis)
-
-            itemAudioPlayer.visibility = View.VISIBLE
-
-            imageButtonPlayPause.onClick {
-                if (draft.id == currentPlayingDraftId) {
-                    onCurrentPlayingDraftPlayClicked()
-                } else {
-                    onOtherDraftPlayClicked(draft)
-                }
-            }
-
-            // Forward button
-            ibAudioFwd.onClick {
-                onForwardClicked(draft)
-            }
-
-            // Rewind button
-            ibAudioRew.onClick {
-                onRewindClicked(draft)
-            }
-
-
-            // More button -> show options menu
-            btnAudioMore.onClick {
-                showMorePopupMenu(draft, position)
-            }
-
-
-            tvResumeRecord.onClick {
-                stopMediaPlayer()
-                draft.length = currentDurationInMillis.toLong()
-                adapter.resumeListener.onResumeItemClick(position, draft)
-            }
-        }
-    }
-
-    private fun showMorePopupMenu(currentDraft: UIDraft, position: Int) {
-        //creating a popup menu
-        val popup = PopupMenu(context, btnAudioMore)
-        //inflating menu from xml resource
-        popup.inflate(R.menu.menu_drafts_iems_adapter)
-        //adding click listener
-        popup.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.menu_duplicate_cast -> {
-                    stopMediaPlayer()
-                    adapter.duplicateListener.onDuplicateItemClick(position)
-                    true
-                }
-                R.id.menu_delete_cast -> {
-                    deleteClicked(position)
-                    true
-                }
-                R.id.menu_change_name_cast -> {
-                    changeNameClicked(currentDraft, position)
-                    true
-                }
-                else -> false
-            }
-        }
-        //displaying the popup
-        popup.show()
-    }
-
-    private fun changeNameClicked(currentDraft: UIDraft, position: Int) {
-        showSaveDraftAlert(currentDraft.title) { newName ->
-            adapter.changeNameListener.onNameChangedClick(currentDraft, position, newName)
-        }
-    }
-
-    private fun showSaveDraftAlert(currentName: String?, onPositiveClicked: (title: String) -> Unit) {
-        val dialogBuilder = AlertDialog.Builder(context)
-        val inflater = requireContext().layoutInflater
-        dialogBuilder.setTitle(requireContext().getString(R.string.edit_draft_title_dialog_title))
-        val dialogLayout = inflater.inflate(R.layout.dialog_with_edittext, null)
-        val positiveButton = dialogLayout.findViewById<Button>(R.id.saveButton)
-        val cancelButton = dialogLayout.findViewById<Button>(R.id.cancelButton)
-        val editText = dialogLayout.findViewById<EditText>(R.id.editText)
-        editText.setText(currentName)
-        dialogBuilder.setView(dialogLayout)
-        dialogBuilder.setCancelable(false)
-        val dialog: AlertDialog = dialogBuilder.show()
-
-        positiveButton.onClick {
-            onPositiveClicked(editText.text.toString())
-            dialog.dismiss()
-        }
-
-        cancelButton.onClick {
-            dialog.dismiss()
-        }
-
-        editText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                positiveButton.isEnabled = !p0.isNullOrEmpty()
-            }
-        })
-    }
-
-    private fun deleteClicked(position: Int) {
-        stopMediaPlayer()
-        itemAudioPlayer.visibility = View.GONE
-        adapter.deleteListener.onDeleteItemClick(position)
-    }
-
-    private fun onOtherDraftPlayClicked(draft: UIDraft) {
-        stopMediaPlayer()
-        var shouldContinue = false
-        draft.filePath?.let { path ->
-            val f = File(path)
-            if (f.exists())
-                shouldContinue = true
-        }
-
-        // if the file doesn't exist, we shouldn't continue because we won't be able to play it
-        if (!shouldContinue) {
-            requireContext().alert(requireContext().getString(R.string.error_accessing_draft_file)) {
-                okButton { }
-            }.show()
-        } else {
-            // if it's playing or not, then we have to stop the current player draft playing and setup this new draft player
-            currentPlayingDraftId = draft.id ?: 0L
-
-
-            if (mediaPlayer.isPlaying) {
-                mediaPlayer.pause()
-                mediaPlayer.stop()
-                mediaPlayer.release()
-            }
-
-            imageButtonPlayPause?.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.pause))
-//            enableRewAndFwdButtons(true)
-
-            mediaPlayer = MediaPlayer()
-            mediaPlayer.setOnCompletionListener {
-                onCompletionListener()
-            }
-            mediaPlayer.setDataSource(draft.filePath)
-            try {
-                mediaPlayer.prepare()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Timber.d("The mediaplayer could not be prepared, probably because the file is corrupted")
-                requireContext().alert(requireContext().getString(R.string.error_file_corrupted)) {
-                    okButton { }
-                }
-                return
-            }
-            mediaPlayer.setOnPreparedListener {
-                it.start()
-                sbAudioProgress?.progress?.let { newProgress ->
-                    mediaPlayer.seekTo(newProgress)
-
-                    // this is to restart the audio after you have stopped it at the end of the track
-                    if (mediaPlayer.currentPosition == mediaPlayer.duration)
-                        mediaPlayer.seekTo(0)
-                }
-
-                seekHandler.post(seekUpdater)
-            }
-        }
-    }
-
-    private fun onCompletionListener() {
-        imageButtonPlayPause?.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.play))
-        sbAudioProgress?.progress = sbAudioProgress?.max ?: mediaPlayer.duration
-        updateRewButton()
-        updateFwdButton()
-        mediaPlayer.pause()
-    }
-
-    private fun onCurrentPlayingDraftPlayClicked() {
-        if (mediaPlayer.isPlaying) {
-            mediaPlayer.pause()
-            imageButtonPlayPause?.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.play))
-            // if it's not playing, we just have to play it and change buttons images
-        } else {
-            // this is to restart the audio after you have stopped it at the end of the track
-            if (mediaPlayer.currentPosition == mediaPlayer.duration) {
-                mediaPlayer.seekTo(0)
-            }
-            mediaPlayer.start()
-            imageButtonPlayPause?.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.pause))
-//            enableRewAndFwdButtons(true)
-        }
-        updateRewButton()
-        updateFwdButton()
-    }
-
-    private fun onRewindClicked(draft: UIDraft) {
-        try {
-            val nextPosition = sbAudioProgress.progress - 30000
-            sbAudioProgress.progress = nextPosition
-            if (currentPlayingDraftId == draft.id) mediaPlayer.seekTo(nextPosition)
-            updateRewButton()
-            updateFwdButton()
-        } catch (e: Exception) {
-            Timber.d("mediaPlayer.seekTo rewind overflow")
-        }
-    }
-
-    private fun onForwardClicked(draft: UIDraft) {
-        try {
-            var nextPosition = sbAudioProgress.progress + 30000
-            if (nextPosition > sbAudioProgress.max)
-                nextPosition = sbAudioProgress.max
-            sbAudioProgress.progress = nextPosition
-            if (currentPlayingDraftId == draft.id) {
-                mediaPlayer.seekTo(nextPosition)
-                updateRewButton()
-                updateFwdButton()
-            }
-        } catch (e: Exception) {
-            Timber.d("mediaPlayer.seekTo forward overflow")
-        }
-    }
-
-    private fun updateRewButton() {
-        val enabled = sbAudioProgress.progress != 0
-        Timber.d("Draft rew enabled $enabled")
-        ibAudioRew.alpha = if(enabled) 1.0f else 0.6f
-        ibAudioRew.isEnabled = enabled
-    }
-
-    private fun updateFwdButton() {
-        val enabled = sbAudioProgress.progress != sbAudioProgress.max
-        Timber.d("Draft fwd enabled $enabled")
-        ibAudioFwd.alpha = if(enabled) 1.0f else 0.6f
-        ibAudioFwd.isEnabled = enabled
     }
 
     private fun getDuplicatedTitle(currentTitle: String?): String {
@@ -689,7 +401,7 @@ class DraftsFragment : BaseFragment() {
         //Clear right toolbar button
         btnEditToolbarUpdate?.background = null
         btnEditToolbarUpdate?.text = ""
-        btnEditToolbarUpdate?.onClick {  }
+        btnEditToolbarUpdate?.onClick { null }
     }
 
 
@@ -730,9 +442,9 @@ class DraftsFragment : BaseFragment() {
 
     private fun deleteDraft() {
         val output = draftViewModel.deleteDraftRealm(
-                DraftViewModel.InputDelete(
-                        deleteDraftsTrigger
-                )
+            DraftViewModel.InputDelete(
+                deleteDraftsTrigger
+            )
         )
 
         output.response.observe(this, Observer {
@@ -754,9 +466,9 @@ class DraftsFragment : BaseFragment() {
 
     private fun insertDraft() {
         val output = draftViewModel.insertDraftRealm(
-                DraftViewModel.InputInsert(
-                        insertDraftsTrigger
-                )
+            DraftViewModel.InputInsert(
+                insertDraftsTrigger
+            )
         )
 
         output.response.observe(this, Observer {
@@ -779,20 +491,8 @@ class DraftsFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        val act = requireActivity() as RecordActivity
-        act.initScreenBehaviour()
         pbDrafts?.visibility = View.VISIBLE
         getDraftsTrigger.onNext(Unit)
-    }
-
-    private fun stopMediaPlayer() {
-        try {
-            if (mediaPlayer.isPlaying) {
-                mediaPlayer.stop()
-            }
-        } catch (e: Exception) {
-            println("Exception stopping media player inside DraftAdapter")
-        }
     }
 
 
