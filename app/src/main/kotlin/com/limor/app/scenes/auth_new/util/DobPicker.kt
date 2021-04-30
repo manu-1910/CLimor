@@ -1,4 +1,4 @@
-package com.limor.app.scenes.auth_new
+package com.limor.app.scenes.auth_new.util
 
 import android.text.format.DateFormat
 import androidx.fragment.app.FragmentManager

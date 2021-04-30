@@ -15,11 +15,11 @@ class CountriesListProvider {
     private fun loadJSONFromAsset(assets: AssetManager): String? {
         val json: String?
         json = try {
-            val `is` = assets.open("countries.txt")
-            val size = `is`.available()
+            val inputStream = assets.open("countries.txt")
+            val size = inputStream.available()
             val buffer = ByteArray(size)
-            `is`.read(buffer)
-            `is`.close()
+            inputStream.read(buffer)
+            inputStream.close()
             String(buffer, Charset.forName("UTF-8"))
         } catch (ex: IOException) {
             ex.printStackTrace()

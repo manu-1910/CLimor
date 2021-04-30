@@ -1,9 +1,11 @@
 package com.limor.app.scenes.auth_new.fragments
 
 import android.os.Bundle
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.fragment.app.Fragment
@@ -15,6 +17,7 @@ import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.Country
+import com.limor.app.scenes.auth_new.util.AfterTextWatcher
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.*
 
 
@@ -32,7 +35,22 @@ class FragmentSignEnterPhone : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btnDobPickerBack.setOnClickListener {
+        setTextChangeListener()
+        setClickListeners()
+        setFocusChanges()
+        subscribeToViewModel()
+    }
+
+    private fun setTextChangeListener() {
+        etEnterPhoneInner.addTextChangedListener(object : AfterTextWatcher() {
+            override fun afterTextChanged(s: Editable?) {
+                model.setPhoneChanged(s?.toString() ?: "")
+            }
+        })
+    }
+
+    private fun setClickListeners() {
+        btnBack.setOnClickListener {
             it.findNavController().popBackStack()
         }
 
@@ -43,9 +61,11 @@ class FragmentSignEnterPhone : Fragment() {
         clMain.setOnClickListener {
             clMain.requestFocus()
         }
+    }
+
+    private fun setFocusChanges() {
         clMain.onFocusChangeListener = onFocusChangeListener()
         etPhoneCode.editText?.onFocusChangeListener = onFocusChangeListener()
-        subscribeToViewModel()
     }
 
     private fun onFocusChangeListener(): View.OnFocusChangeListener {
@@ -56,8 +76,16 @@ class FragmentSignEnterPhone : Fragment() {
     }
 
     private fun subscribeToViewModel() {
+        model.setCountrySelected(Country())
+        model.setPhoneChanged("")
         model.countriesLiveData.observe(viewLifecycleOwner, Observer {
             setCountriesAdapter(it)
+        })
+
+        model.phoneIsValidLiveData.observe(viewLifecycleOwner, Observer {
+            btnContinue.isEnabled = it
+            if(it)
+                clMain.hideKeyboard()
         })
     }
 
@@ -65,5 +93,7 @@ class FragmentSignEnterPhone : Fragment() {
         val items = countries.map { it.visualFormat }
         val adapter = ArrayAdapter(requireContext(), R.layout.item_phone_code_country_code, items)
         (etPhoneCode.editText as? AutoCompleteTextView)?.setAdapter(adapter)
+        (etPhoneCode.editText as? AutoCompleteTextView)?.onItemClickListener =
+            AdapterView.OnItemClickListener { parent, view, position, id -> model.setCountrySelected(countries[position]) }
     }
 }
