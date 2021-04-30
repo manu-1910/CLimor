@@ -35,7 +35,7 @@ class AuthViewModelNew : ViewModel() {
         dobPicker.startMaterialPicker(fragmentManager)
     }
 
-    /* Countries selection */
+    /* PHONE Countries selection */
 
     private val _countries = MutableLiveData<List<Country>>().apply { value = emptyList() }
 
@@ -59,6 +59,11 @@ class AuthViewModelNew : ViewModel() {
         })
     }
 
+    val countrySelected: Country?
+        get() =
+            if (currentCountry.isEmpty) null
+            else currentCountry
+
     fun setCountrySelected(country: Country) {
         currentCountry = country
         updatePhoneValidation()
@@ -76,7 +81,21 @@ class AuthViewModelNew : ViewModel() {
                 currentPhone,
                 currentCountry.codeLetters
             )
-        if(value)
         _validatePhoneLiveData.postValue(value)
+    }
+
+    val formattedPhone: String
+        get() =
+            PhoneNumberChecker.getFormattedNumber(currentPhone, currentCountry.codeLetters) ?: ""
+
+    /* PHONE sms code */
+    private val _smsCodeIsFullLiveData = MutableLiveData<Boolean>().apply { value = false }
+
+    val smsCodeIsFullLiveData: LiveData<Boolean>
+        get() = _smsCodeIsFullLiveData
+
+    fun setSmsCodeForCheck(codes: List<String?>) {
+        val value = codes.all { it?.isNotEmpty() ?: false }
+        _smsCodeIsFullLiveData.postValue(value)
     }
 }

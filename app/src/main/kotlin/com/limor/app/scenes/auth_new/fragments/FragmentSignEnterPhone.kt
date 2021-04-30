@@ -50,6 +50,10 @@ class FragmentSignEnterPhone : Fragment() {
     }
 
     private fun setClickListeners() {
+        btnContinue.setOnClickListener {
+            it.findNavController()
+                .navigate(R.id.action_fragment_new_auth_phone_enter_to_fragment_new_auth_phone_code)
+        }
         btnBack.setOnClickListener {
             it.findNavController().popBackStack()
         }
@@ -66,6 +70,7 @@ class FragmentSignEnterPhone : Fragment() {
     private fun setFocusChanges() {
         clMain.onFocusChangeListener = onFocusChangeListener()
         etPhoneCode.editText?.onFocusChangeListener = onFocusChangeListener()
+
     }
 
     private fun onFocusChangeListener(): View.OnFocusChangeListener {
@@ -76,15 +81,15 @@ class FragmentSignEnterPhone : Fragment() {
     }
 
     private fun subscribeToViewModel() {
-        model.setCountrySelected(Country())
-        model.setPhoneChanged("")
+//        model.setCountrySelected(Country())
+//        model.setPhoneChanged("")
         model.countriesLiveData.observe(viewLifecycleOwner, Observer {
             setCountriesAdapter(it)
         })
 
         model.phoneIsValidLiveData.observe(viewLifecycleOwner, Observer {
             btnContinue.isEnabled = it
-            if(it)
+            if (it)
                 clMain.hideKeyboard()
         })
     }
@@ -92,8 +97,16 @@ class FragmentSignEnterPhone : Fragment() {
     private fun setCountriesAdapter(countries: List<Country>) {
         val items = countries.map { it.visualFormat }
         val adapter = ArrayAdapter(requireContext(), R.layout.item_phone_code_country_code, items)
-        (etPhoneCode.editText as? AutoCompleteTextView)?.setAdapter(adapter)
-        (etPhoneCode.editText as? AutoCompleteTextView)?.onItemClickListener =
-            AdapterView.OnItemClickListener { parent, view, position, id -> model.setCountrySelected(countries[position]) }
+        val editText = etPhoneCode.editText as AutoCompleteTextView
+        editText.setAdapter(adapter)
+        editText.onItemClickListener =
+            AdapterView.OnItemClickListener { parent, view, position, id ->
+                model.setCountrySelected(
+                    countries[position]
+                )
+            }
+        model.countrySelected?.let {
+            editText.setText(it.visualFormat, false)
+        }
     }
 }

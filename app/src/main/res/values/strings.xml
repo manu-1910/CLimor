@@ -507,4 +507,9 @@
     <string name="why_we_need_phone">why we need your number?</string>
     <string name="why_we_need_phone_explanation">We take our users privacy very seriously, in order to protect you and other users we require your device to be registered to your profile.</string>
     <string name="why_we_need_phone_know_more">To know more, please visit our</string>
+    <string name="verify_phone_number">Verify Phone Number</string>
+    <string name="enter_sms_code">Enter the code that sent to</string>
+    <string name="change_number"><u>Change Number</u></string>
+    <string name="didnt_receive_sms_code">Didn’t get the code? Resend it</string>
+    <string name="wrong_code">Wrong code. Please try again!</string>
 </resources>
