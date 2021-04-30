@@ -1,6 +1,8 @@
 package com.limor.app.scenes.main.fragments.record
 
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +20,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -29,6 +32,7 @@ import com.limor.app.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import com.limor.app.uimodels.UIDraft
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_drafts_empty_scenario.*
+import kotlinx.android.synthetic.main.sheet_more_draft.view.*
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -166,7 +170,7 @@ class DraftsFragment : BaseFragment() {
         btnEditToolbarUpdate?.onClick {
 
             //Setup animation transition
-            ViewCompat.setTranslationZ(view!!, 1f)
+            ViewCompat.setTranslationZ(requireView(), 1f)
 
             if (comesFromEditMode) {
                 comesFromEditMode = false
@@ -292,33 +296,6 @@ class DraftsFragment : BaseFragment() {
                         }
                     }
                 },
-
-                // This is deprecated, it's old code. This will never be called.
-                object : DraftAdapter.OnEditItemClickListener {
-                    override fun onEditItemClick(item: UIDraft) {
-                        pbDrafts?.visibility = View.VISIBLE
-
-                        try {
-                            if (adapter?.mediaPlayer!!.isPlaying) {
-                                adapter?.mediaPlayer!!.stop()
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-
-                        //Go to record fragment to continue recording
-                        draftViewModel.uiDraft = item
-                        draftViewModel.filesArray.add(File(item.filePath))
-                        //draftViewModel.durationOfLastAudio = item.length!!
-
-                        val bundle = bundleOf("recordingItem" to draftViewModel.uiDraft)
-                        findNavController().navigate(
-                            R.id.action_record_drafts_to_record_edit,
-                            bundle
-                        )
-                    }
-                },
-
                 // This is deprecated, it's old code. This will never be called.
                 object : DraftAdapter.OnChangeNameClickListener {
                     override fun onNameChangedClick(item: UIDraft, position: Int, newName: String) {
@@ -351,11 +328,46 @@ class DraftsFragment : BaseFragment() {
                             bundle
                         )
                     }
+                },
+                object : DraftAdapter.OnMoreItemClickListener {
+                    override fun onMoreItemClick(position: Int, item: UIDraft) {
+                        showMoreDialog(position, item)
+                    }
                 }
             )
         }
         rvDrafts?.adapter = adapter
         rvDrafts?.setHasFixedSize(false)
+    }
+
+
+    private fun showMoreDialog(position: Int, draft: UIDraft) {
+        val bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialog)
+        val dialogView = layoutInflater.inflate(R.layout.sheet_more_draft, null)
+
+        bottomSheetDialog.setContentView(dialogView)
+        bottomSheetDialog.setCancelable(true)
+
+        dialogView.layoutChangeName.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            adapter?.changeNameClicked(draft, position)
+        }
+
+        dialogView.layoutDuplicateCast.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            adapter?.stopMediaPlayer()
+            adapter?.duplicateListener?.onDuplicateItemClick(position)
+        }
+
+        dialogView.layoutDeleteCast.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            adapter?.deleteClicked(position)
+        }
+
+        bottomSheetDialog.apply {
+            show()
+            window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
     }
 
     private fun getDuplicatedTitle(currentTitle: String?): String {
@@ -413,7 +425,7 @@ class DraftsFragment : BaseFragment() {
 
     private fun loadDrafts() {
         //Observer of LiveData ViewModel
-        draftViewModel.loadDraftRealm()?.observe(this, Observer<List<UIDraft>> {
+        draftViewModel.loadDraftRealm()?.observe(viewLifecycleOwner, Observer<List<UIDraft>> {
             draftsLocalList.clear()
             if (it.isNotEmpty()) {
                 it.map { uiRealmDraft ->
@@ -447,7 +459,7 @@ class DraftsFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it) {
                 toast(getString(R.string.draft_deleted))
             } else {
@@ -455,7 +467,7 @@ class DraftsFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
         output.errorMessage.observe(this, Observer {
@@ -471,7 +483,7 @@ class DraftsFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it) {
                 toast(getString(R.string.draft_inserted))
             } else {
@@ -479,7 +491,7 @@ class DraftsFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -491,6 +503,8 @@ class DraftsFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+        val act = requireActivity() as RecordActivity
+        act.initScreenBehaviour()
         pbDrafts?.visibility = View.VISIBLE
         getDraftsTrigger.onNext(Unit)
     }

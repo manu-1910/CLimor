@@ -25,7 +25,7 @@
       <action
           android:id="@+id/action_record_fragment_to_record_drafts"
           app:destination="@id/record_drafts"
-          app:enterAnim="@anim/push_up_in_enter_no_alpha"
+          app:enterAnim="@anim/no_anim"
           app:exitAnim="@anim/no_anim"
           app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha"/>
    </fragment>

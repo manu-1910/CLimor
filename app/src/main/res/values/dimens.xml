@@ -14,6 +14,7 @@
     <dimen name="marginVeryHuge">82dp</dimen>
     <dimen name="marginEleven">11dp</dimen>
     <dimen name="marginTwenty">20dp</dimen>
+    <dimen name="margin38">38dp</dimen>
 
 
     <!-- Text dimens -->

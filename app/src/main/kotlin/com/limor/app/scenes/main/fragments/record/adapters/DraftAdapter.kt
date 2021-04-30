@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.R
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UIDraft
+import com.zerobranch.layout.SwipeLayout
+import kotlinx.android.synthetic.main.fragment_drafts_item.view.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.layoutInflater
 import org.jetbrains.anko.okButton
@@ -31,10 +33,10 @@ class DraftAdapter(
     var list: ArrayList<UIDraft>,
     private val listener: OnItemClickListener,
     private val deleteListener: OnDeleteItemClickListener,
-    private val duplicateListener: OnDuplicateItemClickListener,
-    private val editListener: OnEditItemClickListener,
+    val duplicateListener: OnDuplicateItemClickListener,
     private val changeNameListener: OnChangeNameClickListener,
-    private val resumeListener: OnResumeItemClickListener
+    private val resumeListener: OnResumeItemClickListener,
+    private val moreListener: OnMoreItemClickListener
 ) : RecyclerView.Adapter<DraftAdapter.ViewHolder>() {
     private var lastVisiblePlayerLayout: LinearLayout? = null
     var inflator: LayoutInflater = LayoutInflater.from(context)
@@ -122,7 +124,7 @@ class DraftAdapter(
         }
 
         // itemClick listener
-        holder.itemView.setOnClickListener {
+        holder.itemView.llDraftItem.setOnClickListener {
             if (currentClickedItemPosition != position) {
                 currentClickedItemPosition = position
                 listener.onItemClick(currentDraft)
@@ -134,12 +136,15 @@ class DraftAdapter(
 
         // edit mode
         if (currentDraft.isEditMode!!) {
-            holder.ivDraftDelete.setImageResource(R.drawable.delete_symbol)
-            holder.ivDraftDelete.onClick {
+            holder.swipeLayout.isEnabledSwipe = true
+            holder.ivDraftDelete.setImageResource(R.drawable.ic_delete_draft)
+            /*holder.ivDraftDelete.onClick {
                 deleteClicked(position)
-            }
+            }*/
+            holder.ivDraftDelete.visibility = View.VISIBLE
         } else {
-            holder.ivDraftDelete.setImageResource(android.R.color.transparent)
+            holder.swipeLayout.isEnabledSwipe = false
+            holder.ivDraftDelete.visibility = View.INVISIBLE
         }
 
         // we have to calculate the duration of every item
@@ -194,13 +199,13 @@ class DraftAdapter(
 
         // Play, rewind and forward buttons style
         if (position == currentPlayingItemPosition && mediaPlayer.isPlaying) {
-            holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.pause))
+            holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pause))
 //            enableRewAndFwdButtons(holder.btnRew, holder.btnFfwd, true)
         } else if (position == currentPlayingItemPosition && !mediaPlayer.isPlaying && mediaPlayer.currentPosition > 0) {
-            holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
+            holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play))
 //            enableRewAndFwdButtons(holder.btnRew, holder.btnFfwd, true)
         } else {
-            holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
+            holder.btnPlay.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_play))
 //            enableRewAndFwdButtons(holder.btnRew, holder.btnFfwd, false)
         }
 
@@ -226,7 +231,7 @@ class DraftAdapter(
 
         // More button -> show options menu
         holder.btnMore.onClick {
-            showMorePopupMenu(holder, currentDraft, position)
+            moreListener.onMoreItemClick(position, currentDraft)
         }
 
 
@@ -237,6 +242,20 @@ class DraftAdapter(
             currentDraft.length = currentDurationInMillis.toLong()
             resumeListener.onResumeItemClick(position, currentDraft)
         }
+
+        holder.swipeLayout.setOnActionsListener(object : SwipeLayout.SwipeActionsListener {
+            override fun onOpen(direction: Int, isContinuous: Boolean) {
+                if (direction == SwipeLayout.LEFT) {
+                    deleteClicked(position)
+                    holder.swipeLayout.close()
+                }
+            }
+
+            override fun onClose() {
+
+            }
+        })
+
 
     }
 
@@ -266,7 +285,7 @@ class DraftAdapter(
         position: Int
     ) {
         try {
-            val nextPosition = holder.seekBar.progress - 30000
+            val nextPosition = holder.seekBar.progress - 5000
             holder.seekBar.progress = nextPosition
             if (currentPlayingItemPosition == position)
                 mediaPlayer.seekTo(nextPosition)
@@ -277,7 +296,7 @@ class DraftAdapter(
 
     private fun onForwardClicked(holder: ViewHolder, position: Int) {
         try {
-            var nextPosition = holder.seekBar.progress + 30000
+            var nextPosition = holder.seekBar.progress + 5000
             if (nextPosition > holder.seekBar.max)
                 nextPosition = holder.seekBar.max
             holder.seekBar.progress = nextPosition
@@ -287,38 +306,6 @@ class DraftAdapter(
         } catch (e: Exception) {
             Timber.d("mediaPlayer.seekTo forward overflow")
         }
-    }
-
-    private fun showMorePopupMenu(
-        holder: ViewHolder,
-        currentDraft: UIDraft,
-        position: Int
-    ) {
-        //creating a popup menu
-        val popup = PopupMenu(context, holder.btnMore)
-        //inflating menu from xml resource
-        popup.inflate(R.menu.menu_drafts_iems_adapter)
-        //adding click listener
-        popup.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.menu_duplicate_cast -> {
-                    stopMediaPlayer()
-                    duplicateListener.onDuplicateItemClick(position)
-                    true
-                }
-                R.id.menu_delete_cast -> {
-                    deleteClicked(position)
-                    true
-                }
-                R.id.menu_change_name_cast -> {
-                    changeNameClicked(currentDraft, position)
-                    true
-                }
-                else -> false
-            }
-        }
-        //displaying the popup
-        popup.show()
     }
 
     private fun onOtherDraftPlayClicked(
@@ -364,7 +351,7 @@ class DraftAdapter(
             currentBtnPlayPlaying?.setImageDrawable(
                 ContextCompat.getDrawable(
                     context,
-                    R.drawable.pause
+                    R.drawable.ic_pause
                 )
             )
 //            enableRewAndFwdButtons(true)
@@ -400,7 +387,12 @@ class DraftAdapter(
     }
 
     private fun onCompletionListener() {
-        currentBtnPlayPlaying?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.play))
+        currentBtnPlayPlaying?.setImageDrawable(
+            ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_play
+            )
+        )
         currentSeekbarPlaying?.progress = currentSeekbarPlaying?.max ?: mediaPlayer.duration
 //        enableRewAndFwdButtons(false)
         mediaPlayer.pause()
@@ -422,7 +414,7 @@ class DraftAdapter(
             currentBtnPlayPlaying?.setImageDrawable(
                 ContextCompat.getDrawable(
                     context,
-                    R.drawable.play
+                    R.drawable.ic_play
                 )
             )
 //            enableRewAndFwdButtons(false)
@@ -437,7 +429,7 @@ class DraftAdapter(
             currentBtnPlayPlaying?.setImageDrawable(
                 ContextCompat.getDrawable(
                     context,
-                    R.drawable.pause
+                    R.drawable.ic_pause
                 )
             )
 //            enableRewAndFwdButtons(true)
@@ -450,7 +442,7 @@ class DraftAdapter(
     }
 
 
-    private fun stopMediaPlayer() {
+    fun stopMediaPlayer() {
         try {
             if (mediaPlayer.isPlaying) {
                 mediaPlayer.stop()
@@ -460,7 +452,7 @@ class DraftAdapter(
         }
     }
 
-    private fun deleteClicked(position: Int) {
+    fun deleteClicked(position: Int) {
         stopMediaPlayer()
         if (position == currentPlayingItemPosition) {
             currentPlayingItemPosition = -1
@@ -471,7 +463,7 @@ class DraftAdapter(
         deleteListener.onDeleteItemClick(position)
     }
 
-    private fun changeNameClicked(currentDraft: UIDraft, position: Int) {
+    fun changeNameClicked(currentDraft: UIDraft, position: Int) {
         showSaveDraftAlert(currentDraft.title) { newName ->
             changeNameListener.onNameChangedClick(currentDraft, position, newName)
         }
@@ -531,11 +523,9 @@ class DraftAdapter(
         var playerLayout: LinearLayout = itemView.findViewById(R.id.itemPlayer) as LinearLayout
         var btnMore: ImageButton = itemView.findViewById<View>(R.id.btnMore) as ImageButton
         var tvResumeItem: TextView = itemView.findViewById<View>(R.id.tvResumeRecording) as TextView
-    }
+        var swipeLayout: SwipeLayout =
+            itemView.findViewById<SwipeLayout>(R.id.swipeLayout) as SwipeLayout
 
-    @Deprecated("In the new version of the app, you cannot go from a draft to edit directly, so this listener will never be triggered")
-    interface OnEditItemClickListener {
-        fun onEditItemClick(item: UIDraft)
     }
 
     interface OnItemClickListener {
@@ -560,6 +550,10 @@ class DraftAdapter(
 
     interface OnResumeItemClickListener {
         fun onResumeItemClick(position: Int, item: UIDraft)
+    }
+
+    interface OnMoreItemClickListener {
+        fun onMoreItemClick(position: Int, item: UIDraft)
     }
 
 

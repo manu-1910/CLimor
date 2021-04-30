@@ -45,11 +45,11 @@
             android:layout_height="?attr/actionBarSize"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="@dimen/marginSmall"
-            android:fontFamily="@font/roboto"
             android:gravity="center_vertical"
             android:textAllCaps="false"
-            android:textColor="@color/brandPrimary500"
-            android:textSize="@dimen/textSizeNormal"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/textSize16"
             android:visibility="gone" />
 
     </RelativeLayout>
