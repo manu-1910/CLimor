@@ -51,7 +51,9 @@ import com.limor.app.scenes.utils.VisualizerView
 import com.limor.app.scenes.utils.location.MyLocation
 import com.limor.app.uimodels.UIDraft
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.dialog_cancel_draft.view.*
 import kotlinx.android.synthetic.main.fragment_record.*
+import kotlinx.android.synthetic.main.sheet_more_draft.view.*
 import kotlinx.android.synthetic.main.toolbar_default.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -257,69 +259,73 @@ class RecordFragment : BaseFragment() {
 
                 // if we are here, this means that we are in this fragment because we come from
                 // another fragment that sent us some draft to continue recording it
-            } else {
+            } else showCancelDraftDialog()
+        }
+    }
 
-                alert(getString(R.string.do_you_want_to_save_changes)) {
+    private fun showCancelDraftDialog() {
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_cancel_draft, null)
 
-                    // NOTE: don't keep in mind if buttons are positive, negative or neutral, any of them
-                    //  do different actions that aren't either positive or negative or so. I just
-                    //  choose those actions to get the order on screen that I wanted.
-                    //  I insist, they are neither positive or negative, they just simply do different actions
+        dialogBuilder.setView(dialogView)
+        dialogBuilder.setCancelable(true)
+        val dialog: AlertDialog = dialogBuilder.create()
 
-
-                    // OVERWRITE
-                    positiveButton(getString(R.string.overwrite)) {
-
-                        val resultStop = stopAudio()
-                        if (!resultStop) {
-                            alert(getString(R.string.error_stopping_audio)) { okButton { } }
-                            return@positiveButton
-                        }
-
-                        mergeFilesIfNecessary {
-                            uiDraft?.title = uiDraft?.draftParent?.title
-                            val parentToDelete = uiDraft?.draftParent?.copy()
-                            uiDraft?.draftParent =
-                                null // this is necessary because if we don't do it
-                            // then when we retreive it from realm we may think that
-                            // this is still a children draft and it may not
-                            insertDraftInRealm(uiDraft!!)
-                            if (parentToDelete != null)
-                                deleteDraftInRealm(parentToDelete)
-                            activity?.finish()
-                        }
-                    }
-
-                    // SAVE AS NEW
-                    negativeButton(getString(R.string.save_as_new_draft)) {
-
-                        val resultStop = stopAudio()
-                        if (!resultStop) {
-                            alert(getString(R.string.error_stopping_audio)) { okButton { } }
-                            return@negativeButton
-                        }
-
-                        showSaveDraftAlert { title ->
-                            mergeFilesIfNecessary {
-                                uiDraft?.title = title
-                                uiDraft?.draftParent =
-                                    null // this is necessary because if we don't do it
-                                // then when we retreive it from realm we may think that
-                                // this is still a children draft and it may not
-                                insertDraftInRealm(uiDraft!!)
-                                activity?.finish()
-                            }
-                        }
-                    }
-
-                    // DISCARD
-                    neutralPressed(getString(R.string.discard)) {
-                        deleteDraftInRealm(uiDraft!!)
-                        activity?.finish()
-                    }
-                }.show()
-
+        dialogView.overwriteButton.setOnClickListener {
+            dialog.dismiss()
+            val resultStop = stopAudio()
+            if (!resultStop) {
+                alert(getString(R.string.error_stopping_audio)) { okButton { } }
+                return@setOnClickListener
             }
+
+            mergeFilesIfNecessary {
+                uiDraft?.title = uiDraft?.draftParent?.title
+                val parentToDelete = uiDraft?.draftParent?.copy()
+                uiDraft?.draftParent =
+                    null // this is necessary because if we don't do it
+                // then when we retreive it from realm we may think that
+                // this is still a children draft and it may not
+                insertDraftInRealm(uiDraft!!)
+                if (parentToDelete != null)
+                    deleteDraftInRealm(parentToDelete)
+                activity?.finish()
+            }
+        }
+
+        dialogView.saveButton.setOnClickListener {
+            dialog.dismiss()
+            val resultStop = stopAudio()
+            if (!resultStop) {
+                alert(getString(R.string.error_stopping_audio)) { okButton { } }
+                return@setOnClickListener
+            }
+
+            showSaveDraftAlert { title ->
+                mergeFilesIfNecessary {
+                    uiDraft?.title = title
+                    uiDraft?.draftParent =
+                        null // this is necessary because if we don't do it
+                    // then when we retreive it from realm we may think that
+                    // this is still a children draft and it may not
+                    insertDraftInRealm(uiDraft!!)
+                    activity?.finish()
+                }
+            }
+        }
+
+        dialogView.discardButton.setOnClickListener {
+            dialog.dismiss()
+            deleteDraftInRealm(uiDraft!!)
+            activity?.finish()
+        }
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset)
+            show()
         }
     }
 

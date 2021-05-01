@@ -143,6 +143,8 @@
     <string name="all_fields_mandatory">All fields are mandatory</string>
     <string name="passwords_not_match">The passwords you entered does not match</string>
     <string name="delete_draft">Delete Draft</string>
+    <string name="cancel_draft">Cancel Draft</string>
+
 
     <!-- Menu Marker -->
     <string name="menu_copy">Copy</string>
@@ -418,6 +420,7 @@
     <string name="confirmation_with_changes">What do you want to do with the current changes?</string>
     <string name="keep">Keep</string>
     <string name="discard">Discard</string>
+    <string name="dont_save">Don\'t Save</string>
     <string name="error_converting_audio">Error converting your audio</string>
     <string name="error_stopping_audio">Error stopping your audio</string>
     <string name="resume">Resume</string>
@@ -425,8 +428,8 @@
     <string name="recording_starts_in">Recording\nstarts in</string>
     <string name="do_you_want_to_save_changes">Do you want to save the current changes?</string>
     <string name="save">Save</string>
-    <string name="save_as_new_draft">Save as a new draft</string>
-    <string name="overwrite">Overwrite</string>
+    <string name="save_as_new_draft">Save as New Draft</string>
+    <string name="overwrite">Overwrite Draft</string>
     <string name="error_copying_file">There was an error trying to copy this file</string>
     <string name="file_doesnt_exist">Error, the file that we received from the previous fragment doesn\'t exist</string>
     <string name="file_not_received">Error, we didn\'t receive any audio from the previous fragment</string>
@@ -494,4 +497,6 @@
     <string name="hint_tags">Tags here</string>
     <string name="continue_text">Continue</string>
     <string name="btn_yes">Yes</string>
+    <string name="what_do_you_want_to_do">What you want to do with your cast?</string>
+
 </resources>
