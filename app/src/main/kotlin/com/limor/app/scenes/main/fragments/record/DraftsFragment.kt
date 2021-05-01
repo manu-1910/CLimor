@@ -1,8 +1,10 @@
 package com.limor.app.scenes.main.fragments.record
 
 
+import android.app.AlertDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -33,7 +35,6 @@ import com.limor.app.uimodels.UIDraft
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_drafts_empty_scenario.*
 import kotlinx.android.synthetic.main.sheet_more_draft.view.*
-import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -210,37 +211,7 @@ class DraftsFragment : BaseFragment() {
                 },
                 object : DraftAdapter.OnDeleteItemClickListener {
                     override fun onDeleteItemClick(position: Int) {
-                        alert(getString(R.string.confirmation_delete_draft)) {
-                            okButton {
-                                pbDrafts?.visibility = View.VISIBLE
-
-                                try {
-                                    if (adapter?.mediaPlayer!!.isPlaying) {
-                                        adapter?.mediaPlayer!!.stop()
-                                    }
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                }
-
-                                draftViewModel.uiDraft = draftsLocalList[position]
-                                deleteDraftsTrigger.onNext(Unit)
-
-                                //Remove the audio file from the folder
-                                try {
-                                    val file = File(draftsLocalList[position].filePath)
-                                    file.delete()
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                }
-                                //Remove item from the list
-                                draftsLocalList.removeAt(position)
-
-                                //rvDrafts?.adapter?.notifyItemRemoved(position)
-                                rvDrafts?.adapter?.notifyDataSetChanged()
-                                //rvDrafts?.adapter?.notifyItemRangeChanged(0, draftsLocalList.size)
-                            }
-                            cancelButton { }
-                        }.show()
+                        showDeleteDialog(position)
                     }
                 },
                 object : DraftAdapter.OnDuplicateItemClickListener {
@@ -338,6 +309,58 @@ class DraftsFragment : BaseFragment() {
         }
         rvDrafts?.adapter = adapter
         rvDrafts?.setHasFixedSize(false)
+    }
+
+    private fun showDeleteDialog(position: Int) {
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.dialog_delete_cast, null)
+        val positiveButton = dialogLayout.findViewById<Button>(R.id.yesButton)
+        val cancelButton = dialogLayout.findViewById<Button>(R.id.cancelButton)
+
+        dialogBuilder.setView(dialogLayout)
+        dialogBuilder.setCancelable(false)
+        val dialog: AlertDialog = dialogBuilder.create()
+
+        positiveButton.onClick {
+            pbDrafts?.visibility = View.VISIBLE
+
+            try {
+                if (adapter?.mediaPlayer!!.isPlaying) {
+                    adapter?.mediaPlayer!!.stop()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            draftViewModel.uiDraft = draftsLocalList[position]
+            deleteDraftsTrigger.onNext(Unit)
+
+            //Remove the audio file from the folder
+            try {
+                val file = File(draftsLocalList[position].filePath)
+                file.delete()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            //Remove item from the list
+            draftsLocalList.removeAt(position)
+            //rvDrafts?.adapter?.notifyItemRemoved(position)
+            rvDrafts?.adapter?.notifyDataSetChanged()
+            //rvDrafts?.adapter?.notifyItemRangeChanged(0, draftsLocalList.size)
+            dialog.dismiss()
+        }
+
+        cancelButton.onClick {
+            dialog.dismiss()
+        }
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset);
+            show()
+        }
     }
 
 

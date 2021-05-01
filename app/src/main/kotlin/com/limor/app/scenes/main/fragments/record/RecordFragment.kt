@@ -171,7 +171,7 @@ class RecordFragment : BaseFragment() {
                 // this means that we come from drafts list fragment, so we have to create a new autosave
                 // draft and assign the parent as the uiDraft received from this fragment
                 if (!it.isNewRecording) {
-
+                    Timber.d("From drafts")
                     uiDraft = it.copy()
                     uiDraft?.id = System.currentTimeMillis()
                     uiDraft?.title = getString(R.string.autosave)
