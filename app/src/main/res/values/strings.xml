@@ -63,6 +63,7 @@
     <string name="save_draft_dialog_title">Save as Draft</string>
     <string name="save_draft_dialog_descr">Give your draft a name.</string>
     <string name="save_draft_dialog_hint_name">New Cast</string>
+    <string name="draft_hint">Draft Name</string>
 
 
     <!-- Publish Screen -->

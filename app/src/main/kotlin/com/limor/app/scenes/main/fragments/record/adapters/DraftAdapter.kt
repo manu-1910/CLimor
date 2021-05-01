@@ -2,6 +2,9 @@ package com.limor.app.scenes.main.fragments.record.adapters
 
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
@@ -15,6 +18,7 @@ import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.textfield.TextInputEditText
 import com.limor.app.R
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UIDraft
@@ -475,15 +479,18 @@ class DraftAdapter(
     ) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = context.layoutInflater
-        dialogBuilder.setTitle(context.getString(R.string.edit_draft_title_dialog_title))
+
         val dialogLayout = inflater.inflate(R.layout.dialog_with_edittext, null)
         val positiveButton = dialogLayout.findViewById<Button>(R.id.saveButton)
         val cancelButton = dialogLayout.findViewById<Button>(R.id.cancelButton)
-        val editText = dialogLayout.findViewById<EditText>(R.id.editText)
+        val editText = dialogLayout.findViewById<TextInputEditText>(R.id.editText)
+        val titleText = dialogLayout.findViewById<TextView>(R.id.textTitle)
+
+        titleText.text = context.getString(R.string.edit_draft_title_dialog_title)
         editText.setText(currentName)
         dialogBuilder.setView(dialogLayout)
         dialogBuilder.setCancelable(false)
-        val dialog: AlertDialog = dialogBuilder.show()
+        val dialog: AlertDialog = dialogBuilder.create()
 
         positiveButton.onClick {
             onPositiveClicked(editText.text.toString())
@@ -506,6 +513,13 @@ class DraftAdapter(
                 positiveButton.isEnabled = !p0.isNullOrEmpty()
             }
         })
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset);
+            show()
+        }
     }
 
 
