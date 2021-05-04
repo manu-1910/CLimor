@@ -1,6 +1,7 @@
 package com.limor.app.scenes.auth_new
 
 import android.content.res.AssetManager
+import android.os.Handler
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -89,13 +90,57 @@ class AuthViewModelNew : ViewModel() {
             PhoneNumberChecker.getFormattedNumber(currentPhone, currentCountry.codeLetters) ?: ""
 
     /* PHONE sms code */
+
     private val _smsCodeIsFullLiveData = MutableLiveData<Boolean>().apply { value = false }
 
     val smsCodeIsFullLiveData: LiveData<Boolean>
         get() = _smsCodeIsFullLiveData
 
     fun setSmsCodeForCheck(codes: List<String?>) {
+        _smsCodeValidationErrorMessageLiveData.postValue("")
         val value = codes.all { it?.isNotEmpty() ?: false }
         _smsCodeIsFullLiveData.postValue(value)
+    }
+
+    private val _smsCodeValidationErrorMessageLiveData =
+        MutableLiveData<String>().apply { value = "" }
+
+    val smsCodeValidationErrorMessageLiveData: LiveData<String>
+        get() = _smsCodeValidationErrorMessageLiveData
+
+    private val _smsCodeValidatedLiveData = MutableLiveData<Boolean>().apply { value = false }
+
+    val smsCodeValidatedLiveData: LiveData<Boolean>
+        get() = _smsCodeValidatedLiveData
+
+    fun submitSmsCode(codes: List<String?>) {
+//        val value = codes.all { it?.isNotEmpty() ?: false }
+        _smsCodeValidationErrorMessageLiveData.postValue("")
+        _smsCodeValidatedLiveData.postValue(true)
+        Handler().postDelayed({ _smsCodeValidatedLiveData.postValue(false) }, 500)
+    }
+
+    /* Email validation*/
+
+    var currentEmail: String = ""
+        private set
+
+
+    fun changeCurrentEmail(email: String?) {
+        currentEmail = email?.trim() ?: ""
+        _currentEmailIsValid.postValue(isEmailValid(currentEmail))
+    }
+
+    private val _currentEmailIsValid = MutableLiveData<Boolean>().apply { value = false }
+
+    val currentEmailIsValidLiveData: LiveData<Boolean>
+        get() = _currentEmailIsValid
+
+
+    companion object{
+        fun isEmailValid(email: String?): Boolean {
+            if(email== null || email.isEmpty()) return false
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        }
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/clMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -45,13 +46,11 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/etPhoneCode"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        style="@style/TextInputLayoutOutlineDropdownWithError"
         android:layout_width="108dp"
         android:layout_height="56dp"
         android:layout_marginStart="24dp"
         android:paddingEnd="0dp"
-        app:boxStrokeColor="@color/text_edit_outline_color"
-        app:endIconTint="@color/subtitle_text_color"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/etEnterPhone">
 
@@ -70,18 +69,15 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/etEnterPhone"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/TextInputLayoutOutlineWithError"
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:hint="@string/enter_phone_hint"
-        app:boxStrokeColor="@color/text_edit_outline_color"
         app:endIconDrawable="@drawable/baseline_cancel_black_24dp"
         app:endIconMode="clear_text"
-        app:endIconTint="@color/brandSecondary100"
-        app:hintTextColor="@color/subtitle_text_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/etPhoneCode"
         app:layout_constraintTop_toBottomOf="@+id/textView8">
@@ -175,6 +171,19 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView14" />
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/already_in_use"
+        android:textColor="@color/error_stroke_color"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@+id/etEnterPhone"
+        app:layout_constraintTop_toBottomOf="@+id/etEnterPhone"
+        tools:visibility="visible" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

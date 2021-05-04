@@ -111,23 +111,27 @@
     <color name="miniplayer_transparent_overlay">#4D000000</color>
 
 
-
     <!-- ImagePicker colors  -->
-    <color tools:override="true" name="ucrop_color_toolbar">@color/colorPrimary</color>
-    <color tools:override="true" name="ucrop_color_statusbar">@color/colorPrimary</color>
-    <color tools:override="true" name="ucrop_color_widget_active">@color/colorAccent</color>
-    <color tools:override="true" name="ucrop_color_">@color/colorAccent</color>
+    <color name="ucrop_color_toolbar" tools:override="true">@color/colorPrimary</color>
+    <color name="ucrop_color_statusbar" tools:override="true">@color/colorPrimary</color>
+    <color name="ucrop_color_widget_active" tools:override="true">@color/colorAccent</color>
+    <color name="ucrop_color_" tools:override="true">@color/colorAccent</color>
 
-    <color tools:override="true" name="ucrop_color_toolbar_widget">@color/white</color>
+    <color name="ucrop_color_toolbar_widget" tools:override="true">@color/white</color>
 
-    <color tools:override="true" name="ucrop_color_active_controls_color">@color/colorAccent</color>
-    <color tools:override="true" name="ucrop_color_widget_rotate_mid_line">@color/colorAccent</color>
-    <color tools:override="true" name="ucrop_color_widget_background">@color/brandSecondary500</color>
+    <color name="ucrop_color_active_controls_color" tools:override="true">@color/colorAccent</color>
+    <color name="ucrop_color_widget_rotate_mid_line" tools:override="true">@color/colorAccent
+    </color>
+    <color name="ucrop_color_widget_background" tools:override="true">@color/brandSecondary500
+    </color>
 
     <color name="border_discover_chip">#6F6F6F</color>
     <color name="discover_transparent_overlay">#9a000000</color>
 
     <color name="subtitle_text_color">#91A2B2</color>
-    <color name="sign_in_new_background">#F0F3F8</color>
+    <color name="end_icon_tint">#91A2B2</color>
+    <color name="sign_in_new_background">#FBFCFF</color>
+    <color name="sign_in_stroke_color">#ECEEF4</color>
+    <color name="error_stroke_color">#FF5A4E</color>
 
 </resources>

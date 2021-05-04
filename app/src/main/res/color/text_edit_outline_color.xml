@@ -4,5 +4,5 @@
     <item android:color="?attr/colorPrimary" android:state_focused="true"/>
     <item android:alpha="0.87" android:color="?attr/colorOnSurface" android:state_hovered="true"/>
     <item android:alpha="0.12" android:color="?attr/colorOnSurface" android:state_enabled="false"/>
-    <item android:alpha="0.2" android:color="?attr/colorOnSurface"/>
+    <item android:alpha="1" android:color="@color/sign_in_stroke_color"/>
 </selector>

@@ -512,4 +512,7 @@
     <string name="change_number"><u>Change Number</u></string>
     <string name="didnt_receive_sms_code">Didn’t get the code? Resend it</string>
     <string name="wrong_code">Wrong code. Please try again!</string>
+    <string name="enter_email_to_continue">Enter your email address to continue</string>
+    <string name="enter_email_hint">Enter Email Address</string>
+    <string name="already_in_use">Already in use.</string>
 </resources>

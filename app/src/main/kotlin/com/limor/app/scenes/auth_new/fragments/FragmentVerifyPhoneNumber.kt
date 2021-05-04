@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
+import com.google.android.material.textfield.TextInputLayout
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.AuthViewModelNew
@@ -19,7 +20,7 @@ import kotlinx.android.synthetic.main.fragment_new_auth_phone_code.*
 
 class FragmentVerifyPhoneNumber : Fragment() {
     private val model: AuthViewModelNew by activityViewModels()
-    private val smsCodeEtList = mutableListOf<EditText>()
+    private val smsCodeEtList = mutableListOf<TextInputLayout>()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,25 +38,25 @@ class FragmentVerifyPhoneNumber : Fragment() {
     }
 
     private fun createSmsCodeFieldsList() {
-        smsCodeEtList.add(etSms1.editText!!)
-        smsCodeEtList.add(etSms2.editText!!)
-        smsCodeEtList.add(etSms3.editText!!)
-        smsCodeEtList.add(etSms4.editText!!)
-        smsCodeEtList.add(etSms5.editText!!)
-        smsCodeEtList.add(etSms6.editText!!)
+        smsCodeEtList.add(etSms1)
+        smsCodeEtList.add(etSms2)
+        smsCodeEtList.add(etSms3)
+        smsCodeEtList.add(etSms4)
+        smsCodeEtList.add(etSms5)
+        smsCodeEtList.add(etSms6)
     }
 
     private fun setTextChangeListeners() {
         for (et in smsCodeEtList) {
             val currentIndex = smsCodeEtList.indexOf(et)
-            setOnTextChangedListener(et, currentIndex)
-            setOnDoneActionClicked(et, currentIndex)
+            setOnTextChangedListener(et.editText!!, currentIndex)
+            setOnDoneActionClicked(et.editText!!, currentIndex)
         }
     }
 
     private fun setOnTextChangedListener(et: EditText, currentIndex: Int) {
         et.doOnTextChanged { inputText, _, _, _ ->
-            model.setSmsCodeForCheck(smsCodeEtList.map { it.text?.toString() })
+            model.setSmsCodeForCheck(smsCodesList())
 
             if (inputText?.isNotEmpty() ?: false) {
                 //user entered symbol
@@ -68,11 +69,14 @@ class FragmentVerifyPhoneNumber : Fragment() {
         }
     }
 
+    private fun smsCodesList(): List<String?> = smsCodeEtList.map { it.editText!!.text?.toString() }
+
     private fun setOnDoneActionClicked(et: EditText, currentIndex: Int) {
         et.setOnEditorActionListener { textView, actionId, keyEvent ->
             when (actionId and EditorInfo.IME_MASK_ACTION) {
                 EditorInfo.IME_ACTION_DONE -> {
-                    validateSmsCode()
+                    if (model.smsCodeIsFullLiveData.value == true)
+                        validateSmsCode()
                 }
 
                 EditorInfo.IME_ACTION_NEXT -> {
@@ -94,8 +98,9 @@ class FragmentVerifyPhoneNumber : Fragment() {
             validateSmsCode()
         }
     }
-    private fun validateSmsCode(){
-        //TODO validateSmsCode
+
+    private fun validateSmsCode() {
+        model.submitSmsCode(smsCodesList())
     }
 
     private fun subscribeToViewModel() {
@@ -103,5 +108,25 @@ class FragmentVerifyPhoneNumber : Fragment() {
         model.smsCodeIsFullLiveData.observe(viewLifecycleOwner, Observer {
             btnContinue.isEnabled = it
         })
+
+        model.smsCodeValidationErrorMessageLiveData.observe(viewLifecycleOwner, Observer {
+            val hasError = it.isNotEmpty()
+            btnContinue.isEnabled = !hasError
+            tvWrongCode.visibility = if (hasError) View.VISIBLE else View.GONE
+            smsCodeEtList.forEach { et ->
+                et.error = if (hasError) it else null
+                et.editText!!.setTextColor(
+                    resources
+                        .getColor(if (hasError) R.color.error_stroke_color else R.color.black)
+                )
+            }
+        })
+
+        model.smsCodeValidatedLiveData.observe(viewLifecycleOwner, Observer {
+            if (it)
+                clMain.findNavController()
+                    .navigate(R.id.action_fragment_new_auth_phone_code_to_fragment_new_auth_enter_email)
+        })
+
     }
 }
