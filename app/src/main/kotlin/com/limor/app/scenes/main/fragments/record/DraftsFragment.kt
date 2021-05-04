@@ -40,7 +40,10 @@ import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 class DraftsFragment : BaseFragment() {
@@ -447,14 +450,19 @@ class DraftsFragment : BaseFragment() {
 
 
     private fun loadDrafts() {
+        val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         //Observer of LiveData ViewModel
         draftViewModel.loadDraftRealm()?.observe(viewLifecycleOwner, Observer<List<UIDraft>> {
             draftsLocalList.clear()
             if (it.isNotEmpty()) {
-                it.map { uiRealmDraft ->
-                    pbDrafts?.visibility = View.GONE
-                    draftsLocalList.add(uiRealmDraft)
+                it.sortedByDescending { draft ->
+                    CommonsKt.getDateFromString(draft.date!!)
                 }
+                    .map { uiRealmDraft ->
+                        pbDrafts?.visibility = View.GONE
+
+                        draftsLocalList.add(uiRealmDraft)
+                    }
 
                 //Continue editing
                 if (btnEditToolbarUpdate?.text!!.trim() == getString(R.string.btnDone)) {
