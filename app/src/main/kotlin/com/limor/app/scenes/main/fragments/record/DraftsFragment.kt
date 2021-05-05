@@ -105,7 +105,7 @@ class DraftsFragment : BaseFragment() {
     }
 
     private fun listeners() {
-        tvRecordACast?.onClick {
+        btnRecordCast?.onClick {
             findNavController().popBackStack()
         }
     }

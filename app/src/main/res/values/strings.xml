@@ -175,11 +175,12 @@
     <string name="draft_not_updated">Draft NOT updated</string>
     <string name="draft_not_updated_error">There was an error updating the draft</string>
     <string name="no_drafts_saved_title">There is no saved drafts</string>
-    <string name="no_drafts_saved_description">You can record and save a Cast as a Draft before publishing. </string>
+    <string name="no_drafts_saved_description">Currently you don’t have any draft. You can record and save a cast as a draft</string>
     <string name="btnDone">Done</string>
     <string name="menu_delete_cast">Delete cast</string>
     <string name="menu_duplicate_cast">Duplicate cast</string>
     <string name="menu_continue_recording_cast">Continue recording this cast</string>
+    <string name="no_drafts_title">No Drafts</string>
 
 
 

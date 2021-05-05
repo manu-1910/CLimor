@@ -16,6 +16,7 @@
     <dimen name="marginTwenty">20dp</dimen>
     <dimen name="margin38">38dp</dimen>
     <dimen name="margin32">32dp</dimen>
+    <dimen name="marginForty">40dp</dimen>
 
 
     <!-- Text dimens -->
