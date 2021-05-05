@@ -10,9 +10,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.limor.app.R
+import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import kotlinx.android.synthetic.main.fragment_new_auth_enter_email.*
-
 
 class FragmentEnterEmail : Fragment() {
 
@@ -28,7 +28,15 @@ class FragmentEnterEmail : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setOnClickListeners()
+        setEditTextChangedListeners()
+        subscribeToViewModel()
+    }
+
+    private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
+            it.findNavController()
+                .navigate(R.id.action_fragment_new_auth_enter_email_to_fragment_new_auth_enter_username)
         }
 
         btnBack.setOnClickListener {
@@ -39,11 +47,16 @@ class FragmentEnterEmail : Fragment() {
             model.changeCurrentEmail("")
             etEnterEmail.editText?.setText("")
         }
+        clMain.setOnClickListener {
+            clMain.requestFocus()
+        }
+        clMain.onFocusChangeListener = AuthActivityNew.onFocusChangeListener()
+    }
 
+    private fun setEditTextChangedListeners() {
         etEnterEmail.requestFocus()
-        etEnterEmail.editText?.setText(model.currentEmail )
+        etEnterEmail.editText?.setText(model.currentEmail)
         etEnterEmail.editText?.doAfterTextChanged { model.changeCurrentEmail(it?.toString()) }
-        subscribeToViewModel()
     }
 
     private fun subscribeToViewModel() {

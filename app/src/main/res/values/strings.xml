@@ -515,4 +515,8 @@
     <string name="enter_email_to_continue">Enter your email address to continue</string>
     <string name="enter_email_hint">Enter Email Address</string>
     <string name="already_in_use">Already in use.</string>
+    <string name="enter_unique_username">Enter an unique username that people can find you easily</string>
+    <string name="enter_username_hint">Enter Username</string>
+    <string name="username_already_in_use">Already in use. Still you can use,</string>
+    <string name="you_are_good_to_go">You’re good to go</string>
 </resources>

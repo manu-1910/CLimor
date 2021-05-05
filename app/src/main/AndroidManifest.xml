@@ -209,7 +209,8 @@
         <service android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"/>
 
         <activity android:name=".scenes.auth_new.AuthActivityNew"
-            android:theme="@style/MaterialMainTheme.FullScreen" />
+            android:screenOrientation="portrait"
+            android:theme="@style/MaterialMainTheme.FullScreen"/>
 
     </application>
 

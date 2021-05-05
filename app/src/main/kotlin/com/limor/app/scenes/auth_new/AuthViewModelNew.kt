@@ -5,13 +5,16 @@ import android.os.Handler
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.limor.app.scenes.auth_new.data.Country
+import com.limor.app.scenes.auth_new.data.UserNameStateBundle
 import com.limor.app.scenes.auth_new.model.CountriesListProvider
 import com.limor.app.scenes.auth_new.util.DobPicker
 import com.limor.app.scenes.auth_new.util.PhoneNumberChecker
 import com.limor.app.scenes.utils.BACKGROUND
 import timber.log.Timber
+import kotlin.random.Random
 
 class AuthViewModelNew : ViewModel() {
 
@@ -137,10 +140,52 @@ class AuthViewModelNew : ViewModel() {
         get() = _currentEmailIsValid
 
 
-    companion object{
+    companion object {
         fun isEmailValid(email: String?): Boolean {
-            if(email== null || email.isEmpty()) return false
+            if (email == null || email.isEmpty()) return false
             return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
         }
     }
+
+    /* Username validation*/
+
+    var currentUsername: String = ""
+        private set
+
+    fun changeCurrentUserName(userName: String?, fromVariant: Boolean = false) {
+        currentUsername = userName?.trim() ?: ""
+        val action =
+            if (fromVariant) UserNameStateBundle.Approved() else UserNameStateBundle.Editing()
+        _currentUsernameState.postValue(action)
+        _currentUsernameIsValid.postValue(currentUsername.length > 3)
+    }
+
+    private val _currentUsernameIsValid = MutableLiveData<Boolean>().apply { value = false }
+
+    val currentUsernameIsValid: LiveData<Boolean>
+        get() = _currentUsernameIsValid
+
+    private val _currentUsernameState =
+        MutableLiveData<UserNameStateBundle>().apply { value = UserNameStateBundle.Editing() }
+
+    val currentUsernameState: LiveData<UserNameStateBundle>
+        get() = Transformations.distinctUntilChanged(_currentUsernameState)
+
+    fun submitUsername(username: String?) {
+        if (currentUsernameState.value?.approved!!) {
+            _navigationFromUsernameScreenAllowed.postValue(true)
+            Handler().postDelayed({ _navigationFromUsernameScreenAllowed.postValue(false) }, 500)
+            return
+        }
+        val variants = List(5) {
+            username + Random.nextInt(0, 100)
+        }
+        _currentUsernameState.postValue(UserNameStateBundle.Error(variants))
+    }
+
+    private val _navigationFromUsernameScreenAllowed =
+        MutableLiveData<Boolean>().apply { value = false }
+
+    val navigationFromUsernameScreenAllowed: LiveData<Boolean>
+        get() = _navigationFromUsernameScreenAllowed
 }

@@ -19,7 +19,7 @@ def versions = [:]
 //Google
 versions.support = "1.0.0"
 versions.supportv4 = "1.0.0-beta01"
-versions.support_livedata = "2.0.0"
+versions.support_livedata = "2.1.0"
 versions.support_work = "1.0.0-rc01"
 versions.material = "1.0.0"
 versions.multidex = "2.0.0"

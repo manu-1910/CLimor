@@ -15,6 +15,7 @@ import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.AuthActivityNew
+import com.limor.app.scenes.auth_new.AuthActivityNew.Companion.onFocusChangeListener
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.Country
 import com.limor.app.scenes.auth_new.util.AfterTextWatcher
@@ -71,13 +72,6 @@ class FragmentSignEnterPhone : Fragment() {
         clMain.onFocusChangeListener = onFocusChangeListener()
         etPhoneCode.editText?.onFocusChangeListener = onFocusChangeListener()
 
-    }
-
-    private fun onFocusChangeListener(): View.OnFocusChangeListener {
-        return View.OnFocusChangeListener { v, hasFocus ->
-            if (hasFocus)
-                v.hideKeyboard()
-        }
     }
 
     private fun subscribeToViewModel() {
