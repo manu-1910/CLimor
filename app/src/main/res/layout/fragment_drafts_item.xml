@@ -179,7 +179,7 @@
                     android:layout_toStartOf="@id/ibPlayPause"
                     android:contentDescription="@string/rewind"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/rewind_5" />
+                    android:src="@drawable/rewind_button" />
 
                 <ImageButton
                     android:id="@+id/ibPlayPause"
@@ -202,7 +202,7 @@
                     android:layout_toEndOf="@id/ibPlayPause"
                     android:contentDescription="@string/ffwd"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/forward_5" />
+                    android:src="@drawable/forward_button" />
 
                 <TextView
                     android:id="@+id/tvResumeRecording"

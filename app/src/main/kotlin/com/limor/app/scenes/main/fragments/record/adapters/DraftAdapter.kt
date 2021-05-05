@@ -74,6 +74,11 @@ class DraftAdapter(
                         currentSeekbarPlaying?.let { seekBar ->
 //                            Timber.tag(TAG).d("We are updating the seekbar $seekBar")
                             seekBar.progress = currentPosition
+                            updateRewFwdButtons(
+                                currentBtnRwdPlaying!!,
+                                currentBtnFwdPlaying!!,
+                                seekBar
+                            )
                         }
                         currentTvPassPlaying?.let { tvPass ->
 //                            Timber.tag(TAG).d("We are updating the tv $tvPass")
@@ -221,7 +226,7 @@ class DraftAdapter(
                 onOtherDraftPlayClicked(holder, position)
             }
         }
-
+        updateRewFwdButtons(holder.btnRew, holder.btnFfwd, holder.seekBar)
         // Forward button
         holder.btnFfwd.onClick {
             onForwardClicked(holder, position)
@@ -263,6 +268,12 @@ class DraftAdapter(
 
     }
 
+    private fun updateRewFwdButtons(btnRew: ImageButton, btnFfwd: ImageButton, seekBar: SeekBar) {
+        btnRew.isEnabled = seekBar.progress > 0
+        btnFfwd.isEnabled = seekBar.progress < seekBar.max
+    }
+
+
     // this method should be called from within listener, like onClickListener, onCompletionListener..
     // if you want to achieve this functionality inside onBind method, call the method below
 //    private fun enableRewAndFwdButtons(enabled : Boolean) {
@@ -293,6 +304,7 @@ class DraftAdapter(
             holder.seekBar.progress = nextPosition
             if (currentPlayingItemPosition == position)
                 mediaPlayer.seekTo(nextPosition)
+            updateRewFwdButtons(holder.btnRew, holder.btnFfwd, holder.seekBar)
         } catch (e: Exception) {
             Timber.d("mediaPlayer.seekTo rewind overflow")
         }
@@ -307,6 +319,7 @@ class DraftAdapter(
             if (currentPlayingItemPosition == position) {
                 mediaPlayer.seekTo(nextPosition)
             }
+            updateRewFwdButtons(holder.btnRew, holder.btnFfwd, holder.seekBar)
         } catch (e: Exception) {
             Timber.d("mediaPlayer.seekTo forward overflow")
         }
@@ -400,6 +413,7 @@ class DraftAdapter(
         currentSeekbarPlaying?.progress = currentSeekbarPlaying?.max ?: mediaPlayer.duration
 //        enableRewAndFwdButtons(false)
         mediaPlayer.pause()
+        updateRewFwdButtons(currentBtnRwdPlaying!!, currentBtnFwdPlaying!!, currentSeekbarPlaying!!)
     }
 
     private fun onCurrentPlayingDraftPlayClicked(
