@@ -167,35 +167,8 @@ class DraftsFragment : BaseFragment() {
                 onBackPressed()
             }
         }
-
         //Toolbar Right
-        btnEditToolbarUpdate?.visibility = View.VISIBLE
-        btnEditToolbarUpdate?.text = getText(R.string.edit)
-        btnEditToolbarUpdate?.onClick {
-
-            //Setup animation transition
-            ViewCompat.setTranslationZ(requireView(), 1f)
-
-            if (comesFromEditMode) {
-                comesFromEditMode = false
-                btnEditToolbarUpdate?.text = getString(R.string.edit)
-                //Done pressed, save list
-                for (draft in draftsLocalList) {
-                    draft.isEditMode = false
-                }
-
-            } else {
-                comesFromEditMode = true
-                btnEditToolbarUpdate?.text = getString(R.string.btnDone)
-                //Edit pressed, show mask
-                for (draft in draftsLocalList) {
-                    draft.isEditMode = true
-                }
-            }
-
-            rvDrafts?.adapter?.notifyDataSetChanged()
-        }
-
+        btnEditToolbarUpdate?.visibility = View.GONE
     }
 
 

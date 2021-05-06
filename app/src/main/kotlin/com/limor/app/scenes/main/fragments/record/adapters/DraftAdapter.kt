@@ -143,7 +143,7 @@ class DraftAdapter(
             }
         }
 
-        // edit mode
+        /*// edit mode
         if (currentDraft.isEditMode!!) {
             holder.swipeLayout.isEnabledSwipe = true
             holder.ivDraftDelete.setImageResource(R.drawable.ic_delete_draft)
@@ -154,7 +154,7 @@ class DraftAdapter(
         } else {
             holder.swipeLayout.isEnabledSwipe = false
             holder.ivDraftDelete.visibility = View.INVISIBLE
-        }
+        }*/
 
         // we have to calculate the duration of every item
         var currentDurationInMillis = 0
