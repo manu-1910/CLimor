@@ -31,7 +31,7 @@ class FragmentSignInOrUp : Fragment() {
             Timber.d("SignUp Clicked")
             val destinationId =
 //                if (BuildConfig.DEBUG)
-//                    R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_enter_username
+//                    R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_gender
 //                else
                     R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_up
             view.findNavController()

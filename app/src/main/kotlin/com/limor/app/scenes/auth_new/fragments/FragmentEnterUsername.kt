@@ -20,7 +20,6 @@ import com.limor.app.scenes.auth_new.data.UserNameState
 import com.limor.app.scenes.auth_new.data.UserNameStateBundle
 import kotlinx.android.synthetic.main.fragment_new_auth_enter_username.*
 
-
 class FragmentEnterUsername : Fragment() {
 
     private val model: AuthViewModelNew by activityViewModels()
@@ -84,8 +83,9 @@ class FragmentEnterUsername : Fragment() {
         })
 
         model.navigationFromUsernameScreenAllowed.observe(viewLifecycleOwner, Observer<Boolean> {
-//            if(it)
-//                clMain.findNavController().navigate()
+            if (it)
+                clMain.findNavController()
+                    .navigate(R.id.action_fragment_new_auth_enter_username_to_fragment_new_auth_gender)
         })
     }
 

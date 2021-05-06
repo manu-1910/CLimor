@@ -519,4 +519,9 @@
     <string name="enter_username_hint">Enter Username</string>
     <string name="username_already_in_use">Already in use. Still you can use,</string>
     <string name="you_are_good_to_go">You’re good to go</string>
+    <string name="gender">Gender</string>
+    <string name="select_your_gender">Select your gender</string>
+    <string name="sex_male">Male</string>
+    <string name="sex_female">Female</string>
+    <string name="sex_other">Other</string>
 </resources>

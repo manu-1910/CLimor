@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.limor.app.scenes.auth_new.data.Country
+import com.limor.app.scenes.auth_new.data.Gender
 import com.limor.app.scenes.auth_new.data.UserNameStateBundle
 import com.limor.app.scenes.auth_new.model.CountriesListProvider
 import com.limor.app.scenes.auth_new.util.DobPicker
@@ -172,7 +173,7 @@ class AuthViewModelNew : ViewModel() {
         get() = Transformations.distinctUntilChanged(_currentUsernameState)
 
     fun submitUsername(username: String?) {
-        if (currentUsernameState.value?.approved!!) {
+        if (_currentUsernameState.value?.approved!!) {
             _navigationFromUsernameScreenAllowed.postValue(true)
             Handler().postDelayed({ _navigationFromUsernameScreenAllowed.postValue(false) }, 500)
             return
@@ -188,4 +189,13 @@ class AuthViewModelNew : ViewModel() {
 
     val navigationFromUsernameScreenAllowed: LiveData<Boolean>
         get() = _navigationFromUsernameScreenAllowed
+
+
+    /* Gender */
+    var currentGender: Gender = Gender.Male
+    private set
+
+    fun setCurrentGender(gender:Gender){
+        currentGender = gender
+    }
 }
