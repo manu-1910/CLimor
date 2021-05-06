@@ -88,6 +88,7 @@ class RecordFragment : BaseFragment() {
     private lateinit var locationResult: MyLocation.LocationResult
     private var fileRecording = ""
     private var isAnimatingCountdown: Boolean = false
+    private var needAnimatedCountDown = true
     private lateinit var handlerCountdown: Handler
     private var anythingToSave = false
 
@@ -800,7 +801,7 @@ class RecordFragment : BaseFragment() {
             if (isRecording) {
                 pauseRecording()
             } else {
-                if (!isAnimatingCountdown) {
+                if (needAnimatedCountDown) {
                     showCountdownAnimation {
                         startRecording()
                     }
@@ -821,6 +822,7 @@ class RecordFragment : BaseFragment() {
     }
 
     private fun showCountdownAnimation(callback: () -> Unit) {
+        needAnimatedCountDown = false
         isAnimatingCountdown = true
         val animatorCountDown = ObjectAnimator.ofPropertyValuesHolder(
             layCountdownAnimation,
