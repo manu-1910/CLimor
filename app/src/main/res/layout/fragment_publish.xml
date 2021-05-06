@@ -219,7 +219,7 @@
                             android:layout_marginStart="20dp"
                             android:layout_marginEnd="20dp"
                             android:fontFamily="@font/roboto"
-                            android:text="Use “#” for hashtags"
+                            android:text="@string/hashtag_subtitle"
                             android:textColor="@color/textSecondary"
                             android:textSize="12sp" />
 
@@ -257,7 +257,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
                                 android:fontFamily="@font/roboto_medium"
-                                android:text="@string/title_category"
+                                android:text="@string/categories_hint"
                                 android:textColor="@color/textPrimary"
                                 android:textSize="@dimen/textSize16" />
 
@@ -552,7 +552,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="13dp"
                 android:fontFamily="@font/roboto_medium"
-                android:text="Publishing your cast"
+                android:text="@string/publishing_your_cast"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
         </LinearLayout>

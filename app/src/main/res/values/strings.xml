@@ -72,14 +72,15 @@
     <string name="title_caption">Caption</string>
     <string name="title_hashtags">Hashtags</string>
     <string name="title_category">Categories</string>
+    <string name="categories_hint">Categories<font color='#FF0000'>*</font></string>
     <string name="title_location">Location</string>
-    <string name="title_language">Language</string>
+    <string name="title_language">Language<font color='#FF0000'>*</font></string>
     <string name="title_languages">Languages</string>
 
     <string name="cast_published_ok_title">Cast Published</string>
     <string name="cast_published_ok_description">Your cast has been published successfully</string>
-    <string name="hint_caption">Caption here</string>
-    <string name="hint_title">Title here</string>
+    <string name="hint_caption">Caption here<font color='#FF0000'>*</font></string>
+    <string name="hint_title">Title here<font color='#FF0000'>*</font></string>
 
 
     <!-- Edit Screen -->
@@ -495,9 +496,11 @@
     <string name="no_user_id_error">We don\'t have a user id so we can\'t show user data</string>
     <string name="no_categories_yet">There are no categories yet</string>
     <string name="no_content_with_this_category">There’s no content related to this category</string>
-    <string name="hint_tags">Tags here</string>
+    <string name="hint_tags">Tags here<font color='#FF0000'>*</font></string>
     <string name="continue_text">Continue</string>
     <string name="btn_yes">Yes</string>
     <string name="what_do_you_want_to_do">What you want to do with your cast?</string>
+    <string name="hashtag_subtitle">Use “#” for hashtags</string>
+    <string name="publishing_your_cast">Publishing your cast</string>
 
 </resources>
