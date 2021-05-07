@@ -7,9 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.limor.app.scenes.auth_new.data.Country
-import com.limor.app.scenes.auth_new.data.Gender
-import com.limor.app.scenes.auth_new.data.UserNameStateBundle
+import com.limor.app.scenes.auth_new.data.*
 import com.limor.app.scenes.auth_new.model.CountriesListProvider
 import com.limor.app.scenes.auth_new.util.DobPicker
 import com.limor.app.scenes.auth_new.util.PhoneNumberChecker
@@ -193,9 +191,42 @@ class AuthViewModelNew : ViewModel() {
 
     /* Gender */
     var currentGender: Gender = Gender.Male
-    private set
+        private set
 
-    fun setCurrentGender(gender:Gender){
+    fun setCurrentGender(gender: Gender) {
         currentGender = gender
     }
+
+    /* Categories */
+
+    private var categories: List<Category> = mutableListOf()
+
+    fun downloadCategories() {
+        if (categories.isEmpty())
+            loadCategoriesRepo()
+    }
+
+    private fun loadCategoriesRepo() {
+        val categories = createMockedCategories()
+        this.categories = categories
+        _categoriesLiveData.postValue(categories)
+    }
+
+    private val _categoriesLiveData =
+        MutableLiveData<List<Category>>().apply { value = categories }
+
+    val categoriesLiveData: LiveData<List<Category>>
+        get() = _categoriesLiveData
+
+
+    fun updateCategoriesSelection() {
+        val anySelected = categories.any { it.isSelected }
+        _categorySelectionDone.postValue(anySelected)
+    }
+
+    private val _categorySelectionDone =
+        MutableLiveData<Boolean>().apply { value = false }
+
+    val categorySelectionDone: LiveData<Boolean>
+        get() = _categorySelectionDone
 }
