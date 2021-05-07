@@ -167,7 +167,7 @@ class DraftAdapter(
                     mmr.setDataSource(context, uri)
                     val durationStr =
                         mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                    currentDurationInMillis = durationStr.toInt()
+                    currentDurationInMillis = durationStr!!.toInt()
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Timber.d("Couldn't read metadata and duration. This could be because the file you're trying to access is corrupted")

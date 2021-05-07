@@ -135,7 +135,7 @@ class ProfileFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it.code != 0) {
                 toast(getString(R.string.error_unblocking_user))
                 viewModelGetUser.user?.blocked = true
@@ -150,13 +150,13 @@ class ProfileFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
         output.errorMessage.observe(this, Observer {
             view?.hideKeyboard()
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+            CommonsKt.handleOnApiError(app!!, requireContext(), this, it)
         })
     }
 
@@ -167,7 +167,7 @@ class ProfileFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it.code != 0) {
                 toast(getString(R.string.error_blocking_user))
                 viewModelGetUser.user?.blocked = false
@@ -179,13 +179,13 @@ class ProfileFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
         output.errorMessage.observe(this, Observer {
             view?.hideKeyboard()
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+            CommonsKt.handleOnApiError(app!!, requireContext(), this, it)
         })
     }
 
@@ -478,7 +478,7 @@ class ProfileFragment : BaseFragment() {
                     data?.let {
                         val reason = data.getStringExtra("reason")
                         viewModelCreateUserReport.idUser = viewModelGetUser.user!!.id
-                        viewModelCreateUserReport.reason = reason
+                        viewModelCreateUserReport.reason = reason!!
                         createUserReportDataTrigger.onNext(Unit)
                     }
                 }
@@ -526,13 +526,13 @@ class ProfileFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it.code != 0) {
                 revertUserFollowedState()
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -540,7 +540,7 @@ class ProfileFragment : BaseFragment() {
             //pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
             revertUserFollowedState()
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+            CommonsKt.handleOnApiError(app!!, requireContext(), this, it)
         })
     }
 
@@ -551,13 +551,13 @@ class ProfileFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it.code != 0) {
                 revertUserFollowedState()
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -565,7 +565,7 @@ class ProfileFragment : BaseFragment() {
             //pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
             revertUserFollowedState()
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+            CommonsKt.handleOnApiError(app!!, requireContext(), this, it)
         })
     }
 
@@ -593,21 +593,21 @@ class ProfileFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             view?.hideKeyboard()
             viewModelGetUser.user = it.data.user
             initViewPager()
             printUserData()
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
         output.errorMessage.observe(this, Observer {
             //pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+            CommonsKt.handleOnApiError(app!!, requireContext(), this, it)
         })
     }
 
@@ -618,7 +618,7 @@ class ProfileFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it.code == 0) {
                 toast(getString(R.string.user_reported_ok))
             } else {
@@ -626,14 +626,14 @@ class ProfileFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
         output.errorMessage.observe(this, Observer {
             //pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+            CommonsKt.handleOnApiError(app!!, requireContext(), this, it)
         })
     }
 
@@ -656,7 +656,7 @@ class ProfileFragment : BaseFragment() {
             tvNumberFollowing?.text = formatSocialMediaQuantity(it)
         }
 
-        Glide.with(context!!)
+        Glide.with(requireContext())
             .load(viewModelGetUser.user?.images?.medium_url)
             .apply(RequestOptions.circleCropTransform())
             .into(ivUser)

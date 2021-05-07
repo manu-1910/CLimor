@@ -361,7 +361,7 @@ class RecordFragment : BaseFragment() {
                     mmr.setDataSource(context, uri)
                     val durationStr =
                         mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                    val currentDurationInMillis = durationStr.toInt()
+                    val currentDurationInMillis = durationStr!!.toInt()
                     val currentDurationInSecondsFloat: Double = currentDurationInMillis / 1000.0
                     val durationFloatRoundedUp = kotlin.math.ceil(currentDurationInSecondsFloat)
                     val durationMillisRoundedUp = (durationFloatRoundedUp * 1000).toInt()

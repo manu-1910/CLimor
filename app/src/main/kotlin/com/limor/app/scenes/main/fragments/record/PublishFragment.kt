@@ -774,7 +774,7 @@ class PublishFragment : BaseFragment() {
                     timePass?.text = CommonsKt.calculateDurationMediaPlayer(
                         miliSeconds
                     )
-                    seekHandler.postDelayed(run, 100)
+                    seekHandler.postDelayed(run!!, 100)
                 }
                 run!!.run()
             } else {
