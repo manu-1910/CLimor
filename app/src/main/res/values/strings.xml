@@ -500,9 +500,11 @@
     <string name="continue_text">Continue</string>
     <string name="btn_yes">Yes</string>
     <string name="what_do_you_want_to_do">What you want to do with your cast?</string>
+    <string name="what_you_wish_to_do_cast">What would you wish to do with your cast?</string>
     <string name="hashtag_subtitle">Use “#” for hashtags</string>
     <string name="publishing_your_cast">Publishing your cast</string>
     <string name="cast_published">Cast Published</string>
     <string name="upload_your_photo">Upload your photo</string>
+    <string name="save_as_draft">Save as Draft</string>
 
 </resources>

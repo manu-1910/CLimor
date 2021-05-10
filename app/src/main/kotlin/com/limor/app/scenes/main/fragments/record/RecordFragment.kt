@@ -52,6 +52,8 @@ import com.limor.app.scenes.utils.location.MyLocation
 import com.limor.app.uimodels.UIDraft
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.dialog_cancel_draft.view.*
+import kotlinx.android.synthetic.main.dialog_cancel_draft.view.saveButton
+import kotlinx.android.synthetic.main.dialog_save_draft.view.*
 import kotlinx.android.synthetic.main.fragment_record.*
 import kotlinx.android.synthetic.main.sheet_more_draft.view.*
 import kotlinx.android.synthetic.main.toolbar_default.*
@@ -239,24 +241,7 @@ class RecordFragment : BaseFragment() {
             if (uiDraft?.isNewRecording == true) {
 
                 // let's show the dialog to show if they want to save the current recorded audio or discard it
-                alert(
-                    getString(R.string.alert_cancel_record_descr),
-                    getString(R.string.alert_cancel_record_title)
-                ) {
-
-                    // if OK, let's save it
-                    positiveButton(getString(R.string.alert_cancel_record_save)) {
-                        it.dismiss()
-                        showSaveDraftAlert()
-                    }
-
-                    // if CANCEL, then let's delete the temporary draft that it's now created
-                    negativeButton(getString(R.string.alert_cancel_record_do_not_save)) {
-                        deleteDraftInRealm(uiDraft!!)
-                        activity?.finish()
-                    }
-                }.show()
-
+                showSaveDraftDialog()
 
                 // if we are here, this means that we are in this fragment because we come from
                 // another fragment that sent us some draft to continue recording it
@@ -320,6 +305,34 @@ class RecordFragment : BaseFragment() {
             dialog.dismiss()
             deleteDraftInRealm(uiDraft!!)
             activity?.finish()
+        }
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset)
+            show()
+        }
+    }
+
+
+    private fun showSaveDraftDialog() {
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_save_draft, null)
+
+        dialogBuilder.setView(dialogView)
+        dialogBuilder.setCancelable(true)
+        val dialog: AlertDialog = dialogBuilder.create()
+
+        dialogView.noButton.setOnClickListener {
+            deleteDraftInRealm(uiDraft!!)
+            activity?.finish()
+        }
+
+        dialogView.saveButton.setOnClickListener {
+            dialog.dismiss()
+            showSaveDraftAlert()
         }
 
         val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
