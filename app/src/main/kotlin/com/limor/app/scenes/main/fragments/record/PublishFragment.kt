@@ -67,6 +67,7 @@ import kotlinx.android.synthetic.main.fragment_publish.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
+import kotlinx.android.synthetic.main.view_cast_published.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -285,15 +286,12 @@ class PublishFragment : BaseFragment() {
                 convertedFile?.delete()
                 callToDeleteDraft()
                 isPublished = true
-                alert {
-                    this.titleResource = R.string.cast_published_ok_title
-                    this.messageResource = R.string.cast_published_ok_description
-                    positiveButton(getString(R.string.btnDone)) {
-                        val mainIntent = Intent(context, MainActivity::class.java)
-                        startActivity(mainIntent)
-                        activity?.finish()
-                    }
-                }.show()
+                viewCastPublished.visibility = View.VISIBLE
+                btnDone.onClick {
+                    val mainIntent = Intent(context, MainActivity::class.java)
+                    startActivity(mainIntent)
+                    activity?.finish()
+                }
             }
         })
 

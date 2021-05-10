@@ -47,11 +47,11 @@
                             android:id="@+id/appCompatTextView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="20dp"
-                            android:layout_marginEnd="20dp"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
                             android:fontFamily="@font/roboto_bold"
-                            android:text="Upload your photo"
+                            android:text="@string/upload_your_photo"
                             android:textAlignment="center"
                             android:textColor="@color/textPrimary"
                             android:textSize="@dimen/textSize16"
@@ -63,9 +63,9 @@
                             android:id="@+id/lytImage"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="24dp"
-                            android:layout_marginEnd="20dp"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginAlmostLarge"
+                            android:layout_marginEnd="@dimen/marginTwenty"
                             android:minHeight="130dp"
                             android:visibility="invisible"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -86,9 +86,9 @@
                             android:id="@+id/lytImagePlaceHolder"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="24dp"
-                            android:layout_marginEnd="20dp"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginAlmostLarge"
+                            android:layout_marginEnd="@dimen/marginTwenty"
                             android:visibility="visible"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -118,9 +118,9 @@
                             style="@style/TextInputLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="24dp"
-                            android:layout_marginEnd="20dp"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginAlmostLarge"
+                            android:layout_marginEnd="@dimen/marginTwenty"
                             app:boxStrokeColor="@color/colorAccent"
                             app:boxStrokeWidth="2dp"
                             app:hintTextAppearance="@style/TextHintStyle"
@@ -153,9 +153,9 @@
                             style="@style/TextInputLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="20dp"
-                            android:layout_marginEnd="20dp"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
                             app:boxStrokeColor="@color/colorAccent"
                             app:boxStrokeWidth="2dp"
                             app:counterEnabled="true"
@@ -184,9 +184,9 @@
                             style="@style/TextInputLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="20dp"
-                            android:layout_marginEnd="20dp"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
                             app:boxStrokeColor="@color/colorAccent"
                             app:boxStrokeWidth="2dp"
                             app:hintTextAppearance="@style/TextHintStyle"
@@ -201,11 +201,10 @@
                                 android:hint="@string/hint_tags"
                                 android:inputType="textNoSuggestions"
                                 android:lines="1"
-                                android:paddingStart="12dp"
-                                android:paddingTop="16dp"
-
-                                android:paddingEnd="12dp"
-                                android:paddingBottom="16dp"
+                                android:paddingStart="@dimen/marginMediumSmall"
+                                android:paddingTop="@dimen/marginMedium"
+                                android:paddingEnd="@dimen/marginMediumSmall"
+                                android:paddingBottom="@dimen/marginMedium"
                                 android:textColor="@color/textPrimary"
                                 android:textSize="@dimen/textSizeNormal"
                                 app:hyperlinkColor="@color/textAccent"
@@ -216,19 +215,19 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginEnd="20dp"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
                             android:fontFamily="@font/roboto"
                             android:text="@string/hashtag_subtitle"
                             android:textColor="@color/textSecondary"
-                            android:textSize="12sp" />
+                            android:textSize="@dimen/textSizeTiny" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvTags"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:layout_marginEnd="12dp"
+                            android:layout_marginStart="@dimen/marginMediumSmall"
+                            android:layout_marginEnd="@dimen/marginMediumSmall"
                             android:visibility="gone"
                             tools:listitem="@layout/tag_item" />
 
@@ -541,22 +540,27 @@
             <com.mikhaellopez.circularprogressbar.CircularProgressBar
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                app:cpb_round_border="true"
+                app:cpb_background_progressbar_color="@android:color/transparent"
                 app:cpb_indeterminate_mode="true"
                 app:cpb_progressbar_color="@color/white"
-                app:cpb_background_progressbar_color="@android:color/transparent"
-                app:cpb_progressbar_width="5dp" />
+                app:cpb_progressbar_width="5dp"
+                app:cpb_round_border="true" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="13dp"
+                android:layout_marginTop="@dimen/marginMediumSmall"
                 android:fontFamily="@font/roboto_medium"
                 android:text="@string/publishing_your_cast"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="@dimen/textSize16" />
         </LinearLayout>
 
 
     </FrameLayout>
+
+    <include
+        android:id="@+id/viewCastPublished"
+        layout="@layout/view_cast_published"
+        android:visibility="gone" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
