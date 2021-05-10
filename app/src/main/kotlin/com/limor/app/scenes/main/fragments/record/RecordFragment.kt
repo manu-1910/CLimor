@@ -4,7 +4,10 @@ import android.Manifest
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.app.AlertDialog
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -53,6 +56,7 @@ import com.limor.app.uimodels.UIDraft
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.dialog_cancel_draft.view.*
 import kotlinx.android.synthetic.main.dialog_cancel_draft.view.saveButton
+import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
 import kotlinx.android.synthetic.main.dialog_save_draft.view.*
 import kotlinx.android.synthetic.main.fragment_record.*
 import kotlinx.android.synthetic.main.sheet_more_draft.view.*
@@ -141,6 +145,7 @@ class RecordFragment : BaseFragment() {
         if (!hasPermissions(requireContext(), *PERMISSIONS)) {
             requestPermissions(PERMISSIONS, PERMISSION_ALL)
         }
+
     }
 
 
@@ -148,7 +153,11 @@ class RecordFragment : BaseFragment() {
         super.onResume()
         (requireActivity() as RecordActivity).initSlideBehaviour()
         requestForLocation()
-
+        Timber.d("OnResume")
+        requireActivity().registerReceiver(
+            lowBatteryReceiver,
+            IntentFilter(Intent.ACTION_BATTERY_LOW)
+        )
 
         // this means that we come from another fragment to continue recording
         draftViewModel.uiDraft?.let {
@@ -223,6 +232,12 @@ class RecordFragment : BaseFragment() {
             createNewAutosavedDraft()
             uiDraft?.isNewRecording = true
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Timber.d("OnPause")
+        requireActivity().unregisterReceiver(lowBatteryReceiver)
     }
 
 
@@ -1156,6 +1171,39 @@ class RecordFragment : BaseFragment() {
         val myLocation = MyLocation()
         myLocation.getLocation(requireContext(), locationResult)
     }
+
+    private val lowBatteryReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(c: Context, i: Intent) {
+            if (isRecording) {
+                pauseRecording()
+            }
+            showLowBatteryDialog()
+            //requireContext().unregisterReceiver(this)
+        }
+    }
+
+    private fun showLowBatteryDialog() {
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.dialog_battery_low, null)
+
+        dialogBuilder.setView(dialogLayout)
+        dialogBuilder.setCancelable(false)
+
+        val dialog: AlertDialog = dialogBuilder.create()
+
+        dialogLayout.okButton.onClick {
+            dialog.dismiss()
+        }
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset);
+            show()
+        }
+    }
+
 
 }
 

@@ -131,7 +131,7 @@
     <string name="alert_title_oops">Oops!</string>
     <string name="error_something_went_wrong">Something went wrong. Please try again.</string>
     <string name="progress_please_wait">Please wait…</string>
-    <string name="ok">OK</string>
+    <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
     <string name="empty_fields_prompt">Please make sure to fill all required fields.</string>
     <string name="invalid_email_prompt">Invalid Email</string>
@@ -508,5 +508,6 @@
     <string name="cast_published">Cast Published</string>
     <string name="upload_your_photo">Upload your photo</string>
     <string name="save_as_draft">Save as Draft</string>
-
+    <string name="battery_low">Battery Low</string>
+    <string name="battery_low_description">Battery level is very low. App may close soon.</string>
 </resources>
