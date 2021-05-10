@@ -19,23 +19,22 @@ class AuthViewModelNew : ViewModel() {
 
     /* Date picking */
 
-    private val _datePicked = MutableLiveData<String>().apply { value = "" }
-
-    val datePickedLiveData: LiveData<String>
+    private val _datePicked = MutableLiveData<DobInfo>().apply { value = DobInfo.Empty() }
+    val datePickedLiveData: LiveData<DobInfo>
         get() = _datePicked
 
     fun clearDate() {
-        _datePicked.postValue("")
+        _datePicked.postValue(DobInfo.Empty())
+    }
+
+    private val dobPicker = object : DobPicker() {
+        override fun onDatePicked(dateMills: Long) {
+            _datePicked.postValue(DobInfo(dateMills))
+        }
     }
 
     fun startDobPicker(fragmentManager: FragmentManager) {
-        val dobPicker = object : DobPicker() {
-            override fun onDatePicked(dateMills: Long) {
-                val formattedDate = parseDate(dateMills)
-                _datePicked.postValue(formattedDate)
-            }
-        }
-        dobPicker.startMaterialPicker(fragmentManager)
+        dobPicker.startMaterialPicker(fragmentManager, _datePicked.value?.mills ?: 0)
     }
 
     /* PHONE Countries selection */
@@ -207,9 +206,11 @@ class AuthViewModelNew : ViewModel() {
     }
 
     private fun loadCategoriesRepo() {
-        val categories = createMockedCategories()
-        this.categories = categories
-        _categoriesLiveData.postValue(categories)
+        BACKGROUND({
+            val categories = createMockedCategories()
+            this.categories = categories
+            _categoriesLiveData.postValue(categories)
+        })
     }
 
     private val _categoriesLiveData =
@@ -229,4 +230,49 @@ class AuthViewModelNew : ViewModel() {
 
     val categorySelectionDone: LiveData<Boolean>
         get() = _categorySelectionDone
+
+
+    /* Languages */
+
+    private var languages: List<Language> = mutableListOf()
+
+    fun downloadLanguages() {
+        if (languages.isEmpty())
+            loadLanguagesRepo()
+    }
+
+    private fun loadLanguagesRepo() {
+        BACKGROUND({
+            val languages = createMockedLanguages()
+            this.languages = languages
+            _languagesLiveData.postValue(languages)
+        })
+    }
+
+    private val _languagesLiveData =
+        MutableLiveData<List<Language>>().apply { value = languages }
+
+    val languagesLiveData: LiveData<List<Language>>
+        get() = _languagesLiveData
+
+
+    fun updateLanguagesSelection() {
+        val anySelected = languages.any { it.isSelected }
+        _languagesSelectionDone.postValue(anySelected)
+    }
+
+    private val _languagesSelectionDone =
+        MutableLiveData<Boolean>().apply { value = false }
+
+    val languagesSelectionDone: LiveData<Boolean>
+        get() = _languagesSelectionDone
+
+    fun onLanguageInputChanged(input: String?) {
+        if (input == null || input.trim().isEmpty()) {
+            _languagesLiveData.postValue(languages)
+            return
+        }
+        val filtered = getLanguagesByInput(input, languages)
+        _languagesLiveData.postValue(filtered)
+    }
 }

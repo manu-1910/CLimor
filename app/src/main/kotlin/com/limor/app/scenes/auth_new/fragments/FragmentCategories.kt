@@ -12,6 +12,8 @@ import com.google.android.material.chip.Chip
 import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.Category
+import com.limor.app.scenes.utils.BACKGROUND
+import com.limor.app.scenes.utils.MAIN
 import kotlinx.android.synthetic.main.fragment_new_auth_categories.*
 
 class FragmentCategories : Fragment() {
@@ -43,18 +45,23 @@ class FragmentCategories : Fragment() {
         })
     }
 
-    private fun createCategoriesArray(categories:List<Category>) {
+    private fun createCategoriesArray(categories: List<Category>) {
         if (categories.isNotEmpty()) cgCategories.removeAllViews()
-        categories.forEach { category ->
-            val chip = getVariantChip(category)
-            cgCategories.addView(chip)
-        }
+        BACKGROUND({
+            val categoriesChips =
+                categories.map { category ->
+                    getVariantChip(category)
+                }
+            MAIN { categoriesChips.forEach { cgCategories.addView(it) } }
+        })
     }
 
     private fun getVariantChip(category: Category): Chip {
         val chip = layoutInflater.inflate(R.layout.item_chip_category, null) as Chip
         chip.text = category.name
-        chip.isChecked = category.isSelected
+        MAIN {
+            chip.isChecked = category.isSelected
+        }
         chip.setOnCheckedChangeListener { buttonView, isChecked ->
             category.isSelected = isChecked
             model.updateCategoriesSelection()
@@ -64,12 +71,12 @@ class FragmentCategories : Fragment() {
 
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
-//            it.findNavController()
-//                .navigate(R.id.)
+            it.findNavController()
+                .navigate(R.id.action_fragment_new_auth_categories_to_fragment_new_auth_languages)
         }
 
         topAppBar.setNavigationOnClickListener {
-           it.findNavController().popBackStack()
+            it.findNavController().popBackStack()
         }
     }
 }

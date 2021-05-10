@@ -32,8 +32,8 @@ class FragmentGender : Fragment() {
 
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
-//            it.findNavController()
-//                .navigate(R.id.)
+            it.findNavController()
+                .navigate(R.id.action_fragment_new_auth_gender_to_fragment_new_auth_categories)
         }
 
         btnBack.setOnClickListener {

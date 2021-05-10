@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthViewModelNew
+import com.limor.app.scenes.auth_new.data.DobInfo
 import kotlinx.android.synthetic.main.fragment_new_auth_dob_picker.*
 
 
@@ -28,7 +29,8 @@ class FragmentDobPicker : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         btnDobPickerContinue.setOnClickListener {
-            it.findNavController().navigate(R.id.action_fragment_new_auth_dob_picker_to_fragment_new_auth_phone_enter)
+            it.findNavController()
+                .navigate(R.id.action_fragment_new_auth_dob_picker_to_fragment_new_auth_phone_enter)
         }
 
         btnDobPickerBack.setOnClickListener {
@@ -48,9 +50,14 @@ class FragmentDobPicker : Fragment() {
     }
 
     private fun subscribeToViewModel() {
-        model.datePickedLiveData.observe(viewLifecycleOwner, Observer<String> {
-            etDobPickerInner.setText(it ?: "")
-            btnDobPickerContinue.isEnabled = it != null && it.isNotEmpty();
+        model.datePickedLiveData.observe(viewLifecycleOwner, Observer<DobInfo> {
+            etDobPickerInner.setText(it.formatted)
+            btnDobPickerContinue.isEnabled = it.isValid()
+            when {
+                it.mills == 0L -> etDobPicker.error = null
+                it.isValid() -> etDobPicker.error = null
+                else -> etDobPicker.error = getString(R.string.date_less_than_13_yo)
+            }
         })
     }
 }

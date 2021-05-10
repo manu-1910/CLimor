@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import com.limor.app.BuildConfig
 import com.limor.app.R
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in_or_up.*
 import timber.log.Timber
@@ -31,9 +30,9 @@ class FragmentSignInOrUp : Fragment() {
         btnSignUpNew.setOnClickListener {
             Timber.d("SignUp Clicked")
             val destinationId =
-                if (BuildConfig.DEBUG)
-                    R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_categories
-                else
+//                if (BuildConfig.DEBUG)
+//                    R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_languages
+//                else
                     R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_up
             view.findNavController()
                 .navigate(destinationId)

@@ -29,13 +29,40 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/categories"
+                android:text="@string/languages"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </com.google.android.material.appbar.MaterialToolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/etSearchLanguage"
+        style="@style/TextInputLayoutSearchLanguage"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        app:endIconDrawable="@drawable/baseline_search_black_24dp"
+        app:endIconMode="custom"
+        app:endIconTint="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etEnterPhoneInner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/search_hint"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
+            android:textColorHint="@color/subtitle_text_color" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ScrollView
         android:layout_width="0dp"
@@ -47,10 +74,10 @@
         app:layout_constraintBottom_toTopOf="@+id/btnContinue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2">
+        app:layout_constraintTop_toBottomOf="@+id/etSearchLanguage">
 
         <com.google.android.material.chip.ChipGroup
-            android:id="@+id/cgCategories"
+            android:id="@+id/cgLanguages"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:chipSpacingHorizontal="16dp"/>

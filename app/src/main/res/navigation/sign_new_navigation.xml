@@ -33,6 +33,9 @@
         <action
             android:id="@+id/action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_categories"
             app:destination="@id/fragment_new_auth_categories" />
+        <action
+            android:id="@+id/action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_languages"
+            app:destination="@id/fragment_new_auth_languages" />
     </fragment>
 
     <fragment
@@ -138,13 +141,30 @@
         tools:layout="@layout/fragment_new_auth_gender">
         <action
             android:id="@+id/action_fragment_new_auth_gender_to_fragment_new_auth_categories"
-            app:destination="@id/fragment_new_auth_categories" />
+            app:destination="@id/fragment_new_auth_categories"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
     </fragment>
 
     <fragment
         android:id="@+id/fragment_new_auth_categories"
         android:name="com.limor.app.scenes.auth_new.fragments.FragmentCategories"
         android:label="Categories"
-        tools:layout="@layout/fragment_new_auth_categories"/>
+        tools:layout="@layout/fragment_new_auth_categories">
+        <action
+            android:id="@+id/action_fragment_new_auth_categories_to_fragment_new_auth_languages"
+            app:destination="@id/fragment_new_auth_languages"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_new_auth_languages"
+        android:name="com.limor.app.scenes.auth_new.fragments.FragmentLanguages"
+        android:label="Languages"
+        tools:layout="@layout/fragment_new_auth_languages" />
 
 </navigation>

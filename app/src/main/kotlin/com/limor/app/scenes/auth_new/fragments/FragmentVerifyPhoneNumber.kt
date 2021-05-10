@@ -110,7 +110,7 @@ class FragmentVerifyPhoneNumber : Fragment() {
         })
 
         model.smsCodeValidationErrorMessageLiveData.observe(viewLifecycleOwner, Observer {
-            val hasError = it.isNotEmpty()
+            val hasError = it.isNotBlank()
             btnContinue.isEnabled = !hasError
             tvWrongCode.visibility = if (hasError) View.VISIBLE else View.GONE
             smsCodeEtList.forEach { et ->

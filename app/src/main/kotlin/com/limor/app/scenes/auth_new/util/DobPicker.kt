@@ -1,35 +1,35 @@
 package com.limor.app.scenes.auth_new.util
 
-import android.text.format.DateFormat
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointBackward
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.limor.app.R
 import timber.log.Timber
-import java.util.*
 
 abstract class DobPicker {
     abstract fun onDatePicked(dateMills: Long)
 
-    fun startMaterialPicker(fragmentManager: FragmentManager) {
-        val today = MaterialDatePicker.todayInUtcMilliseconds()
-        val calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"))
-
-        calendar.timeInMillis = today
-        calendar[Calendar.MONTH] = Calendar.JANUARY
-        calendar[Calendar.YEAR] = 1900
-        val jan1990 = calendar.timeInMillis
+    fun startMaterialPicker(fragmentManager: FragmentManager, dateMills: Long) {
+        val currentDate = if (dateMills != 0L) dateMills else MaterialDatePicker.todayInUtcMilliseconds()
+//        val calendar = Calendar.getInstance()
+//
+//        calendar.timeInMillis = today
+//        calendar[Calendar.MONTH] = Calendar.JANUARY
+//        calendar[Calendar.YEAR] = 1900
+//        val jan1990 = calendar.timeInMillis
 
         val constraintsBuilder =
             CalendarConstraints.Builder()
                 .setValidator(DateValidatorPointBackward.now())
+                .setOpenAt(currentDate)
 //                .setStart(jan1990)
 //                .setEnd(today)
         val picker =
             MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select date")
+                .setTitleText(R.string.select_date)
                 .setCalendarConstraints(constraintsBuilder.build())
-                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .setSelection(currentDate)
                 .build()
 
         picker.addOnPositiveButtonClickListener {
@@ -47,11 +47,5 @@ abstract class DobPicker {
             Timber.d("Picker onDismiss")
         }
         picker.show(fragmentManager, "DobPicker")
-    }
-
-    companion object {
-        fun parseDate(mills: Long) : String{
-            return DateFormat.format("dd MMM, yyyy ", Date(mills)).toString()
-        }
     }
 }
