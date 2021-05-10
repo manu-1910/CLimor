@@ -145,6 +145,8 @@
     <string name="passwords_not_match">The passwords you entered does not match</string>
     <string name="delete_draft">Delete Draft</string>
     <string name="cancel_draft">Cancel Draft</string>
+    <string name="unable_to_publish_cast">Unable to Publish Cast</string>
+    <string name="internet_connection_lost">Unfortunately, your internet connect was lost. Save this cast as a draft and publish again</string>
 
 
     <!-- Menu Marker -->

@@ -539,6 +539,7 @@
 
             <com.mikhaellopez.circularprogressbar.CircularProgressBar
                 android:layout_width="80dp"
+                android:id="@+id/progressUpload"
                 android:layout_height="80dp"
                 app:cpb_background_progressbar_color="@android:color/transparent"
                 app:cpb_indeterminate_mode="true"

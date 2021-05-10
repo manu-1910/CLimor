@@ -4,12 +4,15 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Activity.RESULT_OK
+import android.app.AlertDialog
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
@@ -63,6 +66,7 @@ import com.limor.app.scenes.utils.waveform.KeyboardUtils
 import com.limor.app.uimodels.*
 import com.yalantis.ucrop.UCrop
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
 import kotlinx.android.synthetic.main.fragment_publish.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
@@ -144,7 +148,7 @@ class PublishFragment : BaseFragment() {
     private var imageUploaded: Boolean = false
     private var podcastHasImage: Boolean = false
     private var isShowingTagsRecycler = false
-    private var convertedFile : File? = null
+    private var convertedFile: File? = null
 
 
     companion object {
@@ -313,34 +317,35 @@ class PublishFragment : BaseFragment() {
                 }
 
                 if (it.code == 10) {  //Session expired
-                    alert(
+                    showUnableToPublishCastDialog(
                         getString(R.string.session_expired_error_message),
-                        getString(R.string.publish_cast_error_title)
-                    ) {
-                        okButton {
+                        getString(R.string.ok), {
                             val intent = Intent(context, SignActivity::class.java)
                             //intent.putExtra(getString(R.string.otherActivityKey), true)
                             startActivityForResult(
                                 intent,
                                 resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
                             )
-                        }
-                    }.show()
+                        })
                 } else {
-                    alert(message.toString(), getString(R.string.publish_cast_error_title)) {
-                        positiveButton(getString(R.string.try_again)) {
+                    showUnableToPublishCastDialog(
+                        description = message.toString(),
+                        okText = getString(R.string.try_again),
+                        okAction = {
                             btnPublishDraft?.callOnClick()
-                        }
-                        negativeButton(getString(R.string.description_back)) {
-
-                        }
-                    }.show()
+                        },
+                        negativeText = getString(R.string.description_back),
+                        negativeAction = {
+                        })
                 }
 
             } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
+                showUnableToPublishCastDialog(
+                    description = getString(R.string.default_no_internet),
+                    okText = getString(R.string.ok),
+                    okAction = {
+                    })
+
             }
         })
     }
@@ -508,11 +513,19 @@ class PublishFragment : BaseFragment() {
 
 
     private fun publishPodcastAudio() {
-
-        /*  val dialog = AlertProgressBar(requireContext())
-          dialog.show()*/
         progressPb.visibility = View.VISIBLE
 
+        Timber.d("Publishing audio podcast")
+        if (!app!!.merlinsBeard!!.isConnected) {
+            progressPb.visibility = View.GONE
+            showUnableToPublishCastDialog(
+                description = getString(R.string.default_no_internet),
+                okText = getString(R.string.ok),
+                okAction = {
+
+                })
+            return
+        }
         convertedFile = WavHelper.convertWavToM4a(requireContext(), uiDraft.filePath!!)
         convertedFile?.let {
             //Upload audio file to AWS
@@ -525,17 +538,14 @@ class PublishFragment : BaseFragment() {
                         println("Audio upload to AWS succesfully")
                         audioUploaded = true
                         audioUrlFinal = audioUrl
-                        //  dialog.dismiss()
                         progressPb.visibility = View.GONE
                         readyToPublish()
                     }
 
                     override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
-                        //dialog.updateProgress(bytesCurrent.toInt(), bytesTotal.toInt())
                     }
 
                     override fun onError(error: String?) {
-                        //  dialog.dismiss()
                         progressPb.visibility = View.GONE
                         audioUploaded = false
                         alert(getString(R.string.error_uploading_audio)) {
@@ -944,6 +954,45 @@ class PublishFragment : BaseFragment() {
         }
 
         return titleNotEmpty && captionNotEmpty
+    }
+
+
+    private fun showUnableToPublishCastDialog(
+        description: String,
+        okText: String,
+        okAction: () -> Unit,
+        negativeText: String = getString(R.string.cancel),
+        negativeAction: (() -> Unit)? = null
+    ) {
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_error_publish_cast, null)
+
+        dialogBuilder.setView(dialogView)
+        dialogBuilder.setCancelable(true)
+        val dialog: AlertDialog = dialogBuilder.create()
+
+        dialogView.textDescription.text = description
+        dialogView.okButton.text = okText
+        if (negativeAction != null) {
+            dialogView.cancelButton.visibility = View.VISIBLE
+            dialogView.cancelButton.text = negativeText
+            dialogView.cancelButton.onClick {
+                dialog.dismiss()
+                negativeAction.invoke()
+            }
+        }
+        dialogView.okButton.setOnClickListener {
+            dialog.dismiss()
+            okAction.invoke()
+        }
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset)
+            show()
+        }
     }
 
 
