@@ -1,5 +1,6 @@
 package com.limor.app.scenes.auth_new
 
+import android.app.Activity
 import android.content.res.AssetManager
 import android.os.Handler
 import androidx.fragment.app.FragmentManager
@@ -8,9 +9,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.limor.app.scenes.auth_new.data.*
+import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
 import com.limor.app.scenes.auth_new.model.CountriesListProvider
 import com.limor.app.scenes.auth_new.util.DobPicker
 import com.limor.app.scenes.auth_new.util.PhoneNumberChecker
+import com.limor.app.scenes.auth_new.util.combineWith
 import com.limor.app.scenes.utils.BACKGROUND
 import timber.log.Timber
 import kotlin.random.Random
@@ -38,6 +41,14 @@ class AuthViewModelNew : ViewModel() {
     }
 
     /* PHONE Countries selection */
+
+    fun initPhoneAuthHandler(activity: Activity) {
+        PhoneAuthHandler.init(activity)
+    }
+
+    fun submitPhoneNumber() {
+        PhoneAuthHandler.sendCodeToPhone(formattedPhone)
+    }
 
     private val _countries = MutableLiveData<List<Country>>().apply { value = emptyList() }
 
@@ -94,31 +105,28 @@ class AuthViewModelNew : ViewModel() {
 
     private val _smsCodeIsFullLiveData = MutableLiveData<Boolean>().apply { value = false }
 
-    val smsCodeIsFullLiveData: LiveData<Boolean>
-        get() = _smsCodeIsFullLiveData
+    val smsCodeValidationErrorMessage: LiveData<String>
+        get() = PhoneAuthHandler.smsCodeValidationErrorMessage
+
+    val smsCodeValidatedLiveData: LiveData<Boolean>
+        get() = PhoneAuthHandler.smsCodeValidatedLiveData
+
+    val smsContinueButtonEnabled: LiveData<Boolean> =
+        _smsCodeIsFullLiveData.combineWith(smsCodeValidationErrorMessage) { full, error ->
+            full!! && (error?.isEmpty() ?: false)
+        }
 
     fun setSmsCodeForCheck(codes: List<String?>) {
-        _smsCodeValidationErrorMessageLiveData.postValue("")
+        PhoneAuthHandler.clearError()
         val value = codes.all { it?.isNotEmpty() ?: false }
         _smsCodeIsFullLiveData.postValue(value)
     }
 
-    private val _smsCodeValidationErrorMessageLiveData =
-        MutableLiveData<String>().apply { value = "" }
-
-    val smsCodeValidationErrorMessageLiveData: LiveData<String>
-        get() = _smsCodeValidationErrorMessageLiveData
-
-    private val _smsCodeValidatedLiveData = MutableLiveData<Boolean>().apply { value = false }
-
-    val smsCodeValidatedLiveData: LiveData<Boolean>
-        get() = _smsCodeValidatedLiveData
-
     fun submitSmsCode(codes: List<String?>) {
-//        val value = codes.all { it?.isNotEmpty() ?: false }
-        _smsCodeValidationErrorMessageLiveData.postValue("")
-        _smsCodeValidatedLiveData.postValue(true)
-        Handler().postDelayed({ _smsCodeValidatedLiveData.postValue(false) }, 500)
+        val value = codes.joinToString(separator = "")
+        PhoneAuthHandler.enterCodeAndSignIn(value)
+//        _smsCodeValidatedLiveData.postValue(true)
+//        Handler().postDelayed({ _smsCodeValidatedLiveData.postValue(false) }, 500)
     }
 
     /* Email validation*/

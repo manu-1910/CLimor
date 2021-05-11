@@ -52,6 +52,7 @@ class FragmentSignEnterPhone : Fragment() {
 
     private fun setClickListeners() {
         btnContinue.setOnClickListener {
+            model.submitPhoneNumber()
             it.findNavController()
                 .navigate(R.id.action_fragment_new_auth_phone_enter_to_fragment_new_auth_phone_code)
         }
@@ -75,8 +76,7 @@ class FragmentSignEnterPhone : Fragment() {
     }
 
     private fun subscribeToViewModel() {
-//        model.setCountrySelected(Country())
-//        model.setPhoneChanged("")
+        model.initPhoneAuthHandler(requireActivity())
         model.countriesLiveData.observe(viewLifecycleOwner, Observer {
             setCountriesAdapter(it)
         })

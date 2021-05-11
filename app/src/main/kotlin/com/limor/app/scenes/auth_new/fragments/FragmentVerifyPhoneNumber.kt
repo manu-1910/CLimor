@@ -75,7 +75,7 @@ class FragmentVerifyPhoneNumber : Fragment() {
         et.setOnEditorActionListener { textView, actionId, keyEvent ->
             when (actionId and EditorInfo.IME_MASK_ACTION) {
                 EditorInfo.IME_ACTION_DONE -> {
-                    if (model.smsCodeIsFullLiveData.value == true)
+                    if (model.smsContinueButtonEnabled.value == true)
                         validateSmsCode()
                 }
 
@@ -105,16 +105,15 @@ class FragmentVerifyPhoneNumber : Fragment() {
 
     private fun subscribeToViewModel() {
         tvPhone.text = model.formattedPhone
-        model.smsCodeIsFullLiveData.observe(viewLifecycleOwner, Observer {
+        model.smsContinueButtonEnabled.observe(viewLifecycleOwner, Observer {
             btnContinue.isEnabled = it
         })
 
-        model.smsCodeValidationErrorMessageLiveData.observe(viewLifecycleOwner, Observer {
+        model.smsCodeValidationErrorMessage.observe(viewLifecycleOwner, Observer {
             val hasError = it.isNotBlank()
-            btnContinue.isEnabled = !hasError
             tvWrongCode.visibility = if (hasError) View.VISIBLE else View.GONE
             smsCodeEtList.forEach { et ->
-                et.error = if (hasError) it else null
+                et.error = if (hasError) " " else null
                 et.editText!!.setTextColor(
                     resources
                         .getColor(if (hasError) R.color.error_stroke_color else R.color.black)

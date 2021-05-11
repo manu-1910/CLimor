@@ -527,6 +527,6 @@
     <string name="categories">Categories</string>
     <string name="languages">Languages</string>
     <string name="search_hint">Search...</string>
-    <string name="date_less_than_13_yo">You have to be older than 13 y.o.</string>
+    <string name="date_less_than_13_yo">You must be 13 years old to sign up</string>
     <string name="select_date">Select date</string>
 </resources>
