@@ -2,6 +2,7 @@ package com.limor.app.scenes.auth_new
 
 import android.app.Activity
 import android.content.res.AssetManager
+import android.os.CountDownTimer
 import android.os.Handler
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
@@ -17,6 +18,7 @@ import com.limor.app.scenes.auth_new.util.combineWith
 import com.limor.app.scenes.utils.BACKGROUND
 import timber.log.Timber
 import kotlin.random.Random
+
 
 class AuthViewModelNew : ViewModel() {
 
@@ -48,6 +50,33 @@ class AuthViewModelNew : ViewModel() {
 
     fun submitPhoneNumber() {
         PhoneAuthHandler.sendCodeToPhone(formattedPhone)
+    }
+
+    private val _resendButtonEnableLiveData = MutableLiveData<Boolean>().apply { value = true }
+    private val _resendButtonCountDownLiveData = MutableLiveData<Int?>().apply { value = null }
+
+    val resendButtonEnableLiveData: LiveData<Boolean>
+        get() = _resendButtonEnableLiveData
+
+    val resendButtonCountDownLiveData: LiveData<Int?>
+        get() = _resendButtonCountDownLiveData
+
+    private var countDownTimer: CountDownTimer? = null
+
+    fun resendCode() {
+        _resendButtonEnableLiveData.postValue(false)
+        _resendButtonCountDownLiveData.postValue(30)
+        countDownTimer = object : CountDownTimer(30000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                _resendButtonCountDownLiveData.postValue((millisUntilFinished / 1000).toInt())
+            }
+
+            override fun onFinish() {
+                _resendButtonEnableLiveData.postValue(true)
+                _resendButtonCountDownLiveData.postValue(null)
+                PhoneAuthHandler.sendCodeToPhone(formattedPhone, resend = true)
+            }
+        }.start()
     }
 
     private val _countries = MutableLiveData<List<Country>>().apply { value = emptyList() }
@@ -282,5 +311,10 @@ class AuthViewModelNew : ViewModel() {
         }
         val filtered = getLanguagesByInput(input, languages)
         _languagesLiveData.postValue(filtered)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        countDownTimer?.cancel()
     }
 }

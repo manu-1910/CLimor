@@ -1,5 +1,6 @@
 package com.limor.app.scenes.auth_new.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -97,12 +98,18 @@ class FragmentVerifyPhoneNumber : Fragment() {
             it.hideKeyboard()
             validateSmsCode()
         }
+
+        fabResendCode.setOnClickListener {
+            it.hideKeyboard()
+            model.resendCode()
+        }
     }
 
     private fun validateSmsCode() {
         model.submitSmsCode(smsCodesList())
     }
 
+    @SuppressLint("SetTextI18n")
     private fun subscribeToViewModel() {
         tvPhone.text = model.formattedPhone
         model.smsContinueButtonEnabled.observe(viewLifecycleOwner, Observer {
@@ -127,5 +134,15 @@ class FragmentVerifyPhoneNumber : Fragment() {
                     .navigate(R.id.action_fragment_new_auth_phone_code_to_fragment_new_auth_enter_email)
         })
 
+        model.resendButtonEnableLiveData.observe(viewLifecycleOwner, Observer {
+            fabResendCode.isEnabled = it
+        })
+
+        model.resendButtonCountDownLiveData.observe(viewLifecycleOwner, Observer {
+            if(it == null)
+                tvResendCodeStatus.setText(R.string.didnt_receive_sms_code)
+            else
+                tvResendCodeStatus.text = getString(R.string.resend_code_in) + (if(it < 10) "0$it" else it)
+        })
     }
 }

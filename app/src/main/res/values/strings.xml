@@ -529,4 +529,5 @@
     <string name="search_hint">Search...</string>
     <string name="date_less_than_13_yo">You must be 13 years old to sign up</string>
     <string name="select_date">Select date</string>
+    <string name="resend_code_in">Resend code in 00:</string>
 </resources>

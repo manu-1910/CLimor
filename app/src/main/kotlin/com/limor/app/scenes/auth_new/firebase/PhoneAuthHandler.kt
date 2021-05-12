@@ -23,14 +23,16 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
         this.activity = activity
     }
 
-    fun sendCodeToPhone(phone: String) {
-        val options = PhoneAuthOptions.newBuilder(auth)
+    fun sendCodeToPhone(phone: String, resend: Boolean = false) {
+        val optionsBuilder = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber(phone)
             .setTimeout(30L, TimeUnit.SECONDS)
             .setActivity(activity)
             .setCallbacks(this)
-            .build()
-        PhoneAuthProvider.verifyPhoneNumber(options)
+        if (resend && resendToken != null) {
+            optionsBuilder.setForceResendingToken(resendToken!!)
+        }
+        PhoneAuthProvider.verifyPhoneNumber(optionsBuilder.build())
     }
 
     override fun onVerificationCompleted(credential: PhoneAuthCredential) {
