@@ -21,38 +21,61 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="252dp"
         android:background="#F0F3F8"
         android:layout_marginBottom="@dimen/marginMedium"
         >
 
-        <com.limor.app.scenes.utils.VisualizerView
+        <com.limor.app.scenes.utils.visualizer.RecordVisualizer
             android:id="@+id/graphVisualizer"
             android:layout_width="match_parent"
+            app:barWidth="1.3dp"
+            app:approximateBarDuration="50"
+            app:loadedBarPrimeColor="@color/waveFormColor"
+            app:spaceBetweenBar="2dp"
             android:layout_height="match_parent" />
+
+        <com.limor.app.scenes.utils.visualizer.PlayVisualizer
+            android:id="@+id/playVisualizer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:approximateBarDuration="50"
+            app:barWidth="1.3dp"
+            app:loadedBarPrimeColor="@color/waveFormColor"
+            app:spaceBetweenBar="2dp" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="24dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:background="@color/waveFormColor" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layCountdownAnimation"
-            android:background="@drawable/rectangle_rounded_corners"
             android:layout_width="180dp"
             android:layout_height="180dp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            tools:visibility="visible"
-            android:visibility="gone">
+            android:layout_centerInParent="true"
+            android:background="@drawable/rectangle_rounded_corners"
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <TextView
                 android:id="@+id/tvCountdown"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_bold"
                 android:gravity="center"
+                android:includeFontPadding="false"
                 android:text="3"
                 android:textColor="@color/white"
                 android:textSize="64sp"
-                android:fontFamily="@font/roboto_bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:includeFontPadding="false"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="HardcodedText" />
@@ -91,11 +114,53 @@
             android:layout_height="match_parent"
             android:layout_below="@id/c_meter"
             android:layout_marginStart="@dimen/marginMedium"
-            android:layout_marginTop="@dimen/marginMedium"
+            android:layout_marginTop="@dimen/marginSmall"
             android:layout_marginEnd="@dimen/marginMedium"
-            android:layout_marginBottom="@dimen/marginMedium"
             android:gravity="bottom"
             android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/rewButton"
+                    style="@android:style/MediaButton"
+                    android:layout_width="64dip"
+                    android:layout_height="52dip"
+                    android:layout_marginEnd="16dp"
+                    android:layout_toStartOf="@id/playButton"
+                    android:contentDescription="@string/rewind"
+                    android:src="@drawable/rewind_button"
+                    app:layout_constraintEnd_toStartOf="@+id/playButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/playButton"
+                    style="@android:style/MediaButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="52dip"
+                    android:layout_centerHorizontal="true"
+                    android:contentDescription="@string/play"
+                    android:src="@drawable/play_button"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/ffwdButton"
+                    style="@android:style/MediaButton"
+                    android:layout_width="64dip"
+                    android:layout_height="52dip"
+                    android:layout_marginStart="16dp"
+                    android:layout_toEndOf="@id/playButton"
+                    android:contentDescription="@string/ffwd"
+                    android:src="@drawable/forward_button"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/playButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <Button
                 android:id="@+id/recordButton"
@@ -104,6 +169,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/marginMedium"
                 android:background="@drawable/record_red_btn" />
+
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/nextButton"
@@ -114,7 +180,7 @@
                 android:fontFamily="@font/roboto_medium"
                 android:paddingTop="14dp"
                 android:paddingBottom="14dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="24dp"
                 android:text="@string/go_to_publish"
                 android:textAllCaps="false"
                 android:textColor="@color/colorPrimary"

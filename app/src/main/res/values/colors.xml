@@ -141,4 +141,6 @@
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">
         @color/textSecondary
     </color>
+    <color name="grayWave">#91A2B2</color>
+    <color name="orangeColor">#FF9800</color>
 </resources>
