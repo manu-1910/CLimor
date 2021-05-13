@@ -1,6 +1,7 @@
 package com.limor.app.scenes.auth_new
 
 import android.app.Activity
+import android.content.Intent
 import android.content.res.AssetManager
 import android.os.CountDownTimer
 import android.os.Handler
@@ -10,6 +11,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.limor.app.scenes.auth_new.data.*
+import com.limor.app.scenes.auth_new.firebase.GoogleAuthHandler
 import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
 import com.limor.app.scenes.auth_new.model.CountriesListProvider
 import com.limor.app.scenes.auth_new.util.DobPicker
@@ -317,4 +319,17 @@ class AuthViewModelNew : ViewModel() {
         super.onCleared()
         countDownTimer?.cancel()
     }
+
+    /*GOOGLE AUTH*/
+
+    fun startGoogleAuth(activity: Activity) {
+        GoogleAuthHandler.initClientAndSignIn(activity)
+    }
+
+    fun handleGoogleAuthResult(data: Intent) {
+        GoogleAuthHandler.handleResultIntent(data)
+    }
+
+    val googleSignIsComplete: LiveData<Boolean>
+        get() = GoogleAuthHandler.googleSignIsComplete
 }

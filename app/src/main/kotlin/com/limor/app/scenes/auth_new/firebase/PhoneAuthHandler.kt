@@ -2,6 +2,7 @@ package com.limor.app.scenes.auth_new.firebase
 
 import android.app.Activity
 import android.os.Handler
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -13,11 +14,18 @@ import java.util.concurrent.TimeUnit
 object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
     private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
     private var storedVerificationId: String? = null
+    private var phoneAuthCredential: PhoneAuthCredential? = null
     private var auth: FirebaseAuth = FirebaseAuth.getInstance()
     private lateinit var activity: Activity
-    val smsCodeValidatedLiveData = MutableLiveData<Boolean>().apply { value = false }
-    val smsCodeValidationErrorMessage =
+
+    private val _smsCodeValidatedLiveData = MutableLiveData<Boolean>().apply { value = false }
+    val smsCodeValidatedLiveData: LiveData<Boolean>
+        get() = _smsCodeValidatedLiveData
+
+    private val _smsCodeValidationErrorMessage =
         MutableLiveData<String>().apply { value = "" }
+    val smsCodeValidationErrorMessage: LiveData<String>
+        get() = _smsCodeValidationErrorMessage
 
     fun init(activity: Activity) {
         this.activity = activity
@@ -47,9 +55,8 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
         } else if (e is FirebaseTooManyRequestsException) {
             // The SMS quota for the project has been exceeded
         }
-        smsCodeValidationErrorMessage.postValue(e.toString())
+        _smsCodeValidationErrorMessage.postValue(e.toString())
 
-        // Show a message and update the UI
     }
 
     override fun onCodeSent(
@@ -72,7 +79,7 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
 
     fun enterCodeAndSignIn(code: String) {
         BACKGROUND({
-            smsCodeValidationErrorMessage.postValue("")
+            _smsCodeValidationErrorMessage.postValue("")
             if (storedVerificationId == null) return@BACKGROUND
             val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, code)
             signInWithPhoneAuthCredential(credential)
@@ -80,6 +87,7 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        phoneAuthCredential = credential
         auth.signInWithCredential(credential)
             .addOnCompleteListener(activity) { task ->
                 val successful = task.isSuccessful
@@ -95,15 +103,15 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
                         // The verification code entered was invalid
                     }
-                    smsCodeValidationErrorMessage.postValue(task.exception.toString())
+                    _smsCodeValidationErrorMessage.postValue(task.exception.toString())
                 }
-                smsCodeValidatedLiveData.postValue(successful)
+                _smsCodeValidatedLiveData.postValue(successful)
                 if (successful)
-                    Handler().postDelayed({ smsCodeValidatedLiveData.postValue(false) }, 500)
+                    Handler().postDelayed({ _smsCodeValidatedLiveData.postValue(false) }, 500)
             }
     }
 
     fun clearError() {
-        smsCodeValidationErrorMessage.postValue("")
+        _smsCodeValidationErrorMessage.postValue("")
     }
 }
