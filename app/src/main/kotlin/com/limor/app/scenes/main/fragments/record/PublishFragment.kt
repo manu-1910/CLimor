@@ -178,18 +178,18 @@ class PublishFragment : BaseFragment() {
             btnPlayPause = rootView?.findViewById(R.id.ibPlayPause)
             btnFfwd = rootView?.findViewById(R.id.ibFfwd)
             btnRew = rootView?.findViewById(R.id.ibRew)
-            draftImage = rootView?.findViewById(R.id.ivDraft)
-            lytImagePlaceholder = rootView?.findViewById(R.id.lytImagePlaceHolder)
-            lytImage = rootView?.findViewById(R.id.lytImage)
+            draftImage = rootView?.findViewById(R.id.imageCast)
+            lytImagePlaceholder = rootView?.findViewById(R.id.layoutImageCastPlaceholder)
+            lytImage = rootView?.findViewById(R.id.layoutCastImage)
             btnSaveDraft = rootView?.findViewById(R.id.btnSaveAsDraft)
             btnPublishDraft = rootView?.findViewById(R.id.btnPublish)
             etDraftTitle = rootView?.findViewById(R.id.etTitle)
             etDraftCaption = rootView?.findViewById(R.id.etCaption)
             etDraftTags = rootView?.findViewById(R.id.etHashtags)
-            tvSelectedLocation = rootView?.findViewById(R.id.tvSelectedLocation)
-            tvSelectedCategory = rootView?.findViewById(R.id.tvSelectedCategory)
+            tvSelectedLocation = rootView?.findViewById(R.id.textSelectedLocation)
+            tvSelectedCategory = rootView?.findViewById(R.id.textSelectedCategory)
             lytWithoutTagsRecycler = rootView?.findViewById(R.id.lytWithoutTagsRecycler)
-            rvTags = rootView?.findViewById(R.id.rvTags)
+            rvTags = rootView?.findViewById(R.id.rvHashtags)
 
             mediaPlayer = MediaPlayer()
 
@@ -278,7 +278,7 @@ class PublishFragment : BaseFragment() {
         }
 
         if (!publishViewModel.languageSelected.isNullOrEmpty()) {
-            tvSelectedLanguage?.text = publishViewModel.languageSelected
+            textSelectedLanguage?.text = publishViewModel.languageSelected
             isLanguageSelected = true
             updatePublishBtnState()
         }
@@ -460,15 +460,15 @@ class PublishFragment : BaseFragment() {
             }
         }
 
-        lytTvCategory?.onClick {
+        layoutCastCategory?.onClick {
             findNavController().navigate(R.id.action_record_publish_to_record_categories)
         }
 
-        lytTvLocation?.onClick {
+        layoutCastLocation?.onClick {
             findNavController().navigate(R.id.action_record_publish_to_record_locations)
         }
 
-        lytTvLanguages?.onClick {
+        layoutCastLanguages?.onClick {
             findNavController().navigate(R.id.action_record_publish_to_record_languages)
         }
 

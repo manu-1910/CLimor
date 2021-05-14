@@ -44,7 +44,7 @@
                         android:visibility="visible">
 
                         <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/appCompatTextView"
+                            android:id="@+id/textUploadPhotoTitle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/marginTwenty"
@@ -60,7 +60,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <RelativeLayout
-                            android:id="@+id/lytImage"
+                            android:id="@+id/layoutCastImage"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/marginTwenty"
@@ -70,10 +70,10 @@
                             android:visibility="invisible"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/appCompatTextView">
+                            app:layout_constraintTop_toBottomOf="@+id/textUploadPhotoTitle">
 
                             <ImageView
-                                android:id="@+id/ivDraft"
+                                android:id="@+id/imageCast"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentTop="true"
@@ -83,7 +83,7 @@
                         </RelativeLayout>
 
                         <RelativeLayout
-                            android:id="@+id/lytImagePlaceHolder"
+                            android:id="@+id/layoutImageCastPlaceholder"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/marginTwenty"
@@ -92,10 +92,10 @@
                             android:visibility="visible"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/appCompatTextView">
+                            app:layout_constraintTop_toBottomOf="@+id/textUploadPhotoTitle">
 
                             <ImageView
-                                android:id="@+id/ivDraftImage"
+                                android:id="@+id/imagePlaceholderAddPhoto"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
@@ -105,7 +105,7 @@
                                 android:visibility="visible" />
 
                             <ImageView
-                                android:id="@+id/placeHolder"
+                                android:id="@+id/imagePlaceholderBackground"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
@@ -114,7 +114,7 @@
                         </RelativeLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/textInputLayout"
+                            android:id="@+id/inputCastTitle"
                             style="@style/TextInputLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -129,7 +129,7 @@
                             app:counterMaxLength="80"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/lytImage">
+                            app:layout_constraintTop_toBottomOf="@+id/layoutCastImage">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/etTitle"
@@ -145,13 +145,13 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <LinearLayout
-                        android:id="@+id/lytForm"
+                        android:id="@+id/layoutContent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
                         <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/textInputLayout2"
+                            android:id="@+id/inputCaption"
                             style="@style/TextInputLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -182,7 +182,7 @@
 
 
                         <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/textInputLayoutHashtags"
+                            android:id="@+id/inputHashtags"
                             style="@style/TextInputLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -225,7 +225,7 @@
                             android:textSize="@dimen/textSizeTiny" />
 
                         <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rvTags"
+                            android:id="@+id/rvHashtags"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/marginMediumSmall"
@@ -244,7 +244,7 @@
                         android:visibility="visible">
 
                         <RelativeLayout
-                            android:id="@+id/lytTvCategory"
+                            android:id="@+id/layoutCastCategory"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/marginTwenty"
@@ -253,7 +253,7 @@
                             android:visibility="visible">
 
                             <TextView
-                                android:id="@+id/tvCategory"
+                                android:id="@+id/textCategory"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
@@ -263,12 +263,12 @@
                                 android:textSize="@dimen/textSize16" />
 
                             <TextView
-                                android:id="@+id/tvSelectedCategory"
+                                android:id="@+id/textSelectedCategory"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
                                 android:layout_marginBottom="@dimen/marginMedium"
-                                android:layout_toEndOf="@id/tvCategory"
+                                android:layout_toEndOf="@id/textCategory"
                                 android:fontFamily="@font/roboto_medium"
                                 android:gravity="end"
                                 android:textColor="@color/textSecondary"
@@ -285,7 +285,7 @@
 
 
                         <RelativeLayout
-                            android:id="@+id/lytTvLanguages"
+                            android:id="@+id/layoutCastLanguages"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/marginTwenty"
@@ -294,7 +294,7 @@
                             android:visibility="visible">
 
                             <TextView
-                                android:id="@+id/tvLanguage"
+                                android:id="@+id/textLanguage"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
@@ -305,11 +305,11 @@
                                 android:textSize="@dimen/textSize16" />
 
                             <TextView
-                                android:id="@+id/tvSelectedLanguage"
+                                android:id="@+id/textSelectedLanguage"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
-                                android:layout_toEndOf="@id/tvLanguage"
+                                android:layout_toEndOf="@id/textLanguage"
                                 android:fontFamily="@font/roboto_medium"
                                 android:gravity="end"
                                 android:textColor="@color/textSecondary"
@@ -325,7 +325,7 @@
                         </RelativeLayout>
 
                         <RelativeLayout
-                            android:id="@+id/lytTvLocation"
+                            android:id="@+id/layoutCastLocation"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/marginTwenty"
@@ -334,7 +334,7 @@
                             android:visibility="visible">
 
                             <TextView
-                                android:id="@+id/tvLocation"
+                                android:id="@+id/textLocation"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
@@ -345,11 +345,11 @@
                                 android:textSize="@dimen/textSize16" />
 
                             <TextView
-                                android:id="@+id/tvSelectedLocation"
+                                android:id="@+id/textSelectedLocation"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
-                                android:layout_toEndOf="@id/tvLocation"
+                                android:layout_toEndOf="@id/textLocation"
                                 android:fontFamily="@font/roboto_medium"
                                 android:gravity="end"
                                 android:textColor="@color/textSecondary"
