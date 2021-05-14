@@ -125,6 +125,8 @@
                             app:boxStrokeWidth="2dp"
                             app:hintTextAppearance="@style/TextHintStyle"
                             app:hintTextColor="@color/colorAccent"
+                            app:counterEnabled="true"
+                            app:counterMaxLength="80"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/lytImage">
@@ -159,7 +161,7 @@
                             app:boxStrokeColor="@color/colorAccent"
                             app:boxStrokeWidth="2dp"
                             app:counterEnabled="true"
-                            app:counterMaxLength="120"
+                            app:counterMaxLength="1000"
                             app:counterTextColor="@color/textSecondary"
                             app:hintTextAppearance="@style/TextHintStyle"
                             app:hintTextColor="@color/colorAccent">
@@ -207,7 +209,7 @@
                                 android:paddingBottom="@dimen/marginMedium"
                                 android:textColor="@color/textPrimary"
                                 android:textSize="@dimen/textSizeNormal"
-                                app:hyperlinkColor="@color/textAccent"
+                                app:hyperlinkColor="@color/textPrimary"
                                 app:socialFlags="hashtag" />
                         </com.google.android.material.textfield.TextInputLayout>
 

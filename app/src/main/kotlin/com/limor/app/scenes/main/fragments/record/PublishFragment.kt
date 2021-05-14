@@ -30,6 +30,7 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -77,6 +78,7 @@ import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.textColor
 import org.jetbrains.anko.uiThread
 import timber.log.Timber
 import java.io.File
@@ -139,8 +141,9 @@ class PublishFragment : BaseFragment() {
     private var listTagsString: HashtagArrayAdapter<Hashtag>? = null
     private var tvSelectedLocation: TextView? = null
     private var tvSelectedCategory: TextView? = null
-    private var twCaption: TextWatcher? = null
+    private var twHastags: TextWatcher? = null
     private var twTitle: TextWatcher? = null
+    private var twCaption: TextWatcher? = null
     private var rvTags: RecyclerView? = null
 
     //Flags to publish podcast
@@ -150,6 +153,10 @@ class PublishFragment : BaseFragment() {
     private var isShowingTagsRecycler = false
     private var convertedFile: File? = null
 
+    private var isImageChosen: Boolean = false
+    private var isCategorySelected: Boolean = false
+    private var isLanguageSelected: Boolean = false
+    private var isTagsSelected: Boolean = false
 
     companion object {
         val TAG: String = PublishFragment::class.java.simpleName
@@ -244,7 +251,9 @@ class PublishFragment : BaseFragment() {
 
         listTagsString = HashtagArrayAdapter(requireContext())
         setupRecyclerTags()
+        updatePublishBtnState()
     }
+
 
 
     override fun onResume() {
@@ -264,16 +273,52 @@ class PublishFragment : BaseFragment() {
             tvSelectedCategory?.text = publishViewModel.categorySelected
             uiDraft.category = publishViewModel.categorySelected
             uiDraft.categoryId = publishViewModel.categorySelectedId
+            isCategorySelected = true
+            updatePublishBtnState()
         }
 
         if (!publishViewModel.languageSelected.isNullOrEmpty()) {
             tvSelectedLanguage?.text = publishViewModel.languageSelected
+            isLanguageSelected = true
+            updatePublishBtnState()
         }
 
         //update database
         callToUpdateDraft()
     }
 
+    private fun updatePublishBtnState() {
+        val isTitleValid = etDraftTitle?.text?.trim()?.isNotEmpty() ?: false
+        val isCaptionValid = etDraftCaption?.text?.trim()?.isNotEmpty() ?: false
+        val isAllRequiredFieldsFilled = isCategorySelected
+                && isImageChosen
+                && isLanguageSelected
+                && isCaptionValid
+                && isTitleValid
+                && isTagsSelected
+
+        Timber.d("Publish btn enabled: $isAllRequiredFieldsFilled isTitle valid ${isTitleValid}isCaptionValid ${isCaptionValid}isImageChosen ${isImageChosen}isLanguageSelected = ${isLanguageSelected}isCategorySelected ${isCategorySelected}isTagsSelected $isTagsSelected")
+        if (isAllRequiredFieldsFilled) {
+            btnPublishDraft?.isEnabled = true
+            btnPublishDraft?.background =
+                AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.bg_round_yellow_ripple_new
+                )
+            btnPublishDraft?.textColor =
+                ContextCompat.getColor(requireContext(), R.color.textPrimary)
+            btnPublishDraft?.visibility = View.VISIBLE
+        } else {
+            btnPublishDraft?.isEnabled = false
+            btnPublishDraft?.background =
+                AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.bg_round_grey_ripple_new
+                )
+            btnPublishDraft?.textColor =
+                ContextCompat.getColor(requireContext(), R.color.textSecondary)
+        }
+    }
 
     private fun apiCallPublishPodcast() {
         val output = publishViewModel.transform(
@@ -428,11 +473,11 @@ class PublishFragment : BaseFragment() {
         }
 
         //Used for show or hide the recyclerview of the hashtags
-        twCaption = object : TextWatcher {
+        twHastags = object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
-                uiDraft.caption = editable.toString()
-                callToUpdateDraft()
+                isTagsSelected = etHashtags.hashtags.count() > 0
+                updatePublishBtnState()
             }
 
             override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {
@@ -454,6 +499,7 @@ class PublishFragment : BaseFragment() {
                         rvTags?.visibility = View.VISIBLE
                         lytWithoutTagsRecycler?.visibility = View.GONE
                         isShowingTagsRecycler = true
+
                     } else {
                         rvTags?.visibility = View.GONE
                         lytWithoutTagsRecycler?.visibility = View.VISIBLE
@@ -462,7 +508,7 @@ class PublishFragment : BaseFragment() {
                 }
             }
         }
-        etHashtags.addTextChangedListener(twCaption)
+        etHashtags.addTextChangedListener(twHastags)
 
 
         //Used for show or hide the recyclerview of the hashtags
@@ -471,12 +517,25 @@ class PublishFragment : BaseFragment() {
             override fun afterTextChanged(editable: Editable) {
                 uiDraft.title = editable.toString()
                 callToUpdateDraft()
+                updatePublishBtnState()
             }
 
             override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
         }
         etTitle.addTextChangedListener(twTitle)
 
+        twCaption = object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+            override fun afterTextChanged(editable: Editable) {
+                uiDraft.caption = editable.toString()
+                callToUpdateDraft()
+                updatePublishBtnState()
+            }
+
+            override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
+        }
+
+        etCaption.addTextChangedListener(twTitle)
 
         //Keyboard listener to hide the recycler
         KeyboardUtils.addKeyboardToggleListener(activity) { isVisible ->
@@ -690,6 +749,8 @@ class PublishFragment : BaseFragment() {
             tvSelectedLocation?.text = publishViewModel.locationSelectedItem.address
             uiDraft.location = publishViewModel.locationSelectedItem
         }
+
+        updatePublishBtnState()
     }
 
 
@@ -870,7 +931,8 @@ class PublishFragment : BaseFragment() {
 
             //Update recording item in Realm
             callToUpdateDraft()
-
+            isImageChosen = true
+            updatePublishBtnState()
             // this will run when coming from the cropActivity but there is an error
         } else if (resultCode == UCrop.RESULT_ERROR) {
             val cropError = UCrop.getError(data!!)
@@ -1095,7 +1157,7 @@ class PublishFragment : BaseFragment() {
     private fun multiCompleteText() {
         etDraftTags?.isMentionEnabled = false
         etDraftTags?.hashtagColor =
-            ContextCompat.getColor(requireContext(), R.color.brandPrimary500)
+            ContextCompat.getColor(requireContext(), R.color.textPrimary)
         etDraftTags?.hashtagAdapter = listTagsString
         etDraftTags?.setHashtagTextChangedListener { _, text ->
             println("setHashtagTextChangedListener -> $text")
@@ -1151,7 +1213,8 @@ class PublishFragment : BaseFragment() {
                                 ) + " "
 
                     etHashtags.setText(finalString)
-                    etHashtags.setSelection(etHashtags.text.length) //This places cursor to end of EditText.
+                    etHashtags.setSelection(etHashtags.text.length)
+                    //This places cursor to end of EditText.
                     rvTags?.adapter?.notifyDataSetChanged()
                 }
             })
