@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
+import com.limor.app.scenes.auth_new.firebase.FacebookAuthHandler
 import kotlinx.android.synthetic.main.activity_auth_new.*
 import timber.log.Timber
 
@@ -44,7 +45,10 @@ class AuthActivityNew : AppCompatActivity() {
             return
         if (requestCode == GOOGLE_SIGN_REQUEST_CODE) {
             model.handleGoogleAuthResult(data)
+            return
         }
+        FacebookAuthHandler.callbackManager.onActivityResult(requestCode, resultCode, data)
+
     }
 
     companion object {

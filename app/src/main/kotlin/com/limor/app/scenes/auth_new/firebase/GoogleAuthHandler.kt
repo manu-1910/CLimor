@@ -32,6 +32,14 @@ object GoogleAuthHandler {
     val googleSignIsComplete: LiveData<Boolean>
         get() = _googleSignIsComplete
 
+    private val _googleLoginError = MutableLiveData<String?>().apply { value = null }
+    val googleLoginError: LiveData<String?>
+        get() = _googleLoginError
+
+    fun clearError(){
+        _googleLoginError.postValue(null)
+    }
+
     fun initClientAndSignIn(activity: Activity) {
         BACKGROUND({
             val googleServicesAreAvailable = checkPlayServices(activity)

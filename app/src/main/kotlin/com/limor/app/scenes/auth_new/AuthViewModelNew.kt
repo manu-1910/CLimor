@@ -11,11 +11,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.limor.app.scenes.auth_new.data.*
+import com.limor.app.scenes.auth_new.firebase.FacebookAuthHandler
 import com.limor.app.scenes.auth_new.firebase.GoogleAuthHandler
 import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
 import com.limor.app.scenes.auth_new.model.CountriesListProvider
 import com.limor.app.scenes.auth_new.util.DobPicker
 import com.limor.app.scenes.auth_new.util.PhoneNumberChecker
+import com.limor.app.scenes.auth_new.util.combine
 import com.limor.app.scenes.auth_new.util.combineWith
 import com.limor.app.scenes.utils.BACKGROUND
 import timber.log.Timber
@@ -332,4 +334,16 @@ class AuthViewModelNew : ViewModel() {
 
     val googleSignIsComplete: LiveData<Boolean>
         get() = GoogleAuthHandler.googleSignIsComplete
+
+    fun clearSignErrors(){
+        GoogleAuthHandler.clearError()
+        FacebookAuthHandler.clearError()
+    }
+    val signErrorMessageLiveData: LiveData<String?>
+        get() = GoogleAuthHandler.googleLoginError.combine(FacebookAuthHandler.facebookLoginError)
+
+    /*FACEBOOK AUTH*/
+
+    val facebookSignIsComplete: LiveData<Boolean>
+        get() = FacebookAuthHandler.facebookLoginSuccess
 }

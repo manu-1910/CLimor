@@ -16,3 +16,16 @@ fun <T, K, R> LiveData<T>.combineWith(
     }
     return result
 }
+
+fun <T> LiveData<T>.combine(
+    liveData: LiveData<T>
+): LiveData<T> {
+    val result = MediatorLiveData<T>()
+    result.addSource(this) {
+        result.value = it
+    }
+    result.addSource(liveData) {
+        result.value = it
+    }
+    return result
+}
