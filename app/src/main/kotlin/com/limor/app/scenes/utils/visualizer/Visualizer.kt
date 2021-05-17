@@ -129,6 +129,14 @@ open class Visualizer : View {
     override fun onDraw(canvas: Canvas) {
         val barDuration = tickPerBar * tickDuration
         val barsPerSecond = (1000.0 / barDuration).toLong()
+
+        /* canvas.drawRect(
+             0f,
+             0f,
+             measuredWidth.toFloat(),
+             24.px.toFloat(),
+             timelineBackgroundColor
+         )*/
         canvas.drawRect(
             0f,
             measuredHeight.toFloat() - 24.px,
@@ -170,7 +178,7 @@ open class Visualizer : View {
         }
     }
 
-    private fun getBaseLine() = height / 2
+    private fun getBaseLine() = height / 2 - 12.px
     private fun getStartBar() = max(0, getBarPosition().toInt() - maxVisibleBars / 2)
     private fun getEndBar() = min(amps.size, getStartBar() + maxVisibleBars)
     private fun getBarHeightAt(i: Int) = (height - 40.px) * max(0.01f, min(amps[i] / maxAmp, 0.9f))

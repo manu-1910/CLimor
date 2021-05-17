@@ -21,24 +21,31 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="252dp"
-        android:background="#F0F3F8"
-        android:layout_marginBottom="@dimen/marginMedium"
+        android:layout_height="260dp"
+
         >
+
+        <View
+            android:layout_width="match_parent"
+            android:background="#F0F3F8"
+            android:layout_marginTop="8dp"
+            android:layout_height="match_parent" />
 
         <com.limor.app.scenes.utils.visualizer.RecordVisualizer
             android:id="@+id/graphVisualizer"
             android:layout_width="match_parent"
-            app:barWidth="1.3dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
             app:approximateBarDuration="50"
+            app:barWidth="1.3dp"
             app:loadedBarPrimeColor="@color/waveFormColor"
-            app:spaceBetweenBar="2dp"
-            android:layout_height="match_parent" />
+            app:spaceBetweenBar="2dp" />
 
         <com.limor.app.scenes.utils.visualizer.PlayVisualizer
             android:id="@+id/playVisualizer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
             android:visibility="gone"
             app:approximateBarDuration="50"
             app:barWidth="1.3dp"
@@ -49,11 +56,26 @@
             android:id="@+id/divider"
             android:layout_width="2dp"
             android:layout_height="match_parent"
-            android:layout_marginBottom="24dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentBottom="true"
             android:layout_centerInParent="true"
+            android:layout_marginBottom="24dp"
             android:background="@color/waveFormColor" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerInParent="true"
+            app:srcCompat="@drawable/small_blue_circle" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="16dp"
+            app:srcCompat="@drawable/small_blue_circle" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layCountdownAnimation"
