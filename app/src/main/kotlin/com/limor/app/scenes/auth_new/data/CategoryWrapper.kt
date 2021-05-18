@@ -1,10 +1,16 @@
 package com.limor.app.scenes.auth_new.data
 
+import com.limor.app.CategoriesQuery
 import kotlin.random.Random
 
-data class Category(val id: Int, val name: String, var isSelected: Boolean = false)
+data class CategoryWrapper(
+    val queryCategory: CategoriesQuery.Category,
+    var isSelected: Boolean = false
+) {
+    val name: String get() = queryCategory.name!!
+}
 
-fun createMockedCategories(): List<Category> {
+fun createMockedCategories(): List<CategoryWrapper> {
     val categoriesNamesList = listOf(
         "Sport",
         "News",
@@ -41,6 +47,14 @@ fun createMockedCategories(): List<Category> {
     )
     return List(categoriesNamesList.size) {
         Random.nextInt(0, 100)
-    }.mapIndexed { i, it -> Category(it, categoriesNamesList[i]) }
+    }.mapIndexed { i, it ->
+        CategoryWrapper(
+            CategoriesQuery.Category(
+                id = it,
+                name = categoriesNamesList[i],
+                slug = categoriesNamesList[i]
+            )
+        )
+    }
 
 }

@@ -6,14 +6,12 @@ import android.content.res.AssetManager
 import android.os.CountDownTimer
 import android.os.Handler
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.limor.app.scenes.auth_new.data.*
 import com.limor.app.scenes.auth_new.firebase.FacebookAuthHandler
 import com.limor.app.scenes.auth_new.firebase.GoogleAuthHandler
 import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
+import com.limor.app.scenes.auth_new.model.CategoriesProvider
 import com.limor.app.scenes.auth_new.model.CountriesListProvider
 import com.limor.app.scenes.auth_new.util.DobPicker
 import com.limor.app.scenes.auth_new.util.PhoneNumberChecker
@@ -238,40 +236,18 @@ class AuthViewModelNew : ViewModel() {
     }
 
     /* Categories */
+    private val categoriesProvider: CategoriesProvider = CategoriesProvider(viewModelScope)
 
-    private var categories: List<Category> = mutableListOf()
+    fun downloadCategories() = categoriesProvider.downloadCategories()
 
-    fun downloadCategories() {
-        if (categories.isEmpty())
-            loadCategoriesRepo()
-    }
+    fun updateCategoriesSelection() =
+        categoriesProvider.updateCategoriesSelection()
 
-    private fun loadCategoriesRepo() {
-        BACKGROUND({
-            val categories = createMockedCategories()
-            this.categories = categories
-            _categoriesLiveData.postValue(categories)
-        })
-    }
-
-    private val _categoriesLiveData =
-        MutableLiveData<List<Category>>().apply { value = categories }
-
-    val categoriesLiveData: LiveData<List<Category>>
-        get() = _categoriesLiveData
-
-
-    fun updateCategoriesSelection() {
-        val anySelected = categories.any { it.isSelected }
-        _categorySelectionDone.postValue(anySelected)
-    }
-
-    private val _categorySelectionDone =
-        MutableLiveData<Boolean>().apply { value = false }
+    val categoriesLiveData: LiveData<List<CategoryWrapper>>
+        get() = categoriesProvider.categoriesLiveData
 
     val categorySelectionDone: LiveData<Boolean>
-        get() = _categorySelectionDone
-
+        get() = categoriesProvider.categorySelectionDone
 
     /* Languages */
 
@@ -335,10 +311,11 @@ class AuthViewModelNew : ViewModel() {
     val googleSignIsComplete: LiveData<Boolean>
         get() = GoogleAuthHandler.googleSignIsComplete
 
-    fun clearSignErrors(){
+    fun clearSignErrors() {
         GoogleAuthHandler.clearError()
         FacebookAuthHandler.clearError()
     }
+
     val signErrorMessageLiveData: LiveData<String?>
         get() = GoogleAuthHandler.googleLoginError.combine(FacebookAuthHandler.facebookLoginError)
 

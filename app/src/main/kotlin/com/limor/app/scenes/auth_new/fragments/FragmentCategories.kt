@@ -11,7 +11,7 @@ import androidx.navigation.findNavController
 import com.google.android.material.chip.Chip
 import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthViewModelNew
-import com.limor.app.scenes.auth_new.data.Category
+import com.limor.app.scenes.auth_new.data.CategoryWrapper
 import com.limor.app.scenes.utils.BACKGROUND
 import com.limor.app.scenes.utils.MAIN
 import kotlinx.android.synthetic.main.fragment_new_auth_categories.*
@@ -45,7 +45,7 @@ class FragmentCategories : Fragment() {
         })
     }
 
-    private fun createCategoriesArray(categories: List<Category>) {
+    private fun createCategoriesArray(categories: List<CategoryWrapper>) {
         if (categories.isNotEmpty()) cgCategories.removeAllViews()
         BACKGROUND({
             val categoriesChips =
@@ -56,7 +56,7 @@ class FragmentCategories : Fragment() {
         })
     }
 
-    private fun getVariantChip(category: Category): Chip {
+    private fun getVariantChip(category: CategoryWrapper): Chip {
         val chip = layoutInflater.inflate(R.layout.item_chip_category, null) as Chip
         chip.text = category.name
         MAIN {
