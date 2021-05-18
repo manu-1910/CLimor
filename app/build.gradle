@@ -5,6 +5,12 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'io.fabric'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.apollographql.apollo'
+
+apollo {
+    // instruct the compiler to generate Kotlin models
+    generateKotlinModels.set(true)
+}
 
 android {
     def globalConfiguration = rootProject.ext
@@ -372,4 +378,9 @@ dependencies {
 
 //    implementation platform('com.google.firebase:firebase-bom:27.1.0')
 //    implementation 'com.google.firebase:firebase-auth-ktx:'
+
+    // The core runtime dependencies
+    implementation("com.apollographql.apollo:apollo-runtime:2.5.6")
+    // Coroutines extensions for easier asynchronicity handling
+    implementation("com.apollographql.apollo:apollo-coroutines-support:2.5.6")
 }
