@@ -373,6 +373,4 @@ dependencies {
 
     // The core runtime dependencies
     implementation("com.apollographql.apollo:apollo-runtime:2.5.6")
-    // Coroutines extensions for easier asynchronicity handling
-    implementation("com.apollographql.apollo:apollo-coroutines-support:2.5.6")
 }
