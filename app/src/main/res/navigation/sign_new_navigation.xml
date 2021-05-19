@@ -24,6 +24,9 @@
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
             app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
+        <action
+            android:id="@+id/action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_categories"
+            app:destination="@id/fragment_new_auth_categories" />
     </fragment>
 
     <fragment

@@ -31,17 +31,35 @@ class FragmentCategories : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setOnClickListeners()
+        switchCommonVisibility(isLoading = true)
         subscribeToViewModel()
+    }
+
+    private fun switchCommonVisibility(isLoading: Boolean = false, hasError: Boolean = false) {
+        val shouldShowError = !isLoading && hasError
+        val errorVisibility = if (shouldShowError) View.VISIBLE else View.GONE
+        tvErrorMessage.visibility = errorVisibility
+        btnRetry.visibility = errorVisibility
+        pbLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     private fun subscribeToViewModel() {
         model.downloadCategories()
         model.categoriesLiveData.observe(viewLifecycleOwner, Observer {
+            if (it.isEmpty())
+                return@Observer
+            switchCommonVisibility()
             createCategoriesArray(it)
         })
 
         model.categorySelectionDone.observe(viewLifecycleOwner, Observer {
             btnContinue.isEnabled = it
+        })
+
+        model.categoryLiveDataError.observe(viewLifecycleOwner, Observer {
+            if (it.isNullOrEmpty()) return@Observer
+            tvErrorMessage.text = it
+            switchCommonVisibility(hasError = true)
         })
     }
 
@@ -70,6 +88,11 @@ class FragmentCategories : Fragment() {
     }
 
     private fun setOnClickListeners() {
+        btnRetry.setOnClickListener {
+            switchCommonVisibility(isLoading = true)
+            model.downloadCategories()
+        }
+
         btnContinue.setOnClickListener {
             it.findNavController()
                 .navigate(R.id.action_fragment_new_auth_categories_to_fragment_new_auth_languages)

@@ -249,6 +249,9 @@ class AuthViewModelNew : ViewModel() {
     val categorySelectionDone: LiveData<Boolean>
         get() = categoriesProvider.categorySelectionDone
 
+    val categoryLiveDataError: LiveData<String>
+        get() = categoriesProvider.categoryLiveDataError
+
     /* Languages */
 
     private var languages: List<Language> = mutableListOf()
