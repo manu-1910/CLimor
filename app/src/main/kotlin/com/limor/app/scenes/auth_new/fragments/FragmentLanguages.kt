@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.google.android.material.chip.Chip
@@ -15,12 +15,11 @@ import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
-import com.limor.app.scenes.auth_new.data.Language
-import com.limor.app.scenes.utils.BACKGROUND
+import com.limor.app.scenes.auth_new.data.LanguageWrapper
 import com.limor.app.scenes.utils.MAIN
 import kotlinx.android.synthetic.main.fragment_new_auth_languages.*
 
-class FragmentLanguages : Fragment() {
+class FragmentLanguages : FragmentWithLoading() {
 
     private val model: AuthViewModelNew by activityViewModels()
 
@@ -36,13 +35,17 @@ class FragmentLanguages : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setOnClickListeners()
         setUpSearchEditText()
-        subscribeToViewModel()
     }
+
+    override fun load() = model.downloadLanguages()
+
+    override val errorLiveData: LiveData<String>
+        get() = model.languagesLiveDataError
 
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
-//            it.findNavController()
-//                .navigate(R.id.)
+            it.findNavController()
+                .navigate(R.id.action_fragment_new_auth_languages_to_fragment_new_auth_suggested_people)
         }
 
         topAppBar.setNavigationOnClickListener {
@@ -74,9 +77,11 @@ class FragmentLanguages : Fragment() {
         }
     }
 
-    private fun subscribeToViewModel() {
-        model.downloadLanguages()
+    override fun subscribeToViewModel() {
+        super.subscribeToViewModel()
         model.languagesLiveData.observe(viewLifecycleOwner, Observer {
+            if (it.isNotEmpty())
+                switchCommonVisibility()
             createLanguagesArray(it)
         })
 
@@ -85,19 +90,15 @@ class FragmentLanguages : Fragment() {
         })
     }
 
-    private fun createLanguagesArray(categories: List<Language>) {
-        if (categories.isNotEmpty()) cgLanguages.removeAllViews()
-        BACKGROUND({
-            val chipsList = categories.map { category ->
-                getVariantChip(category)
-            }
-            MAIN {
-                chipsList.forEach { cgLanguages.addView(it) }
-            }
-        })
+    private fun createLanguagesArray(languages: List<LanguageWrapper>) {
+        cgLanguages.removeAllViews()
+        val chipsList = languages.map { languageWrapper ->
+            getVariantChip(languageWrapper)
+        }
+        chipsList.forEach { cgLanguages.addView(it) }
     }
 
-    private fun getVariantChip(language: Language): Chip {
+    private fun getVariantChip(language: LanguageWrapper): Chip {
         val chip = layoutInflater.inflate(R.layout.item_chip_category, null) as Chip
         chip.apply {
             text = language.name

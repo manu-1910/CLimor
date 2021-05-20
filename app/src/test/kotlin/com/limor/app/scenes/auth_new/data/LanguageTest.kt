@@ -31,4 +31,13 @@ class LanguageTest {
         print("filtered length ${filtered.size}")
         assertTrue(filtered.isNotEmpty())
     }
+
+    @Test
+    fun checkLanguagesWrongQuery() {
+        val languages = createMockedLanguages()
+        val input = "lkfjlakjslfk"
+        val filtered = getLanguagesByInput(input, languages)
+        print("filtered length ${filtered.size}")
+        assertTrue(filtered.isEmpty())
+    }
 }

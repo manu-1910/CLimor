@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.google.android.material.chip.Chip
@@ -16,7 +16,7 @@ import com.limor.app.scenes.utils.BACKGROUND
 import com.limor.app.scenes.utils.MAIN
 import kotlinx.android.synthetic.main.fragment_new_auth_categories.*
 
-class FragmentCategories : Fragment() {
+class FragmentCategories : FragmentWithLoading() {
 
     private val model: AuthViewModelNew by activityViewModels()
 
@@ -31,20 +31,15 @@ class FragmentCategories : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setOnClickListeners()
-        switchCommonVisibility(isLoading = true)
-        subscribeToViewModel()
     }
 
-    private fun switchCommonVisibility(isLoading: Boolean = false, hasError: Boolean = false) {
-        val shouldShowError = !isLoading && hasError
-        val errorVisibility = if (shouldShowError) View.VISIBLE else View.GONE
-        tvErrorMessage.visibility = errorVisibility
-        btnRetry.visibility = errorVisibility
-        pbLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
-    }
+    override fun load() = model.downloadCategories()
 
-    private fun subscribeToViewModel() {
-        model.downloadCategories()
+    override val errorLiveData: LiveData<String>
+        get() = model.categoryLiveDataError
+
+    override fun subscribeToViewModel() {
+        super.subscribeToViewModel()
         model.categoriesLiveData.observe(viewLifecycleOwner, Observer {
             if (it.isEmpty())
                 return@Observer
@@ -54,12 +49,6 @@ class FragmentCategories : Fragment() {
 
         model.categorySelectionDone.observe(viewLifecycleOwner, Observer {
             btnContinue.isEnabled = it
-        })
-
-        model.categoryLiveDataError.observe(viewLifecycleOwner, Observer {
-            if (it.isNullOrEmpty()) return@Observer
-            tvErrorMessage.text = it
-            switchCommonVisibility(hasError = true)
         })
     }
 
@@ -88,11 +77,6 @@ class FragmentCategories : Fragment() {
     }
 
     private fun setOnClickListeners() {
-        btnRetry.setOnClickListener {
-            switchCommonVisibility(isLoading = true)
-            model.downloadCategories()
-        }
-
         btnContinue.setOnClickListener {
             it.findNavController()
                 .navigate(R.id.action_fragment_new_auth_categories_to_fragment_new_auth_languages)

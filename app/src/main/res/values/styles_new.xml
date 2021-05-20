@@ -18,8 +18,14 @@
         <item name="materialThemeOverlay">@style/MaterialMainTheme</item>
         <item name="android:textColor">@color/main_button_text_color</item>
         <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0.02</item>
         <item name="backgroundTint">@color/main_button_background</item>
         <item name="cornerRadius">8dp</item>
+    </style>
+
+    <style name="ButtonStyleMain.Follow">
+        <item name="android:textColor">@color/main_button_text_color_follow</item>
+        <item name="backgroundTint">@color/main_button_background_follow</item>
     </style>
 
     <style name="ButtonStyleMainOutlined" parent="Widget.MaterialComponents.Button.OutlinedButton">

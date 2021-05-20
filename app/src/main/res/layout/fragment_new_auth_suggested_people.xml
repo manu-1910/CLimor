@@ -11,7 +11,8 @@
         android:id="@+id/appBarLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:background="@color/white"
+        android:paddingTop="48dp"
         app:elevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +22,6 @@
             android:id="@+id/topAppBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/sign_in_new_background"
             app:navigationIcon="@drawable/ic_navigate_before_black">
 
             <TextView
@@ -29,48 +29,38 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/categories"
+                android:text="@string/suggested_people"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnNext"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="@string/btn_skip" />
         </com.google.android.material.appbar.MaterialToolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSuggestedUsers"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnContinue"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2">
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/cgCategories"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:chipSpacingHorizontal="16dp"/>
-    </ScrollView>
-
-    <Button
-        android:id="@+id/btnContinue"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="@dimen/margin48"
-        android:enabled="false"
-        android:text="@string/continue_button"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:overScrollMode="never"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2" />
 
-
-<include layout="@layout/fragment_new_auth_loading_include"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" />
+    <include
+        layout="@layout/fragment_new_auth_loading_include"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,6 +13,8 @@ import com.limor.app.scenes.auth_new.firebase.GoogleAuthHandler
 import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
 import com.limor.app.scenes.auth_new.model.CategoriesProvider
 import com.limor.app.scenes.auth_new.model.CountriesListProvider
+import com.limor.app.scenes.auth_new.model.LanguagesProvider
+import com.limor.app.scenes.auth_new.model.SuggestedProvider
 import com.limor.app.scenes.auth_new.util.DobPicker
 import com.limor.app.scenes.auth_new.util.PhoneNumberChecker
 import com.limor.app.scenes.auth_new.util.combine
@@ -254,51 +256,42 @@ class AuthViewModelNew : ViewModel() {
 
     /* Languages */
 
-    private var languages: List<Language> = mutableListOf()
+    private val languagesProvider = LanguagesProvider(viewModelScope)
 
-    fun downloadLanguages() {
-        if (languages.isEmpty())
-            loadLanguagesRepo()
-    }
+    fun downloadLanguages() = languagesProvider.downloadLanguages()
 
-    private fun loadLanguagesRepo() {
-        BACKGROUND({
-            val languages = createMockedLanguages()
-            this.languages = languages
-            _languagesLiveData.postValue(languages)
-        })
-    }
-
-    private val _languagesLiveData =
-        MutableLiveData<List<Language>>().apply { value = languages }
-
-    val languagesLiveData: LiveData<List<Language>>
-        get() = _languagesLiveData
-
-
-    fun updateLanguagesSelection() {
-        val anySelected = languages.any { it.isSelected }
-        _languagesSelectionDone.postValue(anySelected)
-    }
-
-    private val _languagesSelectionDone =
-        MutableLiveData<Boolean>().apply { value = false }
+    val languagesLiveData: LiveData<List<LanguageWrapper>>
+        get() = Transformations.distinctUntilChanged(languagesProvider.languagesLiveData)
 
     val languagesSelectionDone: LiveData<Boolean>
-        get() = _languagesSelectionDone
+        get() = Transformations.distinctUntilChanged(languagesProvider.languagesSelectionDone)
 
-    fun onLanguageInputChanged(input: String?) {
-        if (input == null || input.trim().isEmpty()) {
-            _languagesLiveData.postValue(languages)
-            return
-        }
-        val filtered = getLanguagesByInput(input, languages)
-        _languagesLiveData.postValue(filtered)
-    }
+    val languagesLiveDataError: LiveData<String>
+        get() = languagesProvider.languageLiveDataError
 
-    override fun onCleared() {
-        super.onCleared()
-        countDownTimer?.cancel()
+    fun updateLanguagesSelection() = languagesProvider.updateLanguagesSelection()
+
+    fun onLanguageInputChanged(input: String?) = languagesProvider.onLanguageInputChanged(input)
+
+    /* Suggested users */
+    private val suggestedProvider: SuggestedProvider = SuggestedProvider(viewModelScope)
+
+    fun downloadSuggested() = suggestedProvider.downloadSuggested()
+
+    fun followSuggestedUser(suggestedUser: SuggestedUser) =
+        suggestedProvider.followUser(suggestedUser)
+
+    val suggestedUsersLiveData: LiveData<List<SuggestedUser>>
+        get() = suggestedProvider.suggestedLiveData
+
+    val suggestedSelectedLiveData: LiveData<Boolean>
+        get() = suggestedProvider.suggestedSelectedLiveData
+
+    val suggestedLiveDataError: LiveData<String>
+        get() = suggestedProvider.suggestedLiveDataError
+
+    fun sendSuggestedPeopleSelectionResult() {
+        suggestedProvider.sendSuggestedPeopleSelectionResult()
     }
 
     /*GOOGLE AUTH*/
@@ -326,4 +319,9 @@ class AuthViewModelNew : ViewModel() {
 
     val facebookSignIsComplete: LiveData<Boolean>
         get() = FacebookAuthHandler.facebookLoginSuccess
+
+    override fun onCleared() {
+        super.onCleared()
+        countDownTimer?.cancel()
+    }
 }

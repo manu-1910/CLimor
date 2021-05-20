@@ -1,11 +1,9 @@
 package com.limor.app.scenes.auth_new.fragments
 
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -18,6 +16,7 @@ import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.UserNameState
 import com.limor.app.scenes.auth_new.data.UserNameStateBundle
+import com.limor.app.scenes.auth_new.util.colorStateList
 import kotlinx.android.synthetic.main.fragment_new_auth_enter_username.*
 
 class FragmentEnterUsername : Fragment() {
@@ -93,13 +92,14 @@ class FragmentEnterUsername : Fragment() {
         btnContinue.requestFocus()
         etEnterUsername.error = null
         etEnterUsername.setBoxStrokeColorStateList(
-            colorStateList(R.color.text_edit_outline_color_approved)
+            colorStateList(requireContext(), R.color.text_edit_outline_color_approved)
         )
         etEnterUsername.helperText = getString(R.string.you_are_good_to_go)
         etEnterUsername.setHelperTextColor(
-            colorStateList(R.color.text_edit_outline_color_approved)
+            colorStateList(requireContext(), R.color.text_edit_outline_color_approved)
         )
-        etEnterUsername.hintTextColor = colorStateList(R.color.text_edit_outline_color_approved)
+        etEnterUsername.hintTextColor =
+            colorStateList(requireContext(), R.color.text_edit_outline_color_approved)
         cgVariants.isVisible = false
     }
 
@@ -130,13 +130,10 @@ class FragmentEnterUsername : Fragment() {
         etEnterUsername.error = null
         etEnterUsername.helperText = null
         etEnterUsername.setBoxStrokeColorStateList(
-            colorStateList(R.color.text_edit_outline_color)
+            colorStateList(requireContext(), R.color.text_edit_outline_color)
         )
-        etEnterUsername.hintTextColor = colorStateList(R.color.text_edit_outline_color)
+        etEnterUsername.hintTextColor =
+            colorStateList(requireContext(), R.color.text_edit_outline_color)
         cgVariants.isVisible = false
-    }
-
-    private fun colorStateList(boxStrokeColor: Int): ColorStateList {
-        return AppCompatResources.getColorStateList(requireContext(), boxStrokeColor)
     }
 }

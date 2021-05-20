@@ -1,10 +1,16 @@
 package com.limor.app.scenes.auth_new.data
 
+import com.limor.app.LanguagesQuery
 import kotlin.random.Random
 
-data class Language(val id: Int, val name: String, var isSelected: Boolean = false)
+data class LanguageWrapper(val language: LanguagesQuery.Language, var isSelected: Boolean = false) {
+    val name: String
+        get() = language.name ?: ""
+    val nativeName: String
+        get() = language.native_name ?: ""
+}
 
-fun createMockedLanguages(): List<Language> {
+fun createMockedLanguages(): List<LanguageWrapper> {
     val categoriesNamesList = listOf(
         "English",
         "Arabic",
@@ -33,9 +39,20 @@ fun createMockedLanguages(): List<Language> {
     )
     return List(categoriesNamesList.size) {
         Random.nextInt(0, 100)
-    }.mapIndexed { i, it -> Language(it, categoriesNamesList[i]) }
+    }.mapIndexed { i, it ->
+        LanguageWrapper(
+            LanguagesQuery.Language(
+                code = it.toString(),
+                name = categoriesNamesList[i],
+                native_name = categoriesNamesList[i]
+            )
+        )
+    }
 }
 
-fun getLanguagesByInput(input: String, languages: List<Language>): List<Language> {
-    return languages.filter { it.name.contains(input.trim(), ignoreCase = true) }
+fun getLanguagesByInput(input: String, languages: List<LanguageWrapper>): List<LanguageWrapper> {
+    return languages.filter {
+        it.name.contains(input.trim(), ignoreCase = true) ||
+                it.nativeName.contains(input.trim(), ignoreCase = true)
+    }
 }
