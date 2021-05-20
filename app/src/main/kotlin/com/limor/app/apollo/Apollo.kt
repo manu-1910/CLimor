@@ -6,6 +6,7 @@ import com.apollographql.apollo.api.Query
 import com.apollographql.apollo.api.Response
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.IOException
 
 const val GRAPHQL_ENDPOINT = "https://apigateway.dev.limor.ie/graphql"
 
@@ -30,3 +31,9 @@ object Apollo {
 }
 
 class GraphqlClientException(message: String) : Exception(message)
+
+fun showHumanizedErrorMessage(e: Exception): String {
+    if (e is IOException || e.cause is IOException)
+        return "Check internet"
+    return e.message ?: "Network client error"
+}
