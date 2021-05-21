@@ -1,6 +1,7 @@
 package com.limor.app.scenes.auth_new.model
 
 import androidx.lifecycle.MutableLiveData
+import com.limor.app.apollo.showHumanizedErrorMessage
 import com.limor.app.scenes.auth_new.data.SuggestedUser
 import com.limor.app.scenes.auth_new.data.createMockedSuggestedUsers
 import kotlinx.coroutines.CoroutineScope

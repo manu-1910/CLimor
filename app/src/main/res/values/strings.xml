@@ -26,7 +26,6 @@
     <string name="you_have_no_permissions_facebook">You have not granted the required permissions to login with Facebook. We need your email address.</string>
 
 
-
     <!-- Bottom Menu Navigation Strings -->
     <string name="bottom_menu_home">Home</string>
     <string name="bottom_menu_discover">Discover</string>
@@ -176,19 +175,13 @@
     <string name="menu_continue_recording_cast">Continue recording this cast</string>
 
 
-
-
     <!-- Facebook strings -->
     <string name="facebook_app_id">818672961600074</string>
     <string name="fb_login_protocol_scheme">fb818672961600074</string>
 
 
-
-
-
     <string name="error_403_forgot_password">Your request has been registered. If your email exists in our system, you\'ll receive an email to reset your password.</string>
     <string name="error_500_or_higher">Sorry, we couldn\'t process your request. Please, try again later.</string>
-
 
 
     <!-- Profile fragment -->
@@ -532,4 +525,11 @@
     <string name="resend_code_in">Resend code in 00:</string>
     <string name="google_services_not_available">Google services are not available</string>
     <string name="retry">Retry</string>
+    <string name="finish">Finish</string>
+    <string name="new_onboarding_title1">Welcome to Limor!</string>
+    <string name="new_onboarding_title2"><![CDATA[Tap, Record & Upload as Simple as that]]></string>
+    <string name="new_onboarding_title3"><![CDATA[Publish & Let the World Know your Voice]]></string>
+    <string name="new_onboarding_subtitle1">Lorem Ipsum is simply dummy text of the printing and typesetting</string>
+    <string name="new_onboarding_subtitle2">Lorem Ipsum is simply dummy text of the printing and typesetting</string>
+    <string name="new_onboarding_subtitle3">Lorem Ipsum is simply dummy text of the printing and typesetting</string>
 </resources>

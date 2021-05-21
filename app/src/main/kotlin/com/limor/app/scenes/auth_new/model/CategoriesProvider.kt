@@ -3,11 +3,11 @@ package com.limor.app.scenes.auth_new.model
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.limor.app.apollo.GeneralInfoRepository
+import com.limor.app.apollo.showHumanizedErrorMessage
 import com.limor.app.scenes.auth_new.data.CategoryWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.IOException
 
 class CategoriesProvider(private val scope: CoroutineScope) {
     private var categories: List<CategoryWrapper> = mutableListOf()
@@ -52,10 +52,4 @@ class CategoriesProvider(private val scope: CoroutineScope) {
         val anySelected = categories.any { it.isSelected }
         _categorySelectionDone.postValue(anySelected)
     }
-}
-
-fun showHumanizedErrorMessage(e: Exception): String {
-    if (e is IOException || e.cause is IOException)
-        return "Check internet"
-    return e.message.toString()
 }

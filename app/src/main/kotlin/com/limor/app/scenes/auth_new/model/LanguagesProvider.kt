@@ -2,6 +2,7 @@ package com.limor.app.scenes.auth_new.model
 
 import androidx.lifecycle.MutableLiveData
 import com.limor.app.apollo.GeneralInfoRepository
+import com.limor.app.apollo.showHumanizedErrorMessage
 import com.limor.app.scenes.auth_new.data.LanguageWrapper
 import com.limor.app.scenes.auth_new.data.getLanguagesByInput
 import kotlinx.coroutines.CoroutineScope

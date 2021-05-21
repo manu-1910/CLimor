@@ -69,8 +69,8 @@ class FragmentSuggested : FragmentWithLoading() {
     private fun setOnClickListeners() {
         btnNext.setOnClickListener {
             model.sendSuggestedPeopleSelectionResult()
-//            it.findNavController()
-//                .navigate(R.id.action_fragment_new_auth_categories_to_fragment_new_auth_languages)
+            it.findNavController()
+                .navigate(R.id.action_fragment_new_auth_suggested_people_to_fragment_new_auth_onboarding)
         }
 
         topAppBar.setNavigationOnClickListener {
