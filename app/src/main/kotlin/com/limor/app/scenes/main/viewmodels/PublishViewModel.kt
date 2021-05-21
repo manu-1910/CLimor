@@ -29,6 +29,7 @@ class PublishViewModel @Inject constructor(private val publishUseCase: PublishUs
     var locationSelectedItem: UILocations = UILocations("", 0.0, 0.0, true)
     var languageSelected: String = ""
     var languageSelectedId: Int = 0
+    val tags = arrayListOf<String>()
 
     private val compositeDispose = CompositeDisposable()
 

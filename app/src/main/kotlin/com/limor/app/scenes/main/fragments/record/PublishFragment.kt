@@ -255,7 +255,6 @@ class PublishFragment : BaseFragment() {
     }
 
 
-
     override fun onResume() {
         super.onResume()
 
@@ -450,14 +449,11 @@ class PublishFragment : BaseFragment() {
         }
 
         btnPublishDraft?.onClick {
-            if (checkEmptyFields()) {
-
-                //In the result of those calls I will call the method readyToPublish() to check their flags
-                if (podcastHasImage) {
-                    publishPodcastImage()
-                }
-                publishPodcastAudio()
+            //In the result of those calls I will call the method readyToPublish() to check their flags
+            if (podcastHasImage) {
+                publishPodcastImage()
             }
+            publishPodcastAudio()
         }
 
         layoutCastCategory?.onClick {
@@ -477,6 +473,8 @@ class PublishFragment : BaseFragment() {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
                 isTagsSelected = etHashtags.hashtags.count() > 0
+                publishViewModel.tags.clear()
+                publishViewModel.tags.addAll(etHashtags.hashtags.map { "#$it" })
                 updatePublishBtnState()
             }
 
@@ -749,7 +747,9 @@ class PublishFragment : BaseFragment() {
             tvSelectedLocation?.text = publishViewModel.locationSelectedItem.address
             uiDraft.location = publishViewModel.locationSelectedItem
         }
-
+        if (publishViewModel.tags.isNotEmpty()) {
+            etHashtags.setText(publishViewModel.tags.joinToString(" "))
+        }
         updatePublishBtnState()
     }
 
@@ -990,32 +990,6 @@ class PublishFragment : BaseFragment() {
             //toast(getString(R.string.draft_not_updated_error))
             println("There was an error updating the draft")
         })
-    }
-
-
-    private fun checkEmptyFields(): Boolean {
-
-        //Check the Title of the cast
-        val titleNotEmpty: Boolean = if (!etDraftTitle?.text.isNullOrEmpty()) {
-            true
-        } else {
-            alert(getString(R.string.title_cannot_be_empty)) {
-                okButton {}
-            }.show()
-            false
-        }
-
-        //Check the Caption of the cast
-        val captionNotEmpty: Boolean = if (!etDraftCaption?.text.isNullOrEmpty()) {
-            true
-        } else {
-            alert(getString(R.string.caption_cannot_be_empty)) {
-                okButton {}
-            }.show()
-            false
-        }
-
-        return titleNotEmpty && captionNotEmpty
     }
 
 
