@@ -129,9 +129,13 @@ class FragmentVerifyPhoneNumber : Fragment() {
         })
 
         model.smsCodeValidatedLiveData.observe(viewLifecycleOwner, Observer {
-            if (it)
-                clMain.findNavController()
-                    .navigate(R.id.action_fragment_new_auth_phone_code_to_fragment_new_auth_enter_email)
+            if (!it) return@Observer
+            val destination =
+                if (model.signInCase) R.id.action_fragment_new_auth_phone_code_to_destination_main_activity
+                else R.id.action_fragment_new_auth_phone_code_to_fragment_new_auth_enter_email
+            clMain.findNavController().navigate(destination)
+            if (model.signInCase)
+                requireActivity().finish()
         })
 
         model.resendButtonEnableLiveData.observe(viewLifecycleOwner, Observer {
@@ -139,10 +143,11 @@ class FragmentVerifyPhoneNumber : Fragment() {
         })
 
         model.resendButtonCountDownLiveData.observe(viewLifecycleOwner, Observer {
-            if(it == null)
+            if (it == null)
                 tvResendCodeStatus.setText(R.string.didnt_receive_sms_code)
             else
-                tvResendCodeStatus.text = getString(R.string.resend_code_in) + (if(it < 10) "0$it" else it)
+                tvResendCodeStatus.text =
+                    getString(R.string.resend_code_in) + (if (it < 10) "0$it" else it)
         })
     }
 }

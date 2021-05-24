@@ -19,93 +19,139 @@
             app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
         <action
             android:id="@+id/action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_up"
-            app:destination="@id/fragment_new_auth_sign_up"
-            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
-            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
-            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
-            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/fragment_new_auth_sign_in"
-        android:name="com.limor.app.scenes.auth_new.fragments.FragmentSignIn"
-        android:label="Sing In or Up"
-        tools:layout="@layout/fragment_new_auth_sign_in" />
-
-    <fragment
-        android:id="@+id/fragment_new_auth_sign_up"
-        android:name="com.limor.app.scenes.auth_new.fragments.FragmentSignUp"
-        android:label="Sing In or Up"
-        tools:layout="@layout/fragment_new_auth_sign_up">
-        <action
-            android:id="@+id/action_fragment_new_auth_sign_up_to_fragment_new_auth_dob_picker"
             app:destination="@id/fragment_new_auth_dob_picker"
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
             app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
+        <!--        <action-->
+        <!--            android:id="@+id/debugAction"-->
+        <!--            app:destination="@+id/fragment_new_auth_onboarding" />-->
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_new_auth_sign_in"
+        android:name="com.limor.app.scenes.auth_new.fragments.FragmentSignIn"
+        android:label="Sing In"
+        tools:layout="@layout/fragment_new_auth_sign_in">
         <action
-            android:id="@+id/action_fragment_new_auth_sign_up_to_fragment_new_auth_sign_in"
-            app:destination="@id/fragment_new_auth_sign_in"
+            android:id="@+id/action_fragment_new_auth_sign_in_to_fragment_new_auth_phone_code"
+            app:destination="@id/fragment_new_auth_phone_code"
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
             app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
+        <action
+            android:id="@+id/action_fragment_new_auth_sign_in_to_fragment_new_auth_dob_picker"
+            app:destination="@id/fragment_new_auth_dob_picker"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+        <action
+            android:id="@+id/action_fragment_new_auth_sign_in_to_fragment_new_auth_sign_in_email"
+            app:destination="@id/fragment_new_auth_sign_in_email"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/fragment_new_auth_sign_in_email"
+        android:name="com.limor.app.scenes.auth_new.fragments.FragmentSignInCheckEmail"
+        android:label="Sing In Email"
+        tools:layout="@layout/fragment_new_auth_sign_in_check_email">
+        <action
+            android:id="@+id/action_fragment_new_auth_sign_in_email_to_destination_main_activity"
+            app:destination="@id/destination_main_activity"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+    </fragment>
+
+<!--    <fragment-->
+<!--        android:id="@+id/fragment_new_auth_sign_up"-->
+<!--        android:name="com.limor.app.scenes.auth_new.fragments.FragmentSignUp"-->
+<!--        android:label="Sing Up"-->
+<!--        tools:layout="@layout/fragment_new_auth_sign_up">-->
+<!--        <action-->
+<!--            android:id="@+id/action_fragment_new_auth_sign_up_to_fragment_new_auth_dob_picker"-->
+<!--            app:destination="@id/fragment_new_auth_dob_picker"-->
+<!--            app:enterAnim="@anim/slide_in_right_enter_no_alpha"-->
+<!--            app:exitAnim="@anim/slide_out_left_exit_no_alpha"-->
+<!--            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"-->
+<!--            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />-->
+<!--        <action-->
+<!--            android:id="@+id/action_fragment_new_auth_sign_up_to_fragment_new_auth_sign_in"-->
+<!--            app:destination="@id/fragment_new_auth_sign_in"-->
+<!--            app:enterAnim="@anim/slide_in_right_enter_no_alpha"-->
+<!--            app:exitAnim="@anim/slide_out_left_exit_no_alpha"-->
+<!--            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"-->
+<!--            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />-->
+<!--    </fragment>-->
 
     <fragment
         android:id="@+id/fragment_new_auth_dob_picker"
         android:name="com.limor.app.scenes.auth_new.fragments.FragmentDobPicker"
         android:label="DOB picker"
-        tools:layout="@layout/fragment_new_auth_dob_picker" >
+        tools:layout="@layout/fragment_new_auth_dob_picker">
         <action
             android:id="@+id/action_fragment_new_auth_dob_picker_to_fragment_new_auth_phone_enter"
             app:destination="@id/fragment_new_auth_phone_enter"
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
-            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
     </fragment>
 
     <fragment
         android:id="@+id/fragment_new_auth_phone_enter"
         android:name="com.limor.app.scenes.auth_new.fragments.FragmentSignEnterPhone"
         android:label="Enter Phone"
-        tools:layout="@layout/fragment_new_auth_phone_enter" >
+        tools:layout="@layout/fragment_new_auth_phone_enter">
         <action
             android:id="@+id/action_fragment_new_auth_phone_enter_to_fragment_new_auth_phone_code"
             app:destination="@id/fragment_new_auth_phone_code"
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
-            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
     </fragment>
 
     <fragment
         android:id="@+id/fragment_new_auth_phone_code"
         android:name="com.limor.app.scenes.auth_new.fragments.FragmentVerifyPhoneNumber"
         android:label="Enter Phone Code"
-        tools:layout="@layout/fragment_new_auth_phone_code" >
+        tools:layout="@layout/fragment_new_auth_phone_code">
         <action
             android:id="@+id/action_fragment_new_auth_phone_code_to_fragment_new_auth_enter_email"
             app:destination="@id/fragment_new_auth_enter_email"
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
-            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
+        <action
+            android:id="@+id/action_fragment_new_auth_phone_code_to_destination_main_activity"
+            app:destination="@id/destination_main_activity"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
     </fragment>
     <fragment
         android:id="@+id/fragment_new_auth_enter_email"
         android:name="com.limor.app.scenes.auth_new.fragments.FragmentEnterEmail"
         android:label="Enter Email"
-        tools:layout="@layout/fragment_new_auth_enter_email" >
+        tools:layout="@layout/fragment_new_auth_enter_email">
         <action
             android:id="@+id/action_fragment_new_auth_enter_email_to_fragment_new_auth_enter_username"
             app:destination="@id/fragment_new_auth_enter_username"
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
-            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
     </fragment>
 
     <fragment
@@ -119,7 +165,7 @@
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
-            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
     </fragment>
 
     <fragment
@@ -133,7 +179,7 @@
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
-            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
     </fragment>
 
     <fragment
@@ -147,39 +193,51 @@
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
-            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
     </fragment>
     <fragment
         android:id="@+id/fragment_new_auth_languages"
         android:name="com.limor.app.scenes.auth_new.fragments.FragmentLanguages"
         android:label="Languages"
-        tools:layout="@layout/fragment_new_auth_languages" >
+        tools:layout="@layout/fragment_new_auth_languages">
         <action
             android:id="@+id/action_fragment_new_auth_languages_to_fragment_new_auth_suggested_people"
             app:destination="@id/fragment_new_auth_suggested_people"
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
-            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
     </fragment>
 
     <fragment
         android:id="@+id/fragment_new_auth_suggested_people"
         android:name="com.limor.app.scenes.auth_new.fragments.FragmentSuggested"
         android:label="Suggested"
-        tools:layout="@layout/fragment_new_auth_suggested_people" >
+        tools:layout="@layout/fragment_new_auth_suggested_people">
         <action
             android:id="@+id/action_fragment_new_auth_suggested_people_to_fragment_new_auth_onboarding"
             app:destination="@id/fragment_new_auth_onboarding"
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
-            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
     </fragment>
     <fragment
         android:id="@+id/fragment_new_auth_onboarding"
         android:name="com.limor.app.scenes.auth_new.fragments.FragmentOnboarding"
         android:label="Onboarding"
-        tools:layout="@layout/fragment_new_auth_onboarding" />
+        tools:layout="@layout/fragment_new_auth_onboarding">
+        <action
+            android:id="@+id/go_to_main_activity"
+            app:destination="@+id/destination_main_activity"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
+    </fragment>
+
+    <activity
+        android:id="@+id/destination_main_activity"
+        android:name="com.limor.app.scenes.main.MainActivity" />
 
 </navigation>

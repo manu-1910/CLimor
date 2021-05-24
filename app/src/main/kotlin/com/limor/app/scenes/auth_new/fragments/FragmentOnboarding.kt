@@ -13,6 +13,7 @@ import com.limor.app.R
 import com.limor.app.scenes.auth_new.data.OnboardingInfo
 import com.limor.app.scenes.auth_new.view.DepthPageTransformer
 import kotlinx.android.synthetic.main.fragment_new_auth_onboarding.*
+import timber.log.Timber
 
 class FragmentOnboarding : Fragment() {
 
@@ -43,7 +44,9 @@ class FragmentOnboarding : Fragment() {
             vpOnboarding.setCurrentItem(currentPosition + 1, true)
         }
         btnFinish.setOnClickListener {
-            //finish
+            it.findNavController().navigate(R.id.go_to_main_activity)
+            Timber.d("trying to finish activity")
+            requireActivity().finish()
         }
     }
 

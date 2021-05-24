@@ -18,13 +18,13 @@ class SplashActivity : BaseActivity() {
 
     private val mRunnable: Runnable = Runnable {
         if (!isFinishing) {
-
-            if(!sessionManager.getStoredToken().isNullOrEmpty()){
+            val hasFirebaseUser = false // FirebaseAuth.getInstance().currentUser != null
+            if (!sessionManager.getStoredToken().isNullOrEmpty() || hasFirebaseUser) {
                 //println("client_id es:" + sessionManager.getStoredUser().id)
                 var mainIntent: Intent = Intent(this, MainActivity::class.java)
                 startActivity(mainIntent)
                 this.finish()
-            }else{
+            } else {
                 startActivity(Intent(applicationContext, AuthActivityNew::class.java))
                 finish()
             }
@@ -35,7 +35,10 @@ class SplashActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         mDelayHandler = Handler()
-        mDelayHandler!!.postDelayed(mRunnable, resources.getInteger(R.integer.SPLASH_DELAY).toLong())
+        mDelayHandler!!.postDelayed(
+            mRunnable,
+            resources.getInteger(R.integer.SPLASH_DELAY).toLong()
+        )
     }
 
     public override fun onDestroy() {

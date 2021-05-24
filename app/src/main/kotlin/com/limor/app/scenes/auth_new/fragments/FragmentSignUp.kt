@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
@@ -34,8 +33,8 @@ class FragmentSignUp : Fragment() {
 
     private fun initNavigation() {
         btnSingUpNewPickPhone.setOnClickListener {
-            it.findNavController()
-                .navigate(R.id.action_fragment_new_auth_sign_up_to_fragment_new_auth_dob_picker)
+//            it.findNavController()
+//                .navigate(R.id.action_fragment_new_auth_sign_up_to_fragment_new_auth_dob_picker)
         }
 
         btnSingUpNewGoogle.setOnClickListener {
@@ -44,16 +43,19 @@ class FragmentSignUp : Fragment() {
 
         btnSignUpNewFacebook.setOnClickListener {
             facebookLoginButton.setReadPermissions("email", "public_profile")
-            facebookLoginButton.registerCallback(FacebookAuthHandler.callbackManager, FacebookAuthHandler)
+            facebookLoginButton.registerCallback(
+                FacebookAuthHandler.callbackManager,
+                FacebookAuthHandler
+            )
             facebookLoginButton.performClick()
         }
 
         tvSignUpNewSignIn.setOnClickListener {
-            it.findNavController()
-                .navigate(R.id.action_fragment_new_auth_sign_up_to_fragment_new_auth_sign_in)
+//            it.findNavController()
+//                .navigate(R.id.action_fragment_new_auth_sign_up_to_fragment_new_auth_sign_in)
         }
 
-        tvSingUpTerms.setOnClickListener{
+        tvSingUpTerms.setOnClickListener {
             (activity as AuthActivityNew).launchTermsUrl()
         }
     }
@@ -69,14 +71,14 @@ class FragmentSignUp : Fragment() {
         })
 
         model.signErrorMessageLiveData.observe(viewLifecycleOwner, Observer {
-            if(it == null) return@Observer
+            if (it == null) return@Observer
             Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
         })
     }
 
     private fun thirdPartyAuthCompleteAction(it: Boolean) {
-        if (it)
-            clMain.findNavController()
-                .navigate(R.id.action_fragment_new_auth_sign_up_to_fragment_new_auth_dob_picker)
+//        if (it)
+//            clMain.findNavController()
+//                .navigate(R.id.action_fragment_new_auth_sign_up_to_fragment_new_auth_dob_picker)
     }
 }

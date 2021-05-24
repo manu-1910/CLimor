@@ -491,6 +491,7 @@
     <string name="sign_up_terms_part2"><u>terms and conditions</u></string>
     <string name="sig_up_already_have_account">Already have an account?</string>
     <string name="sign_in_underline"><u>Sign in</u></string>
+    <string name="sign_up_underline"><u>Sign up</u></string>
     <string name="when_your_birthday">When’s your Birthday?</string>
     <string name="enterBirthHint">Enter Birth Date</string>
     <string name="back">Back</string>
@@ -532,4 +533,14 @@
     <string name="new_onboarding_subtitle1">Lorem Ipsum is simply dummy text of the printing and typesetting</string>
     <string name="new_onboarding_subtitle2">Lorem Ipsum is simply dummy text of the printing and typesetting</string>
     <string name="new_onboarding_subtitle3">Lorem Ipsum is simply dummy text of the printing and typesetting</string>
+    <string name="sign_in">Sign in</string>
+    <string name="welcome_back_to_limor">Welcome back to Limor</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="email_address">Email Address</string>
+    <string name="sig_in_dont_have_account">Don’t have an account?</string>
+    <string name="get_otp">Get OTP</string>
+    <string name="send_login_link">Send Login Link</string>
+    <string name="check_your_email_subtitle">We’ve sent you the login link to your email address. Please check your email to login</string>
+    <string name="check_your_email">Check Your Email</string>
+    <string name="take_me_to_email">Take Me To Email</string>
 </resources>

@@ -44,7 +44,7 @@
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:text="@string/select_your_gender"
         android:textColor="@color/subtitle_text_color"
         app:layout_constraintEnd_toEndOf="parent"

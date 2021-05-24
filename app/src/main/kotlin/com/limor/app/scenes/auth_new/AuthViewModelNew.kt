@@ -320,6 +320,40 @@ class AuthViewModelNew : ViewModel() {
     val facebookSignIsComplete: LiveData<Boolean>
         get() = FacebookAuthHandler.facebookLoginSuccess
 
+
+    /* SIGN IN*/
+
+    private val _signInMethodLiveData =
+        MutableLiveData<SignInMethod>()
+    val signInMethodLiveData: LiveData<SignInMethod>
+        get() = _signInMethodLiveData
+
+    var signInCase: Boolean = false
+        private set
+
+    val signInMethodContinueEnabledLiveData: LiveData<Boolean>
+        get() = _phoneSignInMethodContinueEnabledLiveData.combineWith(
+            _emailSignInMethodContinueEnabledLiveData,
+            block = { one, two ->
+                Timber.d("signInMethodContinueEnabledLiveData $one | $two")
+                signInCase = one ?: false || two ?: false
+                signInCase
+            })
+
+    private val _phoneSignInMethodContinueEnabledLiveData: LiveData<Boolean>
+        get() =
+            phoneIsValidLiveData.combineWith(
+                _signInMethodLiveData,
+                block = { it, method -> (it ?: false) && method == SignInMethod.PHONE })
+    private val _emailSignInMethodContinueEnabledLiveData: LiveData<Boolean>
+        get() = currentEmailIsValidLiveData.combineWith(
+            _signInMethodLiveData,
+            block = { it, method -> (it ?: false) && method == SignInMethod.EMAIL })
+
+    fun setCurrentSignInMethod(signInMethod: SignInMethod) {
+        _signInMethodLiveData.postValue(signInMethod)
+    }
+
     override fun onCleared() {
         super.onCleared()
         countDownTimer?.cancel()
