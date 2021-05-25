@@ -29,68 +29,24 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBP4Aci4-VYO5luhbBn4wAnSWu3odH6Rqg"
+          "current_key": "AIzaSyAh7RyzW3OxtqHLy88UxBs0T7k7NHQ01OY"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "115486577576-fbreggkma2d378u91ggcs1mfg7s7dc62.apps.googleusercontent.com",
               "client_type": 3
-            }
-          ]
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:115486577576:android:22a2e917893df1fd",
-        "android_client_info": {
-          "package_name": "com.limor.app.dev"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "115486577576-q1cgr3jbiu2gvm5m3ma0aae4ffcn9p5d.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.limor.app.dev",
-            "certificate_hash": "606521757d4a060829090095252264888a3e7892"
-          }
-        },
-        {
-          "client_id": "115486577576-fbreggkma2d378u91ggcs1mfg7s7dc62.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBP4Aci4-VYO5luhbBn4wAnSWu3odH6Rqg"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
+            },
             {
-              "client_id": "115486577576-fbreggkma2d378u91ggcs1mfg7s7dc62.apps.googleusercontent.com",
-              "client_type": 3
+              "client_id": "115486577576-leqti56j4h7vsot62v2uv49sbppcu389.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.limor.app.dev"
+              }
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     },
@@ -117,24 +73,68 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBP4Aci4-VYO5luhbBn4wAnSWu3odH6Rqg"
+          "current_key": "AIzaSyAh7RyzW3OxtqHLy88UxBs0T7k7NHQ01OY"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "115486577576-fbreggkma2d378u91ggcs1mfg7s7dc62.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "115486577576-leqti56j4h7vsot62v2uv49sbppcu389.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.limor.app.dev"
+              }
             }
           ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:115486577576:android:22a2e917893df1fd",
+        "android_client_info": {
+          "package_name": "com.limor.app.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "115486577576-q1cgr3jbiu2gvm5m3ma0aae4ffcn9p5d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.limor.app.dev",
+            "certificate_hash": "606521757d4a060829090095252264888a3e7892"
+          }
         },
-        "ads_service": {
-          "status": 2
+        {
+          "client_id": "115486577576-fbreggkma2d378u91ggcs1mfg7s7dc62.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAh7RyzW3OxtqHLy88UxBs0T7k7NHQ01OY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "115486577576-fbreggkma2d378u91ggcs1mfg7s7dc62.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "115486577576-leqti56j4h7vsot62v2uv49sbppcu389.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.limor.app.dev"
+              }
+            }
+          ]
         }
       }
     }

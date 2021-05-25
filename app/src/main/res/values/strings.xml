@@ -189,8 +189,8 @@
 
 
     <!-- Facebook strings -->
-    <string name="facebook_app_id">304214713248690</string>
-    <string name="fb_login_protocol_scheme">fb304214713248690</string>
+    <string name="facebook_app_id">818672961600074</string>
+    <string name="fb_login_protocol_scheme">fb818672961600074</string>
 
 
 
@@ -510,4 +510,68 @@
     <string name="save_as_draft">Save as Draft</string>
     <string name="battery_low">Battery Low</string>
     <string name="battery_low_description">Battery level is very low. App may close soon.</string>
+    <string name="welcome_to_limor">Welcome to Limor</string>
+    <string name="welcome_to_limor_description">It’s the simplest and safest way to podcast and build your career</string>
+    <string name="sign_up">Sign up</string>
+    <string name="continue_with_prefered_method">Continue with your preferred method</string>
+    <string name="sign_up_use_phone">Use your phone number</string>
+    <string name="sig_up_continue_with_google">Continue with Google</string>
+    <string name="sig_up_continue_with_facebook">Continue with Facebook</string>
+    <string name="sign_up_terms_part1">By signing up, you agree to our</string>
+    <string name="sign_up_terms_part2"><u>terms and conditions</u></string>
+    <string name="sig_up_already_have_account">Already have an account?</string>
+    <string name="sign_in_underline"><u>Sign in</u></string>
+    <string name="sign_up_underline"><u>Sign up</u></string>
+    <string name="when_your_birthday">When’s your Birthday?</string>
+    <string name="enterBirthHint">Enter Birth Date</string>
+    <string name="back">Back</string>
+    <string name="continue_button">Continue</string>
+    <string name="provide_your_phone_number">Provide your Phone Number</string>
+    <string name="enter_phone_hint">Enter Phone Number</string>
+    <string name="why_we_need_phone">why we need your number?</string>
+    <string name="why_we_need_phone_explanation">We take our users privacy very seriously, in order to protect you and other users we require your device to be registered to your profile.</string>
+    <string name="why_we_need_phone_know_more">To know more, please visit our</string>
+    <string name="verify_phone_number">Verify Phone Number</string>
+    <string name="enter_sms_code">Enter the code that sent to</string>
+    <string name="change_number"><u>Change Number</u></string>
+    <string name="didnt_receive_sms_code">Didn’t get the code? Resend it</string>
+    <string name="wrong_code">Wrong code. Please try again!</string>
+    <string name="enter_email_to_continue">Enter your email address to continue</string>
+    <string name="enter_email_hint">Enter Email Address</string>
+    <string name="already_in_use">Already in use.</string>
+    <string name="enter_unique_username">Enter an unique username that people can find you easily</string>
+    <string name="enter_username_hint">Enter Username</string>
+    <string name="username_already_in_use">Already in use. Still you can use,</string>
+    <string name="you_are_good_to_go">You’re good to go</string>
+    <string name="gender">Gender</string>
+    <string name="select_your_gender">Select your gender</string>
+    <string name="sex_male">Male</string>
+    <string name="sex_female">Female</string>
+    <string name="sex_other">Other</string>
+    <string name="categories">Categories</string>
+    <string name="languages">Languages</string>
+    <string name="search_hint">Search...</string>
+    <string name="date_less_than_13_yo">You must be 13 years old to sign up</string>
+    <string name="select_date">Select date</string>
+    <string name="resend_code_in">Resend code in 00:</string>
+    <string name="google_services_not_available">Google services are not available</string>
+    <string name="retry">Retry</string>
+    <string name="finish">Finish</string>
+    <string name="new_onboarding_title1">Welcome to Limor!</string>
+    <string name="new_onboarding_title2"><![CDATA[Tap, Record & Upload as Simple as that]]></string>
+    <string name="new_onboarding_title3"><![CDATA[Publish & Let the World Know your Voice]]></string>
+    <string name="new_onboarding_subtitle1">Lorem Ipsum is simply dummy text of the printing and typesetting</string>
+    <string name="new_onboarding_subtitle2">Lorem Ipsum is simply dummy text of the printing and typesetting</string>
+    <string name="new_onboarding_subtitle3">Lorem Ipsum is simply dummy text of the printing and typesetting</string>
+    <string name="sign_in">Sign in</string>
+    <string name="welcome_back_to_limor">Welcome back to Limor</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="email_address">Email Address</string>
+    <string name="sig_in_dont_have_account">Don’t have an account?</string>
+    <string name="get_otp">Get OTP</string>
+    <string name="send_login_link">Send Login Link</string>
+    <string name="check_your_email_subtitle">We’ve sent you the login link to your email address. Please check your email to login</string>
+    <string name="check_your_email">Check Your Email</string>
+    <string name="take_me_to_email">Take Me To Email</string>
+
 </resources>

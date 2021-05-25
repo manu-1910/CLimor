@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimary">#424242</color>
     <color name="colorPrimaryDark">#424242</color>
-    <color name="colorAccent">#f7bb3d</color>
+    <color name="colorAccent">#F9BB4B</color>
     <color name="colorAccentDark">#BE8F2E</color>
 
     <color name="transparent">#00ffffff</color>
@@ -143,4 +143,13 @@
     </color>
     <color name="grayWave">#91A2B2</color>
     <color name="orangeColor">#FF9800</color>
+
+    <color name="subtitle_text_color">#91A2B2</color>
+    <color name="end_icon_tint">#91A2B2</color>
+    <color name="sign_in_new_background">#FBFCFF</color>
+    <color name="sign_in_stroke_color">#ECEEF4</color>
+    <color name="error_stroke_color">#FF5A4E</color>
+    <color name="approved_green">#49BF9B</color>
+    <color name="ripple_color">#33F9BB4B</color>
+
 </resources>

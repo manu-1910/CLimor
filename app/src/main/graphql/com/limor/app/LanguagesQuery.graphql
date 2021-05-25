@@ -1,0 +1,7 @@
+query LanguagesQuery {
+    Languages{
+        code,
+        name,
+        native_name
+    }
+}

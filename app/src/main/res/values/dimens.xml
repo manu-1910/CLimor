@@ -54,4 +54,6 @@
     <dimen name="buttonElevation">4dp</dimen>
 
     <dimen name="miniPlayerHeight">60dp</dimen>
+    <dimen name="margin64">64dp</dimen>
+    <dimen name="margin48">48dp</dimen>
 </resources>

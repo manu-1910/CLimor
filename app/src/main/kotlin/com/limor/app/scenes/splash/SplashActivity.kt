@@ -6,7 +6,7 @@ import android.os.Handler
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.common.SessionManager
-import com.limor.app.scenes.authentication.SignActivity
+import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.main.MainActivity
 import javax.inject.Inject
 
@@ -18,14 +18,14 @@ class SplashActivity : BaseActivity() {
 
     private val mRunnable: Runnable = Runnable {
         if (!isFinishing) {
-
-            if(!sessionManager.getStoredToken().isNullOrEmpty()){
+            val hasFirebaseUser = false // FirebaseAuth.getInstance().currentUser != null
+            if (!sessionManager.getStoredToken().isNullOrEmpty() || hasFirebaseUser) {
                 //println("client_id es:" + sessionManager.getStoredUser().id)
                 var mainIntent: Intent = Intent(this, MainActivity::class.java)
                 startActivity(mainIntent)
                 this.finish()
-            }else{
-                startActivity(Intent(applicationContext, SignActivity::class.java))
+            } else {
+                startActivity(Intent(applicationContext, AuthActivityNew::class.java))
                 finish()
             }
         }
@@ -35,7 +35,10 @@ class SplashActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         mDelayHandler = Handler()
-        mDelayHandler!!.postDelayed(mRunnable, resources.getInteger(R.integer.SPLASH_DELAY).toLong())
+        mDelayHandler!!.postDelayed(
+            mRunnable,
+            resources.getInteger(R.integer.SPLASH_DELAY).toLong()
+        )
     }
 
     public override fun onDestroy() {
