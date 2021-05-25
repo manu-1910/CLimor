@@ -39,6 +39,7 @@ import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
+import timber.log.Timber
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -265,7 +266,10 @@ class DraftsFragment : BaseFragment() {
                         }
 
                         //Go to record fragment to continue recording
-                        draftViewModel.uiDraft = item
+                        Timber.d("Draft ${item.isNewRecording}")
+                        draftViewModel.uiDraft = item.apply {
+                            isNewRecording = false
+                        }
                         draftViewModel.filesArray.add(File(item.filePath))
                         //draftViewModel.durationOfLastAudio = item.length!!
 

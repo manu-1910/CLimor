@@ -46,9 +46,11 @@ import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
 import com.limor.app.audio.wav.waverecorder.WaveRecorder
+import com.limor.app.audio.wav.waverecorder.calculateAmplitude
 import com.limor.app.common.BaseFragment
 import com.limor.app.scenes.main.viewmodels.DraftViewModel
 import com.limor.app.scenes.main.viewmodels.LocationsViewModel
+import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.CommonsKt.Companion.audioFileFormat
 import com.limor.app.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import com.limor.app.scenes.utils.location.MyLocation
@@ -72,8 +74,6 @@ import org.jetbrains.anko.support.v4.runOnUiThread
 import org.jetbrains.anko.support.v4.toast
 import timber.log.Timber
 import java.io.File
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -111,7 +111,7 @@ class RecordFragment : BaseFragment() {
     private var seekUpdater: Runnable
     private val seekHandler: Handler = Handler(Looper.getMainLooper())
     private var needToInitializeMediaPlayer = true
-
+    private var playBackTime = 0L
 
     companion object {
         val TAG: String = RecordFragment::class.java.simpleName
@@ -135,6 +135,7 @@ class RecordFragment : BaseFragment() {
                     if (it.isPlaying) {
                         val currentPosition = it.currentPosition
                         playVisualizer.updateTime(currentPosition.toLong(), true)
+                        updatePlayBackLabel(currentPosition.toLong())
                     }
                 }
             }
@@ -162,7 +163,6 @@ class RecordFragment : BaseFragment() {
         tempFileName = getNewFileName()
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 1f)
-
 
         bindViewModel()
 //        deleteUnusedAudioFiles()
@@ -232,7 +232,11 @@ class RecordFragment : BaseFragment() {
         recordButton.onClick {
 
             playVisualizer.visibility = View.GONE
+            c_meter.visibility = View.VISIBLE
+            textPlaybackTime.visibility = View.INVISIBLE
             recordVisualizer?.visibility = View.VISIBLE
+            updatePlayBackLabel(0)
+
             if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
                 mediaPlayer.stop()
                 setPlayPauseButtonState(false)
@@ -255,20 +259,44 @@ class RecordFragment : BaseFragment() {
 
         playButton.onClick {
             if (needToInitializeMediaPlayer) {
+                val recordingFile = File(fileRecording)
+                val copiedFile = File(tempFileName)
                 lifecycleScope.launch {
-                    val amps = loadAmps(fileRecording, mRecorder?.bufferSize!!)
-                    playVisualizer.apply {
-                        ampNormalizer = { sqrt(it.toFloat()).toInt() }
-                        onSeeking = { mediaPlayer.seekTo(it.toInt()) }
+                    if (recordingFile.exists()) {
+                        val amps: List<Int>
+                        //We returned from drafts screen
+                        if (uiDraft?.draftParent != null) {
+                            val tempFilePath = getNewFileName()
+                            val tempFile = File(tempFilePath)
+                            recordingFile.copyTo(tempFile, true)
+                            mRecorder?.writeHeaders(tempFilePath)
+                            WavHelper.combineWaveFile(
+                                draftViewModel.filesArray[0].absolutePath,
+                                tempFile.absolutePath,
+                                copiedFile.absolutePath
+                            )
+                            amps = loadAmps(copiedFile.absolutePath, mRecorder?.bufferSize!!)
+                            if (tempFile.exists()) tempFile.delete()
+                            //It's a new recording
+                        } else {
+                            recordingFile.copyTo(copiedFile, true)
+                            mRecorder?.writeHeaders(tempFileName)
+                            amps = loadAmps(copiedFile.absolutePath, mRecorder?.bufferSize!!)
+                        }
+                        playVisualizer.apply {
+                            ampNormalizer = { sqrt(it.toFloat()).toInt() }
+                            onSeeking = {
+                                mediaPlayer.seekTo(it.toInt())
+                                updatePlayBackLabel(it)
+                            }
+                        }
+                        playVisualizer.setWaveForm(
+                            amps,
+                            mRecorder!!.tickDuration
+                        )
+                        configureMediaPlayer(copiedFile)
                     }
-                    playVisualizer.setWaveForm(
-                        amps,
-                        mRecorder!!.tickDuration
-                    )
                 }
-                configureMediaPlayer()
-                playVisualizer.visibility = View.VISIBLE
-                recordVisualizer!!.visibility = View.GONE
             } else {
                 if (mediaPlayer.isPlaying) {
                     mediaPlayer.pause()
@@ -302,6 +330,11 @@ class RecordFragment : BaseFragment() {
 
     }
 
+    private fun updatePlayBackLabel(playBack: Long) {
+        playBackTime = playBack
+        textPlaybackTime.text = Commons.getLengthFromEpochForPlayer(playBackTime)
+    }
+
     private fun setPlayPauseButtonState(isPlaying: Boolean) {
         if (isPlaying)
             playButton.setImageDrawable(
@@ -320,28 +353,28 @@ class RecordFragment : BaseFragment() {
     }
 
 
-    private fun configureMediaPlayer() {
-        val recordingFile = File(fileRecording)
-        val copiedFile = File(tempFileName)
-        if (recordingFile.exists()) {
-            recordingFile.copyTo(copiedFile, true)
-            mRecorder?.writeHeaders(tempFileName)
-        }
+    private fun configureMediaPlayer(audio: File) {
         mediaPlayer = MediaPlayer()
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
-        mediaPlayer.setDataSource(copiedFile.absolutePath)
+        mediaPlayer.setDataSource(audio.absolutePath)
         mediaPlayer.setOnCompletionListener {
             setPlayPauseButtonState(false)
             playVisualizer.updateTime(mediaPlayer.duration.toLong(), false)
+            updatePlayBackLabel(mediaPlayer.duration.toLong())
             mediaPlayer.pause()
         }
         mediaPlayer.setOnPreparedListener {
             it.start()
+            updatePlayBackLabel(0)
             seekHandler.post(seekUpdater)
             setPlayPauseButtonState(true)
         }
         mediaPlayer.prepareAsync()
         needToInitializeMediaPlayer = false
+        playVisualizer.visibility = View.VISIBLE
+        recordVisualizer!!.visibility = View.GONE
+        c_meter.visibility = View.INVISIBLE
+        textPlaybackTime.visibility = View.VISIBLE
     }
 
     private fun enablePlayFfwdRewButtons(isEnabled: Boolean) {
@@ -386,7 +419,6 @@ class RecordFragment : BaseFragment() {
                 // this means that we come from drafts list fragment, so we have to create a new autosave
                 // draft and assign the parent as the uiDraft received from this fragment
                 if (!it.isNewRecording) {
-                    Timber.d("From drafts")
                     uiDraft = it.copy()
                     uiDraft?.id = System.currentTimeMillis()
                     uiDraft?.title = getString(R.string.autosave)
@@ -410,7 +442,7 @@ class RecordFragment : BaseFragment() {
                     }
 
                     uiDraft?.draftParent = it
-
+                    loadDraftToRecordingWave()
 
                     // this means that we are a new recording that just navigated to another fragment to edit
                     // the audio for example and then we came back to the record fragment, so we just assign the received
@@ -435,6 +467,20 @@ class RecordFragment : BaseFragment() {
         }
     }
 
+    private fun loadDraftToRecordingWave() {
+        lifecycleScope.launch {
+            //Create dummy recorder to get wave parameters
+            val recorder = WaveRecorder("")
+            val amps: List<Int> =
+                loadAmps(uiDraft?.draftParent!!.filePath!!, recorder.bufferSize!!)
+            amps.forEach { amp ->
+                recordVisualizer?.addAmp(
+                    amp, recorder.tickDuration
+                )
+            }
+        }
+    }
+
     override fun onPause() {
         super.onPause()
         requireActivity().unregisterReceiver(lowBatteryReceiver)
@@ -446,12 +492,8 @@ class RecordFragment : BaseFragment() {
         if (!anythingToSave) {
             uiDraft = null
             activity?.finish()
-
-
             // if we do have recorded anything...
         } else {
-
-
             // this means that we are in this fragment recording some audio for the first time
             if (uiDraft?.isNewRecording == true) {
 
@@ -590,10 +632,10 @@ class RecordFragment : BaseFragment() {
                     val durationStr =
                         mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                     val currentDurationInMillis = durationStr!!.toInt()
-                    val currentDurationInSecondsFloat: Double = currentDurationInMillis / 1000.0
-                    val durationFloatRoundedUp = kotlin.math.ceil(currentDurationInSecondsFloat)
-                    val durationMillisRoundedUp = (durationFloatRoundedUp * 1000).toInt()
-                    c_meter.base = SystemClock.elapsedRealtime() - durationMillisRoundedUp
+                    //val currentDurationInSecondsFloat: Double = currentDurationInMillis / 1000.0
+                    //val durationFloatRoundedUp = kotlin.math.ceil(currentDurationInSecondsFloat)
+                    // val durationMillisRoundedUp = (durationFloatRoundedUp * 1000).toInt()
+                    c_meter.base = SystemClock.elapsedRealtime() - currentDurationInMillis
                     timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -603,49 +645,11 @@ class RecordFragment : BaseFragment() {
         }
     }
 
-
     private fun hasPermissions(context: Context, vararg permissions: String): Boolean =
         permissions.all {
             ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
         }
 
-
-    // TODO: Jose -> review this method
-    // be careful with this method. It doesn't seem to work as expected.
-    // I mean, it does delete files, but maybe it deletes files that we don't want to be deleted.
-    private fun deleteUnusedAudioFiles() {
-        // let's fill a paths list with all the file paths that should be in the storage
-        draftViewModel.loadDraftRealm()?.observe(this@RecordFragment, Observer<List<UIDraft>> {
-            val paths = ArrayList<String>()
-            it.forEach { draft ->
-                draft.filePath?.let { path ->
-                    paths.add(path)
-                }
-            }
-            // and now, let's delete all zombie files that are not linked to any draft anymore but,
-            // for some reason, they were not deleted
-            val audioDirectory = File(context?.getExternalFilesDir(null)?.absolutePath, "/limorv2/")
-            if (audioDirectory.exists() && audioDirectory.isDirectory) {
-                val files = audioDirectory.listFiles()
-                files?.forEach { file ->
-                    if (!paths.contains(file.absolutePath))
-                        file.delete()
-                }
-            }
-        })
-
-
-        // and now, let's clean cache too
-        context?.externalCacheDir?.absolutePath?.let {
-            val cacheDirectory = File(it)
-            if (cacheDirectory.exists() && cacheDirectory.isDirectory) {
-                val cacheFiles = cacheDirectory.listFiles()
-                cacheFiles?.forEach { file ->
-                    file.delete()
-                }
-            }
-        }
-    }
 
     private fun configureToolbar() {
         //Toolbar title
@@ -827,9 +831,6 @@ class RecordFragment : BaseFragment() {
         }
     }
 
-    private fun mergeFilesAndCloseActivity() {
-        mergeFilesAndNavigateTo(-1)
-    }
 
     private fun mergeFilesAndNavigateTo(navigationAction: Int) {
         doAsync {
@@ -954,11 +955,7 @@ class RecordFragment : BaseFragment() {
             runOnUiThread {
                 if (isRecording) {
                     if (it != 0) {
-                        recordVisualizer?.addAmp(
-                            it,
-                            mRecorder!!.tickDuration
-                        )
-                        // voiceGraph?.invalidate() // refresh the Visualizer
+                        recordVisualizer?.addAmp(it, mRecorder!!.tickDuration)
                     }
                 }
             }
@@ -1307,7 +1304,6 @@ class RecordFragment : BaseFragment() {
                 pauseRecording()
             }
             showLowBatteryDialog()
-            //requireContext().unregisterReceiver(this)
         }
     }
 
@@ -1349,13 +1345,41 @@ class RecordFragment : BaseFragment() {
         amps
     }
 
-    private fun ByteArray.calculateAmplitude(): Int {
-        return ShortArray(size / 2).let {
-            ByteBuffer.wrap(this)
-                .order(ByteOrder.LITTLE_ENDIAN)
-                .asShortBuffer()
-                .get(it)
-            it.max()?.toInt() ?: 0
+
+    // TODO: Jose -> review this method
+    // be careful with this method. It doesn't seem to work as expected.
+    // I mean, it does delete files, but maybe it deletes files that we don't want to be deleted.
+    private fun deleteUnusedAudioFiles() {
+        // let's fill a paths list with all the file paths that should be in the storage
+        draftViewModel.loadDraftRealm()?.observe(this@RecordFragment, Observer<List<UIDraft>> {
+            val paths = ArrayList<String>()
+            it.forEach { draft ->
+                draft.filePath?.let { path ->
+                    paths.add(path)
+                }
+            }
+            // and now, let's delete all zombie files that are not linked to any draft anymore but,
+            // for some reason, they were not deleted
+            val audioDirectory = File(context?.getExternalFilesDir(null)?.absolutePath, "/limorv2/")
+            if (audioDirectory.exists() && audioDirectory.isDirectory) {
+                val files = audioDirectory.listFiles()
+                files?.forEach { file ->
+                    if (!paths.contains(file.absolutePath))
+                        file.delete()
+                }
+            }
+        })
+
+
+        // and now, let's clean cache too
+        context?.externalCacheDir?.absolutePath?.let {
+            val cacheDirectory = File(it)
+            if (cacheDirectory.exists() && cacheDirectory.isDirectory) {
+                val cacheFiles = cacheDirectory.listFiles()
+                cacheFiles?.forEach { file ->
+                    file.delete()
+                }
+            }
         }
     }
 

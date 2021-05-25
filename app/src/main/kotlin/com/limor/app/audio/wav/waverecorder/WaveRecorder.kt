@@ -212,3 +212,13 @@ class WaveRecorder(private var filePath: String) {
     }
 
 }
+
+fun ByteArray.calculateAmplitude(): Int {
+    return ShortArray(size / 2).let {
+        ByteBuffer.wrap(this)
+            .order(ByteOrder.LITTLE_ENDIAN)
+            .asShortBuffer()
+            .get(it)
+        it.max()?.toInt() ?: 0
+    }
+}
