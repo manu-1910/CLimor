@@ -30,7 +30,6 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -78,7 +77,6 @@ import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
-import org.jetbrains.anko.textColor
 import org.jetbrains.anko.uiThread
 import timber.log.Timber
 import java.io.File
@@ -296,27 +294,7 @@ class PublishFragment : BaseFragment() {
                 && isTitleValid
                 && isTagsSelected
 
-        Timber.d("Publish btn enabled: $isAllRequiredFieldsFilled isTitle valid ${isTitleValid}isCaptionValid ${isCaptionValid}isImageChosen ${isImageChosen}isLanguageSelected = ${isLanguageSelected}isCategorySelected ${isCategorySelected}isTagsSelected $isTagsSelected")
-        if (isAllRequiredFieldsFilled) {
-            btnPublishDraft?.isEnabled = true
-            btnPublishDraft?.background =
-                AppCompatResources.getDrawable(
-                    requireContext(),
-                    R.drawable.bg_round_yellow_ripple_new
-                )
-            btnPublishDraft?.textColor =
-                ContextCompat.getColor(requireContext(), R.color.textPrimary)
-            btnPublishDraft?.visibility = View.VISIBLE
-        } else {
-            btnPublishDraft?.isEnabled = false
-            btnPublishDraft?.background =
-                AppCompatResources.getDrawable(
-                    requireContext(),
-                    R.drawable.bg_round_grey_ripple_new
-                )
-            btnPublishDraft?.textColor =
-                ContextCompat.getColor(requireContext(), R.color.textSecondary)
-        }
+        btnPublishDraft?.isEnabled = isAllRequiredFieldsFilled
     }
 
     private fun apiCallPublishPodcast() {

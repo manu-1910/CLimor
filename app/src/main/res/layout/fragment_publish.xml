@@ -496,12 +496,12 @@
                                 android:layout_gravity="bottom"
                                 android:layout_marginStart="@dimen/marginSmall"
                                 android:layout_weight="1"
-                                android:background="@drawable/bg_round_yellow_ripple_new"
+                                android:background="@drawable/btn_primary_background"
                                 android:fontFamily="@font/roboto_medium"
                                 android:padding="15dp"
                                 android:text="@string/btn_publish"
                                 android:textAllCaps="false"
-                                android:textColor="@color/textPrimary"
+                                android:textColor="@color/text_btn_primary_color"
                                 android:textSize="@dimen/textSize14" />
 
                         </LinearLayout>

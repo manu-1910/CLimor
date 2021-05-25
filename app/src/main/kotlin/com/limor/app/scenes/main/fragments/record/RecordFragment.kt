@@ -29,7 +29,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
@@ -938,8 +937,6 @@ class RecordFragment : BaseFragment() {
     private fun initGui() {
         configureToolbar()
         // Disable next button
-        nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple_new)
-        nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.textSecondary)
         nextButton.isEnabled = false
     }
 
@@ -1036,12 +1033,7 @@ class RecordFragment : BaseFragment() {
 
     private fun updateRecordButton() {
         if (isRecording) {
-            nextButton.background =
-                getDrawable(requireContext(), R.drawable.bg_round_grey_ripple_new)
             nextButton.isEnabled = false
-            nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.textSecondary)
-            nextButton.visibility = View.VISIBLE
-
             recordButton.background = ContextCompat.getDrawable(
                 requireContext(),
                 R.drawable.pause_red_btn
@@ -1049,13 +1041,8 @@ class RecordFragment : BaseFragment() {
         } else {
             recordButton.background =
                 ContextCompat.getDrawable(requireContext(), R.drawable.record_red_btn)
-
             // Enable next button
-            nextButton.visibility = View.VISIBLE
-            nextButton.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.bg_round_yellow_ripple_new)
             nextButton.isEnabled = true
-            nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.textPrimary)
         }
     }
 
