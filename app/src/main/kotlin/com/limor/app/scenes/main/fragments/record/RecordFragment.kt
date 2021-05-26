@@ -1132,6 +1132,11 @@ class RecordFragment : BaseFragment() {
             mediaPlayer.stop()
         }
         seekHandler.removeCallbacksAndMessages(null)
+        if (::handlerCountdown.isInitialized) {
+            handlerCountdown.removeCallbacksAndMessages(null)
+            layCountdownAnimation.visibility = View.GONE
+            isAnimatingCountdown = false
+        }
     }
 
     private fun initApiCallInsertDraft() {
