@@ -768,6 +768,14 @@ class PublishFragment : BaseFragment() {
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
         try {
             mediaPlayer.setDataSource(uiDraft.filePath)
+            mediaPlayer.setOnCompletionListener {
+                btnPlayPause?.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_play
+                    )
+                )
+            }
             mediaPlayer.prepare() // might take long for buffering.
         } catch (e: Exception) {
             //e.printStackTrace()
@@ -776,6 +784,7 @@ class PublishFragment : BaseFragment() {
 
         //Seekbar progress listener
         audioSeekbar?.max = mediaPlayer.duration
+        audioSeekbar?.progress = 0
         audioSeekbar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (mediaPlayer != null && fromUser) {
