@@ -20,8 +20,7 @@ import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.main.viewmodels.LanguagesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.MAIN
-import kotlinx.android.synthetic.main.fragment_new_auth_languages.*
-import kotlinx.android.synthetic.main.fragment_record_categories.btnContinue
+import kotlinx.android.synthetic.main.fragment_languages.*
 
 
 class LanguagesFragment : FragmentWithLoading() {

@@ -104,7 +104,7 @@
        android:id="@+id/record_categories"
        android:name="com.limor.app.scenes.main.fragments.record.CategoriesFragment"
        android:label="CategoriesFragment"
-       tools:layout="@layout/fragment_record_categories">
+       tools:layout="@layout/fragment_publish_categories">
 
    </fragment>
 
