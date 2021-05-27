@@ -135,6 +135,7 @@ class RecordFragment : BaseFragment() {
                         val currentPosition = it.currentPosition
                         playVisualizer.updateTime(currentPosition.toLong(), true)
                         updatePlayBackLabel(currentPosition.toLong())
+                        enableRewFwdButton(it)
                     }
                 }
             }
@@ -163,6 +164,9 @@ class RecordFragment : BaseFragment() {
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 1f)
 
+        rewButton.isEnabled = false
+        ffwdButton.isEnabled = false
+
         bindViewModel()
 //        deleteUnusedAudioFiles()
         initGui()
@@ -179,7 +183,7 @@ class RecordFragment : BaseFragment() {
 
 
     private fun listeners() {
-        enablePlayFfwdRewButtons(false)
+        enablePlayButton(false)
         // Next Button
         nextButton.onClick {
             if (mRecorder != null) {
@@ -243,7 +247,7 @@ class RecordFragment : BaseFragment() {
             if (isRecording) {
                 pauseRecording()
                 needToInitializeMediaPlayer = true
-                enablePlayFfwdRewButtons(true)
+                enablePlayButton(true)
             } else {
                 if (needAnimatedCountDown) {
                     showCountdownAnimation {
@@ -252,7 +256,7 @@ class RecordFragment : BaseFragment() {
                 } else {
                     stopCountdownAnimationAndStartRecordingInstantly()
                 }
-                enablePlayFfwdRewButtons(false)
+                enablePlayButton(false)
             }
         }
 
@@ -287,6 +291,7 @@ class RecordFragment : BaseFragment() {
                             onSeeking = {
                                 mediaPlayer.seekTo(it.toInt())
                                 updatePlayBackLabel(it)
+                                enableRewFwdButton(mediaPlayer)
                             }
                         }
                         playVisualizer.setWaveForm(
@@ -360,7 +365,9 @@ class RecordFragment : BaseFragment() {
             setPlayPauseButtonState(false)
             playVisualizer.updateTime(mediaPlayer.duration.toLong(), false)
             updatePlayBackLabel(mediaPlayer.duration.toLong())
+            enableRewFwdButton(it)
             mediaPlayer.pause()
+
         }
         mediaPlayer.setOnPreparedListener {
             it.start()
@@ -376,12 +383,16 @@ class RecordFragment : BaseFragment() {
         textPlaybackTime.visibility = View.VISIBLE
     }
 
-    private fun enablePlayFfwdRewButtons(isEnabled: Boolean) {
+    private fun enablePlayButton(isEnabled: Boolean) {
         playButton.isEnabled = isEnabled
-        rewButton.isEnabled = isEnabled
-        ffwdButton.isEnabled = isEnabled
+        //rewButton.isEnabled = isEnabled
+        //ffwdButton.isEnabled = isEnabled
     }
 
+    private fun enableRewFwdButton(mediaPlayer: MediaPlayer) {
+        rewButton.isEnabled = mediaPlayer.currentPosition > 0
+        ffwdButton.isEnabled = mediaPlayer.currentPosition < mediaPlayer.duration
+    }
 
     override fun onResume() {
         super.onResume()
