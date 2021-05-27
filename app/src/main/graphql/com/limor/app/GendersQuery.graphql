@@ -1,0 +1,7 @@
+query GendersQuery {
+    Genders{
+        id,
+        gender,
+        description
+    }
+}

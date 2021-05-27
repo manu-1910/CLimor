@@ -1,6 +1,7 @@
 package com.limor.app.apollo
 
 import com.limor.app.CategoriesQuery
+import com.limor.app.GendersQuery
 import com.limor.app.LanguagesQuery
 import timber.log.Timber
 
@@ -26,8 +27,18 @@ object GeneralInfoRepository {
         return languages
     }
 
-    private fun logList(categories: List<Any>) {
-        categories.forEach {
+    suspend fun fetchGenders(): List<GendersQuery.Gender>? {
+        val query = GendersQuery()
+        val result = Apollo.launchQuery(query)
+        var genders: List<GendersQuery.Gender?>? =
+            result?.data?.genders ?: return null
+        genders = genders!!.filterNotNull()
+        logList(genders)
+        return genders
+    }
+
+    private fun logList(list: List<Any>) {
+        list.forEach {
             Timber.d(it.toString())
         }
     }
