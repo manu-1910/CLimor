@@ -1,0 +1,8 @@
+mutation UpdateUserOnboardingDataMutation($gender: Int!, $categories: [Int!], $language: [String!]) {
+    updateUserOnboardingData(
+        gender:$gender,
+        categories:$categories,
+        language: $language){
+            message, status
+        }
+}
