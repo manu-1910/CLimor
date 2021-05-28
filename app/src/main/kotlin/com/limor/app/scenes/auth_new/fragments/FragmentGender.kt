@@ -4,15 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
+import com.limor.app.GendersQuery
 import com.limor.app.R
+import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
-import com.limor.app.scenes.auth_new.data.Gender
 import kotlinx.android.synthetic.main.fragment_new_auth_gender.*
 
-class FragmentGender : Fragment() {
+class FragmentGender : FragmentWithLoading() {
 
     private val model: AuthViewModelNew by activityViewModels()
 
@@ -27,7 +29,29 @@ class FragmentGender : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setOnClickListeners()
-        setUpToggleButton()
+        toggleGender.isEnabled = false
+    }
+
+    override fun load() {
+        model.downloadGenders()
+    }
+
+    override val errorLiveData: LiveData<String>
+        get() = model.gendersLiveDataError
+
+
+    override fun subscribeToViewModel() {
+        super.subscribeToViewModel()
+        model.gendersSelectionDone.observe(viewLifecycleOwner, Observer {
+            btnContinue.isEnabled = it
+        })
+
+        model.gendersLiveData.observe(viewLifecycleOwner, Observer {
+            if (it.isNotEmpty()) {
+                switchCommonVisibility()
+                setUpToggleButton(it)
+            }
+        })
     }
 
     private fun setOnClickListeners() {
@@ -37,40 +61,43 @@ class FragmentGender : Fragment() {
         }
 
         btnBack.setOnClickListener {
-            it.findNavController().popBackStack()
+            AuthActivityNew.popBackStack(requireActivity())
         }
 
         btnSkip.setOnClickListener {
-            model.setCurrentGender(Gender.None)
-            //            it.findNavController()
-//                .navigate(R.id.)
+            model.selectGender(0)
+            it.findNavController()
+                .navigate(R.id.action_fragment_new_auth_gender_to_fragment_new_auth_categories)
         }
     }
 
-    private fun setUpToggleButton() {
-        addToggleClickListener()
+    private fun setUpToggleButton(list: List<GendersQuery.Gender>) {
+        addToggleClickListener(list)
         setUpInitialGender()
     }
 
-    private fun addToggleClickListener() {
+    private fun addToggleClickListener(list: List<GendersQuery.Gender>) {
+        btnGender1.text = list[0].gender
+        btnGender2.text = list[1].gender
+        btnGender3.text = list[2].gender
         toggleGender.addOnButtonCheckedListener { toggleButton, checkedId, isChecked ->
             if (isChecked) {
                 val gender = when (checkedId) {
-                    R.id.btnGender1 -> Gender.Male
-                    R.id.btnGender2 -> Gender.Female
-                    R.id.btnGender3 -> Gender.Other
-                    else -> Gender.Male
+                    R.id.btnGender1 -> list[0]
+                    R.id.btnGender2 -> list[1]
+                    R.id.btnGender3 -> list[2]
+                    else -> list[0]
                 }
-                model.setCurrentGender(gender)
+                model.selectGender(gender.id ?: 0)
             }
         }
     }
 
     private fun setUpInitialGender() {
-        val checkedId = when (model.currentGender) {
-            Gender.Male -> R.id.btnGender1
-            Gender.Female -> R.id.btnGender2
-            Gender.Other -> R.id.btnGender3
+        val checkedId = when (model.selectedGenderIndex) {
+            0 -> R.id.btnGender1
+            1 -> R.id.btnGender2
+            2 -> R.id.btnGender3
             else -> R.id.btnGender1
         }
         toggleGender.check(checkedId)

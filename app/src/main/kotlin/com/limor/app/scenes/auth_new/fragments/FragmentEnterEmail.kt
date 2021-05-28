@@ -40,7 +40,7 @@ class FragmentEnterEmail : Fragment() {
         }
 
         btnBack.setOnClickListener {
-            it.findNavController().popBackStack()
+            AuthActivityNew.popBackStack(requireActivity())
         }
 
         etEnterEmail.setEndIconOnClickListener {

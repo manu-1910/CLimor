@@ -23,7 +23,10 @@ import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.common.SessionManager
-import com.limor.app.scenes.main.fragments.*
+import com.limor.app.scenes.main.fragments.HomeFragment
+import com.limor.app.scenes.main.fragments.NotificationsFragment
+import com.limor.app.scenes.main.fragments.ProfileFragment
+import com.limor.app.scenes.main.fragments.UserFeedFragment
 import com.limor.app.scenes.main.fragments.discover.DiscoverFragment
 import com.limor.app.scenes.main.fragments.record.RecordActivity
 import com.limor.app.scenes.main.viewmodels.GetUserViewModel
@@ -165,8 +168,8 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
             }
         }
 
-        navController.addOnNavigatedListener { _, _ ->
-            when (navController.currentDestination.label) {
+        navController.addOnDestinationChangedListener { _,_,_ ->
+            when (navController.currentDestination?.label) {
                 HomeFragment.TAG -> {
                     showHomeToolbar(getString(R.string.title_home))
                 }

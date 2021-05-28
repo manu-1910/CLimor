@@ -210,6 +210,7 @@
 
         <activity android:name=".scenes.auth_new.AuthActivityNew"
             android:screenOrientation="portrait"
+            android:launchMode="singleInstance"
             android:theme="@style/MaterialMainTheme.FullScreen"/>
 
     </application>

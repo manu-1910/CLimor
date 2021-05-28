@@ -57,7 +57,7 @@ class FragmentSignEnterPhone : Fragment() {
                 .navigate(R.id.action_fragment_new_auth_phone_enter_to_fragment_new_auth_phone_code)
         }
         btnBack.setOnClickListener {
-            it.findNavController().popBackStack()
+            AuthActivityNew.popBackStack(requireActivity())
         }
 
         tvSingUpTerms.setOnClickListener {

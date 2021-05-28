@@ -7,14 +7,12 @@ import android.os.CountDownTimer
 import android.os.Handler
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.*
+import com.limor.app.GendersQuery
 import com.limor.app.scenes.auth_new.data.*
 import com.limor.app.scenes.auth_new.firebase.FacebookAuthHandler
 import com.limor.app.scenes.auth_new.firebase.GoogleAuthHandler
 import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
-import com.limor.app.scenes.auth_new.model.CategoriesProvider
-import com.limor.app.scenes.auth_new.model.CountriesListProvider
-import com.limor.app.scenes.auth_new.model.LanguagesProvider
-import com.limor.app.scenes.auth_new.model.SuggestedProvider
+import com.limor.app.scenes.auth_new.model.*
 import com.limor.app.scenes.auth_new.util.DobPicker
 import com.limor.app.scenes.auth_new.util.PhoneNumberChecker
 import com.limor.app.scenes.auth_new.util.combine
@@ -230,12 +228,28 @@ class AuthViewModelNew : ViewModel() {
 
 
     /* Gender */
-    var currentGender: Gender = Gender.Male
-        private set
 
-    fun setCurrentGender(gender: Gender) {
-        currentGender = gender
+    private val gendersProvider: GendersProvider = GendersProvider(viewModelScope)
+
+    fun downloadGenders() = gendersProvider.downloadGenders()
+    val currentGenderId: Int
+        get() = gendersProvider.selectedGenderId
+    val selectedGenderIndex: Int
+        get() = gendersProvider.selectedGenderIndex()
+
+    fun selectGender(id: Int) {
+        gendersProvider.selectedGenderId = id
     }
+
+    val gendersLiveData: LiveData<List<GendersQuery.Gender>>
+        get() = gendersProvider.gendersLiveData
+
+    val gendersSelectionDone: LiveData<Boolean>
+        get() = gendersProvider.gendersSelectionDone
+
+    val gendersLiveDataError: LiveData<String>
+        get() = gendersProvider.gendersLiveDataError
+
 
     /* Categories */
     private val categoriesProvider: CategoriesProvider = CategoriesProvider(viewModelScope)

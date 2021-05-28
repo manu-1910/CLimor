@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.navigation.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.limor.app.R
+import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.data.OnboardingInfo
 import com.limor.app.scenes.auth_new.view.DepthPageTransformer
 import kotlinx.android.synthetic.main.fragment_new_auth_onboarding.*
@@ -35,7 +36,7 @@ class FragmentOnboarding : Fragment() {
     private fun setOnClicks() {
         btnBack.setOnClickListener {
             if (currentPosition == 0) {
-                it.findNavController().popBackStack()
+                AuthActivityNew.popBackStack(requireActivity())
             } else
                 vpOnboarding.setCurrentItem(currentPosition - 1, true)
         }

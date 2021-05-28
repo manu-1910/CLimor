@@ -1,5 +1,6 @@
 package com.limor.app.scenes.auth_new
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 import android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.Navigation
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.firebase.FacebookAuthHandler
@@ -26,6 +28,13 @@ class AuthActivityNew : AppCompatActivity() {
 
 //        FirebaseAuth.getInstance().firebaseAuthSettings
 //            .setAppVerificationDisabledForTesting(false)
+
+//        Handler().postDelayed({
+//            navigateToFragmentByNavigationBreakpoints(
+//                this,
+//                NavigationBreakpoints.PREFERENCE_COLLECTION.destination
+//            )
+//        }, 3000)
     }
 
     fun launchTermsUrl() {
@@ -58,6 +67,17 @@ class AuthActivityNew : AppCompatActivity() {
             return View.OnFocusChangeListener { v, hasFocus ->
                 if (hasFocus)
                     v.hideKeyboard()
+            }
+        }
+
+        fun popBackStack(activity: Activity) {
+            try {
+                val navController = Navigation.findNavController(activity, R.id.nav_host_fragment)
+                val popResult = navController.popBackStack()
+                if (!popResult) activity.finish()
+            } catch (e: java.lang.Exception) {
+                Timber.d("No backStack, finishing")
+                activity.finish()
             }
         }
     }

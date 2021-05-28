@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.limor.app.R
+import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.SuggestedUser
 import com.limor.app.scenes.auth_new.view.SuggestedPeopleAdapter
@@ -74,7 +75,7 @@ class FragmentSuggested : FragmentWithLoading() {
         }
 
         topAppBar.setNavigationOnClickListener {
-            it.findNavController().popBackStack()
+            AuthActivityNew.popBackStack(requireActivity())
         }
     }
 }

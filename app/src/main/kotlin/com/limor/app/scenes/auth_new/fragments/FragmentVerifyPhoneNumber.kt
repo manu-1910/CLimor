@@ -15,6 +15,7 @@ import androidx.navigation.findNavController
 import com.google.android.material.textfield.TextInputLayout
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
+import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_code.*
 
@@ -91,7 +92,7 @@ class FragmentVerifyPhoneNumber : Fragment() {
 
     private fun setClickListeners() {
         tvChangeNumber.setOnClickListener {
-            it.findNavController().popBackStack()
+            AuthActivityNew.popBackStack(requireActivity())
         }
 
         btnContinue.setOnClickListener {

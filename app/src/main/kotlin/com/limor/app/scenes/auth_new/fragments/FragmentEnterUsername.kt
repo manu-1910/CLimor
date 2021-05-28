@@ -44,7 +44,7 @@ class FragmentEnterUsername : Fragment() {
         }
 
         btnBack.setOnClickListener {
-            it.findNavController().popBackStack()
+            AuthActivityNew.popBackStack(requireActivity())
         }
 
         etEnterUsername.setEndIconOnClickListener {

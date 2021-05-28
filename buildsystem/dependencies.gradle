@@ -114,7 +114,7 @@ versions.shimmerlayout = '2.1.0'
 //Merlin connectivity
 versions.merlin = '1.2.0'
 
-versions.navigation = '1.0.0-alpha02'
+versions.navigation = '1.0.0'
 
 def support = [:]
 support.annotations = "androidx.annotation:annotation:$versions.support"
