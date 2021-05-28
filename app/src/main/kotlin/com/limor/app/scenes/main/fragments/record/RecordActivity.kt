@@ -95,7 +95,7 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
 
     fun initSlideBehaviour() {
         val layoutParams = coordinatorLayout.layoutParams as FrameLayout.LayoutParams
-        layoutParams.setMargins(0, 56.px, 0, 0)
+        layoutParams.setMargins(0, 16.px, 0, 0)
         coordinatorLayout.layoutParams = layoutParams
         mainContainer.background =
             ContextCompat.getDrawable(this, R.drawable.bottom_sheet_screen_background)

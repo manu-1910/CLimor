@@ -1,7 +1,0 @@
-input PodcastAudioInput {
-    audio_url: String!
-    original_audio_url: String!
-    duration: Int!
-    total_samples: Int!
-    total_length: Int!
-}
