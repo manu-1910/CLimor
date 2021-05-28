@@ -96,4 +96,31 @@ class ApolloTest {
             }
         }
     }
+
+    @Test
+    fun apolloShouldCallUpdateFollowingUsersDataQuery() {
+        Timber.d("\napolloShouldCallUpdateFollowingUsersDataQuery\n")
+        val followingIds = listOf("one", "two")
+        runBlocking {
+            try {
+                val result = UserRepository.updateFollowingUsersData(followingIds)
+                assert(result != null)
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+        }
+    }
+
+    @Test
+    fun apolloShouldCallGetUserOnboardingStatusQuery() {
+        Timber.d("\napolloShouldCallGetUserOnboardingStatusQuery\n")
+        runBlocking {
+            try {
+                val result = UserRepository.getUserOnboardingStatus()
+                assert(result != null)
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+        }
+    }
 }

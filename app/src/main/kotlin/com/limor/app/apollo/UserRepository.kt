@@ -1,9 +1,7 @@
 package com.limor.app.apollo
 
 import com.apollographql.apollo.api.Input
-import com.limor.app.CreateUserMutation
-import com.limor.app.UpdateUserNameMutation
-import com.limor.app.UpdateUserOnboardingDataMutation
+import com.limor.app.*
 import timber.log.Timber
 
 object UserRepository {
@@ -22,8 +20,8 @@ object UserRepository {
         val queryResult = Apollo.mutate(query)
         val updateUserNameResult =
             queryResult?.data?.updateUserName
-        Timber.d("UpdateUserNameMutation -> ${updateUserNameResult?.status}")
-        return updateUserNameResult?.status
+        Timber.d("UpdateUserNameMutation -> ${updateUserNameResult?.userName}")
+        return updateUserNameResult?.userName
     }
 
     suspend fun updateUserOnboardingData(
@@ -39,5 +37,24 @@ object UserRepository {
             queryResult?.data?.updateUserOnboardingData
         Timber.d("updateUserOnboardingDataMutation -> ${updateUserOnboardingData?.status}")
         return updateUserOnboardingData?.status
+    }
+
+    suspend fun updateFollowingUsersData(
+        followingUsers: List<String>
+    ): String? {
+        val query = UpdateFollowingUsersDataMutation(followingUsers)
+        val queryResult = Apollo.mutate(query)
+        val updateUserOnboardingData =
+            queryResult?.data?.updateFollowingUsersData
+        Timber.d("updateFollowingUsersDataMutation -> ${updateUserOnboardingData?.status}")
+        return updateUserOnboardingData?.status
+    }
+
+    suspend fun getUserOnboardingStatus(): String? {
+        val query = GetUserOnboardingStatusQuery()
+        val result = Apollo.launchQuery(query)
+        val nextStep = result?.data?.getUserOnboardingStatus?.nextStep
+        Timber.d("getUserOnboardingStatus -> $nextStep")
+        return nextStep
     }
 }
