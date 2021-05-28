@@ -1,0 +1,7 @@
+input PodcastMetadataInput {
+    title: String!
+    caption: String!
+    latitude: Float!
+    longitude: Float!
+    image_url: String!
+}

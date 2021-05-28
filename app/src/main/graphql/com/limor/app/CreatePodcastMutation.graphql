@@ -1,0 +1,5 @@
+mutation CreatePodcastMutation($podcast: CreatePodcastInput!) {
+    createPodcast(podcast: $podcast){
+        message, status
+    }
+}

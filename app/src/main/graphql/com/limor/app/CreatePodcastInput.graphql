@@ -1,0 +1,4 @@
+input CreatePodcastInput {
+    audio: PodcastAudioInput!
+    meta_data: PodcastMetadataInput!
+}
