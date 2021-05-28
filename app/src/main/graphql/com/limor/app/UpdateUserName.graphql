@@ -1,5 +1,5 @@
 mutation UpdateUserNameMutation($userName: String!) {
     updateUserName(userName: $userName){
-        message, status
+        userName
     }
 }
