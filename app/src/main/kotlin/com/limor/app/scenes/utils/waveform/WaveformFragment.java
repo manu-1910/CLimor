@@ -162,7 +162,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             public void run() {
                 if (playerPreview != null && playerPreview.isPlaying()) {
                     int posMarkerStart = selectedMarker.getStartPos();
-                    int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+                    int currentStartMillis = (int) (waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
                     seekBarPreview.setProgress(playerPreview.getCurrentPosition() - currentStartMillis);
                     tvTimePassPreview.setText(Commons.getLengthFromEpochForPlayer(seekBarPreview.getProgress()));
                 }
@@ -356,7 +356,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
         touchDragging = false;
 
-        if(playerPreview != null) {
+        if (playerPreview != null) {
             try {
                 preparePlayerPreview(false);
             } catch (IOException e) {
@@ -529,11 +529,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
 
-
     private void onPreviewClicked() {
         showPreviewLayout(true);
         try {
-            preparePlayerPreview(true);
+            preparePlayerPreview(false);
         } catch (IOException e) {
             e.printStackTrace();
             Timber.e("Error trying to load preview");
@@ -939,7 +938,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             seekBarPreview.setClickable(true);
 
             // we check if the layout is clickable to avoid showing or hiding it twice
-        } else if(!visible && rlPreviewSection.isClickable()){
+        } else if (!visible && rlPreviewSection.isClickable()) {
             rlPreviewSection.setVisibility(View.VISIBLE);
             TranslateAnimation animate = new TranslateAnimation(
                     0,                 // fromXDelta
@@ -1057,12 +1056,12 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected View.OnClickListener onRewindPreviewListener = sender -> {
         // we calculate the start previewPosition
         int posMarkerStart = selectedMarker.getStartPos();
-        int currentPreviewStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+        int currentPreviewStartMillis = (int) (waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
 
         // we get the progress of the seekBar and substract 30seconds
         int newProgress = seekBarPreview.getProgress() - 5000;
         // let's do this to not to get negative progress
-        if(newProgress < 0) {
+        if (newProgress < 0) {
             newProgress = 0;
         }
 
@@ -1083,23 +1082,21 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected View.OnClickListener onForwardReviewListener = sender -> {
         // we calculate the start previewPosition
         int posMarkerStart = selectedMarker.getStartPos();
-        int currentPreviewStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+        int currentPreviewStartMillis = (int) (waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
 
         // let's get the progress of the seekbar and add 30 seconds
         int newProgress = seekBarPreview.getProgress() + 5000;
 
         // let's do this to not overflow the seekbar
-        if(newProgress > seekBarPreview.getMax()) {
+        if (newProgress > seekBarPreview.getMax()) {
             newProgress = seekBarPreview.getMax();
         }
         seekBarPreview.setProgress(newProgress);
 
 
-
-
         // this specific case is to control that if the user clicks forward and gets to the end of
         // the audio, it will go back to the beginning
-        if(newProgress >= seekBarPreview.getMax()) {
+        if (newProgress >= seekBarPreview.getMax()) {
             playerPreview.pause();
             playerPreview.seekTo(currentPreviewStartMillis);
             updateButtonsPreview();
@@ -1241,16 +1238,16 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     private void seekPreviewPlayerToSeekbarPosition() {
         int posMarkerStart = selectedMarker.getStartPos();
-        int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+        int currentStartMillis = (int) (waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
         playerPreview.seekTo(currentStartMillis + seekBarPreview.getProgress());
     }
 
     private void setupSeekBarPreview() {
         int posMarkerStart = selectedMarker.getStartPos();
-        int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+        int currentStartMillis = (int) (waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
 
         int posMarkerEnd = selectedMarker.getEndPos();
-        int currentEndMillis = (int)(waveformView.pixelsToSeconds(posMarkerEnd / NEW_WIDTH) * 1000);
+        int currentEndMillis = (int) (waveformView.pixelsToSeconds(posMarkerEnd / NEW_WIDTH) * 1000);
 
         int currentDuration = currentEndMillis - currentStartMillis;
 
@@ -1259,12 +1256,12 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         seekBarPreview.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(currentStartMillis + progress >= currentEndMillis) {
+                if (currentStartMillis + progress >= currentEndMillis) {
                     playerPreview.pause();
                     seekPreviewPlayerToStartPosition();
                     updateButtonsPreview();
                 } else {
-                    if(fromUser) {
+                    if (fromUser) {
                         seekPreviewPlayerToSeekbarPosition();
                     }
                 }
@@ -1286,15 +1283,15 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
     private void updateDurationsPreview() {
-        if(selectedMarker == null)
+        if (selectedMarker == null)
             return;
 
 
         int posMarkerStart = selectedMarker.getStartPos();
-        int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+        int currentStartMillis = (int) (waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
 
         int posMarkerEnd = selectedMarker.getEndPos();
-        int currentEndMillis = (int)(waveformView.pixelsToSeconds(posMarkerEnd / NEW_WIDTH) * 1000);
+        int currentEndMillis = (int) (waveformView.pixelsToSeconds(posMarkerEnd / NEW_WIDTH) * 1000);
 
         int currentDuration = currentEndMillis - currentStartMillis;
         tvTimePassPreview.setText(Commons.getLengthFromEpochForPlayer(seekBarPreview.getProgress()));
@@ -1316,7 +1313,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
 
         int posMarkerStart = selectedMarker.getStartPos();
-        int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+        int currentStartMillis = (int) (waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
 
         playerPreview = null;
         playerPreview = new MediaPlayer();
@@ -1325,7 +1322,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         playerPreview.setOnCompletionListener((MediaPlayer mediaPlayer) -> handlePausePreview());
         playerPreview.prepare();
         playerPreview.seekTo(currentStartMillis);
-        if(shouldPlay)
+        if (shouldPlay)
             playerPreview.start();
         setupSeekBarPreview();
         shouldReloadPreview = false;
