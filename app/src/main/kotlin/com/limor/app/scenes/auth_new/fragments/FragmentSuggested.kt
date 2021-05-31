@@ -50,6 +50,11 @@ class FragmentSuggested : FragmentWithLoading() {
         model.suggestedSelectedLiveData.observe(viewLifecycleOwner, Observer {
             btnNext.text = getString(if (it) R.string.continue_button else R.string.btn_skip)
         })
+        model.suggestedForwardNavigationLiveData.observe(viewLifecycleOwner, Observer {
+            if (it)
+                view?.findNavController()
+                    ?.navigate(R.id.action_fragment_new_auth_suggested_people_to_fragment_new_auth_onboarding)
+        })
     }
 
     private fun buildList(users: List<SuggestedUser>) {
@@ -66,12 +71,9 @@ class FragmentSuggested : FragmentWithLoading() {
         }
     }
 
-
     private fun setOnClickListeners() {
         btnNext.setOnClickListener {
             model.sendSuggestedPeopleSelectionResult()
-            it.findNavController()
-                .navigate(R.id.action_fragment_new_auth_suggested_people_to_fragment_new_auth_onboarding)
         }
 
         topAppBar.setNavigationOnClickListener {

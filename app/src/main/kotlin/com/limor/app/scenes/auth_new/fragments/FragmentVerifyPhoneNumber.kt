@@ -7,16 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
 import com.google.android.material.textfield.TextInputLayout
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
+import com.limor.app.scenes.auth_new.navigation.AuthNavigator.navigateToFragmentByNavigationBreakpoints
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_code.*
 
 
@@ -129,14 +130,33 @@ class FragmentVerifyPhoneNumber : Fragment() {
             }
         })
 
-        model.smsCodeValidatedLiveData.observe(viewLifecycleOwner, Observer {
-            if (!it) return@Observer
-            val destination =
-                if (model.signInCase) R.id.action_fragment_new_auth_phone_code_to_destination_main_activity
-                else R.id.action_fragment_new_auth_phone_code_to_fragment_new_auth_enter_email
-            clMain.findNavController().navigate(destination)
-            if (model.signInCase)
-                requireActivity().finish()
+        model.userInfoProviderErrorLiveData.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+        })
+
+        model.createUserLiveData.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            model.getUserOnboardingStatus()
+        })
+
+        model.breakPointLiveData.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            navigateToFragmentByNavigationBreakpoints(requireActivity(), it)
+//            val destination =
+//                if (model.signInCase) R.id.action_fragment_new_auth_phone_code_to_destination_main_activity
+//                else R.id.action_fragment_new_auth_phone_code_to_fragment_new_auth_enter_email
+//            clMain.findNavController().navigate(destination)
+//            if (model.signInCase)
+//                requireActivity().finish()
+        })
+
+        model.smsCodeValidationPassed.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            if(model.signInCase)
+                model.getUserOnboardingStatus()
+            else
+                model.createUser()
         })
 
         model.resendButtonEnableLiveData.observe(viewLifecycleOwner, Observer {

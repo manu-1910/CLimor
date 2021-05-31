@@ -7,7 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
-import com.limor.app.scenes.utils.BACKGROUND
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -17,18 +18,21 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     private var phoneAuthCredential: PhoneAuthCredential? = null
     private var auth: FirebaseAuth = FirebaseAuth.getInstance()
     private lateinit var activity: Activity
-
-    private val _smsCodeValidatedLiveData = MutableLiveData<Boolean>().apply { value = false }
-    val smsCodeValidatedLiveData: LiveData<Boolean>
-        get() = _smsCodeValidatedLiveData
+    private lateinit var scope: CoroutineScope
 
     private val _smsCodeValidationErrorMessage =
         MutableLiveData<String>().apply { value = "" }
     val smsCodeValidationErrorMessage: LiveData<String>
         get() = _smsCodeValidationErrorMessage
 
-    fun init(activity: Activity) {
+    private val _smsCodeValidationPassed =
+        MutableLiveData<Boolean>().apply { value = false }
+    val smsCodeValidationPassed: LiveData<Boolean>
+        get() = _smsCodeValidationPassed
+
+    fun init(activity: Activity, scope: CoroutineScope) {
         this.activity = activity
+        this.scope = scope
     }
 
     fun sendCodeToPhone(phone: String, resend: Boolean = false) {
@@ -78,12 +82,12 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     }
 
     fun enterCodeAndSignIn(code: String) {
-        BACKGROUND({
+        scope.launch {
             _smsCodeValidationErrorMessage.postValue("")
-            if (storedVerificationId == null) return@BACKGROUND
+            if (storedVerificationId == null) return@launch
             val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, code)
             signInWithPhoneAuthCredential(credential)
-        })
+        }
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
@@ -105,9 +109,10 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
                     }
                     _smsCodeValidationErrorMessage.postValue(task.exception.toString())
                 }
-                _smsCodeValidatedLiveData.postValue(successful)
-                if (successful)
-                    Handler().postDelayed({ _smsCodeValidatedLiveData.postValue(false) }, 500)
+                if (successful) {
+                    _smsCodeValidationPassed.postValue(true)
+                    Handler().postDelayed({ _smsCodeValidationPassed.postValue(false) }, 500)
+                }
             }
     }
 

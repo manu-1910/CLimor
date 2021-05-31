@@ -1,6 +1,8 @@
 package com.limor.app.scenes.auth_new.model
 
+import android.os.Handler
 import androidx.lifecycle.MutableLiveData
+import com.limor.app.apollo.UserRepository
 import com.limor.app.apollo.showHumanizedErrorMessage
 import com.limor.app.scenes.auth_new.data.SuggestedUser
 import com.limor.app.scenes.auth_new.data.createMockedSuggestedUsers
@@ -22,22 +24,12 @@ class SuggestedProvider(private val scope: CoroutineScope) {
     val suggestedSelectedLiveData =
         MutableLiveData<Boolean>().apply { value = false }
 
+    val suggestedForwardNavigationLiveData =
+        MutableLiveData<Boolean>().apply { value = false }
+
     fun downloadSuggested() {
         if (suggestedList.isEmpty())
             loadSuggestedFromRepo()
-    }
-
-    fun followUser(suggestedUser: SuggestedUser){
-        suggestedUser.selected = !suggestedUser.selected
-        val someSelected = suggestedList.any { it.selected }
-        suggestedSelectedLiveData.postValue(someSelected)
-    }
-
-    fun sendSuggestedPeopleSelectionResult(){
-        val selected = suggestedList.filter { it.selected }
-        if(selected.isNotEmpty()){
-            //TODO send selected list to backend
-        }
     }
 
     private fun loadSuggestedFromRepo() {
@@ -46,6 +38,26 @@ class SuggestedProvider(private val scope: CoroutineScope) {
                 delay(300) //waiting for transition animation to end
                 suggestedList = createMockedSuggestedUsers()
                 suggestedLiveData.postValue(suggestedList)
+            } catch (e: Exception) {
+                Timber.e(e)
+                suggestedLiveDataError.postValue(showHumanizedErrorMessage(e))
+            }
+        }
+    }
+
+    fun followUser(suggestedUser: SuggestedUser) {
+        suggestedUser.selected = !suggestedUser.selected
+        val someSelected = suggestedList.any { it.selected }
+        suggestedSelectedLiveData.postValue(someSelected)
+    }
+
+    fun sendSuggestedPeopleSelectionResult() {
+        scope.launch {
+            try {
+                val list = suggestedList.filter { it.selected }.map { it.id.toString() }
+                val result = UserRepository.updateFollowingUsersData(list)
+                suggestedForwardNavigationLiveData.postValue(true)
+                Handler().postDelayed({ suggestedForwardNavigationLiveData.postValue(true) }, 500)
             } catch (e: Exception) {
                 Timber.e(e)
                 suggestedLiveDataError.postValue(showHumanizedErrorMessage(e))

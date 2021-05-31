@@ -19,7 +19,8 @@ object AuthNavigator {
 
     fun navigateToFragmentByNavigationBreakpoints(activity: Activity, destination: String) {
         val breakpoint =
-            NavigationBreakpoints.values().firstOrNull { it.destination == destination } ?: return
+            NavigationBreakpoints.values().firstOrNull { it.destination == destination }
+                ?: NavigationBreakpoints.ACCOUNT_CREATION
         navigateToFragmentWithClear(activity, breakpoint.actionId)
     }
 

@@ -47,7 +47,7 @@ class AuthViewModelNew : ViewModel() {
     /* PHONE Countries selection */
 
     fun initPhoneAuthHandler(activity: Activity) {
-        PhoneAuthHandler.init(activity)
+        PhoneAuthHandler.init(activity, viewModelScope)
     }
 
     fun submitPhoneNumber() {
@@ -139,9 +139,8 @@ class AuthViewModelNew : ViewModel() {
     val smsCodeValidationErrorMessage: LiveData<String>
         get() = PhoneAuthHandler.smsCodeValidationErrorMessage
 
-    val smsCodeValidatedLiveData: LiveData<Boolean>
-        get() = PhoneAuthHandler.smsCodeValidatedLiveData
-
+    val smsCodeValidationPassed: LiveData<Boolean>
+        get() = PhoneAuthHandler.smsCodeValidationPassed
     val smsContinueButtonEnabled: LiveData<Boolean> =
         _smsCodeIsFullLiveData.combineWith(smsCodeValidationErrorMessage) { full, error ->
             full!! && (error?.isEmpty() ?: false)
@@ -301,6 +300,9 @@ class AuthViewModelNew : ViewModel() {
     val suggestedSelectedLiveData: LiveData<Boolean>
         get() = suggestedProvider.suggestedSelectedLiveData
 
+    val suggestedForwardNavigationLiveData: LiveData<Boolean>
+        get() = suggestedProvider.suggestedForwardNavigationLiveData
+
     val suggestedLiveDataError: LiveData<String>
         get() = suggestedProvider.suggestedLiveDataError
 
@@ -367,6 +369,22 @@ class AuthViewModelNew : ViewModel() {
     fun setCurrentSignInMethod(signInMethod: SignInMethod) {
         _signInMethodLiveData.postValue(signInMethod)
     }
+
+
+    /*User info*/
+
+    private val userInfoProvider = UserInfoProvider(viewModelScope)
+    val breakPointLiveData: LiveData<String?>
+        get() = userInfoProvider.breakPointLiveData
+
+    val userInfoProviderErrorLiveData: LiveData<String?>
+        get() = userInfoProvider.userInfoProviderErrorLiveData
+    val createUserLiveData: LiveData<String?>
+        get() = userInfoProvider.createUserLiveData
+
+    fun getUserOnboardingStatus() = userInfoProvider.getUserOnboardingStatus()
+
+    fun createUser() = userInfoProvider.createUser(_datePicked.value?.mills ?: 0)
 
     override fun onCleared() {
         super.onCleared()
