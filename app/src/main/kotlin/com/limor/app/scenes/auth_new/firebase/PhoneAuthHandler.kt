@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Handler
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
@@ -88,6 +89,14 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
             val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, code)
             signInWithPhoneAuthCredential(credential)
         }
+    }
+
+    fun reAuthWithPhoneCredential(): AuthCredential? {
+        if(phoneAuthCredential != null){
+            val task = Tasks.await(auth.signInWithCredential(phoneAuthCredential!!))
+            return task.credential
+        }
+        return null
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {

@@ -18,6 +18,7 @@ import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.navigation.AuthNavigator.navigateToFragmentByNavigationBreakpoints
+import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_code.*
 
 
@@ -137,26 +138,24 @@ class FragmentVerifyPhoneNumber : Fragment() {
 
         model.createUserLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
-            model.getUserOnboardingStatus()
+            navigateToFragmentByNavigationBreakpoints(
+                requireActivity(),
+                NavigationBreakpoints.ACCOUNT_CREATION.destination
+            )
         })
 
         model.breakPointLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
-            navigateToFragmentByNavigationBreakpoints(requireActivity(), it)
-//            val destination =
-//                if (model.signInCase) R.id.action_fragment_new_auth_phone_code_to_destination_main_activity
-//                else R.id.action_fragment_new_auth_phone_code_to_fragment_new_auth_enter_email
-//            clMain.findNavController().navigate(destination)
-//            if (model.signInCase)
-//                requireActivity().finish()
+            if (it == NavigationBreakpoints.ACCOUNT_CREATION.destination)
+                model.createUser()
+            else
+                navigateToFragmentByNavigationBreakpoints(requireActivity(), it)
+
         })
 
         model.smsCodeValidationPassed.observe(viewLifecycleOwner, Observer {
-            if (it == null) return@Observer
-            if(model.signInCase)
-                model.getUserOnboardingStatus()
-            else
-                model.createUser()
+            if (it != true) return@Observer
+            model.getUserOnboardingStatus()
         })
 
         model.resendButtonEnableLiveData.observe(viewLifecycleOwner, Observer {

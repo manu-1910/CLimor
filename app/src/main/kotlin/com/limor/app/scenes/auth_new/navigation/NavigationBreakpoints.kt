@@ -10,9 +10,9 @@ enum class NavigationBreakpoints(val destination: String, @IdRes val actionId: I
     ACCOUNT_CREATION("ACCOUNT_CREATION", R.id.fragment_new_auth_enter_email),
     USERNAME_CREATION("USERNAME_CREATION", R.id.fragment_new_auth_enter_username),
     PREFERENCE_COLLECTION("PREFERENCE_COLLECTION", R.id.fragment_new_auth_gender),
-    SHOW_PROFILES("SHOW_PROFILES", R.id.fragment_new_auth_suggested_people),
+    SHOW_PROFILES("SHOW_SUGGESTED_PROFILES", R.id.fragment_new_auth_suggested_people),
     ONBOARDING_COMPLETION("ONBOARDING_COMPLETION", R.id.fragment_new_auth_onboarding),
-    HOME_FEED("HOMEFEED", R.id.destination_main_activity)
+    HOME_FEED("HOMEFEED_DISPLAY", R.id.destination_main_activity)
 }
 
 object AuthNavigator {

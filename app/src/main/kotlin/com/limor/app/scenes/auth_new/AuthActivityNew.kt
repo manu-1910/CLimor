@@ -10,6 +10,7 @@ import android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.Navigation
+import com.google.firebase.auth.FirebaseAuth
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.firebase.FacebookAuthHandler
@@ -26,15 +27,8 @@ class AuthActivityNew : AppCompatActivity() {
         clActivityAuthNew.systemUiVisibility =
             SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 
-//        FirebaseAuth.getInstance().firebaseAuthSettings
-//            .setAppVerificationDisabledForTesting(false)
-
-//        Handler().postDelayed({
-//            navigateToFragmentByNavigationBreakpoints(
-//                this,
-//                NavigationBreakpoints.PREFERENCE_COLLECTION.destination
-//            )
-//        }, 3000)
+        FirebaseAuth.getInstance().firebaseAuthSettings
+            .setAppVerificationDisabledForTesting(true)
     }
 
     fun launchTermsUrl() {
@@ -57,7 +51,6 @@ class AuthActivityNew : AppCompatActivity() {
             return
         }
         FacebookAuthHandler.callbackManager.onActivityResult(requestCode, resultCode, data)
-
     }
 
     companion object {

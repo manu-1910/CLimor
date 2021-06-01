@@ -33,9 +33,15 @@ class FragmentSignInOrUp : Fragment() {
 //                if (BuildConfig.DEBUG)
 //                    R.id.debugAction
 //                else
-                    R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_up
+                R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_up
             view.findNavController()
                 .navigate(destinationId)
         }
+
+//        if (FirebaseAuth.getInstance().currentUser != null)
+//            AuthNavigator.navigateToFragmentByNavigationBreakpoints(
+//                requireActivity(),
+//                NavigationBreakpoints.ACCOUNT_CREATION.destination
+//            )
     }
 }

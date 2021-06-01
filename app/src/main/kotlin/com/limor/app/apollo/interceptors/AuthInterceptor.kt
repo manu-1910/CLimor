@@ -33,6 +33,6 @@ class AuthInterceptor : Interceptor {
 
     companion object {
         val MOCKED_AUTH_TOKEN = "knsjdn232knfkn23fnwb"
-        var IS_TESTING_AUTH_CASE = true
+        var IS_TESTING_AUTH_CASE = false
     }
 }

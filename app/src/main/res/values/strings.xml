@@ -543,4 +543,5 @@
     <string name="check_your_email_subtitle">We’ve sent you the login link to your email address. Please check your email to login</string>
     <string name="check_your_email">Check Your Email</string>
     <string name="take_me_to_email">Take Me To Email</string>
+    <string name="email_is_already_in_use">Email is already in use</string>
 </resources>
