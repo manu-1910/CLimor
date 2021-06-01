@@ -21,6 +21,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import android.telephony.TelephonyManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -402,7 +403,10 @@ class RecordFragment : BaseFragment() {
             lowBatteryReceiver,
             IntentFilter(Intent.ACTION_BATTERY_LOW)
         )
-
+        requireActivity().registerReceiver(
+            incomeCallReceiver,
+            IntentFilter("android.intent.action.PHONE_STATE")
+        )
         // this means that we come from another fragment to continue recording
         draftViewModel.uiDraft?.let {
 
@@ -496,6 +500,7 @@ class RecordFragment : BaseFragment() {
     override fun onPause() {
         super.onPause()
         requireActivity().unregisterReceiver(lowBatteryReceiver)
+        requireActivity().unregisterReceiver(incomeCallReceiver)
     }
 
 
@@ -1331,6 +1336,26 @@ class RecordFragment : BaseFragment() {
         dialog.apply {
             window?.setBackgroundDrawable(inset);
             show()
+        }
+    }
+
+    private val incomeCallReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == "android.intent.action.PHONE_STATE") {
+                val phoneState = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
+                if (phoneState == TelephonyManager.EXTRA_STATE_RINGING) {
+                    //Трубка не поднята, телефон звонит
+                    // The handset is not lifted, the phone rings
+                    Timber.d("Phone calls ring")
+                    val phoneNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)
+                } else if (phoneState == TelephonyManager.EXTRA_STATE_OFFHOOK) {
+                    //Телефон находится в режиме звонка (набор номера при исходящем звонке / разговор)
+                    // Phone is in a call (dial an outgoing call / talk)
+                } else if (phoneState == TelephonyManager.EXTRA_STATE_IDLE) {
+                    //Телефон находится в ждущем режиме - это событие наступает по окончанию разговора или в ситуации "отказался поднимать трубку и сбросил звонок".
+                    // The phone is in standby mode - this event occurs at the end of a conversation or situation, "refused to pick up the phone and dropped the call."
+                }
+            }
         }
     }
 
