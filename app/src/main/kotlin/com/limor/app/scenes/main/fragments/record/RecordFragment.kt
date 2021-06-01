@@ -445,7 +445,8 @@ class RecordFragment : BaseFragment() {
                                 alert(getString(R.string.error_copying_file))
                             }
                         } else {
-                            alert(getString(R.string.file_doesnt_exist)).show()
+                            createNewAutosavedDraft()
+                            uiDraft?.isNewRecording = true
                         }
                     } else {
                         alert(getString(R.string.file_not_received)).show()
@@ -478,6 +479,7 @@ class RecordFragment : BaseFragment() {
     }
 
     private fun loadDraftToRecordingWave() {
+        if (!File(uiDraft?.draftParent!!.filePath!!).exists()) return
         lifecycleScope.launch {
             //Create dummy recorder to get wave parameters
             val recorder = WaveRecorder("")
