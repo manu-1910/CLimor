@@ -11,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.Navigation
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.firebase.FacebookAuthHandler
@@ -51,6 +52,24 @@ class AuthActivityNew : AppCompatActivity() {
             return
         }
         FacebookAuthHandler.callbackManager.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // [START get_deep_link]
+        FirebaseDynamicLinks.getInstance()
+            .getDynamicLink(intent)
+            .addOnSuccessListener(this) { pendingDynamicLinkData ->
+                // Get deep link from result (may be null if no link is found)
+                var deepLink: Uri? = null
+                if (pendingDynamicLinkData != null) {
+                    deepLink = pendingDynamicLinkData.link
+                    Timber.d("DeepLink fetched $deepLink")
+                    model.handleEmailDynamicLink(this,  deepLink.toString())
+                }
+            }
+            .addOnFailureListener(this) { e -> Timber.e(e) }
+        // [END get_deep_link]
     }
 
     companion object {

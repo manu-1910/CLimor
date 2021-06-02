@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -21,6 +22,7 @@ import com.limor.app.scenes.auth_new.data.Country
 import com.limor.app.scenes.auth_new.data.SignInMethod
 import com.limor.app.scenes.auth_new.util.AfterTextWatcher
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.*
+import timber.log.Timber
 
 class FragmentSignIn : Fragment() {
 
@@ -109,8 +111,7 @@ class FragmentSignIn : Fragment() {
                 etEnterEmail.visibility = View.VISIBLE
                 btnContinue.setText(R.string.send_login_link)
                 btnContinue.setOnClickListener {
-                    it.findNavController()
-                        .navigate(R.id.action_fragment_new_auth_sign_in_to_fragment_new_auth_sign_in_email)
+                    model.checkEmailIsInUse()
                 }
             }
         }
@@ -163,7 +164,6 @@ class FragmentSignIn : Fragment() {
                 clMain.hideKeyboard()
         })
 
-
         model.signInMethodLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
             switchToSignInState(it)
@@ -171,6 +171,36 @@ class FragmentSignIn : Fragment() {
 
         model.signInMethodContinueEnabledLiveData.observe(viewLifecycleOwner, Observer {
             btnContinue.isEnabled = it
+        })
+
+        model.emailLinkSentLiveData.observe(viewLifecycleOwner, Observer {
+            if (it != true) return@Observer
+            clMain.findNavController()
+                .navigate(R.id.action_fragment_new_auth_sign_in_to_fragment_new_auth_sign_in_email)
+        })
+
+        model.emailAuthHandlerErrorLiveData.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            Toast.makeText(
+                requireContext(),
+                it,
+                Toast.LENGTH_LONG
+            ).show()
+        })
+
+        model.currentEmailIsInUseLiveData.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            if (it) {
+                //everything is ok, user email exists on firebase DB
+                model.sendFirebaseDynamicLinkToEmail(requireContext())
+                return@Observer
+            }
+            Timber.d("currentEmailIsInUseLiveData -> $it")
+            Toast.makeText(
+                requireContext(),
+                R.string.no_email_found_offer_to_sign_up,
+                Toast.LENGTH_LONG
+            ).show()
         })
     }
 }

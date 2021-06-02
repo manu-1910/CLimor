@@ -1,6 +1,7 @@
 package com.limor.app.scenes.auth_new
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.res.AssetManager
 import android.os.CountDownTimer
@@ -179,7 +180,7 @@ class AuthViewModelNew : ViewModel() {
         EmailAuthHandler.checkEmailIsInUse(currentEmail, viewModelScope)
     }
 
-    fun addEmailToUserAccount(){
+    fun addEmailToUserAccount() {
         EmailAuthHandler.addEmailToUser(currentEmail, viewModelScope)
     }
 
@@ -227,7 +228,7 @@ class AuthViewModelNew : ViewModel() {
     }
 
     val userNameAttachedToUserLiveData: LiveData<Boolean?>
-    get() = userInfoProvider.userNameAttachedToUserLiveData
+        get() = userInfoProvider.userNameAttachedToUserLiveData
 
 
     /* Gender */
@@ -372,6 +373,23 @@ class AuthViewModelNew : ViewModel() {
 
     fun setCurrentSignInMethod(signInMethod: SignInMethod) {
         _signInMethodLiveData.postValue(signInMethod)
+    }
+
+    fun sendFirebaseDynamicLinkToEmail(context: Context) =
+        EmailAuthHandler.sendFirebaseDynamicLinkToEmailScoped(context, currentEmail, viewModelScope)
+
+    val emailLinkSentLiveData: LiveData<Boolean?>
+        get() = EmailAuthHandler.emailLinkSentLiveData
+
+    val handleEmailDynamicLinkLiveData: LiveData<Boolean?>
+        get() = EmailAuthHandler.handleEmailDynamicLinkLiveData
+
+    fun handleEmailDynamicLink(context: Context, link: String) {
+        if (currentEmail.isEmpty()) {
+            Timber.d("CurrentEmail is empty -> return")
+            return
+        }
+        EmailAuthHandler.handleDynamicLink(context, link, viewModelScope)
     }
 
 

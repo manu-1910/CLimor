@@ -43,6 +43,7 @@ versions.firebase_invites = "16.0.4"
 versions.firebase_functions = "16.1.1"
 versions.firebase_jobdispatcher = "0.8.5"
 versions.firebase_ads = "17.2.1"
+versions.firebase_dynamic_links = "19.1.1"
 
 //Kotlin
 versions.kotlin = "1.3.50"
@@ -211,6 +212,7 @@ firebase.auth = "com.google.firebase:firebase-auth:$versions.firebase_auth"
 firebase.invites = "com.google.firebase:firebase-invites:$versions.firebase_invites"
 firebase.functions = "com.google.firebase:firebase-functions:$versions.firebase_functions"
 firebase.firebase_ads = "com.google.firebase:firebase-ads:$versions.firebase_ads"
+firebase.dynamic_links = "com.google.firebase:firebase-dynamic-links:$versions.firebase_dynamic_links"
 deps.firebase = firebase
 
 def kotlin = [:]

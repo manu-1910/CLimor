@@ -211,7 +211,17 @@
         <activity android:name=".scenes.auth_new.AuthActivityNew"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance"
-            android:theme="@style/MaterialMainTheme.FullScreen"/>
+            android:theme="@style/MaterialMainTheme.FullScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:host="limor.page.link"
+                    android:path="/open"
+                    android:scheme="https"/>
+            </intent-filter>
+        </activity>
 
     </application>
 
