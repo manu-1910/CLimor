@@ -3,11 +3,12 @@ package com.limor.app.scenes.splash
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import com.google.firebase.auth.FirebaseAuth
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.common.SessionManager
 import com.limor.app.scenes.auth_new.AuthActivityNew
-import com.limor.app.scenes.main.MainActivity
+import com.limor.app.scenes.main_new.MainActivityNew
 import javax.inject.Inject
 
 class SplashActivity : BaseActivity() {
@@ -18,10 +19,10 @@ class SplashActivity : BaseActivity() {
 
     private val mRunnable: Runnable = Runnable {
         if (!isFinishing) {
-            val hasFirebaseUser = false // FirebaseAuth.getInstance().currentUser != null
+            val hasFirebaseUser = FirebaseAuth.getInstance().currentUser != null
             if (!sessionManager.getStoredToken().isNullOrEmpty() || hasFirebaseUser) {
                 //println("client_id es:" + sessionManager.getStoredUser().id)
-                var mainIntent: Intent = Intent(this, MainActivity::class.java)
+                val mainIntent = Intent(this, MainActivityNew::class.java)
                 startActivity(mainIntent)
                 this.finish()
             } else {

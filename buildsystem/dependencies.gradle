@@ -46,7 +46,7 @@ versions.firebase_ads = "17.2.1"
 versions.firebase_dynamic_links = "19.1.1"
 
 //Kotlin
-versions.kotlin = "1.3.50"
+versions.kotlin = "1.4.32"
 versions.rx_kotlin = "2.3.0"
 versions.anko = "0.10.8"
 versions.serialization_runtime = "0.10.0"
@@ -115,7 +115,7 @@ versions.shimmerlayout = '2.1.0'
 //Merlin connectivity
 versions.merlin = '1.2.0'
 
-versions.navigation = '1.0.0'
+versions.navigation = '2.4.0-alpha02'
 
 def support = [:]
 support.annotations = "androidx.annotation:annotation:$versions.support"
@@ -273,8 +273,8 @@ deps.google_places = "com.google.android.libraries.places:places:$versions.googl
 deps.photo_view = "com.github.chrisbanes:PhotoView:$versions.photoview"
 deps.expansion_panel = "com.github.florent37:expansionpanel:$versions.expansionpanel"
 deps.circle_dots_indicator = "com.shuhart.bubblepagerindicator:bubblepagerindicator:$versions.circledotsindicator"
-deps.navigation = "android.arch.navigation:navigation-ui-ktx:$versions.navigation"
-deps.navigation_fragment = "android.arch.navigation:navigation-fragment-ktx:$versions.navigation"
+deps.navigation = "androidx.navigation:navigation-ui-ktx:$versions.navigation"
+deps.navigation_fragment = "androidx.navigation:navigation-fragment-ktx:$versions.navigation"
 deps.skeleton = "com.ethanhua:skeleton:$versions.skeleton"
 deps.shimmerlayout = "io.supercharge:shimmerlayout:$versions.shimmerlayout"
 deps.merlin = "com.novoda:merlin:$versions.merlin"

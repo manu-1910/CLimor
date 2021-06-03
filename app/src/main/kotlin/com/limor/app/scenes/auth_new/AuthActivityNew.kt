@@ -56,12 +56,11 @@ class AuthActivityNew : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        // [START get_deep_link]
         FirebaseDynamicLinks.getInstance()
             .getDynamicLink(intent)
             .addOnSuccessListener(this) { pendingDynamicLinkData ->
                 // Get deep link from result (may be null if no link is found)
-                var deepLink: Uri? = null
+                val deepLink: Uri?
                 if (pendingDynamicLinkData != null) {
                     deepLink = pendingDynamicLinkData.link
                     Timber.d("DeepLink fetched $deepLink")
@@ -69,7 +68,6 @@ class AuthActivityNew : AppCompatActivity() {
                 }
             }
             .addOnFailureListener(this) { e -> Timber.e(e) }
-        // [END get_deep_link]
     }
 
     companion object {

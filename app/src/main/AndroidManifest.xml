@@ -223,6 +223,12 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".scenes.main_new.MainActivityNew"
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait"
+            android:theme="@style/MaterialMainTheme.FullScreen">
+        </activity>
+
     </application>
 
 </manifest>
