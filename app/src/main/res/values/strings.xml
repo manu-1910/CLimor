@@ -574,4 +574,8 @@
     <string name="check_your_email">Check Your Email</string>
     <string name="take_me_to_email">Take Me To Email</string>
 
+    <string name="draft_sheet_rename_cast">Rename\nCast</string>
+    <string name="draft_sheet_duplicate_cast">Duplicate\nCast</string>
+    <string name="draft_sheet_delete_cast">Delete\nCast</string>
+
 </resources>
