@@ -37,11 +37,5 @@ class FragmentSignInOrUp : Fragment() {
             view.findNavController()
                 .navigate(destinationId)
         }
-
-//        if (FirebaseAuth.getInstance().currentUser != null)
-//            AuthNavigator.navigateToFragmentByNavigationBreakpoints(
-//                requireActivity(),
-//                NavigationBreakpoints.ACCOUNT_CREATION.destination
-//            )
     }
 }

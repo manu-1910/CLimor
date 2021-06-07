@@ -1,46 +1,38 @@
 {
   "project_info": {
-    "project_number": "115486577576",
-    "firebase_url": "https://limor-186710.firebaseio.com",
-    "project_id": "limor-186710",
-    "storage_bucket": "limor-186710.appspot.com"
+    "project_number": "9658554082",
+    "firebase_url": "https://limor-5439b.firebaseio.com",
+    "project_id": "limor-5439b",
+    "storage_bucket": "limor-5439b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:115486577576:android:9d4d3c809c0d284e",
+        "mobilesdk_app_id": "1:9658554082:android:10a7218a3baf526b4a70bb",
         "android_client_info": {
           "package_name": "com.limor.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "115486577576-0tomrtqhbjpfg9dnm3i9ltiqql2pjv1e.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.limor.app",
-            "certificate_hash": "bffe9dd51b438d7bf87accfb113039e9d3d30e0a"
-          }
-        },
-        {
-          "client_id": "115486577576-fbreggkma2d378u91ggcs1mfg7s7dc62.apps.googleusercontent.com",
+          "client_id": "9658554082-c4ln5lq5mms6guffl6mrrrlt3n0pomev.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAh7RyzW3OxtqHLy88UxBs0T7k7NHQ01OY"
+          "current_key": "AIzaSyD7egBIZu_8Cd2mzVm4-LO8UpxRyzNIjj4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "115486577576-fbreggkma2d378u91ggcs1mfg7s7dc62.apps.googleusercontent.com",
+              "client_id": "9658554082-c4ln5lq5mms6guffl6mrrrlt3n0pomev.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "115486577576-leqti56j4h7vsot62v2uv49sbppcu389.apps.googleusercontent.com",
+              "client_id": "9658554082-bc5th0s3ia6ilcoqv2cd1qk215schst2.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "com.limor.app.dev"
@@ -52,39 +44,31 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:115486577576:android:b4b1630ce19d75e0",
+        "mobilesdk_app_id": "1:9658554082:android:01479f4c2ebf35764a70bb",
         "android_client_info": {
           "package_name": "com.limor.app.beta"
         }
       },
       "oauth_client": [
         {
-          "client_id": "115486577576-6bec6f1ktg1fm4leh56u8sek45nj1o3i.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.limor.app.beta",
-            "certificate_hash": "7e693b30d5f66285c9e0a5a92dd81e4a5056445e"
-          }
-        },
-        {
-          "client_id": "115486577576-fbreggkma2d378u91ggcs1mfg7s7dc62.apps.googleusercontent.com",
+          "client_id": "9658554082-c4ln5lq5mms6guffl6mrrrlt3n0pomev.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAh7RyzW3OxtqHLy88UxBs0T7k7NHQ01OY"
+          "current_key": "AIzaSyD7egBIZu_8Cd2mzVm4-LO8UpxRyzNIjj4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "115486577576-fbreggkma2d378u91ggcs1mfg7s7dc62.apps.googleusercontent.com",
+              "client_id": "9658554082-c4ln5lq5mms6guffl6mrrrlt3n0pomev.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "115486577576-leqti56j4h7vsot62v2uv49sbppcu389.apps.googleusercontent.com",
+              "client_id": "9658554082-bc5th0s3ia6ilcoqv2cd1qk215schst2.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "com.limor.app.dev"
@@ -96,39 +80,31 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:115486577576:android:22a2e917893df1fd",
+        "mobilesdk_app_id": "1:9658554082:android:07c40f1fd1c5dcf34a70bb",
         "android_client_info": {
           "package_name": "com.limor.app.dev"
         }
       },
       "oauth_client": [
         {
-          "client_id": "115486577576-q1cgr3jbiu2gvm5m3ma0aae4ffcn9p5d.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.limor.app.dev",
-            "certificate_hash": "606521757d4a060829090095252264888a3e7892"
-          }
-        },
-        {
-          "client_id": "115486577576-fbreggkma2d378u91ggcs1mfg7s7dc62.apps.googleusercontent.com",
+          "client_id": "9658554082-c4ln5lq5mms6guffl6mrrrlt3n0pomev.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAh7RyzW3OxtqHLy88UxBs0T7k7NHQ01OY"
+          "current_key": "AIzaSyD7egBIZu_8Cd2mzVm4-LO8UpxRyzNIjj4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "115486577576-fbreggkma2d378u91ggcs1mfg7s7dc62.apps.googleusercontent.com",
+              "client_id": "9658554082-c4ln5lq5mms6guffl6mrrrlt3n0pomev.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "115486577576-leqti56j4h7vsot62v2uv49sbppcu389.apps.googleusercontent.com",
+              "client_id": "9658554082-bc5th0s3ia6ilcoqv2cd1qk215schst2.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "com.limor.app.dev"
