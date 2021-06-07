@@ -7,7 +7,6 @@ import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
 import com.limor.app.R
 import kotlinx.android.synthetic.main.activity_main_new.*
-import timber.log.Timber
 
 class MainActivityNew : AppCompatActivity() {
 
@@ -23,10 +22,12 @@ class MainActivityNew : AppCompatActivity() {
     private fun setUpBottomNavigation() {
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         navigation.setupWithNavController(navController)
-        navigation.setOnNavigationItemSelectedListener {item ->
-            Timber.d("setOnNavigationItemSelectedListener -> ${item.title} ")
-            true
-//           onNavDestinationSelected(item, Navigation.findNavController(this, R.id.nav_host_fragment))
-        }
+//        navigation.setOnNavigationItemSelectedListener { item ->
+//            Timber.d("setOnNavigationItemSelectedListener -> ${item.title} ")
+//            onNavDestinationSelected(
+//                item,
+//                navController
+//            )
+//        }
     }
 }
