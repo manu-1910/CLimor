@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.limor.app.R
 import com.limor.app.scenes.utils.CommonsKt
+import com.limor.app.scenes.utils.SpecialCharactersInputFilter
 import com.limor.app.uimodels.UIDraft
 import com.zerobranch.layout.SwipeLayout
 import kotlinx.android.synthetic.main.fragment_drafts_item.view.*
@@ -502,6 +503,7 @@ class DraftAdapter(
 
         titleText.text = context.getString(R.string.edit_draft_title_dialog_title)
         editText.setText(currentName)
+        editText.filters = arrayOf(SpecialCharactersInputFilter())
         dialogBuilder.setView(dialogLayout)
         dialogBuilder.setCancelable(false)
         val dialog: AlertDialog = dialogBuilder.create()

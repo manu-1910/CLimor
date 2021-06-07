@@ -53,6 +53,7 @@ import com.limor.app.scenes.main.viewmodels.LocationsViewModel
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.CommonsKt.Companion.audioFileFormat
 import com.limor.app.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
+import com.limor.app.scenes.utils.SpecialCharactersInputFilter
 import com.limor.app.scenes.utils.location.MyLocation
 import com.limor.app.scenes.utils.visualizer.RecordVisualizer
 import com.limor.app.uimodels.UIDraft
@@ -694,7 +695,9 @@ class RecordFragment : BaseFragment() {
         val cancelButton = dialogLayout.findViewById<Button>(R.id.cancelButton)
         val editText = dialogLayout.findViewById<TextInputEditText>(R.id.editText)
         val titleText = dialogLayout.findViewById<TextView>(R.id.textTitle)
+
         titleText.text = requireContext().getString(R.string.save_draft_dialog_title)
+        editText.filters = arrayOf(SpecialCharactersInputFilter())
 
         dialogBuilder.setView(dialogLayout)
         dialogBuilder.setCancelable(false)
