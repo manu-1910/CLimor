@@ -319,8 +319,8 @@ dependencies {
     //Popup menu view like UIMenuController
     implementation 'me.kareluo.ui:popmenu:1.1.0'
 
-    implementation 'com.github.esafirm.android-image-picker:imagepicker:2.2.0'
-    implementation 'com.github.esafirm.android-image-picker:rximagepicker:2.2.0'
+    implementation 'com.github.esafirm.android-image-picker:imagepicker:2.4.5'
+    implementation 'com.github.esafirm.android-image-picker:rximagepicker:2.4.5'
     implementation 'com.github.dhaval2404:imagepicker-support:1.7.1'
 
     // If you have a problem with Glide, please use the same Glide version or simply open an issue

@@ -7,6 +7,7 @@ import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -21,6 +22,7 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.Spannable
 import android.text.TextWatcher
@@ -32,6 +34,7 @@ import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -48,10 +51,12 @@ import com.hendraanggrian.appcompat.widget.Hashtag
 import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter
 import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
 import com.limor.app.App
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
+import com.limor.app.extensions.drawSimpleSelectorDialog
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.MainActivity
@@ -156,7 +161,10 @@ class PublishFragment : BaseFragment() {
     private var isLanguageSelected: Boolean = false
     private var isTagsSelected: Boolean = false
 
+    private var selectedPhotoFile: File? = null
+
     companion object {
+        const val CAMERA_REQUEST = 256
         val TAG: String = PublishFragment::class.java.simpleName
         fun newInstance() = PublishFragment()
     }
@@ -415,12 +423,11 @@ class PublishFragment : BaseFragment() {
     @SuppressLint("ClickableViewAccessibility")
     private fun listeners() {
         lytImagePlaceholder?.onClick {
-            loadImagePicker()
+            onSelectImageClicked()
         }
         draftImage?.onClick {
-            loadImagePicker()
+            onSelectImageClicked()
         }
-
         btnSaveDraft?.onClick {
             addDataToRecordingItem()
             activity?.finish()
@@ -527,6 +534,38 @@ class PublishFragment : BaseFragment() {
             }
         }
 
+    }
+
+    private fun onSelectImageClicked() {
+        drawSimpleSelectorDialog(
+            "Select Image Option:",
+            listOf("Take A New Photo", "Choose From Gallery")
+        )
+        { dialog: DialogInterface, i: Int ->
+            if (i == 0) {
+                captureImage()
+            } else {
+                loadImagePicker()
+            }
+            dialog.dismiss()
+        }
+    }
+
+    private fun captureImage() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        selectedPhotoFile = File(
+            requireActivity().externalCacheDir,
+            System.currentTimeMillis().toString() + ".jpg"
+        )
+        intent.putExtra(
+            MediaStore.EXTRA_OUTPUT,
+            FileProvider.getUriForFile(
+                requireContext(),
+                BuildConfig.APPLICATION_ID + ".provider",
+                selectedPhotoFile!!
+            )
+        )
+        startActivityForResult(intent, CAMERA_REQUEST)
     }
 
 
@@ -748,8 +787,8 @@ class PublishFragment : BaseFragment() {
 
 
     private fun loadImagePicker() {
-        ImagePicker.create(this) // Activity or Fragment
-            .showCamera(true) // show camera or not (true by default)
+        ImagePicker.create(this)
+            .showCamera(false) // show camera or not (true by default)
             .folderMode(true) // folder mode (false by default)
             .toolbarFolderTitle(getString(R.string.imagepicker_folder)) // folder selection title
             .toolbarImageTitle(getString(R.string.imagepicker_tap_to_select)) // image selection title
@@ -873,31 +912,20 @@ class PublishFragment : BaseFragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         // this will run when coming from the image picker
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
-
             // Get a list of picked files
             val filesSelected = ImagePicker.getImages(data) as ArrayList<Image>
             if (filesSelected.size > 0) {
-
-                // we'll prepare the outputfile
-                val croppedImagesDir = File(
-                    context?.getExternalFilesDir(null)?.absolutePath,
-                    Constants.LOCAL_FOLDER_CROPPED_IMAGES
-                )
-                if (!croppedImagesDir.exists()) {
-                    val isDirectoryCreated = croppedImagesDir.mkdir()
-                }
-                val fileName =
-                    Date().time.toString() + filesSelected[0].path.substringAfterLast("/")
-                val outputFile = File(croppedImagesDir, fileName)
-
-                // and then, we'll perform the crop itself
-                performCrop(filesSelected[0].path, outputFile)
+                prepareToCrop(filesSelected[0].path)
             } else {
                 lytImage?.visibility = View.INVISIBLE
                 lytImagePlaceholder?.visibility = View.VISIBLE
             }
 
-
+            // this will run when coming from camera
+        } else if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST) {
+            selectedPhotoFile?.let {
+                prepareToCrop(it.path)
+            }
             // this will run when coming from the cropActivity and everything is ok
         } else if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             val resultUri = UCrop.getOutput(data!!)
@@ -938,6 +966,21 @@ class PublishFragment : BaseFragment() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    private fun prepareToCrop(sourcePath: String) {
+        val croppedImagesDir = File(
+            context?.getExternalFilesDir(null)?.absolutePath,
+            Constants.LOCAL_FOLDER_CROPPED_IMAGES
+        )
+        if (!croppedImagesDir.exists()) {
+            val isDirectoryCreated = croppedImagesDir.mkdir()
+        }
+        val fileName =
+            Date().time.toString() + sourcePath.substringAfterLast("/")
+        val outputFile = File(croppedImagesDir, fileName)
+
+        // and then, we'll perform the crop itself
+        performCrop(sourcePath, outputFile)
+    }
 
     private fun performCrop(sourcePath: String, destination: File) {
         val sourceUri = Uri.fromFile(File(sourcePath))
