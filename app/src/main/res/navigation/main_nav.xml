@@ -6,15 +6,15 @@
     app:startDestination="@id/navigation_home">
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.limor.app.scenes.main.fragments.UserFeedFragment"
+        android:name="com.limor.app.scenes.main.fragments.FragmentStub"
         android:label="UserFeedFragment"
-        tools:layout="@layout/fragment_feed">
+        tools:layout="@layout/fragment_stub">
     </fragment>
     <fragment
         android:id="@+id/navigation_discover"
-        android:name="com.limor.app.scenes.main.fragments.discover.DiscoverFragment"
+        android:name="com.limor.app.scenes.main.fragments.FragmentStub"
         android:label="DiscoverFragment"
-        tools:layout="@layout/fragment_discover">
+        tools:layout="@layout/fragment_stub">
     </fragment>
     <activity
         android:id="@+id/navigation_record"
@@ -24,14 +24,14 @@
     </activity>
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.limor.app.scenes.main.fragments.NotificationsFragment"
+        android:name="com.limor.app.scenes.main.fragments.FragmentStub"
         android:label="NotificationsFragment"
-        tools:layout="@layout/fragment_notifications">
+        tools:layout="@layout/fragment_stub">
     </fragment>
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.limor.app.scenes.main.fragments.ProfileFragment"
+        android:name="com.limor.app.scenes.main.fragments.FragmentStub"
         android:label="ProfileFragment"
-        tools:layout="@layout/fragment_profile">
+        tools:layout="@layout/fragment_stub">
     </fragment>
 </navigation>
