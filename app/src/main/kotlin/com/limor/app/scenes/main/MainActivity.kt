@@ -8,8 +8,6 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.provider.Settings.Secure
 import android.view.View
-import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -125,11 +123,11 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
         })
 
         output.errorMessage.observe(this, Observer {
-            Toast.makeText(
-                this,
-                getString(R.string.error_initializing_data),
-                Toast.LENGTH_SHORT
-            ).show()
+//            Toast.makeText(
+//                this,
+//                getString(R.string.error_initializing_data),
+//                Toast.LENGTH_SHORT
+//            ).show()
         })
     }
 
@@ -226,8 +224,8 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
         btnClose?.visibility = View.GONE
         toolbar_main.visibility = View.VISIBLE
         toolbarProfile.visibility = View.GONE
-        when (toolbarTitle) {
-            getString(R.string.title_home) -> {
+//        when (toolbarTitle) {
+//            getString(R.string.title_home) -> {
                 //viewModel.unreadCountCentres = 0
                 hideMainToolbar(false)
                 toolbarDiscover.visibility = View.GONE
@@ -248,75 +246,75 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
                 btnToolbarRight?.onClick { toast("right button clicked") }
 
                 bottom_navigation_view?.visibility = View.VISIBLE
-            }
-            getString(R.string.title_discover) -> {
-                //viewModel.unreadCountLeads = 0
-
-                applyDiscoverToolbarElevation(false)
-
-                toolbarDiscover.visibility = View.VISIBLE
-                toolbarProfile.visibility = View.GONE
-                hideMainToolbar(true)
-                toolbarDiscover.findViewById<TextView>(R.id.title).text =
-                    getString(R.string.discover)
-
-                bottom_navigation_view?.visibility = View.VISIBLE
-
-            }
-            getString(R.string.title_record) -> {
-
-                toolbarDiscover.visibility = View.GONE
-                hideMainToolbar(false)
-                //viewModel.unreadCountViewings = 0
-                tvToolbarTitle?.text = toolbarTitle
-
-                btnToolbarLeft?.visibility = View.GONE
-                btnToolbarLeft?.onClick { navController.popBackStack() }
-
-                /*badgeVisibility()
-                badgeViewingVisibility()
-                badgeLeadVisibility()
-                badgeCentreVisibility()*/
-
-                btnToolbarRight?.visibility = View.GONE
-                btnToolbarRight?.text = ""
-                btnToolbarRight?.onClick { toast("right button clicked") }
-
-                bottom_navigation_view?.visibility = View.VISIBLE
-
-            }
-            getString(R.string.title_notifications) -> {
-                toolbarDiscover.visibility = View.VISIBLE
-                toolbarProfile.visibility = View.GONE
-                hideMainToolbar(true)
-                toolbarDiscover.findViewById<TextView>(R.id.title).text =
-                    getString(R.string.title_notifications)
-
-                tvToolbarTitle?.text = toolbarTitle
-
-                btnToolbarLeft?.visibility = View.GONE
-                btnToolbarLeft?.onClick { navController.popBackStack() }
-
-                /*badgeVisibility()
-                badgeViewingVisibility()
-                badgeLeadVisibility()
-                badgeCentreVisibility()*/
-
-                btnToolbarRight?.visibility = View.GONE
-                btnToolbarRight?.text = ""
-                btnToolbarRight?.onClick { toast("right button clicked") }
-
-                bottom_navigation_view?.visibility = View.VISIBLE
-            }
-            getString(R.string.title_profile) -> {
-                toolbarDiscover.visibility = View.GONE
-                toolbarProfile.visibility = View.VISIBLE
-                toolbar_main.visibility = View.INVISIBLE
-                btnToolbarLeft?.visibility = View.GONE
-                bottom_navigation_view?.visibility = View.VISIBLE
-            }
-
-        }
+//            }
+//            getString(R.string.title_discover) -> {
+//                //viewModel.unreadCountLeads = 0
+//
+//                applyDiscoverToolbarElevation(false)
+//
+//                toolbarDiscover.visibility = View.VISIBLE
+//                toolbarProfile.visibility = View.GONE
+//                hideMainToolbar(true)
+//                toolbarDiscover.findViewById<TextView>(R.id.title).text =
+//                    getString(R.string.discover)
+//
+//                bottom_navigation_view?.visibility = View.VISIBLE
+//
+//            }
+//            getString(R.string.title_record) -> {
+//
+//                toolbarDiscover.visibility = View.GONE
+//                hideMainToolbar(false)
+//                //viewModel.unreadCountViewings = 0
+//                tvToolbarTitle?.text = toolbarTitle
+//
+//                btnToolbarLeft?.visibility = View.GONE
+//                btnToolbarLeft?.onClick { navController.popBackStack() }
+//
+//                /*badgeVisibility()
+//                badgeViewingVisibility()
+//                badgeLeadVisibility()
+//                badgeCentreVisibility()*/
+//
+//                btnToolbarRight?.visibility = View.GONE
+//                btnToolbarRight?.text = ""
+//                btnToolbarRight?.onClick { toast("right button clicked") }
+//
+//                bottom_navigation_view?.visibility = View.VISIBLE
+//
+//            }
+//            getString(R.string.title_notifications) -> {
+//                toolbarDiscover.visibility = View.VISIBLE
+//                toolbarProfile.visibility = View.GONE
+//                hideMainToolbar(true)
+//                toolbarDiscover.findViewById<TextView>(R.id.title).text =
+//                    getString(R.string.title_notifications)
+//
+//                tvToolbarTitle?.text = toolbarTitle
+//
+//                btnToolbarLeft?.visibility = View.GONE
+//                btnToolbarLeft?.onClick { navController.popBackStack() }
+//
+//                /*badgeVisibility()
+//                badgeViewingVisibility()
+//                badgeLeadVisibility()
+//                badgeCentreVisibility()*/
+//
+//                btnToolbarRight?.visibility = View.GONE
+//                btnToolbarRight?.text = ""
+//                btnToolbarRight?.onClick { toast("right button clicked") }
+//
+//                bottom_navigation_view?.visibility = View.VISIBLE
+//            }
+//            getString(R.string.title_profile) -> {
+//                toolbarDiscover.visibility = View.GONE
+//                toolbarProfile.visibility = View.VISIBLE
+//                toolbar_main.visibility = View.INVISIBLE
+//                btnToolbarLeft?.visibility = View.GONE
+//                bottom_navigation_view?.visibility = View.VISIBLE
+//            }
+//
+//        }
     }
 
     private fun applyDiscoverToolbarElevation(apply: Boolean){
@@ -412,7 +410,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
         })
 
         output.errorMessage.observe(this, Observer {
-            toast(getString(R.string.error_sending_push_to_server))
+//            toast(getString(R.string.error_sending_push_to_server))
         })
     }
 

@@ -18,8 +18,8 @@ class SplashActivity : BaseActivity() {
 
     private val mRunnable: Runnable = Runnable {
         if (!isFinishing) {
-            val hasFirebaseUser = false // FirebaseAuth.getInstance().currentUser != null
-            if (!sessionManager.getStoredToken().isNullOrEmpty() || hasFirebaseUser) {
+            val hasFirebaseUser = true // FirebaseAuth.getInstance().currentUser != null
+            if (hasFirebaseUser) {
                 //println("client_id es:" + sessionManager.getStoredUser().id)
                 var mainIntent: Intent = Intent(this, MainActivity::class.java)
                 startActivity(mainIntent)
