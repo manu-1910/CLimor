@@ -430,6 +430,8 @@ class PublishFragment : BaseFragment() {
         }
         btnSaveDraft?.onClick {
             addDataToRecordingItem()
+            if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying)
+                mediaPlayer.stop()
             activity?.finish()
         }
 
@@ -552,22 +554,26 @@ class PublishFragment : BaseFragment() {
     }
 
     private fun captureImage() {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        selectedPhotoFile = File(
-            requireActivity().externalCacheDir,
-            System.currentTimeMillis().toString() + ".jpg"
-        )
-        intent.putExtra(
-            MediaStore.EXTRA_OUTPUT,
-            FileProvider.getUriForFile(
-                requireContext(),
-                BuildConfig.APPLICATION_ID + ".provider",
-                selectedPhotoFile!!
+        try {
+            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            selectedPhotoFile = File(
+                requireActivity().externalCacheDir,
+                System.currentTimeMillis().toString() + ".jpg"
             )
-        )
-        startActivityForResult(intent, CAMERA_REQUEST)
-    }
+            intent.putExtra(
+                MediaStore.EXTRA_OUTPUT,
+                FileProvider.getUriForFile(
+                    requireContext(),
+                    BuildConfig.APPLICATION_ID + ".provider",
+                    selectedPhotoFile!!
+                )
+            )
+            startActivityForResult(intent, CAMERA_REQUEST)
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), e.message.toString(), Toast.LENGTH_LONG).show()
+        }
 
+    }
 
     private fun readyToPublish() {
         if (podcastHasImage) {
