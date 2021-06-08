@@ -165,6 +165,7 @@ class PublishFragment : BaseFragment() {
 
     companion object {
         const val CAMERA_REQUEST = 256
+        const val CAMERA_PERMISSION_REQUEST = 345
         val TAG: String = PublishFragment::class.java.simpleName
         fun newInstance() = PublishFragment()
     }
@@ -554,24 +555,24 @@ class PublishFragment : BaseFragment() {
     }
 
     private fun captureImage() {
-        try {
-            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            selectedPhotoFile = File(
-                requireActivity().externalCacheDir,
-                System.currentTimeMillis().toString() + ".jpg"
-            )
-            intent.putExtra(
-                MediaStore.EXTRA_OUTPUT,
-                FileProvider.getUriForFile(
-                    requireContext(),
-                    BuildConfig.APPLICATION_ID + ".provider",
-                    selectedPhotoFile!!
-                )
-            )
-            startActivityForResult(intent, CAMERA_REQUEST)
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), e.message.toString(), Toast.LENGTH_LONG).show()
+        if (!checkPermissionForCamera()) {
+            requestPermissionForCamera()
+            return
         }
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        selectedPhotoFile = File(
+            requireActivity().externalCacheDir,
+            System.currentTimeMillis().toString() + ".jpg"
+        )
+        intent.putExtra(
+            MediaStore.EXTRA_OUTPUT,
+            FileProvider.getUriForFile(
+                requireContext(),
+                BuildConfig.APPLICATION_ID + ".provider",
+                selectedPhotoFile!!
+            )
+        )
+        startActivityForResult(intent, CAMERA_REQUEST)
 
     }
 
@@ -961,8 +962,6 @@ class PublishFragment : BaseFragment() {
             lytImage?.visibility = View.INVISIBLE
             lytImagePlaceholder?.visibility = View.VISIBLE
         }
-
-
         context?.let {
             //LOGIN
             if (requestCode == it.resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH) && resultCode == RESULT_OK) {
@@ -970,6 +969,19 @@ class PublishFragment : BaseFragment() {
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == CAMERA_PERMISSION_REQUEST) {
+            Timber.d("Permission Camera")
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) captureImage()
+        }
     }
 
     private fun prepareToCrop(sourcePath: String) {
@@ -1266,6 +1278,14 @@ class PublishFragment : BaseFragment() {
         updateDraftTrigger.onNext(Unit)
     }
 
+    private fun checkPermissionForCamera(): Boolean {
+        val result = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+        return result == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestPermissionForCamera() {
+        requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST)
+    }
 
     private fun deleteDraft() {
         val output = draftViewModel.deleteDraftRealm(
