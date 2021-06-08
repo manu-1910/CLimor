@@ -247,10 +247,6 @@ class EditFragment : WaveformFragment() {
             onBackPressed()
         }
 
-        /*infoButton.onClick {
-            openHowToEdit()
-        }*/
-
         nextButtonEdit.onClick {
             openPublishFragment()
         }
@@ -294,16 +290,9 @@ class EditFragment : WaveformFragment() {
         if (!isEditMode) {
             return
         }
-        if (editMarker == null || editMarker.startPos >= selectedMarker.startPos && editMarker.startPos <= selectedMarker.endPos) {
-            showAlertOK(
-                activity,
-                getString(R.string.alert_title_oops),
-                getString(R.string.paste_overlap_alert),
-                null
-            )
+        if (editMarker == null) {
             return
         }
-
         handlePause()
         handlePausePreview()
 
