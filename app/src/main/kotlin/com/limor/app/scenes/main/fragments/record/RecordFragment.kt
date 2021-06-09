@@ -513,6 +513,10 @@ class RecordFragment : BaseFragment() {
 
     private fun onBackPressed() {
         // if the drafts is null, it means that we haven't even recorded anything, so we just exit the activity
+        if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+            mediaPlayer.pause()
+            setPlayPauseButtonState(false)
+        }
         if (!anythingToSave) {
             uiDraft = null
             activity?.finish()
@@ -1356,15 +1360,12 @@ class RecordFragment : BaseFragment() {
             if (intent?.action == "android.intent.action.PHONE_STATE") {
                 val phoneState = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
                 if (phoneState == TelephonyManager.EXTRA_STATE_RINGING) {
-                    //Трубка не поднята, телефон звонит
                     // The handset is not lifted, the phone rings
                     Timber.d("Phone calls ring")
                     val phoneNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)
                 } else if (phoneState == TelephonyManager.EXTRA_STATE_OFFHOOK) {
-                    //Телефон находится в режиме звонка (набор номера при исходящем звонке / разговор)
                     // Phone is in a call (dial an outgoing call / talk)
                 } else if (phoneState == TelephonyManager.EXTRA_STATE_IDLE) {
-                    //Телефон находится в ждущем режиме - это событие наступает по окончанию разговора или в ситуации "отказался поднимать трубку и сбросил звонок".
                     // The phone is in standby mode - this event occurs at the end of a conversation or situation, "refused to pick up the phone and dropped the call."
                 }
             }
