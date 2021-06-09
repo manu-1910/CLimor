@@ -460,11 +460,14 @@ class RecordFragment : BaseFragment() {
                     uiDraft?.draftParent = it
                     loadDraftToRecordingWave()
 
+
                     // this means that we are a new recording that just navigated to another fragment to edit
                     // the audio for example and then we came back to the record fragment, so we just assign the received
                     // draft to the local uiDraft of this fragment
                 } else {
                     uiDraft = draftViewModel.uiDraft
+                    needToInitializeMediaPlayer = true
+                    enablePlayButton(true)
                 }
             }
 
@@ -495,7 +498,10 @@ class RecordFragment : BaseFragment() {
                     amp, recorder.tickDuration
                 )
             }
+            needToInitializeMediaPlayer = true
+            enablePlayButton(true)
         }
+
     }
 
     override fun onPause() {
@@ -813,7 +819,10 @@ class RecordFragment : BaseFragment() {
             alert(getString(R.string.error_stopping_audio)) { okButton { } }
             return
         }
-
+        if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+            mediaPlayer.pause()
+            setPlayPauseButtonState(false)
+        }
         // --------------- Read this carefully: -----------------
         // - filesArray will have size 1 when we first record an audio in the record fragment.
         //      I mean, if I just come to the RecordFragment and start a recording, this would
