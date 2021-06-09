@@ -486,7 +486,7 @@
     <string name="session_expired_error_message">Your session expired</string>
     <string name="publish_cast_error_message">There was an error trying to publish your cast</string>
     <string name="change_name">Change name</string>
-    <string name="edit_draft_title_dialog_title">Draft title</string>
+    <string name="edit_draft_title_dialog_title">Rename Draft</string>
     <string name="search_empty_scenario_title">No matches found</string>
     <string name="search_empty_scenario_description">Please try another search</string>
     <string name="publishing_cast_dialog_title">Publishing your cast</string>

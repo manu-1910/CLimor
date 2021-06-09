@@ -533,6 +533,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         showPreviewLayout(true);
         try {
             preparePlayerPreview(false);
+            handlePause();
         } catch (IOException e) {
             e.printStackTrace();
             Timber.e("Error trying to load preview");
