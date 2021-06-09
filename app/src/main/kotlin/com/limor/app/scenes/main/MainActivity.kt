@@ -19,10 +19,6 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.iid.FirebaseInstanceId
 import com.limor.app.App
 import com.limor.app.R
-import com.limor.app.scenes.main.fragments.HomeFragment
-import com.limor.app.scenes.main.fragments.NotificationsFragment
-import com.limor.app.scenes.main.fragments.ProfileFragment
-import com.limor.app.scenes.main.fragments.UserFeedFragment
 import com.limor.app.common.BaseActivity
 import com.limor.app.common.SessionManager
 import com.limor.app.scenes.main.fragments.HomeFragment
