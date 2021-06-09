@@ -504,13 +504,16 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             MenuOption menuOption = MenuOption.valueOf(menu.getTitle().toString());
             switch (menuOption) {
                 case Copy:
+                    handlePause();
                     tvCopy.performClick();
                     break;
                 case Paste:
+                    handlePause();
                     showPreviewLayout(false);
                     tvPaste.performClick();
                     break;
                 case Delete:
+                    handlePause();
                     showPreviewLayout(false);
                     tvDelete.performClick();
                     break;
