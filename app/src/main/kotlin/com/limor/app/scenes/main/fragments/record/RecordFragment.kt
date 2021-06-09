@@ -35,6 +35,7 @@ import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -708,6 +709,9 @@ class RecordFragment : BaseFragment() {
 
         titleText.text = requireContext().getString(R.string.save_draft_dialog_title)
         editText.filters = arrayOf(SpecialCharactersInputFilter())
+        editText.doOnTextChanged { text, start, before, count ->
+            positiveButton.isEnabled = count > 0
+        }
 
         dialogBuilder.setView(dialogLayout)
         dialogBuilder.setCancelable(false)

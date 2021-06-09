@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.core.content.ContextCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.limor.app.R
@@ -502,8 +503,13 @@ class DraftAdapter(
         val titleText = dialogLayout.findViewById<TextView>(R.id.textTitle)
 
         titleText.text = context.getString(R.string.edit_draft_title_dialog_title)
+        editText.doOnTextChanged { text, start, before, count ->
+            positiveButton.isEnabled = count > 0
+        }
         editText.setText(currentName)
+
         editText.filters = arrayOf(SpecialCharactersInputFilter())
+
         dialogBuilder.setView(dialogLayout)
         dialogBuilder.setCancelable(false)
         val dialog: AlertDialog = dialogBuilder.create()
