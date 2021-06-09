@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.limor.app.R
+import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.DobInfo
 import kotlinx.android.synthetic.main.fragment_new_auth_dob_picker.*
@@ -34,7 +35,7 @@ class FragmentDobPicker : Fragment() {
         }
 
         btnDobPickerBack.setOnClickListener {
-            it.findNavController().popBackStack()
+            AuthActivityNew.popBackStack(requireActivity())
         }
 
         etDobPicker.setStartIconOnClickListener {

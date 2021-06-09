@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.google.android.material.chip.Chip
 import com.limor.app.R
+import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.CategoryWrapper
 import com.limor.app.scenes.utils.BACKGROUND
@@ -83,7 +84,7 @@ class FragmentCategories : FragmentWithLoading() {
         }
 
         topAppBar.setNavigationOnClickListener {
-            it.findNavController().popBackStack()
+            AuthActivityNew.popBackStack(requireActivity())
         }
     }
 }

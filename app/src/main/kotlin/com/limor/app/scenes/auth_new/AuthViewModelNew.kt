@@ -1,27 +1,26 @@
 package com.limor.app.scenes.auth_new
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.res.AssetManager
 import android.os.CountDownTimer
-import android.os.Handler
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.*
+import com.limor.app.GendersQuery
 import com.limor.app.scenes.auth_new.data.*
+import com.limor.app.scenes.auth_new.firebase.EmailAuthHandler
 import com.limor.app.scenes.auth_new.firebase.FacebookAuthHandler
 import com.limor.app.scenes.auth_new.firebase.GoogleAuthHandler
 import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
-import com.limor.app.scenes.auth_new.model.CategoriesProvider
-import com.limor.app.scenes.auth_new.model.CountriesListProvider
-import com.limor.app.scenes.auth_new.model.LanguagesProvider
-import com.limor.app.scenes.auth_new.model.SuggestedProvider
+import com.limor.app.scenes.auth_new.model.*
+import com.limor.app.scenes.auth_new.model.UserInfoProvider.Companion.userNameRegExCheck
 import com.limor.app.scenes.auth_new.util.DobPicker
 import com.limor.app.scenes.auth_new.util.PhoneNumberChecker
 import com.limor.app.scenes.auth_new.util.combine
 import com.limor.app.scenes.auth_new.util.combineWith
 import com.limor.app.scenes.utils.BACKGROUND
 import timber.log.Timber
-import kotlin.random.Random
 
 
 class AuthViewModelNew : ViewModel() {
@@ -49,7 +48,7 @@ class AuthViewModelNew : ViewModel() {
     /* PHONE Countries selection */
 
     fun initPhoneAuthHandler(activity: Activity) {
-        PhoneAuthHandler.init(activity)
+        PhoneAuthHandler.init(activity, viewModelScope)
     }
 
     fun submitPhoneNumber() {
@@ -141,9 +140,8 @@ class AuthViewModelNew : ViewModel() {
     val smsCodeValidationErrorMessage: LiveData<String>
         get() = PhoneAuthHandler.smsCodeValidationErrorMessage
 
-    val smsCodeValidatedLiveData: LiveData<Boolean>
-        get() = PhoneAuthHandler.smsCodeValidatedLiveData
-
+    val smsCodeValidationPassed: LiveData<Boolean>
+        get() = PhoneAuthHandler.smsCodeValidationPassed
     val smsContinueButtonEnabled: LiveData<Boolean> =
         _smsCodeIsFullLiveData.combineWith(smsCodeValidationErrorMessage) { full, error ->
             full!! && (error?.isEmpty() ?: false)
@@ -178,6 +176,22 @@ class AuthViewModelNew : ViewModel() {
     val currentEmailIsValidLiveData: LiveData<Boolean>
         get() = _currentEmailIsValid
 
+    fun checkEmailIsInUse() {
+        EmailAuthHandler.checkEmailIsInUse(currentEmail, viewModelScope)
+    }
+
+    fun addEmailToUserAccount() {
+        EmailAuthHandler.addEmailToUser(currentEmail, viewModelScope)
+    }
+
+    val currentEmailIsInUseLiveData: LiveData<Boolean?>
+        get() = EmailAuthHandler.emailIsInUseLiveData
+
+    val emailIsAttachedToUserLiveData: LiveData<Boolean?>
+        get() = EmailAuthHandler.emailAttachedToUserLiveData
+
+    val emailAuthHandlerErrorLiveData: LiveData<String?>
+        get() = EmailAuthHandler.emailAuthErrorLiveData
 
     companion object {
         fun isEmailValid(email: String?): Boolean {
@@ -193,10 +207,9 @@ class AuthViewModelNew : ViewModel() {
 
     fun changeCurrentUserName(userName: String?, fromVariant: Boolean = false) {
         currentUsername = userName?.trim() ?: ""
-        val action =
-            if (fromVariant) UserNameStateBundle.Approved() else UserNameStateBundle.Editing()
+        val action = UserNameStateBundle.Editing()
         _currentUsernameState.postValue(action)
-        _currentUsernameIsValid.postValue(currentUsername.length > 3)
+        _currentUsernameIsValid.postValue(userNameRegExCheck(currentUsername))
     }
 
     private val _currentUsernameIsValid = MutableLiveData<Boolean>().apply { value = false }
@@ -211,31 +224,36 @@ class AuthViewModelNew : ViewModel() {
         get() = Transformations.distinctUntilChanged(_currentUsernameState)
 
     fun submitUsername(username: String?) {
-        if (_currentUsernameState.value?.approved!!) {
-            _navigationFromUsernameScreenAllowed.postValue(true)
-            Handler().postDelayed({ _navigationFromUsernameScreenAllowed.postValue(false) }, 500)
-            return
-        }
-        val variants = List(5) {
-            username + Random.nextInt(0, 100)
-        }
-        _currentUsernameState.postValue(UserNameStateBundle.Error(variants))
+        userInfoProvider.updateFirebaseUserName(username!!)
     }
 
-    private val _navigationFromUsernameScreenAllowed =
-        MutableLiveData<Boolean>().apply { value = false }
-
-    val navigationFromUsernameScreenAllowed: LiveData<Boolean>
-        get() = _navigationFromUsernameScreenAllowed
+    val userNameAttachedToUserLiveData: LiveData<Boolean?>
+        get() = userInfoProvider.userNameAttachedToUserLiveData
 
 
     /* Gender */
-    var currentGender: Gender = Gender.Male
-        private set
 
-    fun setCurrentGender(gender: Gender) {
-        currentGender = gender
+    private val gendersProvider: GendersProvider = GendersProvider(viewModelScope)
+
+    fun downloadGenders() = gendersProvider.downloadGenders()
+    val currentGenderId: Int
+        get() = gendersProvider.selectedGenderId
+    val selectedGenderIndex: Int
+        get() = gendersProvider.selectedGenderIndex()
+
+    fun selectGender(id: Int) {
+        gendersProvider.selectedGenderId = id
     }
+
+    val gendersLiveData: LiveData<List<GendersQuery.Gender>>
+        get() = gendersProvider.gendersLiveData
+
+    val gendersSelectionDone: LiveData<Boolean>
+        get() = gendersProvider.gendersSelectionDone
+
+    val gendersLiveDataError: LiveData<String>
+        get() = gendersProvider.gendersLiveDataError
+
 
     /* Categories */
     private val categoriesProvider: CategoriesProvider = CategoriesProvider(viewModelScope)
@@ -286,6 +304,9 @@ class AuthViewModelNew : ViewModel() {
 
     val suggestedSelectedLiveData: LiveData<Boolean>
         get() = suggestedProvider.suggestedSelectedLiveData
+
+    val suggestedForwardNavigationLiveData: LiveData<Boolean>
+        get() = suggestedProvider.suggestedForwardNavigationLiveData
 
     val suggestedLiveDataError: LiveData<String>
         get() = suggestedProvider.suggestedLiveDataError
@@ -353,6 +374,44 @@ class AuthViewModelNew : ViewModel() {
     fun setCurrentSignInMethod(signInMethod: SignInMethod) {
         _signInMethodLiveData.postValue(signInMethod)
     }
+
+    fun sendFirebaseDynamicLinkToEmail(context: Context) =
+        EmailAuthHandler.sendFirebaseDynamicLinkToEmailScoped(context, currentEmail, viewModelScope)
+
+    val emailLinkSentLiveData: LiveData<Boolean?>
+        get() = EmailAuthHandler.emailLinkSentLiveData
+
+    val handleEmailDynamicLinkLiveData: LiveData<Boolean?>
+        get() = EmailAuthHandler.handleEmailDynamicLinkLiveData
+
+    fun handleEmailDynamicLink(context: Context, link: String) {
+        if (currentEmail.isEmpty()) {
+            Timber.d("CurrentEmail is empty -> return")
+            return
+        }
+        EmailAuthHandler.handleDynamicLink(context, link, viewModelScope)
+    }
+
+
+    /*User info*/
+
+    private val userInfoProvider = UserInfoProvider(viewModelScope)
+    val breakPointLiveData: LiveData<String?>
+        get() = userInfoProvider.breakPointLiveData
+
+    val userInfoProviderErrorLiveData: LiveData<String?>
+        get() = userInfoProvider.userInfoProviderErrorLiveData
+    val createUserLiveData: LiveData<String?>
+        get() = userInfoProvider.createUserLiveData
+
+    val updateUserNameLiveData: LiveData<String?>
+        get() = userInfoProvider.updateUserNameLiveData
+
+    fun getUserOnboardingStatus() = userInfoProvider.getUserOnboardingStatus()
+
+    fun createUser() = userInfoProvider.createUser(_datePicked.value?.mills ?: 0)
+
+    fun updateUserName() = userInfoProvider.updateUserName(currentUsername)
 
     override fun onCleared() {
         super.onCleared()

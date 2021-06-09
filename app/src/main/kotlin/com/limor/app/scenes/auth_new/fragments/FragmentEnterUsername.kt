@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -44,7 +45,7 @@ class FragmentEnterUsername : Fragment() {
         }
 
         btnBack.setOnClickListener {
-            it.findNavController().popBackStack()
+            AuthActivityNew.popBackStack(requireActivity())
         }
 
         etEnterUsername.setEndIconOnClickListener {
@@ -81,10 +82,20 @@ class FragmentEnterUsername : Fragment() {
             }
         })
 
-        model.navigationFromUsernameScreenAllowed.observe(viewLifecycleOwner, Observer<Boolean> {
-            if (it)
-                clMain.findNavController()
-                    .navigate(R.id.action_fragment_new_auth_enter_username_to_fragment_new_auth_gender)
+        model.userInfoProviderErrorLiveData.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+        })
+
+        model.userNameAttachedToUserLiveData.observe(viewLifecycleOwner, Observer {
+            if(it != true) return@Observer
+            model.updateUserName()
+        })
+
+        model.updateUserNameLiveData.observe(viewLifecycleOwner, Observer {
+            if(it == null) return@Observer
+            clMain.findNavController()
+                .navigate(R.id.action_fragment_new_auth_enter_username_to_fragment_new_auth_gender)
         })
     }
 

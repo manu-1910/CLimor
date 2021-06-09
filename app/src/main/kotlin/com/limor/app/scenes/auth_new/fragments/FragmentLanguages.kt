@@ -49,7 +49,7 @@ class FragmentLanguages : FragmentWithLoading() {
         }
 
         topAppBar.setNavigationOnClickListener {
-            it.findNavController().popBackStack()
+            AuthActivityNew.popBackStack(requireActivity())
         }
 
         clMain.setOnClickListener {
