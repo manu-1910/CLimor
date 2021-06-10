@@ -27,8 +27,8 @@ android {
         targetSdkVersion build_versions.target_sdk
 
         applicationId globalConfiguration.androidApplicationId
-        versionCode 46
-        versionName "0.0.46"
+        versionCode 47
+        versionName "0.0.47"
 
         testInstrumentationRunner globalConfiguration.testInstrumentationRunner
         testApplicationId globalConfiguration.testApplicationId
