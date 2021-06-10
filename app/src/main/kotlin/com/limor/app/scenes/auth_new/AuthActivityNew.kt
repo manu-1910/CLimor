@@ -11,7 +11,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
@@ -32,8 +31,8 @@ class AuthActivityNew : AppCompatActivity() {
         clActivityAuthNew.systemUiVisibility =
             SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 
-        FirebaseAuth.getInstance().firebaseAuthSettings
-            .setAppVerificationDisabledForTesting(true)
+//        FirebaseAuth.getInstance().firebaseAuthSettings
+//            .setAppVerificationDisabledForTesting(true)
         checkNavigationBreakPoint()
     }
 
