@@ -255,6 +255,8 @@ class EditFragment : WaveformFragment() {
 
     private fun redoClick() {
         if (stepManager.lastRedoStep != null && stepManager.stepsToRedo.size > 0) {
+            handlePause()
+            waveformView.setPlayback(waveformView.millisecsToPixels(0))
             stepManager.addNewUndoStep(
                 Step(
                     System.currentTimeMillis(),
@@ -266,12 +268,15 @@ class EditFragment : WaveformFragment() {
             fileName = stepManager.lastRedoStep.filePath
             loadFromFile(fileName)
             stepManager.handleLastRedoStep()
+            seekSeekBarToStartPosition()
         }
         updateUndoRedoButtons()
     }
 
     private fun undoClick() {
         if (stepManager.lastUndoStep != null && stepManager.stepsToUndo.size > 0) {
+            handlePause()
+            waveformView.setPlayback(waveformView.millisecsToPixels(0))
             stepManager.addNewRedoStep(
                 Step(
                     System.currentTimeMillis(),
@@ -282,8 +287,10 @@ class EditFragment : WaveformFragment() {
             fileName = stepManager.lastUndoStep.filePath
             loadFromFile(fileName)
             stepManager.handleLastUndoStep()
+            seekSeekBarToStartPosition()
         }
         updateUndoRedoButtons()
+
     }
 
     private fun pasteClick() {

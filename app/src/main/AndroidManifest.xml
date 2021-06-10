@@ -86,6 +86,7 @@
         <activity
             android:name=".scenes.main.fragments.record.RecordActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Translucent" />
 
         <activity

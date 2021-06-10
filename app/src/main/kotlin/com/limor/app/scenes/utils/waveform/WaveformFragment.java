@@ -1188,6 +1188,18 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         return true;
     }
 
+    public void seekSeekBarToStartPosition() {
+        seekBar.setProgress(0);
+        seekPlayerToSeekbarPosition();
+    }
+
+    private void seekPlayerToSeekbarPosition() {
+        if (player != null) {
+            player.seekTo(seekBar.getProgress());
+            tvDuration.setText(Commons.getLengthFromEpochForPlayer(player.getDuration()));
+        }
+    }
+
     private void setupSeekBar() {
         seekBar.setMax(player.getDuration());
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
