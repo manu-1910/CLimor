@@ -36,6 +36,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -66,6 +67,7 @@ import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.CommonsKt.Companion.dpToPx
 import com.limor.app.scenes.utils.CommonsKt.Companion.toEditable
+import com.limor.app.scenes.utils.SpecialCharactersInputFilter
 import com.limor.app.scenes.utils.location.MyLocation
 import com.limor.app.scenes.utils.waveform.KeyboardUtils
 import com.limor.app.uimodels.*
@@ -430,10 +432,16 @@ class PublishFragment : BaseFragment() {
             onSelectImageClicked()
         }
         btnSaveDraft?.onClick {
-            addDataToRecordingItem()
             if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying)
                 mediaPlayer.stop()
-            activity?.finish()
+            val isTitleEmpty = etDraftTitle?.text.toString().isEmpty()
+            if (isTitleEmpty) {
+                showSaveAsDraftDialog()
+            } else {
+                addDataToRecordingItem()
+                toast(getString(R.string.draft_inserted))
+                activity?.finish()
+            }
         }
 
         btnPublishDraft?.onClick {
@@ -537,6 +545,59 @@ class PublishFragment : BaseFragment() {
             }
         }
 
+    }
+
+    private fun showSaveAsDraftDialog() {
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.dialog_with_edittext, null)
+        val positiveButton = dialogLayout.findViewById<Button>(R.id.saveButton)
+        val cancelButton = dialogLayout.findViewById<Button>(R.id.cancelButton)
+        val editText = dialogLayout.findViewById<TextInputEditText>(R.id.editText)
+        val titleText = dialogLayout.findViewById<TextView>(R.id.textTitle)
+
+        titleText.text = requireContext().getString(R.string.save_draft_dialog_title)
+        editText.filters = arrayOf(SpecialCharactersInputFilter())
+        editText.doOnTextChanged { text, start, before, count ->
+            positiveButton.isEnabled = count > 0
+        }
+
+        dialogBuilder.setView(dialogLayout)
+        dialogBuilder.setCancelable(false)
+
+        val dialog: AlertDialog = dialogBuilder.create()
+
+        positiveButton.onClick {
+            uiDraft.title = editText.text.toString()
+            uiDraft.caption = etDraftCaption?.text.toString()
+            callToUpdateDraft()
+            toast(getString(R.string.draft_inserted))
+            requireActivity().finish()
+        }
+
+        cancelButton.onClick {
+            dialog.dismiss()
+        }
+
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                positiveButton.isEnabled = !p0.isNullOrEmpty()
+            }
+        })
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset);
+            show()
+        }
     }
 
     private fun onSelectImageClicked() {
@@ -780,7 +841,7 @@ class PublishFragment : BaseFragment() {
 
     private fun addDataToRecordingItem() {
         //Compose the local object
-        if (!etDraftTitle?.text.toString().isNullOrEmpty()) {
+        if (!etDraftTitle?.text.toString().isEmpty()) {
             uiDraft.title = etDraftTitle?.text.toString()
         } else {
             uiDraft.title = getString(R.string.autosave)
