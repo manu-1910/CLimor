@@ -3,6 +3,7 @@ package com.limor.app.scenes.auth_new.model
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.limor.app.GendersQuery
+import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.apollo.showHumanizedErrorMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -38,9 +39,8 @@ class GendersProvider(private val scope: CoroutineScope) {
     private fun loadGendersRepo() {
         scope.launch {
             try {
-                delay(1000)
-
-                val response = MOCKED_GENDERS;//GeneralInfoRepository.fetchGenders()
+                delay(500)
+                val response = GeneralInfoRepository.fetchGenders()
                 genders = response!!
                 _genderLiveData.postValue(genders)
                 selectedGenderId = genders.first().id ?: 0

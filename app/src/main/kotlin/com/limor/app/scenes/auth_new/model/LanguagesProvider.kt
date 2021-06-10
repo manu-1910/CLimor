@@ -55,4 +55,8 @@ class LanguagesProvider(private val scope: CoroutineScope) {
         val filtered = getLanguagesByInput(input, languages)
         languagesLiveData.postValue(filtered)
     }
+
+    fun getActiveLanguages():List<String?>{
+        return languages.filter { it.isSelected }.map { it.language.code}
+    }
 }

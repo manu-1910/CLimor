@@ -12,6 +12,7 @@ import com.limor.app.GendersQuery
 import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
+import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import kotlinx.android.synthetic.main.fragment_new_auth_gender.*
 
 class FragmentGender : FragmentWithLoading() {
@@ -29,6 +30,7 @@ class FragmentGender : FragmentWithLoading() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setOnClickListeners()
+        saveNavigationBreakPoint()
         toggleGender.isEnabled = false
     }
 
@@ -101,5 +103,9 @@ class FragmentGender : FragmentWithLoading() {
             else -> R.id.btnGender1
         }
         toggleGender.check(checkedId)
+    }
+
+    private fun saveNavigationBreakPoint() {
+        model.saveNavigationBreakPoint(requireContext(), NavigationBreakpoints.PREFERENCE_COLLECTION.destination)
     }
 }

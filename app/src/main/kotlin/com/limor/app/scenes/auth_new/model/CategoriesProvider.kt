@@ -48,6 +48,10 @@ class CategoriesProvider(private val scope: CoroutineScope) {
         }
     }
 
+    fun getActiveCategoriesIds():List<Int?>{
+        return categories.filter { it.isSelected }.map { it.queryCategory.id }
+    }
+
     fun updateCategoriesSelection() {
         val anySelected = categories.any { it.isSelected }
         _categorySelectionDone.postValue(anySelected)

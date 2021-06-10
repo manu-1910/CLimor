@@ -35,6 +35,10 @@ class UserInfoProvider(private val scope: CoroutineScope) {
     val updateUserNameLiveData: LiveData<String?>
         get() = _updateUserNameLiveData
 
+    private val _updatePreferredInfoLiveData = MutableLiveData<String?>().apply { value = null }
+    val updatePreferredInfoLiveData: LiveData<String?>
+        get() = _updatePreferredInfoLiveData
+
     private val _userInfoProviderErrorLiveData = MutableLiveData<String?>().apply { value = null }
     val userInfoProviderErrorLiveData: LiveData<String?>
         get() = _userInfoProviderErrorLiveData
@@ -127,6 +131,36 @@ class UserInfoProvider(private val scope: CoroutineScope) {
             _userInfoProviderErrorLiveData.postValue(e.cause?.message ?: e.message)
         }
     }
+
+    fun updatePreferredInfo(gender: Int, categories: List<Int?>, languages: List<String?>) {
+        scope.launch {
+            try {
+                val result = UserRepository.updateUserOnboardingData(gender, categories, languages)
+                _updatePreferredInfoLiveData.postValue(result)
+                MAIN {
+                    Handler().postDelayed(
+                        {
+                            _updatePreferredInfoLiveData.postValue(null)
+                        },
+                        500
+                    )
+                }
+            } catch (e: Exception) {
+                _userInfoProviderErrorLiveData.postValue(e.cause?.message ?: e.message)
+            }
+        }
+    }
+
+    fun updateUserOnboardingStatus(nextStep:String) {
+        scope.launch {
+            try {
+                val result = UserRepository.updateUserOnboardingStatus(nextStep)
+            } catch (e: Exception) {
+//                _userInfoProviderErrorLiveData.postValue(e.cause?.message ?: e.message)
+            }
+        }
+    }
+
 
     companion object {
         fun userNameRegExCheck(userName: String): Boolean {

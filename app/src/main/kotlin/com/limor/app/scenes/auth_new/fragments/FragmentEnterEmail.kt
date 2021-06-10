@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
+import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import kotlinx.android.synthetic.main.fragment_new_auth_enter_email.*
 import timber.log.Timber
 
@@ -33,6 +34,7 @@ class FragmentEnterEmail : Fragment() {
         setOnClickListeners()
         setEditTextChangedListeners()
         subscribeToViewModel()
+        saveNavigationBreakPoint()
     }
 
     private fun setOnClickListeners() {
@@ -94,5 +96,9 @@ class FragmentEnterEmail : Fragment() {
                 Toast.LENGTH_LONG
             ).show()
         })
+    }
+
+    private fun saveNavigationBreakPoint() {
+        model.saveNavigationBreakPoint(requireContext(), NavigationBreakpoints.ACCOUNT_CREATION.destination)
     }
 }
