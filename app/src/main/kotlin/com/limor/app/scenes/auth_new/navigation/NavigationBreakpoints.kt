@@ -24,7 +24,7 @@ object AuthNavigator {
         navigateToFragmentWithClear(activity, breakpoint.actionId)
     }
 
-    fun navigateToFragmentWithClear(activity: Activity, @IdRes actionId: Int) {
+    private fun navigateToFragmentWithClear(activity: Activity, @IdRes actionId: Int) {
         val navController = Navigation.findNavController(activity, R.id.nav_host_fragment)
         val navOptions = NavOptions.Builder()
             .setPopUpTo(navController.currentDestination?.id ?: 0, true)

@@ -2,7 +2,6 @@ package com.limor.app.scenes.auth_new.model
 
 import android.os.Handler
 import androidx.lifecycle.MutableLiveData
-import com.limor.app.apollo.UserRepository
 import com.limor.app.apollo.showHumanizedErrorMessage
 import com.limor.app.scenes.auth_new.data.SuggestedUser
 import com.limor.app.scenes.auth_new.data.createMockedSuggestedUsers
@@ -35,7 +34,7 @@ class SuggestedProvider(private val scope: CoroutineScope) {
     private fun loadSuggestedFromRepo() {
         scope.launch {
             try {
-                delay(300) //waiting for transition animation to end
+                delay(1000) //waiting for transition animation to end
                 suggestedList = createMockedSuggestedUsers()
                 suggestedLiveData.postValue(suggestedList)
             } catch (e: Exception) {
@@ -55,7 +54,8 @@ class SuggestedProvider(private val scope: CoroutineScope) {
         scope.launch {
             try {
                 val list = suggestedList.filter { it.selected }.map { it.id.toString() }
-                val result = UserRepository.updateFollowingUsersData(list)
+//                val result = UserRepository.updateFollowingUsersData(list)
+                //TODO follow suggested people
                 suggestedForwardNavigationLiveData.postValue(true)
                 Handler().postDelayed({ suggestedForwardNavigationLiveData.postValue(true) }, 500)
             } catch (e: Exception) {

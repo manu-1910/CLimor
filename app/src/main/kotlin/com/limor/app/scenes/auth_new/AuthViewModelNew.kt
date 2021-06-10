@@ -15,11 +15,9 @@ import com.limor.app.scenes.auth_new.firebase.GoogleAuthHandler
 import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
 import com.limor.app.scenes.auth_new.model.*
 import com.limor.app.scenes.auth_new.model.UserInfoProvider.Companion.userNameRegExCheck
-import com.limor.app.scenes.auth_new.util.DobPicker
-import com.limor.app.scenes.auth_new.util.PhoneNumberChecker
-import com.limor.app.scenes.auth_new.util.combine
-import com.limor.app.scenes.auth_new.util.combineWith
+import com.limor.app.scenes.auth_new.util.*
 import com.limor.app.scenes.utils.BACKGROUND
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
@@ -396,22 +394,52 @@ class AuthViewModelNew : ViewModel() {
     /*User info*/
 
     private val userInfoProvider = UserInfoProvider(viewModelScope)
-    val breakPointLiveData: LiveData<String?>
+    val navigationBreakPointLiveData: LiveData<String?>
         get() = userInfoProvider.breakPointLiveData
 
     val userInfoProviderErrorLiveData: LiveData<String?>
         get() = userInfoProvider.userInfoProviderErrorLiveData
+
+    val updatePreferredInfoLiveData: LiveData<String?>
+        get() = userInfoProvider.updatePreferredInfoLiveData
+
     val createUserLiveData: LiveData<String?>
         get() = userInfoProvider.createUserLiveData
 
     val updateUserNameLiveData: LiveData<String?>
         get() = userInfoProvider.updateUserNameLiveData
 
+    fun checkJwtForLuidAndProceed() {
+        viewModelScope.launch {
+            val result = JwtChecker.isFirebaseJwtContainsLuid()
+            if (result)
+                getUserOnboardingStatus()
+            else
+                createUser()
+        }
+    }
+
+    fun saveNavigationBreakPoint(context: Context, breakpoint: String?) {
+        viewModelScope.launch {
+            PrefsHandler.saveNavigationBreakPoint(context, breakpoint)
+        }
+    }
+
     fun getUserOnboardingStatus() = userInfoProvider.getUserOnboardingStatus()
 
     fun createUser() = userInfoProvider.createUser(_datePicked.value?.mills ?: 0)
 
     fun updateUserName() = userInfoProvider.updateUserName(currentUsername)
+
+    fun updatePreferredInfo(){
+        val categoriesIds = categoriesProvider.getActiveCategoriesIds()
+        val languages = languagesProvider.getActiveLanguages();
+        userInfoProvider.updatePreferredInfo(currentGenderId, categoriesIds, languages )
+    }
+
+    fun updateUserOnboardingStatus(nextStep: String){
+        userInfoProvider.updateUserOnboardingStatus(nextStep)
+    }
 
     override fun onCleared() {
         super.onCleared()

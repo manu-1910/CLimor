@@ -17,6 +17,7 @@ import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.UserNameState
 import com.limor.app.scenes.auth_new.data.UserNameStateBundle
+import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import com.limor.app.scenes.auth_new.util.colorStateList
 import kotlinx.android.synthetic.main.fragment_new_auth_enter_username.*
 
@@ -37,6 +38,7 @@ class FragmentEnterUsername : Fragment() {
         setOnClickListeners()
         setTextChangedListener()
         subscribeToViewModel()
+        saveNavigationBreakPoint()
     }
 
     private fun setOnClickListeners() {
@@ -146,5 +148,9 @@ class FragmentEnterUsername : Fragment() {
         etEnterUsername.hintTextColor =
             colorStateList(requireContext(), R.color.text_edit_outline_color)
         cgVariants.isVisible = false
+    }
+
+    private fun saveNavigationBreakPoint() {
+        model.saveNavigationBreakPoint(requireContext(), NavigationBreakpoints.USERNAME_CREATION.destination)
     }
 }

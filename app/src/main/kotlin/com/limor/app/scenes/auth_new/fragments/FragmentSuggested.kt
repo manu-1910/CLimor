@@ -13,6 +13,7 @@ import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.SuggestedUser
+import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import com.limor.app.scenes.auth_new.view.SuggestedPeopleAdapter
 import kotlinx.android.synthetic.main.fragment_new_auth_suggested_people.*
 
@@ -31,6 +32,7 @@ class FragmentSuggested : FragmentWithLoading() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setOnClickListeners()
+        saveNavigationBreakPoint()
     }
 
     override fun load() = model.downloadSuggested()
@@ -51,9 +53,11 @@ class FragmentSuggested : FragmentWithLoading() {
             btnNext.text = getString(if (it) R.string.continue_button else R.string.btn_skip)
         })
         model.suggestedForwardNavigationLiveData.observe(viewLifecycleOwner, Observer {
-            if (it)
+            if (it) {
+                model.updateUserOnboardingStatus(NavigationBreakpoints.ONBOARDING_COMPLETION.destination)
                 view?.findNavController()
                     ?.navigate(R.id.action_fragment_new_auth_suggested_people_to_fragment_new_auth_onboarding)
+            }
         })
     }
 
@@ -79,5 +83,12 @@ class FragmentSuggested : FragmentWithLoading() {
         topAppBar.setNavigationOnClickListener {
             AuthActivityNew.popBackStack(requireActivity())
         }
+    }
+
+    private fun saveNavigationBreakPoint() {
+        model.saveNavigationBreakPoint(
+            requireContext(),
+            NavigationBreakpoints.SHOW_PROFILES.destination
+        )
     }
 }

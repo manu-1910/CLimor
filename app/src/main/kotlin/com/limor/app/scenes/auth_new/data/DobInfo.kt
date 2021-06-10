@@ -47,7 +47,7 @@ data class DobInfo(val mills: Long) {
 
         fun parseForUserCreation(mills: Long): String {
             if(mills == 0L) return ""
-            return DateFormat.format("YYYY-MM-DD", Date(mills)).toString()
+            return DateFormat.format("yyyy-MM-dd", Date(mills)).toString()
         }
     }
 }

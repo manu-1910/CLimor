@@ -144,18 +144,14 @@ class FragmentVerifyPhoneNumber : Fragment() {
             )
         })
 
-        model.breakPointLiveData.observe(viewLifecycleOwner, Observer {
+        model.navigationBreakPointLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
-            if (it == NavigationBreakpoints.ACCOUNT_CREATION.destination)
-                model.createUser()
-            else
                 navigateToFragmentByNavigationBreakpoints(requireActivity(), it)
-
         })
 
         model.smsCodeValidationPassed.observe(viewLifecycleOwner, Observer {
             if (it != true) return@Observer
-            model.getUserOnboardingStatus()
+            model.checkJwtForLuidAndProceed()
         })
 
         model.resendButtonEnableLiveData.observe(viewLifecycleOwner, Observer {

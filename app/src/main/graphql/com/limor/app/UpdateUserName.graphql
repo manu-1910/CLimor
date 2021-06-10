@@ -1,5 +1,9 @@
-mutation UpdateUserNameMutation($userName: String!) {
-    updateUserName(userName: $userName){
-        userName
+mutation UpdateUserNameMutation($userName: String!){
+    updateUser(user:{
+        username:$userName,
+        userOnboardingStatus: {    nextStep: "PREFERENCE_COLLECTION"  }
+    }){
+        status,
+        message
     }
 }

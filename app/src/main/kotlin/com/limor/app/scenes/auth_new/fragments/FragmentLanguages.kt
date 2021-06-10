@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
@@ -44,8 +45,7 @@ class FragmentLanguages : FragmentWithLoading() {
 
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
-            it.findNavController()
-                .navigate(R.id.action_fragment_new_auth_languages_to_fragment_new_auth_suggested_people)
+            model.updatePreferredInfo()
         }
 
         topAppBar.setNavigationOnClickListener {
@@ -87,6 +87,17 @@ class FragmentLanguages : FragmentWithLoading() {
 
         model.languagesSelectionDone.observe(viewLifecycleOwner, Observer {
             btnContinue.isEnabled = it
+        })
+
+        model.updatePreferredInfoLiveData.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            cgLanguages.findNavController()
+                .navigate(R.id.action_fragment_new_auth_languages_to_fragment_new_auth_suggested_people)
+        })
+
+        model.userInfoProviderErrorLiveData.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
         })
     }
 
