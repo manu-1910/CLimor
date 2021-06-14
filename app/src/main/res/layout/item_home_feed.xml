@@ -188,6 +188,7 @@
         app:indicatorColor="@color/colorAccent"
         app:indicatorDirectionCircular="clockwise"
         app:indicatorSize="68dp"
+        app:trackCornerRadius="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPodcastReply"
         app:trackColor="@color/dark_transparent"

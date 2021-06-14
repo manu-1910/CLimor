@@ -546,4 +546,7 @@
     <string name="email_is_already_in_use">Email is already in use</string>
     <string name="no_gmail_app_installed">"We could not find Gmail app  on your device(\nPlease open your email app manually"</string>
     <string name="no_email_found_offer_to_sign_up">This email was not found, maybe you should Sign Up?</string>
+    <string name="why_are_you_reporting">Why are you reporting?</string>
+    <string name="spam_or_scam">Spam or Scam</string>
+    <string name="abusive_content">Abusive Content</string>
 </resources>
