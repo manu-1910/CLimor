@@ -53,7 +53,7 @@ class SimpleRecorder(private val folderPath: String) {
             mmr.setDataSource(lastFileName)
             val durationStr =
                 mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-            duration = durationStr.toInt()
+            duration = durationStr!!.toInt()
 
         }
         return Pair(lastFileName, duration)

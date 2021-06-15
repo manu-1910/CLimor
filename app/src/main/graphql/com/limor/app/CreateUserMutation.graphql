@@ -1,0 +1,5 @@
+mutation CreateUserMutation($dob: String!) {
+    createUser(dob: $dob){
+        message, status
+    }
+}

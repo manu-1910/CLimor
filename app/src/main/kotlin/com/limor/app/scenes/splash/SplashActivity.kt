@@ -3,11 +3,16 @@ package com.limor.app.scenes.splash
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.FirebaseAuth
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.common.SessionManager
-import com.limor.app.scenes.authentication.SignActivity
+import com.limor.app.scenes.auth_new.AuthActivityNew
+import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.MainActivity
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SplashActivity : BaseActivity() {
@@ -17,25 +22,37 @@ class SplashActivity : BaseActivity() {
     lateinit var sessionManager: SessionManager
 
     private val mRunnable: Runnable = Runnable {
-        if (!isFinishing) {
+        if (isFinishing) return@Runnable
 
-            if(!sessionManager.getStoredToken().isNullOrEmpty()){
-                //println("client_id es:" + sessionManager.getStoredUser().id)
-                var mainIntent: Intent = Intent(this, MainActivity::class.java)
+        lifecycleScope.launch {
+            val navigationFlowIsFinished = navigationFlowIsFinished()
+            val hasFirebaseUser = FirebaseAuth.getInstance().currentUser != null
+            if (hasFirebaseUser && navigationFlowIsFinished) {
+                val activity = this@SplashActivity
+                val mainIntent = Intent(activity, MainActivity::class.java)
                 startActivity(mainIntent)
-                this.finish()
-            }else{
-                startActivity(Intent(applicationContext, SignActivity::class.java))
+                activity.finish()
+            } else {
+                startActivity(Intent(applicationContext, AuthActivityNew::class.java))
                 finish()
             }
         }
+    }
+
+    private suspend fun navigationFlowIsFinished(): Boolean {
+        val breakpoint = PrefsHandler.loadNavigationBreakPointSuspend(this)
+            ?: return true
+        return breakpoint == NavigationBreakpoints.HOME_FEED.destination
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         mDelayHandler = Handler()
-        mDelayHandler!!.postDelayed(mRunnable, resources.getInteger(R.integer.SPLASH_DELAY).toLong())
+        mDelayHandler!!.postDelayed(
+            mRunnable,
+            resources.getInteger(R.integer.SPLASH_DELAY).toLong()
+        )
     }
 
     public override fun onDestroy() {

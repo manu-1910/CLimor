@@ -37,11 +37,11 @@ class LocationsAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvLocations.text = locationsList[position].address
-        if (locationsList[position].isSelected) {
+       /* if (locationsList[position].isSelected) {
             holder.ivSelected.visibility = View.VISIBLE
         } else {
             holder.ivSelected.visibility = View.INVISIBLE
-        }
+        }*/
         holder.itemView.setOnClickListener { listener.onItemClick(locationsList[position]) }
     }
 

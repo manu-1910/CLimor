@@ -1,66 +1,234 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/llDraftItem"
-    android:layout_height="wrap_content"
+<com.zerobranch.layout.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:clickable="true"
-    android:focusable="true"
-    android:background="@color/brandSecondary400"
-    android:orientation="vertical">
+    android:layout_height="wrap_content"
+    app:draggedItem="@id/llDraftItem"
+    android:id="@+id/swipeLayout"
+    app:rightItem="@id/right_view"
+    app:swipeDirection="left">
 
-    <RelativeLayout
+
+    <TextView
+        android:id="@+id/right_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="#FF5A4E"
+        android:fontFamily="@font/roboto_medium"
+        android:gravity="center"
+        android:paddingStart="36dp"
+        android:paddingEnd="36dp"
+        android:text="@string/delete"
+        android:textColor="@color/white"
+        android:textSize="@dimen/textSize16" />
+
+    <LinearLayout
+        android:id="@+id/llDraftItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/marginMedium">
+        android:background="@color/white"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/ivDraftDelete"
-            android:layout_marginStart="@dimen/marginMedium"
-            android:orientation="vertical">
+            android:layout_margin="@dimen/marginMedium">
 
-            <TextView
-                android:id="@+id/tvDraftTitle"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/marginMediumSmall"
+                android:layout_toEndOf="@+id/ivDraftDelete"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvDraftTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/marginMedium"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Draft title"
+                    android:textColor="@color/textPrimary"
+                    android:textSize="@dimen/textSize16"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDraftDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/marginMedium"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="11/05/2020 09:00"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="@dimen/textSizeTiny"
+                    android:textStyle="normal" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ivDraftIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:textSize="@dimen/textSizeNormal"
-                android:layout_marginEnd="@dimen/marginMedium"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:text="Draft title"
-                android:maxLines="1" />
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/image_content_description_default"
+                android:src="@drawable/ic_draft"
+                android:visibility="visible" />
 
-            <TextView
-                android:id="@+id/tvDraftDescription"
+            <ImageView
+                android:id="@+id/ivDraftDelete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:textSize="@dimen/textSizeVerySmall"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/image_content_description_default"
+                android:src="@drawable/ic_delete_draft"
+                android:visibility="invisible" />
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:id="@+id/itemPlayer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginStart="@dimen/marginMedium"
+                android:layout_marginTop="@dimen/marginSmall"
                 android:layout_marginEnd="@dimen/marginMedium"
-                android:textColor="@color/brandSecondary100"
-                android:textStyle="normal"
-                android:text="11/05/2020 09:00"
-                android:maxLines="1" />
+                android:background="@color/white">
+
+                <SeekBar
+                    android:id="@+id/sbProgress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxHeight="4dp"
+                    android:minHeight="4dp"
+                    android:thumb="@drawable/seekbar_thumb"
+                    android:paddingTop="8dip"
+                    android:progress="50"
+                    android:progressDrawable="@drawable/custom_seekbar_progress" />
+
+                <TextView
+                    android:id="@+id/tvTimePass"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/sbProgress"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="@dimen/marginSmall"
+                    android:layout_marginTop="@dimen/marginTiny"
+                    android:fontFamily="@font/roboto_medium"
+                    android:gravity="left"
+                    android:text="00:00"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="@dimen/textSizeTiny" />
+
+                <TextView
+                    android:id="@+id/tvDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/sbProgress"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="@dimen/marginTiny"
+                    android:layout_marginEnd="@dimen/marginSmall"
+                    android:fontFamily="@font/roboto_medium"
+                    android:gravity="right"
+                    android:text="00:00"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="@dimen/textSizeTiny" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:paddingBottom="24dp"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/btnMore"
+                    style="@android:style/MediaButton"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignTop="@id/ibRew"
+                    android:layout_alignBottom="@id/ibRew"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="20dp"
+                    android:contentDescription="@string/image_content_description_default"
+                    android:gravity="center"
+                    android:padding="6dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/more_yellow" />
+
+
+                <ImageButton
+                    android:id="@+id/ibRew"
+                    style="@android:style/MediaButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="6dp"
+                    android:layout_toEndOf="@id/btnMore"
+                    android:layout_toStartOf="@id/ibPlayPause"
+                    android:contentDescription="@string/rewind"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/rewind_button" />
+
+                <ImageButton
+                    android:id="@+id/ibPlayPause"
+                    style="@android:style/MediaButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerHorizontal="true"
+                    android:contentDescription="@string/play"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_play" />
+
+                <ImageButton
+                    android:id="@+id/ibFfwd"
+                    style="@android:style/MediaButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="6dp"
+                    android:layout_toStartOf="@id/tvResumeRecording"
+                    android:layout_toEndOf="@id/ibPlayPause"
+                    android:contentDescription="@string/ffwd"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/forward_button" />
+
+                <TextView
+                    android:id="@+id/tvResumeRecording"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_alignTop="@id/ibFfwd"
+                    android:layout_alignBottom="@id/ibFfwd"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="@dimen/marginTwenty"
+                    android:fontFamily="@font/roboto_medium"
+                    android:gravity="center"
+                    android:text="@string/resume"
+                    android:textColor="@color/textAccent"
+                    android:textSize="@dimen/textSize16" />
+            </RelativeLayout>
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/ivDraftDelete"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:padding="6dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:contentDescription="@string/image_content_description_default"
-            android:src="@drawable/delete_symbol"/>
-    </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="@dimen/marginTwenty"
+            android:layout_marginEnd="@dimen/marginTwenty"
+            android:background="@color/lightBlueColor" />
 
+    </LinearLayout>
+</com.zerobranch.layout.SwipeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/brandSecondary300" />
-
-</LinearLayout>

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/brandSecondary400">
+    android:background="@color/white">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -30,336 +29,483 @@
 
                     <include
                         android:id="@+id/toolbar"
-                        layout="@layout/toolbar_with_back_arrow_icon"/>
-
-                    <RelativeLayout
-                        android:id="@+id/lytImageAndTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:visibility="visible">
-
-                        <RelativeLayout
-                            android:id="@+id/lytImage"
-                            android:layout_margin="@dimen/marginMedium"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:visibility="gone">
-
-                            <ImageView
-                                android:id="@+id/ivDraft"
-                                android:layout_width="66dp"
-                                android:layout_height="66dp"
-                                android:src="@drawable/publish_placeholder"
-                                android:scaleType="fitXY"/>
-                        </RelativeLayout>
-
-                        <RelativeLayout
-                            android:id="@+id/lytImagePlaceHolder"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/marginMedium"
-                            android:visibility="visible">
-
-                            <ImageView
-                                android:id="@+id/ivDraftImage"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/add"
-                                android:layout_centerInParent="true"
-                                android:translationZ="4dp"/>
-
-                            <ImageView
-                                android:id="@+id/placeHolder"
-                                android:layout_width="66dp"
-                                android:layout_height="66dp"
-                                android:layout_centerInParent="true"
-                                android:src="@drawable/publish_placeholder" />
-                        </RelativeLayout>
-
-                        <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/etTitle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="98dp"
-                            android:layout_marginTop="@dimen/marginMedium"
-                            android:layout_marginBottom="@dimen/marginMedium"
-                            android:layout_marginEnd="@dimen/marginMedium"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/textSizeNormal"
-                            android:fontFamily="@font/roboto"
-                            android:hint="@string/hint_title"
-                            android:textColorHint="@color/brandSecondary100"
-                            app:backgroundTint="@color/transparent"/>
-                    </RelativeLayout>
+                        layout="@layout/toolbar_with_back_arrow_icon_light" />
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/brandSecondary300"/>
+                        android:layout_height="8dp"
+                        android:background="@color/lightBlueColor" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/lytImageAndTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="visible">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/textUploadPhotoTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            android:fontFamily="@font/roboto_bold"
+                            android:text="@string/upload_your_photo"
+                            android:textAlignment="center"
+                            android:textColor="@color/textPrimary"
+                            android:textSize="@dimen/textSize16"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <RelativeLayout
+                            android:id="@+id/layoutCastImage"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginAlmostLarge"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            android:minHeight="130dp"
+                            android:visibility="invisible"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/textUploadPhotoTitle">
+
+                            <ImageView
+                                android:id="@+id/imageCast"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentTop="true"
+                                android:layout_marginTop="0dp"
+                                android:adjustViewBounds="true"
+                                android:src="@drawable/publish_image_placeholder" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/layoutImageCastPlaceholder"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginAlmostLarge"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            android:visibility="visible"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/textUploadPhotoTitle">
+
+                            <ImageView
+                                android:id="@+id/imagePlaceholderAddPhoto"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:adjustViewBounds="true"
+                                android:src="@drawable/ic_add_image"
+                                android:translationZ="4dp"
+                                android:visibility="visible" />
+
+                            <ImageView
+                                android:id="@+id/imagePlaceholderBackground"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:adjustViewBounds="true"
+                                android:src="@drawable/publish_image_placeholder" />
+                        </RelativeLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/inputCastTitle"
+                            style="@style/TextInputLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginAlmostLarge"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeWidth="2dp"
+                            app:hintTextAppearance="@style/TextHintStyle"
+                            app:hintTextColor="@color/colorAccent"
+                            app:counterEnabled="true"
+                            app:counterMaxLength="80"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/layoutCastImage">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etTitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/roboto_medium"
+                                android:hint="@string/hint_title"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSizeNormal" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <LinearLayout
-                        android:id="@+id/lytForm"
+                        android:id="@+id/layoutContent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
-                            android:id="@+id/etCaption"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/inputCaption"
+                            style="@style/TextInputLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            style="@style/Widget.AppCompat.EditText"
-                            android:layout_gravity="top"
-                            android:layout_margin="@dimen/marginMedium"
-                            android:fontFamily="@font/roboto"
-                            android:foregroundGravity="top"
-                            android:gravity="top"
-                            android:hint="@string/hint_caption"
-                            android:lines="3"
-                            android:textColor="@color/white"
-                            android:textColorHint="@color/brandSecondary100"
-                            android:textSize="@dimen/textSizeNormal"
-                            app:hyperlinkColor="@color/brandPrimary500"
-                            app:backgroundTint="@color/transparent"
-                            app:socialFlags="hashtag" />
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeWidth="2dp"
+                            app:counterEnabled="true"
+                            app:counterMaxLength="1000"
+                            app:counterTextColor="@color/textSecondary"
+                            app:hintTextAppearance="@style/TextHintStyle"
+                            app:hintTextColor="@color/colorAccent">
 
-                        <View
-                            android:layout_marginTop="@dimen/marginSmall"
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etCaption"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="top"
+                                android:fontFamily="@font/roboto_medium"
+                                android:foregroundGravity="top"
+                                android:gravity="top"
+                                android:hint="@string/hint_caption"
+                                android:lines="3"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSizeNormal" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/inputHashtags"
+                            style="@style/TextInputLayout"
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/brandSecondary300"/>
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeWidth="2dp"
+                            app:hintTextAppearance="@style/TextHintStyle"
+                            app:hintTextColor="@color/colorAccent">
+
+                            <com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
+                                android:id="@+id/etHashtags"
+                                style="@style/Widget.AppCompat.EditText"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/roboto_medium"
+                                android:hint="@string/hint_tags"
+                                android:inputType="textNoSuggestions"
+                                android:lines="1"
+                                android:paddingStart="@dimen/marginMediumSmall"
+                                android:paddingTop="@dimen/marginMedium"
+                                android:paddingEnd="@dimen/marginMediumSmall"
+                                android:paddingBottom="@dimen/marginMedium"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSizeNormal"
+                                app:hyperlinkColor="@color/textPrimary"
+                                app:socialFlags="hashtag" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            android:fontFamily="@font/roboto"
+                            android:text="@string/hashtag_subtitle"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="@dimen/textSizeTiny" />
 
                         <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rvTags"
-                            android:layout_width="match_parent"
-                            android:layout_height="200dp"
-                            tools:listitem="@layout/tag_item"
-                            android:visibility="gone"/>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/brandSecondary300"/>
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/lytWithoutTagsRecycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="visible">
-
-                    <RelativeLayout
-                        android:id="@+id/lytTvCategory"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/marginMedium"
-                        android:visibility="visible">
-
-                        <TextView
-                            android:id="@+id/tvCategory"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/textSizeNormal"
-                            android:fontFamily="@font/roboto"
-                            android:text="@string/title_category"
-                            android:layout_alignParentStart="true"/>
-
-                        <TextView
-                            android:id="@+id/tvSelectedCategory"
+                            android:id="@+id/rvHashtags"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:drawableEnd="@drawable/chevron_right"
-                            android:textColor="@color/brandSecondary100"
-                            android:textSize="@dimen/textSizeNormal"
-                            android:fontFamily="@font/roboto"
-                            android:gravity="end"
-                            android:layout_toEndOf="@id/tvCategory"
-                            android:layout_alignParentEnd="true"/>
-
-                    </RelativeLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/brandSecondary300"/>
-
-                    <RelativeLayout
-                        android:id="@+id/lytTvLocation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/marginMedium"
-                        android:visibility="visible">
-
-                        <TextView
-                            android:id="@+id/tvLocation"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/textSizeNormal"
-                            android:fontFamily="@font/roboto"
-                            android:text="@string/title_location"
-                            android:layout_alignParentStart="true"/>
-
-                        <TextView
-                            android:id="@+id/tvSelectedLocation"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:drawableEnd="@drawable/chevron_right"
-                            android:textColor="@color/brandSecondary100"
-                            android:textSize="@dimen/textSizeNormal"
-                            android:fontFamily="@font/roboto"
-                            android:gravity="end"
-                            android:layout_toEndOf="@id/tvLocation"
-                            android:layout_alignParentEnd="true"/>
-
-                    </RelativeLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/brandSecondary300"/>
+                            android:layout_marginStart="@dimen/marginMediumSmall"
+                            android:layout_marginEnd="@dimen/marginMediumSmall"
+                            android:visibility="gone"
+                            tools:listitem="@layout/tag_item" />
 
 
+                    </LinearLayout>
 
                     <LinearLayout
-                        android:id="@+id/lytPlayer"
+                        android:id="@+id/lytWithoutTagsRecycler"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/marginAlmostLarge"
                         android:orientation="vertical"
                         android:visibility="visible">
 
                         <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="60dp"
-                            android:background="@color/brandSecondary400"
-                            android:layout_marginStart="@dimen/marginMedium"
-                            android:layout_marginEnd="@dimen/marginMedium">
+                            android:id="@+id/layoutCastCategory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            android:visibility="visible">
 
-                            <SeekBar
-                                android:id="@+id/sbProgress"
+                            <TextView
+                                android:id="@+id/textCategory"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:fontFamily="@font/roboto_medium"
+                                android:text="@string/categories_hint"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSize16" />
+
+                            <TextView
+                                android:id="@+id/textSelectedCategory"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:maxHeight="4dp"
-                                android:minHeight="4dp"
-                                android:paddingTop="8dip"
-                                android:progress="50"
-                                android:progressDrawable="@drawable/custom_seekbar_progress" />
-
-                            <TextView
-                                android:id="@+id/tvTimePass"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_below="@id/sbProgress"
-                                android:textSize="@dimen/textSizeVerySmall"
-                                android:textColor="@color/brandSecondary100"
-                                android:fontFamily="@font/roboto"
-                                android:layout_alignParentStart="true"
-                                android:layout_marginStart="@dimen/marginSmall"
-                                android:layout_marginTop="@dimen/marginTiny"
-                                android:gravity="left"
-                                android:text="00:00"/>
-
-                            <TextView
-                                android:id="@+id/tvDuration"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_below="@id/sbProgress"
-                                android:textSize="@dimen/textSizeVerySmall"
-                                android:textColor="@color/brandSecondary100"
-                                android:fontFamily="@font/roboto"
                                 android:layout_alignParentEnd="true"
-                                android:layout_marginEnd="@dimen/marginSmall"
-                                android:layout_marginTop="@dimen/marginTiny"
-                                android:gravity="right"
-                                android:text="00:00"/>
+                                android:layout_marginBottom="@dimen/marginMedium"
+                                android:layout_toEndOf="@id/textCategory"
+                                android:fontFamily="@font/roboto_medium"
+                                android:gravity="end"
+                                android:textColor="@color/textSecondary"
+                                android:textSize="@dimen/textSize16"
+                                app:drawableEndCompat="@drawable/chevron_right_light_grey" />
+
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_alignParentBottom="true"
+                                android:background="@color/lightBlueColor" />
+                        </RelativeLayout>
+
+
+                        <RelativeLayout
+                            android:id="@+id/layoutCastLanguages"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            android:visibility="visible">
+
+                            <TextView
+                                android:id="@+id/textLanguage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_marginBottom="@dimen/marginMedium"
+                                android:fontFamily="@font/roboto_medium"
+                                android:text="@string/title_language"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSize16" />
+
+                            <TextView
+                                android:id="@+id/textSelectedLanguage"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_toEndOf="@id/textLanguage"
+                                android:fontFamily="@font/roboto_medium"
+                                android:gravity="end"
+                                android:textColor="@color/textSecondary"
+                                android:textSize="@dimen/textSize16"
+                                app:drawableEndCompat="@drawable/chevron_right_light_grey" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_alignParentBottom="true"
+                                android:background="@color/lightBlueColor" />
 
                         </RelativeLayout>
 
                         <RelativeLayout
-                            android:layout_width="fill_parent"
-                            android:layout_height="62dip">
+                            android:id="@+id/layoutCastLocation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            android:visibility="visible">
 
-                            <ImageButton android:id="@+id/ibRew"
-                                android:layout_toLeftOf="@id/ibPlayPause"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_marginTop="6dp"
-                                android:layout_marginBottom="6dp"
-                                android:layout_marginRight="@dimen/marginMedium"
-                                style="@android:style/MediaButton"
-                                android:contentDescription="@string/rewind"
-                                android:src="@drawable/rewind"
-                                android:scaleType="fitCenter"/>
+                            <TextView
+                                android:id="@+id/textLocation"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_marginBottom="@dimen/marginMedium"
+                                android:fontFamily="@font/roboto_medium"
+                                android:text="@string/title_location"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSize16" />
 
-                            <ImageButton android:id="@+id/ibPlayPause"
-                                android:layout_centerHorizontal="true"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                style="@android:style/MediaButton"
-                                android:contentDescription="@string/play"
-                                android:src="@drawable/play"
-                                android:scaleType="fitCenter"/>
+                            <TextView
+                                android:id="@+id/textSelectedLocation"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_toEndOf="@id/textLocation"
+                                android:fontFamily="@font/roboto_medium"
+                                android:gravity="end"
+                                android:textColor="@color/textSecondary"
+                                android:textSize="@dimen/textSize16"
+                                app:drawableEndCompat="@drawable/chevron_right_light_grey" />
 
-                            <ImageButton android:id="@+id/ibFfwd"
-                                android:layout_toRightOf="@id/ibPlayPause"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_marginTop="6dp"
-                                android:layout_marginBottom="6dp"
-                                android:layout_marginLeft="@dimen/marginMedium"
-                                style="@android:style/MediaButton"
-                                android:contentDescription="@string/ffwd"
-                                android:src="@drawable/forward"
-                                android:scaleType="fitCenter"/>
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_alignParentBottom="true"
+                                android:background="@color/lightBlueColor" />
 
                         </RelativeLayout>
-                    </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/marginMedium"
-                        android:layout_marginEnd="@dimen/marginMedium"
-                        android:layout_marginBottom="@dimen/marginMedium"
-                        android:orientation="horizontal"
-                        android:weightSum="2">
 
-                        <androidx.appcompat.widget.AppCompatButton
-                            android:id="@+id/btnSaveAsDraft"
-                            style="@android:style/Widget.Material.Button.Borderless"
+                        <LinearLayout
+                            android:id="@+id/lytPlayer"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="bottom"
-                            android:fontFamily="@font/roboto_medium"
-                            android:text="@string/btn_save_as_draft"
-                            android:textAllCaps="false"
-                            android:textColor="@color/brandPrimary500"
-                            android:textSize="@dimen/textSizeNormal"
-                            android:layout_weight="1"
-                            android:layout_marginRight="@dimen/marginSmall"/>
+                            android:layout_marginTop="@dimen/marginAlmostLarge"
+                            android:orientation="vertical"
+                            android:visibility="visible">
 
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="60dp"
+                                android:layout_marginStart="@dimen/marginMedium"
+                                android:layout_marginEnd="@dimen/marginMedium"
+                                android:background="@color/white">
 
-                        <androidx.appcompat.widget.AppCompatButton
-                            android:id="@+id/btnPublish"
-                            style="@android:style/Widget.Material.Button.Borderless.Colored"
+                                <SeekBar
+                                    android:id="@+id/sbProgress"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:maxHeight="4dp"
+                                    android:minHeight="4dp"
+                                    android:paddingTop="8dp"
+                                    android:progress="50"
+                                    android:progressDrawable="@drawable/custom_seekbar_progress"
+                                    android:thumb="@drawable/seekbar_thumb" />
+
+                                <TextView
+                                    android:id="@+id/tvTimePass"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@id/sbProgress"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_marginStart="@dimen/marginSmall"
+                                    android:layout_marginTop="@dimen/marginTiny"
+                                    android:fontFamily="@font/roboto"
+                                    android:gravity="start"
+                                    android:text="00:00"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="@dimen/textSizeTiny" />
+
+                                <TextView
+                                    android:id="@+id/tvDuration"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@id/sbProgress"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_marginTop="@dimen/marginTiny"
+                                    android:layout_marginEnd="@dimen/marginSmall"
+                                    android:fontFamily="@font/roboto_medium"
+                                    android:gravity="end"
+                                    android:text="00:00"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="@dimen/textSizeTiny" />
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="fill_parent"
+                                android:layout_height="62dip">
+
+                                <ImageButton
+                                    android:id="@+id/ibRew"
+                                    style="@android:style/MediaButton"
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:layout_marginTop="6dp"
+                                    android:layout_marginEnd="@dimen/marginMedium"
+                                    android:layout_marginBottom="6dp"
+                                    android:layout_toStartOf="@id/ibPlayPause"
+                                    android:contentDescription="@string/rewind"
+                                    android:scaleType="fitCenter"
+                                    android:src="@drawable/rewind_5" />
+
+                                <ImageButton
+                                    android:id="@+id/ibPlayPause"
+                                    style="@android:style/MediaButton"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:contentDescription="@string/play"
+                                    android:scaleType="fitCenter"
+                                    android:src="@drawable/ic_play" />
+
+                                <ImageButton
+                                    android:id="@+id/ibFfwd"
+                                    style="@android:style/MediaButton"
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:layout_marginStart="@dimen/marginMedium"
+                                    android:layout_marginTop="6dp"
+                                    android:layout_marginBottom="6dp"
+                                    android:layout_toEndOf="@id/ibPlayPause"
+                                    android:contentDescription="@string/ffwd"
+                                    android:scaleType="fitCenter"
+                                    android:src="@drawable/forward_5" />
+
+                            </RelativeLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom"
-                            android:background="@drawable/bg_round_yellow_ripple"
-                            android:fontFamily="@font/roboto_medium"
-                            android:text="@string/btn_publish"
-                            android:textAllCaps="false"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="@dimen/textSizeNormal"
-                            android:layout_weight="1"
-                            android:layout_marginLeft="@dimen/marginSmall"/>
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="@dimen/marginMedium"
+                            android:layout_marginEnd="@dimen/marginMedium"
+                            android:layout_marginBottom="@dimen/marginMedium"
+                            android:orientation="horizontal"
+                            android:weightSum="2">
 
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/btnSaveAsDraft"
+                                style="@android:style/Widget.Material.Button.Borderless"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="bottom"
+                                android:layout_marginEnd="@dimen/marginSmall"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/roboto_medium"
+                                android:text="@string/btn_save_as_draft"
+                                android:textAllCaps="false"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSize14" />
+
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/btnPublish"
+                                style="@android:style/Widget.Material.Button.Borderless.Colored"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="bottom"
+                                android:layout_marginStart="@dimen/marginSmall"
+                                android:layout_weight="1"
+                                android:background="@drawable/btn_primary_background"
+                                android:fontFamily="@font/roboto_medium"
+                                android:padding="15dp"
+                                android:text="@string/btn_publish"
+                                android:textAllCaps="false"
+                                android:textColor="@color/text_btn_primary_color"
+                                android:textSize="@dimen/textSize14" />
+
+                        </LinearLayout>
                     </LinearLayout>
-                </LinearLayout>
 
                 </LinearLayout>
 
@@ -377,4 +523,47 @@
 
 
     </androidx.core.widget.NestedScrollView>
+
+    <FrameLayout
+        android:id="@+id/progressPb"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black60"
+        android:visibility="gone">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <com.mikhaellopez.circularprogressbar.CircularProgressBar
+                android:layout_width="80dp"
+                android:id="@+id/progressUpload"
+                android:layout_height="80dp"
+                app:cpb_background_progressbar_color="@android:color/transparent"
+                app:cpb_indeterminate_mode="true"
+                app:cpb_progressbar_color="@color/white"
+                app:cpb_progressbar_width="5dp"
+                app:cpb_round_border="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/marginMediumSmall"
+                android:fontFamily="@font/roboto_medium"
+                android:text="@string/publishing_your_cast"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textSize16" />
+        </LinearLayout>
+
+
+    </FrameLayout>
+
+    <include
+        android:id="@+id/viewCastPublished"
+        layout="@layout/view_cast_published"
+        android:visibility="gone" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

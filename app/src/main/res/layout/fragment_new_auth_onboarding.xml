@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/sign_in_new_background">
+
+
+    <com.limor.app.scenes.auth_new.view.UnscrollableViewPager
+        android:id="@+id/vpOnboarding"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/tabDots"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabDots"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_marginBottom="156dp"
+        android:background="@color/sign_in_new_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tabBackground="@drawable/tab_selector_onboarding"
+        app:tabGravity="center"
+        app:tabIndicatorHeight="0dp" />
+
+    <Button
+        android:id="@+id/btnBack"
+        style="?attr/borderlessButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="@dimen/margin48"
+        android:text="@string/back"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnContinue"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnContinue"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/continue_button"
+        app:icon="@drawable/baseline_arrow_forward_black_24dp"
+        app:iconGravity="textEnd"
+        app:iconSize="16dp"
+        app:iconTint="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/btnBack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btnBack" />
+
+    <Button
+        android:id="@+id/btnFinish"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="@dimen/margin48"
+        android:text="@string/finish"
+        android:visibility="gone"
+        app:icon="@drawable/baseline_arrow_forward_black_24dp"
+        app:iconGravity="textEnd"
+        app:iconSize="16dp"
+        app:iconTint="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

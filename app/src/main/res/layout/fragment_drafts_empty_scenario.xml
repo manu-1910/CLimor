@@ -1,52 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/brandSecondary400"
+    android:background="@color/white"
     android:gravity="center_vertical"
-    android:orientation="vertical"
-    android:padding="@dimen/marginHuge">
+    android:orientation="vertical">
 
-    <ImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/record_icon_empty_scenario"
-        tools:ignore="ContentDescription" />
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/marginMedium"
-        android:layout_marginTop="@dimen/marginMedium"
-        android:layout_marginEnd="@dimen/marginMedium"
-        android:layout_marginBottom="@dimen/marginSmall"
-        android:gravity="center"
-        android:text="@string/title_drafts"
-        android:textColor="@color/brandSecondary200"
-        android:textSize="@dimen/textSizeLarge"
-        android:textStyle="bold" />
+        android:layout_marginStart="@dimen/marginForty"
+        android:layout_marginEnd="@dimen/marginForty"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/btnRecordCast"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/marginMedium"
-        android:layout_marginTop="@dimen/marginSmall"
-        android:layout_marginEnd="@dimen/marginMedium"
-        android:layout_marginBottom="@dimen/marginMedium"
-        android:gravity="center"
-        android:text="@string/no_drafts_saved_description"
-        android:textColor="@color/brandSecondary200"
-        android:textSize="@dimen/textSizeNormal" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            app:srcCompat="@drawable/ic_no_drafts"
+            tools:ignore="ContentDescription" />
 
-    <TextView
-        android:id="@+id/tvRecordACast"
-        android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:gravity="center"
+            android:text="@string/no_drafts_title"
+            android:textColor="@color/textPrimary"
+            android:textSize="@dimen/textSize20"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/marginMedium"
+            android:fontFamily="@font/roboto"
+            android:gravity="center"
+            android:text="@string/no_drafts_saved_description"
+            android:textColor="@color/textSecondary"
+            android:textSize="@dimen/textSize14" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnRecordCast"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:fontFamily="@font/roboto_medium"
+        android:layout_marginStart="@dimen/marginTwenty"
+        android:layout_marginEnd="@dimen/marginTwenty"
+        android:layout_marginBottom="@dimen/marginForty"
+        android:background="@drawable/bg_round_yellow_ripple_new"
+        android:fontFamily="@font/roboto_bold"
         android:text="@string/record_a_cast"
-        android:textColor="@color/brandPrimary500"
-        android:textSize="13sp" />
-</LinearLayout>
+        android:textAllCaps="false"
+        android:textColor="@color/textPrimary"
+        android:textSize="@dimen/textSize14"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

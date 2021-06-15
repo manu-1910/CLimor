@@ -13,15 +13,26 @@
     <dimen name="marginHuge">64dp</dimen>
     <dimen name="marginVeryHuge">82dp</dimen>
     <dimen name="marginEleven">11dp</dimen>
+    <dimen name="marginTwenty">20dp</dimen>
+    <dimen name="margin28">28dp</dimen>
+    <dimen name="margin38">38dp</dimen>
+    <dimen name="margin32">32dp</dimen>
+    <dimen name="marginForty">40dp</dimen>
+
 
     <!-- Text dimens -->
     <dimen name="textSizeVeryTiny">10sp</dimen>
     <dimen name="textSizeTiny">12sp</dimen>
     <dimen name="textSizeVerySmall">13sp</dimen>
+    <dimen name="textSize14">14sp</dimen>
     <dimen name="textSizeSmall">15sp</dimen>
+    <dimen name="textSize16">16sp</dimen>
+
     <dimen name="textSizeNormal">17sp</dimen>
     <dimen name="textSizeLarge">22sp</dimen>
     <dimen name="textSizeVeryLarge">28sp</dimen>
+    <dimen name="textSize20">20sp</dimen>
+
 
     <dimen name="imageSizeMedium">150dp</dimen>
     <dimen name="imageSizeTiny">100dp</dimen>
@@ -43,4 +54,6 @@
     <dimen name="buttonElevation">4dp</dimen>
 
     <dimen name="miniPlayerHeight">60dp</dimen>
+    <dimen name="margin64">64dp</dimen>
+    <dimen name="margin48">48dp</dimen>
 </resources>

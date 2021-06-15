@@ -1,24 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <FrameLayout
-        android:id="@+id/mainContainer"
+    <LinearLayout
+        android:id="@+id/detail_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/textView"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:orientation="vertical"
+        app:behavior_skipCollapsed="true"
+        app:behavior_hideable="false"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <fragment
-            android:id="@+id/navigation_host_fragment_record"
-            android:name="androidx.navigation.fragment.NavHostFragment"
+        <FrameLayout
+            android:id="@+id/mainContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/record_nav"/>
-    </FrameLayout>
+            android:background="@drawable/bottom_sheet_screen_background"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-</LinearLayout>
+            <fragment
+                android:id="@+id/navigation_host_fragment_record"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:defaultNavHost="true"
+                app:navGraph="@navigation/record_nav" />
+        </FrameLayout>
+
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

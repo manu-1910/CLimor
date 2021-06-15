@@ -94,7 +94,8 @@ class SignInFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (arguments?.containsKey("email")!!){
+
+        if (arguments != null && arguments?.containsKey("email")!!){
             emailFromForgotPassword = arguments?.get("email") as String
             if(!emailFromForgotPassword.isNullOrEmpty()){
                 edtSignInEmail.setText(emailFromForgotPassword)

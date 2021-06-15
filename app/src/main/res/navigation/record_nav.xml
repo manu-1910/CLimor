@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/record_nav"
     app:startDestination="@id/record_fragment">
+
    <fragment
        android:id="@+id/record_fragment"
        android:name="com.limor.app.scenes.main.fragments.record.RecordFragment"
@@ -24,7 +25,7 @@
       <action
           android:id="@+id/action_record_fragment_to_record_drafts"
           app:destination="@id/record_drafts"
-          app:enterAnim="@anim/push_up_in_enter_no_alpha"
+          app:enterAnim="@anim/no_anim"
           app:exitAnim="@anim/no_anim"
           app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha"/>
    </fragment>
@@ -34,9 +35,8 @@
        android:name="com.limor.app.scenes.main.fragments.record.EditFragment"
        android:label="EditFragment"
        tools:layout="@layout/fragment_edit">
-      <argument
-          android:name="audioFilename"
-          app:type="com.limor.app.uimodels.UIRecordingItem" />
+
+
       <action
           android:id="@+id/action_record_edit_to_record_publish"
           app:destination="@id/record_publish"
@@ -50,9 +50,8 @@
        android:name="com.limor.app.scenes.main.fragments.record.PublishFragment"
        android:label="PublishFragment"
        tools:layout="@layout/fragment_publish">
-      <argument
-          android:name="audioFilename"
-          app:type="com.limor.app.uimodels.UIRecordingItem" />
+
+
       <action
           android:id="@+id/action_record_publish_to_record_drafts"
           app:destination="@id/record_drafts"
@@ -64,13 +63,20 @@
           app:destination="@id/record_categories"
           app:enterAnim="@anim/push_up_in_enter_no_alpha"
           app:exitAnim="@anim/no_anim"
-          app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha"/>
+          app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha" />
       <action
           android:id="@+id/action_record_publish_to_record_locations"
           app:destination="@id/record_locations"
           app:enterAnim="@anim/push_up_in_enter_no_alpha"
           app:exitAnim="@anim/no_anim"
-          app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha"/>
+          app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha" />
+
+      <action
+          android:id="@+id/action_record_publish_to_record_languages"
+          app:destination="@id/record_languages"
+          app:enterAnim="@anim/push_up_in_enter_no_alpha"
+          app:exitAnim="@anim/no_anim"
+          app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha" />
    </fragment>
 
    <fragment
@@ -90,6 +96,7 @@
           app:enterAnim="@anim/push_up_in_enter_no_alpha"
           app:exitAnim="@anim/no_anim"
           app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha"/>
+
    </fragment>
 
 
@@ -97,9 +104,18 @@
        android:id="@+id/record_categories"
        android:name="com.limor.app.scenes.main.fragments.record.CategoriesFragment"
        android:label="CategoriesFragment"
-       tools:layout="@layout/fragment_categories">
+       tools:layout="@layout/fragment_publish_categories">
 
    </fragment>
+
+   <fragment
+       android:id="@+id/record_languages"
+       android:name="com.limor.app.scenes.main.fragments.record.LanguagesFragment"
+       android:label="LanguagesFragment"
+       tools:layout="@layout/fragment_languages">
+
+   </fragment>
+
 
    <fragment
        android:id="@+id/record_locations"

@@ -10,7 +10,6 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.HandlerCompat
 import androidx.core.os.bundleOf
-import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -23,7 +22,6 @@ import com.googlecode.mp4parser.authoring.tracks.AppendTrack
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
-import com.limor.app.common.SessionManager
 import com.limor.app.scenes.main.viewmodels.DraftViewModel
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.statemanager.Step
@@ -76,11 +74,17 @@ class EditFragment : WaveformFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //Setup animation transition
-        ViewCompat.setTranslationZ(view, 40f)
+        //ViewCompat.setTranslationZ(view, 40f)
 
         listeners()
         bindViewModel()
         initApiCallInsertDraft()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val act = requireActivity() as RecordActivity
+        act.initSlideBehaviour()
     }
 
     private fun bindViewModel() {
@@ -96,7 +100,7 @@ class EditFragment : WaveformFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        val receivedDraft = arguments!!["recordingItem"] as UIDraft
+        val receivedDraft = requireArguments()["recordingItem"] as UIDraft
         uiDraft = receivedDraft
         initialUIDraft = receivedDraft.copy()
     }
@@ -120,7 +124,7 @@ class EditFragment : WaveformFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it) {
                 //toast(getString(R.string.draft_inserted))
                 println("Draft inserted succesfully")
@@ -130,7 +134,7 @@ class EditFragment : WaveformFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -243,10 +247,6 @@ class EditFragment : WaveformFragment() {
             onBackPressed()
         }
 
-        infoButton.onClick {
-            openHowToEdit()
-        }
-
         nextButtonEdit.onClick {
             openPublishFragment()
         }
@@ -255,6 +255,8 @@ class EditFragment : WaveformFragment() {
 
     private fun redoClick() {
         if (stepManager.lastRedoStep != null && stepManager.stepsToRedo.size > 0) {
+            handlePause()
+            waveformView.setPlayback(waveformView.millisecsToPixels(0))
             stepManager.addNewUndoStep(
                 Step(
                     System.currentTimeMillis(),
@@ -266,12 +268,15 @@ class EditFragment : WaveformFragment() {
             fileName = stepManager.lastRedoStep.filePath
             loadFromFile(fileName)
             stepManager.handleLastRedoStep()
+            seekSeekBarToStartPosition()
         }
         updateUndoRedoButtons()
     }
 
     private fun undoClick() {
         if (stepManager.lastUndoStep != null && stepManager.stepsToUndo.size > 0) {
+            handlePause()
+            waveformView.setPlayback(waveformView.millisecsToPixels(0))
             stepManager.addNewRedoStep(
                 Step(
                     System.currentTimeMillis(),
@@ -282,24 +287,19 @@ class EditFragment : WaveformFragment() {
             fileName = stepManager.lastUndoStep.filePath
             loadFromFile(fileName)
             stepManager.handleLastUndoStep()
+            seekSeekBarToStartPosition()
         }
         updateUndoRedoButtons()
+
     }
 
     private fun pasteClick() {
         if (!isEditMode) {
             return
         }
-        if (editMarker == null || editMarker.startPos >= selectedMarker.startPos && editMarker.startPos <= selectedMarker.endPos) {
-            showAlertOK(
-                activity,
-                getString(R.string.alert_title_oops),
-                getString(R.string.paste_overlap_alert),
-                null
-            )
+        if (editMarker == null) {
             return
         }
-
         handlePause()
         handlePausePreview()
 
@@ -605,7 +605,7 @@ class EditFragment : WaveformFragment() {
                 updateRecordingItem()
                 dismissProgress()
                 loadFromFile(fileName)
-                activity!!.sendBroadcast(Intent(BROADCAST_UPDATE_DRAFTS)) // I think this is not doing anything and should be deleted
+                requireActivity().sendBroadcast(Intent(BROADCAST_UPDATE_DRAFTS)) // I think this is not doing anything and should be deleted
                 stepManager.resetRedoSteps()
                 isEditMode = false
                 editMarker = null
@@ -615,7 +615,7 @@ class EditFragment : WaveformFragment() {
 
 
             //This line will remain the original marker when it is copied and pasted
-            activity!!.runOnUiThread {
+            requireActivity().runOnUiThread {
                 addMarker(selectedMarker.startPos, selectedMarker.endPos, false, null) //TODO JJ
             }
 
@@ -657,7 +657,7 @@ class EditFragment : WaveformFragment() {
             var audioFilePaths = ArrayList<String>()
             for (i in 0..1) {
                 val outPath =
-                    activity!!.externalCacheDir!!.absolutePath + "/limor_record_chunk_" + i + ".m4a"
+                    requireActivity().externalCacheDir!!.absolutePath + "/limor_record_chunk_" + i + ".m4a"
                 val startTime =
                     waveformView.pixelsToSeconds(if (i == 0) 0 else (selectedMarker.endPos / NEW_WIDTH))
                 val endTime = waveformView.pixelsToSeconds(
@@ -676,7 +676,7 @@ class EditFragment : WaveformFragment() {
                 }
             }
             fileName =
-                activity!!.externalCacheDir!!.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
+                requireActivity().externalCacheDir!!.absolutePath + "/limor_record_" + System.currentTimeMillis() + "_edited.m4a"
             try {
                 val listMovies: MutableList<Movie> = ArrayList()
                 for (filename in audioFilePaths) {
@@ -707,7 +707,7 @@ class EditFragment : WaveformFragment() {
                 val endPosMilliseconds =
                     waveformView.pixelsToMillisecs(selectedMarker.endPos / NEW_WIDTH)
                 deletedLength = endPosMilliseconds - startPosMilliseconds
-                activity!!.runOnUiThread {
+                requireActivity().runOnUiThread {
                     removeMarker(selectedMarker)
                     val timeStamps = ArrayList<UITimeStamp>()
                     if (markerSets != null && markerSets.size > 0) {
@@ -750,7 +750,7 @@ class EditFragment : WaveformFragment() {
                     updateRecordingItem()
                     dismissProgress()
                     loadFromFile(fileName)
-                    activity!!.sendBroadcast(Intent(BROADCAST_UPDATE_DRAFTS)) // TODO: jose -> I think this is not doing anything. This should be deleted
+                    requireActivity().sendBroadcast(Intent(BROADCAST_UPDATE_DRAFTS)) // TODO: jose -> I think this is not doing anything. This should be deleted
                     stepManager.resetRedoSteps()
                     isEditMode = false
                     selectedMarker = null
@@ -888,7 +888,7 @@ class EditFragment : WaveformFragment() {
             title,
             message,
             listener,
-            context!!.getString(R.string.ok),
+            requireContext().getString(R.string.ok),
             null,
             null
         )
@@ -905,9 +905,9 @@ class EditFragment : WaveformFragment() {
             title,
             message,
             listener,
-            context!!.getString(R.string.ok),
+            requireContext().getString(R.string.ok),
             null,
-            context.getString(
+            requireContext().getString(
                 R.string.cancel
             )
         )

@@ -1,4 +1,4 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:ns1="http://schemas.android.com/apk/res-auto">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -8,7 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
 
     </style>
-    <style name="AppTheme.NoActionBar" parent="Theme.MaterialComponents.Light.Bridge" >
+
+    <style name="AppTheme.NoActionBar" parent="Theme.MaterialComponents.Light.Bridge">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="homeAsUpIndicator">@drawable/ic_navigate_before</item>
@@ -20,6 +21,15 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="Theme.AppCompat.Translucent" parent="AppTheme.NoActionBar">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
     </style>
 
     <!-- ProgressBar theme. -->
@@ -53,8 +63,9 @@
 
     <!-- SearchViewToolbar theme. -->
     <style name="SearchViewToolbarTheme" parent="ThemeOverlay.MaterialComponents.Light">
-        <item name="android:editTextColor">@color/white</item>
-        <item name="android:textColorHint">@color/brandSecondary100</item>
+        <item name="android:editTextColor">@color/textPrimary</item>
+        <item name="android:textColorHint">@color/textSecondary</item>
+        <item name="android:textSize">@dimen/textSize14</item>
     </style>
 
     <!-- Chipview style-->
@@ -97,4 +108,44 @@
 
     </style>
 
+    <style name="CustomOptionMenuStyle" parent="android:Widget.Material.TextView" ns1:ignore="ResourceName">
+        <item name="android:clickable">true</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:drawablePadding">2dp</item>
+        <item name="android:background">@drawable/bg_popup_menu</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="TextInputLayout" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+    </style>
+
+    <style name="TextHintStyle" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/textAccent</item>
+    </style>
+
+    <style name="ChipTextStyle" parent="TextAppearance.MaterialComponents.Chip">
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+
+    </style>
+
+    <style name="BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/bottomSheetStyleWrapper</item>
+    </style>
+
+    <style name="bottomSheetStyleWrapper" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
 </resources>
+

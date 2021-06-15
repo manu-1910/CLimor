@@ -18,6 +18,7 @@ package com.limor.app.scenes.utils.waveform.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
@@ -27,6 +28,8 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import com.limor.app.R;
 import com.limor.app.scenes.utils.Commons;
 import com.limor.app.scenes.utils.waveform.MarkerSet;
@@ -34,8 +37,6 @@ import com.limor.app.scenes.utils.waveform.WaveformFragment;
 import com.limor.app.scenes.utils.waveform.soundfile.SoundFile;
 
 import java.util.ArrayList;
-
-import timber.log.Timber;
 
 
 public class WaveformView extends View {
@@ -70,6 +71,8 @@ public class WaveformView extends View {
     protected Paint selectedBackgroundPaint;
     protected Paint borderLinePaint;
     protected Paint greyBackgroundPaint;
+    protected Paint lightBlueBackgroundPaint;
+
     protected Paint dividerBackgroundPaint;
     protected Paint playbackLinePaint;
     protected Paint timeCodePaint;
@@ -99,6 +102,8 @@ public class WaveformView extends View {
     public static final long ONE_MINUTE = ONE_SECOND * 60;
     public static final long ONE_HOUR = ONE_MINUTE * 60;
     public static final int TEXT_SIZE_13 = 13;
+    public static final int TEXT_SIZE_14 = 14;
+
     public static final int TEXT_SIZE_8 = 8;
     public static final int NEW_WIDTH = 20;
     public static final int LINE_WIDTH = 10;
@@ -118,7 +123,7 @@ public class WaveformView extends View {
         gridPaint.setColor(getResources().getColor(R.color.brandSecondary500)); //grid_line
 
         selectedLinePaint = new Paint();
-        selectedLinePaint.setColor(getResources().getColor(R.color.white));
+        selectedLinePaint.setColor(Color.parseColor("#148DFF"));
         selectedLinePaint.setStrokeWidth(LINE_WIDTH);         // set stroke width
         selectedLinePaint.setDither(true);                    // set the dither to true
         selectedLinePaint.setStyle(Paint.Style.STROKE);       // set to STOKE
@@ -137,7 +142,11 @@ public class WaveformView extends View {
 
         greyBackgroundPaint = new Paint();
         greyBackgroundPaint.setAntiAlias(false);
-        greyBackgroundPaint.setColor(getResources().getColor(R.color.brandSecondary500)); //green500
+        greyBackgroundPaint.setColor(Color.parseColor("#FFFFFF")); //green500
+
+        lightBlueBackgroundPaint = new Paint();
+        lightBlueBackgroundPaint.setAntiAlias(false);
+        lightBlueBackgroundPaint.setColor(Color.parseColor("#F0F3F8")); //green500
 
         dividerBackgroundPaint = new Paint();
         dividerBackgroundPaint.setAntiAlias(false);
@@ -166,9 +175,10 @@ public class WaveformView extends View {
         separatorLine.setColor(getResources().getColor(R.color.brandSecondary100));
 
         timeCodePaint = new Paint();
-        timeCodePaint.setTextSize(TEXT_SIZE_13);
+        timeCodePaint.setTextSize(TEXT_SIZE_14);
         timeCodePaint.setAntiAlias(true);
-        timeCodePaint.setColor(getResources().getColor(R.color.brandSecondary100)); //This is the text of the time topbar
+        timeCodePaint.setTypeface(ResourcesCompat.getFont(getContext(), R.font.roboto_medium));
+        timeCodePaint.setColor(getResources().getColor(R.color.textSecondary)); //This is the text of the time topbar
 
         timeCodePaintBlack = new Paint();
         timeCodePaintBlack.setTextSize(TEXT_SIZE_13);
@@ -297,7 +307,6 @@ public class WaveformView extends View {
 
     public void zoomOut() {
         if (canZoomOut()) {
-            Timber.d("Zoom Level " + zoomLevel);
             zoomLevel--;
             float factor = lenByZoomLevel[zoomLevel + 1] / (float) lenByZoomLevel[zoomLevel];
             for (MarkerSet markerSet : markerSets) {
@@ -402,6 +411,9 @@ public class WaveformView extends View {
             factor++;
         }
 
+        canvas.drawRect(0f, topOffset * 2, (float) getMeasuredWidth(), measuredHeight - topOffset - 1f, lightBlueBackgroundPaint);
+        canvas.drawLine(0f, topOffset, (float) getMeasuredWidth(), topOffset, lightBlueBackgroundPaint);
+
         //Waveform white bars
         int i = 0; //TODO JJ 270820
         //int newWidth = width/NEW_WIDTH;  //Adjust the total width of the white bars of the waveform //TODO JJ 270820 original line
@@ -476,12 +488,13 @@ public class WaveformView extends View {
 
         // Top background
         canvas.drawRect(0f, 0f, (float) getMeasuredWidth(), topOffset * 2, greyBackgroundPaint);
-        canvas.drawRect(0f, topOffset - 3, (float) getMeasuredWidth(), topOffset - 1, dividerBackgroundPaint);
+
+        // canvas.drawRect(0f, topOffset - 3, (float) getMeasuredWidth(), topOffset - 1, dividerBackgroundPaint);
 
         //Light grey separator lines
-        canvas.drawLine(0f, topOffset, (float) getMeasuredWidth(), topOffset, separatorLine);
-        canvas.drawLine(0f, topOffset * 2, (float) getMeasuredWidth(), topOffset * 2, separatorLine);
-        canvas.drawLine(0f, measuredHeight - topOffset - 1f, (float) getMeasuredWidth(), measuredHeight - topOffset - 1f, separatorLine);
+       //// canvas.drawLine(0f, topOffset, (float) getMeasuredWidth(), topOffset, separatorLine);
+      //  canvas.drawLine(0f, topOffset * 2, (float) getMeasuredWidth(), topOffset * 2, separatorLine);
+   //     canvas.drawLine(0f, measuredHeight - topOffset - 1f, (float) getMeasuredWidth(), measuredHeight - topOffset - 1f, separatorLine);
 
         // Bottom background
         //canvas.drawRect(0f, measuredHeight - topOffset / 2, (float)getMeasuredWidth(), measuredHeight, greyBackgroundPaint); //greyBackgroundPaint
@@ -496,7 +509,6 @@ public class WaveformView extends View {
             String timeCode = "" + Commons.getLengthFromEpochForPlayer(pixelsToMillisecs(((int) (eight * count) + offset) / NEW_WIDTH));
             float offsetText = (float) (0.5 * timeCodePaint.measureText(timeCode));
             canvas.drawText(timeCode, eight * count - offsetText, (int) (16 * density), timeCodePaint);
-
         }
 
         if (listener != null) {
