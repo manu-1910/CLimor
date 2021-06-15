@@ -1,6 +1,6 @@
 package io.square1.limor.remote.entities.requests
 
-import kotlinx.serialization.Optional
+
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import com.limor.app.App
 import com.limor.app.R
@@ -84,13 +84,11 @@ class ForgotPasswordFragment : BaseFragment() {
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
             viewModel =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(ForgotPasswordViewModel::class.java)
 
             viewModelSignIn =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(SignViewModel::class.java)
         }
     }

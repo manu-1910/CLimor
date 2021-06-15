@@ -22,6 +22,7 @@ dependencies {
     // Kotlin
     implementation deps.kotlin.stdlib
     api deps.kotlin.serialization_runtime
+    implementation deps.kotlin.serialization_properties
     implementation deps.kotlin.rx
 
     // Dagger

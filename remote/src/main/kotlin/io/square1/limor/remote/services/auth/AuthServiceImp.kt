@@ -10,17 +10,19 @@ import io.square1.limor.remote.entities.responses.NWSignUpResponse
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
 import io.square1.limor.remote.services.RemoteServiceConfig
-import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.Mapper
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.properties.Properties
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import javax.inject.Inject
 
-
-@ImplicitReflectionSerializer
 class AuthServiceImp @Inject constructor(private val serviceConfig: RemoteServiceConfig) :
     RemoteService<AuthService>(AuthService::class.java, serviceConfig) {
+
+    private val json = Json {
+        isLenient = true
+        ignoreUnknownKeys = true
+    }
 
     fun login(email:String, password:String): Single<NWAuthResponse> {
 
@@ -32,7 +34,7 @@ class AuthServiceImp @Inject constructor(private val serviceConfig: RemoteServic
         loginRequest.username = email
         loginRequest.password = password
 
-        val map = Mapper.map(loginRequest)
+        val map = Properties.encodeToMap(NWLoginRequest.serializer(), loginRequest)
         return service.login(map)
             .doOnSuccess { success ->
                 println("SUCCESS: $success")
@@ -44,7 +46,7 @@ class AuthServiceImp @Inject constructor(private val serviceConfig: RemoteServic
 
 
     fun register(nwSignUpRequest: NWSignUpRequest): Single<NWSignUpResponse> {
-        return service.registerBody(RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWSignUpRequest.serializer(), nwSignUpRequest)))
+        return service.registerBody(RequestBody.create(MediaType.parse("application/json"), json.encodeToString(NWSignUpRequest.serializer(), nwSignUpRequest)))
             .map { response -> response.parseSuccessResponse(NWSignUpResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
@@ -56,7 +58,7 @@ class AuthServiceImp @Inject constructor(private val serviceConfig: RemoteServic
 
 
     fun registerFB(nwSignUpFacebookRequest: NWSignUpFacebookRequest): Single<NWSignUpResponse> {
-        return service.registerBody(RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWSignUpFacebookRequest.serializer(), nwSignUpFacebookRequest)))
+        return service.registerBody(RequestBody.create(MediaType.parse("application/json"), json.encodeToString(NWSignUpFacebookRequest.serializer(), nwSignUpFacebookRequest)))
             .map { response -> response.parseSuccessResponse(NWSignUpResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
@@ -67,8 +69,8 @@ class AuthServiceImp @Inject constructor(private val serviceConfig: RemoteServic
     }
 
 
-    fun forgotPassword(NWForgotPasswordRequest: NWForgotPasswordRequest): Completable {
-        return service.forgotPassword(Mapper.map(NWForgotPasswordRequest))
+    fun forgotPassword(nWForgotPasswordRequest: NWForgotPasswordRequest): Completable {
+        return service.forgotPassword(Properties.encodeToMap(NWForgotPasswordRequest.serializer(), nWForgotPasswordRequest))
             .doOnSuccess { println("SUCCESS: $it") }
             .doOnError { println("error: $it") }
             .ignoreElement()
@@ -76,7 +78,7 @@ class AuthServiceImp @Inject constructor(private val serviceConfig: RemoteServic
 
 
     fun requestTokenFacebook(nwTokenFBRequest: NWTokenFBRequest): Single<NWAuthResponse> {
-        return service.requestTokenFacebook(Mapper.map(nwTokenFBRequest))
+        return service.requestTokenFacebook(Properties.encodeToMap(NWTokenFBRequest.serializer(), nwTokenFBRequest))
             .doOnSuccess { success ->
                 println("SUCCESS: $success")
             }
@@ -87,7 +89,7 @@ class AuthServiceImp @Inject constructor(private val serviceConfig: RemoteServic
 
 
     fun mergeAccounts(nwMergeFacebookAccountRequest: NWMergeFacebookAccountRequest): Single<NWAuthResponse> {
-        return service.mergeAccounts(Mapper.map(nwMergeFacebookAccountRequest))
+        return service.mergeAccounts(Properties.encodeToMap(NWMergeFacebookAccountRequest.serializer(), nwMergeFacebookAccountRequest))
             .doOnSuccess { success ->
                 println("SUCCESS: $success")
             }
@@ -99,7 +101,7 @@ class AuthServiceImp @Inject constructor(private val serviceConfig: RemoteServic
 
 
     fun changePassword(nwChangePasswordRequest: NWChangePasswordRequest): Single<NWChangePasswordResponse> {
-        return service.changePassword(RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWChangePasswordRequest.serializer(), nwChangePasswordRequest)))
+        return service.changePassword(RequestBody.create(MediaType.parse("application/json"), json.encodeToString(NWChangePasswordRequest.serializer(), nwChangePasswordRequest)))
             .map { response -> response.parseSuccessResponse(NWChangePasswordResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")

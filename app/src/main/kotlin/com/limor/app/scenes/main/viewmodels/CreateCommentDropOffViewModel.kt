@@ -47,7 +47,7 @@ class CreateCommentDropOffViewModel @Inject constructor(private val createCommen
                 try {
                     val error = it as HttpException
                     val errorResponse: UIErrorResponse? =
-                        error.response().errorBody()?.parseSuccessResponse(
+                        error.response()?.errorBody()?.parseSuccessResponse(
                             UIErrorResponse.serializer()
                         )
                     errorTracker.postValue(errorResponse)

@@ -13,7 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.google.android.exoplayer2.ui.PlayerControlView
@@ -185,8 +185,7 @@ class AudioPlayerActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
 
     private fun bindViewModel() {
-        viewModelCreatePodcastDropOff = ViewModelProviders
-            .of(this, viewModelFactory)
+        viewModelCreatePodcastDropOff = ViewModelProvider(this, viewModelFactory)
             .get(CreatePodcastDropOffViewModel::class.java)
     }
 

@@ -39,7 +39,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -386,24 +386,19 @@ class PublishFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let {
-            draftViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            draftViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(DraftViewModel::class.java)
 
-            publishViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            publishViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(PublishViewModel::class.java)
 
-            categoriesViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            categoriesViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(CategoriesViewModel::class.java)
 
-            locationsViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            locationsViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(LocationsViewModel::class.java)
 
-            tagsViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            tagsViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(TagsViewModel::class.java)
         }
     }

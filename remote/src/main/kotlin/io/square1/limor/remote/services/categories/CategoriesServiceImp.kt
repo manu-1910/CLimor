@@ -6,11 +6,11 @@ import io.square1.limor.remote.entities.responses.NWGetPodcastsResponse
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
 import io.square1.limor.remote.services.RemoteServiceConfig
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import javax.inject.Inject
 
 
-@ImplicitReflectionSerializer
+
 class CategoriesServiceImp @Inject constructor(private val serviceConfig: RemoteServiceConfig) :
     RemoteService<CategoriesService>(CategoriesService::class.java, serviceConfig) {
 

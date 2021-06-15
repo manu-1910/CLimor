@@ -39,7 +39,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputEditText
@@ -767,12 +767,10 @@ class RecordFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let {
-            draftViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            draftViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(DraftViewModel::class.java)
 
-            locationsViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            locationsViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(LocationsViewModel::class.java)
         }
     }

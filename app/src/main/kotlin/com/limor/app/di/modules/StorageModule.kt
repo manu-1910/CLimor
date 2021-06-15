@@ -3,7 +3,7 @@ package com.limor.app.di.modules
 import dagger.Binds
 import dagger.Module
 import io.square1.limor.storage.providers.StorageDraftProviderImp
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import providers.storage.StorageDraftProvider
 
 
@@ -24,7 +24,7 @@ abstract class StorageModule {
         }*/
     }
 
-    @ImplicitReflectionSerializer
+
     @Binds
     abstract fun bindStorageDraftProvider(storageDraftProviderImpl: StorageDraftProviderImp): StorageDraftProvider
 }

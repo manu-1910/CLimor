@@ -11,17 +11,21 @@ import io.square1.limor.remote.entities.responses.NWSuggestedUsersResponse
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
 import io.square1.limor.remote.services.RemoteServiceConfig
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import javax.inject.Inject
 
 
-@ImplicitReflectionSerializer
+
 class SearchServiceImp @Inject constructor(private val serviceConfig: RemoteServiceConfig) :
     RemoteService<SearchService>(SearchService::class.java, serviceConfig) {
 
+    private val json = Json {
+        isLenient = true
+        ignoreUnknownKeys = true
+    }
 
     fun searchTag(tag: String): Single<NWTagsResponse>? {
         return service.searchTag(tag)
@@ -36,7 +40,7 @@ class SearchServiceImp @Inject constructor(private val serviceConfig: RemoteServ
 
 
     fun searchLocations(nwSearchTermRequest: NWSearchTermRequest): Single<NWLocationsResponse>? {
-        return service.searchLocation(RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWSearchTermRequest.serializer(), nwSearchTermRequest)))
+        return service.searchLocation(RequestBody.create(MediaType.parse("application/json"), json.encodeToString(NWSearchTermRequest.serializer(), nwSearchTermRequest)))
             .map { response -> response.parseSuccessResponse(NWLocationsResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
@@ -47,7 +51,7 @@ class SearchServiceImp @Inject constructor(private val serviceConfig: RemoteServ
     }
 
     fun searchUsers(usersRequest: NWSearchTermRequest): Single<NWSuggestedUsersResponse>? {
-        return service.searchUsers(RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWSearchTermRequest.serializer(), usersRequest)))
+        return service.searchUsers(RequestBody.create(MediaType.parse("application/json"), json.encodeToString(NWSearchTermRequest.serializer(), usersRequest)))
             .map { response -> response.parseSuccessResponse(NWSuggestedUsersResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")

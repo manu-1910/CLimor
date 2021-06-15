@@ -4,12 +4,12 @@ package io.square1.limor.remote
 import io.square1.limor.remote.entities.requests.*
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.comment.CommentServiceImp
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import org.junit.Test
 
 private const val CURRENT_TOKEN = "PkRbYfBMW7iTagfOvr7sNvnO4t5iC7OdjCzbbhijpuQ"
 
-@ImplicitReflectionSerializer
+
 class CommentServiceImpTest{
     private lateinit var commentService: CommentServiceImp
     //    private val baseURL = "https://limor-api-staging.herokuapp.com/api/v1/podcasts/"

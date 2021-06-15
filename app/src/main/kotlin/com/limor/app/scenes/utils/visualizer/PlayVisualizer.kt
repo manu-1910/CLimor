@@ -107,7 +107,7 @@ class PlayVisualizer : Visualizer {
         this.tickCount = this.amps.size * this.tickPerBar
         this.cursorPosition = 0f
 
-        this.amps.max()?.let {
+        this.amps.maxOrNull()?.let {
             this.maxAmp = max(it.toFloat(), maxAmp)
         }
 

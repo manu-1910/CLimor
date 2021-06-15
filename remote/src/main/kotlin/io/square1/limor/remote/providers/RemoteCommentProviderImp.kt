@@ -9,11 +9,11 @@ import io.reactivex.Single
 import io.square1.limor.remote.mappers.asDataEntity
 import io.square1.limor.remote.mappers.asRemoteEntity
 import io.square1.limor.remote.services.comment.CommentServiceImp
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import providers.remote.RemoteCommentProvider
 import javax.inject.Inject
 
-@ImplicitReflectionSerializer
+
 class RemoteCommentProviderImp @Inject constructor(private val provider: CommentServiceImp) :
     RemoteCommentProvider {
     override fun createComment(

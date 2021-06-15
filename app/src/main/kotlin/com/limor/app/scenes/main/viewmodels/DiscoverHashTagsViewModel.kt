@@ -49,7 +49,7 @@ class DiscoverHashTagsViewModel @Inject constructor(private val tagsUseCase: Tag
                 try {
                     val error = it as HttpException
                     val errorResponse: UIErrorResponse? =
-                        error.response().errorBody()?.parseSuccessResponse(
+                        error.response()?.errorBody()?.parseSuccessResponse(
                             UIErrorResponse.serializer()
                         )
                     errorTracker.postValue(errorResponse)

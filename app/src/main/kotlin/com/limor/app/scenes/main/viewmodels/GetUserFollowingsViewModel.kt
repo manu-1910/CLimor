@@ -47,7 +47,7 @@ class GetUserFollowingsViewModel @Inject constructor(private val getUserFollowin
             }, {
                 try {
                     val error = it as HttpException
-                    val errorResponse: UIErrorResponse? = error.response().errorBody()?.parseSuccessResponse(
+                    val errorResponse: UIErrorResponse? = error.response()?.errorBody()?.parseSuccessResponse(
                         UIErrorResponse.serializer())
                     errorTracker.postValue(errorResponse)
                 } catch (e: Exception) {
