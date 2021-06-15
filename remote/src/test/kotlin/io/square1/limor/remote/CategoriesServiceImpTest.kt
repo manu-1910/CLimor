@@ -3,11 +3,11 @@ package io.square1.limor.remote
 
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.categories.CategoriesServiceImp
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import org.junit.Test
 
 
-@ImplicitReflectionSerializer
+
 class CategoriesServiceImpTest{
     private lateinit var categoryService : CategoriesServiceImp
     //    private val baseURL = "https://limor-api-staging.herokuapp.com/api/v1/podcasts/"

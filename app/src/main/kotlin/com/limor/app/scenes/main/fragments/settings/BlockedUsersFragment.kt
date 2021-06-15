@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -207,16 +207,13 @@ class BlockedUsersFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
-            viewModelGetBlockedUsers = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelGetBlockedUsers = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(GetBlockedUsersViewModel::class.java)
 
-            viewModelCreateBlockedUser = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreateBlockedUser = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreateBlockedUserViewModel::class.java)
 
-            viewModelDeleteBlockedUser = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeleteBlockedUser = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeleteBlockedUserViewModel::class.java)
         }
     }

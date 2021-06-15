@@ -37,8 +37,7 @@ class HomeFragment : BaseFragment() {
 
     private fun bindViewModel() {
         /* activity?.let { fragmentActivity ->
-             mainViewModel = ViewModelProviders
-                 .of(fragmentActivity, viewModelFactory)
+             mainViewModel = ViewModelProvider(fragmentActivity, viewModelFactory)
                  .get(MainViewModel::class.java)
          }*/
     }

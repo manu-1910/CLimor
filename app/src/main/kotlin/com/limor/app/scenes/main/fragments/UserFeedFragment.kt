@@ -5,7 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
+
 import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.events.Event
@@ -73,8 +74,7 @@ class UserFeedFragment : FeedItemsListFragment() {
     override fun bindViewModel() {
         super.bindViewModel()
         activity?.let { fragmentActivity ->
-            viewModelFeed = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelFeed = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(FeedViewModel::class.java)
         }
         resetFeedViewModelVariables()

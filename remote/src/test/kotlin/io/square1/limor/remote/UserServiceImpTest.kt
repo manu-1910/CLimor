@@ -7,10 +7,10 @@ import io.square1.limor.remote.entities.requests.NWUserIDRequest
 import io.square1.limor.remote.entities.responses.NWDevice
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.user.UserServiceImp
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import org.junit.Test
 
-@ImplicitReflectionSerializer
+
 class UserServiceImpTest {
     private lateinit var userService: UserServiceImp
 

@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.tabs.TabLayout
@@ -491,29 +491,23 @@ class ProfileFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
-            viewModelGetUser = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelGetUser = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(GetUserViewModel::class.java)
 
             if (!isMyProfileMode) {
-                viewModelCreateUserReport = ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                viewModelCreateUserReport = ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(CreateUserReportViewModel::class.java)
 
-                viewModelCreateFriend = ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                viewModelCreateFriend = ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(CreateFriendViewModel::class.java)
 
-                viewModelDeleteFriend = ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                viewModelDeleteFriend = ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(DeleteFriendViewModel::class.java)
 
-                viewModelCreateBlockedUser = ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                viewModelCreateBlockedUser = ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(CreateBlockedUserViewModel::class.java)
 
-                viewModelDeleteBlockedUser = ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                viewModelDeleteBlockedUser = ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(DeleteBlockedUserViewModel::class.java)
             }
         }

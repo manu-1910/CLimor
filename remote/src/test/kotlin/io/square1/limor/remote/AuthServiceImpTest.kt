@@ -5,12 +5,12 @@ import io.square1.limor.remote.entities.requests.NWSignUpRequest
 import io.square1.limor.remote.entities.requests.NWSignUpUser
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.auth.AuthServiceImp
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import org.junit.Test
 
 
 
-@ImplicitReflectionSerializer
+
 class AuthServiceImpTest{
     private lateinit var authservice: AuthServiceImp
 

@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main.fragments.discover
+package com.limor.app.scenes.main.fragments.discover2
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
@@ -31,6 +31,10 @@ import com.limor.app.extensions.forceLayoutChanges
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.main.adapters.*
 import com.limor.app.scenes.main.fragments.CategoriesActivity
+import com.limor.app.scenes.main.fragments.discover.DiscoverAccountsFragment
+import com.limor.app.scenes.main.fragments.discover.DiscoverHashTagsFragment
+import com.limor.app.scenes.main.fragments.discover.DiscoverPodcastsByCategoryActivity
+import com.limor.app.scenes.main.fragments.discover.DiscoverTabFragment
 import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
 import com.limor.app.scenes.main.fragments.profile.ReportActivity
 import com.limor.app.scenes.main.fragments.profile.TypeReport
@@ -54,7 +58,7 @@ import javax.inject.Inject
 
 const val BUNDLE_KEY_SEARCH_TEXT = "BUNDLE_KEY_SEARCH_TEXT"
 
-class DiscoverFragment : BaseFragment(),
+class DiscoverFragment2 : BaseFragment(),
     SuggestedPersonAdapter.OnPersonClicked,
     FeaturedItemAdapter.OnFeaturedClicked,
     TopCastAdapter.OnTopCastClicked,
@@ -90,9 +94,8 @@ class DiscoverFragment : BaseFragment(),
     private var rlSearch: ViewGroup? = null
 
     companion object {
-        val TAG: String = DiscoverFragment::class.java.simpleName
-        fun newInstance() =
-            DiscoverFragment()
+        val TAG: String = DiscoverFragment2::class.java.simpleName
+        fun newInstance() = DiscoverFragment2()
         private const val REQUEST_REPORT_PODCAST: Int = 1
         private const val REQUEST_REPORT_USER: Int = 0
     }
@@ -658,7 +661,7 @@ class DiscoverFragment : BaseFragment(),
             )
         )
 
-        output.response.observe(this, Observer { response ->
+        output.response.observe(viewLifecycleOwner, Observer { response ->
             val code = response.code
             if (code != 0) {
                 toast(getString(R.string.delete_podcast_error))
@@ -682,7 +685,7 @@ class DiscoverFragment : BaseFragment(),
             )
         )
 
-        output.response.observe(this, Observer { response ->
+        output.response.observe(viewLifecycleOwner, Observer { response ->
             val code = response.code
             if (code != 0) {
                 Toast.makeText(
@@ -700,7 +703,7 @@ class DiscoverFragment : BaseFragment(),
         })
 
         output.errorMessage.observe(this, Observer {
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+            CommonsKt.handleOnApiError(app!!, requireContext(), this, it)
             Toast.makeText(
                 context,
                 getString(R.string.error_report),
@@ -716,7 +719,7 @@ class DiscoverFragment : BaseFragment(),
             )
         )
 
-        output.response.observe(this, Observer { response ->
+        output.response.observe(viewLifecycleOwner, Observer { response ->
             val code = response.code
             if (code != 0) {
                 Toast.makeText(
@@ -734,7 +737,7 @@ class DiscoverFragment : BaseFragment(),
         })
 
         output.errorMessage.observe(this, Observer {
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+            CommonsKt.handleOnApiError(app!!, requireContext()!!, this, it)
             Toast.makeText(
                 context,
                 getString(R.string.error_report),

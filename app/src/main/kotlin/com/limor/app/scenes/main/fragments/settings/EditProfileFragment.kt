@@ -13,7 +13,7 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
@@ -130,8 +130,7 @@ class EditProfileFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let {
-            updateUserViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            updateUserViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(UpdateUserViewModel::class.java)
         }
     }

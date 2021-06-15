@@ -12,7 +12,7 @@ import androidx.core.os.HandlerCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import com.googlecode.mp4parser.authoring.Movie
 import com.googlecode.mp4parser.authoring.Track
@@ -89,8 +89,7 @@ class EditFragment : WaveformFragment() {
 
     private fun bindViewModel() {
         activity?.let {
-            draftViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            draftViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(DraftViewModel::class.java)
         }
     }

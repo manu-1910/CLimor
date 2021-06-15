@@ -16,7 +16,8 @@ import android.widget.LinearLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
+
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -123,8 +124,7 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
     }
 
     private fun bindViewModel() {
-        locationsViewModel = ViewModelProviders
-            .of(this, viewModelFactory)
+        locationsViewModel = ViewModelProvider(this, viewModelFactory)
             .get(LocationsViewModel::class.java)
     }
 

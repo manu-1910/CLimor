@@ -3,10 +3,10 @@ package io.square1.limor.remote
 import io.square1.limor.remote.entities.requests.NWSearchTermRequest
 import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.search.SearchServiceImp
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import org.junit.Test
 
-@ImplicitReflectionSerializer
+
 class SearchServiceImpTest {
     private lateinit var searchService: SearchServiceImp
 

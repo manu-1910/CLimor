@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -119,8 +119,7 @@ class CategoriesFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
-            viewModelCategories = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCategories = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CategoriesViewModel::class.java)
         }
     }

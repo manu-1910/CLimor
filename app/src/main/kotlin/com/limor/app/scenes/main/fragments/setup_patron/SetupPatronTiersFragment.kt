@@ -8,7 +8,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.limor.app.App
@@ -166,8 +166,7 @@ class SetupPatronTiersFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let {
-            setupPatronViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            setupPatronViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(SetupPatronViewModel::class.java)
         }
     }

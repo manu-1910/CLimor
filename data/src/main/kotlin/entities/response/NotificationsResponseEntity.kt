@@ -1,7 +1,5 @@
 package entities.response
 
-import kotlinx.serialization.Optional
-
 data class NotificationsResponseEntity(
     var code: Int,
     var message: String,

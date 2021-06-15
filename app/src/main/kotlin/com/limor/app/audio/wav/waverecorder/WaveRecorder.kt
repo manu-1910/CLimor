@@ -169,7 +169,7 @@ class WaveRecorder(private var filePath: String) {
         ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer()
             .get(shortData)
 
-        return shortData.max()?.toInt() ?: 0
+        return shortData.maxOrNull()?.toInt() ?: 0
     }
 
     /**
@@ -219,6 +219,6 @@ fun ByteArray.calculateAmplitude(): Int {
             .order(ByteOrder.LITTLE_ENDIAN)
             .asShortBuffer()
             .get(it)
-        it.max()?.toInt() ?: 0
+        it.maxOrNull()?.toInt() ?: 0
     }
 }

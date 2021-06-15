@@ -8,7 +8,7 @@ import dagger.Module
 import dagger.Provides
 import io.square1.limor.remote.providers.*
 import io.square1.limor.remote.services.RemoteServiceConfig
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import providers.remote.*
 import javax.inject.Singleton
 import kotlin.math.absoluteValue
@@ -47,27 +47,27 @@ abstract class RemoteModule {
         )
     }
 
-    @ImplicitReflectionSerializer
+
     @Binds
     abstract fun bindRemoteAuthProvider(remoteAuthProviderImp: RemoteAuthProviderImp): RemoteAuthProvider
 
-    @ImplicitReflectionSerializer
+
     @Binds
     abstract fun bindRemoteUserProvider(remoteUserProviderImp: RemoteUserProviderImp): RemoteUserProvider
 
-    @ImplicitReflectionSerializer
+
     @Binds
     abstract fun bindRemotePodcastProvider(remotePodcastProviderImp: RemotePodcastProviderImp): RemotePodcastProvider
 
-    @ImplicitReflectionSerializer
+
     @Binds
     abstract fun bindRemoteSearchProvider(remoteSearchProviderImp: RemoteSearchProviderImp): RemoteSearchProvider
 
-    @ImplicitReflectionSerializer
+
     @Binds
     abstract fun bindRemoteCategoriesProvider(remoteCategoriesProviderImp: RemoteCategoriesProviderImp): RemoteCategoriesProvider
 
-    @ImplicitReflectionSerializer
+
     @Binds
     abstract fun bindRemoteCommentProvider(remoteCommentProviderImp: RemoteCommentProviderImp): RemoteCommentProvider
 

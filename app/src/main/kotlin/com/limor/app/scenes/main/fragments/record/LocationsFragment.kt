@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -91,12 +91,10 @@ class LocationsFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let {
-            locationsViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            locationsViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(LocationsViewModel::class.java)
 
-            publishViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            publishViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(PublishViewModel::class.java)
         }
     }

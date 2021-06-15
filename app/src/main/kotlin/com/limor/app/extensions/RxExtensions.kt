@@ -71,7 +71,7 @@ fun<T: Any> Single<T>.trackErrorResponse(errorTracker: SingleLiveEvent<UIErrorRe
     return this.doOnError{
 
         var error = it as HttpException
-        var errorResponse: UIErrorResponse? = error.response().errorBody()?.parseSuccessResponse(
+        var errorResponse: UIErrorResponse? = error.response()?.errorBody()?.parseSuccessResponse(
             UIErrorResponse.serializer())
 
         errorTracker.postValue(errorResponse)

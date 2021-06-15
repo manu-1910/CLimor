@@ -99,7 +99,7 @@ class DiscoverViewModel @Inject constructor(
             try {
                 val error = it as HttpException
                 val errorResponse: UIErrorResponse? =
-                    error.response().errorBody()?.parseSuccessResponse(
+                    error.response()?.errorBody()?.parseSuccessResponse(
                         UIErrorResponse.serializer()
                     )
                 _discoverState.value = DiscoverError(errorResponse!!)

@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.installations.FirebaseInstallations;
 import com.limor.app.scenes.utils.Commons;
 
 public class UtilsRegistrationIntentService extends IntentService {
@@ -21,7 +21,7 @@ public class UtilsRegistrationIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Intent registrationComplete = new Intent(Commons.TAG_PUSH_REG_COMPLETED);
-        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(instanceIdResult -> {
+        FirebaseInstallations.getInstance().getToken(true).addOnSuccessListener(instanceIdResult -> {
             String pushToken = instanceIdResult.getToken();
             //SharedPreferences.getInstance().savePushToken(getApplicationContext(), pushToken);
             sendPushTokenToServer(pushToken);

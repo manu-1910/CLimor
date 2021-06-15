@@ -10,13 +10,13 @@ import android.provider.Settings.Secure
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.FirebaseApp
-import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.installations.FirebaseInstallations
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
@@ -133,12 +133,10 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
 
     private fun bindViewModel() {
-        getUserViewModel = ViewModelProviders
-            .of(this, viewModelFactory)
+        getUserViewModel = ViewModelProvider(this, viewModelFactory)
             .get(GetUserViewModel::class.java)
 
-        pushNotificationsViewModel = ViewModelProviders
-            .of(this, viewModelFactory)
+        pushNotificationsViewModel = ViewModelProvider(this, viewModelFactory)
             .get(PushNotificationsViewModel::class.java)
     }
 
@@ -356,7 +354,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
     }
 
     private fun getFirebaseInstance() {
-        FirebaseInstanceId.getInstance().instanceId
+        FirebaseInstallations.getInstance().getToken(true)
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
                     //Timber.e("getInstanceId failed %s", task.exception)

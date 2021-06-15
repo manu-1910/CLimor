@@ -8,16 +8,21 @@ import io.square1.limor.remote.entities.responses.*
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
 import io.square1.limor.remote.services.RemoteServiceConfig
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import javax.inject.Inject
 
 
-@ImplicitReflectionSerializer
+
 class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
     RemoteService<UserService>(UserService::class.java, serviceConfig) {
+
+    private val json = Json {
+        isLenient = true
+        ignoreUnknownKeys = true
+    }
 
     fun userMe(): Single<NWGetUserResponse> {
         return service.userMe()
@@ -37,7 +42,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
         return service.userMeUpdate(
             RequestBody.create(
                 MediaType.parse("application/json"),
-                Json.nonstrict.stringify(NWUpdateProfileRequest.serializer(), nwUpdateProfileRequest)
+                json.encodeToString(NWUpdateProfileRequest.serializer(), nwUpdateProfileRequest)
             )
         )
             .map { response ->
@@ -56,7 +61,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
         return service.logOut(
             RequestBody.create(
                 MediaType.parse("application/json"),
-                Json.nonstrict.stringify(NWLogoutRequest.serializer(), nwLogoutRequest)
+                json.encodeToString(NWLogoutRequest.serializer(), nwLogoutRequest)
             )
         )
             .map { response -> response.parseSuccessResponse(NWErrorResponse.serializer()) }
@@ -128,7 +133,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
 
 
     fun createBlockedUser(userIDRequest: NWUserIDRequest): Single<NWBlockedUserResponse> {
-        val requestString = Json.nonstrict.stringify(NWUserIDRequest.serializer(), userIDRequest)
+        val requestString = json.encodeToString(NWUserIDRequest.serializer(), userIDRequest)
         val request = RequestBody.create(
             MediaType.parse("application/json"),
             requestString
@@ -149,7 +154,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
         return service.deleteBlockedUser(
             RequestBody.create(
                 MediaType.parse("application/json"),
-                Json.nonstrict.stringify(NWUserIDRequest.serializer(), userIDRequest)
+                json.encodeToString(NWUserIDRequest.serializer(), userIDRequest)
             )
         )
             .map { response -> response.parseSuccessResponse(NWBlockedUserResponse.serializer()) }
@@ -162,7 +167,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
 
 
     fun reportUser(id:Int, createReportRequest: NWCreateReportRequest): Single<NWCreateReportResponse> {
-        val requestString = Json.nonstrict.stringify(NWCreateReportRequest.serializer(), createReportRequest)
+        val requestString = json.encodeToString(NWCreateReportRequest.serializer(), createReportRequest)
         val request = RequestBody.create(
             MediaType.parse("application/json"),
             requestString
@@ -251,7 +256,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
         return service.sendUserDevice(
             RequestBody.create(
                 MediaType.parse("application/json"),
-                Json.nonstrict.stringify(NWUserDeviceRequest.serializer(), userDeviceRequest)
+                json.encodeToString(NWUserDeviceRequest.serializer(), userDeviceRequest)
             )
         )
             .map { response -> response.parseSuccessResponse(NWUserDeviceResponse.serializer()) }
