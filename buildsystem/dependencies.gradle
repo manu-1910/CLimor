@@ -53,6 +53,7 @@ versions.coordinator = "1.1.0"
 
 //Firebase
 versions.firebase_bom = "28.1.0"
+versions.firebase_crashlytics_plugin = "2.7.0"
 
 //Kotlin
 versions.kotlin = "1.5.10"
@@ -221,6 +222,7 @@ firebase.analytics = "com.google.firebase:firebase-analytics-ktx"
 firebase.core = "com.google.firebase:firebase-core"
 firebase.firestore = "com.google.firebase:firebase-firestore-ktx"
 firebase.crashlytics = "com.google.firebase:firebase-crashlytics-ktx"
+firebase.crashlytics_plugin = "com.google.firebase:firebase-crashlytics-gradle:$versions.firebase_crashlytics_plugin"
 firebase.auth = "com.google.firebase:firebase-auth-ktx"
 firebase.functions = "com.google.firebase:firebase-functions-ktx"
 firebase.firebase_ads = "com.google.firebase:firebase-ads"

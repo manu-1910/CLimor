@@ -35,7 +35,8 @@
               "client_id": "9658554082-bc5th0s3ia6ilcoqv2cd1qk215schst2.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.limor.app.dev"
+                "bundle_id": "com.limor.app.dev",
+                "app_store_id": "1557886798"
               }
             }
           ]
@@ -71,7 +72,8 @@
               "client_id": "9658554082-bc5th0s3ia6ilcoqv2cd1qk215schst2.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.limor.app.dev"
+                "bundle_id": "com.limor.app.dev",
+                "app_store_id": "1557886798"
               }
             }
           ]
@@ -86,6 +88,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "9658554082-gm4g5a7lh6583sndgku9bkr7iskfgnpt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.limor.app.dev",
+            "certificate_hash": "606521757d4a060829090095252264888a3e7892"
+          }
+        },
         {
           "client_id": "9658554082-c4ln5lq5mms6guffl6mrrrlt3n0pomev.apps.googleusercontent.com",
           "client_type": 3
@@ -107,7 +117,8 @@
               "client_id": "9658554082-bc5th0s3ia6ilcoqv2cd1qk215schst2.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.limor.app.dev"
+                "bundle_id": "com.limor.app.dev",
+                "app_store_id": "1557886798"
               }
             }
           ]

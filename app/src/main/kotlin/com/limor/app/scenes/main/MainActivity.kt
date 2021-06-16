@@ -15,7 +15,6 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.FirebaseApp
 import com.google.firebase.installations.FirebaseInstallations
 import com.limor.app.App
 import com.limor.app.R
@@ -74,9 +73,6 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
         //Initialize Shared Preferences to store device firebase token
         sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
-        //Initialize Firebase Instance
-        FirebaseApp.initializeApp(this)
 
         bindViewModel()
 
