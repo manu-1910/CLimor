@@ -126,6 +126,7 @@ versions.merlin = '1.2.0'
 versions.superbottomsheet = '2.0.0'
 versions.circle_progress_bar = '3.0.3'
 versions.groupie = '2.9.0'
+versions.flowbinding = '1.1.0'
 
 def support = [:]
 support.annotations = "androidx.annotation:annotation:$versions.annotations"
@@ -296,5 +297,6 @@ deps.merlin = "com.novoda:merlin:$versions.merlin"
 deps.event_bus = "org.greenrobot:eventbus:$versions.event_bus"
 deps.super_bottom_sheet = "com.github.andrefrsousa:SuperBottomSheet:$versions.superbottomsheet"
 deps.circular_progress_bar = "com.mikhaellopez:circularprogressbar:$versions.circle_progress_bar"
+deps.flowbinding = "io.github.reactivecircus.flowbinding:flowbinding-android:$versions.flowbinding"
 
 ext.deps = deps

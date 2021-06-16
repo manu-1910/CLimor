@@ -23,4 +23,8 @@
         <attr name="approximateBarDuration" format="integer" />
         <attr name="maxAmp" format="float" />
     </declare-styleable>
+
+    <declare-styleable name="SearchBar">
+        <attr name="hintText" format="string"/>
+    </declare-styleable>
 </resources>

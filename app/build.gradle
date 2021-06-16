@@ -377,4 +377,8 @@ dependencies {
     implementation("com.apollographql.apollo:apollo-runtime:2.5.6")
     //decoding firebase JWT
     implementation 'com.auth0.android:jwtdecode:2.0.0'
+
+    implementation deps.groupie.core
+    implementation deps.groupie.viewbinding
+    implementation deps.flowbinding
 }
