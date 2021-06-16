@@ -2,7 +2,7 @@ package com.limor.app.scenes.main.fragments.discover2.list.sections
 
 import android.content.Context
 import com.limor.app.R
-import com.limor.app.scenes.main.fragments.discover2.list.items.CategoriesItem
+import com.limor.app.scenes.main.fragments.discover2.list.items.categories.CategoriesItem
 import com.limor.app.scenes.main.fragments.discover2.list.items.HeaderItem
 import com.xwray.groupie.Section
 
