@@ -19,17 +19,19 @@ import reactivecircus.flowbinding.android.widget.textChangeEvents
 
 class SearchBar(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
 
+    init {
+        inflate(context, R.layout.search_bar, this)
+    }
+
     private val editText = findViewById<AppCompatEditText>(R.id.search_text)
     private val searchIcon = findViewById<ImageView>(R.id.search_icon)
-    private val closeIcon = findViewById<ImageView>(R.id.close_icon)
 
+    private val closeIcon = findViewById<ImageView>(R.id.close_icon)
     private var debounceTime = 500L
     private var onQueryTextChange: ((newText: String) -> Unit)? = null
     private var onQueryTextSubmit: ((query: String) -> Unit)? = null
 
     init {
-        inflate(context, R.layout.search_bar, this)
-
         context.obtainStyledAttributes(attrs, R.styleable.SearchBar).apply {
             getString(R.styleable.SearchBar_hintText)?.let { editText.hint = it }
         }.recycle()

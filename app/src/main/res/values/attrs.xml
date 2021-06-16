@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <attr name="hintText" format="reference"/>
+
     <declare-styleable name="edit_text_component_attributes">
         <attr name="hasShadow" format="boolean" />
         <attr name="isPassword" format="boolean" />
@@ -9,7 +12,7 @@
         <attr name="etTextSize" format="integer" />
         <attr name="isEditable" format="boolean" />
         <attr name="lines" format="integer" />
-        <attr name="hintText" format="string" />
+        <attr name="hintText" />
         <attr name="inputType" format="integer" />
         <attr name="hasArrow" format="boolean" />
         <attr name="hasCheck" format="boolean" />
@@ -25,6 +28,6 @@
     </declare-styleable>
 
     <declare-styleable name="SearchBar">
-        <attr name="hintText" format="string"/>
+        <attr name="hintText" />
     </declare-styleable>
 </resources>
