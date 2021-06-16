@@ -9,10 +9,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.*
 import com.limor.app.GendersQuery
 import com.limor.app.scenes.auth_new.data.*
-import com.limor.app.scenes.auth_new.firebase.EmailAuthHandler
-import com.limor.app.scenes.auth_new.firebase.FacebookAuthHandler
-import com.limor.app.scenes.auth_new.firebase.GoogleAuthHandler
-import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
+import com.limor.app.scenes.auth_new.firebase.*
 import com.limor.app.scenes.auth_new.model.*
 import com.limor.app.scenes.auth_new.model.UserInfoProvider.Companion.userNameRegExCheck
 import com.limor.app.scenes.auth_new.util.*
@@ -46,7 +43,11 @@ class AuthViewModelNew : ViewModel() {
     /* PHONE Countries selection */
 
     fun initPhoneAuthHandler(activity: Activity) {
-        PhoneAuthHandler.init(activity, viewModelScope)
+        PhoneAuthHandler.init(viewModelScope, object : ContextProviderHandler {
+            override fun activity(): Activity {
+                return activity
+            }
+        })
     }
 
     fun submitPhoneNumber() {
@@ -406,6 +407,9 @@ class AuthViewModelNew : ViewModel() {
     val createUserLiveData: LiveData<String?>
         get() = userInfoProvider.createUserLiveData
 
+    val updateOnboardingStatusLiveData: LiveData<String?>
+        get() = userInfoProvider.updateOnboardingStatusLiveData
+
     val updateUserNameLiveData: LiveData<String?>
         get() = userInfoProvider.updateUserNameLiveData
 
@@ -431,13 +435,13 @@ class AuthViewModelNew : ViewModel() {
 
     fun updateUserName() = userInfoProvider.updateUserName(currentUsername)
 
-    fun updatePreferredInfo(){
+    fun updatePreferredInfo() {
         val categoriesIds = categoriesProvider.getActiveCategoriesIds()
         val languages = languagesProvider.getActiveLanguages();
-        userInfoProvider.updatePreferredInfo(currentGenderId, categoriesIds, languages )
+        userInfoProvider.updatePreferredInfo(currentGenderId, categoriesIds, languages)
     }
 
-    fun updateUserOnboardingStatus(nextStep: String){
+    fun updateUserOnboardingStatus(nextStep: String) {
         userInfoProvider.updateUserOnboardingStatus(nextStep)
     }
 

@@ -8,7 +8,6 @@ import com.limor.app.scenes.auth_new.data.getLanguagesByInput
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class LanguagesProvider(private val scope: CoroutineScope) {
 
@@ -36,7 +35,6 @@ class LanguagesProvider(private val scope: CoroutineScope) {
                 languages = response!!.map { LanguageWrapper(it, false) }
                 languagesLiveData.postValue(languages)
             } catch (e: Exception) {
-                Timber.e(e)
                 languageLiveDataError.postValue(showHumanizedErrorMessage(e))
             }
         }

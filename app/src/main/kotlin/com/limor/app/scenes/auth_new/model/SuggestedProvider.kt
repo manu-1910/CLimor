@@ -1,6 +1,5 @@
 package com.limor.app.scenes.auth_new.model
 
-import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import com.limor.app.apollo.showHumanizedErrorMessage
 import com.limor.app.scenes.auth_new.data.SuggestedUser
@@ -57,7 +56,8 @@ class SuggestedProvider(private val scope: CoroutineScope) {
 //                val result = UserRepository.updateFollowingUsersData(list)
                 //TODO follow suggested people
                 suggestedForwardNavigationLiveData.postValue(true)
-                Handler().postDelayed({ suggestedForwardNavigationLiveData.postValue(true) }, 500)
+                delay(500)
+                suggestedForwardNavigationLiveData.postValue(true)
             } catch (e: Exception) {
                 Timber.e(e)
                 suggestedLiveDataError.postValue(showHumanizedErrorMessage(e))

@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.SuggestedUser
+import com.limor.app.scenes.auth_new.navigation.AuthNavigator
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import com.limor.app.scenes.auth_new.view.SuggestedPeopleAdapter
 import kotlinx.android.synthetic.main.fragment_new_auth_suggested_people.*
@@ -55,8 +55,9 @@ class FragmentSuggested : FragmentWithLoading() {
         model.suggestedForwardNavigationLiveData.observe(viewLifecycleOwner, Observer {
             if (it) {
                 model.updateUserOnboardingStatus(NavigationBreakpoints.ONBOARDING_COMPLETION.destination)
-                view?.findNavController()
-                    ?.navigate(R.id.action_fragment_new_auth_suggested_people_to_fragment_new_auth_onboarding)
+                AuthNavigator.navigateToFragmentByNavigationBreakpoints(requireActivity(), NavigationBreakpoints.ONBOARDING_COMPLETION.destination)
+//                view?.findNavController()
+//                    ?.navigate(R.id.action_fragment_new_auth_suggested_people_to_fragment_new_auth_onboarding)
             }
         })
     }
