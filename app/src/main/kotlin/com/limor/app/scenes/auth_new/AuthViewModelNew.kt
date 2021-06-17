@@ -441,9 +441,8 @@ class AuthViewModelNew : ViewModel() {
         userInfoProvider.updatePreferredInfo(currentGenderId, categoriesIds, languages)
     }
 
-    fun updateUserOnboardingStatus(nextStep: String) {
+    fun updateUserOnboardingStatus(nextStep: String) =
         userInfoProvider.updateUserOnboardingStatus(nextStep)
-    }
 
     override fun onCleared() {
         super.onCleared()

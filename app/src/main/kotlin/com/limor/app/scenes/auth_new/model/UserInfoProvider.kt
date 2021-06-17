@@ -149,7 +149,7 @@ class UserInfoProvider(private val scope: CoroutineScope) {
             try {
                 val result = UserRepository.updateUserOnboardingStatus(nextStep)
                 _updateOnboardingStatusLiveData.postValue(result)
-                delay(500)
+                delay(400)
                 _updateOnboardingStatusLiveData.postValue(null)
             } catch (e: Exception) {
             }

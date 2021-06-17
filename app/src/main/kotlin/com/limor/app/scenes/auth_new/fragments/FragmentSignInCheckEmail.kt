@@ -46,6 +46,7 @@ class FragmentSignInCheckEmail : Fragment() {
 
         model.createUserLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
+            model.saveNavigationBreakPoint(requireContext(), NavigationBreakpoints.ACCOUNT_CREATION.destination)
             AuthNavigator.navigateToFragmentByNavigationBreakpoints(
                 requireActivity(),
                 NavigationBreakpoints.ACCOUNT_CREATION.destination
@@ -54,6 +55,7 @@ class FragmentSignInCheckEmail : Fragment() {
 
         model.navigationBreakPointLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
+            model.saveNavigationBreakPoint(requireContext(), it)
             AuthNavigator.navigateToFragmentByNavigationBreakpoints(requireActivity(), it)
         })
     }

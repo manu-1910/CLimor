@@ -74,7 +74,7 @@ fun<T: Any> Single<T>.trackErrorResponse(errorTracker: SingleLiveEvent<UIErrorRe
         var errorResponse: UIErrorResponse? = error.response()?.errorBody()?.parseSuccessResponse(
             UIErrorResponse.serializer())
 
-        errorTracker.postValue(errorResponse)
+        errorTracker.postValue(errorResponse!!)
     }
 }
 

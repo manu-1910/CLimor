@@ -22,6 +22,8 @@ object AuthNavigator {
             NavigationBreakpoints.values().firstOrNull { it.destination == destination }
                 ?: NavigationBreakpoints.ACCOUNT_CREATION
         navigateToFragmentWithClear(activity, breakpoint.actionId)
+        if (breakpoint == NavigationBreakpoints.HOME_FEED)
+            activity.finish()
     }
 
     private fun navigateToFragmentWithClear(activity: Activity, @IdRes actionId: Int) {

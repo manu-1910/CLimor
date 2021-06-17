@@ -41,8 +41,10 @@ class FragmentOnboarding : Fragment() {
 
     private fun subscribeToViewModel() {
         model.updateOnboardingStatusLiveData.observe(viewLifecycleOwner, Observer {
-            Timber.d("Update onboarding status liveData $it")
-            it?.let { navigateToHomeFeed() }
+            it?.let {
+                Timber.d("Update onboarding status liveData $it")
+                navigateToHomeFeed()
+            }
         })
     }
 

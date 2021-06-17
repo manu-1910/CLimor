@@ -67,7 +67,7 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
         } else if (e is FirebaseTooManyRequestsException) {
             // The SMS quota for the project has been exceeded
         }
-        _smsCodeValidationErrorMessage.postValue(e.toString())
+        _smsCodeValidationErrorMessage.postValue(e.localizedMessage)
 
     }
 
@@ -124,7 +124,7 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
                         // The verification code entered was invalid
                     }
-                    _smsCodeValidationErrorMessage.postValue(task.exception.toString())
+                    _smsCodeValidationErrorMessage.postValue(task.exception?.localizedMessage ?: "")
                 }
                 if (successful) {
                     _smsCodeValidationPassed.postValue(true)
