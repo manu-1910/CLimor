@@ -1,26 +1,23 @@
 package com.limor.app.scenes.main.fragments.discover2.list
 
 import android.content.Context
-import com.limor.app.scenes.main.fragments.discover2.list.items.SearchItem
-import com.limor.app.scenes.main.fragments.discover2.list.sections.CategoriesSection
+import com.limor.app.scenes.main.fragments.discover2.list.categories.CategoriesSection
+import com.limor.app.scenes.main.fragments.discover2.list.suggestedpeople.SuggestedPeopleSection
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.Section
 
 class DiscoverAdapter(
-    context: Context,
-    onSearchViewTextChange: (newText: String) -> Unit,
-    onCategoriesHeaderActionClick: () -> Unit,
-    onCategoriesItemClick: (String) -> Unit
+    context: Context
 ) : GroupieAdapter() {
 
-    private val categoriesSection =
-        CategoriesSection(context, onCategoriesHeaderActionClick, onCategoriesItemClick)
-    private val suggestedPeopleSection = Section()
+    private val categoriesSection = CategoriesSection(context)
+    private val suggestedPeopleSection = SuggestedPeopleSection(context)
+
     private val featuredCastsSection = Section()
     private val topCastsSection = Section()
 
     init {
-        add(SearchItem(onSearchViewTextChange))
+        add(SearchItem())
         add(categoriesSection)
         add(suggestedPeopleSection)
         add(featuredCastsSection)

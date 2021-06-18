@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main.fragments.discover2.list.items
+package com.limor.app.scenes.main.fragments.discover2.list.items.header
 
 import android.view.View
 import com.limor.app.R

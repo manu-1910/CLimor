@@ -1,0 +1,45 @@
+package com.limor.app.scenes.main.fragments.discover2.list.suggestedpeople
+
+import android.view.View
+import com.limor.app.R
+import com.limor.app.databinding.ItemDiscoverSuggestedPersonBinding
+import com.limor.app.scenes.main.fragments.discover2.mock.MockPerson
+import com.xwray.groupie.Item
+import com.xwray.groupie.viewbinding.BindableItem
+
+class SuggestedPersonItem(val mockSuggestedPerson: MockPerson) : BindableItem<ItemDiscoverSuggestedPersonBinding>() {
+
+    override fun bind(viewBinding: ItemDiscoverSuggestedPersonBinding, position: Int) {
+        viewBinding.root.setOnClickListener {
+            TODO()
+        }
+        viewBinding.personName.text = mockSuggestedPerson.name
+        viewBinding.personNickname.text = mockSuggestedPerson.nickName
+        viewBinding.personImage.setImageFromUrl(mockSuggestedPerson.imageUrl)
+    }
+
+    override fun getLayout() = R.layout.item_discover_suggested_person
+    override fun initializeViewBinding(view: View) = ItemDiscoverSuggestedPersonBinding.bind(view)
+
+    override fun isSameAs(other: Item<*>): Boolean {
+        if (other is SuggestedPersonItem) {
+            return other == this
+        }
+        return false
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as SuggestedPersonItem
+
+        if (mockSuggestedPerson != other.mockSuggestedPerson) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return mockSuggestedPerson.hashCode()
+    }
+}

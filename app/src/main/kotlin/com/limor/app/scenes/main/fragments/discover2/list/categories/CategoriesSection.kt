@@ -1,16 +1,11 @@
-package com.limor.app.scenes.main.fragments.discover2.list.sections
+package com.limor.app.scenes.main.fragments.discover2.list.categories
 
 import android.content.Context
 import com.limor.app.R
-import com.limor.app.scenes.main.fragments.discover2.list.items.categories.CategoriesItem
-import com.limor.app.scenes.main.fragments.discover2.list.items.HeaderItem
+import com.limor.app.scenes.main.fragments.discover2.list.items.header.HeaderItem
 import com.xwray.groupie.Section
 
-class CategoriesSection(
-    context: Context,
-    onHeaderActionClick: () -> Unit,
-    private val onCategoriesItemClick: (String) -> Unit
-) : Section() {
+class CategoriesSection(context: Context) : Section() {
 
     companion object {
         private const val CATEGORIES_ITEM_POSITION = 0
@@ -22,7 +17,9 @@ class CategoriesSection(
                 context.getString(R.string.categories),
                 action = HeaderItem.HeaderAction(
                     name = context.getString(R.string.see_all),
-                    onActionClick = onHeaderActionClick
+                    onActionClick = {
+                        TODO()
+                    }
                 )
             )
         )
@@ -30,7 +27,7 @@ class CategoriesSection(
 
     fun updateCategories(categories: List<String>) {
         val categoriesItem = if (itemCount < CATEGORIES_ITEM_POSITION + 1) {
-            CategoriesItem(onCategoriesItemClick)
+            CategoriesItem().also { add(it) }
         } else {
             getItem(CATEGORIES_ITEM_POSITION) as CategoriesItem
         }

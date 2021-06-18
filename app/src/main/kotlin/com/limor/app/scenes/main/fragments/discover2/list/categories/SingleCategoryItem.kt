@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main.fragments.discover2.list.items.categories
+package com.limor.app.scenes.main.fragments.discover2.list.categories
 
 import android.view.View
 import com.limor.app.R
@@ -6,14 +6,13 @@ import com.limor.app.databinding.ItemChipCategoryBinding
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
 
-class SingleCategoryItem(
-    val category: String,
-    val onSingleCategoryItemClick: (String) -> Unit
-): BindableItem<ItemChipCategoryBinding>() {
+class SingleCategoryItem(val category: String): BindableItem<ItemChipCategoryBinding>() {
 
     override fun bind(viewBinding: ItemChipCategoryBinding, position: Int) {
         viewBinding.chip.text = category
-        viewBinding.chip.setOnClickListener { onSingleCategoryItemClick(category) }
+        viewBinding.chip.setOnClickListener {
+            TODO()
+        }
     }
 
     override fun getLayout() = R.layout.item_chip_category

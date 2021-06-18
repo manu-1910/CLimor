@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main.fragments.discover2.list.items.categories
+package com.limor.app.scenes.main.fragments.discover2.list.categories
 
 import android.view.View
 import com.limor.app.R
@@ -7,9 +7,7 @@ import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 import com.xwray.groupie.viewbinding.GroupieViewHolder
 
-class CategoriesItem(
-    private val onCategoryItemClick: (String) -> Unit
-): BindableItem<ItemDiscoverCategoriesBinding>() {
+class CategoriesItem: BindableItem<ItemDiscoverCategoriesBinding>() {
 
     private var categoriesListAdapter = GroupieAdapter()
 
@@ -20,10 +18,7 @@ class CategoriesItem(
     fun update(categories: List<String>) {
         categoriesListAdapter.update(
             categories.map {
-                SingleCategoryItem(
-                    it,
-                    onCategoryItemClick
-                )
+                SingleCategoryItem(it)
             }
         )
     }
