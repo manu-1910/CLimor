@@ -7,16 +7,20 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.limor.app.R
-import com.limor.app.scenes.auth_new.AuthActivityNew
+import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.OnboardingInfo
+import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import com.limor.app.scenes.auth_new.view.DepthPageTransformer
 import kotlinx.android.synthetic.main.fragment_new_auth_onboarding.*
 import timber.log.Timber
 
 class FragmentOnboarding : Fragment() {
+    private val model: AuthViewModelNew by activityViewModels()
 
     var currentPosition = 0
     override fun onCreateView(
@@ -31,24 +35,37 @@ class FragmentOnboarding : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         createAdapter()
         setOnClicks()
+        subscribeToViewModel()
+        saveNavigationBreakPoint(NavigationBreakpoints.ONBOARDING_COMPLETION.destination)
+    }
+
+    private fun subscribeToViewModel() {
+        model.updateOnboardingStatusLiveData.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                Timber.d("Update onboarding status liveData $it")
+                navigateToHomeFeed()
+            }
+        })
     }
 
     private fun setOnClicks() {
         btnBack.setOnClickListener {
-            if (currentPosition == 0) {
-                AuthActivityNew.popBackStack(requireActivity())
-            } else
-                vpOnboarding.setCurrentItem(currentPosition - 1, true)
+            model.updateUserOnboardingStatus(NavigationBreakpoints.HOME_FEED.destination)
         }
 
         btnContinue.setOnClickListener {
             vpOnboarding.setCurrentItem(currentPosition + 1, true)
         }
         btnFinish.setOnClickListener {
-            it.findNavController().navigate(R.id.go_to_main_activity)
-            Timber.d("trying to finish activity")
-            requireActivity().finish()
+            model.updateUserOnboardingStatus(NavigationBreakpoints.HOME_FEED.destination)
         }
+    }
+
+    private fun navigateToHomeFeed() {
+        view?.findNavController()?.navigate(R.id.go_to_main_activity)
+        Timber.d("trying to finish activity")
+        saveNavigationBreakPoint(NavigationBreakpoints.HOME_FEED.destination)
+        requireActivity().finish()
     }
 
     private fun createAdapter() {
@@ -105,6 +122,10 @@ class FragmentOnboarding : Fragment() {
                 R.string.new_onboarding_subtitle3
             )
         )
+    }
+
+    private fun saveNavigationBreakPoint(destination: String?) {
+        model.saveNavigationBreakPoint(requireContext(), destination)
     }
 }
 

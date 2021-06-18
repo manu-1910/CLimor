@@ -9,12 +9,12 @@ import io.reactivex.Single
 import io.square1.limor.remote.mappers.asDataEntity
 import io.square1.limor.remote.mappers.asRemoteEntity
 import io.square1.limor.remote.services.podcast.PodcastServiceImp
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import providers.remote.RemotePodcastProvider
 import javax.inject.Inject
 
 
-@ImplicitReflectionSerializer
+
 class RemotePodcastProviderImp @Inject constructor(private val provider: PodcastServiceImp) :
     RemotePodcastProvider {
 

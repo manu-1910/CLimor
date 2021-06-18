@@ -25,6 +25,7 @@ package com.limor.app.audio.wav.waverecorder
  */
 
 
+import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.media.audiofx.NoiseSuppressor
@@ -77,6 +78,29 @@ class WaveRecorder(private var filePath: String) {
     private lateinit var audioRecorder: AudioRecord
     private var noiseSuppressor: NoiseSuppressor? = null
 
+    val bufferSize: Int
+        get() = AudioRecord.getMinBufferSize(
+            waveConfig.sampleRate,
+            waveConfig.channels,
+            waveConfig.audioEncoding
+        )
+
+    private val channelCount: Int
+        get() = if (waveConfig.channels == AudioFormat.CHANNEL_IN_MONO) 1 else 2
+
+    val byteRate: Long
+        get() = (bitPerSample * waveConfig.sampleRate * channelCount / 8).toLong()
+
+    val tickDuration: Int
+        get() = (bufferSize.toDouble() * 1000 / byteRate).toInt()
+
+    private val bitPerSample: Int
+        get() = when (waveConfig.audioEncoding) {
+            AudioFormat.ENCODING_PCM_8BIT -> 8
+            AudioFormat.ENCODING_PCM_16BIT -> 16
+            else -> 16
+        }
+
     /**
      * Starts audio recording asynchronously and writes recorded data chunks on storage.
      */
@@ -88,12 +112,9 @@ class WaveRecorder(private var filePath: String) {
                 waveConfig.sampleRate,
                 waveConfig.channels,
                 waveConfig.audioEncoding,
-                AudioRecord.getMinBufferSize(
-                    waveConfig.sampleRate,
-                    waveConfig.channels,
-                    waveConfig.audioEncoding
-                )
+                bufferSize
             )
+
 
             audioSessionId = audioRecorder.audioSessionId
 
@@ -108,7 +129,6 @@ class WaveRecorder(private var filePath: String) {
             onStateChangeListener?.let {
                 it(RecorderState.RECORDING)
             }
-
             GlobalScope.launch(Dispatchers.IO) {
                 writeAudioDataToStorage()
             }
@@ -149,14 +169,13 @@ class WaveRecorder(private var filePath: String) {
         ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer()
             .get(shortData)
 
-        return shortData.max()?.toInt() ?: 0
+        return shortData.maxOrNull()?.toInt() ?: 0
     }
 
     /**
      * Stops audio recorder and release resources then writes recorded file headers.
      */
     fun stopRecording() {
-
         if (isAudioRecorderInitialized()) {
             isRecording = false
             audioRecorder.stop()
@@ -169,6 +188,11 @@ class WaveRecorder(private var filePath: String) {
         }
 
     }
+
+    fun writeHeaders(filePath: String) {
+        WaveHeaderWriter(filePath, waveConfig).writeHeader()
+    }
+
 
     private fun isAudioRecorderInitialized(): Boolean =
         this::audioRecorder.isInitialized && audioRecorder.state == AudioRecord.STATE_INITIALIZED
@@ -187,4 +211,14 @@ class WaveRecorder(private var filePath: String) {
         }
     }
 
+}
+
+fun ByteArray.calculateAmplitude(): Int {
+    return ShortArray(size / 2).let {
+        ByteBuffer.wrap(this)
+            .order(ByteOrder.LITTLE_ENDIAN)
+            .asShortBuffer()
+            .get(it)
+        it.maxOrNull()?.toInt() ?: 0
+    }
 }

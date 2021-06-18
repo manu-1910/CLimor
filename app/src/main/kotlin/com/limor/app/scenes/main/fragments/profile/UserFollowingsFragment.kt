@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -187,16 +187,13 @@ class UserFollowingsFragment(private val uiUser: UIUser) : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
-            viewModelFollowings = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelFollowings = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(GetUserFollowingsViewModel::class.java)
 
-            viewModelCreateFriend = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreateFriend = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreateFriendViewModel::class.java)
 
-            viewModelDeleteFriend = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeleteFriend = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeleteFriendViewModel::class.java)
        }
     }

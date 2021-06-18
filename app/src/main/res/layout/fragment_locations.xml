@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/brandSecondary400">
+    android:background="@color/white">
 
 
     <LinearLayout
@@ -14,12 +14,7 @@
 
         <include
             android:id="@+id/toolbar"
-            layout="@layout/toolbar_with_searchview" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/brandSecondary300"/>
+            layout="@layout/toolbar_with_searchview_light" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvLocations"

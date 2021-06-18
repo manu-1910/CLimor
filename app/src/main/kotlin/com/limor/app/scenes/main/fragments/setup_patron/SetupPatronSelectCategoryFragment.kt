@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import com.limor.app.App
 import com.limor.app.R
@@ -166,12 +166,10 @@ class SetupPatronSelectCategoryFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let {
-            categoriesViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            categoriesViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(CategoriesViewModel::class.java)
 
-            setupPatronViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            setupPatronViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(SetupPatronViewModel::class.java)
             lastSelectedChipId = setupPatronViewModel.categorySelectedId
             lastSelectedChipName = setupPatronViewModel.categorySelectedName

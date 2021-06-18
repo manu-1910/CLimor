@@ -2,14 +2,16 @@ package com.limor.app.scenes.main.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.limor.app.common.BaseViewModel
+import com.limor.app.common.SingleLiveEvent
+import com.limor.app.uimodels.UIDropOffRequest
+import com.limor.app.uimodels.UIErrorResponse
+import com.limor.app.uimodels.UIUpdatedResponse
+import com.limor.app.usecases.CreatePodcastDropOffUseCase
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import com.limor.app.common.BaseViewModel
-import com.limor.app.common.SingleLiveEvent
 import io.square1.limor.remote.extensions.parseSuccessResponse
-import com.limor.app.uimodels.*
-import com.limor.app.usecases.CreatePodcastDropOffUseCase
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -44,16 +46,16 @@ class CreatePodcastDropOffViewModel @Inject constructor(private val createPodcas
                 try {
                     val error = it as HttpException
                     val errorResponse: UIErrorResponse? =
-                        error.response().errorBody()?.parseSuccessResponse(
+                        error.response()?.errorBody()?.parseSuccessResponse(
                             UIErrorResponse.serializer()
                         )
-                    errorTracker.postValue(errorResponse)
+                    errorTracker.postValue(errorResponse!!)
                 } catch (e: Exception) {
                     e.printStackTrace()
 //                    val dataError =
 //                        UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
 //                    val errorResponse = UIErrorResponse(99, dataError.toString())
-//                    errorTracker.postValue(errorResponse)
+//                    errorTracker.postValue(errorResponse!!)
                 }
 
             })

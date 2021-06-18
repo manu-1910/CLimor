@@ -3,77 +3,120 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/brandSecondary500"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:layout_marginTop="31dp"
     android:keepScreenOn="true"
     android:orientation="vertical">
 
-
+    <View
+        android:layout_width="60dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_round_grey_ripple_new"/>
+    
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar_default" />
-
-    <View
-        android:background="@color/brandSecondary300"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"/>
+        layout="@layout/toolbar_default_light" />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/marginMedium"
-        android:layout_weight="1">
+        android:layout_height="260dp"
 
-        <com.limor.app.scenes.utils.VisualizerView
-            android:id="@+id/graphVisualizer"
+        >
+
+        <View
             android:layout_width="match_parent"
+            android:background="#F0F3F8"
+            android:layout_marginTop="8dp"
             android:layout_height="match_parent" />
 
-        <RelativeLayout
+        <com.limor.app.scenes.utils.visualizer.RecordVisualizer
+            android:id="@+id/graphVisualizer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            app:maxAmp="200"
+            app:approximateBarDuration="50"
+            app:barWidth="1.3dp"
+            app:loadedBarPrimeColor="@color/waveFormColor"
+            app:spaceBetweenBar="2dp" />
+
+        <com.limor.app.scenes.utils.visualizer.PlayVisualizer
+            android:id="@+id/playVisualizer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            app:maxAmp="200"
+            app:approximateBarDuration="50"
+            app:barWidth="1.3dp"
+            app:loadedBarPrimeColor="@color/waveFormColor"
+            app:spaceBetweenBar="2dp" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="24dp"
+            android:background="@color/waveFormColor" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerInParent="true"
+            app:srcCompat="@drawable/small_blue_circle" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="16dp"
+            app:srcCompat="@drawable/small_blue_circle" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layCountdownAnimation"
-            android:background="@drawable/rectangle_rounded_corners"
             android:layout_width="180dp"
             android:layout_height="180dp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_marginTop="@dimen/marginMedium"
-                android:textColor="@color/white"
-                android:layout_width="160dp"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:minLines="2"
-                android:textSize="24sp"
-                android:layout_centerHorizontal="true"
-                android:text="@string/recording_starts_in"/>
+            android:layout_centerInParent="true"
+            android:background="@drawable/rectangle_rounded_corners"
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <TextView
                 android:id="@+id/tvCountdown"
-                android:textColor="@color/white"
-                android:textSize="64sp"
-                android:gravity="center"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="@dimen/marginMedium"
-                android:text="3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_bold"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="3"
+                android:textColor="@color/white"
+                android:textSize="64sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="HardcodedText" />
-        </RelativeLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/brandSecondary300" />
+        android:background="@color/white" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@color/brandSecondary400"
+        android:background="@color/white"
         android:gravity="center_horizontal"
         android:padding="@dimen/marginMedium">
 
@@ -85,26 +128,89 @@
             android:layout_centerHorizontal="true"
             android:fontFamily="@font/roboto_bold"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="@color/white"
-            android:textSize="28sp" />
+            android:textColor="@color/textPrimary"
+            android:textStyle="bold"
+            android:textSize="24sp" />
 
-
-        <Button
-            android:id="@+id/recordButton"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_below="@id/c_meter"
+        <TextView
+            android:id="@+id/textPlaybackTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/marginMedium"
-            android:background="@drawable/record_red" />
+            android:fontFamily="@font/roboto_bold"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@color/textPrimary"
+            android:textStyle="bold"
+            android:textSize="24sp" />
 
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/recordButton"
-            android:layout_margin="@dimen/marginMedium"
-            android:orientation="horizontal">
+            android:layout_below="@id/c_meter"
+            android:layout_marginStart="@dimen/marginMedium"
+            android:layout_marginTop="@dimen/marginSmall"
+            android:layout_marginEnd="@dimen/marginMedium"
+            android:gravity="bottom"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutPlay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageButton
+                    android:id="@+id/rewButton"
+                    style="@android:style/MediaButton"
+                    android:layout_width="64dip"
+                    android:layout_height="52dip"
+                    android:layout_marginEnd="16dp"
+                    android:layout_toStartOf="@id/playButton"
+                    android:contentDescription="@string/rewind"
+                    android:src="@drawable/rewind_button"
+                    app:layout_constraintEnd_toStartOf="@+id/playButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/playButton"
+                    style="@android:style/MediaButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="52dip"
+                    android:layout_centerHorizontal="true"
+                    android:contentDescription="@string/play"
+                    android:src="@drawable/play_button"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/ffwdButton"
+                    style="@android:style/MediaButton"
+                    android:layout_width="64dip"
+                    android:layout_height="52dip"
+                    android:layout_marginStart="16dp"
+                    android:layout_toEndOf="@id/playButton"
+                    android:contentDescription="@string/ffwd"
+                    android:src="@drawable/forward_button"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/playButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Button
+                android:id="@+id/recordButton"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/marginMedium"
+                android:background="@drawable/record_red_btn"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layoutPlay" />
 
 
             <androidx.appcompat.widget.AppCompatButton
@@ -112,15 +218,18 @@
                 style="@android:style/Widget.Material.Button.Borderless.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:background="@drawable/bg_round_yellow_ripple"
+                android:background="@drawable/btn_primary_background"
                 android:fontFamily="@font/roboto_medium"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginTop="24dp"
                 android:text="@string/go_to_publish"
                 android:textAllCaps="false"
-                android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/textSizeNormal" />
+                android:textColor="@color/text_btn_primary_color"
+                android:textSize="@dimen/textSize14" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </RelativeLayout>

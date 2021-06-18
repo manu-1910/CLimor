@@ -10,8 +10,8 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.limor.app.GendersQuery
 import com.limor.app.R
-import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
+import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import kotlinx.android.synthetic.main.fragment_new_auth_gender.*
 
 class FragmentGender : FragmentWithLoading() {
@@ -29,6 +29,7 @@ class FragmentGender : FragmentWithLoading() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setOnClickListeners()
+        saveNavigationBreakPoint()
         toggleGender.isEnabled = false
     }
 
@@ -58,10 +59,6 @@ class FragmentGender : FragmentWithLoading() {
         btnContinue.setOnClickListener {
             it.findNavController()
                 .navigate(R.id.action_fragment_new_auth_gender_to_fragment_new_auth_categories)
-        }
-
-        btnBack.setOnClickListener {
-            AuthActivityNew.popBackStack(requireActivity())
         }
 
         btnSkip.setOnClickListener {
@@ -101,5 +98,9 @@ class FragmentGender : FragmentWithLoading() {
             else -> R.id.btnGender1
         }
         toggleGender.check(checkedId)
+    }
+
+    private fun saveNavigationBreakPoint() {
+        model.saveNavigationBreakPoint(requireContext(), NavigationBreakpoints.PREFERENCE_COLLECTION.destination)
     }
 }

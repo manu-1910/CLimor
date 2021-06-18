@@ -6,7 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
+
 import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.scenes.main.fragments.FeedItemsListFragment
@@ -64,8 +65,7 @@ class UserLikedPodcastsFragment(private val userID: Int) : FeedItemsListFragment
     override fun bindViewModel() {
         super.bindViewModel()
         activity?.let { fragmentActivity ->
-            viewModelGetLikedPodcasts = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelGetLikedPodcasts = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(GetUserLikedPodcastsViewModel::class.java)
         }
         resetFeedViewModelVariables()

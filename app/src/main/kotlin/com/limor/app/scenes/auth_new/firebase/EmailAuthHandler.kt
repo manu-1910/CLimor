@@ -114,7 +114,7 @@ object EmailAuthHandler {
         }
     }
 
-    const val dynamicLink = "https://limor.page.link/open"
+    const val dynamicLink = "https://limorapp.page.link/open"
 
     fun sendFirebaseDynamicLinkToEmailScoped(context: Context, email: String, scope: CoroutineScope) {
         scope.launch {
@@ -174,7 +174,8 @@ object EmailAuthHandler {
             val task =
             auth.signInWithEmailLink(email, emailLink)
             try {
-                Tasks.await(task)
+                val result = Tasks.await(task)
+
                 _handleEmailDynamicLinkLiveData.postValue(true)
                 MAIN {
                     Handler().postDelayed({ _handleEmailDynamicLinkLiveData.postValue(null) }, 500)

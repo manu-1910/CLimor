@@ -14,14 +14,14 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.jakewharton.rxbinding4.widget.textChangeEvents
+import com.jakewharton.rxbinding3.widget.textChangeEvents
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
@@ -41,7 +41,7 @@ import com.limor.app.service.AudioService
 import com.limor.app.uimodels.UICategory
 import com.limor.app.uimodels.UIPodcast
 import com.limor.app.uimodels.UIUser
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_discover.*
 import org.jetbrains.anko.cancelButton
@@ -504,20 +504,16 @@ class DiscoverFragment : BaseFragment(),
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
-            viewModelDiscover = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDiscover = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DiscoverViewModel::class.java)
 
-            viewModelCreatePodcastReport = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreatePodcastReport = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastReportViewModel::class.java)
 
-            viewModelCreateUserReport = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreateUserReport = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreateUserReportViewModel::class.java)
 
-            viewModelDeletePodcast = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeletePodcast = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastViewModel::class.java)
         }
     }

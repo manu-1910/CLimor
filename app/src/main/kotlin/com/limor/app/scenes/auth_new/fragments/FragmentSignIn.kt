@@ -191,7 +191,7 @@ class FragmentSignIn : Fragment() {
         model.currentEmailIsInUseLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
             if (it) {
-                //everything is ok, user email exists on firebase DB
+//                everything is ok, user email exists on firebase DB
                 model.sendFirebaseDynamicLinkToEmail(requireContext())
                 return@Observer
             }

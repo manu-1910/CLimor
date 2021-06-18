@@ -1,5 +1,0 @@
-mutation UpdateFollowingUsersData($followingUsers: [String]!) {
-    updateFollowingUsersData(followingUsers:$followingUsers){
-        status, message
-    }
-}

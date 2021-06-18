@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -776,40 +776,31 @@ abstract class FeedItemsListFragment : BaseFragment() {
 
     protected open fun bindViewModel() {
         activity?.let { fragmentActivity ->
-            viewModelCreatePodcastLike = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreatePodcastLike = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastLikeViewModel::class.java)
 
-            viewModelDeletePodcastLike = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeletePodcastLike = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastLikeViewModel::class.java)
 
-            viewModelCreatePodcastRecast = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreatePodcastRecast = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastRecastViewModel::class.java)
 
-            viewModelDeletePodcastRecast = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeletePodcastRecast = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastRecastViewModel::class.java)
 
-            viewModelCreatePodcastReport = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreatePodcastReport = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastReportViewModel::class.java)
 
-            viewModelCreateUserReport = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreateUserReport = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreateUserReportViewModel::class.java)
 
-            viewModelDeletePodcast = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeletePodcast = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastViewModel::class.java)
 
-            viewModelCreateBlockedUser = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreateBlockedUser = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreateBlockedUserViewModel::class.java)
 
-            viewModelGetPodcastById = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelGetPodcastById = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(GetPodcastByIdViewModel::class.java)
         }
     }

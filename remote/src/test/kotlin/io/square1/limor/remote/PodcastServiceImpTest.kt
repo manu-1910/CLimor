@@ -6,12 +6,12 @@ import io.square1.limor.remote.services.RemoteServiceConfig
 import io.square1.limor.remote.services.comment.CommentService
 import io.square1.limor.remote.services.comment.CommentServiceImp
 import io.square1.limor.remote.services.podcast.PodcastServiceImp
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import org.junit.Test
 
 
 
-@ImplicitReflectionSerializer
+
 class PodcastServiceImpTest{
     private lateinit var podcastService: PodcastServiceImp
 //    private val baseURL = "https://limor-api-staging.herokuapp.com/api/v1/podcasts/"

@@ -8,7 +8,7 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.App
@@ -507,49 +507,41 @@ class AudioPlayerFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
-            viewModelFeed = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelFeed = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(FeedViewModel::class.java)
         }
 
         activity?.let { fragmentActivity ->
-            viewModelFeedByTag = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelFeedByTag = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(FeedByTagViewModel::class.java)
         }
 
         activity?.let { fragmentActivity ->
-            viewModelCreatePodcastLike = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreatePodcastLike = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastLikeViewModel::class.java)
         }
 
         activity?.let { fragmentActivity ->
-            viewModelDeletePodcastLike = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeletePodcastLike = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastLikeViewModel::class.java)
         }
 
         activity?.let { fragmentActivity ->
-            viewModelDeletePodcast = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeletePodcast = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastViewModel::class.java)
         }
 
         activity?.let { fragmentActivity ->
-            viewModelCreatePodcastReport = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreatePodcastReport = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastReportViewModel::class.java)
         }
 
         activity?.let { fragmentActivity ->
-            viewModelCreatePodcastRecast = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreatePodcastRecast = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastRecastViewModel::class.java) }
 
         activity?.let { fragmentActivity ->
-            viewModelDeletePodcastRecast = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeletePodcastRecast = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastRecastViewModel::class.java) }
     }
 

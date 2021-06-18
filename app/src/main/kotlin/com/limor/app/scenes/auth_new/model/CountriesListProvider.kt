@@ -3,6 +3,7 @@ package com.limor.app.scenes.auth_new.model
 import android.content.res.AssetManager
 import com.limor.app.scenes.auth_new.data.Country
 import org.json.JSONArray
+import timber.log.Timber
 import java.io.IOException
 import java.nio.charset.Charset
 
@@ -22,7 +23,7 @@ class CountriesListProvider {
             inputStream.close()
             String(buffer, Charset.forName("UTF-8"))
         } catch (ex: IOException) {
-            ex.printStackTrace()
+            Timber.e(ex)
             null
         }
         return json

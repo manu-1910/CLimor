@@ -1,0 +1,7 @@
+mutation UpdateUserOnboardingStatusMutation($nextStep:String) {
+    updateUserOnboardingStatus( userOnboardingStatus:{
+        nextStep:$nextStep
+    }){
+        message, status
+    }
+}

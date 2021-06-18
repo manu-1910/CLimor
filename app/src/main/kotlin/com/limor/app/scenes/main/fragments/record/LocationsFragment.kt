@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -52,14 +52,17 @@ class LocationsFragment : BaseFragment() {
     var app: App? = null
 
 
-
     companion object {
         val TAG: String = LocationsFragment::class.java.simpleName
         fun newInstance() = LocationsFragment()
     }
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_locations, container, false)
 
@@ -88,12 +91,10 @@ class LocationsFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let {
-            locationsViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            locationsViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(LocationsViewModel::class.java)
 
-            publishViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            publishViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(PublishViewModel::class.java)
         }
     }
@@ -120,22 +121,20 @@ class LocationsFragment : BaseFragment() {
             }
             findNavController().popBackStack()
         }
-
-
-
         //Search View
-        search_view.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+        search_view.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
-                if (newText.isNotEmpty() && newText.length > 3){
+                if (newText.isNotEmpty() && newText.length > 3) {
                     searchLocations(newText)
                 }
                 return false
             }
 
             override fun onQueryTextSubmit(query: String): Boolean {
-                if (query.isNotEmpty() && query.length > 3){
+                if (query.isNotEmpty() && query.length > 3) {
                     searchLocations(query)
-                }else{
+                } else {
                     toast(getString(R.string.min_3_chars))
                 }
                 return false
@@ -186,7 +185,7 @@ class LocationsFragment : BaseFragment() {
             }
         }
         val myLocation = MyLocation()
-        myLocation.getLocation(context!!, locationResult)
+        myLocation.getLocation(requireContext(), locationResult)
     }
 
 
@@ -197,7 +196,7 @@ class LocationsFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
 
@@ -214,14 +213,14 @@ class LocationsFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
         output.errorMessage.observe(this, Observer {
             pbSignUp?.visibility = View.GONE
             view?.hideKeyboard()
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+            CommonsKt.handleOnApiError(app!!, requireContext(), this, it)
         })
     }
 
@@ -233,17 +232,30 @@ class LocationsFragment : BaseFragment() {
             object : LocationsAdapter.OnItemClickListener {
                 override fun onItemClick(item: UILocations) {
 
-                    locationSelectedItem?.isSelected = false //Des-select previous selected item
+                    // locationSelectedItem?.isSelected = false //Des-select previous selected item
                     locationSelectedItem = item
 
-                    for (location in listLocations) {
+                    /*for (location in listLocations) {
                         if (item.address == location.address) {
-                            listLocations[listLocations.indexOf(item)].isSelected = !listLocations[listLocations.indexOf(item)].isSelected
+                            listLocations[listLocations.indexOf(item)].isSelected =
+                                !listLocations[listLocations.indexOf(
+                                    item
+                                )].isSelected
                             break
                         }
                     }
 
-                    rvLocations?.adapter?.notifyDataSetChanged()
+                    rvLocations?.adapter?.notifyDataSetChanged()*/
+
+                    locationsViewModel.localListLocations.clear()
+
+                    locationSelectedItem.let {
+                        if (it != null) {
+                            locationsViewModel.locationSelectedItem = it
+                            publishViewModel.locationSelectedItem = it
+                        }
+                    }
+                    findNavController().popBackStack()
                 }
             })
     }

@@ -10,13 +10,12 @@ import android.provider.Settings.Secure
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.FirebaseApp
-import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.installations.FirebaseInstallations
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
@@ -75,9 +74,6 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
         //Initialize Shared Preferences to store device firebase token
         sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-        //Initialize Firebase Instance
-        FirebaseApp.initializeApp(this)
-
         bindViewModel()
 
         initApiCallGetUser()
@@ -133,12 +129,10 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
 
     private fun bindViewModel() {
-        getUserViewModel = ViewModelProviders
-            .of(this, viewModelFactory)
+        getUserViewModel = ViewModelProvider(this, viewModelFactory)
             .get(GetUserViewModel::class.java)
 
-        pushNotificationsViewModel = ViewModelProviders
-            .of(this, viewModelFactory)
+        pushNotificationsViewModel = ViewModelProvider(this, viewModelFactory)
             .get(PushNotificationsViewModel::class.java)
     }
 
@@ -166,7 +160,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
             }
         }
 
-        navController.addOnDestinationChangedListener { _,_,_ ->
+        navController.addOnDestinationChangedListener { _, _, _ ->
             when (navController.currentDestination?.label) {
                 HomeFragment.TAG -> {
                     showHomeToolbar(getString(R.string.title_home))
@@ -226,26 +220,26 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
         toolbarProfile.visibility = View.GONE
 //        when (toolbarTitle) {
 //            getString(R.string.title_home) -> {
-                //viewModel.unreadCountCentres = 0
-                hideMainToolbar(false)
-                toolbarDiscover.visibility = View.GONE
-                toolbarProfile.visibility = View.GONE
+        //viewModel.unreadCountCentres = 0
+        hideMainToolbar(false)
+        toolbarDiscover.visibility = View.GONE
+        toolbarProfile.visibility = View.GONE
 
-                tvToolbarTitle?.text = toolbarTitle
+        tvToolbarTitle?.text = toolbarTitle
 
-                btnToolbarLeft?.visibility = View.GONE
-                btnToolbarLeft?.onClick { navController.popBackStack() }
+        btnToolbarLeft?.visibility = View.GONE
+        btnToolbarLeft?.onClick { navController.popBackStack() }
 
-                /*badgeVisibility()
-                badgeViewingVisibility()
-                badgeLeadVisibility()
-                badgeCentreVisibility()*/
+        /*badgeVisibility()
+        badgeViewingVisibility()
+        badgeLeadVisibility()
+        badgeCentreVisibility()*/
 
-                btnToolbarRight?.visibility = View.GONE
-                btnToolbarRight?.text = ""
-                btnToolbarRight?.onClick { toast("right button clicked") }
+        btnToolbarRight?.visibility = View.GONE
+        btnToolbarRight?.text = ""
+        btnToolbarRight?.onClick { toast("right button clicked") }
 
-                bottom_navigation_view?.visibility = View.VISIBLE
+        bottom_navigation_view?.visibility = View.VISIBLE
 //            }
 //            getString(R.string.title_discover) -> {
 //                //viewModel.unreadCountLeads = 0
@@ -356,7 +350,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
     }
 
     private fun getFirebaseInstance() {
-        FirebaseInstanceId.getInstance().instanceId
+        FirebaseInstallations.getInstance().getToken(true)
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
                     //Timber.e("getInstanceId failed %s", task.exception)

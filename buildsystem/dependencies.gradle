@@ -1,5 +1,4 @@
 def addRepos(RepositoryHandler handler) {
-    handler.maven { url 'https://maven.fabric.io/public' }
     handler.jcenter()
     handler.mavenCentral()
     handler.maven { url "https://jitpack.io" }
@@ -17,48 +16,58 @@ ext.build_versions = build_versions
 ext.deps = [:]
 def versions = [:]
 //Google
-versions.support = "1.0.0"
-versions.supportv4 = "1.0.0-beta01"
-versions.support_livedata = "2.1.0"
-versions.support_work = "1.0.0-rc01"
-versions.material = "1.3.0"
-versions.multidex = "2.0.0"
-versions.android_gradle_plugin = "3.3.0"
-versions.constraint_layout = "1.1.2"
-versions.google_services = "16.0.0"
-versions.google_services_plugin = "4.2.0"
+versions.annotations = "1.2.0"
+versions.app_compat = "1.2.0"
+versions.recyclerview = "1.2.0"
+versions.cardview = "1.0.0"
+versions.vector_drawable = "1.1.0"
+versions.animatedvector_drawable = "1.1.0"
+versions.preferences = "1.1.0"
+versions.grid_view = "1.0.0"
+versions.pallete = "1.0.0"
+versions.leanback = "1.0.0"
+versions.customtabs = "1.3.0"
+versions.percent = "1.0.0"
+versions.swiperefreshlayout = "1.1.0"
+versions.transition = "1.4.1"
+versions.navigation = '2.3.5'
+
+versions.lifecycle = "2.3.1"
+versions.arch = "2.1.0"
+versions.support_work = "1.0.1"
+versions.material = "1.4.0-rc01"
+versions.multidex = "2.0.1"
+versions.android_gradle_plugin = "4.2.0"
+versions.constraint_layout = "2.0.4"
+versions.google_services_location = "18.0.0"
+versions.google_services_vision = "20.1.3"
+versions.google_services_maps = "17.0.1"
+versions.google_services_places = "17.0.0"
+versions.google_services_ads = "20.2.0"
+versions.google_services_plugin = "4.3.8"
 versions.dagger = "2.21"
 versions.gson = "2.7"
-versions.map_services = "0.9.1"
-versions.map_utils = "0.5+"
-versions.coordinator = "1.0.0"
+versions.map_services = "0.18.1"
+versions.map_utils = "2.2.3"
+versions.coordinator = "1.1.0"
 
 //Firebase
-versions.firebase_core = "16.0.8"
-versions.firebase_firestore = "17.1.1"
-versions.firebase_crashlytics = "2.9.5"
-versions.firebase_auth = "20.0.0"
-versions.firebase_messaging = "17.3.4"
-versions.firebase_invites = "16.0.4"
-versions.firebase_functions = "16.1.1"
-versions.firebase_jobdispatcher = "0.8.5"
-versions.firebase_ads = "17.2.1"
-versions.firebase_dynamic_links = "19.1.1"
+versions.firebase_bom = "28.1.0"
+versions.firebase_crashlytics_plugin = "2.7.0"
 
 //Kotlin
-versions.kotlin = "1.3.50"
+versions.kotlin = "1.5.10"
 versions.rx_kotlin = "2.3.0"
 versions.anko = "0.10.8"
-versions.serialization_runtime = "0.10.0"
+versions.serialization_runtime = "1.2.1"
 
 //Third party libraries
 versions.rxjava2 = "2.2.4"
 versions.rx_android = "2.1.0"
 versions.rx_location = "1.0.5"
-versions.rx_binding = "3.0.0-alpha1"
+versions.rx_binding = "3.1.0"
 versions.retrofit = "2.5.0"
 versions.ok_http = "3.12.0"
-versions.fabric = "1.+"
 versions.mockwebserver = versions.ok_http
 versions.realm = "5.9.0"
 versions.job_queue = "2.0.1"
@@ -77,8 +86,7 @@ versions.glide = "4.8.0"
 versions.javax_annotation = "1.0"
 versions.javax_inject = "1"
 versions.timber = "4.7.1"
-versions.crashlytics = "2.10.1@aar"
-versions.kotlinx_converter = "0.2.0"
+versions.kotlinx_converter = "0.8.0"
 versions.event_bus = "3.2.0"
 
 
@@ -115,44 +123,47 @@ versions.shimmerlayout = '2.1.0'
 //Merlin connectivity
 versions.merlin = '1.2.0'
 
-versions.navigation = '1.0.0'
+versions.superbottomsheet = '2.0.0'
+versions.circle_progress_bar = '3.0.3'
+versions.groupie = '2.9.0'
 
 def support = [:]
-support.annotations = "androidx.annotation:annotation:$versions.support"
-support.app_compat = "androidx.appcompat:appcompat:$versions.support"
-support.recyclerview = "androidx.recyclerview:recyclerview:$versions.support"
-support.cardview = "androidx.cardview:cardview:$versions.support"
+support.annotations = "androidx.annotation:annotation:$versions.annotations"
+support.app_compat = "androidx.appcompat:appcompat:$versions.app_compat"
+support.recyclerview = "androidx.recyclerview:recyclerview:$versions.recyclerview"
+support.cardview = "androidx.cardview:cardview:$versions.cardview"
 support.design = "com.google.android.material:material:$versions.material"
-support.core_utils = "androidx.legacy:legacy-support-core-utils:$versions.support"
-support.supportv4 = "androidx.legacy:legacy-support-v4:$versions.supportv4"
 support.constraint_layout = "androidx.constraintlayout:constraintlayout:$versions.constraint_layout"
-support.vector_drawable = "androidx.vectordrawable:vectordrawable:$versions.support"
-support.grid_view = "androidx.gridlayout:gridlayout:$versions.support"
-support.pallete = "androidx.palette:palette:$versions.support"
-support.preferences = "androidx.preference:preference:$versions.support"
-support.leanback = "androidx.leanback:leanback:$versions.support"
-support.animatedvector_drawable = "androidx.vectordrawable:vectordrawable-animated:$versions.support"
-support.customtabs = "androidx.browser:browser:$versions.support"
-support.percent = "androidx.percentlayout:percentlayout:$versions.support"
-support.swiperefreshlayout = "androidx.swiperefreshlayout:swiperefreshlayout:$versions.support"
-support.transition = "androidx.transition:transition:$versions.support"
+support.vector_drawable = "androidx.vectordrawable:vectordrawable:$versions.vector_drawable"
+support.grid_view = "androidx.gridlayout:gridlayout:$versions.grid_view"
+support.pallete = "androidx.palette:palette:$versions.pallete"
+support.preferences = "androidx.preference:preference:$versions.preferences"
+support.leanback = "androidx.leanback:leanback:$versions.leanback"
+support.animatedvector_drawable = "androidx.vectordrawable:vectordrawable-animated:$versions.animatedvector_drawable"
+support.customtabs = "androidx.browser:browser:$versions.customtabs"
+support.percent = "androidx.percentlayout:percentlayout:$versions.percent"
+support.swiperefreshlayout = "androidx.swiperefreshlayout:swiperefreshlayout:$versions.swiperefreshlayout"
+support.transition = "androidx.transition:transition:$versions.transition"
 support.multidex = "androidx.multidex:multidex:$versions.multidex"
 support.workManager = "android.arch.work:work-runtime:$versions.support_work"
 support.coordinator = "androidx.coordinatorlayout:coordinatorlayout:$versions.coordinator"
+support.navigation = "androidx.navigation:navigation-ui-ktx:$versions.navigation"
+support.navigation_fragment = "androidx.navigation:navigation-fragment-ktx:$versions.navigation"
 deps.support = support
 
 def lifecycle = [:]
-lifecycle.runtime = "androidx.lifecycle:lifecycle-runtime:$versions.support_livedata"
-lifecycle.common = "androidx.lifecycle:lifecycle-common:$versions.support_livedata"
+lifecycle.viewmodel = "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
+lifecycle.livedata = "androidx.lifecycle:lifecycle-livedata-ktx:$versions.lifecycle"
 lifecycle.extensions = "androidx.lifecycle:lifecycle-extensions:$versions.support_livedata"
-lifecycle.reactive = "androidx.lifecycle:lifecycle-reactivestreams:$versions.support_livedata"
-lifecycle.java8 = "androidx.lifecycle:lifecycle-common-java8$versions.support_livedata"
-lifecycle.compiler = "androidx.lifecycle:lifecycle-compiler:$versions.support_livedata"
+// Lifecycles only (without ViewModel or LiveData)
+lifecycle.runtime = "androidx.lifecycle:lifecycle-runtime-ktx:$versions.lifecycle"
+// optional - ReactiveStreams support for LiveData
+lifecycle.reactive = "androidx.lifecycle:lifecycle-reactivestreams-ktx:$versions.lifecycle"
+// Annotation processor
+lifecycle.compiler = "androidx.lifecycle:lifecycle-compiler:$versions.lifecycle"
+// optional - Test helpers for LiveData
+lifecycle.testing = "androidx.arch.core:core-testing:$versions.arch"
 deps.lifecycle = lifecycle
-
-def arch_core = [:]
-arch_core.testing = "androidx.arch.core:core-testing:$versions.support_livedata"
-deps.arch_core = arch_core
 
 def retrofit = [:]
 retrofit.runtime = "com.squareup.retrofit2:retrofit:$versions.retrofit"
@@ -194,31 +205,35 @@ deps.mockito = mockito
 
 def google_services = [:]
 google_services.plugin = "com.google.gms:google-services:$versions.google_services_plugin"
-google_services.maps = "com.google.android.gms:play-services-maps:$versions.google_services"
-google_services.location = "com.google.android.gms:play-services-location:$versions.google_services"
-google_services.places = "com.google.android.gms:play-services-places:$versions.google_services"
-google_services.vision = "com.google.android.gms:play-services-vision:$versions.google_services"
+google_services.maps = "com.google.android.gms:play-services-maps:$versions.google_services_maps"
+google_services.location = "com.google.android.gms:play-services-location:$versions.google_services_location"
+google_services.places = "com.google.android.gms:play-services-places:$versions.google_services_places"
+google_services.vision = "com.google.android.gms:play-services-vision:$versions.google_services_vision"
 google_services.map_services = "com.google.maps:google-maps-services:$versions.map_services"
 google_services.map_utils = "com.google.maps.android:android-maps-utils:$versions.map_utils"
+google_services.ads = "com.google.android.gms:play-services-ads:$versions.google_services_ads"
 deps.google_services = google_services
 
 def firebase = [:]
-firebase.jobdispatcher = "com.firebase:firebase-jobdispatcher:$versions.firebase_jobdispatcher"
-firebase.messaging = "com.google.firebase:firebase-messaging:$versions.firebase_messaging"
-firebase.core = "com.google.firebase:firebase-core:$versions.firebase_core"
-firebase.firestore = "com.google.firebase:firebase-firestore:$versions.firebase_firestore"
-firebase.crashlytics = "com.crashlytics.sdk.android:crashlytics:$versions.firebase_crashlytics"
-firebase.auth = "com.google.firebase:firebase-auth:$versions.firebase_auth"
-firebase.invites = "com.google.firebase:firebase-invites:$versions.firebase_invites"
-firebase.functions = "com.google.firebase:firebase-functions:$versions.firebase_functions"
-firebase.firebase_ads = "com.google.firebase:firebase-ads:$versions.firebase_ads"
-firebase.dynamic_links = "com.google.firebase:firebase-dynamic-links:$versions.firebase_dynamic_links"
+//implementation platform(deps.firebase.bom)
+firebase.bom = "com.google.firebase:firebase-bom:$versions.firebase_bom"
+firebase.messaging = "com.google.firebase:firebase-messaging-ktx"
+firebase.analytics = "com.google.firebase:firebase-analytics-ktx"
+firebase.core = "com.google.firebase:firebase-core"
+firebase.firestore = "com.google.firebase:firebase-firestore-ktx"
+firebase.crashlytics = "com.google.firebase:firebase-crashlytics-ktx"
+firebase.crashlytics_plugin = "com.google.firebase:firebase-crashlytics-gradle:$versions.firebase_crashlytics_plugin"
+firebase.auth = "com.google.firebase:firebase-auth-ktx"
+firebase.functions = "com.google.firebase:firebase-functions-ktx"
+firebase.firebase_ads = "com.google.firebase:firebase-ads"
+firebase.dynamic_links = "com.google.firebase:firebase-dynamic-links-ktx"
 deps.firebase = firebase
 
 def kotlin = [:]
 kotlin.stdlib = "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
 kotlin.serialization = "org.jetbrains.kotlin:kotlin-serialization:$versions.kotlin"
-kotlin.serialization_runtime = "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$versions.serialization_runtime"
+kotlin.serialization_runtime = "org.jetbrains.kotlinx:kotlinx-serialization-json:$versions.serialization_runtime"
+kotlin.serialization_properties = "org.jetbrains.kotlinx:kotlinx-serialization-properties-jvm:$versions.serialization_runtime"
 kotlin.test = "org.jetbrains.kotlin:kotlin-test-junit:$versions.kotlin"
 kotlin.plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
 kotlin.rx = "io.reactivex.rxjava2:rxkotlin:$versions.rx_kotlin"
@@ -235,6 +250,11 @@ anko.appcompat = "org.jetbrains.anko:anko-appcompat-v7:$versions.anko"
 anko.design = "org.jetbrains.anko:anko-design:$versions.anko"
 deps.anko = anko
 
+def groupie = [:]
+groupie.core = "com.github.lisawray.groupie:groupie:$versions.groupie"
+groupie.viewbinding = "com.github.lisawray.groupie:groupie-viewbinding:$versions.groupie"
+deps.groupie = groupie
+
 deps.junit = "junit:junit:$versions.junit"
 
 deps.mock_web_server = "com.squareup.okhttp3:mockwebserver:$versions.mockwebserver"
@@ -246,7 +266,6 @@ deps.rx_binding = "com.jakewharton.rxbinding3:rxbinding:$versions.rx_binding"
 deps.android_gradle_plugin = "com.android.tools.build:gradle:$versions.android_gradle_plugin"
 deps.gson = "com.google.code.gson:gson:$versions.gson"
 deps.realm = "io.realm:realm-gradle-plugin:$versions.realm"
-deps.fabric = "io.fabric.tools:gradle:$versions.fabric"
 deps.job_queue = "com.birbit:android-priority-jobqueue:$versions.job_queue"
 deps.ok_http = "com.squareup.okhttp3:okhttp:$versions.ok_http"
 deps.ok_http_sse = "com.squareup.okhttp3:okhttp-sse:$versions.ok_http"
@@ -254,7 +273,6 @@ deps.calligraphy = "io.github.inflationx:calligraphy3:$versions.calligraphy"
 deps.viewpump = "io.github.inflationx:viewpump:$versions.viewpump"
 deps.realm_fields_names_helper = "dk.ilios:realmfieldnameshelper:$versions.realm_fields_names_helper"
 deps.circle_image_view = "de.hdodenhof:circleimageview:$versions.circle_image_view"
-deps.fabric_sdk = "io.fabric.sdk.android:fabric:$versions.fabric_sdk"
 deps.okio = "com.squareup.okio:okio:$versions.okio"
 deps.pdf_viewer = "com.github.barteksc:android-pdf-viewer:$versions.pdf_viewer"
 deps.jwtdecode = "com.auth0.android:jwtdecode:$versions.jwtdecode"
@@ -267,16 +285,16 @@ deps.glide_annotation = "com.github.bumptech.glide:compiler:$versions.glide"
 deps.javaxAnnotation = "javax.annotation:jsr250-api:$versions.javax_annotation"
 deps.javaxInject = "javax.inject:javax.inject:$versions.javax_inject"
 deps.timber = "com.jakewharton.timber:timber:$versions.timber"
-deps.crashlytics = "com.crashlytics.sdk.android:crashlytics:$versions.crashlytics"
 deps.simple_range_bar = "me.bendik.simplerangeview:simplerangeview:$versions.simplerangebar"
 deps.google_places = "com.google.android.libraries.places:places:$versions.googleplaces"
 deps.photo_view = "com.github.chrisbanes:PhotoView:$versions.photoview"
 deps.expansion_panel = "com.github.florent37:expansionpanel:$versions.expansionpanel"
 deps.circle_dots_indicator = "com.shuhart.bubblepagerindicator:bubblepagerindicator:$versions.circledotsindicator"
-deps.navigation = "android.arch.navigation:navigation-ui-ktx:$versions.navigation"
-deps.navigation_fragment = "android.arch.navigation:navigation-fragment-ktx:$versions.navigation"
 deps.skeleton = "com.ethanhua:skeleton:$versions.skeleton"
 deps.shimmerlayout = "io.supercharge:shimmerlayout:$versions.shimmerlayout"
 deps.merlin = "com.novoda:merlin:$versions.merlin"
 deps.event_bus = "org.greenrobot:eventbus:$versions.event_bus"
+deps.super_bottom_sheet = "com.github.andrefrsousa:SuperBottomSheet:$versions.superbottomsheet"
+deps.circular_progress_bar = "com.mikhaellopez:circularprogressbar:$versions.circle_progress_bar"
+
 ext.deps = deps

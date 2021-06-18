@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import com.jakewharton.rxbinding3.widget.textChanges
 import com.limor.app.App
@@ -105,12 +105,10 @@ class ChangePasswordFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let {
-            changePasswordViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            changePasswordViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(ChangePasswordViewModel::class.java)
 
-            signInViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            signInViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(SignViewModel::class.java)
         }
     }

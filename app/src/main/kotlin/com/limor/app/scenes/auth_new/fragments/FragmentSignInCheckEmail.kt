@@ -9,9 +9,10 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthViewModelNew
+import com.limor.app.scenes.auth_new.navigation.AuthNavigator
+import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in_check_email.*
 
 
@@ -34,10 +35,28 @@ class FragmentSignInCheckEmail : Fragment() {
     private fun subscribeToViewModel() {
         model.handleEmailDynamicLinkLiveData.observe(viewLifecycleOwner, Observer {
             if(it == true){
-                btnFinish.findNavController()
-                    .navigate(R.id.action_fragment_new_auth_sign_in_email_to_destination_main_activity)
-                requireActivity().finish()
+                model.checkJwtForLuidAndProceed()
             }
+        })
+
+        model.userInfoProviderErrorLiveData.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+        })
+
+        model.createUserLiveData.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            model.saveNavigationBreakPoint(requireContext(), NavigationBreakpoints.ACCOUNT_CREATION.destination)
+            AuthNavigator.navigateToFragmentByNavigationBreakpoints(
+                requireActivity(),
+                NavigationBreakpoints.ACCOUNT_CREATION.destination
+            )
+        })
+
+        model.navigationBreakPointLiveData.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            model.saveNavigationBreakPoint(requireContext(), it)
+            AuthNavigator.navigateToFragmentByNavigationBreakpoints(requireActivity(), it)
         })
     }
 

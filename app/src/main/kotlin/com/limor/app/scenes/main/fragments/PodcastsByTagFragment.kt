@@ -5,7 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
+
 import com.limor.app.scenes.main.fragments.podcast.PodcastsByTagActivity
 import com.limor.app.scenes.main.viewmodels.FeedByTagViewModel
 import com.limor.app.scenes.utils.CommonsKt
@@ -44,8 +45,7 @@ class PodcastsByTagFragment : FeedItemsListFragment() {
     override fun bindViewModel() {
         super.bindViewModel()
         activity?.let { fragmentActivity ->
-            viewModelFeedByTag = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelFeedByTag = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(FeedByTagViewModel::class.java)
         }
         resetFeedViewModelVariables()

@@ -34,7 +34,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      *
      * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
      */
-    override fun onMessageReceived(remoteMessage: RemoteMessage?) {
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
         val notification = remoteMessage!!.notification
         val data = remoteMessage.data
         try {
@@ -51,7 +51,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      * the previous token had been compromised. Note that this is called when the InstanceID token
      * is initially generated so this is where you would retrieve the token.
      */
-    override fun onNewToken(token: String?) {
+    override fun onNewToken(token: String) {
         sendRegistrationToServer(token)
     }
 

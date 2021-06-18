@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -227,16 +227,13 @@ class DiscoverAccountsFragment : BaseFragment(),
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
-            viewModelDiscoverAccounts = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDiscoverAccounts = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DiscoverAccountsViewModel::class.java)
 
-            viewModelCreateFriend = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreateFriend = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreateFriendViewModel::class.java)
 
-            viewModelDeleteFriend = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeleteFriend = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeleteFriendViewModel::class.java)
         }
     }

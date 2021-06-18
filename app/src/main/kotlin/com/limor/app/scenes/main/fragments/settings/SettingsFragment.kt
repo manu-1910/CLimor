@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
@@ -188,12 +188,10 @@ class SettingsFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let {
-            viewModelLogout = ViewModelProviders
-                .of(it, viewModelFactory)
+            viewModelLogout = ViewModelProvider(it, viewModelFactory)
                 .get(LogoutViewModel::class.java)
 
-            updateUserViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            updateUserViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(UpdateUserViewModel::class.java)
         }
     }

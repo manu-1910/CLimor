@@ -3,11 +3,11 @@ package com.limor.app.scenes.auth_new.model
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.limor.app.GendersQuery
+import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.apollo.showHumanizedErrorMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class GendersProvider(private val scope: CoroutineScope) {
     private var genders: List<GendersQuery.Gender> = mutableListOf()
@@ -38,15 +38,13 @@ class GendersProvider(private val scope: CoroutineScope) {
     private fun loadGendersRepo() {
         scope.launch {
             try {
-                delay(1000)
-
-                val response = MOCKED_GENDERS;//GeneralInfoRepository.fetchGenders()
+                delay(300) //Smooth animation transition between screens
+                val response = GeneralInfoRepository.fetchGenders()
                 genders = response!!
                 _genderLiveData.postValue(genders)
                 selectedGenderId = genders.first().id ?: 0
                 _gendersSelectionDone.postValue(true)
             } catch (e: Exception) {
-                Timber.e(e)
                 _gendersLiveDataError.postValue(showHumanizedErrorMessage(e))
             }
         }

@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -119,8 +119,7 @@ class DiscoverHashTagsFragment : BaseFragment(), DiscoverHashTagsAdapter.OnHashT
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
-            viewModelDiscoverHashTags = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDiscoverHashTags = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DiscoverHashTagsViewModel::class.java)
         }
     }

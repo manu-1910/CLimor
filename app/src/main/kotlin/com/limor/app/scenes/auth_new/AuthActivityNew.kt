@@ -9,12 +9,16 @@ import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 import android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.firebase.FacebookAuthHandler
+import com.limor.app.scenes.auth_new.navigation.AuthNavigator
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import kotlinx.android.synthetic.main.activity_auth_new.*
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class AuthActivityNew : AppCompatActivity() {
@@ -26,9 +30,16 @@ class AuthActivityNew : AppCompatActivity() {
         setContentView(R.layout.activity_auth_new)
         clActivityAuthNew.systemUiVisibility =
             SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        checkNavigationBreakPoint()
+    }
 
-//        FirebaseAuth.getInstance().firebaseAuthSettings
-//            .setAppVerificationDisabledForTesting(true)
+    private fun checkNavigationBreakPoint() {
+        lifecycleScope.launch {
+            val activity = this@AuthActivityNew
+            val breakpoint = PrefsHandler.loadNavigationBreakPoint(activity)
+                ?: return@launch
+            AuthNavigator.navigateToFragmentByNavigationBreakpoints(activity, breakpoint)
+        }
     }
 
     fun launchTermsUrl() {
@@ -63,7 +74,7 @@ class AuthActivityNew : AppCompatActivity() {
                 if (pendingDynamicLinkData != null) {
                     deepLink = pendingDynamicLinkData.link
                     Timber.d("DeepLink fetched $deepLink")
-                    model.handleEmailDynamicLink(this,  deepLink.toString())
+                    model.handleEmailDynamicLink(this, deepLink.toString())
                 }
             }
             .addOnFailureListener(this) { e -> Timber.e(e) }

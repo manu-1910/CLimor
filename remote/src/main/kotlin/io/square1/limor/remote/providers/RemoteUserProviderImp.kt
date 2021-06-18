@@ -7,12 +7,12 @@ import io.reactivex.Single
 import io.square1.limor.remote.mappers.asDataEntity
 import io.square1.limor.remote.mappers.asRemoteEntity
 import io.square1.limor.remote.services.user.UserServiceImp
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import providers.remote.RemoteUserProvider
 import javax.inject.Inject
 
 
-@ImplicitReflectionSerializer
+
 class RemoteUserProviderImp @Inject constructor(private val provider: UserServiceImp) : RemoteUserProvider {
 
     override fun userMe(): Single<GetUserResponseEntity> {

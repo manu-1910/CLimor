@@ -38,7 +38,7 @@ class WebViewFragment : BaseFragment() {
         configureWebView()
 
         //Load the url
-        wvMore?.loadUrl(arguments?.getString(getString(R.string.webViewKey)))
+        wvMore?.loadUrl(arguments?.getString(getString(R.string.webViewKey))!!)
 
     }
 

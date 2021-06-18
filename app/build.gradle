@@ -3,9 +3,9 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlinx-serialization'
-apply plugin: 'io.fabric'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.apollographql.apollo'
+apply plugin: 'com.google.firebase.crashlytics'
 
 apollo {
     // instruct the compiler to generate Kotlin models
@@ -27,8 +27,8 @@ android {
         targetSdkVersion build_versions.target_sdk
 
         applicationId globalConfiguration.androidApplicationId
-        versionCode 41
-        versionName "0.0.41"
+        versionCode 49
+        versionName "0.0.49"
 
         testInstrumentationRunner globalConfiguration.testInstrumentationRunner
         testApplicationId globalConfiguration.testApplicationId
@@ -49,7 +49,7 @@ android {
 
     signingConfigs {
         debug {
-//            storeFile file("${System.env.HOME}/dev/keystores/limor_dev.jks")
+            storeFile file("${System.env.HOME}/dev/keystores/limor_dev.jks")
             storeFile file("keystores/limor_dev.jks")
             storePassword DEV_PASSWORD
             keyAlias DEV_KEY_ALIAS
@@ -138,7 +138,7 @@ android {
             buildConfigField "int", "LIMOR_ACCOUNT_ID", '12'
 
             minifyEnabled true
-            debuggable true
+            debuggable false
             zipAlignEnabled true
             useProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -186,7 +186,6 @@ dependencies {
     implementation deps.support.annotations
     implementation deps.support.recyclerview
     implementation deps.support.cardview
-    implementation deps.support.core_utils
     implementation deps.support.constraint_layout
     implementation deps.support.coordinator
 
@@ -194,12 +193,14 @@ dependencies {
     implementation deps.google_services.maps
     implementation deps.google_services.map_utils
     implementation deps.google_services.map_services
+    implementation deps.google_services.ads
+    implementation deps.google_services.location
 
     // Architecture components
-    implementation deps.lifecycle.extensions
     implementation deps.lifecycle.reactive
-    implementation deps.support.supportv4
-    implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation deps.lifecycle.viewmodel
+    implementation deps.lifecycle.livedata
+    implementation deps.lifecycle.runtime
     implementation 'androidx.viewpager:viewpager:1.0.0'
     kapt deps.lifecycle.compiler
 
@@ -216,11 +217,12 @@ dependencies {
     kapt deps.dagger.compiler
 
     //Firebase
+    implementation platform(deps.firebase.bom)
+    implementation deps.firebase.analytics
     implementation deps.firebase.auth
     implementation deps.firebase.core
     implementation deps.firebase.messaging
     implementation deps.firebase.crashlytics
-    implementation deps.firebase.firebase_ads
     implementation deps.firebase.dynamic_links
 
     //rx
@@ -232,15 +234,13 @@ dependencies {
     // Third party
     implementation deps.gson
     implementation deps.timber
-    implementation(deps.crashlytics, { transitive = true })
-    implementation(deps.fabric_sdk, { transitive = true })
     implementation deps.glide
     kapt deps.glide_annotation
 
     // Unit testing
     testImplementation deps.junit
     testImplementation deps.mock_web_server
-    testImplementation(deps.arch_core.testing, {
+    testImplementation(deps.lifecycle.testing, {
         exclude group: 'androidx.appcompat', module: 'appcompat'
         exclude group: 'androidx.annotation', module: 'annotations'
         exclude group: 'androidx.legacy', module: 'legacy-support-core-utils'
@@ -248,7 +248,6 @@ dependencies {
         exclude group: 'androidx.lifecycle', module: 'lifecycle-common'
     })
     testImplementation deps.lifecycle.runtime
-    testImplementation deps.lifecycle.common
     testImplementation deps.mockito.core
     testImplementation deps.mockito.inline
     testImplementation deps.robolectric
@@ -271,12 +270,11 @@ dependencies {
         exclude group: 'androidx.annotation', module: 'annotations'
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
     })
-    androidTestImplementation(deps.arch_core.testing, {
+    androidTestImplementation(deps.lifecycle.testing, {
         exclude group: 'androidx.lifecycle', module: 'lifecycle-runtime'
         exclude group: 'androidx.lifecycle', module: 'lifecycle-common'
     })
     androidTestImplementation deps.lifecycle.runtime
-    androidTestImplementation deps.lifecycle.common
     androidTestImplementation deps.mockito.core, { exclude group: 'net.bytebuddy' }
     androidTestImplementation deps.atsl.runner
     androidTestImplementation deps.atsl.uiautomator
@@ -285,8 +283,8 @@ dependencies {
     api project(':remote')
     api project(':storage')
 
-    implementation deps.navigation
-    implementation deps.navigation_fragment
+    implementation deps.support.navigation
+    implementation deps.support.navigation_fragment
 
     //RangeBar
     //implementation deps.simple_range_bar
@@ -308,7 +306,8 @@ dependencies {
 
     //PhotoView visor with zoom
     //implementation deps.photo_view
-
+    implementation deps.super_bottom_sheet
+    implementation deps.circular_progress_bar
     // Date, Time & Money
     implementation 'joda-time:joda-time:2.9.9'
     implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
@@ -319,8 +318,8 @@ dependencies {
     //Popup menu view like UIMenuController
     implementation 'me.kareluo.ui:popmenu:1.1.0'
 
-    implementation 'com.github.esafirm.android-image-picker:imagepicker:2.2.0'
-    implementation 'com.github.esafirm.android-image-picker:rximagepicker:2.2.0'
+    implementation 'com.github.esafirm.android-image-picker:imagepicker:2.4.5'
+    implementation 'com.github.esafirm.android-image-picker:rximagepicker:2.4.5'
     implementation 'com.github.dhaval2404:imagepicker-support:1.7.1'
 
     // If you have a problem with Glide, please use the same Glide version or simply open an issue
@@ -334,7 +333,6 @@ dependencies {
     implementation 'com.amazonaws:aws-android-sdk-core:2.7.6'
     implementation 'com.amazonaws:aws-android-sdk-s3:2.7.6'
     implementation 'com.amazonaws:aws-android-sdk-ddb:2.7.6'
-    implementation 'com.google.firebase:firebase-analytics:17.4.4'
     //implementation 'com.github.squti:Android-Wave-Recorder:1.4.0'
 
     // Audio
@@ -349,12 +347,10 @@ dependencies {
     def socialview_version = "0.3-rc1"
     implementation "com.hendraanggrian.appcompat:socialview:$socialview_version"
     implementation "com.hendraanggrian.appcompat:socialview-commons:$socialview_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0"
 
     // viewpager 2
     implementation "androidx.viewpager2:viewpager2:1.0.0"
-    implementation "com.google.android.material:material:1.3.0-alpha02"
-
 
     // cropping image
     implementation 'com.github.yalantis:ucrop:2.2.6'
@@ -364,16 +360,16 @@ dependencies {
     //implementation 'com.github.xxjy:amr-wb-enc-android:1.0.0@aar'
     implementation 'com.arthenica:mobile-ffmpeg-full:4.2.2.LTS'
 
-    implementation 'com.jakewharton.rxbinding4:rxbinding-core:4.0.0'
-
     //Circle ImageView
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
     implementation 'com.android.volley:volley:1.1.1'
 
-    implementation 'androidx.core:core-ktx:1.3.2'
-    implementation "androidx.activity:activity-ktx:1.1.0"
-    implementation "androidx.fragment:fragment-ktx:1.2.0"
+    implementation 'androidx.core:core-ktx:1.5.0'
+
+    implementation 'com.github.zerobranch:SwipeLayout:1.3.1'
+    implementation "androidx.activity:activity-ktx:1.2.3"
+    implementation "androidx.fragment:fragment-ktx:1.3.4"
     implementation "com.googlecode.libphonenumber:libphonenumber:8.12.21"
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
@@ -382,6 +378,7 @@ dependencies {
 
     // The core runtime dependencies
     implementation("com.apollographql.apollo:apollo-runtime:2.5.6")
-
-    implementation 'com.github.hyuwah:DraggableView:1.0.0'
+    //decoding firebase JWT
+    implementation 'com.auth0.android:jwtdecode:2.0.0'
+//    implementation 'androidx.browser:browser:1.3.0'
 }

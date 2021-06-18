@@ -5,17 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
 import com.google.android.material.chip.Chip
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.LanguageWrapper
+import com.limor.app.scenes.auth_new.navigation.AuthNavigator
+import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import com.limor.app.scenes.utils.MAIN
 import kotlinx.android.synthetic.main.fragment_new_auth_languages.*
 
@@ -44,8 +46,7 @@ class FragmentLanguages : FragmentWithLoading() {
 
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
-            it.findNavController()
-                .navigate(R.id.action_fragment_new_auth_languages_to_fragment_new_auth_suggested_people)
+            model.updatePreferredInfo()
         }
 
         topAppBar.setNavigationOnClickListener {
@@ -87,6 +88,21 @@ class FragmentLanguages : FragmentWithLoading() {
 
         model.languagesSelectionDone.observe(viewLifecycleOwner, Observer {
             btnContinue.isEnabled = it
+        })
+
+        model.updatePreferredInfoLiveData.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            AuthNavigator.navigateToFragmentByNavigationBreakpoints(
+                requireActivity(),
+                NavigationBreakpoints.SHOW_PROFILES.destination
+            )
+//            cgLanguages.findNavController()
+//                .navigate(R.id.action_fragment_new_auth_languages_to_fragment_new_auth_suggested_people)
+        })
+
+        model.userInfoProviderErrorLiveData.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
         })
     }
 

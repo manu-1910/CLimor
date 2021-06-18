@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.facebook.*
 import com.facebook.login.LoginManager
@@ -94,7 +93,8 @@ class SignInFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (arguments?.containsKey("email") == true){
+
+        if (arguments != null && arguments?.containsKey("email")!!){
             emailFromForgotPassword = arguments?.get("email") as String
             if(!emailFromForgotPassword.isNullOrEmpty()){
                 edtSignInEmail.setText(emailFromForgotPassword)
@@ -114,28 +114,23 @@ class SignInFragment : BaseFragment() {
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
             viewModelSignInMail =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(SignViewModel::class.java)
 
             viewModelSignInFB =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(SignFBViewModel::class.java)
 
             viewModelMergeFacebookAccount =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(MergeFacebookAccountViewModel::class.java)
 
             viewModelSignUpFB =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(SignUpFBViewModel::class.java)
 
             viewModelCreateFriend =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(CreateFriendViewModel::class.java)
         }
     }

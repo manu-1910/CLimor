@@ -1,8 +1,10 @@
-mutation UpdateUserOnboardingDataMutation($gender: Int!, $categories: [Int!], $language: [String!]) {
-    updateUserOnboardingData(
+mutation UpdateUserOnboardingDataMutation($gender: Int, $categories: [Int], $language: [String]) {
+    updateUser(user:{
         gender:$gender,
         categories:$categories,
-        language: $language){
-            message, status
-        }
+        languages: $language,
+        userOnboardingStatus: {    nextStep: "SHOW_SUGGESTED_PROFILES"  }
+    }){
+        message, status
+    }
 }

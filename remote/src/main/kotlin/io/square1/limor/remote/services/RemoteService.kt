@@ -1,8 +1,6 @@
 package io.square1.limor.remote.services
 
 import io.square1.limor.remote.executors.JobExecutor
-import kotlinx.serialization.*
-import kotlinx.serialization.internal.StringDescriptor
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -54,22 +52,7 @@ abstract class RemoteService<T> constructor(c: Class<T>, private val config: Rem
     }
 
     private fun registerResponseDateFormatSerializer() {
-        registerSerializer(
-            "java.util.Date",
-            @Serializer(forClass = Date::class) object : KSerializer<Date> {
-                private val df: SimpleDateFormat = SimpleDateFormat(DATE_FORMAT_MASK)
 
-                override val descriptor: SerialDescriptor =
-                    StringDescriptor.withName("WithCustomDefault")
-
-                override fun serialize(encoder: Encoder, obj: Date) {
-                    encoder.encodeString(df.format(obj))
-                }
-
-                override fun deserialize(decoder: Decoder): Date {
-                    return df.parse(decoder.decodeString())
-                }
-            })
     }
 
 

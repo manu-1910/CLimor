@@ -11,9 +11,7 @@
         android:label="SetupPatronFragment"
         tools:layout="@layout/fragment_setup_patron">
 
-<!--        <argument-->
-<!--            android:name="user"-->
-<!--            app:type="com.limor.app.uimodels.UIUser" />-->
+
         <action
             android:id="@+id/action_setup_patron_to_select_category"
             app:destination="@id/setup_patron_select_category_fragment"
@@ -50,9 +48,6 @@
         android:label="SetupPatronSelectCategoryFragment"
         tools:layout="@layout/fragment_setup_patron_select_category">
 
-<!--        <argument-->
-<!--            android:name="user"-->
-<!--            app:type="com.limor.app.uimodels.UIUser" />-->
     </fragment>
 
     <fragment
@@ -61,9 +56,6 @@
         android:label="SetupPatronSettingsFragment"
         tools:layout="@layout/fragment_setup_patron_settings">
 
-<!--        <argument-->
-<!--            android:name="user"-->
-<!--            app:type="com.limor.app.uimodels.UIUser" />-->
     </fragment>
 
     <fragment
@@ -72,9 +64,6 @@
         android:label="SetupPatronPaymentFragment"
         tools:layout="@layout/fragment_setup_patron_payment">
 
-<!--        <argument-->
-<!--            android:name="user"-->
-<!--            app:type="com.limor.app.uimodels.UIUser" />-->
     </fragment>
 
     <fragment
@@ -83,16 +72,13 @@
         android:label="SetupPatronTiersFragment"
         tools:layout="@layout/fragment_setup_patron_tiers">
 
-<!--        <argument-->
-<!--            android:name="user"-->
-<!--            app:type="com.limor.app.uimodels.UIUser" />-->
-
         <action
             android:id="@+id/action_setup_patron_tiers_to_new_tier"
             app:destination="@id/setup_patron_new_tier_fragment"
             app:enterAnim="@anim/push_up_in_enter_no_alpha"
             app:exitAnim="@anim/no_anim"
             app:popExitAnim="@anim/push_down_out_pop_exit_no_alpha" />
+
     </fragment>
 
     <fragment
@@ -101,9 +87,6 @@
         android:label="SetupPatronNewTierFragment"
         tools:layout="@layout/fragment_setup_patron_new_tier">
 
-<!--        <argument-->
-<!--            android:name="user"-->
-<!--            app:type="com.limor.app.uimodels.UIUser" />-->
 
     </fragment>
 

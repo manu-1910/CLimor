@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -92,8 +92,7 @@ class SetupPatronFragment : BaseFragment() {
 
     private fun bindViewModels() {
         activity?.let {
-            setupPatronViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            setupPatronViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(SetupPatronViewModel::class.java)
         }
     }

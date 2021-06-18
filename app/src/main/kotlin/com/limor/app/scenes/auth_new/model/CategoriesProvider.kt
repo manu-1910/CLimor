@@ -7,7 +7,6 @@ import com.limor.app.apollo.showHumanizedErrorMessage
 import com.limor.app.scenes.auth_new.data.CategoryWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class CategoriesProvider(private val scope: CoroutineScope) {
     private var categories: List<CategoryWrapper> = mutableListOf()
@@ -42,10 +41,13 @@ class CategoriesProvider(private val scope: CoroutineScope) {
                 categories = response!!.map { CategoryWrapper(it, false) }
                 _categoriesLiveData.postValue(categories)
             } catch (e: Exception) {
-                Timber.e(e)
                 _categoryLiveDataError.postValue(showHumanizedErrorMessage(e))
             }
         }
+    }
+
+    fun getActiveCategoriesIds():List<Int?>{
+        return categories.filter { it.isSelected }.map { it.queryCategory.id }
     }
 
     fun updateCategoriesSelection() {

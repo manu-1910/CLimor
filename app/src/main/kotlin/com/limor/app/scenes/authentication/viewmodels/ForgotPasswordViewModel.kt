@@ -45,10 +45,10 @@ class ForgotPasswordViewModel @Inject constructor(
                     val errorResponse: UIErrorResponse? =
                         error.response()?.errorBody()?.parseSuccessResponse(UIErrorResponse.serializer())
 
-                    errorTracker.postValue(errorResponse)
+                    errorTracker.postValue(errorResponse!!)
                 } catch (e: Exception) {
 //                    val errorResponse = UIErrorResponse(998, com.limor.app.App.Companion.instance.getString(R.string.some_error))
-//                    errorTracker.postValue(errorResponse)
+//                    errorTracker.postValue(errorResponse!!)
                     e.printStackTrace()
                 }
             })

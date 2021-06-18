@@ -13,7 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.App
@@ -154,24 +154,19 @@ class DiscoverPodcastsByCategoryFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
-            viewModelGetPodcastsByCategory = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelGetPodcastsByCategory = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(GetPodcastsByCategoryViewModel::class.java)
 
-            viewModelCreatePodcastReport = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreatePodcastReport = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastReportViewModel::class.java)
 
-            viewModelCreateUserReport = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreateUserReport = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreateUserReportViewModel::class.java)
 
-            viewModelCreateBlockedUser = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreateBlockedUser = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreateBlockedUserViewModel::class.java)
 
-            viewModelDeletePodcast = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeletePodcast = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastViewModel::class.java)
         }
     }

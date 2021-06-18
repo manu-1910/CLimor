@@ -49,10 +49,16 @@ class CommonsKt {
             }
         }
 
+
         fun getDateTimeFormattedFromTimestamp(time: Long): String {
             val cal = Calendar.getInstance(Locale.getDefault())
             cal.timeInMillis = time * 1000
             return DateFormat.format("dd/MM/yyyy HH:mm", cal).toString()
+        }
+
+        fun getDateFromString(date: String): Date? {
+            val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+            return formatter.parse(date)
         }
 
 

@@ -9,17 +9,21 @@ import io.square1.limor.remote.entities.responses.*
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
 import io.square1.limor.remote.services.RemoteServiceConfig
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import javax.inject.Inject
 
 
-@ImplicitReflectionSerializer
+
 class CommentServiceImp @Inject constructor(private val serviceConfig: RemoteServiceConfig) :
     RemoteService<CommentService>(CommentService::class.java, serviceConfig) {
 
+    private val json = Json {
+        isLenient = true
+        ignoreUnknownKeys = true
+    }
 
     fun likeComment(id: Int): Single<NWCreateCommentLikeResponse>? {
         return service.likeComment(id)
@@ -56,7 +60,7 @@ class CommentServiceImp @Inject constructor(private val serviceConfig: RemoteSer
 
     fun createComment(idComment: Int, request: NWCreateCommentRequest): Single<NWCreateCommentResponse> {
         return service.createComment(idComment, RequestBody.create(
-            MediaType.parse("application/json"), Json.nonstrict.stringify(
+            MediaType.parse("application/json"), json.encodeToString(
                 NWCreateCommentRequest.serializer(), request)))
             .map { response -> response.parseSuccessResponse(NWCreateCommentResponse.serializer()) }
             .doOnSuccess { success ->
@@ -68,7 +72,7 @@ class CommentServiceImp @Inject constructor(private val serviceConfig: RemoteSer
     }
 
     fun reportComment(id: Int, request: NWCreateReportRequest): Single<NWCreateReportResponse>? {
-        val jsonRequest = Json.nonstrict.stringify(NWCreateReportRequest.serializer(), request)
+        val jsonRequest = json.encodeToString(NWCreateReportRequest.serializer(), request)
         val requestParsed = RequestBody.create(MediaType.parse("application/json"), jsonRequest)
         return service.reportComment(id, requestParsed)
             .map { response -> response.parseSuccessResponse(NWCreateReportResponse.serializer()) }
@@ -81,7 +85,7 @@ class CommentServiceImp @Inject constructor(private val serviceConfig: RemoteSer
     }
 
     fun deleteComment(id: Int, request: NWContentRequest): Single<NWDeleteResponse> {
-        val jsonRequest = Json.nonstrict.stringify(NWContentRequest.serializer(), request)
+        val jsonRequest = json.encodeToString(NWContentRequest.serializer(), request)
         val requestParsed = RequestBody.create(MediaType.parse("application/json"), jsonRequest)
         return service.deleteComment(id, requestParsed)
             .map { response -> response.parseSuccessResponse(NWDeleteResponse.serializer()) }
@@ -94,7 +98,7 @@ class CommentServiceImp @Inject constructor(private val serviceConfig: RemoteSer
     }
 
     fun createDropOff(id: Int, request: NWDropOffRequest): Single<NWUpdatedResponse> {
-        val jsonRequest = Json.nonstrict.stringify(NWDropOffRequest.serializer(), request)
+        val jsonRequest = json.encodeToString(NWDropOffRequest.serializer(), request)
         val requestParsed = RequestBody.create(MediaType.parse("application/json"), jsonRequest)
         return service.createDropOff(id, requestParsed)
             .map { response -> response.parseSuccessResponse(NWUpdatedResponse.serializer()) }

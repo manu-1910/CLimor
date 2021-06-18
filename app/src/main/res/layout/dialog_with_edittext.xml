@@ -1,59 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/alert_background"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/textTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/marginAlmostLarge"
+        android:layout_marginTop="@dimen/marginAlmostLarge"
+        android:layout_marginEnd="@dimen/marginAlmostLarge"
+        android:fontFamily="@font/roboto_medium"
+        tools:text="Rename draft"
+        android:includeFontPadding="false"
+        android:textColor="@color/textPrimary"
+        android:textSize="16sp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="@dimen/textSizeNormal"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/marginAlmostLarge"
+        android:layout_marginTop="@dimen/marginVerySmall"
+        android:layout_marginEnd="@dimen/marginMedium"
         android:fontFamily="@font/roboto"
         android:text="@string/save_draft_dialog_descr"
-        android:layout_marginStart="@dimen/marginAlmostLarge"
-        android:layout_marginEnd="@dimen/marginMedium"
-        android:layout_marginTop="@dimen/marginSmall"/>
+        android:textColor="@color/textSecondary"
+        android:textSize="@dimen/textSizeTiny" />
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/editText"
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/TextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/marginMedium"
-        android:layout_marginEnd="@dimen/marginMedium"
-        android:layout_marginTop="@dimen/marginSmall"
-        android:textColor="@color/black"
-        android:selectAllOnFocus="true"
-        android:textSize="@dimen/textSizeNormal"
-        android:fontFamily="@font/roboto"
-        android:text="@string/save_draft_dialog_hint_name" />
+        android:layout_marginStart="@dimen/marginTwenty"
+        android:layout_marginTop="@dimen/marginTwenty"
+        android:layout_marginEnd="@dimen/marginTwenty"
+        app:boxStrokeColor="@color/colorAccent"
+        app:boxStrokeWidth="2dp"
+        app:hintTextAppearance="@style/TextHintStyle"
+        app:hintTextColor="@color/colorAccent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
+            android:hint="@string/draft_hint"
+            android:textColor="@color/textPrimary"
+            android:textSize="@dimen/textSize16" />
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="right"
+        android:layout_marginStart="@dimen/marginTwenty"
+        android:layout_marginTop="@dimen/marginAlmostLarge"
+        android:layout_marginEnd="@dimen/marginTwenty"
+        android:layout_marginBottom="@dimen/marginAlmostLarge"
         android:orientation="horizontal"
-        android:layout_marginEnd="@dimen/marginMedium"
-        android:layout_marginStart="@dimen/marginMedium"
-        android:layout_marginBottom="@dimen/marginMedium"
-        android:layout_marginTop="@dimen/marginSmall"
-        android:visibility="visible">
+        android:visibility="visible"
+        android:weightSum="2">
 
 
         <Button
             android:id="@+id/cancelButton"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:fontFamily="@font/roboto_medium"
+            android:textSize="@dimen/textSize14"
+            android:textAllCaps="false"
+            android:textColor="@color/textPrimary"
+            android:layout_weight="1"
             android:text="@string/btn_cancel" />
 
         <Button
             android:id="@+id/saveButton"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:background="@drawable/btn_primary_background"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:textSize="@dimen/textSize14"
+            android:enabled="false"
+            android:fontFamily="@font/roboto_bold"
+            android:textAllCaps="false"
+            android:layout_weight="1"
+            android:textColor="@color/textPrimary"
             android:text="@string/btn_save" />
 
 

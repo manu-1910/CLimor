@@ -27,6 +27,7 @@ import androidx.core.content.ContextCompat;
 import com.limor.app.R;
 import com.limor.app.common.BaseFragment;
 import com.limor.app.scenes.utils.Commons;
+import com.limor.app.scenes.utils.popupMenu.CustomPopupMenuView;
 import com.limor.app.scenes.utils.statemanager.StepManager;
 import com.limor.app.scenes.utils.waveform.soundfile.SoundFile;
 import com.limor.app.scenes.utils.waveform.view.MarkerView;
@@ -40,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import me.kareluo.ui.OptionMenu;
-import me.kareluo.ui.PopupMenuView;
 import me.kareluo.ui.PopupView;
 import timber.log.Timber;
 
@@ -162,7 +162,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             public void run() {
                 if (playerPreview != null && playerPreview.isPlaying()) {
                     int posMarkerStart = selectedMarker.getStartPos();
-                    int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+                    int currentStartMillis = (int) (waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
                     seekBarPreview.setProgress(playerPreview.getCurrentPosition() - currentStartMillis);
                     tvTimePassPreview.setText(Commons.getLengthFromEpochForPlayer(seekBarPreview.getProgress()));
                 }
@@ -356,7 +356,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
         touchDragging = false;
 
-        if(playerPreview != null) {
+        if (playerPreview != null) {
             try {
                 preparePlayerPreview(false);
             } catch (IOException e) {
@@ -482,10 +482,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         // Be careful with this SupressLint, this is intended to avoid a false error that android studio reports
         // with the following line but it's not real. But I insist, be careful, if this fails in the future, take a look at it.
         @SuppressLint("RestrictedApi")
-        PopupMenuView menuView = new PopupMenuView(getContext(), R.menu.menu_popup_edit, new MenuBuilder(getActivity()));
-
+        CustomPopupMenuView menuView = new CustomPopupMenuView(requireContext(), R.menu.menu_popup_edit, new MenuBuilder(requireActivity()));
         if (marker.getMarkerSet().isMiddleVisible() && marker.getMarkerSet().isEditMarker()) {
-            //If is the Paste marker I only will show the "paste" option menu
             menuView.setMenuItems(Arrays.asList(
                     new OptionMenu(getString(R.string.menu_paste)),
                     new OptionMenu(getString(R.string.menu_cancel))
@@ -506,13 +504,16 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             MenuOption menuOption = MenuOption.valueOf(menu.getTitle().toString());
             switch (menuOption) {
                 case Copy:
+                    handlePause();
                     tvCopy.performClick();
                     break;
                 case Paste:
+                    handlePause();
                     showPreviewLayout(false);
                     tvPaste.performClick();
                     break;
                 case Delete:
+                    handlePause();
                     showPreviewLayout(false);
                     tvDelete.performClick();
                     break;
@@ -531,11 +532,11 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
 
-
     private void onPreviewClicked() {
         showPreviewLayout(true);
         try {
-            preparePlayerPreview(true);
+            preparePlayerPreview(false);
+            handlePause();
         } catch (IOException e) {
             e.printStackTrace();
             Timber.e("Error trying to load preview");
@@ -672,7 +673,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
 
         closeButton = view.findViewById(R.id.btnClose);
-        infoButton = view.findViewById(R.id.btnInfo);
+        //infoButton = view.findViewById(R.id.btnInfo);
         nextButton = view.findViewById(R.id.nextButtonEdit);
 
         maxPos = 0;
@@ -941,7 +942,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             seekBarPreview.setClickable(true);
 
             // we check if the layout is clickable to avoid showing or hiding it twice
-        } else if(!visible && rlPreviewSection.isClickable()){
+        } else if (!visible && rlPreviewSection.isClickable()) {
             rlPreviewSection.setVisibility(View.VISIBLE);
             TranslateAnimation animate = new TranslateAnimation(
                     0,                 // fromXDelta
@@ -1012,9 +1013,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     private void updateButtonsPreview() {
         if (playerPreview != null && playerPreview.isPlaying()) {
-            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.pause));
+            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
         } else if (playerPreview != null) {
-            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.play));
+            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.ic_play));
         }
     }
 
@@ -1059,12 +1060,12 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected View.OnClickListener onRewindPreviewListener = sender -> {
         // we calculate the start previewPosition
         int posMarkerStart = selectedMarker.getStartPos();
-        int currentPreviewStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+        int currentPreviewStartMillis = (int) (waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
 
         // we get the progress of the seekBar and substract 30seconds
-        int newProgress = seekBarPreview.getProgress() - 30000;
+        int newProgress = seekBarPreview.getProgress() - 5000;
         // let's do this to not to get negative progress
-        if(newProgress < 0) {
+        if (newProgress < 0) {
             newProgress = 0;
         }
 
@@ -1085,23 +1086,21 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected View.OnClickListener onForwardReviewListener = sender -> {
         // we calculate the start previewPosition
         int posMarkerStart = selectedMarker.getStartPos();
-        int currentPreviewStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+        int currentPreviewStartMillis = (int) (waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
 
         // let's get the progress of the seekbar and add 30 seconds
-        int newProgress = seekBarPreview.getProgress() + 30000;
+        int newProgress = seekBarPreview.getProgress() + 5000;
 
         // let's do this to not overflow the seekbar
-        if(newProgress > seekBarPreview.getMax()) {
+        if (newProgress > seekBarPreview.getMax()) {
             newProgress = seekBarPreview.getMax();
         }
         seekBarPreview.setProgress(newProgress);
 
 
-
-
         // this specific case is to control that if the user clicks forward and gets to the end of
         // the audio, it will go back to the beginning
-        if(newProgress >= seekBarPreview.getMax()) {
+        if (newProgress >= seekBarPreview.getMax()) {
             playerPreview.pause();
             playerPreview.seekTo(currentPreviewStartMillis);
             updateButtonsPreview();
@@ -1136,7 +1135,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected View.OnClickListener rewindListener = new View.OnClickListener() {
         public void onClick(View sender) {
 //            if (isPlaying) {
-            int newPos = player.getCurrentPosition() - 30000;
+            int newPos = player.getCurrentPosition() - 5000;
             player.seekTo(newPos);
             seekBar.setProgress(newPos);
 //            }
@@ -1146,7 +1145,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     protected View.OnClickListener ffwdListener = new View.OnClickListener() {
         public void onClick(View sender) {
 //            if (isPlaying) {
-            int newPos = player.getCurrentPosition() + 30000;
+            int newPos = player.getCurrentPosition() + 5000;
             player.seekTo(newPos);
             seekBar.setProgress(newPos);
 //            }
@@ -1155,7 +1154,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     protected void enableDisableButtons() {
         if (isPlaying) {
-            playButton.setImageDrawable(getResources().getDrawable(R.drawable.pause));
+            playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
             tvDelete.setAlpha(0.6f);
             tvDelete.setEnabled(false);
             tvCopy.setAlpha(0.6f);
@@ -1163,7 +1162,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             tvPaste.setAlpha(0.6f);
             tvPaste.setEnabled(false);
         } else {
-            playButton.setImageDrawable(getResources().getDrawable(R.drawable.play));
+            playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_play));
             tvDelete.setAlpha(1f);
             tvDelete.setEnabled(true);
             tvCopy.setAlpha(1f);
@@ -1187,6 +1186,18 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             }
         }
         return true;
+    }
+
+    public void seekSeekBarToStartPosition() {
+        seekBar.setProgress(0);
+        seekPlayerToSeekbarPosition();
+    }
+
+    private void seekPlayerToSeekbarPosition() {
+        if (player != null) {
+            player.seekTo(seekBar.getProgress());
+            tvDuration.setText(Commons.getLengthFromEpochForPlayer(player.getDuration()));
+        }
     }
 
     private void setupSeekBar() {
@@ -1243,16 +1254,16 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     private void seekPreviewPlayerToSeekbarPosition() {
         int posMarkerStart = selectedMarker.getStartPos();
-        int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+        int currentStartMillis = (int) (waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
         playerPreview.seekTo(currentStartMillis + seekBarPreview.getProgress());
     }
 
     private void setupSeekBarPreview() {
         int posMarkerStart = selectedMarker.getStartPos();
-        int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+        int currentStartMillis = (int) (waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
 
         int posMarkerEnd = selectedMarker.getEndPos();
-        int currentEndMillis = (int)(waveformView.pixelsToSeconds(posMarkerEnd / NEW_WIDTH) * 1000);
+        int currentEndMillis = (int) (waveformView.pixelsToSeconds(posMarkerEnd / NEW_WIDTH) * 1000);
 
         int currentDuration = currentEndMillis - currentStartMillis;
 
@@ -1261,12 +1272,12 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         seekBarPreview.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(currentStartMillis + progress >= currentEndMillis) {
+                if (currentStartMillis + progress >= currentEndMillis) {
                     playerPreview.pause();
                     seekPreviewPlayerToStartPosition();
                     updateButtonsPreview();
                 } else {
-                    if(fromUser) {
+                    if (fromUser) {
                         seekPreviewPlayerToSeekbarPosition();
                     }
                 }
@@ -1288,15 +1299,15 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
     private void updateDurationsPreview() {
-        if(selectedMarker == null)
+        if (selectedMarker == null)
             return;
 
 
         int posMarkerStart = selectedMarker.getStartPos();
-        int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+        int currentStartMillis = (int) (waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
 
         int posMarkerEnd = selectedMarker.getEndPos();
-        int currentEndMillis = (int)(waveformView.pixelsToSeconds(posMarkerEnd / NEW_WIDTH) * 1000);
+        int currentEndMillis = (int) (waveformView.pixelsToSeconds(posMarkerEnd / NEW_WIDTH) * 1000);
 
         int currentDuration = currentEndMillis - currentStartMillis;
         tvTimePassPreview.setText(Commons.getLengthFromEpochForPlayer(seekBarPreview.getProgress()));
@@ -1318,7 +1329,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         }
 
         int posMarkerStart = selectedMarker.getStartPos();
-        int currentStartMillis = (int)(waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
+        int currentStartMillis = (int) (waveformView.pixelsToSeconds(posMarkerStart / NEW_WIDTH) * 1000);
 
         playerPreview = null;
         playerPreview = new MediaPlayer();
@@ -1327,7 +1338,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         playerPreview.setOnCompletionListener((MediaPlayer mediaPlayer) -> handlePausePreview());
         playerPreview.prepare();
         playerPreview.seekTo(currentStartMillis);
-        if(shouldPlay)
+        if (shouldPlay)
             playerPreview.start();
         setupSeekBarPreview();
         shouldReloadPreview = false;
@@ -1413,20 +1424,20 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         if (stepManager.canUndo()) {
             tvUndo.setEnabled(true);
             //tvUndo.setAlpha(1f);
-            tvUndo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandPrimary500));
+            tvUndo.setTextColor(ContextCompat.getColor(requireContext(), R.color.textAccent));
         } else {
             tvUndo.setEnabled(false);
             //tvUndo.setAlpha(0.5f);
-            tvUndo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandSecondary100));
+            tvUndo.setTextColor(ContextCompat.getColor(requireContext(), R.color.textSecondary));
         }
         if (stepManager.canRedo()) {
             tvRedo.setEnabled(true);
             //tvRedo.setAlpha(1f);
-            tvRedo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandPrimary500));
+            tvRedo.setTextColor(ContextCompat.getColor(requireContext(), R.color.textAccent));
         } else {
             tvRedo.setEnabled(false);
             //tvRedo.setAlpha(0.5f);
-            tvRedo.setTextColor(ContextCompat.getColor(getContext(), R.color.brandSecondary100));
+            tvRedo.setTextColor(ContextCompat.getColor(requireContext(), R.color.textSecondary));
         }
     }
 

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/alert_background"
+    android:orientation="vertical">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/marginAlmostLarge"
+        app:srcCompat="@drawable/ic_cancel_draft" />
+
+    <TextView
+        android:id="@+id/textTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/marginAlmostLarge"
+        android:layout_marginTop="@dimen/marginMediumSmall"
+        android:layout_marginEnd="@dimen/marginAlmostLarge"
+        android:fontFamily="@font/roboto_medium"
+        android:includeFontPadding="false"
+        android:text="@string/cancel_draft"
+        android:textColor="@color/textPrimary"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/marginAlmostLarge"
+        android:layout_marginTop="@dimen/marginVerySmall"
+        android:layout_marginEnd="@dimen/marginMedium"
+        android:fontFamily="@font/roboto"
+        android:text="@string/what_do_you_want_to_do"
+        android:textColor="@color/textSecondary"
+        android:textSize="@dimen/textSizeTiny" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/marginTwenty"
+        android:layout_marginTop="@dimen/margin38"
+        android:layout_marginEnd="@dimen/marginTwenty"
+        android:layout_marginBottom="@dimen/marginAlmostLarge"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightBlueColor" />
+
+        <Button
+            android:id="@+id/overwriteButton"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
+            android:textSize="@dimen/textSize16"
+            android:textAllCaps="false"
+            android:textColor="@color/waveFormColor"
+            android:layout_weight="1"
+            android:text="@string/overwrite" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightBlueColor" />
+
+        <Button
+            android:id="@+id/saveButton"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/textSize16"
+            android:fontFamily="@font/roboto_medium"
+            android:textAllCaps="false"
+            android:layout_weight="1"
+            android:textColor="@color/waveFormColor"
+            android:text="@string/save_as_new_draft" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightBlueColor" />
+
+        <Button
+            android:id="@+id/discardButton"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/textSize16"
+            android:fontFamily="@font/roboto_medium"
+            android:textAllCaps="false"
+            android:layout_weight="1"
+            android:textColor="@color/waveFormColor"
+            android:text="@string/dont_save" />
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

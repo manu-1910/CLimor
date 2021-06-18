@@ -29,4 +29,7 @@ abstract class RecordActivityFragmentsBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeLocationsFragmentInjector(): LocationsFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeLanguagesFragmentInjector(): LanguagesFragment
 }

@@ -47,15 +47,15 @@ class GetPodcastsByCategoryViewModel @Inject constructor(private val getPodcasts
                 try {
                     val error = it as HttpException
                     val errorResponse: UIErrorResponse? =
-                        error.response().errorBody()?.parseSuccessResponse(
+                        error.response()?.errorBody()?.parseSuccessResponse(
                             UIErrorResponse.serializer()
                         )
-                    errorTracker.postValue(errorResponse)
+                    errorTracker.postValue(errorResponse!!)
                 } catch (e: Exception) {
                     e.printStackTrace()
 //                    val dataError = UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
 //                    val errorResponse = UIErrorResponse(99, dataError.toString())
-//                    errorTracker.postValue(errorResponse)
+//                    errorTracker.postValue(errorResponse!!)
                 }
 
             })

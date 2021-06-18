@@ -4,12 +4,16 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Activity.RESULT_OK
+import android.app.AlertDialog
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
@@ -18,6 +22,7 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.Spannable
 import android.text.TextWatcher
@@ -29,10 +34,12 @@ import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -40,16 +47,17 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
+import com.google.android.material.textfield.TextInputEditText
 import com.hendraanggrian.appcompat.widget.Hashtag
 import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter
 import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
 import com.limor.app.App
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
-import com.limor.app.components.AlertProgressBar
-import com.limor.app.components.AlertProgressBarWithCancel
+import com.limor.app.extensions.drawSimpleSelectorDialog
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.MainActivity
@@ -59,15 +67,18 @@ import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.CommonsKt.Companion.dpToPx
 import com.limor.app.scenes.utils.CommonsKt.Companion.toEditable
+import com.limor.app.scenes.utils.SpecialCharactersInputFilter
 import com.limor.app.scenes.utils.location.MyLocation
 import com.limor.app.scenes.utils.waveform.KeyboardUtils
 import com.limor.app.uimodels.*
 import com.yalantis.ucrop.UCrop
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
 import kotlinx.android.synthetic.main.fragment_publish.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
+import kotlinx.android.synthetic.main.view_cast_published.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -123,8 +134,10 @@ class PublishFragment : BaseFragment() {
     private var btnPublishDraft: Button? = null
 
     //Form vars
-    private var etDraftTitle: EditText? = null
-    private var etDraftCaption: SocialAutoCompleteTextView? = null
+    private var etDraftTitle: TextInputEditText? = null
+    private var etDraftCaption: TextInputEditText? = null
+    private var etDraftTags: SocialAutoCompleteTextView? = null
+
     private var podcastLocation: UILocations = UILocations("", 0.0, 0.0, false)
     private var imageUrlFinal: String? = ""
     private var audioUrlFinal: String? = ""
@@ -133,8 +146,9 @@ class PublishFragment : BaseFragment() {
     private var listTagsString: HashtagArrayAdapter<Hashtag>? = null
     private var tvSelectedLocation: TextView? = null
     private var tvSelectedCategory: TextView? = null
-    private var twCaption: TextWatcher? = null
+    private var twHastags: TextWatcher? = null
     private var twTitle: TextWatcher? = null
+    private var twCaption: TextWatcher? = null
     private var rvTags: RecyclerView? = null
 
     //Flags to publish podcast
@@ -142,10 +156,18 @@ class PublishFragment : BaseFragment() {
     private var imageUploaded: Boolean = false
     private var podcastHasImage: Boolean = false
     private var isShowingTagsRecycler = false
-    private var convertedFile : File? = null
+    private var convertedFile: File? = null
 
+    private var isImageChosen: Boolean = false
+    private var isCategorySelected: Boolean = false
+    private var isLanguageSelected: Boolean = false
+    private var isTagsSelected: Boolean = false
+
+    private var selectedPhotoFile: File? = null
 
     companion object {
+        const val CAMERA_REQUEST = 256
+        const val CAMERA_PERMISSION_REQUEST = 345
         val TAG: String = PublishFragment::class.java.simpleName
         fun newInstance() = PublishFragment()
     }
@@ -165,17 +187,18 @@ class PublishFragment : BaseFragment() {
             btnPlayPause = rootView?.findViewById(R.id.ibPlayPause)
             btnFfwd = rootView?.findViewById(R.id.ibFfwd)
             btnRew = rootView?.findViewById(R.id.ibRew)
-            draftImage = rootView?.findViewById(R.id.ivDraft)
-            lytImagePlaceholder = rootView?.findViewById(R.id.lytImagePlaceHolder)
-            lytImage = rootView?.findViewById(R.id.lytImage)
+            draftImage = rootView?.findViewById(R.id.imageCast)
+            lytImagePlaceholder = rootView?.findViewById(R.id.layoutImageCastPlaceholder)
+            lytImage = rootView?.findViewById(R.id.layoutCastImage)
             btnSaveDraft = rootView?.findViewById(R.id.btnSaveAsDraft)
             btnPublishDraft = rootView?.findViewById(R.id.btnPublish)
             etDraftTitle = rootView?.findViewById(R.id.etTitle)
             etDraftCaption = rootView?.findViewById(R.id.etCaption)
-            tvSelectedLocation = rootView?.findViewById(R.id.tvSelectedLocation)
-            tvSelectedCategory = rootView?.findViewById(R.id.tvSelectedCategory)
+            etDraftTags = rootView?.findViewById(R.id.etHashtags)
+            tvSelectedLocation = rootView?.findViewById(R.id.textSelectedLocation)
+            tvSelectedCategory = rootView?.findViewById(R.id.textSelectedCategory)
             lytWithoutTagsRecycler = rootView?.findViewById(R.id.lytWithoutTagsRecycler)
-            rvTags = rootView?.findViewById(R.id.rvTags)
+            rvTags = rootView?.findViewById(R.id.rvHashtags)
 
             mediaPlayer = MediaPlayer()
 
@@ -194,7 +217,7 @@ class PublishFragment : BaseFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        uiDraft = arguments!!["recordingItem"] as UIDraft
+        uiDraft = requireArguments()["recordingItem"] as UIDraft
     }
 
 
@@ -228,21 +251,24 @@ class PublishFragment : BaseFragment() {
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 100f)
 
-        uiDraft = arguments!!["recordingItem"] as UIDraft
+        uiDraft = requireArguments()["recordingItem"] as UIDraft
 
         configureToolbar()
         listeners()
         loadExistingData()
         multiCompleteText()
 
-        listTagsString = HashtagArrayAdapter(context!!)
+        listTagsString = HashtagArrayAdapter(requireContext())
         setupRecyclerTags()
+        updatePublishBtnState()
     }
 
 
     override fun onResume() {
         super.onResume()
 
+        val act = requireActivity() as RecordActivity
+        act.initScreenBehaviour()
         //Load selected location
         podcastLocation = locationsViewModel.locationSelectedItem
 
@@ -250,16 +276,37 @@ class PublishFragment : BaseFragment() {
             tvSelectedLocation?.text = podcastLocation.address
             uiDraft.location = podcastLocation
         }
+
         if (!publishViewModel.categorySelected.isNullOrEmpty()) {
             tvSelectedCategory?.text = publishViewModel.categorySelected
             uiDraft.category = publishViewModel.categorySelected
             uiDraft.categoryId = publishViewModel.categorySelectedId
+            isCategorySelected = true
+            updatePublishBtnState()
+        }
+
+        if (!publishViewModel.languageSelected.isNullOrEmpty()) {
+            textSelectedLanguage?.text = publishViewModel.languageSelected
+            isLanguageSelected = true
+            updatePublishBtnState()
         }
 
         //update database
         callToUpdateDraft()
     }
 
+    private fun updatePublishBtnState() {
+        val isTitleValid = etDraftTitle?.text?.trim()?.isNotEmpty() ?: false
+        val isCaptionValid = etDraftCaption?.text?.trim()?.isNotEmpty() ?: false
+        val isAllRequiredFieldsFilled = isCategorySelected
+                && isImageChosen
+                && isLanguageSelected
+                && isCaptionValid
+                && isTitleValid
+                && isTagsSelected
+
+        btnPublishDraft?.isEnabled = isAllRequiredFieldsFilled
+    }
 
     private fun apiCallPublishPodcast() {
         val output = publishViewModel.transform(
@@ -268,35 +315,30 @@ class PublishFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
-            pbPublish?.visibility = View.GONE
+        output.response.observe(viewLifecycleOwner, Observer {
+            progressPb.visibility = View.GONE
             view?.hideKeyboard()
 
             if (it.code == 0) { //Publish Ok
-
                 convertedFile?.delete()
                 callToDeleteDraft()
-
                 isPublished = true
-
-                alert {
-                    this.titleResource = R.string.cast_published_ok_title
-                    this.messageResource = R.string.cast_published_ok_description
-                    positiveButton(getString(R.string.btnDone)) {
-                        val mainIntent = Intent(context, MainActivity::class.java)
-                        startActivity(mainIntent)
-                        activity?.finish()
-                    }
-                }.show()
+                viewCastPublished.visibility = View.VISIBLE
+                btnDone.onClick {
+                    val mainIntent = Intent(context, MainActivity::class.java)
+                    startActivity(mainIntent)
+                    activity?.finish()
+                }
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
         output.errorMessage.observe(this, Observer {
-            pbPublish?.visibility = View.GONE
+            progressPb.visibility = View.GONE
+
             view?.hideKeyboard()
             if (app!!.merlinsBeard!!.isConnected) {
 
@@ -308,34 +350,35 @@ class PublishFragment : BaseFragment() {
                 }
 
                 if (it.code == 10) {  //Session expired
-                    alert(
+                    showUnableToPublishCastDialog(
                         getString(R.string.session_expired_error_message),
-                        getString(R.string.publish_cast_error_title)
-                    ) {
-                        okButton {
+                        getString(R.string.ok), {
                             val intent = Intent(context, SignActivity::class.java)
                             //intent.putExtra(getString(R.string.otherActivityKey), true)
                             startActivityForResult(
                                 intent,
                                 resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
                             )
-                        }
-                    }.show()
+                        })
                 } else {
-                    alert(message.toString(), getString(R.string.publish_cast_error_title)) {
-                        positiveButton(getString(R.string.try_again)) {
+                    showUnableToPublishCastDialog(
+                        description = message.toString(),
+                        okText = getString(R.string.try_again),
+                        okAction = {
                             btnPublishDraft?.callOnClick()
-                        }
-                        negativeButton(getString(R.string.description_back)) {
-
-                        }
-                    }.show()
+                        },
+                        negativeText = getString(R.string.description_back),
+                        negativeAction = {
+                        })
                 }
 
             } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
+                showUnableToPublishCastDialog(
+                    description = getString(R.string.default_no_internet),
+                    okText = getString(R.string.ok),
+                    okAction = {
+                    })
+
             }
         })
     }
@@ -343,24 +386,19 @@ class PublishFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let {
-            draftViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            draftViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(DraftViewModel::class.java)
 
-            publishViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            publishViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(PublishViewModel::class.java)
 
-            categoriesViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            categoriesViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(CategoriesViewModel::class.java)
 
-            locationsViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            locationsViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(LocationsViewModel::class.java)
 
-            tagsViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            tagsViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(TagsViewModel::class.java)
         }
     }
@@ -383,42 +421,52 @@ class PublishFragment : BaseFragment() {
     @SuppressLint("ClickableViewAccessibility")
     private fun listeners() {
         lytImagePlaceholder?.onClick {
-            loadImagePicker()
+            onSelectImageClicked()
         }
         draftImage?.onClick {
-            loadImagePicker()
+            onSelectImageClicked()
         }
-
         btnSaveDraft?.onClick {
-            addDataToRecordingItem()
-            activity?.finish()
-        }
-
-        btnPublishDraft?.onClick {
-            if (checkEmptyFields()) {
-
-                //In the result of those calls I will call the method readyToPublish() to check their flags
-                if (podcastHasImage) {
-                    publishPodcastImage()
-                }
-                publishPodcastAudio()
+            if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying)
+                mediaPlayer.stop()
+            val isTitleEmpty = etDraftTitle?.text.toString().isEmpty()
+            if (isTitleEmpty) {
+                showSaveAsDraftDialog()
+            } else {
+                addDataToRecordingItem()
+                toast(getString(R.string.draft_inserted))
+                activity?.finish()
             }
         }
 
-        lytTvCategory?.onClick {
+        btnPublishDraft?.onClick {
+            //In the result of those calls I will call the method readyToPublish() to check their flags
+            if (podcastHasImage) {
+                publishPodcastImage()
+            }
+            publishPodcastAudio()
+        }
+
+        layoutCastCategory?.onClick {
             findNavController().navigate(R.id.action_record_publish_to_record_categories)
         }
 
-        lytTvLocation?.onClick {
+        layoutCastLocation?.onClick {
             findNavController().navigate(R.id.action_record_publish_to_record_locations)
         }
 
+        layoutCastLanguages?.onClick {
+            findNavController().navigate(R.id.action_record_publish_to_record_languages)
+        }
+
         //Used for show or hide the recyclerview of the hashtags
-        twCaption = object : TextWatcher {
+        twHastags = object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
-                uiDraft.caption = editable.toString()
-                callToUpdateDraft()
+                isTagsSelected = etHashtags.hashtags.count() > 0
+                publishViewModel.tags.clear()
+                publishViewModel.tags.addAll(etHashtags.hashtags.map { "#$it" })
+                updatePublishBtnState()
             }
 
             override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {
@@ -440,6 +488,7 @@ class PublishFragment : BaseFragment() {
                         rvTags?.visibility = View.VISIBLE
                         lytWithoutTagsRecycler?.visibility = View.GONE
                         isShowingTagsRecycler = true
+
                     } else {
                         rvTags?.visibility = View.GONE
                         lytWithoutTagsRecycler?.visibility = View.VISIBLE
@@ -448,7 +497,7 @@ class PublishFragment : BaseFragment() {
                 }
             }
         }
-        etCaption.addTextChangedListener(twCaption)
+        etHashtags.addTextChangedListener(twHastags)
 
 
         //Used for show or hide the recyclerview of the hashtags
@@ -457,12 +506,25 @@ class PublishFragment : BaseFragment() {
             override fun afterTextChanged(editable: Editable) {
                 uiDraft.title = editable.toString()
                 callToUpdateDraft()
+                updatePublishBtnState()
             }
 
             override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
         }
         etTitle.addTextChangedListener(twTitle)
 
+        twCaption = object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+            override fun afterTextChanged(editable: Editable) {
+                uiDraft.caption = editable.toString()
+                callToUpdateDraft()
+                updatePublishBtnState()
+            }
+
+            override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
+        }
+
+        etCaption.addTextChangedListener(twTitle)
 
         //Keyboard listener to hide the recycler
         KeyboardUtils.addKeyboardToggleListener(activity) { isVisible ->
@@ -480,6 +542,95 @@ class PublishFragment : BaseFragment() {
 
     }
 
+    private fun showSaveAsDraftDialog() {
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.dialog_with_edittext, null)
+        val positiveButton = dialogLayout.findViewById<Button>(R.id.saveButton)
+        val cancelButton = dialogLayout.findViewById<Button>(R.id.cancelButton)
+        val editText = dialogLayout.findViewById<TextInputEditText>(R.id.editText)
+        val titleText = dialogLayout.findViewById<TextView>(R.id.textTitle)
+
+        titleText.text = requireContext().getString(R.string.save_draft_dialog_title)
+        editText.filters = arrayOf(SpecialCharactersInputFilter())
+        editText.doOnTextChanged { text, start, before, count ->
+            positiveButton.isEnabled = count > 0
+        }
+
+        dialogBuilder.setView(dialogLayout)
+        dialogBuilder.setCancelable(false)
+
+        val dialog: AlertDialog = dialogBuilder.create()
+
+        positiveButton.onClick {
+            uiDraft.title = editText.text.toString()
+            uiDraft.caption = etDraftCaption?.text.toString()
+            callToUpdateDraft()
+            toast(getString(R.string.draft_inserted))
+            requireActivity().finish()
+        }
+
+        cancelButton.onClick {
+            dialog.dismiss()
+        }
+
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                positiveButton.isEnabled = !p0.isNullOrEmpty()
+            }
+        })
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset);
+            show()
+        }
+    }
+
+    private fun onSelectImageClicked() {
+        drawSimpleSelectorDialog(
+            "Select Image Option:",
+            listOf("Take A New Photo", "Choose From Gallery")
+        )
+        { dialog: DialogInterface, i: Int ->
+            if (i == 0) {
+                captureImage()
+            } else {
+                loadImagePicker()
+            }
+            dialog.dismiss()
+        }
+    }
+
+    private fun captureImage() {
+        if (!checkPermissionForCamera()) {
+            requestPermissionForCamera()
+            return
+        }
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        selectedPhotoFile = File(
+            requireActivity().externalCacheDir,
+            System.currentTimeMillis().toString() + ".jpg"
+        )
+        intent.putExtra(
+            MediaStore.EXTRA_OUTPUT,
+            FileProvider.getUriForFile(
+                requireContext(),
+                BuildConfig.APPLICATION_ID + ".provider",
+                selectedPhotoFile!!
+            )
+        )
+        startActivityForResult(intent, CAMERA_REQUEST)
+
+    }
 
     private fun readyToPublish() {
         if (podcastHasImage) {
@@ -499,11 +650,20 @@ class PublishFragment : BaseFragment() {
 
 
     private fun publishPodcastAudio() {
+        progressPb.visibility = View.VISIBLE
 
-        val dialog = AlertProgressBar(context!!)
-        dialog.show()
+        Timber.d("Publishing audio podcast")
+        if (!app!!.merlinsBeard!!.isConnected) {
+            progressPb.visibility = View.GONE
+            showUnableToPublishCastDialog(
+                description = getString(R.string.default_no_internet),
+                okText = getString(R.string.ok),
+                okAction = {
 
-        convertedFile = WavHelper.convertWavToM4a(context!!, uiDraft.filePath!!)
+                })
+            return
+        }
+        convertedFile = WavHelper.convertWavToM4a(requireContext(), uiDraft.filePath!!)
         convertedFile?.let {
             //Upload audio file to AWS
             Commons.getInstance().uploadAudio(
@@ -515,16 +675,15 @@ class PublishFragment : BaseFragment() {
                         println("Audio upload to AWS succesfully")
                         audioUploaded = true
                         audioUrlFinal = audioUrl
-                        dialog.dismiss()
+                        progressPb.visibility = View.GONE
                         readyToPublish()
                     }
 
                     override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
-                        dialog.updateProgress(bytesCurrent.toInt(), bytesTotal.toInt())
                     }
 
                     override fun onError(error: String?) {
-                        dialog.dismiss()
+                        progressPb.visibility = View.GONE
                         audioUploaded = false
                         alert(getString(R.string.error_uploading_audio)) {
                             okButton { }
@@ -539,11 +698,11 @@ class PublishFragment : BaseFragment() {
 
 
     private fun publishPodcastImage() {
-
+        progressPb.visibility = View.VISIBLE
         if (Commons.getInstance().isImageReadyForUpload) {
 
-            val dialog = AlertProgressBar(context!!)
-            dialog.show()
+            // val dialog = AlertProgressBar(requireContext())
+            // dialog.show()
 
 
             //Upload audio file to AWS
@@ -551,7 +710,7 @@ class PublishFragment : BaseFragment() {
                 context,
                 object : Commons.ImageUploadCallback {
                     override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
-                        dialog.updateProgress(bytesCurrent.toInt(), bytesTotal.toInt())
+                        //  dialog.updateProgress(bytesCurrent.toInt(), bytesTotal.toInt())
                     }
 
                     override fun onSuccess(imageUrl: String?) {
@@ -559,7 +718,9 @@ class PublishFragment : BaseFragment() {
                         //var imageUploadedUrl = imageUrl
                         imageUploaded = true
                         imageUrlFinal = imageUrl
-                        dialog.dismiss()
+                        //dialog.dismiss()
+                        progressPb.visibility = View.GONE
+
                         readyToPublish()
                     }
 
@@ -568,7 +729,8 @@ class PublishFragment : BaseFragment() {
                     }
 
                     override fun onError(error: String?) {
-                        dialog.dismiss()
+                        progressPb.visibility = View.GONE
+                        //  dialog.dismiss()
                         imageUploaded = false
                         alert(getString(R.string.error_uploading_image)) {
                             okButton { }
@@ -591,7 +753,8 @@ class PublishFragment : BaseFragment() {
 
 
     private fun apiCallPublish() {
-        pbPublish?.visibility = View.VISIBLE
+        progressPb.visibility = View.VISIBLE
+
 
         val uiPublishRequest = UIPublishRequest(
             podcast = UIPodcastRequest(
@@ -644,12 +807,12 @@ class PublishFragment : BaseFragment() {
                     "podcast_photo"
                 )
             }
-            Glide.with(context!!).load(imageFile).into(draftImage!!)  // Uri of the picture
-            lytImagePlaceholder?.visibility = View.GONE
+            Glide.with(requireContext()).load(imageFile).into(draftImage!!)  // Uri of the picture
+            lytImagePlaceholder?.visibility = View.INVISIBLE
             lytImage?.visibility = View.VISIBLE
         } else {
             lytImagePlaceholder?.visibility = View.VISIBLE
-            lytImage?.visibility = View.GONE
+            lytImage?.visibility = View.INVISIBLE
         }
         if (!uiDraft.category.toString().isNullOrEmpty()) {
             tvSelectedCategory?.text = uiDraft.category
@@ -664,12 +827,16 @@ class PublishFragment : BaseFragment() {
             tvSelectedLocation?.text = publishViewModel.locationSelectedItem.address
             uiDraft.location = publishViewModel.locationSelectedItem
         }
+        if (publishViewModel.tags.isNotEmpty()) {
+            etHashtags.setText(publishViewModel.tags.joinToString(" "))
+        }
+        updatePublishBtnState()
     }
 
 
     private fun addDataToRecordingItem() {
         //Compose the local object
-        if (!etDraftTitle?.text.toString().isNullOrEmpty()) {
+        if (!etDraftTitle?.text.toString().isEmpty()) {
             uiDraft.title = etDraftTitle?.text.toString()
         } else {
             uiDraft.title = getString(R.string.autosave)
@@ -683,8 +850,8 @@ class PublishFragment : BaseFragment() {
 
 
     private fun loadImagePicker() {
-        ImagePicker.create(this) // Activity or Fragment
-            .showCamera(true) // show camera or not (true by default)
+        ImagePicker.create(this)
+            .showCamera(false) // show camera or not (true by default)
             .folderMode(true) // folder mode (false by default)
             .toolbarFolderTitle(getString(R.string.imagepicker_folder)) // folder selection title
             .toolbarImageTitle(getString(R.string.imagepicker_tap_to_select)) // image selection title
@@ -703,6 +870,14 @@ class PublishFragment : BaseFragment() {
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
         try {
             mediaPlayer.setDataSource(uiDraft.filePath)
+            mediaPlayer.setOnCompletionListener {
+                btnPlayPause?.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_play
+                    )
+                )
+            }
             mediaPlayer.prepare() // might take long for buffering.
         } catch (e: Exception) {
             //e.printStackTrace()
@@ -711,6 +886,7 @@ class PublishFragment : BaseFragment() {
 
         //Seekbar progress listener
         audioSeekbar?.max = mediaPlayer.duration
+        audioSeekbar?.progress = 0
         audioSeekbar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (mediaPlayer != null && fromUser) {
@@ -721,7 +897,7 @@ class PublishFragment : BaseFragment() {
                         context?.let {
                             ContextCompat.getDrawable(
                                 it,
-                                R.drawable.play
+                                R.drawable.ic_play
                             )
                         }
                     )
@@ -740,8 +916,8 @@ class PublishFragment : BaseFragment() {
                 mediaPlayer.start()
                 btnPlayPause?.setImageDrawable(
                     ContextCompat.getDrawable(
-                        context!!,
-                        R.drawable.pause
+                        requireContext(),
+                        R.drawable.ic_pause
                     )
                 )
                 run = Runnable {
@@ -756,15 +932,15 @@ class PublishFragment : BaseFragment() {
                     timePass?.text = CommonsKt.calculateDurationMediaPlayer(
                         miliSeconds
                     )
-                    seekHandler.postDelayed(run, 100)
+                    seekHandler.postDelayed(run!!, 100)
                 }
                 run!!.run()
             } else {
                 mediaPlayer.pause()
                 btnPlayPause?.setImageDrawable(
                     ContextCompat.getDrawable(
-                        context!!,
-                        R.drawable.play
+                        requireContext(),
+                        R.drawable.ic_play
                     )
                 )
             }
@@ -774,7 +950,7 @@ class PublishFragment : BaseFragment() {
         //Forward button
         btnFfwd?.onClick {
             try {
-                val nextPosition = mediaPlayer.currentPosition + 30000
+                val nextPosition = mediaPlayer.currentPosition + 5000
                 if (nextPosition < mediaPlayer.duration)
                     mediaPlayer.seekTo(nextPosition)
                 else if (mediaPlayer.currentPosition < mediaPlayer.duration)
@@ -788,7 +964,7 @@ class PublishFragment : BaseFragment() {
         //Rew button
         btnRew?.onClick {
             try {
-                mediaPlayer.seekTo(mediaPlayer.currentPosition - 30000)
+                mediaPlayer.seekTo(mediaPlayer.currentPosition - 5000)
             } catch (e: Exception) {
                 Timber.d("mediaPlayer.seekTo rewind overflow")
             }
@@ -799,38 +975,27 @@ class PublishFragment : BaseFragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         // this will run when coming from the image picker
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
-
             // Get a list of picked files
             val filesSelected = ImagePicker.getImages(data) as ArrayList<Image>
             if (filesSelected.size > 0) {
-
-                // we'll prepare the outputfile
-                val croppedImagesDir = File(
-                    context?.getExternalFilesDir(null)?.absolutePath,
-                    Constants.LOCAL_FOLDER_CROPPED_IMAGES
-                )
-                if (!croppedImagesDir.exists()) {
-                    val isDirectoryCreated = croppedImagesDir.mkdir()
-                }
-                val fileName =
-                    Date().time.toString() + filesSelected[0].path.substringAfterLast("/")
-                val outputFile = File(croppedImagesDir, fileName)
-
-                // and then, we'll perform the crop itself
-                performCrop(filesSelected[0].path, outputFile)
+                prepareToCrop(filesSelected[0].path)
             } else {
-                lytImage?.visibility = View.GONE
+                lytImage?.visibility = View.INVISIBLE
                 lytImagePlaceholder?.visibility = View.VISIBLE
             }
 
-
+            // this will run when coming from camera
+        } else if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST) {
+            selectedPhotoFile?.let {
+                prepareToCrop(it.path)
+            }
             // this will run when coming from the cropActivity and everything is ok
         } else if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             val resultUri = UCrop.getOutput(data!!)
             podcastHasImage = true
-            Glide.with(context!!).load(resultUri).into(draftImage!!)
+            Glide.with(requireContext()).load(resultUri).into(draftImage!!)
             lytImage?.visibility = View.VISIBLE
-            lytImagePlaceholder?.visibility = View.GONE
+            lytImagePlaceholder?.visibility = View.INVISIBLE
 
             //Add the photopath to recording item
             draftViewModel.uiDraft?.tempPhotoPath = resultUri?.path
@@ -844,16 +1009,15 @@ class PublishFragment : BaseFragment() {
 
             //Update recording item in Realm
             callToUpdateDraft()
-
+            isImageChosen = true
+            updatePublishBtnState()
             // this will run when coming from the cropActivity but there is an error
         } else if (resultCode == UCrop.RESULT_ERROR) {
             val cropError = UCrop.getError(data!!)
             Timber.d(cropError)
-            lytImage?.visibility = View.GONE
+            lytImage?.visibility = View.INVISIBLE
             lytImagePlaceholder?.visibility = View.VISIBLE
         }
-
-
         context?.let {
             //LOGIN
             if (requestCode == it.resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH) && resultCode == RESULT_OK) {
@@ -864,12 +1028,40 @@ class PublishFragment : BaseFragment() {
     }
 
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == CAMERA_PERMISSION_REQUEST) {
+            Timber.d("Permission Camera")
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) captureImage()
+        }
+    }
+
+    private fun prepareToCrop(sourcePath: String) {
+        val croppedImagesDir = File(
+            context?.getExternalFilesDir(null)?.absolutePath,
+            Constants.LOCAL_FOLDER_CROPPED_IMAGES
+        )
+        if (!croppedImagesDir.exists()) {
+            val isDirectoryCreated = croppedImagesDir.mkdir()
+        }
+        val fileName =
+            Date().time.toString() + sourcePath.substringAfterLast("/")
+        val outputFile = File(croppedImagesDir, fileName)
+
+        // and then, we'll perform the crop itself
+        performCrop(sourcePath, outputFile)
+    }
+
     private fun performCrop(sourcePath: String, destination: File) {
         val sourceUri = Uri.fromFile(File(sourcePath))
         val destinationUri = Uri.fromFile(destination)
         context?.let {
             UCrop.of(sourceUri, destinationUri)
-                .withAspectRatio(1.0f, 1.0f)
+                .withAspectRatio(1f, 1.0f)
                 .withMaxResultSize(1000, 1000)
                 .start(it, this, UCrop.REQUEST_CROP)
         }
@@ -883,7 +1075,7 @@ class PublishFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it) {
 
 //                toast(getString(R.string.draft_saved_ok))
@@ -894,7 +1086,7 @@ class PublishFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -905,39 +1097,52 @@ class PublishFragment : BaseFragment() {
     }
 
 
-    private fun checkEmptyFields(): Boolean {
+    private fun showUnableToPublishCastDialog(
+        description: String,
+        okText: String,
+        okAction: () -> Unit,
+        negativeText: String = getString(R.string.cancel),
+        negativeAction: (() -> Unit)? = null
+    ) {
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_error_publish_cast, null)
 
-        //Check the Title of the cast
-        val titleNotEmpty: Boolean = if (!etDraftTitle?.text.isNullOrEmpty()) {
-            true
-        } else {
-            alert(getString(R.string.title_cannot_be_empty)) {
-                okButton {}
-            }.show()
-            false
+        dialogBuilder.setView(dialogView)
+        dialogBuilder.setCancelable(true)
+        val dialog: AlertDialog = dialogBuilder.create()
+
+        dialogView.textDescription.text = description
+        dialogView.okButton.text = okText
+        if (negativeAction != null) {
+            dialogView.cancelButton.visibility = View.VISIBLE
+            dialogView.cancelButton.text = negativeText
+            dialogView.cancelButton.onClick {
+                dialog.dismiss()
+                negativeAction.invoke()
+            }
+        }
+        dialogView.okButton.setOnClickListener {
+            dialog.dismiss()
+            okAction.invoke()
         }
 
-        //Check the Caption of the cast
-        val captionNotEmpty: Boolean = if (!etDraftCaption?.text.isNullOrEmpty()) {
-            true
-        } else {
-            alert(getString(R.string.caption_cannot_be_empty)) {
-                okButton {}
-            }.show()
-            false
-        }
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
 
-        return titleNotEmpty && captionNotEmpty
+        dialog.apply {
+            window?.setBackgroundDrawable(inset)
+            show()
+        }
     }
 
 
     private fun getCityOfDevice() {
 
         if (ActivityCompat.checkSelfPermission(
-                context!!,
+                requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                context!!,
+                requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -979,7 +1184,7 @@ class PublishFragment : BaseFragment() {
             }
         }
         val myLocation = MyLocation()
-        myLocation.getLocation(context!!, locationResult)
+        myLocation.getLocation(requireContext(), locationResult)
 
     }
 
@@ -997,7 +1202,7 @@ class PublishFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it.code == 0) {
                 if (it.data.tags.size > 0) {
                     listTagsString?.clear()
@@ -1017,21 +1222,22 @@ class PublishFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
         output.errorMessage.observe(this, Observer {
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
+            CommonsKt.handleOnApiError(app!!, requireContext(), this, it)
         })
     }
 
 
     private fun multiCompleteText() {
-        etDraftCaption?.isMentionEnabled = false
-        etDraftCaption?.hashtagColor = ContextCompat.getColor(context!!, R.color.brandPrimary500)
-        etDraftCaption?.hashtagAdapter = listTagsString
-        etDraftCaption?.setHashtagTextChangedListener { _, text ->
+        etDraftTags?.isMentionEnabled = false
+        etDraftTags?.hashtagColor =
+            ContextCompat.getColor(requireContext(), R.color.textPrimary)
+        etDraftTags?.hashtagAdapter = listTagsString
+        etDraftTags?.setHashtagTextChangedListener { _, text ->
             println("setHashtagTextChangedListener -> $text")
             callToTagsApiAndShowRecyclerView(text.toString())
         }
@@ -1040,7 +1246,7 @@ class PublishFragment : BaseFragment() {
 
     private fun bitmapToFile(bitmap: Bitmap): Uri {
         // Get the context wrapper
-        val wrapper = ContextWrapper(context!!)
+        val wrapper = ContextWrapper(requireContext())
 
         // Initialize a new file instance to save bitmap object
         var file = wrapper.getDir("Images", Context.MODE_PRIVATE)
@@ -1062,16 +1268,16 @@ class PublishFragment : BaseFragment() {
 
 
     private fun setupRecyclerTags() {
-        rvTags?.layoutManager = LinearLayoutManager(context)
+        rvTags?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         rvTags?.adapter = listTagsString?.let {
             HashtagAdapter(it, object : HashtagAdapter.OnItemClickListener {
                 override fun onItemClick(item: Hashtag) {
-                    val actualString = etCaption.text
+                    val actualString = etHashtags.text
                     val finalString: String =
                         actualString.substring(
                             0, actualString.lastIndexOf(
                                 getCurrentWord(
-                                    etCaption
+                                    etHashtags
                                 )!!
                             )
                         ) +
@@ -1079,13 +1285,14 @@ class PublishFragment : BaseFragment() {
                                 actualString.substring(
                                     actualString.lastIndexOf(
                                         getCurrentWord(
-                                            etCaption
+                                            etHashtags
                                         )!!
-                                    ) + getCurrentWord(etCaption)!!.length, actualString.length
+                                    ) + getCurrentWord(etHashtags)!!.length, actualString.length
                                 ) + " "
 
-                    etCaption.setText(finalString)
-                    etCaption.setSelection(etCaption.text.length) //This places cursor to end of EditText.
+                    etHashtags.setText(finalString)
+                    etHashtags.setSelection(etHashtags.text.length)
+                    //This places cursor to end of EditText.
                     rvTags?.adapter?.notifyDataSetChanged()
                 }
             })
@@ -1127,6 +1334,14 @@ class PublishFragment : BaseFragment() {
         updateDraftTrigger.onNext(Unit)
     }
 
+    private fun checkPermissionForCamera(): Boolean {
+        val result = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+        return result == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestPermissionForCamera() {
+        requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST)
+    }
 
     private fun deleteDraft() {
         val output = draftViewModel.deleteDraftRealm(
@@ -1135,7 +1350,7 @@ class PublishFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it) {
                 println(getString(R.string.draft_deleted))
             } else {
@@ -1143,7 +1358,7 @@ class PublishFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
         output.errorMessage.observe(this, Observer {

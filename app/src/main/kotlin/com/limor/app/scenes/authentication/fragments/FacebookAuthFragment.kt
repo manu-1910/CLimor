@@ -14,7 +14,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import com.android.volley.Request
 import com.android.volley.Response
@@ -132,28 +132,23 @@ class FacebookAuthFragment : BaseFragment() {
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
             viewModelSignInMail =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(SignViewModel::class.java)
 
             viewModelSignInFB =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(SignFBViewModel::class.java)
 
             viewModelMergeFacebookAccount =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(MergeFacebookAccountViewModel::class.java)
 
             viewModelSignUpFB =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(SignUpFBViewModel::class.java)
 
             viewModelCreateFriend =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(CreateFriendViewModel::class.java)
         }
     }
@@ -214,7 +209,7 @@ class FacebookAuthFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             pbSignIn?.visibility = View.GONE
             view?.hideKeyboard()
 
@@ -245,7 +240,7 @@ class FacebookAuthFragment : BaseFragment() {
 
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -295,7 +290,7 @@ class FacebookAuthFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             pbSignIn?.visibility = View.GONE
             view?.hideKeyboard()
 
@@ -324,7 +319,7 @@ class FacebookAuthFragment : BaseFragment() {
 
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -363,7 +358,7 @@ class FacebookAuthFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             pbSignIn?.visibility = View.GONE
             view?.hideKeyboard()
             if (it.message == "Success") {
@@ -371,7 +366,7 @@ class FacebookAuthFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -404,12 +399,12 @@ class FacebookAuthFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             view?.hideKeyboard()
             goToMainActivity()
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -480,7 +475,7 @@ class FacebookAuthFragment : BaseFragment() {
     val drawable = ResourcesCompat.getDrawable(resources, R.drawable.selected, null)
     drawable!!.setBounds(0, 0, 50, 50)
 
-    DrawableCompat.setTint(drawable, ContextCompat.getColor(context!!, R.color.green500))
+    DrawableCompat.setTint(drawable, ContextCompat.getColor(requireContext(), R.color.green500))
     edtUsername.myEdit.setCompoundDrawables(null, null, drawable, null)
 
     edtUsername?.myEditLyt?.isErrorEnabled = false

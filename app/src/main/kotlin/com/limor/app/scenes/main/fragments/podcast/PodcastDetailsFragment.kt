@@ -24,7 +24,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -1746,96 +1746,78 @@ class PodcastDetailsFragment : BaseFragment() {
 
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
-            viewModelGetPodcastComments = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelGetPodcastComments = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(GetPodcastCommentsViewModel::class.java)
             viewModelGetPodcastComments.limit = FEED_LIMIT_REQUEST
             viewModelGetPodcastComments.offset = 0
 
 
-            viewModelGetCommentComments = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelGetCommentComments = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(GetCommentCommentsViewModel::class.java)
             viewModelGetCommentComments.limit = FEED_LIMIT_REQUEST
             viewModelGetCommentComments.offset = 0
 
 
-            viewModelCreatePodcastLike = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreatePodcastLike = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastLikeViewModel::class.java)
             uiPodcast?.id?.let { viewModelCreatePodcastLike.idPodcast = it }
 
 
-            viewModelDeletePodcastLike = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeletePodcastLike = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastLikeViewModel::class.java)
             uiPodcast?.id?.let { viewModelDeletePodcastLike.idPodcast = it }
 
 
-            viewModelCreatePodcastRecast = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreatePodcastRecast = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastRecastViewModel::class.java)
             uiPodcast?.id?.let { viewModelCreatePodcastRecast.idPodcast = it }
 
 
-            viewModelDeletePodcastRecast = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeletePodcastRecast = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastRecastViewModel::class.java)
             uiPodcast?.id?.let { viewModelDeletePodcastRecast.idPodcast = it }
 
 
-            viewModelCreateCommentLike = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreateCommentLike = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreateCommentLikeViewModel::class.java)
 
 
-            viewModelDeleteCommentLike = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeleteCommentLike = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeleteCommentLikeViewModel::class.java)
 
 
-            viewModelCreateCommentComment = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreateCommentComment = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreateCommentCommentViewModel::class.java)
 
 
-            viewModelCreatePodcastComment = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreatePodcastComment = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastCommentViewModel::class.java)
 
 
-            viewModelCreateCommentReport = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreateCommentReport = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreateCommentReportViewModel::class.java)
 
 
-            viewModelCreatePodcastReport = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreatePodcastReport = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreatePodcastReportViewModel::class.java)
 
-            viewModelCreateUserReport = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreateUserReport = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreateUserReportViewModel::class.java)
 
-            viewModelDeletePodcast = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeletePodcast = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeletePodcastViewModel::class.java)
 
-            viewModelCreateBlockedUser = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreateBlockedUser = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreateBlockedUserViewModel::class.java)
 
-            viewModelDeleteComment = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelDeleteComment = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(DeleteCommentViewModel::class.java)
 
-            viewModelGetPodcastById = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelGetPodcastById = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(GetPodcastByIdViewModel::class.java)
             uiPodcast?.id?.let { viewModelGetPodcastById.idPodcast = it }
 
-            viewModelCreateCommentDropOff = ViewModelProviders
-                .of(fragmentActivity, viewModelFactory)
+            viewModelCreateCommentDropOff = ViewModelProvider(fragmentActivity, viewModelFactory)
                 .get(CreateCommentDropOffViewModel::class.java)
         }
     }

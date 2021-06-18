@@ -9,21 +9,24 @@ import io.square1.limor.remote.entities.responses.*
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import io.square1.limor.remote.services.RemoteService
 import io.square1.limor.remote.services.RemoteServiceConfig
-import kotlinx.serialization.ImplicitReflectionSerializer
+
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import javax.inject.Inject
 
 
-@ImplicitReflectionSerializer
+
 class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteServiceConfig) :
     RemoteService<PodcastService>(PodcastService::class.java, serviceConfig) {
 
-
+    private val json = Json {
+        isLenient = true
+        ignoreUnknownKeys = true
+    }
 
     fun publishPodcast(nwPublishRequest: NWPublishRequest): Single<NWPublishResponse>? {
-        val jsonRequest = Json.nonstrict.stringify(NWPublishRequest.serializer(), nwPublishRequest)
+        val jsonRequest = json.encodeToString(NWPublishRequest.serializer(), nwPublishRequest)
         val request = RequestBody.create(MediaType.parse("application/json"), jsonRequest)
         return service.publishPodcast(request)
             .map { response -> response.parseSuccessResponse(NWPublishResponse.serializer()) }
@@ -96,7 +99,7 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
         idPodcast: Int,
         request: NWCreateCommentRequest
     ): Single<NWCreateCommentResponse> {
-        return service.createComment(idPodcast, RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWCreateCommentRequest.serializer(), request)))
+        return service.createComment(idPodcast, RequestBody.create(MediaType.parse("application/json"), json.encodeToString(NWCreateCommentRequest.serializer(), request)))
             .map {
                     response -> response.parseSuccessResponse(NWCreateCommentResponse.serializer())
             }
@@ -112,7 +115,7 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
         idPodcast: Int,
         request: NWDropOffRequest
     ): Single<NWUpdatedResponse> {
-        return service.createDropOff(idPodcast, RequestBody.create(MediaType.parse("application/json"), Json.nonstrict.stringify(NWDropOffRequest.serializer(), request)))
+        return service.createDropOff(idPodcast, RequestBody.create(MediaType.parse("application/json"), json.encodeToString(NWDropOffRequest.serializer(), request)))
             .map {
                     response -> response.parseSuccessResponse(NWUpdatedResponse.serializer())
             }
@@ -142,7 +145,7 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
 
 
     fun reportPodcast(id : Int, request: NWCreateReportRequest): Single<NWCreateReportResponse>? {
-        val jsonRequest = Json.nonstrict.stringify(NWCreateReportRequest.serializer(), request)
+        val jsonRequest = json.encodeToString(NWCreateReportRequest.serializer(), request)
         val requestParsed = RequestBody.create(MediaType.parse("application/json"), jsonRequest)
         return service.reportPodcast(id, requestParsed)
             .map { response -> response.parseSuccessResponse(NWCreateReportResponse.serializer()) }

@@ -4,21 +4,31 @@ package com.limor.app.scenes.main.fragments.record
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
+import android.view.View
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
+
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
+import com.limor.app.extensions.px
 import com.limor.app.scenes.main.viewmodels.LocationsViewModel
 import com.limor.app.scenes.utils.location.MyLocation
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
+import kotlinx.android.synthetic.main.activity_record.*
 import java.util.*
 import javax.inject.Inject
 
@@ -40,6 +50,8 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
+    lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+
     companion object {
         val TAG: String = RecordActivity::class.java.simpleName
         fun newInstance() = RecordActivity()
@@ -52,37 +64,67 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_record)
-
+        window.setBackgroundDrawable(ColorDrawable(Color.parseColor("#99000000")))
+        if (savedInstanceState == null) initSlideBehaviour()
         bindViewModel()
-
-//
-//        AndroidAudioConverter.load(this, object : ILoadCallback {
-//            override fun onSuccess() {
-//                // Great!
-//            }
-//
-//            override fun onFailure(error: java.lang.Exception) {
-//                // FFmpeg is not supported by device
-//            }
-//        })
 
         //Check Permissions
         if (!hasPermissions(applicationContext, *PERMISSIONS)) {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                 requestPermissions(PERMISSIONS, PERMISSION_ALL)
             }
-        }else{
+        } else {
             requestForLocation()
         }
-
 
         setupNavigationController()
     }
 
 
+    fun initScreenBehaviour() {
+        val layoutParams = coordinatorLayout.layoutParams as FrameLayout.LayoutParams
+        layoutParams.setMargins(0, 0, 0, 0)
+        coordinatorLayout.layoutParams = layoutParams
+        mainContainer.background = ColorDrawable(Color.WHITE)
+
+        val bottomSheetBehavior = BottomSheetBehavior.from(detail_container)
+        bottomSheetBehavior.isDraggable = false
+        bottomSheetBehavior.skipCollapsed = true
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+    }
+
+    fun initSlideBehaviour() {
+        val layoutParams = coordinatorLayout.layoutParams as FrameLayout.LayoutParams
+        layoutParams.setMargins(0, 16.px, 0, 0)
+        coordinatorLayout.layoutParams = layoutParams
+        mainContainer.background =
+            ContextCompat.getDrawable(this, R.drawable.bottom_sheet_screen_background)
+        val bottomSheetBehavior = BottomSheetBehavior.from(detail_container)
+        bottomSheetBehavior.isDraggable = true
+        bottomSheetBehavior.skipCollapsed = true
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    finish()
+                    overridePendingTransition(0, 0)
+                }
+                if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            }
+        })
+
+    }
+
     private fun bindViewModel() {
-        locationsViewModel = ViewModelProviders
-            .of(this, viewModelFactory)
+        locationsViewModel = ViewModelProvider(this, viewModelFactory)
             .get(LocationsViewModel::class.java)
     }
 
@@ -92,8 +134,7 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
     }
 
 
-    fun requestForLocation(){
-
+    private fun requestForLocation(){
         if (ActivityCompat.checkSelfPermission(
                 applicationContext,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -147,5 +188,6 @@ class RecordActivity : BaseActivity(), HasSupportFragmentInjector{
     private fun hasPermissions(context: Context, vararg permissions: String): Boolean = permissions.all {
         ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
+
 
 }

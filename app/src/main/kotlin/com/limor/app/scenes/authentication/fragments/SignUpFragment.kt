@@ -18,7 +18,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat.getColor
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
 import androidx.navigation.fragment.findNavController
 import com.facebook.*
 import com.facebook.login.LoginManager
@@ -117,28 +117,23 @@ class SignUpFragment : BaseFragment() {
     private fun bindViewModel() {
         activity?.let { fragmentActivity ->
             viewModel =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(SignUpViewModel::class.java)
 
             viewModelSignInFB =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(SignFBViewModel::class.java)
 
             viewModelSignUpFB =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(SignUpFBViewModel::class.java)
 
             viewModelMergeFacebookAccount =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(MergeFacebookAccountViewModel::class.java)
 
             viewModelCreateFriend =
-                ViewModelProviders
-                    .of(fragmentActivity, viewModelFactory)
+                ViewModelProvider(fragmentActivity, viewModelFactory)
                     .get(CreateFriendViewModel::class.java)
         }
     }

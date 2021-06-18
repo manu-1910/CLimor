@@ -4,51 +4,71 @@ import android.Manifest
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.app.AlertDialog
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
-import android.media.AudioFormat
-import android.media.MediaMetadataRetriever
+import android.media.*
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
+import android.telephony.TelephonyManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.textfield.TextInputEditText
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
 import com.limor.app.audio.wav.waverecorder.WaveRecorder
+import com.limor.app.audio.wav.waverecorder.calculateAmplitude
 import com.limor.app.common.BaseFragment
 import com.limor.app.scenes.main.viewmodels.DraftViewModel
 import com.limor.app.scenes.main.viewmodels.LocationsViewModel
+import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.CommonsKt.Companion.audioFileFormat
 import com.limor.app.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
-import com.limor.app.scenes.utils.VisualizerView
+import com.limor.app.scenes.utils.SpecialCharactersInputFilter
 import com.limor.app.scenes.utils.location.MyLocation
+import com.limor.app.scenes.utils.visualizer.RecordVisualizer
 import com.limor.app.uimodels.UIDraft
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.dialog_cancel_draft.view.*
+import kotlinx.android.synthetic.main.dialog_cancel_draft.view.saveButton
+import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
+import kotlinx.android.synthetic.main.dialog_save_draft.view.*
 import kotlinx.android.synthetic.main.fragment_record.*
+import kotlinx.android.synthetic.main.sheet_more_draft.view.*
 import kotlinx.android.synthetic.main.toolbar_default.*
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -59,6 +79,7 @@ import java.io.File
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
+import kotlin.math.sqrt
 
 
 class RecordFragment : BaseFragment() {
@@ -73,7 +94,7 @@ class RecordFragment : BaseFragment() {
     private var isFirstTapRecording = true
     private var timeWhenStopped: Long = 0
     private var rootView: View? = null
-    private var voiceGraph: VisualizerView? = null
+    private var recordVisualizer: RecordVisualizer? = null
     private var mRecorder: WaveRecorder? = null
     private val insertDraftTrigger = PublishSubject.create<Unit>()
     private val deleteDraftTrigger = PublishSubject.create<Unit>()
@@ -82,9 +103,17 @@ class RecordFragment : BaseFragment() {
     private lateinit var locationResult: MyLocation.LocationResult
     private var fileRecording = ""
     private var isAnimatingCountdown: Boolean = false
-    private lateinit var handlerCountdown : Handler
+    private var needAnimatedCountDown = true
+    private lateinit var handlerCountdown: Handler
     private var anythingToSave = false
 
+    //Player record variables
+    private lateinit var mediaPlayer: MediaPlayer
+    private lateinit var tempFileName: String
+    private var seekUpdater: Runnable
+    private val seekHandler: Handler = Handler(Looper.getMainLooper())
+    private var needToInitializeMediaPlayer = true
+    private var playBackTime = 0L
 
     companion object {
         val TAG: String = RecordFragment::class.java.simpleName
@@ -100,6 +129,23 @@ class RecordFragment : BaseFragment() {
     }
 
 
+    init {
+        seekUpdater = object : Runnable {
+            override fun run() {
+                seekHandler.postDelayed(this, 100)
+                mediaPlayer.let {
+                    if (it.isPlaying) {
+                        val currentPosition = it.currentPosition
+                        playVisualizer.updateTime(currentPosition.toLong(), true)
+                        updatePlayBackLabel(currentPosition.toLong())
+                        enableRewFwdButton(it)
+                    }
+                }
+            }
+        }
+    }
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -107,7 +153,7 @@ class RecordFragment : BaseFragment() {
     ): View? {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_record, container, false)
-            voiceGraph = rootView?.findViewById(R.id.graphVisualizer)
+            recordVisualizer = rootView?.findViewById(R.id.graphVisualizer)
         }
         app = context?.applicationContext as App
         return rootView
@@ -117,9 +163,12 @@ class RecordFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        tempFileName = getNewFileName()
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 1f)
 
+        rewButton.isEnabled = false
+        ffwdButton.isEnabled = false
 
         bindViewModel()
 //        deleteUnusedAudioFiles()
@@ -132,15 +181,234 @@ class RecordFragment : BaseFragment() {
         if (!hasPermissions(requireContext(), *PERMISSIONS)) {
             requestPermissions(PERMISSIONS, PERMISSION_ALL)
         }
+
     }
 
 
+    private fun listeners() {
+        enablePlayButton(false)
+        // Next Button
+        nextButton.onClick {
+            if (mRecorder != null) {
+                val resultStop = stopAudio()
+                if (!resultStop) {
+                    alert(getString(R.string.error_stopping_audio)) { okButton { } }
+                    return@onClick
+                }
+            }
+
+            // --------------- Read this carefully: -----------------
+            // - filesArray will have size 1 when we first record an audio in the record fragment.
+            //      I mean, if I just come to the RecordFragment and start a recording, this would
+            //      be my only recording and my only file. This is this specific case.
+            //
+            // - filesArray will have size 2 and that second file won't exist yet when
+            //      we came back to this fragment from edit or publish fragment but the user didn't
+            //      record more audio, so the first audio file (the one that we received from the other
+            //      fragment) is set, but the second one (the one that we should've created by recording audio) is not set.
+            //
+            // In both cases, we just have to set the only useful filePath and send it to the next fragment. Without merging anything.
+            if (draftViewModel.filesArray.size == 1
+                || draftViewModel.filesArray.size == 2 && !draftViewModel.filesArray[1].exists()
+            ) {
+                uiDraft?.filePath = draftViewModel.filesArray[0].absolutePath
+                uiDraft?.editedFilePath = draftViewModel.filesArray[0].absolutePath
+                insertDraftInRealm(uiDraft!!)
+
+                val bundle = bundleOf("recordingItem" to uiDraft)
+                //findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
+                findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
+
+
+                // This situation will happen when I came back from edit or publish fragment and then,
+                // I have my previous recording that I received from the previous fragment (edit or publish),
+                // and the new recording the user just recorded. Both files should be merged now.
+            } else if (draftViewModel.filesArray.size == 2) {
+                mergeFilesAndNavigateTo(R.id.action_record_fragment_to_record_publish)
+            } else {
+                val errorMessage =
+                    "Error, you have -> ${draftViewModel.filesArray.size} items when merging audio"
+                alert(errorMessage) { okButton { } }.show()
+                Timber.e(errorMessage)
+            }
+
+        }
+
+        // Record Button
+        recordButton.onClick {
+
+            playVisualizer.visibility = View.GONE
+            c_meter.visibility = View.VISIBLE
+            textPlaybackTime.visibility = View.INVISIBLE
+            recordVisualizer?.visibility = View.VISIBLE
+            updatePlayBackLabel(0)
+
+            if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                setPlayPauseButtonState(false)
+            }
+            if (isRecording) {
+                pauseRecording()
+                needToInitializeMediaPlayer = true
+                enablePlayButton(true)
+            } else {
+                if (needAnimatedCountDown) {
+                    showCountdownAnimation {
+                        startRecording()
+                    }
+                } else {
+                    stopCountdownAnimationAndStartRecordingInstantly()
+                }
+                enablePlayButton(false)
+            }
+        }
+
+        playButton.onClick {
+            if (needToInitializeMediaPlayer) {
+                val recordingFile = File(fileRecording)
+                val copiedFile = File(tempFileName)
+                lifecycleScope.launch {
+                    if (recordingFile.exists()) {
+                        val amps: List<Int>
+                        //We returned from drafts screen
+                        if (uiDraft?.draftParent != null) {
+                            val tempFilePath = getNewFileName()
+                            val tempFile = File(tempFilePath)
+                            recordingFile.copyTo(tempFile, true)
+                            mRecorder?.writeHeaders(tempFilePath)
+                            WavHelper.combineWaveFile(
+                                draftViewModel.filesArray[0].absolutePath,
+                                tempFile.absolutePath,
+                                copiedFile.absolutePath
+                            )
+                            amps = loadAmps(copiedFile.absolutePath, mRecorder?.bufferSize!!)
+                            if (tempFile.exists()) tempFile.delete()
+                            //It's a new recording
+                        } else {
+                            recordingFile.copyTo(copiedFile, true)
+                            mRecorder?.writeHeaders(tempFileName)
+                            amps = loadAmps(copiedFile.absolutePath, mRecorder?.bufferSize!!)
+                        }
+                        playVisualizer.apply {
+                            ampNormalizer = { sqrt(it.toFloat()).toInt() }
+                            onSeeking = {
+                                mediaPlayer.seekTo(it.toInt())
+                                updatePlayBackLabel(it)
+                                enableRewFwdButton(mediaPlayer)
+                            }
+                        }
+                        playVisualizer.setWaveForm(
+                            amps,
+                            mRecorder!!.tickDuration
+                        )
+                        configureMediaPlayer(copiedFile)
+                    }
+                }
+            } else {
+                if (mediaPlayer.isPlaying) {
+                    mediaPlayer.pause()
+                    setPlayPauseButtonState(false)
+                } else {
+                    mediaPlayer.start()
+                    setPlayPauseButtonState(true)
+                }
+            }
+        }
+
+        ffwdButton.onClick {
+            try {
+                val nextPosition = mediaPlayer.currentPosition + 5000
+                if (nextPosition < mediaPlayer.duration)
+                    mediaPlayer.seekTo(nextPosition)
+                else if (mediaPlayer.currentPosition < mediaPlayer.duration)
+                    mediaPlayer.seekTo(mediaPlayer.duration)
+            } catch (e: Exception) {
+                Timber.d("mediaPlayer.seekTo forward overflow")
+            }
+        }
+
+        rewButton.onClick {
+            try {
+                mediaPlayer.seekTo(mediaPlayer.currentPosition - 5000)
+            } catch (e: Exception) {
+                Timber.d("mediaPlayer.seekTo rewind overflow")
+            }
+        }
+
+    }
+
+    private fun updatePlayBackLabel(playBack: Long) {
+        playBackTime = playBack
+        textPlaybackTime.text = Commons.getLengthFromEpochForPlayer(playBackTime)
+    }
+
+    private fun setPlayPauseButtonState(isPlaying: Boolean) {
+        if (isPlaying)
+            playButton.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_pause
+                )
+            )
+        else
+            playButton.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.play_button
+                )
+            )
+    }
+
+
+    private fun configureMediaPlayer(audio: File) {
+        mediaPlayer = MediaPlayer()
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+        mediaPlayer.setDataSource(audio.absolutePath)
+        mediaPlayer.setOnCompletionListener {
+            setPlayPauseButtonState(false)
+            playVisualizer.updateTime(mediaPlayer.duration.toLong(), false)
+            updatePlayBackLabel(mediaPlayer.duration.toLong())
+            enableRewFwdButton(it)
+            mediaPlayer.pause()
+
+        }
+        mediaPlayer.setOnPreparedListener {
+            it.start()
+            updatePlayBackLabel(0)
+            seekHandler.post(seekUpdater)
+            setPlayPauseButtonState(true)
+        }
+        mediaPlayer.prepareAsync()
+        needToInitializeMediaPlayer = false
+        playVisualizer.visibility = View.VISIBLE
+        recordVisualizer!!.visibility = View.GONE
+        c_meter.visibility = View.INVISIBLE
+        textPlaybackTime.visibility = View.VISIBLE
+    }
+
+    private fun enablePlayButton(isEnabled: Boolean) {
+        playButton.isEnabled = isEnabled
+        //rewButton.isEnabled = isEnabled
+        //ffwdButton.isEnabled = isEnabled
+    }
+
+    private fun enableRewFwdButton(mediaPlayer: MediaPlayer) {
+        rewButton.isEnabled = mediaPlayer.currentPosition > 0
+        ffwdButton.isEnabled = mediaPlayer.currentPosition < mediaPlayer.duration
+    }
+
     override fun onResume() {
         super.onResume()
-
+        (requireActivity() as RecordActivity).initSlideBehaviour()
         requestForLocation()
-
-
+        requireActivity().registerReceiver(
+            lowBatteryReceiver,
+            IntentFilter(Intent.ACTION_BATTERY_LOW)
+        )
+        requireActivity().registerReceiver(
+            incomeCallReceiver,
+            IntentFilter("android.intent.action.PHONE_STATE")
+        )
         // this means that we come from another fragment to continue recording
         draftViewModel.uiDraft?.let {
 
@@ -152,7 +420,7 @@ class RecordFragment : BaseFragment() {
 
             // this means that we come from another fragment and that this is an autosave from
             // another draft, so we just assign the received draft to the current uiDraft
-            if(it.draftParent != null) {
+            if (it.draftParent != null) {
 
                 uiDraft = draftViewModel.uiDraft
 
@@ -166,17 +434,16 @@ class RecordFragment : BaseFragment() {
 
                 // this means that we come from drafts list fragment, so we have to create a new autosave
                 // draft and assign the parent as the uiDraft received from this fragment
-                if( ! it.isNewRecording) {
-
+                if (!it.isNewRecording) {
                     uiDraft = it.copy()
                     uiDraft?.id = System.currentTimeMillis()
                     uiDraft?.title = getString(R.string.autosave)
-                    if(it.filePath != null) {
+                    if (it.filePath != null) {
                         val fileFromParent = File(it.filePath!!)
-                        if(fileFromParent.exists()) {
+                        if (fileFromParent.exists()) {
                             val copiedFilePath = getNewFileName()
                             val copiedFile = fileFromParent.copyTo(File(copiedFilePath), true)
-                            if(copiedFile.exists()) {
+                            if (copiedFile.exists()) {
                                 uiDraft?.filePath = copiedFilePath
                                 draftViewModel.filesArray.clear()
                                 draftViewModel.filesArray.add(copiedFile)
@@ -184,13 +451,15 @@ class RecordFragment : BaseFragment() {
                                 alert(getString(R.string.error_copying_file))
                             }
                         } else {
-                            alert(getString(R.string.file_doesnt_exist)).show()
+                            createNewAutosavedDraft()
+                            uiDraft?.isNewRecording = true
                         }
                     } else {
                         alert(getString(R.string.file_not_received)).show()
                     }
 
                     uiDraft?.draftParent = it
+                    loadDraftToRecordingWave()
 
 
                     // this means that we are a new recording that just navigated to another fragment to edit
@@ -198,6 +467,8 @@ class RecordFragment : BaseFragment() {
                     // draft to the local uiDraft of this fragment
                 } else {
                     uiDraft = draftViewModel.uiDraft
+                    needToInitializeMediaPlayer = true
+                    enablePlayButton(true)
                 }
             }
 
@@ -216,110 +487,150 @@ class RecordFragment : BaseFragment() {
         }
     }
 
+    private fun loadDraftToRecordingWave() {
+        if (!File(uiDraft?.draftParent!!.filePath!!).exists()) return
+        lifecycleScope.launch {
+            //Create dummy recorder to get wave parameters
+            val recorder = WaveRecorder("")
+            val amps: List<Int> =
+                loadAmps(uiDraft?.draftParent!!.filePath!!, recorder.bufferSize!!)
+            amps.forEach { amp ->
+                recordVisualizer?.addAmp(
+                    amp, recorder.tickDuration
+                )
+            }
+            needToInitializeMediaPlayer = true
+            enablePlayButton(true)
+        }
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        requireActivity().unregisterReceiver(lowBatteryReceiver)
+        requireActivity().unregisterReceiver(incomeCallReceiver)
+    }
 
 
     private fun onBackPressed() {
         // if the drafts is null, it means that we haven't even recorded anything, so we just exit the activity
+        if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+            mediaPlayer.pause()
+            setPlayPauseButtonState(false)
+        }
         if (!anythingToSave) {
             uiDraft = null
             activity?.finish()
-
-
             // if we do have recorded anything...
         } else {
-
-
             // this means that we are in this fragment recording some audio for the first time
-            if(uiDraft?.isNewRecording == true) {
+            if (uiDraft?.isNewRecording == true) {
 
                 // let's show the dialog to show if they want to save the current recorded audio or discard it
-                alert(
-                    getString(R.string.alert_cancel_record_descr),
-                    getString(R.string.alert_cancel_record_title)
-                ) {
-
-                    // if OK, let's save it
-                    positiveButton(getString(R.string.alert_cancel_record_save)) {
-                        it.dismiss()
-                        showSaveDraftAlert()
-                    }
-
-                    // if CANCEL, then let's delete the temporary draft that it's now created
-                    negativeButton(getString(R.string.alert_cancel_record_do_not_save)) {
-                        deleteDraftInRealm(uiDraft!!)
-                        activity?.finish()
-                    }
-                }.show()
-
+                showSaveDraftDialog()
 
                 // if we are here, this means that we are in this fragment because we come from
                 // another fragment that sent us some draft to continue recording it
-            } else {
+            } else showCancelDraftDialog()
+        }
+    }
 
-                alert(getString(R.string.do_you_want_to_save_changes)) {
+    private fun showCancelDraftDialog() {
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_cancel_draft, null)
 
-                    // NOTE: don't keep in mind if buttons are positive, negative or neutral, any of them
-                    //  do different actions that aren't either positive or negative or so. I just
-                    //  choose those actions to get the order on screen that I wanted.
-                    //  I insist, they are neither positive or negative, they just simply do different actions
+        dialogBuilder.setView(dialogView)
+        dialogBuilder.setCancelable(true)
+        val dialog: AlertDialog = dialogBuilder.create()
 
-
-                    // OVERWRITE
-                    positiveButton(getString(R.string.overwrite)) {
-
-                        val resultStop = stopAudio()
-                        if (!resultStop) {
-                            alert(getString(R.string.error_stopping_audio)) { okButton { } }
-                            return@positiveButton
-                        }
-
-                        mergeFilesIfNecessary {
-                            uiDraft?.title = uiDraft?.draftParent?.title
-                            val parentToDelete = uiDraft?.draftParent?.copy()
-                            uiDraft?.draftParent = null // this is necessary because if we don't do it
-                                                        // then when we retreive it from realm we may think that
-                                                        // this is still a children draft and it may not
-                            insertDraftInRealm(uiDraft!!)
-                            if(parentToDelete != null)
-                                deleteDraftInRealm(parentToDelete)
-                            activity?.finish()
-                        }
-                    }
-
-                    // SAVE AS NEW
-                    negativeButton(getString(R.string.save_as_new_draft)) {
-
-                        val resultStop = stopAudio()
-                        if (!resultStop) {
-                            alert(getString(R.string.error_stopping_audio)) { okButton { } }
-                            return@negativeButton
-                        }
-
-                        showSaveDraftAlert {title ->
-                            mergeFilesIfNecessary {
-                                uiDraft?.title = title
-                                uiDraft?.draftParent = null // this is necessary because if we don't do it
-                                                            // then when we retreive it from realm we may think that
-                                                            // this is still a children draft and it may not
-                                insertDraftInRealm(uiDraft!!)
-                                activity?.finish()
-                            }
-                        }
-                    }
-
-                    // DISCARD
-                    neutralPressed(getString(R.string.discard)) {
-                        deleteDraftInRealm(uiDraft!!)
-                        activity?.finish()
-                    }
-                }.show()
-
+        dialogView.overwriteButton.setOnClickListener {
+            dialog.dismiss()
+            val resultStop = stopAudio()
+            if (!resultStop) {
+                alert(getString(R.string.error_stopping_audio)) { okButton { } }
+                return@setOnClickListener
             }
+
+            mergeFilesIfNecessary {
+                uiDraft?.title = uiDraft?.draftParent?.title
+                val parentToDelete = uiDraft?.draftParent?.copy()
+                uiDraft?.draftParent =
+                    null // this is necessary because if we don't do it
+                // then when we retreive it from realm we may think that
+                // this is still a children draft and it may not
+                insertDraftInRealm(uiDraft!!)
+                if (parentToDelete != null)
+                    deleteDraftInRealm(parentToDelete)
+                activity?.finish()
+            }
+        }
+
+        dialogView.saveButton.setOnClickListener {
+            dialog.dismiss()
+            val resultStop = stopAudio()
+            if (!resultStop) {
+                alert(getString(R.string.error_stopping_audio)) { okButton { } }
+                return@setOnClickListener
+            }
+
+            showSaveDraftAlert { title ->
+                mergeFilesIfNecessary {
+                    uiDraft?.title = title
+                    uiDraft?.draftParent =
+                        null // this is necessary because if we don't do it
+                    // then when we retreive it from realm we may think that
+                    // this is still a children draft and it may not
+                    insertDraftInRealm(uiDraft!!)
+                    activity?.finish()
+                }
+            }
+        }
+
+        dialogView.discardButton.setOnClickListener {
+            dialog.dismiss()
+            deleteDraftInRealm(uiDraft!!)
+            activity?.finish()
+        }
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset)
+            show()
         }
     }
 
 
-    private fun createNewAutosavedDraft() : UIDraft {
+    private fun showSaveDraftDialog() {
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_save_draft, null)
+
+        dialogBuilder.setView(dialogView)
+        dialogBuilder.setCancelable(true)
+        val dialog: AlertDialog = dialogBuilder.create()
+
+        dialogView.noButton.setOnClickListener {
+            deleteDraftInRealm(uiDraft!!)
+            activity?.finish()
+        }
+
+        dialogView.saveButton.setOnClickListener {
+            dialog.dismiss()
+            showSaveDraftAlert()
+        }
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset)
+            show()
+        }
+    }
+
+
+    private fun createNewAutosavedDraft(): UIDraft {
         val auxDraft = UIDraft()
         auxDraft.id = System.currentTimeMillis()
         auxDraft.title = getString(R.string.autosaved_draft)
@@ -349,11 +660,11 @@ class RecordFragment : BaseFragment() {
                     mmr.setDataSource(context, uri)
                     val durationStr =
                         mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                    val currentDurationInMillis = durationStr.toInt()
-                    val currentDurationInSecondsFloat: Double = currentDurationInMillis / 1000.0
-                    val durationFloatRoundedUp = kotlin.math.ceil(currentDurationInSecondsFloat)
-                    val durationMillisRoundedUp = (durationFloatRoundedUp * 1000).toInt()
-                    c_meter.base = SystemClock.elapsedRealtime() - durationMillisRoundedUp
+                    val currentDurationInMillis = durationStr!!.toInt()
+                    //val currentDurationInSecondsFloat: Double = currentDurationInMillis / 1000.0
+                    //val durationFloatRoundedUp = kotlin.math.ceil(currentDurationInSecondsFloat)
+                    // val durationMillisRoundedUp = (durationFloatRoundedUp * 1000).toInt()
+                    c_meter.base = SystemClock.elapsedRealtime() - currentDurationInMillis
                     timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -363,50 +674,11 @@ class RecordFragment : BaseFragment() {
         }
     }
 
-
     private fun hasPermissions(context: Context, vararg permissions: String): Boolean =
         permissions.all {
             ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
         }
 
-
-
-    // TODO: Jose -> review this method
-    // be careful with this method. It doesn't seem to work as expected.
-    // I mean, it does delete files, but maybe it deletes files that we don't want to be deleted.
-    private fun deleteUnusedAudioFiles() {
-        // let's fill a paths list with all the file paths that should be in the storage
-        draftViewModel.loadDraftRealm()?.observe(this@RecordFragment, Observer<List<UIDraft>> {
-            val paths = ArrayList<String>()
-            it.forEach { draft ->
-                draft.filePath?.let { path ->
-                    paths.add(path)
-                }
-            }
-            // and now, let's delete all zombie files that are not linked to any draft anymore but,
-            // for some reason, they were not deleted
-            val audioDirectory = File(context?.getExternalFilesDir(null)?.absolutePath, "/limorv2/")
-            if (audioDirectory.exists() && audioDirectory.isDirectory) {
-                val files = audioDirectory.listFiles()
-                files?.forEach { file ->
-                    if (!paths.contains(file.absolutePath))
-                        file.delete()
-                }
-            }
-        })
-
-
-        // and now, let's clean cache too
-        context?.externalCacheDir?.absolutePath?.let {
-            val cacheDirectory = File(it)
-            if (cacheDirectory.exists() && cacheDirectory.isDirectory) {
-                val cacheFiles = cacheDirectory.listFiles()
-                cacheFiles?.forEach { file ->
-                    file.delete()
-                }
-            }
-        }
-    }
 
     private fun configureToolbar() {
         //Toolbar title
@@ -429,14 +701,22 @@ class RecordFragment : BaseFragment() {
     private fun showSaveDraftAlert(onPositiveClicked: (title: String) -> Unit) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = layoutInflater
-        dialogBuilder.setTitle(getString(R.string.save_draft_dialog_title))
         val dialogLayout = inflater.inflate(R.layout.dialog_with_edittext, null)
         val positiveButton = dialogLayout.findViewById<Button>(R.id.saveButton)
         val cancelButton = dialogLayout.findViewById<Button>(R.id.cancelButton)
-        val editText = dialogLayout.findViewById<EditText>(R.id.editText)
+        val editText = dialogLayout.findViewById<TextInputEditText>(R.id.editText)
+        val titleText = dialogLayout.findViewById<TextView>(R.id.textTitle)
+
+        titleText.text = requireContext().getString(R.string.save_draft_dialog_title)
+        editText.filters = arrayOf(SpecialCharactersInputFilter())
+        editText.doOnTextChanged { text, start, before, count ->
+            positiveButton.isEnabled = count > 0
+        }
+
         dialogBuilder.setView(dialogLayout)
         dialogBuilder.setCancelable(false)
-        val dialog: AlertDialog = dialogBuilder.show()
+
+        val dialog: AlertDialog = dialogBuilder.create()
 
         positiveButton.onClick {
             onPositiveClicked(editText.text.toString())
@@ -459,33 +739,38 @@ class RecordFragment : BaseFragment() {
                 positiveButton.isEnabled = !p0.isNullOrEmpty()
             }
         })
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset);
+            show()
+        }
     }
 
 
     private fun showSaveDraftAlert() {
-       showSaveDraftAlert {
-           uiDraft?.title = it
-           uiDraft?.isNewRecording = false
-           uiDraft?.date = getDateTimeFormatted()
+        showSaveDraftAlert {
+            uiDraft?.title = it
+            uiDraft?.isNewRecording = false
+            uiDraft?.date = getDateTimeFormatted()
 
-           //Inserting in Realm
-           insertDraftInRealm(uiDraft!!)
+            //Inserting in Realm
+            insertDraftInRealm(uiDraft!!)
 
-           toast(getString(R.string.draft_inserted))
+            toast(getString(R.string.draft_inserted))
 
-           activity?.finish()
-       }
+            activity?.finish()
+        }
     }
 
 
     private fun bindViewModel() {
         activity?.let {
-            draftViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            draftViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(DraftViewModel::class.java)
 
-            locationsViewModel = ViewModelProviders
-                .of(it, viewModelFactory)
+            locationsViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(LocationsViewModel::class.java)
         }
     }
@@ -540,7 +825,10 @@ class RecordFragment : BaseFragment() {
             alert(getString(R.string.error_stopping_audio)) { okButton { } }
             return
         }
-
+        if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+            mediaPlayer.pause()
+            setPlayPauseButtonState(false)
+        }
         // --------------- Read this carefully: -----------------
         // - filesArray will have size 1 when we first record an audio in the record fragment.
         //      I mean, if I just come to the RecordFragment and start a recording, this would
@@ -578,11 +866,8 @@ class RecordFragment : BaseFragment() {
         }
     }
 
-    private fun mergeFilesAndCloseActivity() {
-        mergeFilesAndNavigateTo(-1)
-    }
 
-    private fun mergeFilesAndNavigateTo(navigationAction : Int) {
+    private fun mergeFilesAndNavigateTo(navigationAction: Int) {
         doAsync {
             val finalAudio = File(
                 context?.getExternalFilesDir(null)?.absolutePath,
@@ -614,7 +899,7 @@ class RecordFragment : BaseFragment() {
                 uiThread {
                     //Go to Publish fragment
                     // TODO: Jose -> maybe we don't need any bundle if we are using viewmodels
-                    if(navigationAction > 0) {
+                    if (navigationAction > 0) {
                         val bundle = bundleOf("recordingItem" to uiDraft)
                         findNavController().navigate(
                             navigationAction,
@@ -643,12 +928,12 @@ class RecordFragment : BaseFragment() {
             )
 
             // this means that there is only one file and there is no need to merge anything
-            if(draftViewModel.filesArray.size == 1) {
+            if (draftViewModel.filesArray.size == 1) {
                 uiDraft?.filePath = draftViewModel.filesArray[0].absolutePath
                 uiThread { callback() }
 
                 // this means that there are actually two files to merge
-            } else if(draftViewModel.filesArray.size == 2) {
+            } else if (draftViewModel.filesArray.size == 2) {
                 if (WavHelper.combineWaveFile(
                         draftViewModel.filesArray[0].absolutePath,
                         draftViewModel.filesArray[1].absolutePath,
@@ -679,7 +964,7 @@ class RecordFragment : BaseFragment() {
                 }
             } else {
                 uiThread {
-                    alert("There are three files in the list, it shouldn't") {  }.show()
+                    alert("There are three files in the list, it shouldn't") { }.show()
                 }
             }
         }
@@ -688,10 +973,7 @@ class RecordFragment : BaseFragment() {
     private fun initGui() {
         configureToolbar()
         // Disable next button
-        nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
-        nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.white)
         nextButton.isEnabled = false
-        nextButton.visibility = View.GONE
     }
 
 
@@ -701,20 +983,21 @@ class RecordFragment : BaseFragment() {
         mRecorder?.waveConfig?.sampleRate = 44100
         mRecorder?.waveConfig?.channels = AudioFormat.CHANNEL_IN_STEREO
         mRecorder?.waveConfig?.audioEncoding = AudioFormat.ENCODING_PCM_16BIT
+        recordVisualizer?.ampNormalizer = { sqrt(it.toFloat()).toInt() }
         mRecorder?.onAmplitudeListener = {
             runOnUiThread {
                 if (isRecording) {
                     if (it != 0) {
-                        voiceGraph?.addAmplitude(it.toFloat())
-                        voiceGraph?.invalidate() // refresh the Visualizer
+                        recordVisualizer?.addAmp(it, mRecorder!!.tickDuration)
                     }
                 }
             }
         }
+
     }
 
 
-    private fun getNewFileName() : String {
+    private fun getNewFileName(): String {
         // Note: this is not the audio file name, it's a directory.
         val recordingDirectory =
             File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/")
@@ -726,74 +1009,6 @@ class RecordFragment : BaseFragment() {
         return recordingDirectory.absolutePath + "/" + System.currentTimeMillis() + audioFileFormat
     }
 
-
-    private fun listeners() {
-
-        // Next Button
-        nextButton.onClick {
-            if(mRecorder != null) {
-                val resultStop = stopAudio()
-                if (!resultStop) {
-                    alert(getString(R.string.error_stopping_audio)) { okButton { } }
-                    return@onClick
-                }
-            }
-
-            // --------------- Read this carefully: -----------------
-            // - filesArray will have size 1 when we first record an audio in the record fragment.
-            //      I mean, if I just come to the RecordFragment and start a recording, this would
-            //      be my only recording and my only file. This is this specific case.
-            //
-            // - filesArray will have size 2 and that second file won't exist yet when
-            //      we came back to this fragment from edit or publish fragment but the user didn't
-            //      record more audio, so the first audio file (the one that we received from the other
-            //      fragment) is set, but the second one (the one that we should've created by recording audio) is not set.
-            //
-            // In both cases, we just have to set the only useful filePath and send it to the next fragment. Without merging anything.
-            if (draftViewModel.filesArray.size == 1
-                || draftViewModel.filesArray.size == 2 && !draftViewModel.filesArray[1].exists()
-            ) {
-                uiDraft?.filePath = draftViewModel.filesArray[0].absolutePath
-                uiDraft?.editedFilePath = draftViewModel.filesArray[0].absolutePath
-                insertDraftInRealm(uiDraft!!)
-
-                val bundle = bundleOf("recordingItem" to uiDraft)
-                //findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
-                findNavController().navigate(R.id.action_record_fragment_to_record_publish, bundle)
-
-
-                // This situation will happen when I came back from edit or publish fragment and then,
-                // I have my previous recording that I received from the previous fragment (edit or publish),
-                // and the new recording the user just recorded. Both files should be merged now.
-            } else if (draftViewModel.filesArray.size == 2) {
-                mergeFilesAndNavigateTo(R.id.action_record_fragment_to_record_publish)
-            } else {
-                val errorMessage =
-                    "Error, you have -> ${draftViewModel.filesArray.size} items when merging audio"
-                alert(errorMessage) { okButton { } }.show()
-                Timber.e(errorMessage)
-            }
-
-        }
-
-        // Record Button
-        recordButton.onClick {
-            if (isRecording) {
-                pauseRecording()
-            } else {
-                if(!isAnimatingCountdown) {
-                    showCountdownAnimation {
-                        startRecording()
-                    }
-                } else {
-                    stopCountdownAnimationAndStartRecordingInstantly()
-                }
-            }
-        }
-
-    }
-
-
     private fun stopCountdownAnimationAndStartRecordingInstantly() {
         handlerCountdown.removeCallbacksAndMessages(null)
         layCountdownAnimation.visibility = View.GONE
@@ -802,6 +1017,7 @@ class RecordFragment : BaseFragment() {
     }
 
     private fun showCountdownAnimation(callback: () -> Unit) {
+        needAnimatedCountDown = false
         isAnimatingCountdown = true
         val animatorCountDown = ObjectAnimator.ofPropertyValuesHolder(
             layCountdownAnimation,
@@ -818,7 +1034,7 @@ class RecordFragment : BaseFragment() {
         handlerCountdown = Handler()
         val runnableAnim = object : Runnable {
             override fun run() {
-                if(count > 0) {
+                if (count > 0) {
                     animatorCountDown.start()
                     handlerCountdown.postDelayed(this, 1000)
                     count--
@@ -853,24 +1069,16 @@ class RecordFragment : BaseFragment() {
 
     private fun updateRecordButton() {
         if (isRecording) {
-            nextButton.background = getDrawable(requireContext(), R.drawable.bg_round_grey_ripple)
             nextButton.isEnabled = false
-            nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.white)
-            nextButton.visibility = View.VISIBLE
-
             recordButton.background = ContextCompat.getDrawable(
                 requireContext(),
-                R.drawable.pause_red
+                R.drawable.pause_red_btn
             )
         } else {
             recordButton.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.record_red)
-
+                ContextCompat.getDrawable(requireContext(), R.drawable.record_red_btn)
             // Enable next button
-            nextButton.visibility = View.VISIBLE
-            nextButton.background = requireContext().getDrawable(R.drawable.bg_round_yellow_ripple)
             nextButton.isEnabled = true
-            nextButton.textColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
         }
     }
 
@@ -894,12 +1102,14 @@ class RecordFragment : BaseFragment() {
                 println("RECORD --> START")
                 resetRecorderWithNewFile()
                 mRecorder?.startRecording()
-
                 //This is the recorded audio file saved in storage
                 val fileChosen = File(fileRecording)
                 uiDraft?.filePath = fileChosen.absolutePath
                 draftViewModel.filesArray.add(fileChosen)
                 insertDraftInRealm(uiDraft!!)
+                val tickPerBar = 100 / mRecorder!!.tickDuration
+                val barDuration = tickPerBar * mRecorder!!.tickDuration
+                Timber.d("Audio Bar duration" + barDuration)
 
             } else {
                 println("RECORD --> RESUME")
@@ -942,21 +1152,6 @@ class RecordFragment : BaseFragment() {
         return true
     }
 
-
-//    override fun onDestroy() {
-//        super.onDestroy()
-//
-//        try {
-//            mRecorder.stopRecording()
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//
-//        voiceGraph?.clearAnimation()
-//        voiceGraph?.clear()
-//    }
-
-
     override fun onDestroyView() {
         super.onDestroyView()
 
@@ -966,8 +1161,18 @@ class RecordFragment : BaseFragment() {
             e.printStackTrace()
         }
 
-        voiceGraph?.clearAnimation()
-        voiceGraph?.clear()
+        recordVisualizer?.clearAnimation()
+        recordVisualizer?.clear()
+
+        if (::mediaPlayer.isInitialized) {
+            mediaPlayer.stop()
+        }
+        seekHandler.removeCallbacksAndMessages(null)
+        if (::handlerCountdown.isInitialized) {
+            handlerCountdown.removeCallbacksAndMessages(null)
+            layCountdownAnimation.visibility = View.GONE
+            isAnimatingCountdown = false
+        }
     }
 
     private fun initApiCallInsertDraft() {
@@ -977,7 +1182,7 @@ class RecordFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it) {
                 //toast(getString(R.string.draft_inserted))
                 println("Draft inserted succesfully")
@@ -987,7 +1192,7 @@ class RecordFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -1004,7 +1209,7 @@ class RecordFragment : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        output.response.observe(viewLifecycleOwner, Observer {
             if (it) {
                 //toast(getString(R.string.draft_deleted))
                 println("Draft deleted in realm")
@@ -1014,7 +1219,7 @@ class RecordFragment : BaseFragment() {
             }
         })
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -1022,24 +1227,6 @@ class RecordFragment : BaseFragment() {
             toast(getString(R.string.draft_not_inserted_error))
         })
     }
-
-
-//    private fun getLastModified(): File? {
-//        val directoryFilePath = context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/"
-//        val directory = File(directoryFilePath)
-//        val files = directory.listFiles { obj: File -> obj.isFile }
-//        var lastModifiedTime = Long.MIN_VALUE
-//        var chosenFile: File? = null
-//        if (files != null) {
-//            for (file in files) {
-//                if (file.lastModified() > lastModifiedTime) {
-//                    chosenFile = file
-//                    lastModifiedTime = file.lastModified()
-//                }
-//            }
-//        }
-//        return chosenFile
-//    }
 
 
     @Deprecated("")
@@ -1092,23 +1279,15 @@ class RecordFragment : BaseFragment() {
 
     private fun requestForLocation() {
 
-        if (ActivityCompat.checkSelfPermission(
-                context!!,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                context!!,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // Consider calling ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
+        val isPermissionsNotGranted = ActivityCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
 
+        if (isPermissionsNotGranted) return
 
         locationResult = object : MyLocation.LocationResult() {
             override fun gotLocation(location: Location?) {
@@ -1144,8 +1323,111 @@ class RecordFragment : BaseFragment() {
             }
         }
         val myLocation = MyLocation()
-        myLocation.getLocation(context!!, locationResult)
+        myLocation.getLocation(requireContext(), locationResult)
     }
+
+    private val lowBatteryReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(c: Context, i: Intent) {
+            if (isRecording) {
+                pauseRecording()
+            }
+            showLowBatteryDialog()
+        }
+    }
+
+    private fun showLowBatteryDialog() {
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.dialog_battery_low, null)
+
+        dialogBuilder.setView(dialogLayout)
+        dialogBuilder.setCancelable(false)
+
+        val dialog: AlertDialog = dialogBuilder.create()
+
+        dialogLayout.okButton.onClick {
+            dialog.dismiss()
+        }
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset);
+            show()
+        }
+    }
+
+    private val incomeCallReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == "android.intent.action.PHONE_STATE") {
+                val phoneState = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
+                if (phoneState == TelephonyManager.EXTRA_STATE_RINGING) {
+                    // The handset is not lifted, the phone rings
+                    Timber.d("Phone calls ring")
+                    val phoneNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)
+                } else if (phoneState == TelephonyManager.EXTRA_STATE_OFFHOOK) {
+                    // Phone is in a call (dial an outgoing call / talk)
+                } else if (phoneState == TelephonyManager.EXTRA_STATE_IDLE) {
+                    // The phone is in standby mode - this event occurs at the end of a conversation or situation, "refused to pick up the phone and dropped the call."
+                }
+            }
+        }
+    }
+
+    @Suppress("BlockingMethodInNonBlockingContext")
+    suspend fun loadAmps(recordFile: String, bufferSize: Int): List<Int> = withContext(IO) {
+        val amps = mutableListOf<Int>()
+        val buffer = ByteArray(bufferSize)
+        File(recordFile).inputStream().use {
+            it.skip(44.toLong())
+
+            var count = it.read(buffer)
+            while (count > 0) {
+                amps.add(buffer.calculateAmplitude())
+                count = it.read(buffer)
+            }
+        }
+        amps
+    }
+
+
+    // TODO: Jose -> review this method
+    // be careful with this method. It doesn't seem to work as expected.
+    // I mean, it does delete files, but maybe it deletes files that we don't want to be deleted.
+    private fun deleteUnusedAudioFiles() {
+        // let's fill a paths list with all the file paths that should be in the storage
+        draftViewModel.loadDraftRealm()?.observe(this@RecordFragment, Observer<List<UIDraft>> {
+            val paths = ArrayList<String>()
+            it.forEach { draft ->
+                draft.filePath?.let { path ->
+                    paths.add(path)
+                }
+            }
+            // and now, let's delete all zombie files that are not linked to any draft anymore but,
+            // for some reason, they were not deleted
+            val audioDirectory = File(context?.getExternalFilesDir(null)?.absolutePath, "/limorv2/")
+            if (audioDirectory.exists() && audioDirectory.isDirectory) {
+                val files = audioDirectory.listFiles()
+                files?.forEach { file ->
+                    if (!paths.contains(file.absolutePath))
+                        file.delete()
+                }
+            }
+        })
+
+
+        // and now, let's clean cache too
+        context?.externalCacheDir?.absolutePath?.let {
+            val cacheDirectory = File(it)
+            if (cacheDirectory.exists() && cacheDirectory.isDirectory) {
+                val cacheFiles = cacheDirectory.listFiles()
+                cacheFiles?.forEach { file ->
+                    file.delete()
+                }
+            }
+        }
+    }
+
 
 }
 
