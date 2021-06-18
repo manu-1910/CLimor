@@ -135,12 +135,12 @@ class NotificationsViewModel @Inject constructor(private val getNotificationsUse
                         error.response()?.errorBody()?.parseSuccessResponse(
                             UIErrorResponse.serializer()
                         )
-                    errorTracker.postValue(errorResponse)
+                    errorTracker.postValue(errorResponse!!)
                 } catch (e: Exception) {
                     e.printStackTrace()
 //                    val dataError = UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
 //                    val errorResponse = UIErrorResponse(99, dataError.toString())
-//                    errorTracker.postValue(errorResponse)
+//                    errorTracker.postValue(errorResponse!!)
                 }
 
             })

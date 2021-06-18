@@ -10,7 +10,6 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.limor.app.GendersQuery
 import com.limor.app.R
-import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import kotlinx.android.synthetic.main.fragment_new_auth_gender.*
@@ -60,10 +59,6 @@ class FragmentGender : FragmentWithLoading() {
         btnContinue.setOnClickListener {
             it.findNavController()
                 .navigate(R.id.action_fragment_new_auth_gender_to_fragment_new_auth_categories)
-        }
-
-        btnBack.setOnClickListener {
-            AuthActivityNew.popBackStack(requireActivity())
         }
 
         btnSkip.setOnClickListener {

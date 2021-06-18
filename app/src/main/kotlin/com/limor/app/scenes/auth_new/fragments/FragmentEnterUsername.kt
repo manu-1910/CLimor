@@ -10,13 +10,13 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
 import com.google.android.material.chip.Chip
 import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.UserNameState
 import com.limor.app.scenes.auth_new.data.UserNameStateBundle
+import com.limor.app.scenes.auth_new.navigation.AuthNavigator
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import com.limor.app.scenes.auth_new.util.colorStateList
 import kotlinx.android.synthetic.main.fragment_new_auth_enter_username.*
@@ -90,14 +90,16 @@ class FragmentEnterUsername : Fragment() {
         })
 
         model.userNameAttachedToUserLiveData.observe(viewLifecycleOwner, Observer {
-            if(it != true) return@Observer
+            if (it != true) return@Observer
             model.updateUserName()
         })
 
         model.updateUserNameLiveData.observe(viewLifecycleOwner, Observer {
-            if(it == null) return@Observer
-            clMain.findNavController()
-                .navigate(R.id.action_fragment_new_auth_enter_username_to_fragment_new_auth_gender)
+            if (it == null) return@Observer
+            AuthNavigator.navigateToFragmentByNavigationBreakpoints(
+                requireActivity(),
+                NavigationBreakpoints.PREFERENCE_COLLECTION.destination
+            )
         })
     }
 
@@ -151,6 +153,9 @@ class FragmentEnterUsername : Fragment() {
     }
 
     private fun saveNavigationBreakPoint() {
-        model.saveNavigationBreakPoint(requireContext(), NavigationBreakpoints.USERNAME_CREATION.destination)
+        model.saveNavigationBreakPoint(
+            requireContext(),
+            NavigationBreakpoints.USERNAME_CREATION.destination
+        )
     }
 }

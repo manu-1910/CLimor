@@ -44,7 +44,7 @@ class PushNotificationsViewModel @Inject constructor(private val notificationsUs
                     val errorResponse: UIErrorResponse? =
                         error.response()?.errorBody()?.parseSuccessResponse(UIErrorResponse.serializer())
 
-                    errorTracker.postValue(errorResponse)
+                    errorTracker.postValue(errorResponse!!)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

@@ -122,6 +122,7 @@ class FragmentVerifyPhoneNumber : Fragment() {
         model.smsCodeValidationErrorMessage.observe(viewLifecycleOwner, Observer {
             val hasError = it.isNotBlank()
             tvWrongCode.visibility = if (hasError) View.VISIBLE else View.GONE
+            if(hasError) tvWrongCode.text = it
             smsCodeEtList.forEach { et ->
                 et.error = if (hasError) " " else null
                 et.editText!!.setTextColor(
@@ -138,6 +139,10 @@ class FragmentVerifyPhoneNumber : Fragment() {
 
         model.createUserLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
+            model.saveNavigationBreakPoint(
+                requireContext(),
+                NavigationBreakpoints.ACCOUNT_CREATION.destination
+            )
             navigateToFragmentByNavigationBreakpoints(
                 requireActivity(),
                 NavigationBreakpoints.ACCOUNT_CREATION.destination
@@ -146,7 +151,8 @@ class FragmentVerifyPhoneNumber : Fragment() {
 
         model.navigationBreakPointLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
-                navigateToFragmentByNavigationBreakpoints(requireActivity(), it)
+            model.saveNavigationBreakPoint(requireContext(), it)
+            navigateToFragmentByNavigationBreakpoints(requireActivity(), it)
         })
 
         model.smsCodeValidationPassed.observe(viewLifecycleOwner, Observer {

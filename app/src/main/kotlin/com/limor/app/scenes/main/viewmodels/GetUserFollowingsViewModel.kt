@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import com.limor.app.common.BaseViewModel
 import com.limor.app.common.SingleLiveEvent
 import com.limor.app.uimodels.UIErrorResponse
-import com.limor.app.uimodels.UIGetBlockedUsersResponse
 import com.limor.app.uimodels.UIGetFollowingsUsersResponse
 import com.limor.app.usecases.GetUserFollowingsUseCase
 import io.reactivex.Observable
@@ -49,12 +48,12 @@ class GetUserFollowingsViewModel @Inject constructor(private val getUserFollowin
                     val error = it as HttpException
                     val errorResponse: UIErrorResponse? = error.response()?.errorBody()?.parseSuccessResponse(
                         UIErrorResponse.serializer())
-                    errorTracker.postValue(errorResponse)
+                    errorTracker.postValue(errorResponse!!)
                 } catch (e: Exception) {
                     e.printStackTrace()
 //                    val dataError = UIErrorData(arrayListOf(App.instance.getString(R.string.some_error)))
 //                    val errorResponse = UIErrorResponse(99, dataError.toString())
-//                    errorTracker.postValue(errorResponse)
+//                    errorTracker.postValue(errorResponse!!)
                 }
 
             })

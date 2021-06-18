@@ -22,12 +22,14 @@ object AuthNavigator {
             NavigationBreakpoints.values().firstOrNull { it.destination == destination }
                 ?: NavigationBreakpoints.ACCOUNT_CREATION
         navigateToFragmentWithClear(activity, breakpoint.actionId)
+        if (breakpoint == NavigationBreakpoints.HOME_FEED)
+            activity.finish()
     }
 
     private fun navigateToFragmentWithClear(activity: Activity, @IdRes actionId: Int) {
         val navController = Navigation.findNavController(activity, R.id.nav_host_fragment)
         val navOptions = NavOptions.Builder()
-            .setPopUpTo(navController.currentDestination?.id ?: 0, true)
+            .setPopUpTo(R.id.sign_new_navigation, true)
             .setEnterAnim(R.anim.slide_in_right_enter_no_alpha)
             .setExitAnim(R.anim.slide_out_left_exit_no_alpha)
             .build()
