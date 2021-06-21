@@ -4,51 +4,63 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.limor.app.FeedItemsQuery
 import com.limor.app.R
-import com.limor.app.scenes.main_new.fragments.adapters.HomeFeedAdapter
+import com.limor.app.databinding.FragmentHomeNewBinding
+import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
+import com.limor.app.scenes.main_new.adapters.HomeFeedAdapter
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
-import io.github.hyuwah.draggableviewlib.DraggableListener
-import io.github.hyuwah.draggableviewlib.DraggableView
+import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import kotlinx.android.synthetic.main.fragment_home_new.*
-import timber.log.Timber
 
-class FragmentHomeNew : Fragment(), DraggableListener {
+class FragmentHomeNew : FragmentWithLoading() {
+
+    val model: HomeFeedViewModel by viewModels()
+    lateinit var binding: FragmentHomeNewBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_home_new, container, false)
+    ): View {
+        binding = FragmentHomeNewBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setUpRecyclerView()
-        setUpDraggableView()
+    override fun load() {
+        model.loadHomeFeed()
     }
 
-    private fun setUpRecyclerView() {
+    override val errorLiveData: LiveData<String>
+        get() = model.homeFeedErrorLiveData
+
+    override fun subscribeToViewModel() {
+        super.subscribeToViewModel()
+        model.homeFeedLiveData.observe(viewLifecycleOwner, {
+            it?.let{
+                switchCommonVisibility(isLoading = false)
+                setDataToRecyclerView(it)
+            }
+        })
+    }
+
+    private fun setDataToRecyclerView(list: List<FeedItemsQuery.FeedItem>) {
+        val adapter = binding.rvHome.adapter
+        if(adapter != null) {
+            (adapter as HomeFeedAdapter).addData(list)
+        }else {
+            setUpRecyclerView(list)
+        }
+    }
+
+    private fun setUpRecyclerView(list: List<FeedItemsQuery.FeedItem>) {
         val layoutManager = LinearLayoutManager(requireContext())
-        rvHome.layoutManager = layoutManager
+        binding.rvHome.layoutManager = layoutManager
         val itemMargin = resources.getDimension(R.dimen.marginMedium).toInt()
-        rvHome.addItemDecoration(MarginItemDecoration(itemMargin))
-        rvHome.adapter = HomeFeedAdapter((1..50).map { it.toString() }.toList())
-    }
-
-    private lateinit var someDraggableView: DraggableView<LinearLayout> // can be other View or ViewGroup
-
-    private fun setUpDraggableView() {
-        someDraggableView = DraggableView.Builder(draggableView)
-            .setStickyMode(DraggableView.Mode.STICKY_X)
-            .setListener(this)
-            .build()
-    }
-
-    override fun onPositionChanged(view: View) {
-        Timber.d("X: ${view.x}, Y: ${view.y}")
+        binding.rvHome.addItemDecoration(MarginItemDecoration(itemMargin))
+        rvHome.adapter = HomeFeedAdapter(list.toMutableList())
     }
 }

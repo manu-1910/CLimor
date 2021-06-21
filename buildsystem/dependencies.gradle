@@ -30,7 +30,7 @@ versions.customtabs = "1.3.0"
 versions.percent = "1.0.0"
 versions.swiperefreshlayout = "1.1.0"
 versions.transition = "1.4.1"
-versions.navigation = '2.3.5'
+versions.navigation = '2.4.0-alpha03'
 
 versions.lifecycle = "2.3.1"
 versions.arch = "2.1.0"
@@ -298,3 +298,4 @@ deps.super_bottom_sheet = "com.github.andrefrsousa:SuperBottomSheet:$versions.su
 deps.circular_progress_bar = "com.mikhaellopez:circularprogressbar:$versions.circle_progress_bar"
 
 ext.deps = deps
+ext.versions = versions

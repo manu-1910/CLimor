@@ -1,0 +1,99 @@
+query FeedItemsQuery {
+    FeedItems {
+        id
+        podcast {
+            id
+            owner {
+                id
+                first_name
+                last_name
+                images {
+                    small_url
+                    medium_url
+                    large_url
+                    original_url
+                }
+                blocked
+                followed
+                blocked_by
+                followed_by
+                following_count
+                followers_count
+                description
+                website
+                gender
+                date_of_birth
+                notifications_enabled
+                active
+                suspended
+                verified
+                autoplay_enabled
+                sharing_url
+            }
+            title
+            address
+            images {
+                small_url
+                medium_url
+                large_url
+                original_url
+            }
+            caption
+            created_at
+            updated_at
+            latitude
+            longitude
+            liked
+            reported
+            recasted
+            listened
+            bookmarked
+            number_of_listens
+            number_of_likes
+            number_of_recasts
+            number_of_comments
+            audio{
+                audio_url
+                total_length
+                total_samples
+                duration
+                sample_rate
+                original_audio_url
+            }
+            active
+            sharing_url
+            tags{id}
+            mentions{id}
+            links{id}
+        }
+        recaster {
+            id
+            first_name
+            last_name
+            images {
+                small_url
+                medium_url
+                large_url
+                original_url
+            }
+            blocked
+            followed
+            blocked_by
+            followed_by
+            following_count
+            followers_count
+            description
+            website
+            gender
+            date_of_birth
+            notifications_enabled
+            active
+            suspended
+            verified
+            autoplay_enabled
+            sharing_url
+        }
+        recasted
+        created_at
+    }
+}

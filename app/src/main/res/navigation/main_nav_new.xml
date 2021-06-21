@@ -9,29 +9,53 @@
         android:name="com.limor.app.scenes.main_new.fragments.FragmentHomeNew"
         android:label="HomeFeedFragment"
         tools:layout="@layout/fragment_home_new">
+        <action
+            android:id="@+id/action_navigation_home_to_dialog_report_podcast"
+            app:destination="@id/dialog_report_podcast" >
+        </action>
     </fragment>
+
     <fragment
         android:id="@+id/navigation_discover"
         android:name="com.limor.app.scenes.auth_new.fragments.FragmentSignInCheckEmail"
         android:label="DiscoverFragment"
-        tools:layout="@layout/fragment_new_auth_sign_in_check_email">
-    </fragment>
-<!--    <activity-->
-<!--        android:id="@+id/navigation_record"-->
-<!--        android:name="com.limor.app.scenes.main.fragments.record.RecordActivity"-->
-<!--        android:label="RecordActivity"-->
-<!--        tools:layout="@layout/activity_record">-->
-<!--    </activity>-->
-<!--    <fragment-->
-<!--        android:id="@+id/navigation_notifications"-->
-<!--        android:name="com.limor.app.scenes.main.fragments.NotificationsFragment"-->
-<!--        android:label="NotificationsFragment"-->
-<!--        tools:layout="@layout/fragment_notifications">-->
-<!--    </fragment>-->
-<!--    <fragment-->
-<!--        android:id="@+id/navigation_profile"-->
-<!--        android:name="com.limor.app.scenes.main.fragments.ProfileFragment"-->
-<!--        android:label="ProfileFragment"-->
-<!--        tools:layout="@layout/fragment_profile">-->
-<!--    </fragment>-->
+        tools:layout="@layout/fragment_new_auth_sign_in_check_email"/>
+
+    <dialog
+        android:id="@+id/dialog_report_podcast"
+        android:name="com.limor.app.scenes.main_new.fragments.DialogPodcastMore"
+        android:label="Dialog Report Podcast"
+        tools:layout="@layout/dialog_report_cast" >
+        <action
+            android:id="@+id/action_dialog_report_podcast_to_dialog_report_podcast_p2"
+            app:destination="@id/dialog_report_podcast_p2"
+            app:popUpTo="@id/navigation_home" />
+        <argument
+            android:name="DialogReportPodcastArgs"
+            app:argType="string" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/dialog_report_podcast_p2"
+        android:name="com.limor.app.scenes.main_new.fragments.DialogPodcastMoreP2"
+        android:label="Dialog Report Podcast P2"
+        tools:layout="@layout/dialog_report_cast_p2" />
+    <!--    <activity-->
+    <!--        android:id="@+id/navigation_record"-->
+    <!--        android:name="com.limor.app.scenes.main.fragments.record.RecordActivity"-->
+    <!--        android:label="RecordActivity"-->
+    <!--        tools:layout="@layout/activity_record">-->
+    <!--    </activity>-->
+    <!--    <fragment-->
+    <!--        android:id="@+id/navigation_notifications"-->
+    <!--        android:name="com.limor.app.scenes.main.fragments.NotificationsFragment"-->
+    <!--        android:label="NotificationsFragment"-->
+    <!--        tools:layout="@layout/fragment_notifications">-->
+    <!--    </fragment>-->
+    <!--    <fragment-->
+    <!--        android:id="@+id/navigation_profile"-->
+    <!--        android:name="com.limor.app.scenes.main.fragments.ProfileFragment"-->
+    <!--        android:label="ProfileFragment"-->
+    <!--        tools:layout="@layout/fragment_profile">-->
+    <!--    </fragment>-->
 </navigation>

@@ -585,4 +585,6 @@
     <string name="why_are_you_reporting">Why are you reporting?</string>
     <string name="spam_or_scam">Spam or Scam</string>
     <string name="abusive_content">Abusive Content</string>
+    <string name="active">Active</string>
+    <string name="edit_cast">Edit Cast</string>
 </resources>

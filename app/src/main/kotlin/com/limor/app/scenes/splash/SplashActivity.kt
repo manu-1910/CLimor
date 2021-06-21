@@ -11,7 +11,7 @@ import com.limor.app.common.SessionManager
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import com.limor.app.scenes.auth_new.util.PrefsHandler
-import com.limor.app.scenes.main.MainActivity
+import com.limor.app.scenes.main_new.MainActivityNew
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,7 +29,7 @@ class SplashActivity : BaseActivity() {
             val hasFirebaseUser = FirebaseAuth.getInstance().currentUser != null
             if (hasFirebaseUser && navigationFlowIsFinished) {
                 val activity = this@SplashActivity
-                val mainIntent = Intent(activity, MainActivity::class.java)
+                val mainIntent = Intent(activity, MainActivityNew::class.java)
                 startActivity(mainIntent)
                 activity.finish()
             } else {

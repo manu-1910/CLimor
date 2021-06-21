@@ -47,15 +47,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topViewBackground" />
 
-    <LinearLayout
-        android:id="@+id/draggableView"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_margin="8dp"
-        android:background="@color/redError"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
+    <include layout="@layout/fragment_new_auth_loading_include"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

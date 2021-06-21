@@ -3,6 +3,7 @@ package com.limor.app.scenes.main_new
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
 import com.limor.app.R
@@ -15,19 +16,13 @@ class MainActivityNew : AppCompatActivity() {
         setContentView(R.layout.activity_main_new)
         clActivityMainNew.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
         setUpBottomNavigation()
     }
 
+    lateinit var navController: NavController
+
     private fun setUpBottomNavigation() {
-        val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         navigation.setupWithNavController(navController)
-//        navigation.setOnNavigationItemSelectedListener { item ->
-//            Timber.d("setOnNavigationItemSelectedListener -> ${item.title} ")
-//            onNavDestinationSelected(
-//                item,
-//                navController
-//            )
-//        }
     }
 }

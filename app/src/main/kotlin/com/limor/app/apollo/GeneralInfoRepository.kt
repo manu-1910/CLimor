@@ -1,8 +1,6 @@
 package com.limor.app.apollo
 
-import com.limor.app.CategoriesQuery
-import com.limor.app.GendersQuery
-import com.limor.app.LanguagesQuery
+import com.limor.app.*
 import timber.log.Timber
 
 object GeneralInfoRepository {
@@ -37,7 +35,18 @@ object GeneralInfoRepository {
         return genders
     }
 
+    suspend fun fetchHomeFeed(): List<FeedItemsQuery.FeedItem>? {
+        val query = FeedItemsQuery()
+        val result = Apollo.launchQuery(query)
+        var feedItems: List<FeedItemsQuery.FeedItem?> =
+            result?.data?.feedItems ?: return null
+        feedItems = feedItems.filterNotNull()
+        logList(feedItems)
+        return feedItems
+    }
+
     private fun logList(list: List<Any>) {
+        if (!BuildConfig.DEBUG) return
         list.forEach {
             Timber.d(it.toString())
         }

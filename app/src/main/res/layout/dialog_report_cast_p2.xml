@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/red400">
+    android:background="@color/transparent">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/llTopDialogForm"
@@ -43,7 +43,6 @@
                 android:id="@+id/btnSpamOrScam"
                 style="@style/ButtonTextStyle.Icon.Red"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:text="@string/spam_or_scam"
                 android:textColor="#FF5A4E" />
 
@@ -58,7 +57,6 @@
                 android:id="@+id/btnAbusiveContent"
                 style="@style/ButtonTextStyle.Icon.Red"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:text="@string/abusive_content"
                 android:textColor="#FF5A4E" />
         </LinearLayout>
@@ -82,7 +80,6 @@
             android:id="@+id/btnCancel"
             style="@style/ButtonTextStyle.Icon"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:text="@string/cancel"
             android:textColor="@color/black"
             app:icon="@drawable/ic_cancel_podcast"
