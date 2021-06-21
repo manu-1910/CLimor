@@ -127,10 +127,11 @@ object EmailAuthHandler {
     private fun sendFirebaseDynamicLinkToEmailScoped(context: Context, email: String) {
 
         val actionCodeSettings =
-            ActionCodeSettings.newBuilder() // URL you want to redirect back to. The domain (www.example.com) for this
+            ActionCodeSettings.newBuilder()
+                // URL you want to redirect back to. The domain (www.example.com) for this
                 // URL must be whitelisted in the Firebase Console.
-                .setUrl("$dynamicLink?bar=foo") // This must be true
-                .setHandleCodeInApp(true)
+                .setUrl(dynamicLink)
+                .setHandleCodeInApp(true)// This must be true
                 .setAndroidPackageName(
                     BuildConfig.APPLICATION_ID,
                     true,  /* installIfNotAvailable */
