@@ -59,4 +59,5 @@
     
     <!-- Sizes -->
     <dimen name="search_bar_height">48dp</dimen>
+    <dimen name="toolbar_button_size">56dp</dimen>
 </resources>

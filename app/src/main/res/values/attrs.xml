@@ -34,11 +34,16 @@
 
     <declare-styleable name="CircleAuthorView">
         <attr name="circleColor" format="color" />
-        <attr name="imageSrc" format="reference" />
+        <attr name="imageSrc" />
     </declare-styleable>
 
     <declare-styleable name="CroppedCircleAuthorView">
         <attr name="imageSrc" />
+        <attr name="type" format="enum">
+            <enum name="BIG" value="0"/>
+            <enum name="SMALL" value="1"/>
+            <enum name="NO_PLUS_ICON" value="2"/>
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="ArcProgress">

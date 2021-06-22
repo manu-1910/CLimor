@@ -1,13 +1,11 @@
 package com.limor.app.scenes.main
 
-
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.provider.Settings.Secure
-import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -20,12 +18,7 @@ import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.common.SessionManager
-import com.limor.app.scenes.main.fragments.HomeFragment
-import com.limor.app.scenes.main.fragments.NotificationsFragment
-import com.limor.app.scenes.main.fragments.ProfileFragment
 import com.limor.app.scenes.main.fragments.UserFeedFragment
-import com.limor.app.scenes.main.fragments.discover.DiscoverFragment
-import com.limor.app.scenes.main.fragments.record.RecordActivity
 import com.limor.app.scenes.main.viewmodels.GetUserViewModel
 import com.limor.app.scenes.notifications.PushNotificationsViewModel
 import com.limor.app.scenes.notifications.UtilsRegistrationIntentService
@@ -37,12 +30,8 @@ import dagger.android.support.HasSupportFragmentInjector
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar_default.*
-import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
-import org.jetbrains.anko.sdk23.listeners.onClick
-import org.jetbrains.anko.toast
 import javax.inject.Inject
-
 
 class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
@@ -160,30 +149,6 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
             }
         }
 
-        navController.addOnDestinationChangedListener { _, _, _ ->
-            when (navController.currentDestination?.label) {
-                HomeFragment.TAG -> {
-                    showHomeToolbar(getString(R.string.title_home))
-                }
-                UserFeedFragment.TAG -> {
-                    showHomeToolbar(getString(R.string.title_home))
-                }
-                DiscoverFragment.TAG -> {
-                    showHomeToolbar(getString(R.string.title_discover))
-                }
-                RecordActivity.TAG -> {
-                    showHomeToolbar(getString(R.string.title_record))
-                }
-                NotificationsFragment.TAG -> {
-                    showHomeToolbar(getString(R.string.title_notifications))
-                }
-                ProfileFragment.TAG -> {
-                    showHomeToolbar(getString(R.string.title_profile))
-                }
-
-            }
-        }
-
         bottom_navigation_view.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.navigation_home -> {
@@ -211,142 +176,6 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
                     return@setOnNavigationItemSelectedListener true
             }
         }
-    }
-
-
-    private fun showHomeToolbar(toolbarTitle: String) {
-        btnClose?.visibility = View.GONE
-        toolbar_main.visibility = View.VISIBLE
-        toolbarProfile.visibility = View.GONE
-//        when (toolbarTitle) {
-//            getString(R.string.title_home) -> {
-        //viewModel.unreadCountCentres = 0
-        hideMainToolbar(false)
-        toolbarDiscover.visibility = View.GONE
-        toolbarProfile.visibility = View.GONE
-
-        tvToolbarTitle?.text = toolbarTitle
-
-        btnToolbarLeft?.visibility = View.GONE
-        btnToolbarLeft?.onClick { navController.popBackStack() }
-
-        /*badgeVisibility()
-        badgeViewingVisibility()
-        badgeLeadVisibility()
-        badgeCentreVisibility()*/
-
-        btnToolbarRight?.visibility = View.GONE
-        btnToolbarRight?.text = ""
-        btnToolbarRight?.onClick { toast("right button clicked") }
-
-        bottom_navigation_view?.visibility = View.VISIBLE
-//            }
-//            getString(R.string.title_discover) -> {
-//                //viewModel.unreadCountLeads = 0
-//
-//                applyDiscoverToolbarElevation(false)
-//
-//                toolbarDiscover.visibility = View.VISIBLE
-//                toolbarProfile.visibility = View.GONE
-//                hideMainToolbar(true)
-//                toolbarDiscover.findViewById<TextView>(R.id.title).text =
-//                    getString(R.string.discover)
-//
-//                bottom_navigation_view?.visibility = View.VISIBLE
-//
-//            }
-//            getString(R.string.title_record) -> {
-//
-//                toolbarDiscover.visibility = View.GONE
-//                hideMainToolbar(false)
-//                //viewModel.unreadCountViewings = 0
-//                tvToolbarTitle?.text = toolbarTitle
-//
-//                btnToolbarLeft?.visibility = View.GONE
-//                btnToolbarLeft?.onClick { navController.popBackStack() }
-//
-//                /*badgeVisibility()
-//                badgeViewingVisibility()
-//                badgeLeadVisibility()
-//                badgeCentreVisibility()*/
-//
-//                btnToolbarRight?.visibility = View.GONE
-//                btnToolbarRight?.text = ""
-//                btnToolbarRight?.onClick { toast("right button clicked") }
-//
-//                bottom_navigation_view?.visibility = View.VISIBLE
-//
-//            }
-//            getString(R.string.title_notifications) -> {
-//                toolbarDiscover.visibility = View.VISIBLE
-//                toolbarProfile.visibility = View.GONE
-//                hideMainToolbar(true)
-//                toolbarDiscover.findViewById<TextView>(R.id.title).text =
-//                    getString(R.string.title_notifications)
-//
-//                tvToolbarTitle?.text = toolbarTitle
-//
-//                btnToolbarLeft?.visibility = View.GONE
-//                btnToolbarLeft?.onClick { navController.popBackStack() }
-//
-//                /*badgeVisibility()
-//                badgeViewingVisibility()
-//                badgeLeadVisibility()
-//                badgeCentreVisibility()*/
-//
-//                btnToolbarRight?.visibility = View.GONE
-//                btnToolbarRight?.text = ""
-//                btnToolbarRight?.onClick { toast("right button clicked") }
-//
-//                bottom_navigation_view?.visibility = View.VISIBLE
-//            }
-//            getString(R.string.title_profile) -> {
-//                toolbarDiscover.visibility = View.GONE
-//                toolbarProfile.visibility = View.VISIBLE
-//                toolbar_main.visibility = View.INVISIBLE
-//                btnToolbarLeft?.visibility = View.GONE
-//                bottom_navigation_view?.visibility = View.VISIBLE
-//            }
-//
-//        }
-    }
-
-    private fun applyDiscoverToolbarElevation(apply: Boolean){
-
-        try{
-            val toolbar = window.decorView.findViewById<View>(android.R.id.content).
-            rootView.findViewById(R.id.toolbarDiscover) as androidx.appcompat.widget.Toolbar
-
-            if(apply){
-                toolbar.elevation = 10F
-            }else{
-                toolbar.elevation = 0F
-            }
-        }catch (e: Exception){
-            e.printStackTrace()
-        }
-
-    }
-
-    private fun hideMainToolbar(hide: Boolean){
-        val toolbar = window.decorView.findViewById<View>(android.R.id.content).
-        rootView.findViewById(R.id.toolbar_main) as androidx.appcompat.widget.Toolbar
-        if(hide){
-            toolbar.visibility = View.GONE
-        }else{
-            toolbar.visibility = View.VISIBLE
-        }
-    }
-
-    fun getToolbarHeight() : Int{
-        val toolbar = window.decorView.findViewById<View>(android.R.id.content).
-        rootView.findViewById(R.id.toolbar_main) as androidx.appcompat.widget.Toolbar
-        return toolbar.measuredHeight
-    }
-
-    fun getToolBar(): androidx.appcompat.widget.Toolbar{
-        return window.decorView.findViewById<View>(android.R.id.content).
-        rootView.findViewById(R.id.toolbar_main) as androidx.appcompat.widget.Toolbar
     }
 
     private fun getFirebaseInstance() {
@@ -437,10 +266,5 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector{
 
             }
         }
-
-
-
     }
-
-
 }

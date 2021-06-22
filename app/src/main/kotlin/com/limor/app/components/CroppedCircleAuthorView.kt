@@ -9,21 +9,15 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.graphics.drawable.toBitmap
+import com.bumptech.glide.Glide
 import com.limor.app.R
 import com.limor.app.components.util.CenterCropDrawable
+import com.limor.app.extensions.getEnum
+import com.limor.app.extensions.listener
 
 class CroppedCircleAuthorView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
-    init {
-        context.obtainStyledAttributes(attrs, R.styleable.CroppedCircleAuthorView).apply {
-            val drawableResId = getResourceId(R.styleable.CroppedCircleAuthorView_imageSrc, -1)
-            if (drawableResId!= -1) {
-                setAvatarIcon(drawableResId)
-            }
-        }.recycle()
-    }
-
-    private var type: Type = Type.SMALL
+    private var type: Type
     private var avatarImageDrawable: Drawable? = null
     private var avatarImageBitmap: Bitmap? = null
     private lateinit var bitmap: Bitmap
@@ -43,9 +37,16 @@ class CroppedCircleAuthorView(context: Context, attrs: AttributeSet) : View(cont
         isAntiAlias = true
     }
 
-    /**
-     * Don't forget to call [refreshCanvas] to see changes
-     */
+    init {
+        context.obtainStyledAttributes(attrs, R.styleable.CroppedCircleAuthorView).apply {
+            val drawableResId = getResourceId(R.styleable.CroppedCircleAuthorView_imageSrc, -1)
+            if (drawableResId != -1) {
+                setAvatarIcon(drawableResId)
+            }
+            type = getEnum(R.styleable.CroppedCircleAuthorView_type, Type.NO_PLUS_ICON)
+        }.recycle()
+    }
+
     fun setAvatarIcon(@DrawableRes drawableResId: Int) {
         avatarImageDrawable = CenterCropDrawable(
             RoundedBitmapDrawableFactory.create(
@@ -53,16 +54,30 @@ class CroppedCircleAuthorView(context: Context, attrs: AttributeSet) : View(cont
                 BitmapFactory.decodeResource(resources, drawableResId)
             ).apply { isCircular = true }
         )
+        refreshCanvas()
     }
 
-    /**
-     * Don't forget to call [refreshCanvas] to see changes
-     */
+    fun loadIcon(iconUrl: String) {
+        Glide.with(this)
+            .load(iconUrl)
+            .circleCrop()
+            .listener(onReady = { resource, _, _, _, _ ->
+                avatarImageDrawable = resource
+                refreshCanvas()
+                false
+            }).submit()
+    }
+
     fun setType(type: Type) {
         this.type = type
+        refreshCanvas()
     }
 
     fun refreshCanvas(invalidate: Boolean = true) {
+        if (width <= 0 || height <= 0) {
+            return
+        }
+
         bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         bitmap.eraseColor(Color.TRANSPARENT)
         bitmapCanvas = Canvas(bitmap)
@@ -145,8 +160,8 @@ class CroppedCircleAuthorView(context: Context, attrs: AttributeSet) : View(cont
         val plusIconCircleRatio: Float,
         val transparentCircleOverlayRatio: Float = 1.3f
     ) {
-        BIG(avatarCircleRatio = 0.685f, plusIconCircleRatio = 0.455f),
-        SMALL(avatarCircleRatio = 0.859f, plusIconCircleRatio = 0.314f),
+        BIG(avatarCircleRatio = 0.859f, plusIconCircleRatio = 0.314f),
+        SMALL(avatarCircleRatio = 0.685f, plusIconCircleRatio = 0.455f),
         NO_PLUS_ICON(1f, -1f)
     }
 }

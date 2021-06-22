@@ -4,6 +4,7 @@ import android.animation.LayoutTransition
 import android.content.Context
 import android.content.DialogInterface
 import android.content.res.Resources
+import android.content.res.TypedArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,17 +35,29 @@ fun View.showShortToast(context: Context, toastText: String) {
     Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
 }
 
-fun View.setupSnackbar(lifecycleOwner: LifecycleOwner, snackbarMessageLiveEvent: SingleLiveEvent<Int>, timeLength: Int) {
+fun View.setupSnackbar(
+    lifecycleOwner: LifecycleOwner,
+    snackbarMessageLiveEvent: SingleLiveEvent<Int>,
+    timeLength: Int
+) {
     snackbarMessageLiveEvent.observe(lifecycleOwner, Observer { resource ->
         resource?.let { showSnackbar(context.getString(it), timeLength) }
     })
 }
-fun View.setupLongToast(lifecycleOwner: LifecycleOwner, toastMessageLiveEvent: SingleLiveEvent<Int>) {
+
+fun View.setupLongToast(
+    lifecycleOwner: LifecycleOwner,
+    toastMessageLiveEvent: SingleLiveEvent<Int>
+) {
     toastMessageLiveEvent.observe(lifecycleOwner, Observer { resource ->
         resource?.let { showLongToast(context, context.getString(it)) }
     })
 }
-fun View.setupShortToast(lifecycleOwner: LifecycleOwner, toastMessageLiveEvent: SingleLiveEvent<Int>) {
+
+fun View.setupShortToast(
+    lifecycleOwner: LifecycleOwner,
+    toastMessageLiveEvent: SingleLiveEvent<Int>
+) {
     toastMessageLiveEvent.observe(lifecycleOwner, Observer { resource ->
         resource?.let { showShortToast(context, context.getString(it)) }
     })
@@ -120,6 +133,11 @@ val View.viewScope: CoroutineScope
         } else newScope.cancel()
 
         return newScope
+    }
+
+inline fun <reified T : Enum<T>> TypedArray.getEnum(index: Int, default: T) =
+    getInt(index, -1).let {
+        if (it >= 0) enumValues<T>()[it] else default
     }
 
 private class ViewCoroutineScope : CoroutineScope, View.OnAttachStateChangeListener {

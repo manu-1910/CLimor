@@ -5,6 +5,7 @@ import com.limor.app.scenes.main.fragments.*
 import com.limor.app.scenes.main.fragments.discover.DiscoverAccountsFragment
 import com.limor.app.scenes.main.fragments.discover.DiscoverFragment
 import com.limor.app.scenes.main.fragments.discover.DiscoverHashTagsFragment
+import com.limor.app.scenes.main.fragments.discover2.discover.DiscoverFragment2
 import com.limor.app.scenes.main.fragments.profile.JoinToPatronFragment
 import com.limor.app.scenes.main.fragments.profile.UserLikedPodcastsFragment
 import com.limor.app.scenes.main.fragments.profile.UserPatronPodcastsFragment
@@ -24,6 +25,9 @@ abstract class MainActivityFragmentsBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeDiscoverFragmentInjector(): DiscoverFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeDiscover2FragmentInjector(): DiscoverFragment2
 
     //@ContributesAndroidInjector
     //abstract fun contributeRecordFragmentInjector(): RecordActivity

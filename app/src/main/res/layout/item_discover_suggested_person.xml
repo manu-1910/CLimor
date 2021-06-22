@@ -5,16 +5,15 @@
     android:layout_width="100dp"
     android:layout_height="wrap_content">
 
-    <com.limor.app.components.CircleAuthorView
+    <ImageView
         android:id="@+id/person_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
         android:layout_marginTop="8dp"
-        app:circleColor="@color/black"
-        app:imageSrc="@mipmap/ic_launcher"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@mipmap/ic_launcher" />
 
     <TextView
         android:id="@+id/person_name"
