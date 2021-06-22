@@ -39,9 +39,9 @@ class SplashActivity : BaseActivity() {
         }
     }
 
-    private suspend fun navigationFlowIsFinished(): Boolean {
-        val breakpoint = PrefsHandler.loadNavigationBreakPointSuspend(this)
-            ?: return true
+    private fun navigationFlowIsFinished(): Boolean {
+        val breakpoint = PrefsHandler.loadNavigationBreakPoint(this)
+            ?: return false
         return breakpoint == NavigationBreakpoints.HOME_FEED.destination
     }
 

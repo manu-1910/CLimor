@@ -2,6 +2,7 @@ package com.limor.app.scenes.auth_new.firebase
 
 import android.app.Activity
 import android.os.Handler
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Tasks
@@ -13,13 +14,17 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
+interface ContextProviderHandler {
+    fun activity(): Activity
+}
+
 object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
     private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
     private var storedVerificationId: String? = null
     private var phoneAuthCredential: PhoneAuthCredential? = null
     private var auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private lateinit var activity: Activity
     private lateinit var scope: CoroutineScope
+    private lateinit var contextProviderHandler: ContextProviderHandler
 
     private val _smsCodeValidationErrorMessage =
         MutableLiveData<String>().apply { value = "" }
@@ -31,16 +36,16 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     val smsCodeValidationPassed: LiveData<Boolean>
         get() = _smsCodeValidationPassed
 
-    fun init(activity: Activity, scope: CoroutineScope) {
-        this.activity = activity
+    fun init(scope: CoroutineScope, contextProviderHandler: ContextProviderHandler) {
         this.scope = scope
+        this.contextProviderHandler = contextProviderHandler
     }
 
     fun sendCodeToPhone(phone: String, resend: Boolean = false) {
         val optionsBuilder = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber(phone)
             .setTimeout(30L, TimeUnit.SECONDS)
-            .setActivity(activity)
+            .setActivity(contextProviderHandler.activity())
             .setCallbacks(this)
         if (resend && resendToken != null) {
             optionsBuilder.setForceResendingToken(resendToken!!)
@@ -50,6 +55,8 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
 
     override fun onVerificationCompleted(credential: PhoneAuthCredential) {
         Timber.d("onVerificationCompleted:$credential")
+        Toast.makeText(contextProviderHandler.activity(), "Auto verification", Toast.LENGTH_LONG)
+            .show()
         signInWithPhoneAuthCredential(credential)
     }
 
@@ -60,7 +67,7 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
         } else if (e is FirebaseTooManyRequestsException) {
             // The SMS quota for the project has been exceeded
         }
-        _smsCodeValidationErrorMessage.postValue(e.toString())
+        _smsCodeValidationErrorMessage.postValue(e.localizedMessage)
 
     }
 
@@ -72,7 +79,8 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
         // now need to ask the user to enter the code and then construct a credential
         // by combining the code with a verification ID.
         Timber.d("onCodeSent: $verificationId")
-
+        Toast.makeText(contextProviderHandler.activity(), "Code has been sent", Toast.LENGTH_LONG)
+            .show()
         // Save verification ID and resending token so we can use them later
         storedVerificationId = verificationId
         resendToken = token
@@ -92,7 +100,7 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     }
 
     fun reAuthWithPhoneCredential(): AuthCredential? {
-        if(phoneAuthCredential != null){
+        if (phoneAuthCredential != null) {
             val task = Tasks.await(auth.signInWithCredential(phoneAuthCredential!!))
             return task.credential
         }
@@ -102,7 +110,7 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         phoneAuthCredential = credential
         auth.signInWithCredential(credential)
-            .addOnCompleteListener(activity) { task ->
+            .addOnCompleteListener(contextProviderHandler.activity()) { task ->
                 val successful = task.isSuccessful
                 if (successful) {
                     // Sign in success, update UI with the signed-in user's information
@@ -116,7 +124,7 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
                         // The verification code entered was invalid
                     }
-                    _smsCodeValidationErrorMessage.postValue(task.exception.toString())
+                    _smsCodeValidationErrorMessage.postValue(task.exception?.localizedMessage ?: "")
                 }
                 if (successful) {
                     _smsCodeValidationPassed.postValue(true)

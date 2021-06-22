@@ -8,6 +8,7 @@ import com.facebook.FacebookSdk
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.limor.app.di.AppInjector
 import com.limor.app.di.components.AppComponent
+import com.limor.app.util.CrashReportingTree
 import com.novoda.merlin.MerlinsBeard
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -57,9 +58,7 @@ class App : Application(), HasActivityInjector, HasServiceInjector {
         //Initialize Facebook SDK
         FacebookSdk.sdkInitialize(this)
 
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        }
+        initLogging()
 
 //        AndroidAudioConverter.load(this, object : ILoadCallback {
 //            override fun onSuccess() {
@@ -71,6 +70,13 @@ class App : Application(), HasActivityInjector, HasServiceInjector {
 //                println("FFmpeg loaded error")
 //            }
 //        })
+    }
+
+    private fun initLogging() {
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
+        Timber.plant(CrashReportingTree())
     }
 
     private fun initRealm(): Realm? {

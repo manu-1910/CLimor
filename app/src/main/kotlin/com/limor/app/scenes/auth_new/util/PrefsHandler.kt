@@ -2,8 +2,6 @@ package com.limor.app.scenes.auth_new.util
 
 import android.content.Context
 import androidx.core.content.edit
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 object PrefsHandler {
 
@@ -29,12 +27,6 @@ object PrefsHandler {
 
     fun loadNavigationBreakPoint(context: Context): String? {
         return sharedPreferences(context).getString(LABEL_NAVIGATION_BREAKPOINT, null)
-    }
-
-    suspend fun loadNavigationBreakPointSuspend(context: Context): String? {
-       return withContext(Dispatchers.IO){
-           loadNavigationBreakPoint(context)
-       }
     }
 
     private fun sharedPreferences(context: Context) =

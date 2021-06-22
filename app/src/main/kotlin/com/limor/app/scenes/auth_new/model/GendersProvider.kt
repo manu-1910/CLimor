@@ -8,7 +8,6 @@ import com.limor.app.apollo.showHumanizedErrorMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class GendersProvider(private val scope: CoroutineScope) {
     private var genders: List<GendersQuery.Gender> = mutableListOf()
@@ -39,14 +38,13 @@ class GendersProvider(private val scope: CoroutineScope) {
     private fun loadGendersRepo() {
         scope.launch {
             try {
-                delay(500)
+                delay(300) //Smooth animation transition between screens
                 val response = GeneralInfoRepository.fetchGenders()
                 genders = response!!
                 _genderLiveData.postValue(genders)
                 selectedGenderId = genders.first().id ?: 0
                 _gendersSelectionDone.postValue(true)
             } catch (e: Exception) {
-                Timber.e(e)
                 _gendersLiveDataError.postValue(showHumanizedErrorMessage(e))
             }
         }

@@ -8,10 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.limor.app.R
-import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.OnboardingInfo
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
@@ -35,15 +35,22 @@ class FragmentOnboarding : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         createAdapter()
         setOnClicks()
+        subscribeToViewModel()
         saveNavigationBreakPoint(NavigationBreakpoints.ONBOARDING_COMPLETION.destination)
+    }
+
+    private fun subscribeToViewModel() {
+        model.updateOnboardingStatusLiveData.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                Timber.d("Update onboarding status liveData $it")
+                navigateToHomeFeed()
+            }
+        })
     }
 
     private fun setOnClicks() {
         btnBack.setOnClickListener {
-            if (currentPosition == 0) {
-                AuthActivityNew.popBackStack(requireActivity())
-            } else
-                vpOnboarding.setCurrentItem(currentPosition - 1, true)
+            model.updateUserOnboardingStatus(NavigationBreakpoints.HOME_FEED.destination)
         }
 
         btnContinue.setOnClickListener {
@@ -51,11 +58,14 @@ class FragmentOnboarding : Fragment() {
         }
         btnFinish.setOnClickListener {
             model.updateUserOnboardingStatus(NavigationBreakpoints.HOME_FEED.destination)
-            it.findNavController().navigate(R.id.go_to_main_activity)
-            Timber.d("trying to finish activity")
-            saveNavigationBreakPoint(NavigationBreakpoints.HOME_FEED.destination)
-            requireActivity().finish()
         }
+    }
+
+    private fun navigateToHomeFeed() {
+        view?.findNavController()?.navigate(R.id.go_to_main_activity)
+        Timber.d("trying to finish activity")
+        saveNavigationBreakPoint(NavigationBreakpoints.HOME_FEED.destination)
+        requireActivity().finish()
     }
 
     private fun createAdapter() {

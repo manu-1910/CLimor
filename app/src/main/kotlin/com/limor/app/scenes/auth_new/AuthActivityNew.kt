@@ -30,16 +30,13 @@ class AuthActivityNew : AppCompatActivity() {
         setContentView(R.layout.activity_auth_new)
         clActivityAuthNew.systemUiVisibility =
             SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-//        FirebaseAuth.getInstance().firebaseAuthSettings
-//            .setAppVerificationDisabledForTesting(true)
         checkNavigationBreakPoint()
     }
 
     private fun checkNavigationBreakPoint() {
         lifecycleScope.launch {
             val activity = this@AuthActivityNew
-            val breakpoint = PrefsHandler.loadNavigationBreakPointSuspend(activity)
+            val breakpoint = PrefsHandler.loadNavigationBreakPoint(activity)
                 ?: return@launch
             AuthNavigator.navigateToFragmentByNavigationBreakpoints(activity, breakpoint)
         }
