@@ -16,7 +16,6 @@ import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.extensions.hideKeyboard
-import com.limor.app.scenes.main.fragments.discover.DiscoverPodcastsByCategoryActivity
 import com.limor.app.scenes.main.viewmodels.CategoriesViewModel
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UICategory
@@ -184,8 +183,6 @@ class CategoriesFragment : BaseFragment() {
     }
 
     private fun onCategoryClicked(item: UICategory) {
-        val intent = Intent(requireActivity(), DiscoverPodcastsByCategoryActivity::class.java)
-        intent.putExtra("category", item)
-        startActivity(intent)
+        TODO()
     }
 }

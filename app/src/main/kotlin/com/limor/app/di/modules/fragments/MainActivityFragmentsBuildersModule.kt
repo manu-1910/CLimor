@@ -2,9 +2,6 @@ package com.limor.app.di.modules.fragments
 
 
 import com.limor.app.scenes.main.fragments.*
-import com.limor.app.scenes.main.fragments.discover.DiscoverAccountsFragment
-import com.limor.app.scenes.main.fragments.discover.DiscoverFragment
-import com.limor.app.scenes.main.fragments.discover.DiscoverHashTagsFragment
 import com.limor.app.scenes.main.fragments.discover2.discover.DiscoverFragment2
 import com.limor.app.scenes.main.fragments.profile.JoinToPatronFragment
 import com.limor.app.scenes.main.fragments.profile.UserLikedPodcastsFragment
@@ -24,10 +21,7 @@ abstract class MainActivityFragmentsBuildersModule {
     abstract fun contributeFeedFragmentInjector(): FeedItemsListFragment
 
     @ContributesAndroidInjector
-    abstract fun contributeDiscoverFragmentInjector(): DiscoverFragment
-
-    @ContributesAndroidInjector
-    abstract fun contributeDiscover2FragmentInjector(): DiscoverFragment2
+    abstract fun contributeDiscoverFragmentInjector(): DiscoverFragment2
 
     //@ContributesAndroidInjector
     //abstract fun contributeRecordFragmentInjector(): RecordActivity
@@ -52,11 +46,4 @@ abstract class MainActivityFragmentsBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeUserPatronPodcastsFragmentInjector(): UserPatronPodcastsFragment
-
-    @ContributesAndroidInjector
-    abstract fun contributeDiscoverAccountsFragmentInjector(): DiscoverAccountsFragment
-
-    @ContributesAndroidInjector
-    abstract fun contributeDiscoverHashTagsFragmentInjector(): DiscoverHashTagsFragment
-
 }
