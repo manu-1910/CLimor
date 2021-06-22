@@ -6,6 +6,7 @@ import com.limor.app.GendersQuery
 import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.apollo.showHumanizedErrorMessage
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -36,7 +37,7 @@ class GendersProvider(private val scope: CoroutineScope) {
     }
 
     private fun loadGendersRepo() {
-        scope.launch {
+        scope.launch (Dispatchers.Default) {
             try {
                 delay(300) //Smooth animation transition between screens
                 val response = GeneralInfoRepository.fetchGenders()

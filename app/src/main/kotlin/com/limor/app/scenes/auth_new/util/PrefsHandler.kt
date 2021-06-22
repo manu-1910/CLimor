@@ -25,6 +25,12 @@ object PrefsHandler {
         }
     }
 
+    fun clearNavigationBreakPoint(context: Context) {
+        sharedPreferences(context).edit(true) {
+            remove(LABEL_NAVIGATION_BREAKPOINT)
+        }
+    }
+
     fun loadNavigationBreakPoint(context: Context): String? {
         return sharedPreferences(context).getString(LABEL_NAVIGATION_BREAKPOINT, null)
     }

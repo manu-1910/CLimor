@@ -1,11 +1,11 @@
 package com.limor.app.util
 
 import android.util.Log
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.crashlytics.ktx.setCustomKeys
 import com.google.firebase.ktx.Firebase
 import timber.log.Timber
-import java.lang.Exception
 
 class CrashReportingTree: Timber.Tree() {
 
@@ -15,6 +15,7 @@ class CrashReportingTree: Timber.Tree() {
     }
 
     private val crashlytics = Firebase.crashlytics
+    private val auth = Firebase.auth
 
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
         if (priority >= Log.ERROR) {
@@ -23,6 +24,10 @@ class CrashReportingTree: Timber.Tree() {
             crashlytics.setCustomKeys {
                 tag?.let { key(CRASHLYTICS_KEY_TAG, it) }
                 key(CRASHLYTICS_KEY_MESSAGE, message)
+            }
+
+            auth.currentUser?.uid?.let{
+                crashlytics.setUserId(it)
             }
 
             crashlytics.recordException(throwable)

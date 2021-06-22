@@ -7,8 +7,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.limor.app.apollo.UserRepository
+import com.limor.app.apollo.interceptors.AuthInterceptor
 import com.limor.app.scenes.auth_new.data.DobInfo.Companion.parseForUserCreation
 import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
+import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
+import com.limor.app.scenes.auth_new.util.JwtChecker
 import kotlinx.coroutines.*
 import timber.log.Timber
 import java.util.regex.Matcher
@@ -43,10 +46,11 @@ class UserInfoProvider(private val scope: CoroutineScope) {
         get() = _userInfoProviderErrorLiveData
 
     fun getUserOnboardingStatus() {
-        scope.launch {
+        scope.launch(Dispatchers.Default) {
             try {
                 val response = UserRepository.getUserOnboardingStatus() ?: ""
-                _breakPointLiveData.postValue(response)
+                val breakpoint = getBreakpointAccordingToEmailPresence(response)
+                _breakPointLiveData.postValue(breakpoint)
                 delay(500)
                 _breakPointLiveData.postValue(null)
             } catch (e: Exception) {
@@ -55,6 +59,14 @@ class UserInfoProvider(private val scope: CoroutineScope) {
                 _userInfoProviderErrorLiveData.postValue(null)
             }
         }
+    }
+
+    private fun getBreakpointAccordingToEmailPresence(response: String): String {
+        //check if user has an email on it's JWT
+        val jwt = AuthInterceptor.getToken()
+        val hasEmail = JwtChecker.isJwtContainsEmail(jwt)
+        return if (hasEmail) response else NavigationBreakpoints.ACCOUNT_CREATION.destination
+
     }
 
     fun createUser(dob: Long) {
@@ -76,14 +88,13 @@ class UserInfoProvider(private val scope: CoroutineScope) {
     }
 
     fun updateUserName(userName: String) {
-        scope.launch {
+        scope.launch(Dispatchers.Default) {
             try {
                 val response = UserRepository.updateUserName(userName)
                 _updateUserNameLiveData.postValue(response)
                 delay(500)
                 _updateUserNameLiveData.postValue(null)
             } catch (e: Exception) {
-                Timber.e(e)
                 _userInfoProviderErrorLiveData.postValue(e.message)
                 delay(500)
                 _userInfoProviderErrorLiveData.postValue(null)
@@ -96,7 +107,7 @@ class UserInfoProvider(private val scope: CoroutineScope) {
         get() = _userNameAttachedToUserLiveData
 
     fun updateFirebaseUserName(userName: String) {
-        scope.launch {
+        scope.launch(Dispatchers.Default) {
             withContext(Dispatchers.IO) {
                 updateFirebaseUserNameScoped(userName)
             }
@@ -130,7 +141,7 @@ class UserInfoProvider(private val scope: CoroutineScope) {
     }
 
     fun updatePreferredInfo(gender: Int, categories: List<Int?>, languages: List<String?>) {
-        scope.launch {
+        scope.launch(Dispatchers.Default) {
             try {
                 val result = UserRepository.updateUserOnboardingData(gender, categories, languages)
                 _updatePreferredInfoLiveData.postValue(result)
@@ -145,7 +156,7 @@ class UserInfoProvider(private val scope: CoroutineScope) {
     }
 
     fun updateUserOnboardingStatus(nextStep: String) {
-        scope.launch {
+        scope.launch(Dispatchers.Default) {
             try {
                 val result = UserRepository.updateUserOnboardingStatus(nextStep)
                 _updateOnboardingStatusLiveData.postValue(result)

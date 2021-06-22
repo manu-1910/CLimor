@@ -6,6 +6,7 @@ import com.limor.app.apollo.showHumanizedErrorMessage
 import com.limor.app.scenes.auth_new.data.LanguageWrapper
 import com.limor.app.scenes.auth_new.data.getLanguagesByInput
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -28,7 +29,7 @@ class LanguagesProvider(private val scope: CoroutineScope) {
     }
 
     private fun loadLanguagesRepo() {
-        scope.launch {
+        scope.launch (Dispatchers.Default) {
             try {
                 delay(500)
                 val response = GeneralInfoRepository.fetchLanguages()

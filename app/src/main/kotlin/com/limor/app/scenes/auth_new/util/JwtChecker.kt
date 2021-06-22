@@ -15,7 +15,7 @@ object JwtChecker {
         }
     }
 
-    fun isTokenExpired(token:String): Boolean{
+    fun isTokenExpired(token: String): Boolean {
         val jwt = createJwtObjectFromToken(token) ?: return true
         return jwt.isExpired(10)
     }
@@ -35,5 +35,13 @@ object JwtChecker {
         val jwt = createJwtObjectFromToken(token) ?: return false
         val luid = jwt.claims["luid"]?.asString()
         return luid != null && luid.isNotEmpty()
+    }
+
+    fun isJwtContainsEmail(token: String): Boolean {
+        val jwt = createJwtObjectFromToken(token) ?: return false
+        jwt.claims["email"]?.asString()?.let {
+            return it.isNotBlank()
+        }
+        return false
     }
 }

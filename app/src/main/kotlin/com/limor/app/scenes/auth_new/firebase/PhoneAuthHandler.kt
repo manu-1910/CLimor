@@ -25,6 +25,7 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     private var auth: FirebaseAuth = FirebaseAuth.getInstance()
     private lateinit var scope: CoroutineScope
     private lateinit var contextProviderHandler: ContextProviderHandler
+    private var shouldSendCode = true
 
     private val _smsCodeValidationErrorMessage =
         MutableLiveData<String>().apply { value = "" }
@@ -42,15 +43,21 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     }
 
     fun sendCodeToPhone(phone: String, resend: Boolean = false) {
+        if(resend)
+            shouldSendCode = true
+
+        if (!(shouldSendCode)) return
+
         val optionsBuilder = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber(phone)
-            .setTimeout(30L, TimeUnit.SECONDS)
+            .setTimeout(60L, TimeUnit.SECONDS)
             .setActivity(contextProviderHandler.activity())
             .setCallbacks(this)
         if (resend && resendToken != null) {
             optionsBuilder.setForceResendingToken(resendToken!!)
         }
         PhoneAuthProvider.verifyPhoneNumber(optionsBuilder.build())
+        shouldSendCode = false
     }
 
     override fun onVerificationCompleted(credential: PhoneAuthCredential) {
@@ -108,6 +115,7 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        shouldSendCode = true
         phoneAuthCredential = credential
         auth.signInWithCredential(credential)
             .addOnCompleteListener(contextProviderHandler.activity()) { task ->

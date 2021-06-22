@@ -28,20 +28,22 @@ object Apollo {
     suspend fun <A : Operation.Data, B, C : Operation.Variables> launchQuery(query: Query<A, B, C>): Response<B>? =
         withContext(Dispatchers.IO) {
             val result = client.query(query).await()
-            checkResultForErrors(result)
+            checkResultForErrors(result, query.javaClass.simpleName)
             result
         }
 
     suspend fun <A : Operation.Data, B, C : Operation.Variables> mutate(query: Mutation<A, B, C>): Response<B>? =
         withContext(Dispatchers.IO) {
             val result = client.mutate(query).await()
-            checkResultForErrors(result)
+            checkResultForErrors(result, query.javaClass.simpleName)
             result
         }
 
-    private fun <T> checkResultForErrors(response: Response<T>) {
+    private fun <T> checkResultForErrors(response: Response<T>, queryName: String) {
         if (response.hasErrors()) {
-            val apiException = GraphqlClientException(response.errors!![0].message)
+            val errorMessage = response.errors!!.joinToString("\n") { it.message }
+            val errorWithQueryPrefix = StringBuilder(queryName).append("-> ").append(errorMessage)
+            val apiException = GraphqlClientException(errorWithQueryPrefix.toString())
             Timber.e(apiException)
             throw apiException
         }
@@ -53,5 +55,5 @@ class GraphqlClientException(message: String) : Exception(message)
 fun showHumanizedErrorMessage(e: Exception): String {
     if (e is IOException || e.cause is IOException)
         return "Check internet"
-    return e.message ?: "Network client error"
+    return e.message?.split("->")?.last() ?: "Network client error"
 }
