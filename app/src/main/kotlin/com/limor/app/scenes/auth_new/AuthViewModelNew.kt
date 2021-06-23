@@ -13,7 +13,6 @@ import com.limor.app.scenes.auth_new.firebase.*
 import com.limor.app.scenes.auth_new.model.*
 import com.limor.app.scenes.auth_new.model.UserInfoProvider.Companion.userNameRegExCheck
 import com.limor.app.scenes.auth_new.util.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -51,7 +50,7 @@ class AuthViewModelNew : ViewModel() {
     }
 
     fun submitPhoneNumber() {
-        PhoneAuthHandler.sendCodeToPhone(formattedPhone)
+        PhoneAuthHandler.sendCodeToPhone(formattedPhone, isSignInCase = signInCase)
     }
 
     private val _resendButtonEnableLiveData = MutableLiveData<Boolean>().apply { value = true }
@@ -76,7 +75,7 @@ class AuthViewModelNew : ViewModel() {
             override fun onFinish() {
                 _resendButtonEnableLiveData.postValue(true)
                 _resendButtonCountDownLiveData.postValue(null)
-                PhoneAuthHandler.sendCodeToPhone(formattedPhone, resend = true)
+                PhoneAuthHandler.sendCodeToPhone(formattedPhone, resend = true, signInCase)
             }
         }.start()
     }
@@ -96,7 +95,7 @@ class AuthViewModelNew : ViewModel() {
 
     fun loadCountriesList(assets: AssetManager) {
         if (_countries.value?.size ?: 0 > 0) return
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch {
             val countries = CountriesListProvider().provideCountries(assets)
             Timber.d("Countries loaded -> ${countries.size}")
             _countries.postValue(countries)
@@ -147,16 +146,17 @@ class AuthViewModelNew : ViewModel() {
         }
 
     fun setSmsCodeForCheck(codes: List<String?>) {
-        PhoneAuthHandler.clearError()
+        clearSmsCodeError()
         val value = codes.all { it?.isNotEmpty() ?: false }
         _smsCodeIsFullLiveData.postValue(value)
+    }
+    fun clearSmsCodeError(){
+        PhoneAuthHandler.clearError()
     }
 
     fun submitSmsCode(codes: List<String?>) {
         val value = codes.joinToString(separator = "")
         PhoneAuthHandler.enterCodeAndSignIn(value)
-//        _smsCodeValidatedLiveData.postValue(true)
-//        Handler().postDelayed({ _smsCodeValidatedLiveData.postValue(false) }, 500)
     }
 
     /* Email validation*/
@@ -398,7 +398,7 @@ class AuthViewModelNew : ViewModel() {
     val navigationBreakPointLiveData: LiveData<String?>
         get() = userInfoProvider.breakPointLiveData
 
-    val userInfoProviderErrorLiveData: LiveData<String?>
+    val userInfoProviderErrorLiveData: LiveData<Any?>
         get() = userInfoProvider.userInfoProviderErrorLiveData
 
     val updatePreferredInfoLiveData: LiveData<String?>
@@ -415,8 +415,8 @@ class AuthViewModelNew : ViewModel() {
 
     fun checkJwtForLuidAndProceed() {
         viewModelScope.launch {
-            val result = JwtChecker.isFirebaseJwtContainsLuid()
-            if (result)
+            val userHasBeenCreatedBefore = JwtChecker.isFirebaseJwtContainsLuid()
+            if (userHasBeenCreatedBefore)
                 getUserOnboardingStatus()
             else
                 createUser()

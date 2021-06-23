@@ -1,7 +1,6 @@
 package com.limor.app.scenes.auth_new.firebase
 
 import android.app.Activity
-import android.os.Handler
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,7 +8,10 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
+import com.limor.app.R
+import com.limor.app.scenes.auth_new.util.JwtChecker
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -26,6 +28,7 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     private lateinit var scope: CoroutineScope
     private lateinit var contextProviderHandler: ContextProviderHandler
     private var shouldSendCode = true
+    private var isSignInCase = false
 
     private val _smsCodeValidationErrorMessage =
         MutableLiveData<String>().apply { value = "" }
@@ -42,8 +45,9 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
         this.contextProviderHandler = contextProviderHandler
     }
 
-    fun sendCodeToPhone(phone: String, resend: Boolean = false) {
-        if(resend)
+    fun sendCodeToPhone(phone: String, resend: Boolean = false, isSignInCase: Boolean) {
+        this.isSignInCase = isSignInCase
+        if (resend)
             shouldSendCode = true
 
         if (!(shouldSendCode)) return
@@ -135,10 +139,35 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
                     _smsCodeValidationErrorMessage.postValue(task.exception?.localizedMessage ?: "")
                 }
                 if (successful) {
-                    _smsCodeValidationPassed.postValue(true)
-                    Handler().postDelayed({ _smsCodeValidationPassed.postValue(false) }, 500)
+                    onPhoneAuthSuccess()
                 }
             }
+    }
+
+    private fun onPhoneAuthSuccess() {
+        scope.launch {
+            if (!isSignInCase) {
+                onPhoneAuthSuccessPositive()
+                return@launch
+            }
+            if (JwtChecker.isFirebaseJwtContainsLuid())
+                onPhoneAuthSuccessPositive()
+            else
+                onPhoneAuthSuccessNegative()
+        }
+    }
+
+    private suspend fun onPhoneAuthSuccessPositive() {
+        _smsCodeValidationPassed.postValue(true)
+        delay(300)
+        _smsCodeValidationPassed.postValue(false)
+    }
+
+    private fun onPhoneAuthSuccessNegative() {
+        //This is possible if user Signing in, but did not create Limor account before (doesn't have "luid" in JWT)
+        val message = contextProviderHandler.activity()
+            .getString(R.string.no_user_found_offer_to_sign_up)
+        _smsCodeValidationErrorMessage.postValue(message)
     }
 
     fun clearError() {

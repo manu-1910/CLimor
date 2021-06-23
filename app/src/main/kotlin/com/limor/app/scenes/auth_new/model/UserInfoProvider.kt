@@ -6,6 +6,7 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.limor.app.R
 import com.limor.app.apollo.UserRepository
 import com.limor.app.apollo.interceptors.AuthInterceptor
 import com.limor.app.scenes.auth_new.data.DobInfo.Companion.parseForUserCreation
@@ -41,8 +42,8 @@ class UserInfoProvider(private val scope: CoroutineScope) {
     val updateOnboardingStatusLiveData: LiveData<String?>
         get() = _updateOnboardingStatusLiveData
 
-    private val _userInfoProviderErrorLiveData = MutableLiveData<String?>().apply { value = null }
-    val userInfoProviderErrorLiveData: LiveData<String?>
+    private val _userInfoProviderErrorLiveData = MutableLiveData<Any?>().apply { value = null }
+    val userInfoProviderErrorLiveData: LiveData<Any?>
         get() = _userInfoProviderErrorLiveData
 
     fun getUserOnboardingStatus() {
@@ -70,8 +71,15 @@ class UserInfoProvider(private val scope: CoroutineScope) {
     }
 
     fun createUser(dob: Long) {
-        if (dob == 0L) return
         scope.launch {
+            if (dob == 0L) {
+                //This is possible if user Signing in, but did not create Limor account before (doesn't have "luid" in JWT)
+                _userInfoProviderErrorLiveData.postValue(R.string.no_user_found_offer_to_sign_up)
+                delay(500)
+                _userInfoProviderErrorLiveData.postValue(null)
+                return@launch
+            }
+
             try {
                 val formattedDate = parseForUserCreation(dob)
                 Timber.d("Formatted DOB $formattedDate")

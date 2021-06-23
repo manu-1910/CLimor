@@ -28,24 +28,31 @@ object Apollo {
     suspend fun <A : Operation.Data, B, C : Operation.Variables> launchQuery(query: Query<A, B, C>): Response<B>? =
         withContext(Dispatchers.IO) {
             val result = client.query(query).await()
-            checkResultForErrors(result, query.javaClass.simpleName)
+            checkResultForErrors(result, query.javaClass.name)
             result
         }
 
     suspend fun <A : Operation.Data, B, C : Operation.Variables> mutate(query: Mutation<A, B, C>): Response<B>? =
         withContext(Dispatchers.IO) {
             val result = client.mutate(query).await()
-            checkResultForErrors(result, query.javaClass.simpleName)
+            checkResultForErrors(result, query.javaClass.name)
             result
         }
 
     private fun <T> checkResultForErrors(response: Response<T>, queryName: String) {
         if (response.hasErrors()) {
             val errorMessage = response.errors!!.joinToString("\n") { it.message }
-            val errorWithQueryPrefix = StringBuilder(queryName).append("-> ").append(errorMessage)
-            val apiException = GraphqlClientException(errorWithQueryPrefix.toString())
-            Timber.e(apiException)
-            throw apiException
+            val errorWithQueryPrefix = StringBuilder(queryName)
+                .append("-> ")
+                .append(errorMessage)
+
+            //Exception, that will be send to Crashlytics, contains query class name
+            val apiExceptionToLog = GraphqlClientException(errorWithQueryPrefix.toString())
+            Timber.e(apiExceptionToLog)
+
+            //Exception, that will be shown to user, doesn't have to contain the query class name
+            val apiExceptionToShow = GraphqlClientException(errorMessage)
+            throw apiExceptionToShow
         }
     }
 }

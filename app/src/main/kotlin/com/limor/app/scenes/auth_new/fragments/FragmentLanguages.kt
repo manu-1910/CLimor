@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
@@ -18,6 +17,7 @@ import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.LanguageWrapper
 import com.limor.app.scenes.auth_new.navigation.AuthNavigator
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
+import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.utils.MAIN
 import kotlinx.android.synthetic.main.fragment_new_auth_languages.*
 
@@ -102,7 +102,7 @@ class FragmentLanguages : FragmentWithLoading() {
 
         model.userInfoProviderErrorLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
-            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            ToastMaker.showToast(requireContext(), it)
         })
     }
 
