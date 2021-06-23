@@ -46,10 +46,6 @@ class FragmentEnterUsername : Fragment() {
             model.submitUsername(etEnterUsername?.editText?.text?.toString())
         }
 
-        btnBack.setOnClickListener {
-            AuthActivityNew.popBackStack(requireActivity())
-        }
-
         etEnterUsername.setEndIconOnClickListener {
             model.changeCurrentUserName("")
             etEnterUsername.editText?.setText("")

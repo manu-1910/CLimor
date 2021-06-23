@@ -5,6 +5,7 @@ import com.limor.app.apollo.showHumanizedErrorMessage
 import com.limor.app.scenes.auth_new.data.SuggestedUser
 import com.limor.app.scenes.auth_new.data.createMockedSuggestedUsers
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -31,7 +32,7 @@ class SuggestedProvider(private val scope: CoroutineScope) {
     }
 
     private fun loadSuggestedFromRepo() {
-        scope.launch {
+        scope.launch (Dispatchers.Default) {
             try {
                 delay(1000) //waiting for transition animation to end
                 suggestedList = createMockedSuggestedUsers()
@@ -50,7 +51,7 @@ class SuggestedProvider(private val scope: CoroutineScope) {
     }
 
     fun sendSuggestedPeopleSelectionResult() {
-        scope.launch {
+        scope.launch (Dispatchers.Default) {
             try {
                 val list = suggestedList.filter { it.selected }.map { it.id.toString() }
 //                val result = UserRepository.updateFollowingUsersData(list)

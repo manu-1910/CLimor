@@ -6,6 +6,7 @@ import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.apollo.showHumanizedErrorMessage
 import com.limor.app.scenes.auth_new.data.CategoryWrapper
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CategoriesProvider(private val scope: CoroutineScope) {
@@ -35,7 +36,7 @@ class CategoriesProvider(private val scope: CoroutineScope) {
     }
 
     private fun loadCategoriesRepo() {
-        scope.launch {
+        scope.launch(Dispatchers.Default) {
             try {
                 val response = GeneralInfoRepository.fetchCategories()
                 categories = response!!.map { CategoryWrapper(it, false) }
@@ -46,7 +47,7 @@ class CategoriesProvider(private val scope: CoroutineScope) {
         }
     }
 
-    fun getActiveCategoriesIds():List<Int?>{
+    fun getActiveCategoriesIds(): List<Int?> {
         return categories.filter { it.isSelected }.map { it.queryCategory.id }
     }
 

@@ -37,7 +37,7 @@ class LanguageTest {
         val languages = createMockedLanguages()
         val input = "lkfjlakjslfk"
         val filtered = getLanguagesByInput(input, languages)
-        print("filtered length ${filtered.size}")
+        println("filtered length ${filtered.size}")
         assertTrue(filtered.isEmpty())
     }
 }
