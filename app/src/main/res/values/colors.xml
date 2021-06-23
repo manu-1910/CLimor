@@ -152,4 +152,6 @@
     <color name="approved_green">#49BF9B</color>
     <color name="ripple_color">#33F9BB4B</color>
 
+    <color name="background_color">#FBFCFF</color>
+
 </resources>
