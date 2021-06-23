@@ -22,7 +22,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_toStartOf="@+id/fl_time_and_follow"
         android:layout_toEndOf="@+id/iv_user"
         android:gravity="center_vertical"
