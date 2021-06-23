@@ -148,6 +148,7 @@ support.transition = "androidx.transition:transition:$versions.transition"
 support.multidex = "androidx.multidex:multidex:$versions.multidex"
 support.workManager = "android.arch.work:work-runtime:$versions.support_work"
 support.coordinator = "androidx.coordinatorlayout:coordinatorlayout:$versions.coordinator"
+support.navigation_safeargs = "androidx.navigation:navigation-safe-args-gradle-plugin:$versions.navigation"
 support.navigation = "androidx.navigation:navigation-ui-ktx:$versions.navigation"
 support.navigation_fragment = "androidx.navigation:navigation-fragment-ktx:$versions.navigation"
 deps.support = support
