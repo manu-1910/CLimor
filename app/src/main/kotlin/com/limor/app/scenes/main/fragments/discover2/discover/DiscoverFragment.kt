@@ -7,24 +7,24 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.limor.app.common.BaseFragment
-import com.limor.app.databinding.FragmentDiscover2Binding
+import com.limor.app.databinding.FragmentDiscoverBinding
 import com.limor.app.scenes.main.fragments.discover2.common.casts.GridCastItemDecoration
 import com.limor.app.scenes.main.fragments.discover2.discover.list.DiscoverAdapter
 
-class DiscoverFragment2 : BaseFragment() {
+class DiscoverFragment : BaseFragment() {
 
-    private var _binding: FragmentDiscover2Binding? = null
+    private var _binding: FragmentDiscoverBinding? = null
     private val binding get() = _binding!!
 
     private val discoverAdapter by lazy { DiscoverAdapter(requireContext()) }
-    private val viewModel: Discover2ViewModel by viewModels()
+    private val viewModel: DiscoverViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentDiscover2Binding.inflate(inflater, container, false)
+        _binding = FragmentDiscoverBinding.inflate(inflater, container, false)
         initViews()
         subscribeForEvents()
         return binding.root

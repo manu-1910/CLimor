@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.LocalDateTime
 
-class Discover2ViewModel : ViewModel() {
+class DiscoverViewModel : ViewModel() {
 
     private val _categories = MutableLiveData<List<String>>()
     val categories: LiveData<List<String>> = _categories

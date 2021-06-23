@@ -12,9 +12,9 @@
     </fragment>
     <fragment
         android:id="@+id/navigation_discover"
-        android:name="com.limor.app.scenes.main.fragments.discover2.discover.DiscoverFragment2"
+        android:name="com.limor.app.scenes.main.fragments.discover2.discover.DiscoverFragment"
         android:label="DiscoverFragment"
-        tools:layout="@layout/fragment_discover2">
+        tools:layout="@layout/fragment_discover">
     </fragment>
     <activity
         android:id="@+id/navigation_record"
