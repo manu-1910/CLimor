@@ -15,6 +15,7 @@ import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.record.RecordActivity
 import com.limor.app.scenes.main.fragments.settings.SettingsActivity
 import com.limor.app.scenes.main.fragments.setup_patron.SetupPatronActivity
+import com.limor.app.scenes.main_new.MainActivityNew
 import com.limor.app.scenes.splash.SplashActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -101,5 +102,8 @@ abstract class ActivitiesModule {
         (UserFollowersFollowingsFragmentsBuildersModule::class)
     ])
     abstract fun contributeUserFollowersFollingActivityInjector(): UserFollowersFollowingsActivity
+
+    @ContributesAndroidInjector
+    abstract fun contributeMainActivityNewActivityInjector(): MainActivityNew
 
 }
