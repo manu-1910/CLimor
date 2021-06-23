@@ -29,10 +29,7 @@ import com.limor.app.scenes.main.viewmodels.GetUserFollowersViewModel
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UIUser
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.activity_followers_followings.*
-import kotlinx.android.synthetic.main.activity_followers_followings.view.*
 import kotlinx.android.synthetic.main.fragment_user_followers.*
-import kotlinx.android.synthetic.main.toolbar_discover.view.*
 import javax.inject.Inject
 
 

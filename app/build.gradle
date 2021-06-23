@@ -35,6 +35,9 @@ android {
     }
 
     compileOptions {
+        // Flag to enable support for the new language APIs
+        coreLibraryDesugaringEnabled = true
+
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -45,10 +48,6 @@ android {
 
     testOptions {
         unitTests.returnDefaultValues = true
-    }
-
-    buildFeatures {
-        viewBinding true
     }
 
     signingConfigs {
@@ -166,6 +165,10 @@ android {
 
     dataBinding {
         enabled = true
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 
@@ -377,11 +380,15 @@ dependencies {
     implementation "com.googlecode.libphonenumber:libphonenumber:8.12.21"
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
-//    implementation platform('com.google.firebase:firebase-bom:27.1.0')
-//    implementation 'com.google.firebase:firebase-auth-ktx:'
-
     // The core runtime dependencies
     implementation("com.apollographql.apollo:apollo-runtime:2.5.6")
     //decoding firebase JWT
     implementation 'com.auth0.android:jwtdecode:2.0.0'
+
+    implementation deps.groupie.core
+    implementation deps.groupie.viewbinding
+    implementation deps.flowbinding
+
+    // https://developer.android.com/studio/write/java8-support#library-desugaring
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 }
