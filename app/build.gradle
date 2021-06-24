@@ -290,6 +290,7 @@ dependencies {
     api project(':data')
     api project(':remote')
     api project(':storage')
+    api project(':mock')
 
     implementation deps.support.navigation
     implementation deps.support.navigation_fragment

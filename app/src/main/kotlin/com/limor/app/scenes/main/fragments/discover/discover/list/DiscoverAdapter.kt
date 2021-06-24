@@ -20,7 +20,7 @@ class DiscoverAdapter(
         private const val SPAN_COUNT = 2
     }
 
-    private val categoriesSection = CategoriesSection(context)
+    private val categoriesSection = CategoriesSection(context, navController)
     private val suggestedPeopleSection = SuggestedPeopleSection(context)
     private val featuredCastsSection = FeaturedCastsSection(context, navController)
     private val topCastsSection = TopCastsSection(context)

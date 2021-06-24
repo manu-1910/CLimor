@@ -17,7 +17,9 @@ import javax.inject.Singleton
         ActivitiesModule::class,
         DataModule::class,
         RemoteModule::class,
-        StorageModule::class]
+        StorageModule::class,
+        MockModule::class
+    ]
 )
 interface AppComponent {
     @Component.Builder

@@ -9,7 +9,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
-import com.limor.app.databinding.FragmentDiscoverCategoryBinding
+import com.limor.app.databinding.FragmentDiscoverFeaturedCastsBinding
 import com.limor.app.extensions.px
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration
 import com.limor.app.scenes.main.fragments.discover.featuredcasts.list.DiscoverFeaturedCastsAdapter
@@ -17,10 +17,10 @@ import com.limor.app.scenes.utils.recycler.TopGridSpacingItemDecoration
 
 class DiscoverFeaturedCastsFragment : BaseFragment() {
 
-    private var _binding: FragmentDiscoverCategoryBinding? = null
+    private var _binding: FragmentDiscoverFeaturedCastsBinding? = null
     private val binding get() = _binding!!
 
-    private val discoverCategoryAdapter by lazy { DiscoverFeaturedCastsAdapter() }
+    private val discoverFeaturedCastsAdapter by lazy { DiscoverFeaturedCastsAdapter() }
     private val viewModel: DiscoverFeaturedCastsViewModel by viewModels()
 
     override fun onCreateView(
@@ -28,7 +28,7 @@ class DiscoverFeaturedCastsFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentDiscoverCategoryBinding.inflate(inflater)
+        _binding = FragmentDiscoverFeaturedCastsBinding.inflate(inflater)
         initViews()
         subscribeForEvents()
         return binding.root
@@ -36,9 +36,9 @@ class DiscoverFeaturedCastsFragment : BaseFragment() {
 
     private fun initViews() {
         binding.list.apply {
-            layoutManager = GridLayoutManager(context, discoverCategoryAdapter.spanCount).apply {
-                spanSizeLookup = discoverCategoryAdapter.spanSizeLookup
-                adapter = discoverCategoryAdapter
+            layoutManager = GridLayoutManager(context, discoverFeaturedCastsAdapter.spanCount).apply {
+                spanSizeLookup = discoverFeaturedCastsAdapter.spanSizeLookup
+                adapter = discoverFeaturedCastsAdapter
                 addItemDecoration(GridCastItemDecoration())
                 addItemDecoration(TopGridSpacingItemDecoration(16.px))
             }
@@ -53,7 +53,7 @@ class DiscoverFeaturedCastsFragment : BaseFragment() {
 
     private fun subscribeForEvents() {
         viewModel.featuredCasts.observe(viewLifecycleOwner) {
-            discoverCategoryAdapter.updateFeaturedCasts(it)
+            discoverFeaturedCastsAdapter.updateFeaturedCasts(it)
         }
     }
 

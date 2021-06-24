@@ -5,14 +5,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.limor.app.common.ViewModelFactory
 import com.limor.app.di.ViewModelKey
 import com.limor.app.scenes.authentication.viewmodels.*
+import com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategoriesViewModel
 import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.notifications.PushNotificationsViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-import com.limor.app.scenes.main.viewmodels.CreateCommentDropOffViewModel
-import com.limor.app.scenes.main.viewmodels.CreatePodcastDropOffViewModel
-
 
 @Module
 abstract class ViewModelsModule {
@@ -191,21 +189,6 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(DiscoverViewModel::class)
-    abstract fun bindDiscoverViewModel(discoverViewModel: DiscoverViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(DiscoverAccountsViewModel::class)
-    abstract fun bindDiscoverAccountsViewModel(discoverAccountsViewModel: DiscoverAccountsViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(DiscoverHashTagsViewModel::class)
-    abstract fun bindDiscoverHashTagsViewModel(discoverHashTagsViewModel: DiscoverHashTagsViewModel): ViewModel
-
-    @Binds
-    @IntoMap
     @ViewModelKey(ChangePasswordViewModel::class)
     abstract fun bindChangePasswordViewModel(changePasswordViewModel: ChangePasswordViewModel): ViewModel
 
@@ -261,11 +244,6 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(GetPodcastsByCategoryViewModel::class)
-    abstract fun bindGetPodcastsByCategoryViewModel(viewModel: GetPodcastsByCategoryViewModel): ViewModel
-
-    @Binds
-    @IntoMap
     @ViewModelKey(GetUserFollowingsViewModel::class)
     abstract fun bindGetUserFollowingsViewModel(viewModel: GetUserFollowingsViewModel): ViewModel
 
@@ -273,4 +251,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(GetUserFollowersViewModel::class)
     abstract fun bindGetUserFollowersViewModel(viewModel: GetUserFollowersViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverAllCategoriesViewModel::class)
+    abstract fun bindDiscoverAllCategoriesViewModel(viewModel: DiscoverAllCategoriesViewModel): ViewModel
 }
