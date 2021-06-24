@@ -18,6 +18,7 @@ import javax.inject.Singleton
         DataModule::class,
         RemoteModule::class,
         StorageModule::class,
+        ApolloModule::class,
         MockModule::class
     ]
 )

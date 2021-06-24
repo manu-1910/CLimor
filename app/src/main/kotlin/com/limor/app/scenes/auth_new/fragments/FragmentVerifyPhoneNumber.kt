@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
-import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -19,6 +18,7 @@ import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.navigation.AuthNavigator.navigateToFragmentByNavigationBreakpoints
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
+import com.limor.app.scenes.auth_new.util.ToastMaker
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_code.*
 
 
@@ -115,6 +115,7 @@ class FragmentVerifyPhoneNumber : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun subscribeToViewModel() {
         tvPhone.text = model.formattedPhone
+        model.clearSmsCodeError()
         model.smsContinueButtonEnabled.observe(viewLifecycleOwner, Observer {
             btnContinue.isEnabled = it
         })
@@ -122,7 +123,7 @@ class FragmentVerifyPhoneNumber : Fragment() {
         model.smsCodeValidationErrorMessage.observe(viewLifecycleOwner, Observer {
             val hasError = it.isNotBlank()
             tvWrongCode.visibility = if (hasError) View.VISIBLE else View.GONE
-            if(hasError) tvWrongCode.text = it
+            if (hasError) tvWrongCode.text = it
             smsCodeEtList.forEach { et ->
                 et.error = if (hasError) " " else null
                 et.editText!!.setTextColor(
@@ -134,7 +135,7 @@ class FragmentVerifyPhoneNumber : Fragment() {
 
         model.userInfoProviderErrorLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
-            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            ToastMaker.showToast(requireContext(), it)
         })
 
         model.createUserLiveData.observe(viewLifecycleOwner, Observer {

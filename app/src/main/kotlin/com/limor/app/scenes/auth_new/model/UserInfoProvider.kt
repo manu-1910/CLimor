@@ -6,16 +6,24 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.limor.app.R
 import com.limor.app.apollo.UserRepository
+import com.limor.app.apollo.interceptors.AuthInterceptor
 import com.limor.app.scenes.auth_new.data.DobInfo.Companion.parseForUserCreation
 import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
+import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
+import com.limor.app.scenes.auth_new.util.JwtChecker
 import kotlinx.coroutines.*
 import timber.log.Timber
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import javax.inject.Inject
 
 
-class UserInfoProvider(private val scope: CoroutineScope) {
+class UserInfoProvider @Inject constructor(
+    val userRepository: UserRepository,
+    val phoneAuthHandler: PhoneAuthHandler
+) {
 
 
     private val _breakPointLiveData = MutableLiveData<String?>().apply { value = null }
@@ -38,15 +46,16 @@ class UserInfoProvider(private val scope: CoroutineScope) {
     val updateOnboardingStatusLiveData: LiveData<String?>
         get() = _updateOnboardingStatusLiveData
 
-    private val _userInfoProviderErrorLiveData = MutableLiveData<String?>().apply { value = null }
-    val userInfoProviderErrorLiveData: LiveData<String?>
+    private val _userInfoProviderErrorLiveData = MutableLiveData<Any?>().apply { value = null }
+    val userInfoProviderErrorLiveData: LiveData<Any?>
         get() = _userInfoProviderErrorLiveData
 
-    fun getUserOnboardingStatus() {
-        scope.launch {
+    fun getUserOnboardingStatus(scope: CoroutineScope) {
+        scope.launch(Dispatchers.Default) {
             try {
-                val response = UserRepository.getUserOnboardingStatus() ?: ""
-                _breakPointLiveData.postValue(response)
+                val response = userRepository.getUserOnboardingStatus() ?: ""
+                val breakpoint = getBreakpointAccordingToEmailPresence(response)
+                _breakPointLiveData.postValue(breakpoint)
                 delay(500)
                 _breakPointLiveData.postValue(null)
             } catch (e: Exception) {
@@ -57,13 +66,29 @@ class UserInfoProvider(private val scope: CoroutineScope) {
         }
     }
 
-    fun createUser(dob: Long) {
+    private fun getBreakpointAccordingToEmailPresence(response: String): String {
+        //check if user has an email on it's JWT
+        val jwt = AuthInterceptor.getToken()
+        val hasEmail = JwtChecker.isJwtContainsEmail(jwt)
+        return if (hasEmail) response else NavigationBreakpoints.ACCOUNT_CREATION.destination
+
+    }
+
+    fun createUser(scope: CoroutineScope, dob: Long) {
         if (dob == 0L) return
         scope.launch {
+            if (dob == 0L) {
+                //This is possible if user Signing in, but did not create Limor account before (doesn't have "luid" in JWT)
+                _userInfoProviderErrorLiveData.postValue(R.string.no_user_found_offer_to_sign_up)
+                delay(500)
+                _userInfoProviderErrorLiveData.postValue(null)
+                return@launch
+            }
+
             try {
                 val formattedDate = parseForUserCreation(dob)
                 Timber.d("Formatted DOB $formattedDate")
-                val response = UserRepository.createUser(formattedDate) ?: ""
+                val response = userRepository.createUser(formattedDate) ?: ""
                 _createUserLiveData.postValue(response)
                 delay(500)
                 _createUserLiveData.postValue(null)
@@ -75,15 +100,14 @@ class UserInfoProvider(private val scope: CoroutineScope) {
         }
     }
 
-    fun updateUserName(userName: String) {
-        scope.launch {
+    fun updateUserName(scope: CoroutineScope, userName: String) {
+        scope.launch(Dispatchers.Default) {
             try {
-                val response = UserRepository.updateUserName(userName)
+                val response = userRepository.updateUserName(userName)
                 _updateUserNameLiveData.postValue(response)
                 delay(500)
                 _updateUserNameLiveData.postValue(null)
             } catch (e: Exception) {
-                Timber.e(e)
                 _userInfoProviderErrorLiveData.postValue(e.message)
                 delay(500)
                 _userInfoProviderErrorLiveData.postValue(null)
@@ -95,8 +119,8 @@ class UserInfoProvider(private val scope: CoroutineScope) {
     val userNameAttachedToUserLiveData: LiveData<Boolean?>
         get() = _userNameAttachedToUserLiveData
 
-    fun updateFirebaseUserName(userName: String) {
-        scope.launch {
+    fun updateFirebaseUserName(scope: CoroutineScope, userName: String) {
+        scope.launch(Dispatchers.Default) {
             withContext(Dispatchers.IO) {
                 updateFirebaseUserNameScoped(userName)
             }
@@ -118,7 +142,7 @@ class UserInfoProvider(private val scope: CoroutineScope) {
         } catch (e: FirebaseAuthRecentLoginRequiredException) {
             Timber.e(e)
             try {
-                PhoneAuthHandler.reAuthWithPhoneCredential()
+                phoneAuthHandler.reAuthWithPhoneCredential()
             } catch (e: Exception) {
                 Timber.e(e)
                 _userInfoProviderErrorLiveData.postValue(e.cause?.message ?: e.message)
@@ -129,10 +153,15 @@ class UserInfoProvider(private val scope: CoroutineScope) {
         }
     }
 
-    fun updatePreferredInfo(gender: Int, categories: List<Int?>, languages: List<String?>) {
-        scope.launch {
+    fun updatePreferredInfo(
+        scope: CoroutineScope,
+        gender: Int,
+        categories: List<Int?>,
+        languages: List<String?>
+    ) {
+        scope.launch(Dispatchers.Default) {
             try {
-                val result = UserRepository.updateUserOnboardingData(gender, categories, languages)
+                val result = userRepository.updateUserOnboardingData(gender, categories, languages)
                 _updatePreferredInfoLiveData.postValue(result)
                 delay(500)
                 _updatePreferredInfoLiveData.postValue(null)
@@ -144,10 +173,10 @@ class UserInfoProvider(private val scope: CoroutineScope) {
         }
     }
 
-    fun updateUserOnboardingStatus(nextStep: String) {
-        scope.launch {
+    fun updateUserOnboardingStatus(scope: CoroutineScope, nextStep: String) {
+        scope.launch(Dispatchers.Default) {
             try {
-                val result = UserRepository.updateUserOnboardingStatus(nextStep)
+                val result = userRepository.updateUserOnboardingStatus(nextStep)
                 _updateOnboardingStatusLiveData.postValue(result)
                 delay(400)
                 _updateOnboardingStatusLiveData.postValue(null)

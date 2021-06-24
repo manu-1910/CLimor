@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/navigation_home">
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.limor.app.scenes.main_new.fragments.FragmentHomeNew"
+        android:label="HomeFeedFragment"
+        tools:layout="@layout/fragment_home_new">
+        <action
+            android:id="@+id/action_navigation_home_to_dialog_report_podcast"
+            app:destination="@id/dialog_report_podcast" >
+        </action>
+    </fragment>
+
+    <dialog
+        android:id="@+id/dialog_report_podcast"
+        android:name="com.limor.app.scenes.main_new.fragments.DialogPodcastReport"
+        android:label="Dialog Report Podcast"
+        tools:layout="@layout/dialog_report_cast" >
+        <action
+            android:id="@+id/action_dialog_report_podcast_to_dialog_report_podcast_p2"
+            app:destination="@id/dialog_report_podcast_p2"
+            app:popUpTo="@id/navigation_home" />
+        <argument
+            android:name="DialogReportPodcastArgs"
+            app:argType="string" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/dialog_report_podcast_p2"
+        android:name="com.limor.app.scenes.main_new.fragments.DialogPodcastReportP2"
+        android:label="Dialog Report Podcast P2"
+        tools:layout="@layout/dialog_report_cast_p2" />
+
+
+<!--    Replace this dummy fragments with you own Impl-->
+
+    <fragment
+        android:id="@+id/navigation_discover"
+        android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
+        android:label="DiscoverFragment"
+        tools:layout="@layout/fragment_dummy"/>
+
+    <!--    <activity-->
+    <!--        android:id="@+id/navigation_record"-->
+    <!--        android:name="com.limor.app.scenes.main.fragments.record.RecordActivity"-->
+    <!--        android:label="RecordActivity"-->
+    <!--        tools:layout="@layout/activity_record">-->
+    <!--    </activity>-->
+
+        <fragment
+            android:id="@+id/navigation_notifications"
+            android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
+            android:label="NotificationsFragment"
+            tools:layout="@layout/fragment_dummy">
+        </fragment>
+        <fragment
+            android:id="@+id/navigation_profile"
+            android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
+            android:label="ProfileFragment"
+            tools:layout="@layout/fragment_dummy">
+        </fragment>
+</navigation>

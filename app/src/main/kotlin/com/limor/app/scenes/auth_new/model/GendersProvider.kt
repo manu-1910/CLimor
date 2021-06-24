@@ -6,10 +6,12 @@ import com.limor.app.GendersQuery
 import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.apollo.showHumanizedErrorMessage
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class GendersProvider(private val scope: CoroutineScope) {
+class GendersProvider @Inject constructor(val generalInfoRepository: GeneralInfoRepository) {
     private var genders: List<GendersQuery.Gender> = mutableListOf()
     private val _genderLiveData =
         MutableLiveData<List<GendersQuery.Gender>>().apply { value = genders }
@@ -29,17 +31,17 @@ class GendersProvider(private val scope: CoroutineScope) {
     val gendersLiveDataError: LiveData<String>
         get() = _gendersLiveDataError
 
-    fun downloadGenders() {
+    fun downloadGenders(scope: CoroutineScope) {
         _gendersLiveDataError.postValue("")
         if (genders.isEmpty())
-            loadGendersRepo()
+            loadGendersRepo(scope)
     }
 
-    private fun loadGendersRepo() {
-        scope.launch {
+    private fun loadGendersRepo(scope: CoroutineScope) {
+        scope.launch(Dispatchers.Default) {
             try {
                 delay(300) //Smooth animation transition between screens
-                val response = GeneralInfoRepository.fetchGenders()
+                val response = generalInfoRepository.fetchGenders()
                 genders = response!!
                 _genderLiveData.postValue(genders)
                 selectedGenderId = genders.first().id ?: 0

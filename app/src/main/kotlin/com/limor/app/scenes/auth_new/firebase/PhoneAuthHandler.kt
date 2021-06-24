@@ -1,7 +1,6 @@
 package com.limor.app.scenes.auth_new.firebase
 
 import android.app.Activity
-import android.os.Handler
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,22 +8,25 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
+import com.limor.app.R
+import com.limor.app.scenes.auth_new.util.JwtChecker
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.lang.ref.WeakReference
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-interface ContextProviderHandler {
-    fun activity(): Activity
-}
-
-object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+class PhoneAuthHandler @Inject constructor() :
+    PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
     private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
     private var storedVerificationId: String? = null
     private var phoneAuthCredential: PhoneAuthCredential? = null
     private var auth: FirebaseAuth = FirebaseAuth.getInstance()
     private lateinit var scope: CoroutineScope
-    private lateinit var contextProviderHandler: ContextProviderHandler
+    private var shouldSendCode = true
+    private var isSignInCase = false
 
     private val _smsCodeValidationErrorMessage =
         MutableLiveData<String>().apply { value = "" }
@@ -36,26 +38,34 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     val smsCodeValidationPassed: LiveData<Boolean>
         get() = _smsCodeValidationPassed
 
-    fun init(scope: CoroutineScope, contextProviderHandler: ContextProviderHandler) {
+    fun init(activityReference: WeakReference<Activity>, scope: CoroutineScope) {
+        activityRef = activityReference
         this.scope = scope
-        this.contextProviderHandler = contextProviderHandler
     }
 
-    fun sendCodeToPhone(phone: String, resend: Boolean = false) {
+    fun sendCodeToPhone(phone: String, resend: Boolean = false, isSignInCase: Boolean) {
+        this.isSignInCase = isSignInCase
+        if (activity == null) return
+        if (resend)
+            shouldSendCode = true
+
+        if (!(shouldSendCode)) return
+
         val optionsBuilder = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber(phone)
-            .setTimeout(30L, TimeUnit.SECONDS)
-            .setActivity(contextProviderHandler.activity())
+            .setTimeout(60L, TimeUnit.SECONDS)
+            .setActivity(activity!!)
             .setCallbacks(this)
         if (resend && resendToken != null) {
             optionsBuilder.setForceResendingToken(resendToken!!)
         }
         PhoneAuthProvider.verifyPhoneNumber(optionsBuilder.build())
+        shouldSendCode = false
     }
 
     override fun onVerificationCompleted(credential: PhoneAuthCredential) {
         Timber.d("onVerificationCompleted:$credential")
-        Toast.makeText(contextProviderHandler.activity(), "Auto verification", Toast.LENGTH_LONG)
+        Toast.makeText(activity, "Auto verification", Toast.LENGTH_LONG)
             .show()
         signInWithPhoneAuthCredential(credential)
     }
@@ -79,7 +89,7 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
         // now need to ask the user to enter the code and then construct a credential
         // by combining the code with a verification ID.
         Timber.d("onCodeSent: $verificationId")
-        Toast.makeText(contextProviderHandler.activity(), "Code has been sent", Toast.LENGTH_LONG)
+        Toast.makeText(activity, "Code has been sent", Toast.LENGTH_LONG)
             .show()
         // Save verification ID and resending token so we can use them later
         storedVerificationId = verificationId
@@ -93,7 +103,11 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     fun enterCodeAndSignIn(code: String) {
         scope.launch {
             _smsCodeValidationErrorMessage.postValue("")
-            if (storedVerificationId == null) return@launch
+            if (storedVerificationId == null) {
+                val message = activity?.getString(R.string.code_hasnt_been_sent)
+                _smsCodeValidationErrorMessage.postValue(message ?: "")
+                return@launch
+            }
             val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, code)
             signInWithPhoneAuthCredential(credential)
         }
@@ -108,9 +122,11 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        if (activity == null) return
+        shouldSendCode = true
         phoneAuthCredential = credential
         auth.signInWithCredential(credential)
-            .addOnCompleteListener(contextProviderHandler.activity()) { task ->
+            .addOnCompleteListener(activity!!) { task ->
                 val successful = task.isSuccessful
                 if (successful) {
                     // Sign in success, update UI with the signed-in user's information
@@ -127,13 +143,46 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
                     _smsCodeValidationErrorMessage.postValue(task.exception?.localizedMessage ?: "")
                 }
                 if (successful) {
-                    _smsCodeValidationPassed.postValue(true)
-                    Handler().postDelayed({ _smsCodeValidationPassed.postValue(false) }, 500)
+                    onPhoneAuthSuccess()
                 }
             }
+    }
+
+    private fun onPhoneAuthSuccess() {
+        scope.launch {
+            if (!isSignInCase) {
+                onPhoneAuthSuccessPositive()
+                return@launch
+            }
+            if (JwtChecker.isFirebaseJwtContainsLuid())
+                onPhoneAuthSuccessPositive()
+            else
+                onPhoneAuthSuccessNegative()
+        }
+    }
+
+    private suspend fun onPhoneAuthSuccessPositive() {
+        _smsCodeValidationPassed.postValue(true)
+        delay(300)
+        _smsCodeValidationPassed.postValue(false)
+    }
+
+    private fun onPhoneAuthSuccessNegative() {
+        //This is possible if user Signing in, but did not create Limor account before (doesn't have "luid" in JWT)
+        val message = activity?.getString(R.string.no_user_found_offer_to_sign_up) ?: ""
+        _smsCodeValidationErrorMessage.postValue(message)
     }
 
     fun clearError() {
         _smsCodeValidationErrorMessage.postValue("")
     }
+
+    private lateinit var activityRef: WeakReference<Activity>
+    private val activity
+        get() = try {
+            activityRef.get()!!
+        } catch (e: Exception) {
+            Timber.e(e)
+            null
+        }
 }

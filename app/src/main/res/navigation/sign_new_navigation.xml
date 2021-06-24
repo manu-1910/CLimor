@@ -240,6 +240,6 @@
 
     <activity
         android:id="@+id/destination_main_activity"
-        android:name="com.limor.app.scenes.main.MainActivity" />
+        android:name="com.limor.app.scenes.main_new.MainActivityNew" />
 
 </navigation>
