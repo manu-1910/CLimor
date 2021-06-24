@@ -5,8 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.FeedItemsQuery
+import com.limor.app.GetBlockedUsersQuery
+import com.limor.app.GetUserProfileQuery
+import com.limor.app.apollo.Apollo
 import com.limor.app.apollo.GeneralInfoRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 class HomeFeedViewModel @Inject constructor(
@@ -33,6 +39,15 @@ class HomeFeedViewModel @Inject constructor(
             }
 
         }
+    }
+
+
+    suspend fun getUserProfile(): GetUserProfileQuery.GetUser? {
+        return  generalInfoRepository.getUserProfile()
+    }
+
+    suspend fun getBlockedUsers(): ArrayList<GetBlockedUsersQuery.GetBlockedUser?>? {
+        return generalInfoRepository.getBlockedUsers()
     }
 
 }

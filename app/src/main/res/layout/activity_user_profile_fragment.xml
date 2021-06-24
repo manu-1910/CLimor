@@ -6,7 +6,36 @@
         android:layout_width="match_parent"
         android:id="@+id/m_layout"
         android:layout_height="match_parent">
+        <View
+            android:id="@+id/topViewBackground"
+            android:layout_width="0dp"
+            android:layout_height="110dp"
+            android:background="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/topViewBackground"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/limor_top_item" />
 
+        <ImageButton
+            android:id="@+id/btn_user_settings"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:background="@color/transparent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_setting"
+            app:layout_constraintBottom_toBottomOf="@id/topViewBackground"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <LinearLayout
             android:id="@+id/linear_layout"
@@ -14,7 +43,7 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:orientation="vertical"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/topViewBackground">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -252,14 +281,5 @@
      <!--   <include layout="@layout/fragment_new_auth_loading_include"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />-->
-
-        <ImageView
-            android:id="@+id/btn_user_settings"
-            android:layout_margin="14dp"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_setting"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

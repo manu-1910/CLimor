@@ -53,9 +53,9 @@
 
         <fragment
             android:id="@+id/navigation_notifications"
-            android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
+            android:name="com.limor.app.scenes.main.fragments.profile.UserProfileFragment"
             android:label="NotificationsFragment"
-            tools:layout="@layout/fragment_dummy">
+            tools:layout="@layout/activity_user_profile_fragment">
         </fragment>
         <fragment
             android:id="@+id/navigation_profile"

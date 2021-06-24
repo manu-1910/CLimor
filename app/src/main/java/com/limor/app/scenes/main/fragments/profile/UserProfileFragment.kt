@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.limor.app.FollowersQuery
 import com.limor.app.GetBlockedUsersQuery
@@ -15,23 +17,32 @@ import com.limor.app.GetUserProfileQuery
 import com.limor.app.R
 import com.limor.app.apollo.Apollo
 import com.limor.app.databinding.ActivityUserProfileFragmentBinding
+import com.limor.app.di.Injectable
 import com.limor.app.scenes.main.fragments.profile.adapters.ProfileViewPagerAdapter
 import com.limor.app.scenes.main.fragments.settings.SettingsActivity
+import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.profile.FollowersAndFollowingActivity
 import kotlinx.android.synthetic.main.fragment_new_auth_gender.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import javax.inject.Inject
 
-class UserProfileFragment : Fragment() {
+class UserProfileFragment : Fragment(), Injectable {
+
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val model: HomeFeedViewModel by viewModels { viewModelFactory }
+
     private lateinit var binding: ActivityUserProfileFragmentBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DataBindingUtil.inflate(inflater,R.layout.activity_user_profile_fragment,container,false)
+        binding = ActivityUserProfileFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -43,11 +54,9 @@ class UserProfileFragment : Fragment() {
         binding.toggleGender.check(R.id.btnCasts)
 
 
-        lifecycleScope.launch(Dispatchers.Main){
-            val user = getUserProfile()
-
-            user?.let{
-
+        lifecycleScope.launch(Dispatchers.Main) {
+            val user = model.getUserProfile()
+            user?.let {
                 binding.profileName.text = it.username
                 binding.profileDesc.text = it.description
                 binding.profileFollowers.text = "${it.followers_count}"
@@ -59,13 +68,13 @@ class UserProfileFragment : Fragment() {
         }
 
 
-        binding.followers.setOnClickListener{
-            startActivity(Intent(requireContext(),FollowersAndFollowingActivity::class.java))
+        binding.followers.setOnClickListener {
+            startActivity(Intent(requireContext(), FollowersAndFollowingActivity::class.java))
         }
 
-        binding.following.setOnClickListener{
+        binding.following.setOnClickListener {
 
-            startActivity(Intent(requireContext(),FollowersAndFollowingActivity::class.java))
+            startActivity(Intent(requireContext(), FollowersAndFollowingActivity::class.java))
 
         }
 
@@ -81,39 +90,19 @@ class UserProfileFragment : Fragment() {
                     R.id.btnPatron -> 1
                     else -> 0
                 }
-               //move viewpager
+                //move viewpager
             }
         }
 
     }
 
     private fun setupViewPager(it: GetUserProfileQuery.GetUser) {
-        val adapter = ProfileViewPagerAdapter(childFragmentManager,lifecycle)
+        val adapter = ProfileViewPagerAdapter(childFragmentManager, lifecycle)
 
         binding.profileViewpager.adapter = adapter
 
 
     }
 
-    suspend fun getUserProfile(): GetUserProfileQuery.GetUser? {
-        val query = GetUserProfileQuery()
-        val queryResult = withContext(Dispatchers.IO){
-            Apollo.launchQuery(query)
-        }
-        val createUserResult: GetUserProfileQuery.GetUser? =
-            queryResult?.data?.getUser
-        Timber.d("Got User -> ${createUserResult?.username}")
-        return createUserResult
-    }
 
-    suspend fun getBlockedUsers(): ArrayList<GetBlockedUsersQuery.GetBlockedUser?>? {
-        val query = GetBlockedUsersQuery(10,10)
-        val queryResult = withContext(Dispatchers.IO){
-            Apollo.launchQuery(query)
-        }
-        val createUserResult: List<GetBlockedUsersQuery.GetBlockedUser?>? =
-            queryResult?.data?.getBlockedUsers
-        Timber.d("Got Blocked Users -> ${createUserResult?.size}")
-        return createUserResult as ArrayList<GetBlockedUsersQuery.GetBlockedUser?>
-    }
 }

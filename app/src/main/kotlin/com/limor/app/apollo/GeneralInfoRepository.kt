@@ -1,6 +1,8 @@
 package com.limor.app.apollo
 
 import com.limor.app.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -51,5 +53,39 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         list.forEach {
             Timber.d(it.toString())
         }
+    }
+
+
+    suspend fun getUserProfile(): GetUserProfileQuery.GetUser? {
+        val query = GetUserProfileQuery()
+        val queryResult = withContext(Dispatchers.IO){
+            apollo.launchQuery(query)
+        }
+        val createUserResult: GetUserProfileQuery.GetUser =
+            queryResult?.data?.getUser ?: return null
+        Timber.d("Got User -> ${createUserResult.username}")
+        return createUserResult
+    }
+
+    suspend fun getBlockedUsers(): ArrayList<GetBlockedUsersQuery.GetBlockedUser?>? {
+        val query = GetBlockedUsersQuery(10,10)
+        val queryResult = withContext(Dispatchers.IO){
+            apollo.launchQuery(query)
+        }
+        val createUserResult: List<GetBlockedUsersQuery.GetBlockedUser?> =
+            queryResult?.data?.getBlockedUsers ?: return null
+        Timber.d("Got Blocked Users -> ${createUserResult.size}")
+        return createUserResult as ArrayList<GetBlockedUsersQuery.GetBlockedUser?>
+    }
+
+    suspend fun getFollowers(): List<FollowersQuery.GetFollower?>? {
+        val query = FollowersQuery(10,10)
+        val queryResult = withContext(Dispatchers.IO){
+            apollo.launchQuery(query)
+        }
+        val createUserResult: List<FollowersQuery.GetFollower?> =
+            queryResult?.data?.getFollowers ?: return null
+        Timber.d("Got Followers -> ${createUserResult.size}")
+        return createUserResult
     }
 }
