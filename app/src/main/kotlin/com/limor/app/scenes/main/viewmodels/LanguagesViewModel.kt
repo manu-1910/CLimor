@@ -6,12 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.scenes.auth_new.data.LanguageWrapper
 import com.limor.app.scenes.auth_new.model.LanguagesProvider
+import javax.inject.Inject
 
-class LanguagesViewModel : ViewModel() {
+class LanguagesViewModel @Inject constructor(
+    val languagesProvider: LanguagesProvider
+) : ViewModel() {
 
-    private val languagesProvider = LanguagesProvider(viewModelScope)
-
-    fun downloadLanguages() = languagesProvider.downloadLanguages()
+    fun downloadLanguages() = languagesProvider.downloadLanguages(viewModelScope)
 
     val languagesLiveData: LiveData<List<LanguageWrapper>>
         get() = Transformations.distinctUntilChanged(languagesProvider.languagesLiveData)

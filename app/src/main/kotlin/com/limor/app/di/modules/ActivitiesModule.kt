@@ -1,6 +1,7 @@
 package com.limor.app.di.modules
 
 import com.limor.app.di.modules.fragments.*
+import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.fragments.CategoriesActivity
@@ -14,6 +15,7 @@ import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.record.RecordActivity
 import com.limor.app.scenes.main.fragments.settings.SettingsActivity
 import com.limor.app.scenes.main.fragments.setup_patron.SetupPatronActivity
+import com.limor.app.scenes.main_new.MainActivityNew
 import com.limor.app.scenes.splash.SplashActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -25,45 +27,59 @@ abstract class ActivitiesModule {
     abstract fun contributeSplashActivityInjector(): SplashActivity
 
 
-    @ContributesAndroidInjector(modules = [
-        (SignActivityFragmentsBuildersModule::class)
-    ])
+    @ContributesAndroidInjector(
+        modules = [
+            (SignActivityFragmentsBuildersModule::class)
+        ]
+    )
     abstract fun contributeSignActivityInjector(): SignActivity
 
 
-    @ContributesAndroidInjector(modules = [
-        (MainActivityFragmentsBuildersModule::class)
-    ])
+    @ContributesAndroidInjector(
+        modules = [
+            (MainActivityFragmentsBuildersModule::class)
+        ]
+    )
     abstract fun contributeMainActivityInjector(): MainActivity
 
 
-    @ContributesAndroidInjector(modules = [
-        (RecordActivityFragmentsBuildersModule::class)
-    ])
+    @ContributesAndroidInjector(
+        modules = [
+            (RecordActivityFragmentsBuildersModule::class)
+        ]
+    )
     abstract fun contributeRecordActivityInjector(): RecordActivity
 
 
-    @ContributesAndroidInjector(modules = [
-        (PodcastDetailsActivityFragmentsBuildersModule::class)
-    ])
+    @ContributesAndroidInjector(
+        modules = [
+            (PodcastDetailsActivityFragmentsBuildersModule::class)
+        ]
+    )
     abstract fun contributePodcastDetailsActivityInjector(): PodcastDetailsActivity
 
 
-    @ContributesAndroidInjector(modules = [
-        (UserProfileActivityFragmentsBuildersModule::class)
-    ])
+    @ContributesAndroidInjector(
+        modules = [
+            (UserProfileActivityFragmentsBuildersModule::class)
+        ]
+    )
     abstract fun contributeUserProfileActivityInjector(): UserProfileActivity
 
 
-    @ContributesAndroidInjector(modules = [
-        (PodcastsByTagActivityFragmentsBuildersModule::class)
-    ])
+    @ContributesAndroidInjector(
+        modules = [
+            (PodcastsByTagActivityFragmentsBuildersModule::class)
+        ]
+    )
     abstract fun contributePodcastsByTagActivityInjector(): PodcastsByTagActivity
 
 
-    @ContributesAndroidInjector(modules = [
-        (AudioPlayerActivityFragmentsBuildersModule::class)
-    ])
+    @ContributesAndroidInjector(
+        modules = [
+            (AudioPlayerActivityFragmentsBuildersModule::class)
+        ]
+    )
     abstract fun contributeAudioPlayerActivityInjector(): AudioPlayerActivity
 
 
@@ -71,29 +87,48 @@ abstract class ActivitiesModule {
     abstract fun contributeUserReportActivityInjector(): ReportActivity
 
 
-    @ContributesAndroidInjector(modules = [
-        (SettingsActivityFragmentsBuildersModule::class)
-    ])
+    @ContributesAndroidInjector(
+        modules = [
+            (SettingsActivityFragmentsBuildersModule::class)
+        ]
+    )
     abstract fun contributeSettingsActivityInjector(): SettingsActivity
 
-    @ContributesAndroidInjector(modules = [
-        (OnBoardingActivityFragmentsBuildersModule::class)
-    ])
+    @ContributesAndroidInjector(
+        modules = [
+            (OnBoardingActivityFragmentsBuildersModule::class)
+        ]
+    )
     abstract fun contributeOnBoardingActivityInjector(): OnBoardingActivity
 
-    @ContributesAndroidInjector(modules = [
-        (SetupPatronActivityFragmentsBuildersModule::class)
-    ])
+    @ContributesAndroidInjector(
+        modules = [
+            (SetupPatronActivityFragmentsBuildersModule::class)
+        ]
+    )
     abstract fun contributeSetupPatronActivityInjector(): SetupPatronActivity
 
-    @ContributesAndroidInjector(modules = [
-        (SetupCategoriesActivityFragmentsBuildersModule::class)
-    ])
+    @ContributesAndroidInjector(
+        modules = [
+            (SetupCategoriesActivityFragmentsBuildersModule::class)
+        ]
+    )
     abstract fun contributeCategoriesActivityInjector(): CategoriesActivity
 
-    @ContributesAndroidInjector(modules = [
-        (UserFollowersFollowingsFragmentsBuildersModule::class)
-    ])
+    @ContributesAndroidInjector(
+        modules = [
+            (UserFollowersFollowingsFragmentsBuildersModule::class)
+        ]
+    )
     abstract fun contributeUserFollowersFollingActivityInjector(): UserFollowersFollowingsActivity
 
+    @ContributesAndroidInjector(
+        modules = [
+            MainActivityNewFragmentBuildersModule::class
+        ]
+    )
+    abstract fun contributeMainActivityNewActivityInjector(): MainActivityNew
+
+    @ContributesAndroidInjector
+    abstract fun contributeAuthActivityNewInjector(): AuthActivityNew
 }

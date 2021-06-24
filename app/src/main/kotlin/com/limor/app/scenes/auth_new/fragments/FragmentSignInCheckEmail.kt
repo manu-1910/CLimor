@@ -13,6 +13,7 @@ import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.navigation.AuthNavigator
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
+import com.limor.app.scenes.auth_new.util.ToastMaker
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in_check_email.*
 
 
@@ -41,7 +42,7 @@ class FragmentSignInCheckEmail : Fragment() {
 
         model.userInfoProviderErrorLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
-            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            ToastMaker.showToast(requireContext(), it)
         })
 
         model.createUserLiveData.observe(viewLifecycleOwner, Observer {

@@ -4,14 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.limor.app.common.ViewModelFactory
 import com.limor.app.di.ViewModelKey
+import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.authentication.viewmodels.*
 import com.limor.app.scenes.main.viewmodels.*
+import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.notifications.PushNotificationsViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-import com.limor.app.scenes.main.viewmodels.CreateCommentDropOffViewModel
-import com.limor.app.scenes.main.viewmodels.CreatePodcastDropOffViewModel
 
 
 @Module
@@ -273,4 +273,14 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(GetUserFollowersViewModel::class)
     abstract fun bindGetUserFollowersViewModel(viewModel: GetUserFollowersViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(AuthViewModelNew::class)
+    abstract fun bindAuthNewViewModel(viewModel: AuthViewModelNew): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(HomeFeedViewModel::class)
+    abstract fun bindHomeFeedNewViewModel(viewModel: HomeFeedViewModel): ViewModel
 }

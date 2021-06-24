@@ -20,6 +20,7 @@ import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.Country
 import com.limor.app.scenes.auth_new.util.AfterTextWatcher
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.*
+import java.lang.ref.WeakReference
 
 
 class FragmentSignEnterPhone : Fragment() {
@@ -76,7 +77,7 @@ class FragmentSignEnterPhone : Fragment() {
     }
 
     private fun subscribeToViewModel() {
-        model.initPhoneAuthHandler(requireActivity())
+        model.initPhoneAuthHandler(WeakReference(requireActivity()))
         model.countriesLiveData.observe(viewLifecycleOwner, Observer {
             setCountriesAdapter(it)
         })

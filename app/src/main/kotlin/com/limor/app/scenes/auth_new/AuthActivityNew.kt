@@ -9,6 +9,7 @@ import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 import android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
@@ -17,20 +18,26 @@ import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.firebase.FacebookAuthHandler
 import com.limor.app.scenes.auth_new.navigation.AuthNavigator
 import com.limor.app.scenes.auth_new.util.PrefsHandler
+import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_auth_new.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 class AuthActivityNew : AppCompatActivity() {
 
-    private val model: AuthViewModelNew by viewModels()
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val model: AuthViewModelNew  by viewModels { viewModelFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AndroidInjection .inject(this)
         setContentView(R.layout.activity_auth_new)
         clActivityAuthNew.systemUiVisibility =
             SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         checkNavigationBreakPoint()
+        Timber.d("Sign in case  ${model.signInCase}")
     }
 
     private fun checkNavigationBreakPoint() {
@@ -66,12 +73,11 @@ class AuthActivityNew : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        // [START get_deep_link]
         FirebaseDynamicLinks.getInstance()
             .getDynamicLink(intent)
             .addOnSuccessListener(this) { pendingDynamicLinkData ->
                 // Get deep link from result (may be null if no link is found)
-                var deepLink: Uri? = null
+                val deepLink: Uri?
                 if (pendingDynamicLinkData != null) {
                     deepLink = pendingDynamicLinkData.link
                     Timber.d("DeepLink fetched $deepLink")
@@ -79,7 +85,6 @@ class AuthActivityNew : AppCompatActivity() {
                 }
             }
             .addOnFailureListener(this) { e -> Timber.e(e) }
-        // [END get_deep_link]
     }
 
     companion object {

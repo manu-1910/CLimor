@@ -3,12 +3,13 @@ package com.limor.app.apollo
 import com.apollographql.apollo.api.Input
 import com.limor.app.*
 import timber.log.Timber
+import javax.inject.Inject
 
-object UserRepository {
+class UserRepository @Inject constructor(val apollo: Apollo){
 
     suspend fun createUser(dob: String): String? {
         val query = CreateUserMutation(dob)
-        val queryResult = Apollo.mutate(query)
+        val queryResult = apollo.mutate(query)
         val createUserResult: CreateUserMutation.CreateUser? =
             queryResult?.data?.createUser
         Timber.d("CreateUserMutation -> ${createUserResult?.status}")
@@ -17,7 +18,7 @@ object UserRepository {
 
     suspend fun updateUserName(userName: String): String? {
         val query = UpdateUserNameMutation(userName)
-        val queryResult = Apollo.mutate(query)
+        val queryResult = apollo.mutate(query)
         val updateUserNameResult =
             queryResult?.data?.updateUser?.status
         Timber.d("UpdateUserNameMutation -> $updateUserNameResult")
@@ -33,7 +34,7 @@ object UserRepository {
         val inputCategories = Input.fromNullable(categories)
         val inputLanguages = Input.fromNullable(languages)
         val query = UpdateUserOnboardingDataMutation(inputGender, inputCategories, inputLanguages)
-        val queryResult = Apollo.mutate(query)
+        val queryResult = apollo.mutate(query)
         val updateUserOnboardingData =
             queryResult?.data?.updateUser
         Timber.d("updateUserOnboardingDataMutation -> ${updateUserOnboardingData?.status}")
@@ -56,7 +57,7 @@ object UserRepository {
 
     suspend fun getUserOnboardingStatus(): String? {
         val query = GetUserOnboardingStatusQuery()
-        val result = Apollo.launchQuery(query)
+        val result = apollo.launchQuery(query)
         val nextStep = result?.data?.getUserOnboardingStatus?.nextStep
         Timber.d("getUserOnboardingStatus -> $nextStep")
         return nextStep
@@ -64,7 +65,7 @@ object UserRepository {
 
     suspend fun updateUserOnboardingStatus(nextStep: String): String? {
         val query = UpdateUserOnboardingStatusMutation(Input.fromNullable(nextStep))
-        val result = Apollo.mutate(query)
+        val result = apollo.mutate(query)
         val status = result?.data?.updateUserOnboardingStatus?.status
         Timber.d("sendUserOnboardingStatus -> $status")
         return status
