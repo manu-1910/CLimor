@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,26 +21,19 @@ import javax.inject.Inject
 
 class FragmentHomeNew : FragmentWithLoading(), Injectable {
 
-    lateinit var model: HomeFeedViewModel
-    lateinit var binding: FragmentHomeNewBinding
-
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val  model: HomeFeedViewModel by viewModels { viewModelFactory }
+
+    lateinit var binding: FragmentHomeNewBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        initViewModel()
         binding = FragmentHomeNewBinding.inflate(inflater, container, false)
         return binding.root
-    }
-
-    private fun initViewModel() {
-        model =
-            ViewModelProvider(this, viewModelFactory)
-                .get(HomeFeedViewModel::class.java)
     }
 
     override fun load() {

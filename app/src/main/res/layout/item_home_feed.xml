@@ -199,8 +199,9 @@
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivAvatarImageListening"
         android:layout_width="52dp"
-        android:layout_height="84dp"
+        android:layout_height="52dp"
         android:src="@color/green400"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="@+id/cpiPodcastListeningProgress"
         app:layout_constraintEnd_toEndOf="@+id/cpiPodcastListeningProgress"
         app:layout_constraintStart_toStartOf="@+id/cpiPodcastListeningProgress"
@@ -219,12 +220,12 @@
     <ImageView
         android:id="@+id/ivPodcastListening"
         android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:layout_marginTop="24dp"
+        android:layout_height="22dp"
+        android:layout_marginTop="20dp"
         android:src="@drawable/ic_podcast_listening"
-        app:layout_constraintEnd_toEndOf="@id/ivAvatarImageListening"
-        app:layout_constraintStart_toStartOf="@id/ivAvatarImageListening"
-        app:layout_constraintTop_toTopOf="@id/ivAvatarImageListening"
+        app:layout_constraintEnd_toEndOf="@id/cpiPodcastListeningProgress"
+        app:layout_constraintStart_toStartOf="@id/cpiPodcastListeningProgress"
+        app:layout_constraintTop_toTopOf="@id/cpiPodcastListeningProgress"
         app:tint="@color/white" />
 
     <TextView
@@ -233,8 +234,8 @@
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="@id/ivAvatarImageListening"
-        app:layout_constraintStart_toStartOf="@id/ivAvatarImageListening"
+        app:layout_constraintEnd_toEndOf="@id/cpiPodcastListeningProgress"
+        app:layout_constraintStart_toStartOf="@id/cpiPodcastListeningProgress"
         app:layout_constraintTop_toBottomOf="@id/ivPodcastListening"
         tools:text="1.4k" />
 

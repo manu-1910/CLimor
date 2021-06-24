@@ -8,7 +8,7 @@ import com.limor.app.FeedItemsQuery
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedRecastedBinding
 import com.limor.app.scenes.main_new.utils.ArgsConverter
-import com.limor.app.util.GlideHelper
+import com.limor.app.util.loadUrlSimple
 
 class ViewHolderRecast(val binding: ItemHomeFeedRecastedBinding) :
     ViewHolderBindable(binding) {
@@ -40,18 +40,15 @@ class ViewHolderRecast(val binding: ItemHomeFeedRecastedBinding) :
         binding.tvPodcastSubtitle.text = item.podcast?.caption ?: ""
 
 
-        GlideHelper.loadImageSimple(
-            binding.ivPodcastAvatar,
+        binding.ivPodcastAvatar.loadUrlSimple(
             item.podcast?.owner?.images?.small_url ?: ""
         )
 
-        GlideHelper.loadImageSimple(
-            binding.ivRecastAvatar,
+        binding.ivRecastAvatar.loadUrlSimple(
             item.recaster?.images?.small_url ?: ""
         )
 
-        GlideHelper.loadImageSimple(
-            binding.ivPodcastBackground,
+        binding.ivPodcastBackground.loadUrlSimple(
             item.podcast?.images?.medium_url ?: ""
         )
 
@@ -60,10 +57,13 @@ class ViewHolderRecast(val binding: ItemHomeFeedRecastedBinding) :
         }
         binding.btnPodcastMore.setOnClickListener {
             val bundle = bundleOf(
-                ArgsConverter.LABEL_DIALOG_REPORT_PODCAST to ArgsConverter.encodeFeedItemAsReportDialogArgs(item)
+                ArgsConverter.LABEL_DIALOG_REPORT_PODCAST to ArgsConverter.encodeFeedItemAsReportDialogArgs(
+                    item
+                )
             )
 
-            it.findNavController().navigate(R.id.action_navigation_home_to_dialog_report_podcast, bundle)
+            it.findNavController()
+                .navigate(R.id.action_navigation_home_to_dialog_report_podcast, bundle)
         }
     }
 
@@ -71,7 +71,7 @@ class ViewHolderRecast(val binding: ItemHomeFeedRecastedBinding) :
         binding.llPodcastTags.removeAllViews()
         val tagView = LayoutInflater.from(context)
             .inflate(R.layout.item_podcast_tag, binding.llPodcastTags, false)
-        (tagView as TextView).text = caption?.tag ?:""
+        (tagView as TextView).text = caption?.tag ?: ""
         binding.llPodcastTags.addView(tagView)
     }
 }

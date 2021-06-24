@@ -33,7 +33,7 @@ class ApolloModule {
     }
 
     @Provides
-    @Named("OkhttpClientForApolloInterceptors")
+    @Named(OKHTTP_INTERCEPTORS_LABEL)
     @Singleton
     fun providesOkhttpClientInterceptorsForApollo(): List<@JvmSuppressWildcards Interceptor> {
         return listOf(AuthInterceptor())
@@ -41,10 +41,14 @@ class ApolloModule {
 
     @Provides
     @Singleton
-    fun provideOkhttpClientForApollo(@Named("OkhttpClientForApolloInterceptors") interceptors: List<@JvmSuppressWildcards Interceptor>)
+    fun provideOkhttpClientForApollo(@Named(OKHTTP_INTERCEPTORS_LABEL) interceptors: List<@JvmSuppressWildcards Interceptor>)
             : OkHttpClient {
         val builder = OkHttpClient.Builder()
         interceptors.forEach { builder.addInterceptor(it) }
         return builder.build()
+    }
+
+    companion object {
+        const val OKHTTP_INTERCEPTORS_LABEL = "OkhttpClientForApolloInterceptors"
     }
 }
