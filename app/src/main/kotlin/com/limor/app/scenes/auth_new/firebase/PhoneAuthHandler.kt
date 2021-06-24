@@ -12,19 +12,17 @@ import com.google.firebase.auth.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.lang.ref.WeakReference
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-interface ContextProviderHandler {
-    fun activity(): Activity
-}
-
-object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+class PhoneAuthHandler @Inject constructor() :
+    PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
     private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
     private var storedVerificationId: String? = null
     private var phoneAuthCredential: PhoneAuthCredential? = null
     private var auth: FirebaseAuth = FirebaseAuth.getInstance()
     private lateinit var scope: CoroutineScope
-    private lateinit var contextProviderHandler: ContextProviderHandler
     private var shouldSendCode = true
 
     private val _smsCodeValidationErrorMessage =
@@ -37,13 +35,14 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     val smsCodeValidationPassed: LiveData<Boolean>
         get() = _smsCodeValidationPassed
 
-    fun init(scope: CoroutineScope, contextProviderHandler: ContextProviderHandler) {
+    fun init(activityReference: WeakReference<Activity>, scope: CoroutineScope) {
+        activityRef = activityReference
         this.scope = scope
-        this.contextProviderHandler = contextProviderHandler
     }
 
     fun sendCodeToPhone(phone: String, resend: Boolean = false) {
-        if(resend)
+        if (activity == null) return
+        if (resend)
             shouldSendCode = true
 
         if (!(shouldSendCode)) return
@@ -51,7 +50,7 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
         val optionsBuilder = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber(phone)
             .setTimeout(60L, TimeUnit.SECONDS)
-            .setActivity(contextProviderHandler.activity())
+            .setActivity(activity!!)
             .setCallbacks(this)
         if (resend && resendToken != null) {
             optionsBuilder.setForceResendingToken(resendToken!!)
@@ -62,7 +61,7 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
 
     override fun onVerificationCompleted(credential: PhoneAuthCredential) {
         Timber.d("onVerificationCompleted:$credential")
-        Toast.makeText(contextProviderHandler.activity(), "Auto verification", Toast.LENGTH_LONG)
+        Toast.makeText(activity, "Auto verification", Toast.LENGTH_LONG)
             .show()
         signInWithPhoneAuthCredential(credential)
     }
@@ -86,7 +85,7 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
         // now need to ask the user to enter the code and then construct a credential
         // by combining the code with a verification ID.
         Timber.d("onCodeSent: $verificationId")
-        Toast.makeText(contextProviderHandler.activity(), "Code has been sent", Toast.LENGTH_LONG)
+        Toast.makeText(activity, "Code has been sent", Toast.LENGTH_LONG)
             .show()
         // Save verification ID and resending token so we can use them later
         storedVerificationId = verificationId
@@ -115,10 +114,11 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        if (activity == null) return
         shouldSendCode = true
         phoneAuthCredential = credential
         auth.signInWithCredential(credential)
-            .addOnCompleteListener(contextProviderHandler.activity()) { task ->
+            .addOnCompleteListener(activity!!) { task ->
                 val successful = task.isSuccessful
                 if (successful) {
                     // Sign in success, update UI with the signed-in user's information
@@ -144,4 +144,13 @@ object PhoneAuthHandler : PhoneAuthProvider.OnVerificationStateChangedCallbacks(
     fun clearError() {
         _smsCodeValidationErrorMessage.postValue("")
     }
+
+    private lateinit var activityRef: WeakReference<Activity>
+    private val activity
+        get() = try {
+            activityRef.get()!!
+        } catch (e: Exception) {
+            Timber.e(e)
+            null
+        }
 }

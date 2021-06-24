@@ -55,7 +55,7 @@ class ViewHolderRecast(val binding: ItemHomeFeedRecastedBinding) :
             item.podcast?.images?.medium_url ?: ""
         )
 
-        item.podcast?.tags?.let {
+        item.podcast?.tags?.caption?.forEach {
             addTags(it)
         }
         binding.btnPodcastMore.setOnClickListener {
@@ -67,11 +67,11 @@ class ViewHolderRecast(val binding: ItemHomeFeedRecastedBinding) :
         }
     }
 
-    private fun addTags(tags: FeedItemsQuery.Tags) {
+    private fun addTags(caption: FeedItemsQuery.Caption?) {
         binding.llPodcastTags.removeAllViews()
         val tagView = LayoutInflater.from(context)
             .inflate(R.layout.item_podcast_tag, binding.llPodcastTags, false)
-        (tagView as TextView).text = tags.id?.toString()
+        (tagView as TextView).text = caption?.tag ?:""
         binding.llPodcastTags.addView(tagView)
     }
 }

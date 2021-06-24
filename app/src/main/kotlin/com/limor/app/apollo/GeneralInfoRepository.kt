@@ -2,12 +2,13 @@ package com.limor.app.apollo
 
 import com.limor.app.*
 import timber.log.Timber
+import javax.inject.Inject
 
-object GeneralInfoRepository {
+class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
 
     suspend fun fetchCategories(): List<CategoriesQuery.Category>? {
         val query = CategoriesQuery()
-        val result = Apollo.launchQuery(query)
+        val result = apollo.launchQuery(query)
         var categories: List<CategoriesQuery.Category?>? =
             result?.data?.categories ?: return null
         categories = categories!!.filterNotNull()
@@ -17,7 +18,7 @@ object GeneralInfoRepository {
 
     suspend fun fetchLanguages(): List<LanguagesQuery.Language>? {
         val query = LanguagesQuery()
-        val result = Apollo.launchQuery(query)
+        val result = apollo.launchQuery(query)
         var languages: List<LanguagesQuery.Language?>? =
             result?.data?.languages ?: return null
         languages = languages!!.filterNotNull()
@@ -27,7 +28,7 @@ object GeneralInfoRepository {
 
     suspend fun fetchGenders(): List<GendersQuery.Gender>? {
         val query = GendersQuery()
-        val result = Apollo.launchQuery(query)
+        val result = apollo.launchQuery(query)
         var genders: List<GendersQuery.Gender?>? =
             result?.data?.genders ?: return null
         genders = genders!!.filterNotNull()
@@ -37,7 +38,7 @@ object GeneralInfoRepository {
 
     suspend fun fetchHomeFeed(): List<FeedItemsQuery.FeedItem>? {
         val query = FeedItemsQuery()
-        val result = Apollo.launchQuery(query)
+        val result = apollo.launchQuery(query)
         var feedItems: List<FeedItemsQuery.FeedItem?> =
             result?.data?.feedItems ?: return null
         feedItems = feedItems.filterNotNull()

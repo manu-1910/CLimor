@@ -7,8 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.limor.app.FeedItemsQuery
 import com.limor.app.apollo.GeneralInfoRepository
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeFeedViewModel : ViewModel() {
+class HomeFeedViewModel @Inject constructor(
+    val generalInfoRepository: GeneralInfoRepository
+) : ViewModel() {
 
     private var _homeFeedLiveData =
         MutableLiveData<List<FeedItemsQuery.FeedItem>?>()
@@ -23,9 +26,9 @@ class HomeFeedViewModel : ViewModel() {
     fun loadHomeFeed() {
         viewModelScope.launch {
             try {
-                val feedItems = GeneralInfoRepository.fetchHomeFeed()
+                val feedItems = generalInfoRepository.fetchHomeFeed()
                 _homeFeedLiveData.postValue(feedItems)
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 _homeFeedErrorLiveData.postValue(e.localizedMessage)
             }
 

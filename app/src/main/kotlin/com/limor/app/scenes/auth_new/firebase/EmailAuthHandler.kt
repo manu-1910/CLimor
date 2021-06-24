@@ -9,7 +9,6 @@ import com.google.firebase.auth.ActionCodeSettings
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.limor.app.BuildConfig
-import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler.reAuthWithPhoneCredential
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.utils.MAIN
 import kotlinx.coroutines.CoroutineScope
@@ -17,9 +16,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import javax.inject.Inject
 
 
-object EmailAuthHandler {
+class EmailAuthHandler @Inject constructor(val phoneAuthHandler: PhoneAuthHandler) {
 
     private val _emailIsInUseLiveData = MutableLiveData<Boolean?>().apply { value = null }
     val emailIsInUseLiveData: LiveData<Boolean?>
@@ -101,7 +101,7 @@ object EmailAuthHandler {
         } catch (e: FirebaseAuthRecentLoginRequiredException) {
             Timber.e(e)
             try {
-                reAuthWithPhoneCredential()
+               phoneAuthHandler. reAuthWithPhoneCredential()
             } catch (e: Exception) {
                 Timber.e(e)
                 _emailAuthErrorLiveData.postValue(e.cause?.message ?: e.message)
@@ -113,8 +113,6 @@ object EmailAuthHandler {
             MAIN { Handler().postDelayed({ _emailAuthErrorLiveData.postValue(null) }, 500) }
         }
     }
-
-    const val dynamicLink = "https://limorapp.page.link/open"
 
     fun sendFirebaseDynamicLinkToEmailScoped(context: Context, email: String, scope: CoroutineScope) {
         scope.launch {
@@ -130,7 +128,7 @@ object EmailAuthHandler {
             ActionCodeSettings.newBuilder()
                 // URL you want to redirect back to. The domain (www.example.com) for this
                 // URL must be whitelisted in the Firebase Console.
-                .setUrl(dynamicLink)
+                .setUrl(Companion.dynamicLink)
                 .setHandleCodeInApp(true)// This must be true
                 .setAndroidPackageName(
                     BuildConfig.APPLICATION_ID,
@@ -187,5 +185,9 @@ object EmailAuthHandler {
             }
         }
 
+    }
+
+    companion object {
+        const val dynamicLink = "https://limorapp.page.link/open"
     }
 }

@@ -7,8 +7,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 import android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
@@ -17,20 +17,34 @@ import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.firebase.FacebookAuthHandler
 import com.limor.app.scenes.auth_new.navigation.AuthNavigator
 import com.limor.app.scenes.auth_new.util.PrefsHandler
+import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_auth_new.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 class AuthActivityNew : AppCompatActivity() {
 
-    private val model: AuthViewModelNew by viewModels()
+    lateinit var model: AuthViewModelNew
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AndroidInjection .inject(this)
         setContentView(R.layout.activity_auth_new)
         clActivityAuthNew.systemUiVisibility =
             SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         checkNavigationBreakPoint()
+        initViewModel()
+        Timber.d("Sign in case  ${model.signInCase}")
+    }
+
+    private fun initViewModel() {
+        model =
+            ViewModelProvider(this, viewModelFactory)
+                .get(AuthViewModelNew::class.java)
     }
 
     private fun checkNavigationBreakPoint() {

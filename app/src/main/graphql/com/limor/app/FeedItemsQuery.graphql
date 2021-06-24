@@ -52,7 +52,8 @@ query FeedItemsQuery {
             number_of_likes
             number_of_recasts
             number_of_comments
-            audio{
+            number_of_shares
+            audio {
                 audio_url
                 total_length
                 total_samples
@@ -62,9 +63,24 @@ query FeedItemsQuery {
             }
             active
             sharing_url
-            tags{id}
-            mentions{id}
-            links{id}
+            tags {
+                caption {
+                    tag
+                }
+            }
+            mentions {
+                content {
+                    username
+                    user_id
+                }
+                caption {
+                    username
+                    user_id
+                }
+            }
+            links {
+                id
+            }
         }
         recaster {
             id

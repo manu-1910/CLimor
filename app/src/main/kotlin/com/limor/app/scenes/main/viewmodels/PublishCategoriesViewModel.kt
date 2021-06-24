@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.scenes.auth_new.data.CategoryWrapper
 import com.limor.app.scenes.auth_new.model.CategoriesProvider
+import javax.inject.Inject
 
-class PublishCategoriesViewModel : ViewModel() {
+class PublishCategoriesViewModel @Inject constructor(val categoriesProvider: CategoriesProvider) :
+    ViewModel() {
 
-    private val categoriesProvider: CategoriesProvider = CategoriesProvider(viewModelScope)
-
-    fun downloadCategories() = categoriesProvider.downloadCategories()
+    fun downloadCategories() = categoriesProvider.downloadCategories(viewModelScope)
 
     fun updateCategoriesSelection() =
         categoriesProvider.updateCategoriesSelection()

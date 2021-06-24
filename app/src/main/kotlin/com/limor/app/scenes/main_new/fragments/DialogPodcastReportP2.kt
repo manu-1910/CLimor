@@ -12,7 +12,7 @@ import com.limor.app.scenes.main_new.utils.ArgsConverter
 import com.limor.app.scenes.main_new.utils.ReportDialogArgs
 import timber.log.Timber
 
-class DialogPodcastMoreP2 : DialogFragment() {
+class DialogPodcastReportP2 : DialogFragment() {
 
     lateinit var binding : DialogReportCastP2Binding
     lateinit var args: ReportDialogArgs

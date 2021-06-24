@@ -23,7 +23,7 @@
 
     <dialog
         android:id="@+id/dialog_report_podcast"
-        android:name="com.limor.app.scenes.main_new.fragments.DialogPodcastMore"
+        android:name="com.limor.app.scenes.main_new.fragments.DialogPodcastReport"
         android:label="Dialog Report Podcast"
         tools:layout="@layout/dialog_report_cast" >
         <action
@@ -37,7 +37,7 @@
 
     <dialog
         android:id="@+id/dialog_report_podcast_p2"
-        android:name="com.limor.app.scenes.main_new.fragments.DialogPodcastMoreP2"
+        android:name="com.limor.app.scenes.main_new.fragments.DialogPodcastReportP2"
         android:label="Dialog Report Podcast P2"
         tools:layout="@layout/dialog_report_cast_p2" />
     <!--    <activity-->

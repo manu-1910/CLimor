@@ -18,7 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class DialogPodcastMore : DialogFragment() {
+class DialogPodcastReport : DialogFragment() {
 
     lateinit var binding: DialogReportCastBinding
     lateinit var args: ReportDialogArgs

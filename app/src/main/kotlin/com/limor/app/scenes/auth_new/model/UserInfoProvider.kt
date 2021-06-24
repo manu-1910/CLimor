@@ -16,9 +16,13 @@ import kotlinx.coroutines.*
 import timber.log.Timber
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import javax.inject.Inject
 
 
-class UserInfoProvider(private val scope: CoroutineScope) {
+class UserInfoProvider @Inject constructor(
+    val userRepository: UserRepository,
+    val phoneAuthHandler: PhoneAuthHandler
+) {
 
 
     private val _breakPointLiveData = MutableLiveData<String?>().apply { value = null }
@@ -45,10 +49,10 @@ class UserInfoProvider(private val scope: CoroutineScope) {
     val userInfoProviderErrorLiveData: LiveData<String?>
         get() = _userInfoProviderErrorLiveData
 
-    fun getUserOnboardingStatus() {
+    fun getUserOnboardingStatus(scope: CoroutineScope) {
         scope.launch(Dispatchers.Default) {
             try {
-                val response = UserRepository.getUserOnboardingStatus() ?: ""
+                val response = userRepository.getUserOnboardingStatus() ?: ""
                 val breakpoint = getBreakpointAccordingToEmailPresence(response)
                 _breakPointLiveData.postValue(breakpoint)
                 delay(500)
@@ -69,13 +73,13 @@ class UserInfoProvider(private val scope: CoroutineScope) {
 
     }
 
-    fun createUser(dob: Long) {
+    fun createUser(scope: CoroutineScope, dob: Long) {
         if (dob == 0L) return
         scope.launch {
             try {
                 val formattedDate = parseForUserCreation(dob)
                 Timber.d("Formatted DOB $formattedDate")
-                val response = UserRepository.createUser(formattedDate) ?: ""
+                val response = userRepository.createUser(formattedDate) ?: ""
                 _createUserLiveData.postValue(response)
                 delay(500)
                 _createUserLiveData.postValue(null)
@@ -87,10 +91,10 @@ class UserInfoProvider(private val scope: CoroutineScope) {
         }
     }
 
-    fun updateUserName(userName: String) {
+    fun updateUserName(scope: CoroutineScope, userName: String) {
         scope.launch(Dispatchers.Default) {
             try {
-                val response = UserRepository.updateUserName(userName)
+                val response = userRepository.updateUserName(userName)
                 _updateUserNameLiveData.postValue(response)
                 delay(500)
                 _updateUserNameLiveData.postValue(null)
@@ -106,7 +110,7 @@ class UserInfoProvider(private val scope: CoroutineScope) {
     val userNameAttachedToUserLiveData: LiveData<Boolean?>
         get() = _userNameAttachedToUserLiveData
 
-    fun updateFirebaseUserName(userName: String) {
+    fun updateFirebaseUserName(scope: CoroutineScope, userName: String) {
         scope.launch(Dispatchers.Default) {
             withContext(Dispatchers.IO) {
                 updateFirebaseUserNameScoped(userName)
@@ -129,7 +133,7 @@ class UserInfoProvider(private val scope: CoroutineScope) {
         } catch (e: FirebaseAuthRecentLoginRequiredException) {
             Timber.e(e)
             try {
-                PhoneAuthHandler.reAuthWithPhoneCredential()
+                phoneAuthHandler.reAuthWithPhoneCredential()
             } catch (e: Exception) {
                 Timber.e(e)
                 _userInfoProviderErrorLiveData.postValue(e.cause?.message ?: e.message)
@@ -140,10 +144,15 @@ class UserInfoProvider(private val scope: CoroutineScope) {
         }
     }
 
-    fun updatePreferredInfo(gender: Int, categories: List<Int?>, languages: List<String?>) {
+    fun updatePreferredInfo(
+        scope: CoroutineScope,
+        gender: Int,
+        categories: List<Int?>,
+        languages: List<String?>
+    ) {
         scope.launch(Dispatchers.Default) {
             try {
-                val result = UserRepository.updateUserOnboardingData(gender, categories, languages)
+                val result = userRepository.updateUserOnboardingData(gender, categories, languages)
                 _updatePreferredInfoLiveData.postValue(result)
                 delay(500)
                 _updatePreferredInfoLiveData.postValue(null)
@@ -155,10 +164,10 @@ class UserInfoProvider(private val scope: CoroutineScope) {
         }
     }
 
-    fun updateUserOnboardingStatus(nextStep: String) {
+    fun updateUserOnboardingStatus(scope: CoroutineScope, nextStep: String) {
         scope.launch(Dispatchers.Default) {
             try {
-                val result = UserRepository.updateUserOnboardingStatus(nextStep)
+                val result = userRepository.updateUserOnboardingStatus(nextStep)
                 _updateOnboardingStatusLiveData.postValue(result)
                 delay(400)
                 _updateOnboardingStatusLiveData.postValue(null)

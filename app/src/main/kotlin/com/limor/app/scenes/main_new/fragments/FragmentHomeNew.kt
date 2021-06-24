@@ -4,30 +4,42 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.limor.app.FeedItemsQuery
 import com.limor.app.R
 import com.limor.app.databinding.FragmentHomeNewBinding
+import com.limor.app.di.Injectable
 import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.main_new.adapters.HomeFeedAdapter
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import kotlinx.android.synthetic.main.fragment_home_new.*
+import javax.inject.Inject
 
-class FragmentHomeNew : FragmentWithLoading() {
+class FragmentHomeNew : FragmentWithLoading(), Injectable {
 
-    val model: HomeFeedViewModel by viewModels()
+    lateinit var model: HomeFeedViewModel
     lateinit var binding: FragmentHomeNewBinding
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        initViewModel()
         binding = FragmentHomeNewBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    private fun initViewModel() {
+        model =
+            ViewModelProvider(this, viewModelFactory)
+                .get(HomeFeedViewModel::class.java)
     }
 
     override fun load() {
@@ -40,7 +52,7 @@ class FragmentHomeNew : FragmentWithLoading() {
     override fun subscribeToViewModel() {
         super.subscribeToViewModel()
         model.homeFeedLiveData.observe(viewLifecycleOwner, {
-            it?.let{
+            it?.let {
                 switchCommonVisibility(isLoading = false)
                 setDataToRecyclerView(it)
             }
@@ -49,9 +61,9 @@ class FragmentHomeNew : FragmentWithLoading() {
 
     private fun setDataToRecyclerView(list: List<FeedItemsQuery.FeedItem>) {
         val adapter = binding.rvHome.adapter
-        if(adapter != null) {
+        if (adapter != null) {
             (adapter as HomeFeedAdapter).addData(list)
-        }else {
+        } else {
             setUpRecyclerView(list)
         }
     }

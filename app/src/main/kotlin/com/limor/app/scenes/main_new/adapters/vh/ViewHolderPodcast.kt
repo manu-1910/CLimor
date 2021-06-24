@@ -26,7 +26,7 @@ class ViewHolderPodcast(val binding: ItemHomeFeedBinding) : ViewHolderBindable(b
         binding.tvPodcastLikes.text = item.podcast?.number_of_likes?.toString() ?: ""
         binding.tvPodcastRecast.text = item.podcast?.number_of_recasts?.toString() ?: ""
         binding.tvPodcastComments.text = item.podcast?.number_of_comments?.toString() ?: ""
-        binding.tvPodcastReply.text = item.podcast?.number_of_recasts?.toString() ?: ""
+        binding.tvPodcastReply.text = item.podcast?.number_of_shares?.toString() ?: ""
         binding.tvPodcastNumberOfListeners.text = item.podcast?.number_of_listens?.toString() ?: ""
 
         binding.tvPodcastLength.text = item.podcast?.audio?.duration?.toString() ?: ""
@@ -49,7 +49,7 @@ class ViewHolderPodcast(val binding: ItemHomeFeedBinding) : ViewHolderBindable(b
             item.podcast?.images?.medium_url ?: ""
         )
 
-        item.podcast?.tags?.let {
+        item.podcast?.tags?.caption?.forEach {
             addTags(it)
         }
         binding.btnPodcastMore.setOnClickListener {
@@ -61,11 +61,11 @@ class ViewHolderPodcast(val binding: ItemHomeFeedBinding) : ViewHolderBindable(b
         }
     }
 
-    private fun addTags(tags: FeedItemsQuery.Tags) {
+    private fun addTags(caption: FeedItemsQuery.Caption?) {
         binding.llPodcastTags.removeAllViews()
         val tagView = LayoutInflater.from(context)
             .inflate(R.layout.item_podcast_tag, binding.llPodcastTags, false)
-        (tagView as TextView).text = tags.id?.toString()
+        (tagView as TextView).text = caption?.tag ?:""
         binding.llPodcastTags.addView(tagView)
     }
 }
