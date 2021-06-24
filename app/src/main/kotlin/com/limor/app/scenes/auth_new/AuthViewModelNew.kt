@@ -59,7 +59,7 @@ class AuthViewModelNew @Inject constructor(
     }
 
     fun submitPhoneNumber() {
-        phoneAuthHandler.sendCodeToPhone(formattedPhone)
+        phoneAuthHandler.sendCodeToPhone(formattedPhone, isSignInCase = signInCase)
     }
 
     private val _resendButtonEnableLiveData = MutableLiveData<Boolean>().apply { value = true }
@@ -84,7 +84,7 @@ class AuthViewModelNew @Inject constructor(
             override fun onFinish() {
                 _resendButtonEnableLiveData.postValue(true)
                 _resendButtonCountDownLiveData.postValue(null)
-                phoneAuthHandler.sendCodeToPhone(formattedPhone, resend = true)
+                phoneAuthHandler.sendCodeToPhone(formattedPhone, resend = true, signInCase)
             }
         }.start()
     }
@@ -159,7 +159,8 @@ class AuthViewModelNew @Inject constructor(
         val value = codes.all { it?.isNotEmpty() ?: false }
         _smsCodeIsFullLiveData.postValue(value)
     }
-    fun clearSmsCodeError(){
+
+    fun clearSmsCodeError() {
         phoneAuthHandler.clearError()
     }
 
@@ -232,7 +233,7 @@ class AuthViewModelNew @Inject constructor(
         get() = Transformations.distinctUntilChanged(_currentUsernameState)
 
     fun submitUsername(username: String?) {
-        userInfoProvider.updateFirebaseUserName(username!!)
+        userInfoProvider.updateFirebaseUserName(viewModelScope, username!!)
     }
 
     val userNameAttachedToUserLiveData: LiveData<Boolean?>
@@ -242,7 +243,7 @@ class AuthViewModelNew @Inject constructor(
     /* Gender */
 
 
-    fun downloadGenders() = gendersProvider.downloadGenders()
+    fun downloadGenders() = gendersProvider.downloadGenders(viewModelScope)
     val currentGenderId: Int
         get() = gendersProvider.selectedGenderId
     val selectedGenderIndex: Int
@@ -264,7 +265,7 @@ class AuthViewModelNew @Inject constructor(
 
     /* Categories */
 
-    fun downloadCategories() = categoriesProvider.downloadCategories()
+    fun downloadCategories() = categoriesProvider.downloadCategories(viewModelScope)
 
     fun updateCategoriesSelection() =
         categoriesProvider.updateCategoriesSelection()
@@ -281,7 +282,7 @@ class AuthViewModelNew @Inject constructor(
     /* Languages */
 
 
-    fun downloadLanguages() = languagesProvider.downloadLanguages()
+    fun downloadLanguages() = languagesProvider.downloadLanguages(viewModelScope)
 
     val languagesLiveData: LiveData<List<LanguageWrapper>>
         get() = Transformations.distinctUntilChanged(languagesProvider.languagesLiveData)
@@ -298,7 +299,7 @@ class AuthViewModelNew @Inject constructor(
 
     /* Suggested users */
 
-    fun downloadSuggested() = suggestedProvider.downloadSuggested()
+    fun downloadSuggested() = suggestedProvider.downloadSuggested(viewModelScope)
 
     fun followSuggestedUser(suggestedUser: SuggestedUser) =
         suggestedProvider.followUser(suggestedUser)
@@ -316,7 +317,7 @@ class AuthViewModelNew @Inject constructor(
         get() = suggestedProvider.suggestedLiveDataError
 
     fun sendSuggestedPeopleSelectionResult() {
-        suggestedProvider.sendSuggestedPeopleSelectionResult()
+        suggestedProvider.sendSuggestedPeopleSelectionResult(viewModelScope)
     }
 
     /*GOOGLE AUTH*/
@@ -433,20 +434,25 @@ class AuthViewModelNew @Inject constructor(
         }
     }
 
-    fun getUserOnboardingStatus() = userInfoProvider.getUserOnboardingStatus()
+    fun getUserOnboardingStatus() = userInfoProvider.getUserOnboardingStatus(viewModelScope)
 
-    fun createUser() = userInfoProvider.createUser(_datePicked.value?.mills ?: 0)
+    fun createUser() = userInfoProvider.createUser(viewModelScope, _datePicked.value?.mills ?: 0)
 
-    fun updateUserName() = userInfoProvider.updateUserName(currentUsername)
+    fun updateUserName() = userInfoProvider.updateUserName(viewModelScope, currentUsername)
 
     fun updatePreferredInfo() {
         val categoriesIds = categoriesProvider.getActiveCategoriesIds()
         val languages = languagesProvider.getActiveLanguages();
-        userInfoProvider.updatePreferredInfo(currentGenderId, categoriesIds, languages)
+        userInfoProvider.updatePreferredInfo(
+            viewModelScope,
+            currentGenderId,
+            categoriesIds,
+            languages
+        )
     }
 
     fun updateUserOnboardingStatus(nextStep: String) =
-        userInfoProvider.updateUserOnboardingStatus(nextStep)
+        userInfoProvider.updateUserOnboardingStatus(viewModelScope, nextStep)
 
     override fun onCleared() {
         super.onCleared()

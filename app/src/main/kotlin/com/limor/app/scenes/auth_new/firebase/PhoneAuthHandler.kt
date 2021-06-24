@@ -165,8 +165,7 @@ class PhoneAuthHandler @Inject constructor() :
 
     private fun onPhoneAuthSuccessNegative() {
         //This is possible if user Signing in, but did not create Limor account before (doesn't have "luid" in JWT)
-        val message = contextProviderHandler.activity()
-            .getString(R.string.no_user_found_offer_to_sign_up)
+        val message = activity?.getString(R.string.no_user_found_offer_to_sign_up) ?: ""
         _smsCodeValidationErrorMessage.postValue(message)
     }
 
