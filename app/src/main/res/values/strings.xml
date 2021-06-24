@@ -593,4 +593,5 @@
     <string name="abusive_content">Abusive Content</string>
     <string name="active">Active</string>
     <string name="edit_cast">Edit Cast</string>
+    <string name="code_hasnt_been_sent">Code has not been sent</string>
 </resources>

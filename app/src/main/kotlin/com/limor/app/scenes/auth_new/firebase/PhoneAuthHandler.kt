@@ -103,7 +103,11 @@ class PhoneAuthHandler @Inject constructor() :
     fun enterCodeAndSignIn(code: String) {
         scope.launch {
             _smsCodeValidationErrorMessage.postValue("")
-            if (storedVerificationId == null) return@launch
+            if (storedVerificationId == null) {
+                val message = activity?.getString(R.string.code_hasnt_been_sent)
+                _smsCodeValidationErrorMessage.postValue(message ?: "")
+                return@launch
+            }
             val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, code)
             signInWithPhoneAuthCredential(credential)
         }
