@@ -2,15 +2,19 @@ package com.limor.app.scenes.auth_new.model
 
 import android.content.res.AssetManager
 import com.limor.app.scenes.auth_new.data.Country
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import timber.log.Timber
 import java.io.IOException
 import java.nio.charset.Charset
 
 class CountriesListProvider {
-    fun provideCountries(assets: AssetManager): List<Country> {
-        val loadedJson = loadJSONFromAsset(assets)
-        return parseCountries(loadedJson!!)
+    suspend fun provideCountries(assets: AssetManager): List<Country> {
+        return withContext(Dispatchers.Default) {
+            val loadedJson = loadJSONFromAsset(assets)
+            parseCountries(loadedJson!!)
+        }
     }
 
     private fun loadJSONFromAsset(assets: AssetManager): String? {

@@ -16,7 +16,6 @@ import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
 import com.limor.app.scenes.auth_new.model.*
 import com.limor.app.scenes.auth_new.model.UserInfoProvider.Companion.userNameRegExCheck
 import com.limor.app.scenes.auth_new.util.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -105,7 +104,7 @@ class AuthViewModelNew @Inject constructor(
 
     fun loadCountriesList(assets: AssetManager) {
         if (_countries.value?.size ?: 0 > 0) return
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch {
             val countries = CountriesListProvider().provideCountries(assets)
             Timber.d("Countries loaded -> ${countries.size}")
             _countries.postValue(countries)
@@ -156,16 +155,17 @@ class AuthViewModelNew @Inject constructor(
         }
 
     fun setSmsCodeForCheck(codes: List<String?>) {
-        phoneAuthHandler.clearError()
+        clearSmsCodeError()
         val value = codes.all { it?.isNotEmpty() ?: false }
         _smsCodeIsFullLiveData.postValue(value)
+    }
+    fun clearSmsCodeError(){
+        phoneAuthHandler.clearError()
     }
 
     fun submitSmsCode(codes: List<String?>) {
         val value = codes.joinToString(separator = "")
         phoneAuthHandler.enterCodeAndSignIn(value)
-//        _smsCodeValidatedLiveData.postValue(true)
-//        Handler().postDelayed({ _smsCodeValidatedLiveData.postValue(false) }, 500)
     }
 
     /* Email validation*/
@@ -232,7 +232,7 @@ class AuthViewModelNew @Inject constructor(
         get() = Transformations.distinctUntilChanged(_currentUsernameState)
 
     fun submitUsername(username: String?) {
-        userInfoProvider.updateFirebaseUserName(viewModelScope, username!!)
+        userInfoProvider.updateFirebaseUserName(username!!)
     }
 
     val userNameAttachedToUserLiveData: LiveData<Boolean?>
@@ -242,7 +242,7 @@ class AuthViewModelNew @Inject constructor(
     /* Gender */
 
 
-    fun downloadGenders() = gendersProvider.downloadGenders(viewModelScope)
+    fun downloadGenders() = gendersProvider.downloadGenders()
     val currentGenderId: Int
         get() = gendersProvider.selectedGenderId
     val selectedGenderIndex: Int
@@ -264,7 +264,7 @@ class AuthViewModelNew @Inject constructor(
 
     /* Categories */
 
-    fun downloadCategories() = categoriesProvider.downloadCategories(viewModelScope)
+    fun downloadCategories() = categoriesProvider.downloadCategories()
 
     fun updateCategoriesSelection() =
         categoriesProvider.updateCategoriesSelection()
@@ -281,7 +281,7 @@ class AuthViewModelNew @Inject constructor(
     /* Languages */
 
 
-    fun downloadLanguages() = languagesProvider.downloadLanguages(viewModelScope)
+    fun downloadLanguages() = languagesProvider.downloadLanguages()
 
     val languagesLiveData: LiveData<List<LanguageWrapper>>
         get() = Transformations.distinctUntilChanged(languagesProvider.languagesLiveData)
@@ -298,7 +298,7 @@ class AuthViewModelNew @Inject constructor(
 
     /* Suggested users */
 
-    fun downloadSuggested() = suggestedProvider.downloadSuggested(viewModelScope)
+    fun downloadSuggested() = suggestedProvider.downloadSuggested()
 
     fun followSuggestedUser(suggestedUser: SuggestedUser) =
         suggestedProvider.followUser(suggestedUser)
@@ -316,7 +316,7 @@ class AuthViewModelNew @Inject constructor(
         get() = suggestedProvider.suggestedLiveDataError
 
     fun sendSuggestedPeopleSelectionResult() {
-        suggestedProvider.sendSuggestedPeopleSelectionResult(viewModelScope)
+        suggestedProvider.sendSuggestedPeopleSelectionResult()
     }
 
     /*GOOGLE AUTH*/
@@ -402,7 +402,7 @@ class AuthViewModelNew @Inject constructor(
     val navigationBreakPointLiveData: LiveData<String?>
         get() = userInfoProvider.breakPointLiveData
 
-    val userInfoProviderErrorLiveData: LiveData<String?>
+    val userInfoProviderErrorLiveData: LiveData<Any?>
         get() = userInfoProvider.userInfoProviderErrorLiveData
 
     val updatePreferredInfoLiveData: LiveData<String?>
@@ -419,8 +419,8 @@ class AuthViewModelNew @Inject constructor(
 
     fun checkJwtForLuidAndProceed() {
         viewModelScope.launch {
-            val result = JwtChecker.isFirebaseJwtContainsLuid()
-            if (result)
+            val userHasBeenCreatedBefore = JwtChecker.isFirebaseJwtContainsLuid()
+            if (userHasBeenCreatedBefore)
                 getUserOnboardingStatus()
             else
                 createUser()
@@ -433,25 +433,20 @@ class AuthViewModelNew @Inject constructor(
         }
     }
 
-    fun getUserOnboardingStatus() = userInfoProvider.getUserOnboardingStatus(viewModelScope)
+    fun getUserOnboardingStatus() = userInfoProvider.getUserOnboardingStatus()
 
-    fun createUser() = userInfoProvider.createUser(viewModelScope, _datePicked.value?.mills ?: 0)
+    fun createUser() = userInfoProvider.createUser(_datePicked.value?.mills ?: 0)
 
-    fun updateUserName() = userInfoProvider.updateUserName(viewModelScope, currentUsername)
+    fun updateUserName() = userInfoProvider.updateUserName(currentUsername)
 
     fun updatePreferredInfo() {
         val categoriesIds = categoriesProvider.getActiveCategoriesIds()
         val languages = languagesProvider.getActiveLanguages();
-        userInfoProvider.updatePreferredInfo(
-            viewModelScope,
-            currentGenderId,
-            categoriesIds,
-            languages
-        )
+        userInfoProvider.updatePreferredInfo(currentGenderId, categoriesIds, languages)
     }
 
     fun updateUserOnboardingStatus(nextStep: String) =
-        userInfoProvider.updateUserOnboardingStatus(viewModelScope, nextStep)
+        userInfoProvider.updateUserOnboardingStatus(nextStep)
 
     override fun onCleared() {
         super.onCleared()
