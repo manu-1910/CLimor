@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -13,6 +14,7 @@ import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentDiscoverAllCategoriesBinding
 import com.limor.app.extensions.makeGone
+import timber.log.Timber
 import javax.inject.Inject
 
 class DiscoverAllCategoriesFragment : BaseFragment() {
@@ -47,21 +49,22 @@ class DiscoverAllCategoriesFragment : BaseFragment() {
         viewModel.categories.observe(viewLifecycleOwner) { categories ->
             binding.categoriesGroup.removeAllViews()
 
-            categories.map { category ->
-                (layoutInflater.inflate(
+            categories.forEach { category ->
+                AsyncLayoutInflater(requireContext()).inflate(
                     R.layout.item_chip_category,
                     null
-                ) as Chip).apply {
-                    text = category.name
-                    setOnClickListener {
-                        it.findNavController().navigate(
-                            R.id.action_discoverAllCategoriesFragment_to_discoverCategoryFragment,
-                            bundleOf(DiscoverCategoryFragment.CATEGORY_KEY to category.name)
-                        )
+                ) { view, _, _ ->
+                    (view as Chip).apply {
+                        text = category.name
+                        setOnClickListener {
+                            it.findNavController().navigate(
+                                R.id.action_discoverAllCategoriesFragment_to_discoverCategoryFragment,
+                                bundleOf(DiscoverCategoryFragment.CATEGORY_KEY to category)
+                            )
+                        }
                     }
+                    binding.categoriesGroup.addView(view)
                 }
-            }.forEach {
-                binding.categoriesGroup.addView(it)
             }
         }
     }
