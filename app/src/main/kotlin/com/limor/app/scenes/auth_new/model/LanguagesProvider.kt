@@ -9,8 +9,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LanguagesProvider(private val scope: CoroutineScope) {
+class LanguagesProvider @Inject constructor(val generalInfoRepository: GeneralInfoRepository) {
 
     private var languages: List<LanguageWrapper> = mutableListOf()
 
@@ -23,16 +24,16 @@ class LanguagesProvider(private val scope: CoroutineScope) {
     val languagesSelectionDone =
         MutableLiveData<Boolean>().apply { value = false }
 
-    fun downloadLanguages() {
+    fun downloadLanguages(scope: CoroutineScope) {
         if (languages.isEmpty())
-            loadLanguagesRepo()
+            loadLanguagesRepo(scope)
     }
 
-    private fun loadLanguagesRepo() {
-        scope.launch (Dispatchers.Default) {
+    private fun loadLanguagesRepo(scope: CoroutineScope) {
+        scope.launch(Dispatchers.Default) {
             try {
                 delay(500)
-                val response = GeneralInfoRepository.fetchLanguages()
+                val response = generalInfoRepository.fetchLanguages()
                 languages = response!!.map { LanguageWrapper(it, false) }
                 languagesLiveData.postValue(languages)
             } catch (e: Exception) {
@@ -55,7 +56,7 @@ class LanguagesProvider(private val scope: CoroutineScope) {
         languagesLiveData.postValue(filtered)
     }
 
-    fun getActiveLanguages():List<String?>{
-        return languages.filter { it.isSelected }.map { it.language.code}
+    fun getActiveLanguages(): List<String?> {
+        return languages.filter { it.isSelected }.map { it.language.code }
     }
 }

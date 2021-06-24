@@ -8,8 +8,9 @@ import com.limor.app.scenes.auth_new.data.CategoryWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CategoriesProvider(private val scope: CoroutineScope) {
+class CategoriesProvider @Inject constructor (val generalInfoRepository :GeneralInfoRepository ) {
     private var categories: List<CategoryWrapper> = mutableListOf()
     private val _categoriesLiveData =
         MutableLiveData<List<CategoryWrapper>>().apply { value = categories }
@@ -29,16 +30,16 @@ class CategoriesProvider(private val scope: CoroutineScope) {
     val categoryLiveDataError: LiveData<String>
         get() = _categoryLiveDataError
 
-    fun downloadCategories() {
+    fun downloadCategories(scope: CoroutineScope) {
         _categoryLiveDataError.postValue("")
         if (categories.isEmpty())
-            loadCategoriesRepo()
+            loadCategoriesRepo(scope)
     }
 
-    private fun loadCategoriesRepo() {
+    private fun loadCategoriesRepo(scope: CoroutineScope) {
         scope.launch(Dispatchers.Default) {
             try {
-                val response = GeneralInfoRepository.fetchCategories()
+                val response = generalInfoRepository.fetchCategories()
                 categories = response!!.map { CategoryWrapper(it, false) }
                 _categoriesLiveData.postValue(categories)
             } catch (e: Exception) {

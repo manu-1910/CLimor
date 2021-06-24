@@ -1,6 +1,7 @@
 package com.limor.app.scenes.auth_new.model
 
 import androidx.lifecycle.MutableLiveData
+import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.apollo.showHumanizedErrorMessage
 import com.limor.app.scenes.auth_new.data.SuggestedUser
 import com.limor.app.scenes.auth_new.data.createMockedSuggestedUsers
@@ -9,8 +10,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
-class SuggestedProvider(private val scope: CoroutineScope) {
+class SuggestedProvider @Inject constructor(val generalInfoRepository: GeneralInfoRepository) {
 
     private var suggestedList: List<SuggestedUser> = mutableListOf()
 
@@ -26,13 +28,13 @@ class SuggestedProvider(private val scope: CoroutineScope) {
     val suggestedForwardNavigationLiveData =
         MutableLiveData<Boolean>().apply { value = false }
 
-    fun downloadSuggested() {
+    fun downloadSuggested(scope: CoroutineScope) {
         if (suggestedList.isEmpty())
-            loadSuggestedFromRepo()
+            loadSuggestedFromRepo(scope)
     }
 
-    private fun loadSuggestedFromRepo() {
-        scope.launch (Dispatchers.Default) {
+    private fun loadSuggestedFromRepo(scope: CoroutineScope) {
+        scope.launch(Dispatchers.Default) {
             try {
                 delay(1000) //waiting for transition animation to end
                 suggestedList = createMockedSuggestedUsers()
@@ -50,8 +52,8 @@ class SuggestedProvider(private val scope: CoroutineScope) {
         suggestedSelectedLiveData.postValue(someSelected)
     }
 
-    fun sendSuggestedPeopleSelectionResult() {
-        scope.launch (Dispatchers.Default) {
+    fun sendSuggestedPeopleSelectionResult(scope: CoroutineScope) {
+        scope.launch(Dispatchers.Default) {
             try {
                 val list = suggestedList.filter { it.selected }.map { it.id.toString() }
 //                val result = UserRepository.updateFollowingUsersData(list)
