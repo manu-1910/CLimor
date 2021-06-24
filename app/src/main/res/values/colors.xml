@@ -169,4 +169,6 @@
     <color name="divider_user_profile_item">@color/lightBlueColor</color><!--F0F3F8-->
 
 
+    <color name="background_color">#FBFCFF</color>
+
 </resources>

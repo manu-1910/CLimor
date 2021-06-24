@@ -56,4 +56,8 @@
     <dimen name="miniPlayerHeight">60dp</dimen>
     <dimen name="margin64">64dp</dimen>
     <dimen name="margin48">48dp</dimen>
+    
+    <!-- Sizes -->
+    <dimen name="search_bar_height">48dp</dimen>
+    <dimen name="toolbar_button_size">56dp</dimen>
 </resources>

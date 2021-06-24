@@ -4,6 +4,7 @@ import android.animation.LayoutTransition
 import android.content.Context
 import android.content.DialogInterface
 import android.content.res.Resources
+import android.content.res.TypedArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +16,12 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.limor.app.R
 import com.limor.app.common.SingleLiveEvent
-
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 
 fun View.showSnackbar(snackbarText: String, timeLength: Int) {
     Snackbar.make(this, snackbarText, timeLength).show()
@@ -30,17 +35,29 @@ fun View.showShortToast(context: Context, toastText: String) {
     Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
 }
 
-fun View.setupSnackbar(lifecycleOwner: LifecycleOwner, snackbarMessageLiveEvent: SingleLiveEvent<Int>, timeLength: Int) {
+fun View.setupSnackbar(
+    lifecycleOwner: LifecycleOwner,
+    snackbarMessageLiveEvent: SingleLiveEvent<Int>,
+    timeLength: Int
+) {
     snackbarMessageLiveEvent.observe(lifecycleOwner, Observer { resource ->
         resource?.let { showSnackbar(context.getString(it), timeLength) }
     })
 }
-fun View.setupLongToast(lifecycleOwner: LifecycleOwner, toastMessageLiveEvent: SingleLiveEvent<Int>) {
+
+fun View.setupLongToast(
+    lifecycleOwner: LifecycleOwner,
+    toastMessageLiveEvent: SingleLiveEvent<Int>
+) {
     toastMessageLiveEvent.observe(lifecycleOwner, Observer { resource ->
         resource?.let { showLongToast(context, context.getString(it)) }
     })
 }
-fun View.setupShortToast(lifecycleOwner: LifecycleOwner, toastMessageLiveEvent: SingleLiveEvent<Int>) {
+
+fun View.setupShortToast(
+    lifecycleOwner: LifecycleOwner,
+    toastMessageLiveEvent: SingleLiveEvent<Int>
+) {
     toastMessageLiveEvent.observe(lifecycleOwner, Observer { resource ->
         resource?.let { showShortToast(context, context.getString(it)) }
     })
@@ -90,4 +107,46 @@ fun Fragment.drawSimpleSelectorDialog(
         dialogInterface.dismiss()
     }
     dialog.show()
+}
+
+fun View.makeVisible() {
+    visibility = View.VISIBLE
+}
+
+fun View.makeInVisible() {
+    visibility = View.INVISIBLE
+}
+
+fun View.makeGone() {
+    visibility = View.GONE
+}
+
+val View.viewScope: CoroutineScope
+    get() {
+        val storedScope = getTag(R.string.view_coroutine_scope) as? CoroutineScope
+        if (storedScope != null) return storedScope
+
+        val newScope = ViewCoroutineScope()
+        if (isAttachedToWindow) {
+            addOnAttachStateChangeListener(newScope)
+            setTag(R.string.view_coroutine_scope, newScope)
+        } else newScope.cancel()
+
+        return newScope
+    }
+
+inline fun <reified T : Enum<T>> TypedArray.getEnum(index: Int, default: T) =
+    getInt(index, -1).let {
+        if (it >= 0) enumValues<T>()[it] else default
+    }
+
+private class ViewCoroutineScope : CoroutineScope, View.OnAttachStateChangeListener {
+    override val coroutineContext = SupervisorJob() + Dispatchers.Main
+
+    override fun onViewAttachedToWindow(view: View) = Unit
+
+    override fun onViewDetachedFromWindow(view: View) {
+        coroutineContext.cancel()
+        view.setTag(R.string.view_coroutine_scope, null)
+    }
 }

@@ -13,7 +13,7 @@ import com.limor.app.scenes.auth_new.firebase.*
 import com.limor.app.scenes.auth_new.model.*
 import com.limor.app.scenes.auth_new.model.UserInfoProvider.Companion.userNameRegExCheck
 import com.limor.app.scenes.auth_new.util.*
-import com.limor.app.scenes.utils.BACKGROUND
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -96,11 +96,11 @@ class AuthViewModelNew : ViewModel() {
 
     fun loadCountriesList(assets: AssetManager) {
         if (_countries.value?.size ?: 0 > 0) return
-        BACKGROUND({
+        viewModelScope.launch(Dispatchers.Default) {
             val countries = CountriesListProvider().provideCountries(assets)
             Timber.d("Countries loaded -> ${countries.size}")
             _countries.postValue(countries)
-        })
+        }
     }
 
     val countrySelected: Country?
