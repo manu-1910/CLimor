@@ -1,0 +1,10 @@
+query Followers($limit: Int!,$offset:Int!) {
+    getFollowers(limit: $limit,offset: $offset){
+        username,
+        description,
+        followed,
+        images{
+            small_url
+        }
+    }
+}

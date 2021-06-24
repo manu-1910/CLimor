@@ -15,6 +15,7 @@ import com.facebook.AccessToken
 import com.facebook.GraphRequest
 import com.facebook.HttpMethod
 import com.facebook.login.LoginManager
+import com.google.firebase.auth.FirebaseAuth
 import com.limor.app.App
 import com.limor.app.BuildConfig
 import com.limor.app.R
@@ -87,7 +88,7 @@ class SettingsFragment : BaseFragment() {
         //Set the version name of the app into textview
         tvAppVersion.text = "v" + BuildConfig.VERSION_NAME
 
-        swPushNotifications.isChecked = sessionManager.getStoredUser()!!.notifications_enabled
+//        swPushNotifications.isChecked = sessionManager.getStoredUser()!!.notifications_enabled
     }
 
 
@@ -98,9 +99,6 @@ class SettingsFragment : BaseFragment() {
         }
 
 
-        lytChangePassword.onClick {
-            findNavController().navigate(R.id.action_settings_fragment_to_change_password_fragment)
-        }
 
 
         lytPrivacyPolicy.onClick {
@@ -137,16 +135,7 @@ class SettingsFragment : BaseFragment() {
 
         swPushNotifications?.onClick {
             val currentStatus = swPushNotifications.isChecked
-            Timber.tag(TIMBER_TAG).d("push notifications switch triggered, now it is $currentStatus")
-            val userItem = sessionManager.getStoredUser()
-            val userAge = CommonsKt.calculateAge(userItem?.date_of_birth!!)
-            Timber.tag(TIMBER_TAG).d("the current user age is $userAge")
-
-            if (userItem != null) {
-                userItem.notifications_enabled = currentStatus
-                Timber.tag(TIMBER_TAG).d("We call to apiUpdateUser")
-                callToUpdateUser(userItem)
-            }
+           // callToUpdateUser(userItem)
         }
 
 
@@ -168,130 +157,41 @@ class SettingsFragment : BaseFragment() {
 
 
         lytLogout.onClick {
-            logoutTrigger.onNext(Unit)
-            logOutFromFacebook()
+            FirebaseAuth.getInstance().signOut()
+            startActivity(Intent(requireContext(),SplashActivity::class.java))
         }
 
     }
 
 
     private fun configureToolbar() {
-        //Toolbar title
-        tvToolbarTitle?.text = getString(R.string.title_settings)
 
-        //Toolbar Left
-        btnClose.onClick {
-            activity?.finish()
-        }
     }
 
 
     private fun bindViewModel() {
-        activity?.let {
-            viewModelLogout = ViewModelProvider(it, viewModelFactory)
-                .get(LogoutViewModel::class.java)
 
-            updateUserViewModel = ViewModelProvider(it, viewModelFactory)
-                .get(UpdateUserViewModel::class.java)
-        }
     }
 
 
     private fun apiCallLogout() {
-        val output = viewModelLogout.transform(
-            LogoutViewModel.Input(
-                logoutTrigger
-            )
-        )
 
-        output.response.observe(this, Observer {
-            //pbSignUp?.visibility = View.GONE
-            view?.hideKeyboard()
-
-            //if (it.message == "Success") { //TODO review why message is errormessage and is null
-            if (it.code == 0) {
-                sessionManager.logOut()
-
-                val mainIntent = Intent(context, SplashActivity::class.java)
-                startActivity(mainIntent)
-                try {
-                    activity?.finish()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-        })
-
-        output.backgroundWorkingProgress.observe(this, Observer {
-            trackBackgroudProgress(it)
-        })
-
-        output.errorMessage.observe(this, Observer {
-            //pbSignUp?.visibility = View.GONE
-            view?.hideKeyboard()
-            handleOnApiError(App.instance, context!!, this, it)
-        })
     }
 
 
     private fun logOutFromFacebook() {
         // Logout
-        if (AccessToken.getCurrentAccessToken() != null) {
-            GraphRequest(
-                AccessToken.getCurrentAccessToken(),
-                "/me/permissions/",
-                null,
-                HttpMethod.DELETE,
-                GraphRequest.Callback {
-                    AccessToken.setCurrentAccessToken(null)
-                    LoginManager.getInstance().logOut()
-                }).executeAsync()
-        }
+
     }
 
 
     private fun callToUpdateUser(userItem: UIUser) {
-        Timber.tag(TIMBER_TAG).d("We are in callToUpdateUser")
-        updateUserViewModel.first_name = userItem.first_name.toString()
-        updateUserViewModel.last_name = userItem.last_name.toString()
-        updateUserViewModel.username = userItem.username.toString()
-        updateUserViewModel.website = userItem.website.toString()
-        updateUserViewModel.description = userItem.description.toString()
-        updateUserViewModel.email = userItem.email.toString()
-        updateUserViewModel.phone_number = userItem.phone_number.toString()
-        updateUserViewModel.date_of_birth = userItem.date_of_birth!!
-        updateUserViewModel.gender = userItem.gender.toString()
-        updateUserViewModel.image = userItem.images.small_url
-        updateUserViewModel.notifications_enabled = userItem.notifications_enabled
 
-        updateUserTrigger.onNext(Unit)
     }
 
 
     private fun apiCallUpdateUser() {
-        val output = updateUserViewModel.transform(
-            UpdateUserViewModel.Input(
-                updateUserTrigger
-            )
-        )
 
-        output.response.observe(this, Observer {
-            Timber.tag(TIMBER_TAG).d("We are in settings fragment apiCallUpdateUser")
-            if (it.code == 0) {
-                Timber.tag(TIMBER_TAG).d("Profile updated successfully, we are storing user and changing switch status")
-//                sessionManager.storeUser(it.data.user) // this is not necessary because it is stored inside the viewModel
-//                swPushNotifications.isChecked = it.data.user.notifications_enabled
-            }
-        })
-
-        output.backgroundWorkingProgress.observe(this, Observer {
-            trackBackgroudProgress(it)
-        })
-
-        output.errorMessage.observe(this, Observer {
-            handleOnApiError(App.instance, context!!, this, it)
-            swPushNotifications.isChecked = sessionManager.getStoredUser()?.notifications_enabled ?: true
-        })
     }
 
 }

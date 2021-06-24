@@ -331,67 +331,11 @@ class BlockedUsersFragment : BaseFragment() {
 
 
     private fun initApiCallDeleteBlockedUser() {
-        val output = viewModelDeleteBlockedUser.transform(
-            DeleteBlockedUserViewModel.Input(
-                deleteBlockedUserDataTrigger
-            )
-        )
 
-        output.response.observe(this, Observer {
-            if(it.code != 0) {
-                toast(getString(R.string.error_unblocking_user))
-                viewModelDeleteBlockedUser.user?.blocked = true
-            }
-            blockedUsersAdapter.notifyDataSetChanged()
-        })
-
-        output.backgroundWorkingProgress.observe(this, Observer {
-            trackBackgroudProgress(it)
-        })
-
-        output.errorMessage.observe(this, Observer {
-            view?.hideKeyboard()
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
-        })
     }
 
     private fun initApiCallCreateBlockedUser() {
-        val output = viewModelCreateBlockedUser.transform(
-            CreateBlockedUserViewModel.Input(
-                createBlockedUserDataTrigger
-            )
-        )
 
-        output.response.observe(this, Observer {
-            if(it.code != 0) {
-                toast(getString(R.string.error_blocking_user))
-                viewModelCreateBlockedUser.user?.blocked = false
-            }
-            blockedUsersAdapter.notifyDataSetChanged()
-        })
-
-        output.backgroundWorkingProgress.observe(this, Observer {
-            trackBackgroudProgress(it)
-        })
-
-        output.errorMessage.observe(this, Observer {
-            view?.hideKeyboard()
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                alert(message.toString()) {
-                    okButton { }
-                }.show()
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
-        })
     }
 
 }

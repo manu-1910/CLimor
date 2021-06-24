@@ -126,6 +126,8 @@ class ProfileFragment : BaseFragment() {
             initViewPager()
             printUserData()
         }
+
+
     }
 
     private fun apiCallDeleteBlockedUser() {

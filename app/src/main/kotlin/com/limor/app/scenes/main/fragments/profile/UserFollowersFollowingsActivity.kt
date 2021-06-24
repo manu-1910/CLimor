@@ -3,25 +3,23 @@ package com.limor.app.scenes.main.fragments.profile
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
+import com.limor.app.databinding.ActivityFollowersAndFollowingBinding
 import com.limor.app.uimodels.UIUser
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
-import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
-import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.btnClose
-import kotlinx.android.synthetic.main.toolbar_with_searchview.*
-import org.jetbrains.anko.sdk23.listeners.onClick
-import org.jetbrains.anko.toast
 import javax.inject.Inject
 
 
 class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInjector {
 
+    private lateinit var binding: ActivityFollowersAndFollowingBinding
     var rootView: View? = null
     private var uiUser: UIUser? = null
     private var tabToShow: String = ""
@@ -43,7 +41,9 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_followers_followings)
+
+        binding = DataBindingUtil.setContentView(this,R.layout.activity_followers_and_following) as ActivityFollowersAndFollowingBinding
+
 
         val bundle = intent?.extras
         uiUser = bundle?.get("user") as UIUser
@@ -58,20 +58,21 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
 
     private fun configureToolbar(){
         //Toolbar title
-        if(uiUser!=null){
+       /* if(uiUser!=null){
             if (uiUser!!.username.isNullOrEmpty()){
-                tvToolbarTitle?.text = getString(R.string.username)
+                binding.top.tvToolbarTitle.text = getString(R.string.username)
             }else{
-                tvToolbarTitle?.text = uiUser!!.username
+                binding.top.tvToolbarTitle.text = "user_name"
             }
         }
+        binding.top.tvToolbarTitle.text = "user_name"
 
         //Toolbar Left
-        btnClose.onClick {
+        binding.top.btnClose.onClick {
             this.finish()
-        }
+        }*/
 
-        //Search View
+        /*//Search View
         search_view.setOnQueryTextListener(object :
             androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
@@ -91,7 +92,7 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
                 }
                 return false
             }
-        })
+        })*/
     }
 
 

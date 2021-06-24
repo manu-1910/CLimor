@@ -3,15 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/brandSecondary400">
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar_with_back_arrow_icon" />
+    android:background="@color/white">
+
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/laySwipeRefresh"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="0dp">
 
@@ -30,10 +27,9 @@
         android:id="@+id/layEmptyScenario"
         layout="@layout/fragment_empty_scenario"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:visibility="gone"/>
+        android:visibility="visible"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,12 @@
+query GetUserProfile{
+    getUser{
+        id,
+        username,
+        description,
+        following_count,
+        followers_count,
+        images{
+            small_url
+        }
+    }
+}

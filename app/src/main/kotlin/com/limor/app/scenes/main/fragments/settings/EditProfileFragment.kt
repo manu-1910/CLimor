@@ -93,39 +93,13 @@ class EditProfileFragment : BaseFragment() {
 
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 1f)
-
-        bindViewModel()
-        configureToolbar()
-        listeners()
+        /*bindViewModel()
         loadExistingData()
-        apiCallUpdateUser()
+        apiCallUpdateUser()*/
     }
 
 
-    private fun configureToolbar() {
-        //Toolbar title
-        tvToolbarTitle?.text = getString(R.string.settings_edit_profile)
 
-        //Toolbar Left
-        btnClose.onClick {
-            findNavController().popBackStack()
-        }
-
-        //Toolbar Right
-        btnToolbarRight.text = getString(R.string.btnUpdate)
-        btnToolbarRight.visibility = View.VISIBLE
-        btnToolbarRight.onClick {
-
-            pbEditProfile?.visibility = View.VISIBLE
-
-            if(profileHasImage){
-                publishProfileImage()
-            }else{
-                callToApiUpdateUser()
-            }
-
-        }
-    }
 
 
     private fun bindViewModel() {
@@ -135,45 +109,6 @@ class EditProfileFragment : BaseFragment() {
         }
     }
 
-
-    private fun listeners(){
-        btnChoosePhoto.onClick {
-            loadImagePicker()
-        }
-
-        // this is to make the editText non editable
-        etAge.keyListener = null
-        etAge.onClick {
-
-            val date: DatePickerDialog.OnDateSetListener =
-                DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth -> // TODO Auto-generated method stub
-                    val newDate = Calendar.getInstance()
-                    newDate[Calendar.YEAR] = year
-                    newDate[Calendar.MONTH] = monthOfYear
-                    newDate[Calendar.DAY_OF_MONTH] = dayOfMonth
-                    onBirthdateUpdated(newDate)
-                }
-
-            val myCalendar = Calendar.getInstance()
-
-            user?.date_of_birth?.let {
-                val d = Date(it)
-                myCalendar.time = d
-            }
-            DatePickerDialog(
-                context!!, date, myCalendar[Calendar.YEAR], myCalendar[Calendar.MONTH],
-                myCalendar[Calendar.DAY_OF_MONTH]
-            ).show()
-        }
-    }
-
-    private fun onBirthdateUpdated(newBirthDate: Calendar) {
-        val newMillis = newBirthDate.timeInMillis
-        user?.date_of_birth = newMillis
-        val now = Calendar.getInstance()
-        val years = CommonsKt.getYearsBetweenTwoCalendars(newBirthDate, now)
-        etAge.setText(years.toString())
-    }
 
 
     private fun loadImagePicker() {
@@ -191,99 +126,23 @@ class EditProfileFragment : BaseFragment() {
 
 
     private fun callToApiUpdateUser(){
-        val userAge = CommonsKt.calculateAge(user?.date_of_birth!!)
-        Timber.tag(TIMBER_TAG).d("callToApiUpdateUser has been called and the user is $userAge")
-        updateUserViewModel.first_name = etFirstName.text.toString()
-        updateUserViewModel.last_name = etLastName.text.toString()
-        updateUserViewModel.username = etUsername.text.toString()
-        updateUserViewModel.website = etWebsite.text.toString()
-        updateUserViewModel.description = etBio.text.toString()
-        updateUserViewModel.email = etEmail.text.toString()
-        updateUserViewModel.phone_number = etPhone.text.toString()
-        user?.date_of_birth?.let {
-            updateUserViewModel.date_of_birth = it
-        }
-        updateUserViewModel.gender = etGender.text.toString()
-        updateUserViewModel.notifications_enabled = user!!.notifications_enabled
-        if(profileHasImage){
-            updateUserViewModel.image = profileImageUrlFinal
-        }
 
-        updateUserTrigger.onNext(Unit)
     }
 
 
     private fun apiCallUpdateUser() {
-        val output = updateUserViewModel.transform(
-            UpdateUserViewModel.Input(
-                updateUserTrigger
-            )
-        )
 
-        output.response.observe(this, Observer {
-            pbEditProfile?.visibility = View.GONE
-            view?.hideKeyboard()
-
-            if (it.code == 0) {
-                val userAge = CommonsKt.calculateAge(user?.date_of_birth!!)
-                val newUserAge = CommonsKt.calculateAge(it.data.user.date_of_birth!!)
-                Timber.tag(TIMBER_TAG).d("User is successfully updated and the user is $userAge, the new user age received is $newUserAge")
-                Timber.tag(TIMBER_TAG).d("We will store the user in sessionStorage again")
-                sessionManager.storeUser(it.data.user)
-                toast("Profile updated successfully")
-                Timber.tag(TIMBER_TAG).d("We will go back to Settings Screen")
-                findNavController().popBackStack()
-            }
-
-        })
-
-        output.backgroundWorkingProgress.observe(this, Observer {
-            trackBackgroudProgress(it)
-        })
-
-        output.errorMessage.observe(this, Observer {
-            pbEditProfile?.visibility = View.GONE
-            view?.hideKeyboard()
-            handleOnApiError(it)
-        })
     }
 
 
     private fun handleOnApiError(it: UIErrorResponse) {
-        if (app!!.merlinsBeard!!.isConnected) {
-            val message: StringBuilder = StringBuilder()
-            if (it.errorMessage!!.isNotEmpty()) {
-                message.append(it.errorMessage)
-            } else {
-                message.append(R.string.some_error)
-            }
-            if (it.code == 10) {  //Session expired
-                alert(message.toString()) {
-                    okButton {
-                        val intent = Intent(context, SignActivity::class.java)
-                        //intent.putExtra(getString(R.string.otherActivityKey), true)
-                        startActivityForResult(
-                            intent,
-                            resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
-                        )
-                    }
-                }.show()
-            } else {
-                alert(message.toString()) {
-                    okButton { }
-                }.show()
-            }
-        } else {
-            alert(getString(R.string.default_no_internet)) {
-                okButton {}
-            }.show()
-        }
+
     }
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         // this will run when coming from the image picker
-        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+       /* if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
 
             // Get a list of picked files
             val filesSelected = ImagePicker.getImages(data) as ArrayList<Image>
@@ -325,7 +184,7 @@ class EditProfileFragment : BaseFragment() {
                 loadExistingData()
             }
         }
-        super.onActivityResult(requestCode, resultCode, data)
+        super.onActivityResult(requestCode, resultCode, data)*/
     }
 
 
@@ -342,7 +201,7 @@ class EditProfileFragment : BaseFragment() {
 
 
     private fun loadExistingData(){
-        etFirstName.text = user?.first_name?.toEditable()
+      /*  etFirstName.text = user?.first_name?.toEditable()
         etLastName.text = user?.last_name?.toEditable()
         etUsername.text = user?.username?.toEditable()
         etWebsite.text = user?.website?.toEditable()
@@ -357,13 +216,13 @@ class EditProfileFragment : BaseFragment() {
         etGender.text = user?.gender?.toEditable()
         Glide.with(context!!).load(user?.images?.medium_url).into(
             profile_image!!
-        )
+        )*/
     }
 
 
     private fun publishProfileImage() {
 
-        if (Commons.getInstance().isImageReadyForUpload) {
+        /*if (Commons.getInstance().isImageReadyForUpload) {
             Commons.getInstance().uploadImage(
                 context,
                 object : Commons.ImageUploadCallback {
@@ -396,19 +255,19 @@ class EditProfileFragment : BaseFragment() {
                 "podcast_photo"
             )
             publishProfileImage()
-        }
+        }*/
     }
 
 
     private fun readyToUpdate() {
-        if (profileHasImage) {
+       /* if (profileHasImage) {
             if (profileImageUploaded) {
                 profileImageUploaded = false
                 callToApiUpdateUser()
             }
         } else {
             callToApiUpdateUser()
-        }
+        }*/
     }
 
 

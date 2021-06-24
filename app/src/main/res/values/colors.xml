@@ -160,4 +160,13 @@
     <color name="notification_secondary_text">#91A2B2</color>
     <color name="notification_divider">#91A2B2</color>
 
+
+
+    <!--Views-->
+    <color name="background">#FBFCFF</color>
+    <!--User Profiles-->
+
+    <color name="divider_user_profile_item">@color/lightBlueColor</color><!--F0F3F8-->
+
+
 </resources>
