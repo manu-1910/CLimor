@@ -6,13 +6,14 @@ import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.ItemChipCategoryBinding
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverCategoryFragment
+import com.limor.app.uimodels.CategoryUIModel
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
 
-class SingleCategoryItem(val category: String) : BindableItem<ItemChipCategoryBinding>() {
+class SingleCategoryItem(val category: CategoryUIModel) : BindableItem<ItemChipCategoryBinding>() {
 
     override fun bind(viewBinding: ItemChipCategoryBinding, position: Int) {
-        viewBinding.chip.text = category
+        viewBinding.chip.text = category.name
         viewBinding.chip.setOnClickListener {
             it.findNavController().navigate(
                 R.id.action_navigation_discover_to_discoverCategoryFragment, bundleOf(

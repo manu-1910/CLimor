@@ -6,15 +6,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.scenes.main.fragments.discover.common.mock.MockCast
 import com.limor.app.scenes.main.fragments.discover.common.mock.MockPerson
-import kotlinx.coroutines.delay
+import com.limor.app.uimodels.CategoryUIModel
+import com.limor.app.usecases.GetCategoriesUseCase
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.time.Duration
 import java.time.LocalDateTime
+import javax.inject.Inject
 
-class DiscoverViewModel : ViewModel() {
+class DiscoverViewModel @Inject constructor(
+    val getCategoriesUseCase: GetCategoriesUseCase
+) : ViewModel() {
 
-    private val _categories = MutableLiveData<List<String>>()
-    val categories: LiveData<List<String>> = _categories
+    private val _categories = MutableLiveData<List<CategoryUIModel>>()
+    val categories: LiveData<List<CategoryUIModel>> = _categories
 
     private val _suggestedPeople = MutableLiveData<List<MockPerson>>()
     val suggestedPeople: LiveData<List<MockPerson>> = _suggestedPeople
@@ -24,17 +29,6 @@ class DiscoverViewModel : ViewModel() {
 
     private val _topCasts = MutableLiveData<List<MockCast>>()
     val topCasts: LiveData<List<MockCast>> = _topCasts
-
-    init {
-        viewModelScope.launch {
-            delay(1000)
-            generateCategories()
-            generateSuggestedPeople()
-            delay(200)
-            generateFeaturedCasts()
-            generateTopCasts()
-        }
-    }
 
     private val mockPersonList = listOf(
         MockPerson(
@@ -69,36 +63,41 @@ class DiscoverViewModel : ViewModel() {
         ),
     )
 
-    private val mockCastsList get() = mutableListOf<MockCast>()
-        .apply {
-            repeat(21) {
-                add(
-                    MockCast(
-                        location = generateRandomLocation(),
-                        playProgress = generatePlayProgress(),
-                        duration = generateRandomDuration(),
-                        owner = mockPersonList.random(),
-                        date = generateRandomDateInPast(),
-                        name = generateRandomName(),
-                        imageUrl = generateRandomImageUrl()
+    private val mockCastsList
+        get() = mutableListOf<MockCast>()
+            .apply {
+                repeat(21) {
+                    add(
+                        MockCast(
+                            location = generateRandomLocation(),
+                            playProgress = generatePlayProgress(),
+                            duration = generateRandomDuration(),
+                            owner = mockPersonList.random(),
+                            date = generateRandomDateInPast(),
+                            name = generateRandomName(),
+                            imageUrl = generateRandomImageUrl()
+                        )
                     )
-                )
+                }
             }
+
+    init {
+        loadCategories()
+        generateSuggestedPeople()
+        generateFeaturedCasts()
+        generateTopCasts()
+    }
+
+    private fun loadCategories() {
+        viewModelScope.launch {
+            getCategoriesUseCase.execute()
+                .onSuccess {
+                    _categories.value = it
+                }
+                .onFailure {
+                    Timber.e("Error while getting categories: $it")
+                }
         }
-
-
-    @Deprecated("As soon as API is available this has to be removed")
-    private fun generateCategories() {
-        _categories.value = listOf(
-            "Sport",
-            "News",
-            "Art",
-            "Travel",
-            "Voice",
-            "Food",
-            "Education",
-            "VIP",
-        )
     }
 
     @Deprecated("As soon as API is available this has to be removed")

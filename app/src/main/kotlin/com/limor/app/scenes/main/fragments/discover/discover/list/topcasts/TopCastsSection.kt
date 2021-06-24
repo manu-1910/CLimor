@@ -36,13 +36,7 @@ class TopCastsSection(
         if (groupCount == 0) {
             setHeader(
                 HeaderItem(
-                    context.getString(R.string.top_casts),
-                    action = HeaderItem.HeaderAction(
-                        name = context.getString(R.string.see_all),
-                        onActionClick = {
-                            TODO()
-                        }
-                    )
+                    context.getString(R.string.top_casts)
                 )
             )
             add(castsInnerSection)

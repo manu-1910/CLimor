@@ -5,6 +5,7 @@ import androidx.core.view.updateLayoutParams
 import com.bumptech.glide.Glide
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverBigCastBinding
+import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration.Companion.GRID_CAST_ITEM
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration.Companion.GRID_CAST_ITEM_TYPE_KEY
 import com.limor.app.scenes.main.fragments.discover.common.mock.MockCast
@@ -49,10 +50,10 @@ class BigCastItem(
                 .into(ownerIcon)
 
             root.setOnClickListener {
-                TODO()
+                ToastMaker.showToast(it.context, "Not implemented")
             }
             moreBtn.setOnClickListener {
-                TODO()
+                ToastMaker.showToast(it.context, "Not implemented")
             }
         }
     }

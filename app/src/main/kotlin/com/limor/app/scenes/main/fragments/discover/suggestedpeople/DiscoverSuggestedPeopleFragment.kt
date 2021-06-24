@@ -10,6 +10,8 @@ import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentDiscoverSuggestedPeopleBinding
+import com.limor.app.scenes.main.fragments.discover.suggestedpeople.list.SuggestedPersonBigItem
+import com.xwray.groupie.GroupieAdapter
 import javax.inject.Inject
 
 class DiscoverSuggestedPeopleFragment: BaseFragment() {
@@ -20,6 +22,8 @@ class DiscoverSuggestedPeopleFragment: BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: DiscoverSuggestedPeopleViewModel by viewModels { viewModelFactory }
+
+    private val suggestedPeopleAdapter = GroupieAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,9 +41,20 @@ class DiscoverSuggestedPeopleFragment: BaseFragment() {
         binding.toolbar.btnBack.setOnClickListener {
             it.findNavController().popBackStack()
         }
+        binding.list.adapter = suggestedPeopleAdapter
+        suggestedPeopleAdapter.setOnItemClickListener { item, view ->
+            val person = (item as SuggestedPersonBigItem).person
+            // TODO
+        }
     }
 
     private fun subscribeForEvents() {
-        TODO()
+        viewModel.suggestedPeople.observe(viewLifecycleOwner) { suggestedPeople ->
+            suggestedPeopleAdapter.update(
+                suggestedPeople.map {
+                    SuggestedPersonBigItem(it)
+                }
+            )
+        }
     }
 }

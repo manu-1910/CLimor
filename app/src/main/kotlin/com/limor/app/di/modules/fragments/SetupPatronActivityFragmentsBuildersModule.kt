@@ -11,9 +11,6 @@ abstract class SetupPatronActivityFragmentsBuildersModule {
     abstract fun contributeSetupPatronFragmentInjector(): SetupPatronFragment
 
     @ContributesAndroidInjector
-    abstract fun contributeSetupPatronSelectCategoryFragmentInjector(): SetupPatronSelectCategoryFragment
-
-    @ContributesAndroidInjector
     abstract fun contributeSetupPatronSettingsFragmentInjector(): SetupPatronSettingsFragment
 
     @ContributesAndroidInjector

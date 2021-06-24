@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -12,14 +13,18 @@ import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentDiscoverBinding
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration
 import com.limor.app.scenes.main.fragments.discover.discover.list.DiscoverAdapter
+import javax.inject.Inject
 
 class DiscoverFragment : BaseFragment() {
 
     private var _binding: FragmentDiscoverBinding? = null
     private val binding get() = _binding!!
 
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val viewModel: DiscoverViewModel by viewModels { viewModelFactory }
+
     private val discoverAdapter by lazy { DiscoverAdapter(requireContext(), findNavController()) }
-    private val viewModel: DiscoverViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

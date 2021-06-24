@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.navigation.NavController
 import com.limor.app.R
 import com.limor.app.scenes.main.fragments.discover.common.HeaderItem
+import com.limor.app.uimodels.CategoryUIModel
 import com.xwray.groupie.Section
 
 class CategoriesSection(
@@ -15,7 +16,7 @@ class CategoriesSection(
         private const val CATEGORIES_ITEM_POSITION = 1
     }
 
-    fun updateCategories(categories: List<String>) {
+    fun updateCategories(categories: List<CategoryUIModel>) {
         if (categories.isNotEmpty()) {
             setHeaderIfNeeded()
         }

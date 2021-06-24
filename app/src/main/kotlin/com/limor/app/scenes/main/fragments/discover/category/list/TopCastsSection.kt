@@ -2,6 +2,7 @@ package com.limor.app.scenes.main.fragments.discover.category.list
 
 import android.content.Context
 import com.limor.app.R
+import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.fragments.discover.common.HeaderItem
 import com.limor.app.scenes.main.fragments.discover.common.casts.BigCastItem
 import com.limor.app.scenes.main.fragments.discover.common.mock.MockCast
@@ -21,13 +22,7 @@ class TopCastsSection(
     init {
         setHeader(
             HeaderItem(
-                context.getString(R.string.top_casts),
-                action = HeaderItem.HeaderAction(
-                    name = context.getString(R.string.see_all),
-                    onActionClick = {
-                        TODO()
-                    }
-                )
+                context.getString(R.string.top_casts)
             )
         )
         add(castsInnerSection)

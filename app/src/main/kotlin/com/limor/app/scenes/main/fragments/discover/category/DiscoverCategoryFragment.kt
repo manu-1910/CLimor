@@ -11,6 +11,7 @@ import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentDiscoverCategoryBinding
 import com.limor.app.scenes.main.fragments.discover.category.list.DiscoverCategoryAdapter
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration
+import com.limor.app.uimodels.CategoryUIModel
 
 class DiscoverCategoryFragment : BaseFragment() {
 
@@ -21,7 +22,7 @@ class DiscoverCategoryFragment : BaseFragment() {
     private var _binding: FragmentDiscoverCategoryBinding? = null
     private val binding get() = _binding!!
 
-    private val category: String by lazy { requireArguments().getString(CATEGORY_KEY)!! }
+    private val category: CategoryUIModel by lazy { requireArguments().getParcelable(CATEGORY_KEY)!! }
     private val discoverCategoryAdapter by lazy { DiscoverCategoryAdapter(requireContext()) }
     private val viewModel: DiscoverCategoryViewModel by viewModels()
 
@@ -45,7 +46,7 @@ class DiscoverCategoryFragment : BaseFragment() {
             }
         }
 
-        binding.toolbar.title.text = category
+        binding.toolbar.title.text = category.name
         binding.toolbar.btnBack.setOnClickListener {
             it.findNavController().popBackStack()
         }

@@ -5,6 +5,7 @@ import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverCategoriesBinding
 import com.limor.app.extensions.px
 import com.limor.app.scenes.utils.recycler.HorizontalSpacingItemDecoration
+import com.limor.app.uimodels.CategoryUIModel
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 
@@ -25,7 +26,7 @@ class CategoriesItem: BindableItem<ItemDiscoverCategoriesBinding>() {
         }
     }
 
-    fun update(categories: List<String>) {
+    fun update(categories: List<CategoryUIModel>) {
         categoriesListAdapter.update(
             categories.map {
                 SingleCategoryItem(it)

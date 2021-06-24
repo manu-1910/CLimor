@@ -6,7 +6,7 @@ apply plugin: 'kotlinx-serialization'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.apollographql.apollo'
 apply plugin: 'com.google.firebase.crashlytics'
-apply plugin: 'androidx.navigation.safeargs.kotlin'
+//apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 apollo {
     // instruct the compiler to generate Kotlin models

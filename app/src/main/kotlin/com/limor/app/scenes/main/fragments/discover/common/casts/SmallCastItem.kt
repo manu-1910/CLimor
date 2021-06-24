@@ -4,6 +4,7 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverSmallCastBinding
+import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.fragments.discover.common.mock.MockCast
 import com.xwray.groupie.viewbinding.BindableItem
 import java.time.Duration
@@ -34,7 +35,7 @@ class SmallCastItem(
                 .into(ownerIcon)
 
             root.setOnClickListener {
-                TODO()
+                ToastMaker.showToast(it.context, "Not implemented")
             }
         }
     }

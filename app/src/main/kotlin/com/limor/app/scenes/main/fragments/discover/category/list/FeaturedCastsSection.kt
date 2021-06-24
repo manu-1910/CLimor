@@ -2,6 +2,7 @@ package com.limor.app.scenes.main.fragments.discover.category.list
 
 import android.content.Context
 import com.limor.app.R
+import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.fragments.discover.common.HeaderItem
 import com.limor.app.scenes.main.fragments.discover.common.casts.HorizontalCastsListItem
 import com.limor.app.scenes.main.fragments.discover.common.mock.MockCast
@@ -20,7 +21,7 @@ class FeaturedCastsSection(context: Context) : Section() {
                 action = HeaderItem.HeaderAction(
                     name = context.getString(R.string.see_all),
                     onActionClick = {
-                        TODO()
+                        ToastMaker.showToast(context, "Not implemented")
                     }
                 )
             )

@@ -37,5 +37,6 @@ abstract class ApplicationModule {
     @Binds
     abstract fun bindPostExecutionThread(uiThread: UIThread): PostExecutionThread
 
+    @Binds
     abstract fun bindDispatchersProvider(dispatcherProvider: DispatcherProviderImpl): DispatcherProvider
 }

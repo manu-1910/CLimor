@@ -9,6 +9,7 @@ import com.limor.app.scenes.main.fragments.discover.discover.list.featuredcasts.
 import com.limor.app.scenes.main.fragments.discover.discover.list.search.SearchItem
 import com.limor.app.scenes.main.fragments.discover.discover.list.suggestedpeople.SuggestedPeopleSection
 import com.limor.app.scenes.main.fragments.discover.discover.list.topcasts.TopCastsSection
+import com.limor.app.uimodels.CategoryUIModel
 import com.xwray.groupie.GroupieAdapter
 
 class DiscoverAdapter(
@@ -21,7 +22,7 @@ class DiscoverAdapter(
     }
 
     private val categoriesSection = CategoriesSection(context, navController)
-    private val suggestedPeopleSection = SuggestedPeopleSection(context)
+    private val suggestedPeopleSection = SuggestedPeopleSection(context, navController)
     private val featuredCastsSection = FeaturedCastsSection(context, navController)
     private val topCastsSection = TopCastsSection(context)
 
@@ -34,7 +35,7 @@ class DiscoverAdapter(
         add(topCastsSection)
     }
 
-    fun updateCategories(categories: List<String>) {
+    fun updateCategories(categories: List<CategoryUIModel>) {
         categoriesSection.updateCategories(categories)
     }
     fun updateSuggestedPeople(suggestedPeople: List<MockPerson>) {

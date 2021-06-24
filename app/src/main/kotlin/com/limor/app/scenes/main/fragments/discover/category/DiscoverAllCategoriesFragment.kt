@@ -22,7 +22,6 @@ class DiscoverAllCategoriesFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-
     private val viewModel: DiscoverAllCategoriesViewModel by viewModels { viewModelFactory }
 
     override fun onCreateView(
@@ -48,16 +47,16 @@ class DiscoverAllCategoriesFragment : BaseFragment() {
         viewModel.categories.observe(viewLifecycleOwner) { categories ->
             binding.categoriesGroup.removeAllViews()
 
-            categories.map { name ->
+            categories.map { category ->
                 (layoutInflater.inflate(
                     R.layout.item_chip_category,
                     null
                 ) as Chip).apply {
-                    text = name
+                    text = category.name
                     setOnClickListener {
                         it.findNavController().navigate(
                             R.id.action_discoverAllCategoriesFragment_to_discoverCategoryFragment,
-                            bundleOf(DiscoverCategoryFragment.CATEGORY_KEY to name)
+                            bundleOf(DiscoverCategoryFragment.CATEGORY_KEY to category.name)
                         )
                     }
                 }

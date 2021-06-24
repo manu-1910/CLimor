@@ -110,13 +110,6 @@ abstract class ActivitiesModule {
 
     @ContributesAndroidInjector(
         modules = [
-            (SetupCategoriesActivityFragmentsBuildersModule::class)
-        ]
-    )
-    abstract fun contributeCategoriesActivityInjector(): CategoriesActivity
-
-    @ContributesAndroidInjector(
-        modules = [
             (UserFollowersFollowingsFragmentsBuildersModule::class)
         ]
     )
