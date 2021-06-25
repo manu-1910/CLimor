@@ -29,6 +29,11 @@ class HomeFeedViewModel @Inject constructor(
     val homeFeedErrorLiveData: LiveData<String>
         get() = _homeFeedErrorLiveData
 
+    private var _userProfileData =
+        MutableLiveData<GetUserProfileQuery.GetUser?>()
+    val userProfileData: LiveData<GetUserProfileQuery.GetUser?>
+        get() = _userProfileData
+
     fun loadHomeFeed() {
         viewModelScope.launch {
             try {
@@ -42,8 +47,15 @@ class HomeFeedViewModel @Inject constructor(
     }
 
 
-    suspend fun getUserProfile(): GetUserProfileQuery.GetUser? {
-        return  generalInfoRepository.getUserProfile()
+    fun getUserProfile(){
+        viewModelScope.launch {
+            try {
+                val user = generalInfoRepository.getUserProfile()
+                _userProfileData.postValue(user)
+            } catch (e: Exception) {
+
+            }
+        }
     }
 
     suspend fun getBlockedUsers(): ArrayList<GetBlockedUsersQuery.GetBlockedUser?>? {

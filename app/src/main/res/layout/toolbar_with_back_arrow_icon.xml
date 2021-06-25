@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:fontFamily="@font/roboto_medium"
-                android:textColor="@color/toolbar_text"
+                android:textColor="@color/black"
                 android:textSize="@dimen/textSizeNormal"
                 android:textStyle="bold" />
 

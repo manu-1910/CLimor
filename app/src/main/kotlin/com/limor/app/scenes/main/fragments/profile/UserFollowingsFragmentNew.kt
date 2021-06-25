@@ -20,6 +20,7 @@ import com.limor.app.FollowersQuery
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentUsersBlockedBinding
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.adapters.UserFollowersAdapter
 import com.limor.app.scenes.main.fragments.settings.SettingsViewModel
 import com.limor.app.scenes.main.viewmodels.GetBlockedUsersViewModel
@@ -36,7 +37,7 @@ import javax.inject.Inject
 
 
 
-class UserFollowersFragmentNew(private val uiUser: String) : BaseFragment() {
+class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
 
     private lateinit var arrayList: ArrayList<FollowersQuery.GetFollower?>
     private var isLastPage: Boolean = false
@@ -92,15 +93,12 @@ class UserFollowersFragmentNew(private val uiUser: String) : BaseFragment() {
         model.followersData.observe(viewLifecycleOwner, Observer{
             Timber.d("observe -> $it")
             if(it?.size == 0){
-                    showEmptyScenario()
+                showEmptyScenario()
             }else{
-                 isRequestingNewData = false
-                 Timber.d("MJ ISSUE p -> ${arrayList.size}")
-                 val adapter = ( binding.rvBlockedUsers.adapter as UserFollowersAdapter )
-                 arrayList.addAll(it!!)
-                 adapter.notifyDataSetChanged()
-                 Timber.d("MJ ISSUE p ->  ${adapter.list}")
-                 hideEmptyScenario()
+                isRequestingNewData = false
+                arrayList.addAll(it!!)
+                ( binding.rvBlockedUsers.adapter as UserFollowersAdapter ).notifyDataSetChanged()
+                hideEmptyScenario()
             }
 
             hideProgressBar()
@@ -240,7 +238,10 @@ class UserFollowersFragmentNew(private val uiUser: String) : BaseFragment() {
         }
     }
 
-
+    override fun onResume() {
+        super.onResume()
+        reload()
+    }
 
     private fun reload() {
         isLastPage = false

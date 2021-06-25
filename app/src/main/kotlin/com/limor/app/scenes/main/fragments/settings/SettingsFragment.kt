@@ -6,9 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 
 import androidx.navigation.fragment.findNavController
 import com.facebook.AccessToken
@@ -23,6 +25,7 @@ import io.reactivex.subjects.PublishSubject
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.SessionManager
 import com.limor.app.extensions.hideKeyboard
+import com.limor.app.scenes.auth_new.firebase.FirebaseSessionHandler
 import com.limor.app.scenes.main.fragments.settings.EditProfileFragment.Companion.TIMBER_TAG
 import com.limor.app.scenes.main.viewmodels.LogoutViewModel
 import com.limor.app.scenes.main.viewmodels.UpdateUserViewModel
@@ -33,6 +36,8 @@ import com.limor.app.uimodels.UIUser
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.sdk23.listeners.onClick
 import timber.log.Timber
 import javax.inject.Inject
@@ -157,8 +162,21 @@ class SettingsFragment : BaseFragment() {
 
 
         lytLogout.onClick {
-            FirebaseAuth.getInstance().signOut()
-            startActivity(Intent(requireContext(),SplashActivity::class.java))
+            lifecycleScope.launch {
+                try {
+                    FirebaseSessionHandler.logout(requireContext())
+                    delay(300)
+                    Toast.makeText(requireContext(), "Done!", Toast.LENGTH_LONG).show()
+                    (activity)?.finishAffinity()
+                    startActivity(Intent(requireContext(),SplashActivity::class.java))
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Error -> ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
 
     }

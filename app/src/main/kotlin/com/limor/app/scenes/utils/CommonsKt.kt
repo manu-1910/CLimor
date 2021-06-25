@@ -239,6 +239,27 @@ class CommonsKt {
             }
         }
 
+        fun setButtonFollowerStylePressed(
+            button: Button,
+            primaryStatus: Boolean,
+            textPrimary: Int,
+            textSecondary: Int
+        ) {
+            if (primaryStatus) {
+                button.background = ContextCompat.getDrawable(
+                    button.context, R.drawable.bg_round_yellow_ripple)
+                button.setTextColor(ContextCompat.getColor(button.context, R.color.black))
+                button.text = button.context.getString(textPrimary)
+            } else {
+                button.text = button.context.getString(textSecondary)
+                button.background = ContextCompat.getDrawable(
+                    button.context,
+                    R.drawable.bg_round_bluish_ripple
+                )
+                button.setTextColor(ContextCompat.getColor(button.context, R.color.notification_divider))
+            }
+        }
+
 
         fun ageToTimestamp(age: Int): Long {
             val calendar = Calendar.getInstance()

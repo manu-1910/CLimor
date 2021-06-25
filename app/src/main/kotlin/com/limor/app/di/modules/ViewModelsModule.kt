@@ -6,6 +6,8 @@ import com.limor.app.common.ViewModelFactory
 import com.limor.app.di.ViewModelKey
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.authentication.viewmodels.*
+import com.limor.app.scenes.main.fragments.profile.FollowViewModelNew
+import com.limor.app.scenes.main.fragments.settings.SettingsViewModel
 import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.notifications.PushNotificationsViewModel
@@ -283,4 +285,14 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(HomeFeedViewModel::class)
     abstract fun bindHomeFeedNewViewModel(viewModel: HomeFeedViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SettingsViewModel::class)
+    abstract fun bindSettingsViewModel(viewModel: SettingsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(FollowViewModelNew::class)
+    abstract fun bindFollowViewModel(viewModel: FollowViewModelNew): ViewModel
 }

@@ -36,7 +36,7 @@ class SettingsActivity : BaseActivity(), HasSupportFragmentInjector {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-      //  overridePendingTransition(R.anim.slide_in_right_enter, R.anim.slide_out_left_exit);
+        overridePendingTransition(0,0)
 
         binding = DataBindingUtil.setContentView(this,R.layout.activity_settings) as ActivitySettingsBinding
 
@@ -56,6 +56,11 @@ class SettingsActivity : BaseActivity(), HasSupportFragmentInjector {
         }
 
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        overridePendingTransition(0,0)
     }
 
     /*override fun onBackPressed() {

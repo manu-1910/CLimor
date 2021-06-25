@@ -1,6 +1,10 @@
 query Followers($limit: Int!,$offset:Int!) {
     getFollowers(limit: $limit,offset: $offset){
         username,
+        first_name,
+        last_name,
+        following_count,
+        followers_count,
         description,
         followed,
         images{

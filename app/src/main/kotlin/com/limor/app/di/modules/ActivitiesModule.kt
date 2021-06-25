@@ -131,4 +131,5 @@ abstract class ActivitiesModule {
 
     @ContributesAndroidInjector
     abstract fun contributeAuthActivityNewInjector(): AuthActivityNew
+
 }

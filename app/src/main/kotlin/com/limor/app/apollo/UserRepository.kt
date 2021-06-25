@@ -25,6 +25,15 @@ class UserRepository @Inject constructor(val apollo: Apollo){
         return updateUserNameResult
     }
 
+    suspend fun updateUserProfile(userName: String,firstName:String,lastName:String,bio:String,website:String): String? {
+        val query = UpdateUserProfileMutation(userName,firstName,lastName,website,bio)
+        val queryResult = apollo.mutate(query)
+        val updateUserNameResult =
+            queryResult?.data?.updateUser?.status
+        Timber.d("UpdateUserProfileMutation -> $updateUserNameResult")
+        return updateUserNameResult
+    }
+
     suspend fun updateUserOnboardingData(
         gender: Int?,
         categories: List<Int?>,

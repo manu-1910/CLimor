@@ -89,7 +89,7 @@
             app:layout_constraintTop_toTopOf="@+id/linearLayout">
 
             <Button
-                android:visibility="gone"
+                android:visibility="visible"
                 android:id="@+id/btn_follow"
                 android:layout_width="84dp"
                 android:layout_height="32dp"
@@ -101,6 +101,7 @@
                 android:textColor="@color/black"
                 android:textSize="12sp" />
             <Button
+                android:visibility="gone"
                 android:layout_width="84dp"
                 android:layout_height="32dp"
                 android:background="@drawable/bg_round_yellow_ripple"

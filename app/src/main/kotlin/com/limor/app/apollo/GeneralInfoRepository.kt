@@ -78,14 +78,14 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         return createUserResult as ArrayList<GetBlockedUsersQuery.GetBlockedUser?>
     }
 
-    suspend fun getFollowers(): List<FollowersQuery.GetFollower?>? {
+    suspend fun getFollowers(limit:Int,offset:Int): List<FollowersQuery.GetFollower?>? {
         val query = FollowersQuery(10,10)
         val queryResult = withContext(Dispatchers.IO){
             apollo.launchQuery(query)
         }
         val createUserResult: List<FollowersQuery.GetFollower?> =
             queryResult?.data?.getFollowers ?: return null
-        Timber.d("Got Followers -> ${createUserResult.size}")
+        Timber.d("Got FF -> ${createUserResult.size}")
         return createUserResult
     }
 }

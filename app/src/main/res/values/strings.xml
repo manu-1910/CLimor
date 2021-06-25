@@ -305,6 +305,7 @@
     <string name="profile_casts_title">Casts</string>
     <string name="confirmation_block_user">Are you sure you want to block this user?</string>
     <string name="confirmation_unblock_user">Are you sure you want to unblock this user?</string>
+    <string name="confirmation_unfollow_user">Are you sure you want to unfollow this user?</string>
     <string name="unblock">Unblock</string>
     <string name="error_blocking_user">There was an error blocking this user, please try again later</string>
     <string name="success_blocking_user">User blocked correctly</string>

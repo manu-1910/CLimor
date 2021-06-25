@@ -11,22 +11,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 
 import androidx.navigation.fragment.findNavController
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
+import com.google.android.material.snackbar.Snackbar
 import com.limor.app.App
+import com.limor.app.GetUserProfileQuery
 import com.limor.app.R
 import com.yalantis.ucrop.UCrop
 import io.reactivex.subjects.PublishSubject
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.common.SessionManager
+import com.limor.app.databinding.FragmentEditBinding
+import com.limor.app.databinding.FragmentEditProfileBinding
 import com.limor.app.extensions.hideKeyboard
+import com.limor.app.extensions.showSnackbar
 import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.viewmodels.UpdateUserViewModel
 import com.limor.app.scenes.utils.Commons
@@ -49,15 +56,19 @@ import javax.inject.Inject
 
 class EditProfileFragment : BaseFragment() {
 
+    private var currentUser: GetUserProfileQuery.GetUser? = null
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val  model: SettingsViewModel by viewModels { viewModelFactory }
+
     @Inject
     lateinit var sessionManager: SessionManager
 
     private lateinit var updateUserViewModel: UpdateUserViewModel
     private val updateUserTrigger = PublishSubject.create<Unit>()
 
-    private var rootView: View? = null
+    private lateinit var binding: FragmentEditProfileBinding
     var app: App? = null
     var profileImageUploaded = true
     var profileHasImage = false
@@ -77,12 +88,10 @@ class EditProfileFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_edit_profile, container, false)
-        }
+    ): View {
+        binding = FragmentEditProfileBinding.inflate(inflater,container,false)
         app = context?.applicationContext as App
-        return rootView
+        return binding.root
     }
 
 
@@ -92,21 +101,78 @@ class EditProfileFragment : BaseFragment() {
         user = sessionManager.getStoredUser()
 
         //Setup animation transition
-        ViewCompat.setTranslationZ(view, 1f)
+      //  ViewCompat.setTranslationZ(view, 1f)
+
+        loadExistingData()
         /*bindViewModel()
         loadExistingData()
         apiCallUpdateUser()*/
+        addClickListeners()
+        fetchRequiredData()
+    }
+
+    private fun addClickListeners() {
+        binding.btnUpdate.setOnClickListener {
+            updateUserData()
+        }
+
+        binding.btnChoosePhoto.setOnClickListener {
+           // loadImagePicker()
+
+        }
+
+
+    }
+
+    private fun fetchRequiredData() {
+
+        lifecycleScope.launchWhenCreated {
+            currentUser  = model.getUserInfo()
+            bindUserDataToViews()
+        }
+
     }
 
 
+    private fun updateUserData(){
 
+        lifecycleScope.launchWhenCreated {
+
+            val response = model.updateUserInfo(
+                binding.etUsernameInner.text.toString(),
+                binding.etFirstNameInner.text.toString(),
+                binding.etLastNameInner.text.toString(),
+                binding.etBioInner.text.toString(),
+                binding.etWebUrlInner.text.toString()
+            )
+
+            response?.let{
+                binding.root.showSnackbar(it,Snackbar.LENGTH_SHORT)
+                (activity)?.finish()
+            }
+
+            bindUserDataToViews()
+
+        }
+
+    }
+
+    private fun bindUserDataToViews() {
+        currentUser?.let{
+
+            binding.etUsernameInner.setText(it.username)
+            binding.etFirstNameInner.setText(it.first_name)
+            binding.etLastNameInner.setText(it.last_name)
+            binding.etWebUrlInner.setText(it.website)
+            binding.etBioInner.setText(it.description)
+
+
+        }
+    }
 
 
     private fun bindViewModel() {
-        activity?.let {
-            updateUserViewModel = ViewModelProvider(it, viewModelFactory)
-                .get(UpdateUserViewModel::class.java)
-        }
+
     }
 
 
@@ -118,7 +184,7 @@ class EditProfileFragment : BaseFragment() {
             .toolbarFolderTitle(getString(R.string.imagepicker_folder)) // folder selection title
             .toolbarImageTitle(getString(R.string.imagepicker_tap_to_select)) // image selection title
             .toolbarArrowColor(Color.WHITE) // Toolbar 'up' arrow color
-            .includeVideo(true) // Show video on image picker
+            .includeVideo(false) // Show video on image picker
             .limit(resources.getInteger(R.integer.MAX_PHOTOS)) // max images can be selected (99 by default)
             .theme(R.style.ImagePickerTheme) // must inherit ef_BaseTheme. please refer to sample
             .start()
@@ -141,6 +207,11 @@ class EditProfileFragment : BaseFragment() {
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        /*if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+
+
+        }*/
         // this will run when coming from the image picker
        /* if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
 
@@ -201,6 +272,7 @@ class EditProfileFragment : BaseFragment() {
 
 
     private fun loadExistingData(){
+
       /*  etFirstName.text = user?.first_name?.toEditable()
         etLastName.text = user?.last_name?.toEditable()
         etUsername.text = user?.username?.toEditable()

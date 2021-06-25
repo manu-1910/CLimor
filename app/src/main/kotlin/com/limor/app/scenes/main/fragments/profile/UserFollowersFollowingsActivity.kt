@@ -7,6 +7,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.tabs.TabLayout
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
@@ -41,13 +44,14 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        overridePendingTransition(0,0)
 
         binding = DataBindingUtil.setContentView(this,R.layout.activity_followers_and_following) as ActivityFollowersAndFollowingBinding
 
 
-        val bundle = intent?.extras
-        uiUser = bundle?.get("user") as UIUser
-        tabToShow = bundle?.getString("tabToShow").toString()
+
+
+
 
         configureToolbar()
 
@@ -97,78 +101,73 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
 
 
     private fun configureViewPager(){
-        val viewPager: ViewPager = findViewById(R.id.view_pager_followers_followings)
-        val tabs: TabLayout = findViewById(R.id.tabs)
+        val viewPager: ViewPager2 = binding.followViewPager
         val names = arrayOf(
-            getString(R.string.followers_count, uiUser?.followers_count),
-            getString(R.string.followings_count, uiUser?.following_count)
+            getString(R.string.followers_count, followersCount),
+            getString(R.string.followings_count, followingsCount)
         )
 
-        val adapter = object : FragmentStatePagerAdapter(
-            supportFragmentManager,
-            BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
+        val adapter = object : FragmentStateAdapter(
+            supportFragmentManager,lifecycle
         ) {
-            override fun getItem(position: Int): Fragment {
-                if(position == 0){
-                    return UserFollowersFragment.newInstance(uiUser!!)
-                }else{
-                    return UserFollowingsFragment.newInstance(uiUser!!)
-                }
-            }
 
-            override fun getCount() : Int {
+
+            override fun getItemCount(): Int {
                 return names.size
             }
 
-            override fun getPageTitle(position: Int): CharSequence {
-                return names[position]
+            override fun createFragment(position: Int): Fragment {
+                return if(position == 0){
+                    UserFollowersFragmentNew.newInstance("")
+                }else{
+                    UserFollowingsFragmentNew.newInstance("")
+                }
             }
 
-            // this is necessary. Without this, app will crash when you are in a different fragment
-            // and then push back and it goes back to this fragment.
-            // the fragmentstatepageradapter saves states between different fragments of the adapter itself
-            // but if you go to a different fragment, for example home, and the push back and the navigation
-            // goes back to this profile fragment, the fragmentstatepageradapter will try to restore the
-            // state of the adapter fragments but they are not alive anymore.
-            override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
+            /*override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
                 try {
                     super.restoreState(state, loader)
                 } catch (e: Exception) {
-//                        Timber.e("Error Restore State of Fragment : %s", e.message)
                 }
-            }
+            }*/
         }
         viewPager.adapter = adapter
+        viewPager.isUserInputEnabled = false
 
-        tabs.setupWithViewPager(viewPager)
-        tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                tab?.let {
-                    val myFragment = adapter.instantiateItem(viewPager, it.position)
-//                            if (myFragment is UserFollowersFragment) {
-//                                myFragment.scrollToTop()
-//                            }
+
+        binding.toggleGender.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                when (checkedId) {
+                    R.id.btnFollowers -> viewPager.currentItem = 0
+                    R.id.btnFollowing -> viewPager.currentItem = 1
                 }
             }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-
-            }
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-
-            }
-        })
-
-        if (!tabToShow.isNullOrEmpty()){
-            if(tabToShow.trim().equals("followers")){
-                val tab: TabLayout.Tab? = tabs.getTabAt(0)
-                tab?.select()
-            }else{
-                val tab: TabLayout.Tab? = tabs.getTabAt(1)
-                tab?.select()
-            }
         }
+
+
+        val bundle = intent?.extras
+        bundle?.let{
+            when(bundle.getString("tab")){
+                "followers" ->{
+                    binding.toggleGender.check(R.id.btnFollowers)
+                    viewPager.currentItem = 0
+                }
+                "following" ->{
+                    binding.toggleGender.check(R.id.btnFollowing)
+                    viewPager.currentItem = 1
+                }
+
+            }
+        }?:run{
+            binding.toggleGender.check(R.id.btnFollowers)
+        }
+
+
+        binding.toolbar.btnClose.setOnClickListener{
+            finish()
+        }
+
+
 
     }
 

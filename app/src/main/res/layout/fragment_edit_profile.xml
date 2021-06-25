@@ -119,7 +119,9 @@
                         android:layout_height="wrap_content"
                         android:imeOptions="actionNext"
                         android:inputType="text"
-                        android:maxLines="1" />
+                        android:maxLines="1"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/roboto_bold"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
                 <com.google.android.material.textfield.TextInputLayout
@@ -131,8 +133,6 @@
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="24dp"
                     android:hint="@string/hint_username"
-                    app:endIconDrawable="@drawable/baseline_cancel_black_24dp"
-                    app:endIconMode="clear_text"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/etPhoneCode"
                     app:layout_constraintTop_toBottomOf="@+id/textView8">
@@ -143,7 +143,9 @@
                         android:layout_height="wrap_content"
                         android:imeOptions="actionNext"
                         android:inputType="text"
-                        android:maxLines="1" />
+                        android:maxLines="1"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/roboto_bold"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
                 <com.google.android.material.textfield.TextInputLayout
@@ -155,8 +157,6 @@
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="24dp"
                     android:hint="@string/hint_website"
-                    app:endIconDrawable="@drawable/baseline_cancel_black_24dp"
-                    app:endIconMode="clear_text"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/etPhoneCode"
                     app:layout_constraintTop_toBottomOf="@+id/textView8">
@@ -167,7 +167,9 @@
                         android:layout_height="wrap_content"
                         android:imeOptions="actionNext"
                         android:inputType="text"
-                        android:maxLines="1" />
+                        android:maxLines="1"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/roboto_bold"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
                 <com.google.android.material.textfield.TextInputLayout
@@ -180,8 +182,6 @@
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="24dp"
                     android:hint="@string/hint_bio"
-                    app:endIconDrawable="@drawable/baseline_cancel_black_24dp"
-                    app:endIconMode="clear_text"
                     app:counterEnabled="true"
                     app:counterMaxLength="120"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -192,8 +192,12 @@
                         android:id="@+id/etBioInner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:maxHeight="120dp"
+                        android:minHeight="120dp"
                         android:inputType="textMultiLine"
-                        android:maxEms="120" />
+                        android:maxEms="120"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/roboto_medium"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 

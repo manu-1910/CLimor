@@ -14,9 +14,9 @@ class FollowViewModelNew @Inject constructor(
 ): ViewModel() {
 
 
-    suspend fun getFollowers(): List<FollowersQuery.GetFollower?>? {
+/*    suspend fun getFollowers(): List<FollowersQuery.GetFollower?>? {
         return generalInfoRepository.getFollowers()
-    }
+    }*/
 
 
 }
