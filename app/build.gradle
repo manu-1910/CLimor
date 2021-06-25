@@ -209,10 +209,6 @@ dependencies {
     implementation deps.lifecycle.livedata
     implementation deps.lifecycle.runtime
     implementation 'androidx.viewpager:viewpager:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     kapt deps.lifecycle.compiler
 
     // Kotlin

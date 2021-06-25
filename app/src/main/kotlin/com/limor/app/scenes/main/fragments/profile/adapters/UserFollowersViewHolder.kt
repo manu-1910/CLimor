@@ -27,7 +27,6 @@ class UserFollowersViewHolder(
 
     fun bind(currentItem: FollowersQuery.GetFollower, position: Int) {
 
-        Timber.d("MJ ISSUE bind -> ${currentItem.username}")
         if (currentItem.followed!!) {
             CommonsKt.setButtonFollowerStylePressed(
                 btnFollow,

@@ -28,6 +28,16 @@ class SettingsViewModel @Inject constructor(
     val blockedUsersData: LiveData<ArrayList<GetBlockedUsersQuery.GetBlockedUser?>>
         get() = _blockedUsersData
 
+    private var _userInfoLiveData =
+        MutableLiveData<GetUserProfileQuery.GetUser?>()
+    val userInfoLiveData: LiveData<GetUserProfileQuery.GetUser?>
+        get() = _userInfoLiveData
+
+    private var _userUpdatedResponse =
+        MutableLiveData<String?>()
+    val userUpdatedResponse: LiveData<String?>
+        get() = _userUpdatedResponse
+
     private var _followersData =
         MutableLiveData<List<FollowersQuery.GetFollower?>?>()
     val followersData: LiveData<List<FollowersQuery.GetFollower?>?>
@@ -48,7 +58,7 @@ class SettingsViewModel @Inject constructor(
         _blockedUsersData.postValue(ArrayList())
     }
 
-    suspend fun getFollowers(offset: Int) {
+    fun getFollowers(offset: Int) {
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 val blockedUsers = withContext(Dispatchers.IO){
@@ -62,19 +72,33 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    suspend fun getUserInfo(): GetUserProfileQuery.GetUser?{
-        return try {
-            withContext(Dispatchers.IO){
-                generalInfoRepository.getUserProfile()
+    fun getUserInfo(){
+        viewModelScope.launch(Dispatchers.Default) {
+            try {
+                val userInfo = withContext(Dispatchers.IO){
+                    generalInfoRepository.getUserProfile()
+                }
+                _userInfoLiveData.postValue(userInfo)
+                Timber.d("Got UserInfo -> $userInfo")
+            } catch (e: Exception) {
+                Timber.d("Got UserInfo -> $e")
             }
-        } catch (e: Exception) {
-            Timber.d("Got Follow -> $e")
-            null
         }
+
     }
 
-    suspend fun updateUserInfo(userName: String, firstName:String, lastName:String, bio:String, website:String): String?{
-        return userInfoProvider.updateUserProfile(userName,firstName,lastName,bio,website)
+    fun updateUserInfo(userName: String, firstName:String, lastName:String, bio:String, website:String){
+        viewModelScope.launch(Dispatchers.Default) {
+            try {
+                val response = withContext(Dispatchers.IO){
+                    userInfoProvider.updateUserProfile(userName,firstName,lastName,bio,website)
+                }
+                _userUpdatedResponse.postValue(response)
+                Timber.d("Updated UserInfo -> $response")
+            } catch (e: Exception) {
+                Timber.d("Updated UserInfo -> $e")
+            }
+        }
     }
 
     fun clearFollowers() {

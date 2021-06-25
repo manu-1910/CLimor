@@ -13,7 +13,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.limor.app.GetUserProfileQuery
 import com.limor.app.R
-import com.limor.app.databinding.ActivityUserProfileFragmentBinding
+import com.limor.app.common.Constants
+import com.limor.app.databinding.UserProfileFragmentBinding
 import com.limor.app.di.Injectable
 import com.limor.app.scenes.main.fragments.profile.adapters.ProfileViewPagerAdapter
 import com.limor.app.scenes.main.fragments.settings.SettingsActivity
@@ -27,13 +28,13 @@ class UserProfileFragment : Fragment(), Injectable {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: HomeFeedViewModel by viewModels { viewModelFactory }
 
-    private lateinit var binding: ActivityUserProfileFragmentBinding
+    private lateinit var binding: UserProfileFragmentBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = ActivityUserProfileFragmentBinding.inflate(inflater, container, false)
+        binding = UserProfileFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -67,14 +68,14 @@ class UserProfileFragment : Fragment(), Injectable {
 
         binding.followers.setOnClickListener {
             startActivity(Intent(requireContext(), UserFollowersFollowingsActivity::class.java)
-                .putExtra("tab","followers")
+                .putExtra(Constants.TAB_KEY, Constants.TAB_FOLLOWERS)
             )
         }
 
         binding.following.setOnClickListener {
 
             startActivity(Intent(requireContext(), UserFollowersFollowingsActivity::class.java)
-                .putExtra("tab","following")
+                .putExtra(Constants.TAB_KEY,Constants.TAB_FOLLOWINGS)
             )
 
         }
@@ -86,12 +87,10 @@ class UserProfileFragment : Fragment(), Injectable {
 
         binding.toggleGender.addOnButtonCheckedListener { toggleButton, checkedId, isChecked ->
             if (isChecked) {
-                val gender = when (checkedId) {
+                 when (checkedId) {
                     R.id.btnCasts -> 0
-                    R.id.btnPatron -> 1
-                    else -> 0
+                    else -> 1
                 }
-                //move viewpager
             }
         }
 

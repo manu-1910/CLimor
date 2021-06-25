@@ -20,6 +20,7 @@ import com.limor.app.FollowersQuery
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentUsersBlockedBinding
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.adapters.UserFollowersAdapter
 import com.limor.app.scenes.main.fragments.settings.SettingsViewModel
 import com.limor.app.scenes.main.viewmodels.GetBlockedUsersViewModel
@@ -48,11 +49,8 @@ class UserFollowersFragmentNew(private val uiUser: String) : BaseFragment() {
     private val  model: SettingsViewModel by viewModels { viewModelFactory }
 
     private lateinit var binding: FragmentUsersBlockedBinding
-    var app: App? = null
 
     private lateinit var blockedUsersAdapter: UserFollowersAdapter
-
-    private lateinit var viewModelGetBlockedUsers: GetBlockedUsersViewModel
 
 
 
@@ -67,10 +65,9 @@ class UserFollowersFragmentNew(private val uiUser: String) : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentUsersBlockedBinding.inflate(inflater,container,false)
         arrayList = ArrayList()
-        app = context?.applicationContext as App
         return binding.root
     }
 
@@ -95,11 +92,9 @@ class UserFollowersFragmentNew(private val uiUser: String) : BaseFragment() {
                     showEmptyScenario()
             }else{
                  isRequestingNewData = false
-                 Timber.d("MJ ISSUE p -> ${arrayList.size}")
                  val adapter = ( binding.rvBlockedUsers.adapter as UserFollowersAdapter )
                  arrayList.addAll(it!!)
                  adapter.notifyDataSetChanged()
-                 Timber.d("MJ ISSUE p ->  ${adapter.list}")
                  hideEmptyScenario()
             }
 
@@ -255,14 +250,12 @@ class UserFollowersFragmentNew(private val uiUser: String) : BaseFragment() {
 
 
     private fun initApiCallGetBlockedUsers() {
-        lifecycleScope.launchWhenCreated {
-            if(model.followersData.value == null || model.followersData.value?.size == 0){
-                model.getFollowers(arrayList.size)
-                Timber.d("called -> load data")
-            }else{
-                model.clearFollowers()
-                model.getFollowers(0)
-            }
+
+        if(model.followersData.value == null || model.followersData.value?.size == 0){
+            model.getFollowers(arrayList.size)
+        }else{
+            model.clearFollowers()
+            model.getFollowers(0)
         }
 
     }

@@ -1,48 +1,23 @@
 package com.limor.app.scenes.main.fragments
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
-import android.view.*
-import android.widget.ImageButton
-import android.widget.PopupMenu
-import android.widget.TextView
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.google.android.material.tabs.TabLayout
-import com.limor.app.App
 import com.limor.app.GetUserProfileQuery
 import com.limor.app.R
-import com.limor.app.common.BaseFragment
-import com.limor.app.common.SessionManager
-import com.limor.app.databinding.ActivityUserProfileFragmentBinding
 import com.limor.app.databinding.FragmentProfileBinding
 import com.limor.app.di.Injectable
-import com.limor.app.extensions.hideKeyboard
-import com.limor.app.scenes.main.fragments.profile.*
+import com.limor.app.scenes.main.fragments.profile.UserFollowersFollowingsActivity
 import com.limor.app.scenes.main.fragments.profile.adapters.ProfileViewPagerAdapter
-import com.limor.app.scenes.main.fragments.settings.SettingsActivity
-import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
-import com.limor.app.scenes.utils.CommonsKt
-import com.limor.app.scenes.utils.CommonsKt.Companion.formatSocialMediaQuantity
-import com.limor.app.uimodels.UIUser
-import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.fragment_profile.*
-import org.jetbrains.anko.cancelButton
-import org.jetbrains.anko.okButton
-import org.jetbrains.anko.sdk23.listeners.onClick
-import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
-
 
 
 class ProfileFragment : Fragment(), Injectable {
@@ -86,15 +61,17 @@ class ProfileFragment : Fragment(), Injectable {
 
 
         binding.followers.setOnClickListener {
-            startActivity(Intent(requireContext(), UserFollowersFollowingsActivity::class.java)
-                .putExtra("tab","followers")
+            startActivity(
+                Intent(requireContext(), UserFollowersFollowingsActivity::class.java)
+                    .putExtra("tab", "followers")
             )
         }
 
         binding.following.setOnClickListener {
 
-            startActivity(Intent(requireContext(), UserFollowersFollowingsActivity::class.java)
-                .putExtra("tab","following")
+            startActivity(
+                Intent(requireContext(), UserFollowersFollowingsActivity::class.java)
+                    .putExtra("tab", "following")
             )
 
         }

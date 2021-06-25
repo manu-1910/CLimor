@@ -256,16 +256,12 @@ class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
 
 
     private fun initApiCallGetBlockedUsers() {
-        lifecycleScope.launchWhenCreated {
-            if(model.followersData.value == null || model.followersData.value?.size == 0){
-                model.getFollowers(arrayList.size)
-                Timber.d("called -> load data")
-            }else{
-                model.clearFollowers()
-                model.getFollowers(0)
-            }
+        if(model.followersData.value == null || model.followersData.value?.size == 0){
+            model.getFollowers(arrayList.size)
+        }else{
+            model.clearFollowers()
+            model.getFollowers(0)
         }
-
     }
 
     private fun requestNewData(showProgress : Boolean = true) {

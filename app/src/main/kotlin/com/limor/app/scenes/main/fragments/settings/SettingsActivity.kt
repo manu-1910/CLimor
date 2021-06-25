@@ -38,7 +38,8 @@ class SettingsActivity : BaseActivity(), HasSupportFragmentInjector {
         super.onCreate(savedInstanceState)
         overridePendingTransition(0,0)
 
-        binding = DataBindingUtil.setContentView(this,R.layout.activity_settings) as ActivitySettingsBinding
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
 
         setupNavigationController()
@@ -47,9 +48,6 @@ class SettingsActivity : BaseActivity(), HasSupportFragmentInjector {
     private fun setupNavigationController() {
         navHostFragment = supportFragmentManager.findFragmentById(R.id.navigation_host_fragment_settings) as NavHostFragment
         navController = navHostFragment.navController
-
-
-       // binding.toolbar.title =
 
         binding.toolbar.btnClose.setOnClickListener {
             onBackPressed()

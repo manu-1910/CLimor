@@ -1,22 +1,17 @@
 package com.limor.app.scenes.main.fragments.profile
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.View
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.button.MaterialButtonToggleGroup
-import com.google.android.material.tabs.TabLayout
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
+import com.limor.app.common.Constants
 import com.limor.app.databinding.ActivityFollowersAndFollowingBinding
-import com.limor.app.uimodels.UIUser
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -24,8 +19,6 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
 
     private lateinit var binding: ActivityFollowersAndFollowingBinding
     var rootView: View? = null
-    private var uiUser: UIUser? = null
-    private var tabToShow: String = ""
 
     @Inject
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -36,22 +29,20 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
         fun newInstance() = UserFollowersFollowingsActivity()
     }
 
-    var followersCount = 0;
-    var followingsCount = 0;
+    var followersCount = 0
+    var followingsCount = 0
 
 
     override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> = fragmentInjector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        overridePendingTransition(0,0)
+        overridePendingTransition(0, 0)
 
-        binding = DataBindingUtil.setContentView(this,R.layout.activity_followers_and_following) as ActivityFollowersAndFollowingBinding
+        binding = ActivityFollowersAndFollowingBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-
-
-
-
+        Timber.d("USER FOLLOW created FF")
 
         configureToolbar()
 
@@ -60,21 +51,21 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
     }
 
 
-    private fun configureToolbar(){
+    private fun configureToolbar() {
         //Toolbar title
-       /* if(uiUser!=null){
-            if (uiUser!!.username.isNullOrEmpty()){
-                binding.top.tvToolbarTitle.text = getString(R.string.username)
-            }else{
-                binding.top.tvToolbarTitle.text = "user_name"
-            }
-        }
-        binding.top.tvToolbarTitle.text = "user_name"
+        /* if(uiUser!=null){
+             if (uiUser!!.username.isNullOrEmpty()){
+                 binding.top.tvToolbarTitle.text = getString(R.string.username)
+             }else{
+                 binding.top.tvToolbarTitle.text = "user_name"
+             }
+         }
+         binding.top.tvToolbarTitle.text = "user_name"
 
-        //Toolbar Left
-        binding.top.btnClose.onClick {
-            this.finish()
-        }*/
+         //Toolbar Left
+         binding.top.btnClose.onClick {
+             this.finish()
+         }*/
 
         /*//Search View
         search_view.setOnQueryTextListener(object :
@@ -100,7 +91,7 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
     }
 
 
-    private fun configureViewPager(){
+    private fun configureViewPager() {
         val viewPager: ViewPager2 = binding.followViewPager
         val names = arrayOf(
             getString(R.string.followers_count, followersCount),
@@ -108,7 +99,7 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
         )
 
         val adapter = object : FragmentStateAdapter(
-            supportFragmentManager,lifecycle
+            supportFragmentManager, lifecycle
         ) {
 
 
@@ -117,9 +108,9 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
             }
 
             override fun createFragment(position: Int): Fragment {
-                return if(position == 0){
+                return if (position == 0) {
                     UserFollowersFragmentNew.newInstance("")
-                }else{
+                } else {
                     UserFollowingsFragmentNew.newInstance("")
                 }
             }
@@ -146,27 +137,26 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
 
 
         val bundle = intent?.extras
-        bundle?.let{
-            when(bundle.getString("tab")){
-                "followers" ->{
+        bundle?.let {
+            when (bundle.getString(Constants.TAB_KEY)) {
+                Constants.TAB_FOLLOWERS -> {
                     binding.toggleGender.check(R.id.btnFollowers)
                     viewPager.currentItem = 0
                 }
-                "following" ->{
+                Constants.TAB_FOLLOWINGS -> {
                     binding.toggleGender.check(R.id.btnFollowing)
                     viewPager.currentItem = 1
                 }
 
             }
-        }?:run{
+        } ?: run {
             binding.toggleGender.check(R.id.btnFollowers)
         }
 
 
-        binding.toolbar.btnClose.setOnClickListener{
+        binding.toolbar.btnClose.setOnClickListener {
             finish()
         }
-
 
 
     }

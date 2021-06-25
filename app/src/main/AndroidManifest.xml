@@ -259,10 +259,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/MaterialMainTheme.FullScreen">
         </activity>
-        <activity android:name=".scenes.profile.FollowersAndFollowingActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
+
 
     </application>
 

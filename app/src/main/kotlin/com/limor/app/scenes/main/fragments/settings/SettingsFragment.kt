@@ -47,15 +47,8 @@ class SettingsFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    @Inject
-    lateinit var sessionManager: SessionManager
 
-    private lateinit var viewModelLogout: LogoutViewModel
-    private lateinit var updateUserViewModel: UpdateUserViewModel
-    private val logoutTrigger = PublishSubject.create<Unit>()
-    private val updateUserTrigger = PublishSubject.create<Unit>()
     private var rootView: View? = null
-    var app: App? = null
 
 
     companion object {
@@ -72,7 +65,6 @@ class SettingsFragment : BaseFragment() {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_settings, container, false)
         }
-        app = context?.applicationContext as App
         return rootView
     }
 
@@ -148,7 +140,7 @@ class SettingsFragment : BaseFragment() {
             try {
                 val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", getString(R.string.support_email), null))
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject))
-                emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.request_from) + " " + sessionManager.getStoredUser()?.username)
+                emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.request_from) )
                 startActivity(emailIntent)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -165,7 +157,6 @@ class SettingsFragment : BaseFragment() {
             lifecycleScope.launch {
                 try {
                     FirebaseSessionHandler.logout(requireContext())
-                    delay(300)
                     Toast.makeText(requireContext(), "Done!", Toast.LENGTH_LONG).show()
                     (activity)?.finishAffinity()
                     startActivity(Intent(requireContext(),SplashActivity::class.java))

@@ -202,6 +202,7 @@ class UserInfoProvider @Inject constructor(
         return try {
             userRepository.updateUserProfile(userName,firstName,lastName,bio,website)
         } catch (e: Exception) {
+            Timber.e(e)
             null
         }
     }

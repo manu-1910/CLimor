@@ -53,6 +53,10 @@ class Constants{
         const val MAX_API_COMMENTS_PER_COMMENT = 2
 
 
+        const val TAB_FOLLOWERS = "followers"
+        const val TAB_FOLLOWINGS = "followings"
+        const val TAB_KEY = "followings"
+
         // Errors
         private val ERROR_CODE_NO_AUTHENTICATED_USER: Int = 10
         private const val ERROR_CODE_AUTH_INVALID_CREDENTIALS = 100

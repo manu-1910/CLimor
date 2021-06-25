@@ -28,65 +28,52 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@drawable/placeholder_noti" />
 
-        <LinearLayout
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/circleImageView"
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:outlineAmbientShadowColor="@color/black"
+            android:outlineSpotShadowColor="@color/black"
+            android:src="@drawable/ic_comment"
             app:layout_constraintBottom_toBottomOf="@+id/iv_user"
-            app:layout_constraintEnd_toEndOf="@+id/iv_user">
+            app:layout_constraintEnd_toEndOf="@+id/iv_user" />
 
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:outlineSpotShadowColor="@color/black"
-                android:outlineAmbientShadowColor="@color/black"
-                android:src="@drawable/ic_comment" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linearLayout"
+        <TextView
+            android:id="@+id/tv_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/fl_time_and_follow"
-            android:layout_toEndOf="@+id/iv_user"
-            android:gravity="center_vertical"
-            android:orientation="vertical"
+            android:ellipsize="end"
+            android:fontFamily="@font/roboto"
+            android:gravity="top"
+            android:lineSpacingExtra="4sp"
+            android:maxLines="2"
             android:paddingStart="12dp"
-            app:layout_constraintBottom_toBottomOf="@+id/iv_user"
+            android:paddingEnd="12dp"
+            android:textColor="@color/black"
+            android:textSize="14sp"
             app:layout_constraintEnd_toStartOf="@+id/fl_time_and_follow"
             app:layout_constraintStart_toEndOf="@+id/iv_user"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Mc Commented on your vdsdjfsdnf,msndfideo asdkjhsdkfjsdkjfhkjsdhfkjshdkfjhs" />
 
-            <TextView
-                android:id="@+id/tv_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:fontFamily="@font/roboto"
-                android:gravity="top"
-                android:lineSpacingExtra="4sp"
-                android:maxLines="2"
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                tools:text="Mc Commented on your vdsdjfsdnf,msndfideo asdkjhsdkfjsdkjfhkjsdhfkjshdkfjhs" />
+        <TextView
+            android:id="@+id/tv_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/roboto"
+            android:letterSpacing="-0.01"
+            android:lineSpacingExtra="2sp"
+            android:maxLines="1"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:textColor="@color/notification_secondary_text"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@+id/iv_user"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title"
+            tools:text="2 Minutes Ago" />
 
-            <TextView
-                android:id="@+id/tv_subtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:ellipsize="end"
-                android:letterSpacing="-0.01"
-                android:lineSpacingExtra="2sp"
-                android:maxLines="1"
-                android:textColor="@color/notification_secondary_text"
-                android:textSize="12sp"
-                android:fontFamily="@font/roboto"
-                tools:text="2 Minutes Ago" />
-
-
-        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/fl_time_and_follow"
@@ -96,8 +83,7 @@
             android:layout_centerVertical="true"
             android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/linearLayout"
-            app:layout_constraintTop_toTopOf="@+id/linearLayout">
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/btn_follow"

@@ -27,18 +27,14 @@ class UserFollowersAdapter(var list: ArrayList<FollowersQuery.GetFollower?>, val
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        Timber.d("MJ ISSUE bind fail check-> ${list[position]}")
         list[position]?.let{
             ( holder as UserFollowersViewHolder)
                 .bind(it,position)
-        }?: run {
-            Timber.d("MJ ISSUE bind fail-> ${list[position]}")
         }
 
     }
 
     override fun getItemCount(): Int {
-        Timber.d("MJ ISSUE size -> ${list.size}")
         return list.size
     }
 

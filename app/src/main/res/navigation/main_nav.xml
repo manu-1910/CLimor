@@ -32,6 +32,6 @@
         android:id="@+id/navigation_profile"
         android:name="com.limor.app.scenes.main.fragments.profile.UserProfileFragment"
         android:label="ProfileFragment"
-        tools:layout="@layout/activity_user_profile_fragment">
+        tools:layout="@layout/user_profile_fragment">
     </fragment>
 </navigation>

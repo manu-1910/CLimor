@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/mainContainer"
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_with_back_arrow_icon" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:layout_below="@+id/toolbar"
+        android:id="@+id/navigation_host_fragment_settings"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/settings_navigation">
+    </androidx.fragment.app.FragmentContainerView>
 
-        <include
-            android:id="@+id/toolbar"
-            layout="@layout/toolbar_with_back_arrow_icon" />
-
-        <androidx.fragment.app.FragmentContainerView
-            android:layout_below="@+id/toolbar"
-            android:id="@+id/navigation_host_fragment_settings"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/settings_navigation">
-        </androidx.fragment.app.FragmentContainerView>
-
-    </RelativeLayout>
-
-</layout>
+</RelativeLayout>
