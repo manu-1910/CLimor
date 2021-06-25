@@ -8,7 +8,7 @@ import com.limor.app.FeedItemsQuery
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedRecastedBinding
 import com.limor.app.scenes.main_new.utils.ArgsConverter
-import com.limor.app.util.loadUrlSimple
+import com.limor.app.extensions.loadImage
 
 class ViewHolderRecast(val binding: ItemHomeFeedRecastedBinding) :
     ViewHolderBindable(binding) {
@@ -40,15 +40,15 @@ class ViewHolderRecast(val binding: ItemHomeFeedRecastedBinding) :
         binding.tvPodcastSubtitle.text = item.podcast?.caption ?: ""
 
 
-        binding.ivPodcastAvatar.loadUrlSimple(
+        binding.ivPodcastAvatar.loadImage(
             item.podcast?.owner?.images?.small_url ?: ""
         )
 
-        binding.ivRecastAvatar.loadUrlSimple(
+        binding.ivRecastAvatar.loadImage(
             item.recaster?.images?.small_url ?: ""
         )
 
-        binding.ivPodcastBackground.loadUrlSimple(
+        binding.ivPodcastBackground.loadImage(
             item.podcast?.images?.medium_url ?: ""
         )
 

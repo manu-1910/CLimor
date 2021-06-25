@@ -6,6 +6,7 @@ apply plugin: 'kotlinx-serialization'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.apollographql.apollo'
 apply plugin: 'com.google.firebase.crashlytics'
+//apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 apollo {
     // instruct the compiler to generate Kotlin models
@@ -289,6 +290,7 @@ dependencies {
     api project(':data')
     api project(':remote')
     api project(':storage')
+    api project(':mock')
 
     implementation deps.support.navigation
     implementation deps.support.navigation_fragment

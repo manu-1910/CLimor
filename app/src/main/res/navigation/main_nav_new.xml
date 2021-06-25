@@ -11,15 +11,14 @@
         tools:layout="@layout/fragment_home_new">
         <action
             android:id="@+id/action_navigation_home_to_dialog_report_podcast"
-            app:destination="@id/dialog_report_podcast" >
-        </action>
+            app:destination="@id/dialog_report_podcast"></action>
     </fragment>
 
     <dialog
         android:id="@+id/dialog_report_podcast"
         android:name="com.limor.app.scenes.main_new.fragments.DialogPodcastReport"
         android:label="Dialog Report Podcast"
-        tools:layout="@layout/dialog_report_cast" >
+        tools:layout="@layout/dialog_report_cast">
         <action
             android:id="@+id/action_dialog_report_podcast_to_dialog_report_podcast_p2"
             app:destination="@id/dialog_report_podcast_p2"
@@ -36,13 +35,53 @@
         tools:layout="@layout/dialog_report_cast_p2" />
 
 
-<!--    Replace this dummy fragments with you own Impl-->
+    <!--    Replace this dummy fragments with you own Impl-->
 
     <fragment
         android:id="@+id/navigation_discover"
-        android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
+        android:name="com.limor.app.scenes.main.fragments.discover.discover.DiscoverFragment"
         android:label="DiscoverFragment"
-        tools:layout="@layout/fragment_dummy"/>
+        tools:layout="@layout/fragment_discover">
+        <action
+            android:id="@+id/action_navigation_discover_to_discoverCategoryFragment"
+            app:destination="@id/discoverCategoryFragment" />
+        <action
+            android:id="@+id/action_navigation_discover_to_discoverFeaturedCastsFragment"
+            app:destination="@id/discoverFeaturedCastsFragment" />
+        <action
+            android:id="@+id/action_navigation_discover_to_discoverAllCategoriesFragment"
+            app:destination="@id/discoverAllCategoriesFragment" />
+        <action
+            android:id="@+id/action_navigation_discover_to_discoverSuggestedPeopleFragment"
+            app:destination="@id/discoverSuggestedPeopleFragment" />
+        <action
+            android:id="@+id/action_navigation_discover_to_discoverSearchFragment"
+            app:destination="@id/discoverSearchFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/discoverFeaturedCastsFragment"
+        android:name="com.limor.app.scenes.main.fragments.discover.featuredcasts.DiscoverFeaturedCastsFragment"
+        android:label="DiscoverFeaturedCastsFragment" />
+
+    <fragment
+        android:id="@+id/discoverCategoryFragment"
+        android:name="com.limor.app.scenes.main.fragments.discover.category.DiscoverCategoryFragment"
+        android:label="DiscoverCategoryFragment"
+        tools:layout="@layout/fragment_discover_category">
+        <argument
+            android:name="category"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/discoverAllCategoriesFragment"
+        android:name="com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategoriesFragment"
+        android:label="DiscoverAllCategoriesFragment"
+        tools:layout="@layout/fragment_discover_all_categories">
+        <action
+            android:id="@+id/action_discoverAllCategoriesFragment_to_discoverCategoryFragment"
+            app:destination="@id/discoverCategoryFragment" />
+    </fragment>
 
     <!--    <activity-->
     <!--        android:id="@+id/navigation_record"-->
@@ -51,16 +90,22 @@
     <!--        tools:layout="@layout/activity_record">-->
     <!--    </activity>-->
 
-        <fragment
-            android:id="@+id/navigation_notifications"
-            android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
-            android:label="NotificationsFragment"
-            tools:layout="@layout/fragment_dummy">
-        </fragment>
-        <fragment
-            android:id="@+id/navigation_profile"
-            android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
-            android:label="ProfileFragment"
-            tools:layout="@layout/fragment_dummy">
-        </fragment>
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
+        android:label="NotificationsFragment"
+        tools:layout="@layout/fragment_dummy"/>
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
+        android:label="ProfileFragment"
+        tools:layout="@layout/fragment_dummy"/>
+    <fragment
+        android:id="@+id/discoverSuggestedPeopleFragment"
+        android:name="com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleFragment"
+        android:label="DiscoverSuggestedPeopleFragment" />
+    <fragment
+        android:id="@+id/discoverSearchFragment"
+        android:name="com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchFragment"
+        android:label="DiscoverSearchFragment" />
 </navigation>

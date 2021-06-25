@@ -9,7 +9,7 @@ import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.scenes.main_new.utils.ArgsConverter
 import com.limor.app.scenes.main_new.utils.ArgsConverter.Companion.LABEL_DIALOG_REPORT_PODCAST
-import com.limor.app.util.loadUrlSimple
+import com.limor.app.extensions.loadImage
 
 class ViewHolderPodcast(val binding: ItemHomeFeedBinding) : ViewHolderBindable(binding) {
     override fun bind(item: FeedItemsQuery.FeedItem) {
@@ -34,15 +34,15 @@ class ViewHolderPodcast(val binding: ItemHomeFeedBinding) : ViewHolderBindable(b
         binding.tvPodcastSubtitle.text = item.podcast?.caption ?: ""
 
 
-        binding.ivPodcastAvatar.loadUrlSimple(
+        binding.ivPodcastAvatar.loadImage(
             item.podcast?.owner?.images?.small_url ?: ""
         )
 
-        binding.ivAvatarImageListening.loadUrlSimple(
+        binding.ivAvatarImageListening.loadImage(
             item.podcast?.owner?.images?.small_url ?: ""
         )
 
-        binding.ivPodcastBackground.loadUrlSimple(
+        binding.ivPodcastBackground.loadImage(
             item.podcast?.images?.medium_url ?: ""
         )
 

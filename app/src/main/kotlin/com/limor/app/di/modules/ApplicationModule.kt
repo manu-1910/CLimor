@@ -2,6 +2,8 @@ package com.limor.app.di.modules
 
 import android.app.Application
 import android.content.Context
+import com.limor.app.common.dispatchers.DispatcherProvider
+import com.limor.app.common.dispatchers.DispatcherProviderImpl
 import com.limor.app.common.executors.PostExecutionThread
 import com.limor.app.common.executors.UIThread
 import dagger.Binds
@@ -34,4 +36,7 @@ abstract class ApplicationModule {
 
     @Binds
     abstract fun bindPostExecutionThread(uiThread: UIThread): PostExecutionThread
+
+    @Binds
+    abstract fun bindDispatchersProvider(dispatcherProvider: DispatcherProviderImpl): DispatcherProvider
 }

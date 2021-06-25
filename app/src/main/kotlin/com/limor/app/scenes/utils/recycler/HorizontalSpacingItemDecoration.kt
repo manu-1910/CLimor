@@ -4,7 +4,6 @@ import android.graphics.Rect
 import android.view.View
 import androidx.annotation.Dimension
 import androidx.recyclerview.widget.RecyclerView
-import com.limor.app.extensions.px
 
 class HorizontalSpacingItemDecoration(
     @Dimension(unit = Dimension.PX) private val spacing: Int,
