@@ -15,6 +15,8 @@ class DiscoverSearchFragment : BaseFragment() {
     private var _binding: FragmentDiscoverSearchBinding? = null
     private val binding get() = _binding!!
 
+        //private val viewModel:
+
     private val tabs by lazy {
         mapOf(
             Tab.ACCOUNTS to getString(R.string.accounts),
@@ -22,6 +24,8 @@ class DiscoverSearchFragment : BaseFragment() {
             Tab.HASHTAGS to getString(R.string.title_hashtags),
         )
     }
+
+    private var selectedTab: Tab = Tab.ACCOUNTS
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,18 +43,7 @@ class DiscoverSearchFragment : BaseFragment() {
             setMode(TabSelectorView.Mode.FIXED)
             setTabs(tabs.values.toList())
             setOnTabSelectedListener { tabName, position ->
-                Toast.makeText(context, "Selected: $tabName", Toast.LENGTH_SHORT).show()
-                when(tabs.keys.elementAt(position)) {
-                    Tab.ACCOUNTS -> {
-                    }
-                    Tab.CATEGORIES -> {
-                    }
-                    Tab.HASHTAGS -> {
-                    }
-                    else -> {
-                        throw IllegalArgumentException()
-                    }
-                }
+                selectedTab = tabs.keys.elementAt(position)
             }
         }
     }
