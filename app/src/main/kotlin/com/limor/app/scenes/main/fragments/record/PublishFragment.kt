@@ -103,7 +103,6 @@ class PublishFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var draftViewModel: DraftViewModel
     private lateinit var publishViewModel: PublishViewModel
-    private lateinit var categoriesViewModel: CategoriesViewModel
     private lateinit var locationsViewModel: LocationsViewModel
     private lateinit var tagsViewModel: TagsViewModel
 
@@ -391,9 +390,6 @@ class PublishFragment : BaseFragment() {
 
             publishViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(PublishViewModel::class.java)
-
-            categoriesViewModel = ViewModelProvider(it, viewModelFactory)
-                .get(CategoriesViewModel::class.java)
 
             locationsViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(LocationsViewModel::class.java)

@@ -3,9 +3,9 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/clActivityMainNew"
-    android:background="@color/transparent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/transparent">
 
     <fragment
         android:id="@+id/nav_host_fragment"
@@ -31,9 +31,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/sign_up_bottom_shape"
+            app:itemIconSize="24dp"
             app:itemIconTint="@color/navigation_button_text_color"
             app:itemTextColor="@color/navigation_button_text_color"
-            app:itemIconSize="24dp"
             app:menu="@menu/menu_bottom_navigation_new" />
 
     </com.google.android.material.bottomappbar.BottomAppBar>
@@ -45,8 +45,7 @@
         android:layout_gravity="bottom|center"
         android:layout_marginBottom="16dp"
         android:backgroundTint="?attr/colorAccent"
-        android:src="@drawable/record"
-         />
+        android:src="@drawable/record" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

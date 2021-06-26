@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.jetbrains.anko.sdk23.listeners.onEditorAction
+import org.jetbrains.anko.sdk23.listeners.onFocusChange
 import reactivecircus.flowbinding.android.widget.textChangeEvents
 
 class SearchBar(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
@@ -86,5 +87,13 @@ class SearchBar(context: Context, attrs: AttributeSet) : FrameLayout(context, at
 
     fun setDebounceTime(millis: Long) {
         debounceTime = millis
+    }
+
+    override fun setOnClickListener(l: OnClickListener?) {
+        editText.onFocusChange { v, hasFocus ->
+            if (hasFocus) {
+                l?.onClick(v)
+            }
+        }
     }
 }

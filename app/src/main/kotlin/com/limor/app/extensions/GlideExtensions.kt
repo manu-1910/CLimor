@@ -1,6 +1,9 @@
 package com.limor.app.extensions
 
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
@@ -85,3 +88,16 @@ fun <T> RequestBuilder<T>.listener(
         }
     }
 )
+
+fun <T: ImageView> T.loadCircleImage(url: String) {
+    Glide.with(this)
+        .load(url)
+        .circleCrop()
+        .into(this)
+}
+
+fun ImageView.loadImage(url: String) {
+    Glide.with(this)
+        .load(url)
+        .into(this)
+}

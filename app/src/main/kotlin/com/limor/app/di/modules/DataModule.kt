@@ -55,5 +55,4 @@ abstract class DataModule {
     @Binds
     abstract fun bindCommentRepository(commentRepository: DataCommentRepository): CommentRepository
 
-
 }

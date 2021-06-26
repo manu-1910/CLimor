@@ -1,2 +1,1 @@
-include ':app', ':remote', ':storage', ':data'
-
+include ':app', ':remote', ':storage', ':data', ':mock'

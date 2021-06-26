@@ -8,13 +8,15 @@ import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.authentication.viewmodels.*
 import com.limor.app.scenes.main.fragments.profile.FollowViewModelNew
 import com.limor.app.scenes.main.fragments.settings.SettingsViewModel
+import com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategoriesViewModel
+import com.limor.app.scenes.main.fragments.discover.discover.DiscoverViewModel
+import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleViewModel
 import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.notifications.PushNotificationsViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-
 
 @Module
 abstract class ViewModelsModule {
@@ -60,11 +62,6 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(PublishViewModel::class)
     abstract fun bindPublishViewModel(publishViewModel: PublishViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(CategoriesViewModel::class)
-    abstract fun bindCategoriesViewModel(categoriesViewModel: CategoriesViewModel): ViewModel
 
     @Binds
     @IntoMap
@@ -193,21 +190,6 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(DiscoverViewModel::class)
-    abstract fun bindDiscoverViewModel(discoverViewModel: DiscoverViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(DiscoverAccountsViewModel::class)
-    abstract fun bindDiscoverAccountsViewModel(discoverAccountsViewModel: DiscoverAccountsViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(DiscoverHashTagsViewModel::class)
-    abstract fun bindDiscoverHashTagsViewModel(discoverHashTagsViewModel: DiscoverHashTagsViewModel): ViewModel
-
-    @Binds
-    @IntoMap
     @ViewModelKey(ChangePasswordViewModel::class)
     abstract fun bindChangePasswordViewModel(changePasswordViewModel: ChangePasswordViewModel): ViewModel
 
@@ -263,11 +245,6 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(GetPodcastsByCategoryViewModel::class)
-    abstract fun bindGetPodcastsByCategoryViewModel(viewModel: GetPodcastsByCategoryViewModel): ViewModel
-
-    @Binds
-    @IntoMap
     @ViewModelKey(GetUserFollowingsViewModel::class)
     abstract fun bindGetUserFollowingsViewModel(viewModel: GetUserFollowingsViewModel): ViewModel
 
@@ -275,6 +252,21 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(GetUserFollowersViewModel::class)
     abstract fun bindGetUserFollowersViewModel(viewModel: GetUserFollowersViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverAllCategoriesViewModel::class)
+    abstract fun bindDiscoverAllCategoriesViewModel(viewModel: DiscoverAllCategoriesViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverSuggestedPeopleViewModel::class)
+    abstract fun bindDiscoverSuggestedPeopleViewModel(viewModel: DiscoverSuggestedPeopleViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverViewModel::class)
+    abstract fun bindDiscoverViewModel(viewModel: DiscoverViewModel): ViewModel
 
     @Binds
     @IntoMap

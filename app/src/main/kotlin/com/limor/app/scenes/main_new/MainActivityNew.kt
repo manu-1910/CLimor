@@ -22,8 +22,6 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector {
         super.onCreate(savedInstanceState)
 //        AndroidInjection.inject(this)
         setContentView(R.layout.activity_main_new)
-        clActivityMainNew.systemUiVisibility =
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         setUpBottomNavigation()
     }
 
