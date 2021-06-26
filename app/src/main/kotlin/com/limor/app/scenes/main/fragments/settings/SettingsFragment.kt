@@ -159,7 +159,8 @@ class SettingsFragment : BaseFragment() {
                     FirebaseSessionHandler.logout(requireContext())
                     Toast.makeText(requireContext(), "Done!", Toast.LENGTH_LONG).show()
                     (activity)?.finishAffinity()
-                    startActivity(Intent(requireContext(),SplashActivity::class.java))
+                    startActivity(Intent(requireContext(),SplashActivity::class.java)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
                 } catch (e: Exception) {
                     Toast.makeText(
                         requireContext(),
