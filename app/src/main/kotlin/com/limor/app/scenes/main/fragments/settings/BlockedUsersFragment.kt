@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.AbsListView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
@@ -15,14 +16,18 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.App
+import com.limor.app.GetBlockedUsersQuery
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
+import com.limor.app.databinding.FragmentUsersBlockedBinding
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.main.adapters.BlockedUsersAdapter
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main.fragments.settings.adapters.AdapterBlockedUsers
 import com.limor.app.scenes.main.viewmodels.CreateBlockedUserViewModel
 import com.limor.app.scenes.main.viewmodels.DeleteBlockedUserViewModel
 import com.limor.app.scenes.main.viewmodels.GetBlockedUsersViewModel
+import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UIUser
 import io.reactivex.subjects.PublishSubject
@@ -45,18 +50,15 @@ class BlockedUsersFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val  model: SettingsViewModel by viewModels { viewModelFactory }
 
-    private var rootView: View? = null
+    private lateinit var rootView: FragmentUsersBlockedBinding
     var app: App? = null
 
-    private lateinit var blockedUsersAdapter: BlockedUsersAdapter
+    private lateinit var blockedUsersAdapter: AdapterBlockedUsers
 
     private lateinit var viewModelGetBlockedUsers: GetBlockedUsersViewModel
-    private lateinit var viewModelCreateBlockedUser: CreateBlockedUserViewModel
-    private lateinit var viewModelDeleteBlockedUser: DeleteBlockedUserViewModel
-    private val getBlockedUsersDataTrigger = PublishSubject.create<Unit>()
-    private val createBlockedUserDataTrigger = PublishSubject.create<Unit>()
-    private val deleteBlockedUserDataTrigger = PublishSubject.create<Unit>()
+
 
 
     companion object {
@@ -71,11 +73,10 @@ class BlockedUsersFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_users_blocked, container, false)
-        }
+        rootView = FragmentUsersBlockedBinding.inflate(inflater,container,false)
+
         app = context?.applicationContext as App
-        return rootView
+        return rootView.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -93,8 +94,11 @@ class BlockedUsersFragment : BaseFragment() {
         initSwipeAndRefreshLayout()
         initRecyclerView()
 
-        if(viewModelGetBlockedUsers.users.size == 0)
-            requestNewData()
+        model.blockedUsersData.observe(viewLifecycleOwner, Observer{
+            if(it.size == 0){
+                requestNewData(true)
+            }
+        })
     }
 
     private fun configureEmptyScenario() {
@@ -105,34 +109,37 @@ class BlockedUsersFragment : BaseFragment() {
     }
 
     private fun initToolbar() {
-        tvToolbarTitle.text = getString(R.string.title_blocked_users)
 
-        //Toolbar Left
-        btnClose.onClick {
-            findNavController().popBackStack()
-        }
     }
 
     private fun initRecyclerView() {
         val layoutManager = LinearLayoutManager(context)
         rvBlockedUsers?.layoutManager = layoutManager
-        blockedUsersAdapter = BlockedUsersAdapter(
-            context!!,
-            viewModelGetBlockedUsers.users,
-            object : BlockedUsersAdapter.OnBlockedUserClickListener {
-                override fun onUserClicked(item: UIUser, position: Int) {
+        blockedUsersAdapter = AdapterBlockedUsers(
+            ArrayList<GetBlockedUsersQuery.GetBlockedUser?>(),
+            object : AdapterBlockedUsers.OnFollowerClickListener {
+                override fun onUserClicked(
+                    item: GetBlockedUsersQuery.GetBlockedUser,
+                    position: Int
+                ) {
                     val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-                    userProfileIntent.putExtra("user", item)
+                    userProfileIntent.putExtra("user", item.username)
                     startActivity(userProfileIntent)
                 }
 
-                override fun onBlockClicked(item: UIUser, position: Int) {
-                    if(item.blocked) {
+                override fun onFollowClicked(
+                    item: GetBlockedUsersQuery.GetBlockedUser,
+                    position: Int
+                ) {
+                    if(item.blocked!!) {
                         onUnblockButtonClicked(item)
                     } else {
                         onBlockButtonClicked(item)
                     }
                 }
+
+
+
 
             })
 
@@ -175,7 +182,7 @@ class BlockedUsersFragment : BaseFragment() {
         viewModelGetBlockedUsers.offset = viewModelGetBlockedUsers.users.size
     }
 
-    private fun onUnblockButtonClicked(item: UIUser) {
+    private fun onUnblockButtonClicked(item: GetBlockedUsersQuery.GetBlockedUser) {
         alert(getString(R.string.confirmation_unblock_user)) {
             okButton {
                 performUnblockUser(item)
@@ -184,7 +191,7 @@ class BlockedUsersFragment : BaseFragment() {
         }.show()
     }
 
-    private fun onBlockButtonClicked(item: UIUser) {
+    private fun onBlockButtonClicked(item: GetBlockedUsersQuery.GetBlockedUser) {
         alert(getString(R.string.confirmation_block_user)) {
             okButton {
                 performBlockUser(item)
@@ -193,29 +200,16 @@ class BlockedUsersFragment : BaseFragment() {
         }.show()
     }
 
-    private fun performUnblockUser(item: UIUser) {
-        viewModelDeleteBlockedUser.user = item
-        item.blocked = false
-        deleteBlockedUserDataTrigger.onNext(Unit)
+    private fun performUnblockUser(item: GetBlockedUsersQuery.GetBlockedUser) {
+
     }
 
-    private fun performBlockUser(item: UIUser) {
-        viewModelCreateBlockedUser.user = item
-        item.blocked = true
-        createBlockedUserDataTrigger.onNext(Unit)
+    private fun performBlockUser(item: GetBlockedUsersQuery.GetBlockedUser) {
+
     }
 
     private fun bindViewModel() {
-        activity?.let { fragmentActivity ->
-            viewModelGetBlockedUsers = ViewModelProvider(fragmentActivity, viewModelFactory)
-                .get(GetBlockedUsersViewModel::class.java)
 
-            viewModelCreateBlockedUser = ViewModelProvider(fragmentActivity, viewModelFactory)
-                .get(CreateBlockedUserViewModel::class.java)
-
-            viewModelDeleteBlockedUser = ViewModelProvider(fragmentActivity, viewModelFactory)
-                .get(DeleteBlockedUserViewModel::class.java)
-        }
     }
 
     private fun initSwipeAndRefreshLayout() {
@@ -245,9 +239,9 @@ class BlockedUsersFragment : BaseFragment() {
 
     private fun reload() {
         isLastPage = false
-        viewModelGetBlockedUsers.offset = 0
+        model.blockUsersOffset = 0
         hideEmptyScenario()
-        viewModelGetBlockedUsers.users.clear()
+        model.clearBlockedUsers()
         rvBlockedUsers?.recycledViewPool?.clear()
         rvBlockedUsers.adapter?.notifyDataSetChanged()
         requestNewData()
@@ -255,43 +249,9 @@ class BlockedUsersFragment : BaseFragment() {
 
 
     private fun initApiCallGetBlockedUsers() {
-        val output = viewModelGetBlockedUsers.transform(
-            GetBlockedUsersViewModel.Input(
-                getBlockedUsersDataTrigger
-            )
-        )
+        model.getBlockedUsers()
+        hideProgressBar()
 
-        output.response.observe(this, Observer {
-            hideProgressBar()
-            isRequestingNewData = false
-            if (it.code != 0) {
-                toast("error")
-            } else {
-                if(it.data.blocked_users.size > 0) {
-                    val previousSize = viewModelGetBlockedUsers.users.size
-                    viewModelGetBlockedUsers.users.addAll(it.data.blocked_users)
-                    setViewModelVariables()
-                    blockedUsersAdapter.notifyItemRangeInserted(previousSize, it.data.blocked_users.size)
-                } else {
-                    if(viewModelGetBlockedUsers.users.size == 0)
-                        showEmptyScenario()
-
-                    if(it.data.blocked_users.size == 0)
-                        isLastPage = true
-                }
-            }
-        })
-
-        output.backgroundWorkingProgress.observe(this, Observer {
-            trackBackgroudProgress(it)
-        })
-
-        output.errorMessage.observe(this, Observer {
-            hideProgressBar()
-            isRequestingNewData = false
-            view?.hideKeyboard()
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
-        })
     }
 
     private fun requestNewData(showProgress : Boolean = true) {
@@ -299,7 +259,7 @@ class BlockedUsersFragment : BaseFragment() {
             if(showProgress)
                 showProgressBar()
             isRequestingNewData = true
-            getBlockedUsersDataTrigger.onNext(Unit)
+            initApiCallGetBlockedUsers()
         }
     }
 
@@ -331,67 +291,11 @@ class BlockedUsersFragment : BaseFragment() {
 
 
     private fun initApiCallDeleteBlockedUser() {
-        val output = viewModelDeleteBlockedUser.transform(
-            DeleteBlockedUserViewModel.Input(
-                deleteBlockedUserDataTrigger
-            )
-        )
 
-        output.response.observe(this, Observer {
-            if(it.code != 0) {
-                toast(getString(R.string.error_unblocking_user))
-                viewModelDeleteBlockedUser.user?.blocked = true
-            }
-            blockedUsersAdapter.notifyDataSetChanged()
-        })
-
-        output.backgroundWorkingProgress.observe(this, Observer {
-            trackBackgroudProgress(it)
-        })
-
-        output.errorMessage.observe(this, Observer {
-            view?.hideKeyboard()
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
-        })
     }
 
     private fun initApiCallCreateBlockedUser() {
-        val output = viewModelCreateBlockedUser.transform(
-            CreateBlockedUserViewModel.Input(
-                createBlockedUserDataTrigger
-            )
-        )
 
-        output.response.observe(this, Observer {
-            if(it.code != 0) {
-                toast(getString(R.string.error_blocking_user))
-                viewModelCreateBlockedUser.user?.blocked = false
-            }
-            blockedUsersAdapter.notifyDataSetChanged()
-        })
-
-        output.backgroundWorkingProgress.observe(this, Observer {
-            trackBackgroudProgress(it)
-        })
-
-        output.errorMessage.observe(this, Observer {
-            view?.hideKeyboard()
-            if (app!!.merlinsBeard!!.isConnected) {
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(R.string.some_error)
-                }
-                alert(message.toString()) {
-                    okButton { }
-                }.show()
-            } else {
-                alert(getString(R.string.default_no_internet)) {
-                    okButton {}
-                }.show()
-            }
-        })
     }
 
 }

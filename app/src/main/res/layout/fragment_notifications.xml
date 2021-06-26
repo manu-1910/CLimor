@@ -2,16 +2,35 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/brandSecondary400"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
     android:orientation="vertical">
 
+    <ImageView
+        android:padding="12dp"
+        android:src="@drawable/arrow_left"
+        android:layout_width="54dp"
+        android:layout_height="54dp"/>
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Notifications"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:padding="16dp"
+        android:layout_centerHorizontal="true"/>
 
     <View
         android:id="@+id/upperDivider"
-        android:layout_alignParentTop="true"
-        android:background="@color/brandSecondary300"
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"/>
+        android:layout_height="0.5dp"
+        android:layout_below="@id/textView6"
+        android:layout_alignBottom="@+id/textView6"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="56dp"
+        android:background="@color/white" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout_notifications"
@@ -20,11 +39,34 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_notifications"
+
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/brandSecondary400" />
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_notifications"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white" />
+                <include layout="@layout/notification_item_new"/>
+                <include layout="@layout/notification_item_new"/>
+                <include layout="@layout/notification_item_new"/>
+                <include layout="@layout/notification_item_new"/>
+                <include layout="@layout/notification_item_new"/>
+                <include layout="@layout/notification_item_new"/>
+                <include layout="@layout/notification_item_new"/>
+                <include layout="@layout/notification_item_new"/>
+                <include layout="@layout/notification_item_new"/>
+                <include layout="@layout/notification_item_new"/>
+                <include layout="@layout/notification_item_new"/>
+            </LinearLayout>
+        </ScrollView>
+
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -48,6 +90,7 @@
         android:layout_height="0.5dp"/>
 
     <ProgressBar
+        android:visibility="gone"
         android:id="@+id/pb_notifications"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

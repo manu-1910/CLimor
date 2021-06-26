@@ -10,7 +10,10 @@ import dagger.android.ContributesAndroidInjector
 abstract class UserProfileActivityFragmentsBuildersModule {
 
     @ContributesAndroidInjector
-    abstract fun contributeUserProfileFragmentInjector(): ProfileFragment
+    abstract fun contributeUserProfileFragmentInjector(): UserProfileFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeProfileFragmentInjector(): ProfileFragment
 
     @ContributesAndroidInjector
     abstract fun contributeFeedFragmentInjector(): FeedItemsListFragment

@@ -34,5 +34,8 @@ abstract class MainActivityNewFragmentBuildersModule {
     @ContributesAndroidInjector
     abstract fun contributeDiscoverSearchFragmentInjector(): DiscoverSearchFragment
 
+    @ContributesAndroidInjector
+    abstract fun contributeUserProfileFragmentInjector(): UserProfileFragment
+
 }
 

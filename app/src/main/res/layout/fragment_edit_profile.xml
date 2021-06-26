@@ -2,8 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/brandSecondary400">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -12,410 +11,212 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/brandSecondary400"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
             android:orientation="vertical">
 
             <LinearLayout
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <include
-                    android:id="@+id/toolbar"
-                    layout="@layout/toolbar_with_back_arrow_icon" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profile_image"
                     android:layout_width="118dp"
                     android:layout_height="118dp"
-                    android:src="@drawable/limor_orange_primary"
+                    android:src="@drawable/placeholder_noti"
                     android:layout_marginTop="@dimen/marginMedium"
-                    android:layout_gravity="center_horizontal"
-                    app:civ_border_width="1dp"
-                    app:civ_border_color="@color/brandPrimary500"/>
+                    android:layout_gravity="center_horizontal" />
 
                 <Button
+                    android:layout_marginTop="24dp"
                     android:id="@+id/btnChoosePhoto"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:text="@string/choose_a_photo"
-                    android:textColor="@color/brandPrimary500"
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:textColor="@color/black"
+                    android:background="@drawable/bg_round_yellow_ripple"
+                    android:paddingStart="40dp"
+                    android:paddingEnd="40dp"
+                    android:textSize="14sp"
                     android:textAllCaps="false"
+                    android:fontFamily="@font/roboto_bold"
                     android:layout_gravity="center_horizontal"/>
 
-
+                <View
+                    android:layout_marginTop="32dp"
+                    android:layout_width="300dp"
+                    android:layout_height="1dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@color/divider_user_profile_item"/>
                 <TextView
                     android:id="@+id/tvTitleProfile"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/marker_time_text"
-                    android:textSize="@dimen/textSizeVerySmall"
-                    android:fontFamily="@font/roboto"
+                    android:textColor="@color/notification_secondary_text"
+                    android:textSize="@dimen/textSize16"
+                    android:fontFamily="@font/roboto_bold"
                     android:text="@string/settings_title_profile"
-                    android:layout_marginTop="@dimen/marginMedium"
                     android:layout_marginStart="@dimen/marginMedium"
                     android:layout_marginEnd="@dimen/marginMedium"
-                    android:layout_marginBottom="@dimen/marginVerySmall"
-                    android:textAllCaps="true"
-                    android:layout_alignParentStart="true" />
+                    android:layout_marginTop="-12dp"
+                    android:background="@color/white"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:layout_gravity="center"
+                    android:textAlignment="center" />
 
 
-                <View
+
+
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/etFirstName"
+                    style="@style/TextInputLayoutOutlineWithError"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/brandSecondary300"/>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginTop="@dimen/marginSmall"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/tvFirstName"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignBottom="@id/etFirstName"
-                        android:layout_marginBottom="11dp"
-                        android:fontFamily="@font/roboto"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:textColor="@color/white"
-                        android:text="@string/title_firstname" />
+                    android:layout_height="56dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:hint="@string/hint_firstname"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/etPhoneCode"
+                    app:layout_constraintTop_toBottomOf="@+id/textView8">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etFirstName"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/etFirstNameInner"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_toEndOf="@id/tvFirstName"
-                        android:paddingEnd="@dimen/marginMedium"
-                        android:fontFamily="@font/roboto"
-                        android:hint="@string/hint_firstname"
-                        android:inputType="textPersonName"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
-
-                </RelativeLayout>
-
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginTop="@dimen/marginSmall"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/tvLastName"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignBottom="@id/etLastName"
-                        android:layout_marginBottom="11dp"
-                        android:fontFamily="@font/roboto"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:textColor="@color/white"
-                        android:text="@string/title_lastname" />
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etLastName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingEnd="@dimen/marginMedium"
-                        android:layout_alignParentEnd="true"
-                        android:layout_toEndOf="@id/tvLastName"
-                        android:fontFamily="@font/roboto"
-                        android:hint="@string/hint_lastname"
-                        android:inputType="textPersonName"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginTop="@dimen/marginSmall"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/tvUsername"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignBottom="@id/etUsername"
-                        android:layout_marginBottom="11dp"
-                        android:fontFamily="@font/roboto"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:textColor="@color/white"
-                        android:text="@string/title_username" />
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etUsername"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:paddingEnd="@dimen/marginMedium"
-                        android:layout_toEndOf="@id/tvUsername"
-                        android:fontFamily="@font/roboto"
-                        android:hint="@string/hint_username"
-                        android:inputType="textPersonName"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginTop="@dimen/marginSmall"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/tvWebsite"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:paddingEnd="@dimen/marginMedium"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignBottom="@id/etWebsite"
-                        android:layout_marginBottom="11dp"
-                        android:fontFamily="@font/roboto"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:textColor="@color/white"
-                        android:text="@string/title_website" />
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etWebsite"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_toEndOf="@id/tvWebsite"
-                        android:fontFamily="@font/roboto"
-                        android:hint="@string/hint_website"
-                        android:inputType="textWebEmailAddress"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
-
-                </RelativeLayout>
-
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginTop="@dimen/marginSmall"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/tvBio"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignBottom="@id/etBio"
-                        android:layout_marginBottom="11dp"
-                        android:fontFamily="@font/roboto"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:textColor="@color/white"
-                        android:text="@string/title_bio" />
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etBio"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:paddingEnd="@dimen/marginMedium"
-                        android:layout_toEndOf="@id/tvBio"
-                        android:fontFamily="@font/roboto"
-                        android:hint="@string/hint_bio"
-                        android:inputType="textMultiLine"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
-
-                </RelativeLayout>
-
-
-                <TextView
-                    android:id="@+id/tvTitlePersonalInformation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/marker_time_text"
-                    android:textSize="@dimen/textSizeVerySmall"
-                    android:fontFamily="@font/roboto"
-                    android:text="@string/title_personal_information"
-                    android:layout_marginTop="@dimen/marginMedium"
-                    android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginEnd="@dimen/marginMedium"
-                    android:layout_marginBottom="@dimen/marginVerySmall"
-                    android:textAllCaps="true"
-                    android:layout_alignParentStart="true" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/brandSecondary300"/>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginTop="@dimen/marginSmall"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/tvEmail"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignBottom="@id/etEmail"
-                        android:layout_marginBottom="11dp"
-                        android:fontFamily="@font/roboto"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:textColor="@color/white"
-                        android:text="@string/title_email" />
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etEmail"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingEnd="@dimen/marginMedium"
-                        android:layout_alignParentEnd="true"
-                        android:layout_toEndOf="@id/tvEmail"
-                        android:fontFamily="@font/roboto"
-                        android:hint="@string/hint_email"
-                        android:inputType="textWebEmailAddress"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginTop="@dimen/marginSmall"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/tvPhone"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignBottom="@id/etPhone"
-                        android:layout_marginBottom="11dp"
-                        android:fontFamily="@font/roboto"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:textColor="@color/white"
-                        android:text="@string/title_phone" />
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etPhone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:paddingEnd="@dimen/marginMedium"
-                        android:layout_toEndOf="@id/tvPhone"
-                        android:fontFamily="@font/roboto"
-                        android:hint="@string/hint_phone"
-                        android:inputType="phone"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginTop="@dimen/marginSmall"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/tvAge"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignBottom="@id/etAge"
-                        android:layout_marginBottom="11dp"
-                        android:fontFamily="@font/roboto"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:textColor="@color/white"
-                        android:text="@string/title_age" />
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etAge"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:paddingEnd="@dimen/marginMedium"
-                        android:focusable="false"
-                        android:layout_toEndOf="@id/tvAge"
-                        android:fontFamily="@font/roboto"
-                        android:hint="@string/hint_age"
-                        android:inputType="number"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/marginMedium"
-                    android:layout_marginTop="@dimen/marginSmall"
-                    android:layout_marginBottom="@dimen/marginMedium"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/tvGender"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignBottom="@id/etGender"
-                        android:layout_marginBottom="11dp"
-                        android:fontFamily="@font/roboto"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:textColor="@color/white"
-                        android:text="@string/title_gender" />
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etGender"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:paddingEnd="@dimen/marginMedium"
-                        android:layout_toEndOf="@id/tvGender"
-                        android:fontFamily="@font/roboto"
-                        android:hint="@string/hint_gender"
+                        android:imeOptions="actionNext"
                         android:inputType="text"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/brandSecondary100"
-                        android:textSize="@dimen/textSizeNormal"
-                        android:theme="@style/TextAppearence.App.TextInputLayout"/>
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/roboto_bold"
+                        android:maxLines="1" />
 
-                </RelativeLayout>
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/etLastName"
+                    style="@style/TextInputLayoutOutlineWithError"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:hint="@string/hint_lastname"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/etPhoneCode"
+                    app:layout_constraintTop_toBottomOf="@+id/textView8">
 
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etLastNameInner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/roboto_bold"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/etUsername"
+                    style="@style/TextInputLayoutOutlineWithError"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:hint="@string/hint_username"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/etPhoneCode"
+                    app:layout_constraintTop_toBottomOf="@+id/textView8">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etUsernameInner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/roboto_bold"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/etWebUrl"
+                    style="@style/TextInputLayoutOutlineWithError"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:hint="@string/hint_website"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/etPhoneCode"
+                    app:layout_constraintTop_toBottomOf="@+id/textView8">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etWebUrlInner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/roboto_bold"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/etBio"
+                    style="@style/TextInputLayoutOutlineWithError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="120dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:hint="@string/hint_bio"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="120"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/etPhoneCode"
+                    app:layout_constraintTop_toBottomOf="@+id/textView8">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etBioInner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxHeight="120dp"
+                        android:minHeight="120dp"
+                        android:inputType="textMultiLine"
+                        android:maxEms="120"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/roboto_medium"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <Button
+                    android:layout_marginBottom="64dp"
+                    android:layout_marginTop="24dp"
+                    android:id="@+id/btnUpdate"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="@string/btnUpdate"
+                    android:textColor="@color/black"
+                    android:background="@drawable/bg_round_yellow_ripple_new"
+                    android:paddingStart="40dp"
+                    android:paddingEnd="40dp"
+                    android:textSize="14sp"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/roboto_bold"
+                    android:layout_gravity="center_horizontal"/>
             </LinearLayout>
 
             <ProgressBar

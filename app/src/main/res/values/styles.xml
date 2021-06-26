@@ -15,7 +15,10 @@
         <item name="windowNoTitle">true</item>
         <item name="homeAsUpIndicator">@drawable/ic_navigate_before</item>
         <item name="android:homeAsUpIndicator">@drawable/ic_navigate_before</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowDisablePreview">true</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="textInputStyle">@style/TextInputLayoutWithError</item>
     </style>
     <style name="AppTheme.NoActionBar.FullScreen">
         <item name="android:windowNoTitle">true</item>

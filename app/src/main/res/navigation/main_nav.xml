@@ -24,9 +24,9 @@
     </fragment>
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.limor.app.scenes.main.fragments.FragmentStub"
+        android:name="com.limor.app.scenes.main.fragments.profile.UserProfileFragment"
         android:label="ProfileFragment"
-        tools:layout="@layout/fragment_stub">
+        tools:layout="@layout/user_profile_fragment">
     </fragment>
 
     <fragment
