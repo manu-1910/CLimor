@@ -14,7 +14,8 @@ import java.time.Duration
 import java.time.LocalDateTime
 import javax.inject.Inject
 
-class DiscoverViewModel @Inject constructor(
+class
+DiscoverViewModel @Inject constructor(
     val getCategoriesUseCase: GetCategoriesUseCase
 ) : ViewModel() {
 

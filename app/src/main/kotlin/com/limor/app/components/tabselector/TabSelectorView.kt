@@ -30,7 +30,10 @@ class TabSelectorView(context: Context, attrs: AttributeSet) : FrameLayout(conte
         tabsList.adapter = tabsAdapter
         tabsList.addItemDecoration(TabItemDecoration(tabSpacing))
         tabsAdapter.setOnItemClickListener { item, view ->
-            onItemSelected(item as TabItem)
+            // Skip tapping on the same tab
+            if (selectedPosition != tabsAdapter.getAdapterPosition(item)) {
+                onItemSelected(item as TabItem)
+            }
         }
     }
 

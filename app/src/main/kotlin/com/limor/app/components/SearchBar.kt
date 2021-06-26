@@ -31,22 +31,35 @@ class SearchBar(context: Context, attrs: AttributeSet) : FrameLayout(context, at
     private var debounceTime = 500L
     private var onQueryTextChange: ((newText: String) -> Unit)? = null
     private var onQueryTextSubmit: ((query: String) -> Unit)? = null
+    private var onQueryTextBlank: (() -> Unit)? = null
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.SearchBar).apply {
             getString(R.styleable.SearchBar_hintText)?.let { editText.hint = it }
         }.recycle()
 
-        initTextListener()
-        initSearchActionListener()
+        closeIcon.setOnClickListener {
+            editText.setText("")
+        }
     }
 
     fun setOnQueryTextListener(
         onQueryTextChange: ((newText: String) -> Unit)? = null,
-        onQueryTextSubmit: ((query: String) -> Unit)? = null
+        onQueryTextSubmit: ((query: String) -> Unit)? = null,
+        onQueryTextBlank: (() -> Unit)? = null,
     ) {
         this.onQueryTextChange = onQueryTextChange
         this.onQueryTextSubmit = onQueryTextSubmit
+        this.onQueryTextBlank = onQueryTextBlank
+    }
+
+    fun getCurrentSearchQuery(): String = editText.text.toString()
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+
+        initTextListener()
+        initSearchActionListener()
     }
 
     private fun initTextListener() {
@@ -59,6 +72,9 @@ class SearchBar(context: Context, attrs: AttributeSet) : FrameLayout(context, at
                 } else {
                     searchIcon.makeInVisible()
                     closeIcon.makeVisible()
+                }
+                if (event.text.isBlank()) {
+                    onQueryTextBlank?.invoke()
                 }
             }
             .debounce(debounceTime)
