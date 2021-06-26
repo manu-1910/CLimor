@@ -1,0 +1,10 @@
+query GetBlockedUsersQuery($limit: Int!,$offset:Int!) {
+    getBlockedUsers(limit: $limit,offset: $offset){
+        username,
+        description,
+        blocked,
+        images{
+            small_url
+        }
+    }
+}

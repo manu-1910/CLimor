@@ -152,6 +152,23 @@
     <color name="approved_green">#49BF9B</color>
     <color name="ripple_color">#33F9BB4B</color>
 
+
+
+    <!--Notifications Colors-->
+    <color name="un_read_background">#0F148DFF</color>
+    <color name="read_background">#FFFFFF</color>
+    <color name="notification_secondary_text">#91A2B2</color>
+    <color name="notification_divider">#91A2B2</color>
+
+
+
+    <!--Views-->
+    <color name="background">#FBFCFF</color>
+    <!--User Profiles-->
+
+    <color name="divider_user_profile_item">@color/lightBlueColor</color><!--F0F3F8-->
+
+
     <color name="background_color">#FBFCFF</color>
 
 </resources>

@@ -1,0 +1,12 @@
+mutation UpdateUserProfile($userName: String!, $firstName:String!,$lastName:String!,$websiteUrl:String!,$bio:String!){
+    updateUser(user:{
+        firstName:$firstName,
+        lastName:$lastName,
+        username:$userName,
+        websiteURL:$websiteUrl
+        bio:$bio
+    }){
+        status,
+        message
+    }
+}

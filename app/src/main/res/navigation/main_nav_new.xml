@@ -90,11 +90,13 @@
     <!--        tools:layout="@layout/activity_record">-->
     <!--    </activity>-->
 
-    <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
-        android:label="NotificationsFragment"
-        tools:layout="@layout/fragment_dummy"/>
+        <fragment
+            android:id="@+id/navigation_notifications"
+            android:name="com.limor.app.scenes.main.fragments.profile.UserProfileFragment"
+            android:label="NotificationsFragment"
+            tools:layout="@layout/user_profile_fragment">
+        </fragment>
+
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
