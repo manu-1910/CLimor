@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.limor.app.GetUserProfileQuery
@@ -80,7 +81,7 @@ class UserProfileFragment : Fragment(), Injectable {
 
         }
 
-        binding.btnUserSettings.setOnClickListener {
+        binding.toolbar.btnUserSettings.setOnClickListener {
             startActivity(Intent(requireContext(), SettingsActivity::class.java))
 
         }
@@ -92,6 +93,10 @@ class UserProfileFragment : Fragment(), Injectable {
                     else -> 1
                 }
             }
+        }
+
+        binding.toolbar.btnBack.setOnClickListener {
+            it.findNavController().popBackStack()
         }
 
     }
