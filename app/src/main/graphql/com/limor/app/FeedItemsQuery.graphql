@@ -79,7 +79,24 @@ query FeedItemsQuery {
                 }
             }
             links {
-                id
+                website {
+                    id
+                    link
+                    start_index
+                    end_index
+                }
+                content {
+                    id
+                    link
+                    start_index
+                    end_index
+                }
+                caption {
+                    id
+                    link
+                    start_index
+                    end_index
+                }
             }
         }
         recaster {

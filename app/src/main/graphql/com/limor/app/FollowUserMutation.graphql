@@ -1,0 +1,5 @@
+mutation FollowUser($id: Int!) {
+    createFriends(followed_user_id: $id) {
+        followed
+    }
+}
