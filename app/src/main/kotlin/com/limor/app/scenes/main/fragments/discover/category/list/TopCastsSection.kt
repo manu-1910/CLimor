@@ -7,6 +7,7 @@ import com.limor.app.scenes.main.fragments.discover.common.HeaderItem
 import com.limor.app.scenes.main.fragments.discover.common.casts.BigCastItem
 import com.limor.app.scenes.main.fragments.discover.common.mock.MockCast
 import com.limor.app.scenes.main.fragments.discover.common.casts.SmallCastItem
+import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.Section
 
 /**
@@ -28,7 +29,7 @@ class TopCastsSection(
         add(castsInnerSection)
     }
 
-    fun updateTopCasts(topCasts: List<MockCast>) {
+    fun updateTopCasts(topCasts: List<CastUIModel>) {
         castsInnerSection.update(
             topCasts.mapIndexed { index, cast ->
                 when {

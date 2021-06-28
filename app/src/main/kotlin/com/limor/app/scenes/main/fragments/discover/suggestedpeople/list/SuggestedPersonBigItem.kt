@@ -5,12 +5,12 @@ import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverSuggestedPersonBigBinding
 import com.limor.app.extensions.loadCircleImage
 import com.limor.app.scenes.auth_new.util.ToastMaker
-import com.limor.app.uimodels.SuggestedPersonUIModel
+import com.limor.app.uimodels.UserUIModel
 import com.xwray.groupie.viewbinding.BindableItem
 
 class SuggestedPersonBigItem(
-    val person: SuggestedPersonUIModel,
-    val onFollowClick: (person: SuggestedPersonUIModel) -> Unit
+    val person: UserUIModel,
+    val onFollowClick: (person: UserUIModel) -> Unit
 ) : BindableItem<ItemDiscoverSuggestedPersonBigBinding>() {
 
     override fun bind(viewBinding: ItemDiscoverSuggestedPersonBigBinding, position: Int) {

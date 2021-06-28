@@ -4,9 +4,8 @@ import android.view.View
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverSuggestedPeopleBinding
 import com.limor.app.extensions.px
-import com.limor.app.scenes.main.fragments.discover.common.mock.MockPerson
 import com.limor.app.scenes.utils.recycler.HorizontalSpacingItemDecoration
-import com.limor.app.uimodels.SuggestedPersonUIModel
+import com.limor.app.uimodels.UserUIModel
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 
@@ -27,7 +26,7 @@ class SuggestedPeopleItem() : BindableItem<ItemDiscoverSuggestedPeopleBinding>()
         }
     }
 
-    fun update(suggestedPeople: List<SuggestedPersonUIModel>) {
+    fun update(suggestedPeople: List<UserUIModel>) {
         suggestedPeopleListAdapter.update(
             suggestedPeople.map {
                 SuggestedPersonItem(it)

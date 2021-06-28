@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.limor.app.uimodels.SuggestedPersonUIModel
+import com.limor.app.uimodels.UserUIModel
 import com.limor.app.usecases.FollowPersonUseCase
 import com.limor.app.usecases.GetSuggestedPeopleUseCase
 import kotlinx.coroutines.launch
@@ -16,8 +16,8 @@ class DiscoverSuggestedPeopleViewModel @Inject constructor(
     private val followPersonUseCase: FollowPersonUseCase
 ): ViewModel() {
 
-    private val _suggestedPeople = MutableLiveData<List<SuggestedPersonUIModel>>()
-    val suggestedPeople: LiveData<List<SuggestedPersonUIModel>> = _suggestedPeople
+    private val _suggestedPeople = MutableLiveData<List<UserUIModel>>()
+    val suggestedPeople: LiveData<List<UserUIModel>> = _suggestedPeople
 
     init {
         viewModelScope.launch {
@@ -31,7 +31,7 @@ class DiscoverSuggestedPeopleViewModel @Inject constructor(
         }
     }
 
-    fun onFollowClick(person: SuggestedPersonUIModel) {
+    fun onFollowClick(person: UserUIModel) {
         viewModelScope.launch {
             try {
                 followPersonUseCase.execute(person)

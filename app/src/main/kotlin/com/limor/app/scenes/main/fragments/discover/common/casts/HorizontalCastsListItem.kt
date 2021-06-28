@@ -6,6 +6,7 @@ import com.limor.app.databinding.ItemHorizontalCastsListBinding
 import com.limor.app.extensions.px
 import com.limor.app.scenes.main.fragments.discover.common.mock.MockCast
 import com.limor.app.scenes.utils.recycler.HorizontalSpacingItemDecoration
+import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 
@@ -26,7 +27,7 @@ class HorizontalCastsListItem : BindableItem<ItemHorizontalCastsListBinding>() {
         }
     }
 
-    fun update(featuredCasts: List<MockCast>) {
+    fun update(featuredCasts: List<CastUIModel>) {
         horizontalCastsListAdapter.update(
             featuredCasts.map {
                 BigCastItem(it, ITEM_WIDTH)

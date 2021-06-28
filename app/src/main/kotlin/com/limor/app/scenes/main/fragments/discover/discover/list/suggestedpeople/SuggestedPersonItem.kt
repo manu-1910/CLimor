@@ -5,11 +5,11 @@ import com.bumptech.glide.Glide
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverSuggestedPersonBinding
 import com.limor.app.scenes.auth_new.util.ToastMaker
-import com.limor.app.uimodels.SuggestedPersonUIModel
+import com.limor.app.uimodels.UserUIModel
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
 
-class SuggestedPersonItem(val suggestedPerson: SuggestedPersonUIModel) :
+class SuggestedPersonItem(val suggestedPerson: UserUIModel) :
     BindableItem<ItemDiscoverSuggestedPersonBinding>() {
 
     override fun bind(viewBinding: ItemDiscoverSuggestedPersonBinding, position: Int) {
