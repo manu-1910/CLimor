@@ -1,5 +1,5 @@
-query Followers($limit: Int!,$offset:Int!) {
-    getFollowers(limit: $limit,offset: $offset){
+query Friends($limit: Int!,$offset:Int!) {
+    getFriends(limit: $limit,offset: $offset){
         id,
         username,
         first_name,

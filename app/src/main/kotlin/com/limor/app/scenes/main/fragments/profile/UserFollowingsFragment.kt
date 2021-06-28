@@ -160,27 +160,7 @@ class UserFollowingsFragment(private val uiUser: UIUser) : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
-            tvNoFollowings?.visibility = View.GONE
-            val followingsLength = it.data.followed_users.size
-            if (followingsLength == 0 && followingsAdapter?.list?.size == 0) {
-                tvNoFollowings?.text = getString(R.string.no_following_message)
-                tvNoFollowings?.visibility = View.VISIBLE
-            } else if (followingsLength == 0) {
-                isLastPage = true
-            } else {
-                followingsAdapter?.list?.addAll(it.data.followed_users)
-                followingsAdapter?.notifyDataSetChanged()
-            }
-            showProgress(false)
-        })
 
-        output.errorMessage.observe(this, Observer {
-            tvNoFollowings?.visibility = View.VISIBLE
-            tvNoFollowings?.text = getString(R.string.no_followers_error_message)
-            showProgress(false)
-            CommonsKt.handleOnApiError(app!!, context!!, this, it)
-        })
 
     }
 
@@ -212,70 +192,7 @@ class UserFollowingsFragment(private val uiUser: UIUser) : BaseFragment() {
     private fun configureAdapter() {
         val layoutManager = LinearLayoutManager(context)
         rvFollowings?.layoutManager = layoutManager
-        followingsAdapter = context?.let {
-            UserFollowingsAdapter(
-                requireContext(),
-                ArrayList(),
-                object : UserFollowingsAdapter.OnFollowingClickListener {
-                    override fun onUserClicked(item: UIUser, position: Int) {
-                        goToUserProfile(item)
-                    }
 
-                    override fun onFollowClicked(item: UIUser, position: Int) {
-                        val userId = item.id
-
-                        if(item.followed){
-                            viewModelDeleteFriend.idFriend = userId
-                            deleteFriendDataTrigger.onNext(Unit)
-                        }else{
-                            viewModelCreateFriend.idNewFriend = userId
-                            createFriendDataTrigger.onNext(Unit)
-                        }
-                        showProgress(true)
-                    }
-                }
-            )
-        }
-        rvFollowings?.adapter = followingsAdapter
-
-        rvFollowings?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
-                    isScrolling = true
-            }
-
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-
-                // if we scroll down...
-                if (dy > 0) {
-                    // those are the items that we have already passed in the list, the items we already saw
-                    val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
-                    // this are the items that are currently showing on screen
-                    val visibleItemsCount = layoutManager.childCount
-                    // this are the total amount of items
-                    val totalItemsCount = layoutManager.itemCount
-                    // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
-                    if (isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
-                        isScrolling = false
-                        followingsAdapter?.list?.size?.minus(1)?.let {
-                            setNotificationViewModelVariables(it)
-                        }
-                        showProgress(true)
-                        getFollowingsTrigger.onNext(Unit)
-                    }
-                }
-            }
-        })
-
-        rvFollowings?.setHasFixedSize(false)
-        val divider = DividerItemDecoration(
-            context,
-            DividerItemDecoration.VERTICAL
-        )
-        context?.getDrawable(R.drawable.divider_item_recyclerview)?.let { divider.setDrawable(it) }
-        rvFollowings?.addItemDecoration(divider)
 
     }
 
@@ -293,7 +210,7 @@ class UserFollowingsFragment(private val uiUser: UIUser) : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+        /*output.response.observe(this, Observer {
             if (it.code != 0) {
                 revertUserFollowedState()
             }else{
@@ -310,7 +227,7 @@ class UserFollowingsFragment(private val uiUser: UIUser) : BaseFragment() {
             view?.hideKeyboard()
             revertUserFollowedState()
             CommonsKt.handleOnApiError(app!!, context!!, this, it)
-        })
+        })*/
     }
 
     private fun apiCallDeleteFriend() {
@@ -320,15 +237,15 @@ class UserFollowingsFragment(private val uiUser: UIUser) : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+       /* output.response.observe(this, Observer {
             if (it.code != 0) {
                 revertUserFollowedState()
             }else{
                 showProgress(false)
             }
-        })
+        })*/
 
-        output.backgroundWorkingProgress.observe(this, Observer {
+        /*output.backgroundWorkingProgress.observe(this, Observer {
             trackBackgroudProgress(it)
         })
 
@@ -337,7 +254,7 @@ class UserFollowingsFragment(private val uiUser: UIUser) : BaseFragment() {
             view?.hideKeyboard()
             revertUserFollowedState()
             CommonsKt.handleOnApiError(app!!, context!!, this, it)
-        })
+        })*/
     }
 
 

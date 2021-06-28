@@ -1,6 +1,11 @@
 query GetBlockedUsersQuery($limit: Int!,$offset:Int!) {
     getBlockedUsers(limit: $limit,offset: $offset){
+        id,
         username,
+        first_name,
+        last_name,
+        following_count,
+        followers_count,
         description,
         blocked,
         images{

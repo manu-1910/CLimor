@@ -2,7 +2,10 @@ package com.limor.app.scenes.main.fragments.settings.adapters
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.limor.app.FollowersQuery
 import com.limor.app.GetBlockedUsersQuery
+import com.limor.app.scenes.main.adapters.BlockedUserViewHolder
+import com.limor.app.scenes.main.fragments.profile.adapters.UserFollowersViewHolder
 import com.limor.app.uimodels.UIUser
 import org.jetbrains.anko.layoutInflater
 
@@ -15,7 +18,8 @@ class AdapterBlockedUsers(var list: ArrayList<GetBlockedUsersQuery.GetBlockedUse
 
     interface OnFollowerClickListener {
         fun onUserClicked(item:  GetBlockedUsersQuery.GetBlockedUser, position: Int)
-        fun onFollowClicked(item:  GetBlockedUsersQuery.GetBlockedUser, position: Int)
+        fun onBlockClicked(item:  GetBlockedUsersQuery.GetBlockedUser, position: Int)
+        fun onUserLongClicked(item:  GetBlockedUsersQuery.GetBlockedUser, position: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -24,7 +28,10 @@ class AdapterBlockedUsers(var list: ArrayList<GetBlockedUsersQuery.GetBlockedUse
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        TODO("Not yet implemented")
+        list[position]?.let{
+            ( holder as BlockedUserViewHolder)
+                .bind(it,position)
+        }
     }
 
     override fun getItemCount(): Int {

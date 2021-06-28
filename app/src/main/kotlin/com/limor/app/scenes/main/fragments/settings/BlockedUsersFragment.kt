@@ -12,7 +12,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.App
@@ -20,26 +19,16 @@ import com.limor.app.GetBlockedUsersQuery
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentUsersBlockedBinding
-import com.limor.app.extensions.hideKeyboard
-import com.limor.app.scenes.main.adapters.BlockedUsersAdapter
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.settings.adapters.AdapterBlockedUsers
-import com.limor.app.scenes.main.viewmodels.CreateBlockedUserViewModel
-import com.limor.app.scenes.main.viewmodels.DeleteBlockedUserViewModel
 import com.limor.app.scenes.main.viewmodels.GetBlockedUsersViewModel
-import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
-import com.limor.app.scenes.utils.CommonsKt
-import com.limor.app.uimodels.UIUser
-import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_empty_scenario.*
 import kotlinx.android.synthetic.main.fragment_users_blocked.*
-import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
-import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.onRefresh
-import org.jetbrains.anko.support.v4.toast
+import java.util.ArrayList
 import javax.inject.Inject
 
 class BlockedUsersFragment : BaseFragment() {
@@ -47,12 +36,14 @@ class BlockedUsersFragment : BaseFragment() {
     private var isLastPage: Boolean = false
     private var isScrolling: Boolean = false
     private var isRequestingNewData: Boolean = false
+    private lateinit var arrayList: ArrayList<GetBlockedUsersQuery.GetBlockedUser?>
+
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val  model: SettingsViewModel by viewModels { viewModelFactory }
 
-    private lateinit var rootView: FragmentUsersBlockedBinding
+    private lateinit var binding: FragmentUsersBlockedBinding
     var app: App? = null
 
     private lateinit var blockedUsersAdapter: AdapterBlockedUsers
@@ -73,17 +64,17 @@ class BlockedUsersFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        rootView = FragmentUsersBlockedBinding.inflate(inflater,container,false)
+        binding = FragmentUsersBlockedBinding.inflate(inflater,container,false)
 
         app = context?.applicationContext as App
-        return rootView.root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initToolbar()
         configureEmptyScenario()
-
+        arrayList = ArrayList()
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 1f)
 
@@ -94,18 +85,28 @@ class BlockedUsersFragment : BaseFragment() {
         initSwipeAndRefreshLayout()
         initRecyclerView()
 
-        model.blockedUsersData.observe(viewLifecycleOwner, Observer{
-            if(it.size == 0){
-                requestNewData(true)
+        model.blockedUsersData.observe(viewLifecycleOwner, Observer {
+            if (it?.size == 0) {
+                showEmptyScenario()
+            } else {
+                isRequestingNewData = false
+                val adapter = (binding.rvBlockedUsers.adapter as AdapterBlockedUsers)
+                arrayList.addAll(it!!)
+                adapter.notifyDataSetChanged()
+                hideEmptyScenario()
             }
         })
+
+        reload()
+
+
     }
 
     private fun configureEmptyScenario() {
-        ivEmptyScenario.visibility = View.GONE
-        tvTitleEmptyScenario.text = getString(R.string.title_blocked_users)
-        tvDescriptionEmptyScenario.text = getString(R.string.empty_scenario_blocked_users)
-        tvActionEmptyScenario.visibility = View.GONE
+        binding.layEmptyScenario.ivEmptyScenario.visibility = View.GONE
+        binding.layEmptyScenario.tvTitleEmptyScenario.text = getString(R.string.empty_scenario_blocked_users)
+        binding.layEmptyScenario.tvDescriptionEmptyScenario.text = ""
+        binding.layEmptyScenario.tvActionEmptyScenario.visibility = View.GONE
     }
 
     private fun initToolbar() {
@@ -114,9 +115,8 @@ class BlockedUsersFragment : BaseFragment() {
 
     private fun initRecyclerView() {
         val layoutManager = LinearLayoutManager(context)
-        rvBlockedUsers?.layoutManager = layoutManager
-        blockedUsersAdapter = AdapterBlockedUsers(
-            ArrayList<GetBlockedUsersQuery.GetBlockedUser?>(),
+        binding.rvBlockedUsers.layoutManager = layoutManager
+        blockedUsersAdapter = AdapterBlockedUsers(arrayList,
             object : AdapterBlockedUsers.OnFollowerClickListener {
                 override fun onUserClicked(
                     item: GetBlockedUsersQuery.GetBlockedUser,
@@ -127,7 +127,7 @@ class BlockedUsersFragment : BaseFragment() {
                     startActivity(userProfileIntent)
                 }
 
-                override fun onFollowClicked(
+                override fun onBlockClicked(
                     item: GetBlockedUsersQuery.GetBlockedUser,
                     position: Int
                 ) {
@@ -138,12 +138,17 @@ class BlockedUsersFragment : BaseFragment() {
                     }
                 }
 
+                override fun onUserLongClicked(
+                    item: GetBlockedUsersQuery.GetBlockedUser,
+                    position: Int
+                ) {
 
+                }
 
 
             })
 
-        rvBlockedUsers?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.rvBlockedUsers?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
@@ -174,12 +179,12 @@ class BlockedUsersFragment : BaseFragment() {
                 }
             }
         })
-        rvBlockedUsers.adapter = blockedUsersAdapter
-        rvBlockedUsers?.setHasFixedSize(false)
+        binding.rvBlockedUsers.adapter = blockedUsersAdapter
+        binding.rvBlockedUsers?.setHasFixedSize(false)
     }
 
     private fun setViewModelVariables() {
-        viewModelGetBlockedUsers.offset = viewModelGetBlockedUsers.users.size
+
     }
 
     private fun onUnblockButtonClicked(item: GetBlockedUsersQuery.GetBlockedUser) {
@@ -232,10 +237,6 @@ class BlockedUsersFragment : BaseFragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        reload()
-    }
 
     private fun reload() {
         isLastPage = false

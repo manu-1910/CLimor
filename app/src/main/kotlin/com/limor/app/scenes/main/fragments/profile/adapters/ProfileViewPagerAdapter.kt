@@ -13,9 +13,6 @@ import com.limor.app.scenes.main.fragments.profile.UserPodcastsFragmentNew
 class ProfileViewPagerAdapter(@NonNull fragmentManager: FragmentManager, lifecycleOwner: Lifecycle) :
     FragmentStateAdapter(fragmentManager,lifecycleOwner) {
 
-    private val arrayList: ArrayList<Fragment> = ArrayList()
-
-
     override fun getItemCount(): Int {
        return 2
     }

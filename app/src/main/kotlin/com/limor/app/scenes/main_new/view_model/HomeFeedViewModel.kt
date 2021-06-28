@@ -29,6 +29,11 @@ class HomeFeedViewModel @Inject constructor(
     val homeFeedErrorLiveData: LiveData<String>
         get() = _homeFeedErrorLiveData
 
+    private var _profileErrorLiveData =
+        MutableLiveData<String>()
+    val profileErrorLiveData: LiveData<String>
+        get() = _profileErrorLiveData
+
     private var _userProfileData =
         MutableLiveData<GetUserProfileQuery.GetUser?>()
     val userProfileData: LiveData<GetUserProfileQuery.GetUser?>
@@ -53,7 +58,7 @@ class HomeFeedViewModel @Inject constructor(
                 val user = generalInfoRepository.getUserProfile()
                 _userProfileData.postValue(user)
             } catch (e: Exception) {
-
+                _profileErrorLiveData.postValue(e.localizedMessage)
             }
         }
     }

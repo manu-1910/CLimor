@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.FollowersQuery
+import com.limor.app.FriendsQuery
 import com.limor.app.GetBlockedUsersQuery
 import com.limor.app.GetUserProfileQuery
 import com.limor.app.apollo.GeneralInfoRepository
@@ -43,13 +44,18 @@ class SettingsViewModel @Inject constructor(
     val followersData: LiveData<List<FollowersQuery.GetFollower?>?>
         get() = _followersData
 
+    private var _followingsData =
+        MutableLiveData<List<FriendsQuery.GetFriend?>?>()
+    val followingsData: LiveData<List<FriendsQuery.GetFriend?>?>
+        get() = _followingsData
+
     fun getBlockedUsers() {
         viewModelScope.launch {
             try {
                 val blockedUsers = generalInfoRepository.getBlockedUsers()
                 _blockedUsersData.postValue(blockedUsers!!)
             } catch (e: Exception) {
-
+                Timber.e(e)
             }
         }
     }
@@ -65,6 +71,19 @@ class SettingsViewModel @Inject constructor(
                     generalInfoRepository.getFollowers(blockedUsersLimit,offset)
                 }
                 _followersData.postValue(blockedUsers)
+                Timber.d("Got Follow -> $blockedUsers")
+            } catch (e: Exception) {
+                Timber.d("Got Follow -> $e")
+            }
+        }
+    }
+    fun getFollowings(offset: Int) {
+        viewModelScope.launch(Dispatchers.Default) {
+            try {
+                val blockedUsers = withContext(Dispatchers.IO){
+                    generalInfoRepository.getFollowings(blockedUsersLimit,offset)
+                }
+                _followingsData.postValue(blockedUsers)
                 Timber.d("Got Follow -> $blockedUsers")
             } catch (e: Exception) {
                 Timber.d("Got Follow -> $e")
@@ -103,6 +122,24 @@ class SettingsViewModel @Inject constructor(
 
     fun clearFollowers() {
         _followersData.postValue(ArrayList())
+    }
+
+    fun clearFollowing() {
+        _followingsData.postValue(ArrayList())
+    }
+
+    fun followUser(id: Int) {
+
+        viewModelScope.launch {
+            userInfoProvider.startFollowingUser(id)
+        }
+    }
+
+    fun unFollowUser(id: Int) {
+
+        viewModelScope.launch {
+            userInfoProvider.unFollowUser(id)
+        }
     }
 
 }

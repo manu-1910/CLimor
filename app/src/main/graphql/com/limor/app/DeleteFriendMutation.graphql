@@ -1,0 +1,5 @@
+mutation DeleteFriendMutation($followedId: Int!) {
+    deleteFriends(followed_user_id: $followedId){
+        followed
+    }
+}

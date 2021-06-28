@@ -129,16 +129,22 @@ class UserFollowersFragmentNew(private val uiUser: String) : BaseFragment() {
                     startActivity(userProfileIntent)
                 }
 
+                override fun onUserLongClicked(item: FollowersQuery.GetFollower, position: Int) {
+
+                }
+
                 override fun onFollowClicked(
                     item: FollowersQuery.GetFollower,
                     position: Int
                 ) {
-                    /*if(item.followed!!) {
-                        onUnblockButtonClicked(item)
+                    if(item.followed!!) {
+                        onUnblockButtonClicked(item,position)
                     } else {
+
                         onBlockButtonClicked(item)
-                    }*/
-                    blockedUsersAdapter.updateItem(item,position)
+                        blockedUsersAdapter.updateItem(item,position)
+                    }
+
                 }
 
 
@@ -185,29 +191,26 @@ class UserFollowersFragmentNew(private val uiUser: String) : BaseFragment() {
 
     }
 
-    private fun onUnblockButtonClicked(item: FollowersQuery.GetFollower) {
+    private fun onUnblockButtonClicked(item: FollowersQuery.GetFollower,position:Int) {
         alert(getString(R.string.confirmation_unfollow_user)) {
             okButton {
-                performBlockUser(item)
+                performUnfollow(item)
+                blockedUsersAdapter.updateItem(item, position )
             }
             cancelButton {  }
         }.show()
     }
 
     private fun onBlockButtonClicked(item: FollowersQuery.GetFollower) {
-        alert(getString(R.string.confirmation_unblock_user)) {
-            okButton {
-                performUnblockUser(item)
-            }
-            cancelButton {  }
-        }.show()
+        performFollow(item)
     }
 
-    private fun performUnblockUser(item: FollowersQuery.GetFollower) {
-
+    private fun performFollow(item: FollowersQuery.GetFollower) {
+            model.followUser(item.id)
     }
 
-    private fun performBlockUser(item: FollowersQuery.GetFollower) {
+    private fun performUnfollow(item: FollowersQuery.GetFollower) {
+            model.unFollowUser(item.id)
 
     }
 

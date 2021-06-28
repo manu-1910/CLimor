@@ -14,6 +14,7 @@ import com.limor.app.R
 import com.limor.app.databinding.ItemUserFollowersBinding
 import com.limor.app.scenes.utils.CommonsKt
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.sdk23.listeners.onLongClick
 import timber.log.Timber
 import java.util.*
 
@@ -27,25 +28,26 @@ class UserFollowersViewHolder(
 
     fun bind(currentItem: FollowersQuery.GetFollower, position: Int) {
 
+        Timber.d("Follower -> " + currentItem.followed)
         if (currentItem.followed!!) {
-            CommonsKt.setButtonFollowerStylePressed(
-                btnFollow,
-                true,
-                R.string.follow,
-                R.string.following
-            )
-        } else {
             CommonsKt.setButtonFollowerStylePressed(
                 btnFollow,
                 false,
                 R.string.follow,
-                R.string.following
+                R.string.unfollow
+            )
+        } else {
+            CommonsKt.setButtonFollowerStylePressed(
+                btnFollow,
+                true,
+                R.string.follow,
+                R.string.unfollow
             )
         }
 
         btnFollow.onClick {
 
-            if (currentItem.followed) {
+            /*if (currentItem.followed) {
                 CommonsKt.setButtonFollowerStylePressed(
                     btnFollow,
                     false,
@@ -60,7 +62,7 @@ class UserFollowersViewHolder(
                     R.string.following
                 )
 
-            }
+            }*/
 
             listener.onFollowClicked(currentItem, position)
         }
@@ -74,6 +76,11 @@ class UserFollowersViewHolder(
 
         tvUsername.text = currentItem.description
         tvUsername.onClick { listener.onUserClicked(currentItem, position) }
+
+        binding.root.onLongClick {
+             listener.onUserLongClicked(currentItem,position)
+            return@onLongClick true
+        }
 
 
         Glide.with(itemView.context)

@@ -93,6 +93,7 @@ android {
             buildConfigField "String",  "ANALYTICS_TRACKING_ID", '"UA-123281132-1"'
 
             buildConfigField "int", "LIMOR_ACCOUNT_ID", '12'
+            buildConfigField "String", "SMART_LOOK_API_KEY", '"6a6016ead4a7f1fbb773ff00f25092544289f292"'
 
             minifyEnabled false
             debuggable true
@@ -117,6 +118,7 @@ android {
             buildConfigField "String",  "ANALYTICS_TRACKING_ID", '"UA-123275575-1"'
 
             buildConfigField "int", "LIMOR_ACCOUNT_ID", '350'
+            buildConfigField "String", "SMART_LOOK_API_KEY", '"6a6016ead4a7f1fbb773ff00f25092544289f292"'
 
             minifyEnabled false
             debuggable true
@@ -140,6 +142,7 @@ android {
             buildConfigField "String",  "ANALYTICS_TRACKING_ID", '"UA-123270039-1"'
 
             buildConfigField "int", "LIMOR_ACCOUNT_ID", '12'
+            buildConfigField "String", "SMART_LOOK_API_KEY", '"6a6016ead4a7f1fbb773ff00f25092544289f292"'
 
             minifyEnabled true
             debuggable false
@@ -394,4 +397,8 @@ dependencies {
     // https://developer.android.com/studio/write/java8-support#library-desugaring
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
     implementation "androidx.browser:browser:1.3.0"
+
+
+    //SmartLook
+    implementation 'com.smartlook.recording:app:1.8.1-native'
 }

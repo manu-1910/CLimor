@@ -206,4 +206,22 @@ class UserInfoProvider @Inject constructor(
             null
         }
     }
+
+    suspend fun startFollowingUser(id: Int) {
+        try {
+            userRepository.startFollowingUser(id)
+        } catch (e: Exception) {
+            Timber.e(e)
+            null
+        }
+    }
+
+    suspend fun unFollowUser(id: Int) {
+        try {
+            userRepository.unFollowUser(id)
+        } catch (e: Exception) {
+            Timber.e(e)
+            null
+        }
+    }
 }

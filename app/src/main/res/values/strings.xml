@@ -376,7 +376,7 @@
     <string name="settings_blocked_users">Blocked Users</string>
     <string name="title_blocked_users">Blocked Users</string>
     <string name="delete_podcast_ok">Podcast deleted successfully</string>
-    <string name="empty_scenario_blocked_users">You don\'t have blocked people</string>
+    <string name="empty_scenario_blocked_users">You don\'t have any blocked user</string>
     <string name="error_content_unavailable">The content you are trying to access is not longer available or you don’t have access to it.</string>
     <string name="error_deleting_comment">The comment could not be deleted. Please try again later.</string>
     <string name="comment_deleted_ok">Comment deleted correctly</string>

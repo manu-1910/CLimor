@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -17,13 +18,17 @@ import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.UserProfileFragmentBinding
 import com.limor.app.di.Injectable
+import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.main.fragments.profile.adapters.ProfileViewPagerAdapter
 import com.limor.app.scenes.main.fragments.settings.SettingsActivity
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
+import kotlinx.android.synthetic.main.fragment_new_auth_loading_include.*
 import javax.inject.Inject
 
-class UserProfileFragment : Fragment(), Injectable {
+class UserProfileFragment : FragmentWithLoading(), Injectable {
 
+
+    private lateinit var user: GetUserProfileQuery.GetUser
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -44,12 +49,15 @@ class UserProfileFragment : Fragment(), Injectable {
         super.onViewCreated(view, savedInstanceState)
 
 
-        binding.toggleGender.check(R.id.btnCasts)
+        binding.toggleProfileButtons.check(R.id.btnCasts)
 
 
 
         model.userProfileData.observe(viewLifecycleOwner, Observer {
             it?.let {
+                user = it
+                switchCommonVisibility(false)
+               // binding.profileLayout.visibility = View.VISIBLE
                 binding.profileName.text = it.username
                 binding.profileDesc.text = it.description
                 binding.profileLink.text = it.website
@@ -63,13 +71,16 @@ class UserProfileFragment : Fragment(), Injectable {
                 setupViewPager(it)
             }
         })
-        model.getUserProfile()
+
+        load()
 
 
 
         binding.followers.setOnClickListener {
             startActivity(Intent(requireContext(), UserFollowersFollowingsActivity::class.java)
                 .putExtra(Constants.TAB_KEY, Constants.TAB_FOLLOWERS)
+                .putExtra("user_name", user.username)
+                .putExtra("user_id", user.id)
             )
         }
 
@@ -77,6 +88,8 @@ class UserProfileFragment : Fragment(), Injectable {
 
             startActivity(Intent(requireContext(), UserFollowersFollowingsActivity::class.java)
                 .putExtra(Constants.TAB_KEY,Constants.TAB_FOLLOWINGS)
+                .putExtra("user_name", user.username)
+                .putExtra("user_id", user.id)
             )
 
         }
@@ -86,11 +99,11 @@ class UserProfileFragment : Fragment(), Injectable {
 
         }
 
-        binding.toggleGender.addOnButtonCheckedListener { toggleButton, checkedId, isChecked ->
+        binding.toggleProfileButtons.addOnButtonCheckedListener { toggleButton, checkedId, isChecked ->
             if (isChecked) {
                  when (checkedId) {
-                    R.id.btnCasts -> 0
-                    else -> 1
+                    R.id.btnCasts -> binding.profileViewpager.currentItem = 0
+                    else -> binding.profileViewpager.currentItem = 1
                 }
             }
         }
@@ -101,9 +114,15 @@ class UserProfileFragment : Fragment(), Injectable {
 
     }
 
+    override fun load() {
+        model.getUserProfile()
+    }
+
+    override val errorLiveData: LiveData<String>
+        get() = model.homeFeedErrorLiveData
+
     private fun setupViewPager(it: GetUserProfileQuery.GetUser) {
         val adapter = ProfileViewPagerAdapter(childFragmentManager, lifecycle)
-
         binding.profileViewpager.adapter = adapter
 
 

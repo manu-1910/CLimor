@@ -79,4 +79,20 @@ class UserRepository @Inject constructor(val apollo: Apollo){
         Timber.d("sendUserOnboardingStatus -> $status")
         return status
     }
+
+    suspend fun startFollowingUser(id: Int): Boolean? {
+        val query = CreateFriendMutation(id)
+        val result = apollo.mutate(query)
+        val status = result?.data?.createFriends?.followed
+        Timber.d("sendUserOnboardingStatus -> $status")
+        return status
+    }
+
+    suspend fun unFollowUser(id: Int): Boolean? {
+        val query = DeleteFriendMutation(id)
+        val result = apollo.mutate(query)
+        val status = result?.data?.deleteFriends?.followed
+        Timber.d("sendUserOnboardingStatus -> $status")
+        return status
+    }
 }

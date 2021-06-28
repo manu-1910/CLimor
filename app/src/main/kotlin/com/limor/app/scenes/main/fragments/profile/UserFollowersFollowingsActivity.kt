@@ -19,6 +19,8 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
 
     private lateinit var binding: ActivityFollowersAndFollowingBinding
     var rootView: View? = null
+    var userId: Int? = 0
+    var userName: String? = ""
 
     @Inject
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -52,42 +54,11 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
 
 
     private fun configureToolbar() {
-        //Toolbar title
-        /* if(uiUser!=null){
-             if (uiUser!!.username.isNullOrEmpty()){
-                 binding.top.tvToolbarTitle.text = getString(R.string.username)
-             }else{
-                 binding.top.tvToolbarTitle.text = "user_name"
-             }
-         }
-         binding.top.tvToolbarTitle.text = "user_name"
-
-         //Toolbar Left
-         binding.top.btnClose.onClick {
-             this.finish()
-         }*/
-
-        /*//Search View
-        search_view.setOnQueryTextListener(object :
-            androidx.appcompat.widget.SearchView.OnQueryTextListener {
-            override fun onQueryTextChange(newText: String): Boolean {
-                if (newText.isNotEmpty() && newText.length > 3) {
-                    //searchLocations(newText)
-                    println(newText)
-                }
-                return false
-            }
-
-            override fun onQueryTextSubmit(query: String): Boolean {
-                if (query.isNotEmpty() && query.length > 3) {
-                    //searchLocations(query)
-                    println(query)
-                } else {
-                    toast(getString(R.string.min_3_chars))
-                }
-                return false
-            }
-        })*/
+        intent?.extras?.let{
+            userName = it.getString("user_name")
+            userId = it.getInt("user_id")
+        }
+        binding.toolbar.tvToolbarTitle.text = userName
     }
 
 
@@ -124,6 +95,7 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
         }
         viewPager.adapter = adapter
         viewPager.isUserInputEnabled = false
+        viewPager.offscreenPageLimit = 2
 
 
         binding.toggleGender.addOnButtonCheckedListener { _, checkedId, isChecked ->

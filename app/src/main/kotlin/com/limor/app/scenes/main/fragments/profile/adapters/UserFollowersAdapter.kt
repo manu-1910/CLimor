@@ -19,6 +19,7 @@ class UserFollowersAdapter(var list: ArrayList<FollowersQuery.GetFollower?>, val
 
     interface OnFollowerClickListener {
         fun onUserClicked(item:  FollowersQuery.GetFollower, position: Int)
+        fun onUserLongClicked(item:  FollowersQuery.GetFollower, position: Int)
         fun onFollowClicked(item:  FollowersQuery.GetFollower, position: Int)
     }
 

@@ -26,7 +26,7 @@
         android:layout_marginBottom="@dimen/marginSmall"
         android:gravity="center"
         android:text="@string/title_home"
-        android:textColor="@color/brandSecondary200"
+        android:textColor="@color/black"
         android:textSize="@dimen/textSizeLarge"
         android:textStyle="bold" />
 

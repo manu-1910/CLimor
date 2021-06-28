@@ -17,11 +17,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.App
 import com.limor.app.FollowersQuery
+import com.limor.app.FriendsQuery
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentUsersBlockedBinding
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.adapters.UserFollowersAdapter
+import com.limor.app.scenes.main.fragments.profile.adapters.UserFollowingsAdapter
 import com.limor.app.scenes.main.fragments.settings.SettingsViewModel
 import com.limor.app.scenes.main.viewmodels.GetBlockedUsersViewModel
 import kotlinx.android.synthetic.main.fragment_users_blocked.*
@@ -39,7 +41,7 @@ import javax.inject.Inject
 
 class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
 
-    private lateinit var arrayList: ArrayList<FollowersQuery.GetFollower?>
+    private lateinit var arrayList: ArrayList<FriendsQuery.GetFriend?>
     private var isLastPage: Boolean = false
     private var isScrolling: Boolean = false
     private var isRequestingNewData: Boolean = false
@@ -51,7 +53,7 @@ class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
     private lateinit var binding: FragmentUsersBlockedBinding
     var app: App? = null
 
-    private lateinit var blockedUsersAdapter: UserFollowersAdapter
+    private lateinit var blockedUsersAdapter: UserFollowingsAdapter
 
     private lateinit var viewModelGetBlockedUsers: GetBlockedUsersViewModel
 
@@ -90,14 +92,14 @@ class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
         initSwipeAndRefreshLayout()
 
 
-        model.followersData.observe(viewLifecycleOwner, Observer{
+        model.followingsData.observe(viewLifecycleOwner, Observer{
             Timber.d("observe -> $it")
             if(it?.size == 0){
                 showEmptyScenario()
             }else{
                 isRequestingNewData = false
                 arrayList.addAll(it!!)
-                ( binding.rvBlockedUsers.adapter as UserFollowersAdapter ).notifyDataSetChanged()
+                ( binding.rvBlockedUsers.adapter as UserFollowingsAdapter ).notifyDataSetChanged()
                 hideEmptyScenario()
             }
 
@@ -109,7 +111,7 @@ class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
 
     private fun configureEmptyScenario() {
         binding.layEmptyScenario.ivEmptyScenario.visibility = View.GONE
-        binding.layEmptyScenario.tvTitleEmptyScenario.text = getString(R.string.title_blocked_users)
+        binding.layEmptyScenario.tvTitleEmptyScenario.text = getString(R.string.settings_title_follow_people)
         binding.layEmptyScenario.tvDescriptionEmptyScenario.text = getString(R.string.empty_scenario_blocked_users)
         binding.layEmptyScenario.tvActionEmptyScenario.visibility = View.GONE
     }
@@ -121,10 +123,10 @@ class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
     private fun initRecyclerView() {
         val layoutManager = LinearLayoutManager(context)
         binding.rvBlockedUsers.layoutManager = layoutManager
-        blockedUsersAdapter = UserFollowersAdapter(arrayList,
-            object : UserFollowersAdapter.OnFollowerClickListener {
+        blockedUsersAdapter = UserFollowingsAdapter(arrayList,
+            object : UserFollowingsAdapter.OnFollowerClickListener {
                 override fun onUserClicked(
-                    item: FollowersQuery.GetFollower,
+                    item: FriendsQuery.GetFriend,
                     position: Int
                 ) {
                     val userProfileIntent = Intent(context, UserProfileActivity::class.java)
@@ -132,16 +134,22 @@ class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
                     startActivity(userProfileIntent)
                 }
 
+                override fun onUserLongClicked(item: FriendsQuery.GetFriend, position: Int) {
+
+                }
+
                 override fun onFollowClicked(
-                    item: FollowersQuery.GetFollower,
+                    item: FriendsQuery.GetFriend,
                     position: Int
                 ) {
-                    /*if(item.followed!!) {
-                        onUnblockButtonClicked(item)
+                    Timber.d("Following ->%s", item.toString())
+                    if(item.followed!!) {
+                        onUnblockButtonClicked(item,position)
                     } else {
+
                         onBlockButtonClicked(item)
-                    }*/
-                    blockedUsersAdapter.updateItem(item,position)
+                        blockedUsersAdapter.updateItem(item,position)
+                    }
                 }
 
 
@@ -188,7 +196,7 @@ class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
 
     }
 
-    private fun onUnblockButtonClicked(item: FollowersQuery.GetFollower) {
+    private fun onUnblockButtonClicked(item: FriendsQuery.GetFriend, position:Int) {
         alert(getString(R.string.confirmation_unfollow_user)) {
             okButton {
                 performBlockUser(item)
@@ -197,20 +205,15 @@ class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
         }.show()
     }
 
-    private fun onBlockButtonClicked(item: FollowersQuery.GetFollower) {
-        alert(getString(R.string.confirmation_unblock_user)) {
-            okButton {
-                performUnblockUser(item)
-            }
-            cancelButton {  }
-        }.show()
+    private fun onBlockButtonClicked(item: FriendsQuery.GetFriend) {
+        performUnblockUser(item)
     }
 
-    private fun performUnblockUser(item: FollowersQuery.GetFollower) {
+    private fun performUnblockUser(item: FriendsQuery.GetFriend) {
 
     }
 
-    private fun performBlockUser(item: FollowersQuery.GetFollower) {
+    private fun performBlockUser(item: FriendsQuery.GetFriend) {
 
     }
 
@@ -247,7 +250,7 @@ class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
         isLastPage = false
         model.blockUsersOffset = 0
         hideEmptyScenario()
-        model.clearFollowers()
+        model.clearFollowing()
         arrayList.clear()
         rvBlockedUsers?.recycledViewPool?.clear()
         rvBlockedUsers.adapter?.notifyDataSetChanged()
@@ -256,11 +259,11 @@ class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
 
 
     private fun initApiCallGetBlockedUsers() {
-        if(model.followersData.value == null || model.followersData.value?.size == 0){
-            model.getFollowers(arrayList.size)
+        if(model.followingsData.value == null || model.followingsData.value?.size == 0){
+            model.getFollowings(arrayList.size)
         }else{
-            model.clearFollowers()
-            model.getFollowers(0)
+            model.clearFollowing()
+            model.getFollowings(0)
         }
     }
 

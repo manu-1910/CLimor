@@ -52,7 +52,7 @@ class ViewHolderBlockedUser(
                 CommonsKt.setUserItemButtonPressed(btnFollow, false, R.string.follow, R.string.following)
             }*/
 
-            listener.onFollowClicked(currentItem, position)
+            listener.onBlockClicked(currentItem, position)
         }
         var usernameCapitals = ""
         var finalUsername = ""
