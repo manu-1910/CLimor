@@ -6,6 +6,7 @@ import com.limor.app.R
 import com.limor.app.scenes.main.fragments.discover.common.HeaderItem
 import com.limor.app.scenes.main.fragments.discover.common.casts.HorizontalCastsListItem
 import com.limor.app.scenes.main.fragments.discover.common.mock.MockCast
+import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.Section
 
 class FeaturedCastsSection(
@@ -17,7 +18,7 @@ class FeaturedCastsSection(
         private const val FEATURED_CASTS_ITEM_POSITION = 1
     }
 
-    fun updateFeaturedCasts(featuredCasts: List<MockCast>) {
+    fun updateFeaturedCasts(featuredCasts: List<CastUIModel>) {
         if (featuredCasts.isNotEmpty()) {
             setHeaderIfNeeded()
         }

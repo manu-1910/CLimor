@@ -58,7 +58,7 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
 
     suspend fun getUserProfile(): GetUserProfileQuery.GetUser? {
         val query = GetUserProfileQuery()
-        val queryResult = withContext(Dispatchers.IO){
+        val queryResult = withContext(Dispatchers.IO) {
             apollo.launchQuery(query)
         }
         val createUserResult: GetUserProfileQuery.GetUser =
@@ -78,8 +78,8 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
     }
 
     suspend fun getBlockedUsers(): ArrayList<GetBlockedUsersQuery.GetBlockedUser?>? {
-        val query = GetBlockedUsersQuery(10,10)
-        val queryResult = withContext(Dispatchers.IO){
+        val query = GetBlockedUsersQuery(10, 10)
+        val queryResult = withContext(Dispatchers.IO) {
             apollo.launchQuery(query)
         }
         val createUserResult: List<GetBlockedUsersQuery.GetBlockedUser?> =
@@ -107,5 +107,12 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
             queryResult?.data?.getFriends?: return null
         Timber.d("Got FF -> ${createUserResult.size}")
         return createUserResult
+    }
+
+    suspend fun getSuggestedPeople(): List<SuggestedPeopleQuery.GetSuggestedUser>? {
+        return apollo.launchQuery(SuggestedPeopleQuery())
+            ?.data?.getSuggestedUsers?.filterNotNull()?.also {
+                Timber.d("getSuggestedPeople() -> $it")
+            }
     }
 }

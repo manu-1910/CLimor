@@ -6,6 +6,7 @@ import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.fragments.discover.common.HeaderItem
 import com.limor.app.scenes.main.fragments.discover.common.casts.HorizontalCastsListItem
 import com.limor.app.scenes.main.fragments.discover.common.mock.MockCast
+import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.Section
 
 class FeaturedCastsSection(context: Context) : Section() {
@@ -28,7 +29,7 @@ class FeaturedCastsSection(context: Context) : Section() {
         )
     }
 
-    fun updateFeaturedCasts(featuredCasts: List<MockCast>) {
+    fun updateFeaturedCasts(featuredCasts: List<CastUIModel>) {
         val featuredCastsItem = if (itemCount < FEATURED_CASTS_ITEM_POSITION + 1) {
             HorizontalCastsListItem().also { add(it) }
         } else {

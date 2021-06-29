@@ -23,7 +23,7 @@
         <item name="cornerRadius">8dp</item>
     </style>
 
-    <style name="ButtonStyleMain.Follow">
+    <style name="ButtonStyleMain.Follow" parent="ButtonStyleMain">
         <item name="android:textColor">@color/main_button_text_color_follow</item>
         <item name="backgroundTint">@color/main_button_background_follow</item>
     </style>

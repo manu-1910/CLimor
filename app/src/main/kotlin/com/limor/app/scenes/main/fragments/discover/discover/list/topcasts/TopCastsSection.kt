@@ -4,8 +4,8 @@ import android.content.Context
 import com.limor.app.R
 import com.limor.app.scenes.main.fragments.discover.common.HeaderItem
 import com.limor.app.scenes.main.fragments.discover.common.casts.BigCastItem
-import com.limor.app.scenes.main.fragments.discover.common.mock.MockCast
 import com.limor.app.scenes.main.fragments.discover.common.casts.SmallCastItem
+import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.Section
 
 /**
@@ -18,7 +18,7 @@ class TopCastsSection(
 
     private val castsInnerSection = Section()
 
-    fun updateTopCasts(topCasts: List<MockCast>) {
+    fun updateTopCasts(topCasts: List<CastUIModel>) {
         if (topCasts.isNotEmpty()) {
             setHeaderIfNeeded()
         }

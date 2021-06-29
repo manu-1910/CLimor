@@ -10,6 +10,7 @@ import com.limor.app.scenes.main.fragments.profile.FollowViewModelNew
 import com.limor.app.scenes.main.fragments.settings.SettingsViewModel
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategoriesViewModel
 import com.limor.app.scenes.main.fragments.discover.discover.DiscoverViewModel
+import com.limor.app.scenes.main.fragments.discover.featuredcasts.DiscoverFeaturedCastsViewModel
 import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchViewModel
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleViewModel
 import com.limor.app.scenes.main.viewmodels.*
@@ -273,6 +274,11 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(DiscoverViewModel::class)
     abstract fun bindDiscoverViewModel(viewModel: DiscoverViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverFeaturedCastsViewModel::class)
+    abstract fun bindDiscoverFeaturedCastsViewModel(viewModel: DiscoverFeaturedCastsViewModel): ViewModel
 
     @Binds
     @IntoMap
