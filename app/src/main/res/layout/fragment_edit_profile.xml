@@ -27,7 +27,7 @@
                     android:id="@+id/profile_image"
                     android:layout_width="118dp"
                     android:layout_height="118dp"
-                    android:src="@drawable/placeholder_noti"
+                    android:src="@drawable/limor_orange_primary"
                     android:layout_marginTop="@dimen/marginMedium"
                     android:layout_gravity="center_horizontal" />
 
