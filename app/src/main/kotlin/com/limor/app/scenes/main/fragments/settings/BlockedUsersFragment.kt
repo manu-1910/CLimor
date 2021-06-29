@@ -105,6 +105,7 @@ class BlockedUsersFragment : BaseFragment() {
     private fun configureEmptyScenario() {
         binding.layEmptyScenario.ivEmptyScenario.visibility = View.GONE
         binding.layEmptyScenario.tvTitleEmptyScenario.text = getString(R.string.empty_scenario_blocked_users)
+        binding.layEmptyScenario.tvTitleEmptyScenario.textSize = 14f
         binding.layEmptyScenario.tvDescriptionEmptyScenario.text = ""
         binding.layEmptyScenario.tvActionEmptyScenario.visibility = View.GONE
     }
@@ -250,7 +251,7 @@ class BlockedUsersFragment : BaseFragment() {
 
 
     private fun initApiCallGetBlockedUsers() {
-        model.getBlockedUsers()
+        model.getBlockedUsers(arrayList.size)
         hideProgressBar()
 
     }

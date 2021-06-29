@@ -9,9 +9,7 @@ import com.limor.app.FriendsQuery
 import com.limor.app.GetBlockedUsersQuery
 import com.limor.app.GetUserProfileQuery
 import com.limor.app.apollo.GeneralInfoRepository
-import com.limor.app.scenes.auth_new.firebase.EmailAuthHandler
-import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
-import com.limor.app.scenes.auth_new.model.*
+import com.limor.app.scenes.auth_new.model.UserInfoProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -49,11 +47,22 @@ class SettingsViewModel @Inject constructor(
     val followingsData: LiveData<List<FriendsQuery.GetFriend?>?>
         get() = _followingsData
 
-    fun getBlockedUsers() {
+    fun getBlockedUsers(offset: Int) {
+        viewModelScope.launch(Dispatchers.Default) {
+            try {
+                val blockedUsers = withContext(Dispatchers.IO) {
+                    generalInfoRepository.getBlockedUsers(blockedUsersLimit,offset)
+                }
+                _blockedUsersData.postValue(blockedUsers!!)
+                Timber.d("Got Blocked -> $blockedUsers")
+            } catch (e: Exception) {
+                Timber.d("Got Blocked -> $e")
+            }
+        }
         viewModelScope.launch {
             try {
-                val blockedUsers = generalInfoRepository.getBlockedUsers()
-                _blockedUsersData.postValue(blockedUsers!!)
+
+
             } catch (e: Exception) {
                 Timber.e(e)
             }
@@ -67,8 +76,8 @@ class SettingsViewModel @Inject constructor(
     fun getFollowers(offset: Int) {
         viewModelScope.launch(Dispatchers.Default) {
             try {
-                val blockedUsers = withContext(Dispatchers.IO){
-                    generalInfoRepository.getFollowers(blockedUsersLimit,offset)
+                val blockedUsers = withContext(Dispatchers.IO) {
+                    generalInfoRepository.getFollowers(blockedUsersLimit, offset)
                 }
                 _followersData.postValue(blockedUsers)
                 Timber.d("Got Follow -> $blockedUsers")
@@ -77,11 +86,12 @@ class SettingsViewModel @Inject constructor(
             }
         }
     }
+
     fun getFollowings(offset: Int) {
         viewModelScope.launch(Dispatchers.Default) {
             try {
-                val blockedUsers = withContext(Dispatchers.IO){
-                    generalInfoRepository.getFollowings(blockedUsersLimit,offset)
+                val blockedUsers = withContext(Dispatchers.IO) {
+                    generalInfoRepository.getFollowings(blockedUsersLimit, offset)
                 }
                 _followingsData.postValue(blockedUsers)
                 Timber.d("Got Follow -> $blockedUsers")
@@ -91,10 +101,10 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun getUserInfo(){
+    fun getUserInfo() {
         viewModelScope.launch(Dispatchers.Default) {
             try {
-                val userInfo = withContext(Dispatchers.IO){
+                val userInfo = withContext(Dispatchers.IO) {
                     generalInfoRepository.getUserProfile()
                 }
                 _userInfoLiveData.postValue(userInfo)
@@ -106,11 +116,17 @@ class SettingsViewModel @Inject constructor(
 
     }
 
-    fun updateUserInfo(userName: String, firstName:String, lastName:String, bio:String, website:String){
+    fun updateUserInfo(
+        userName: String,
+        firstName: String,
+        lastName: String,
+        bio: String,
+        website: String
+    ) {
         viewModelScope.launch(Dispatchers.Default) {
             try {
-                val response = withContext(Dispatchers.IO){
-                    userInfoProvider.updateUserProfile(userName,firstName,lastName,bio,website)
+                val response = withContext(Dispatchers.IO) {
+                    userInfoProvider.updateUserProfile(userName, firstName, lastName, bio, website)
                 }
                 _userUpdatedResponse.postValue(response)
                 Timber.d("Updated UserInfo -> $response")

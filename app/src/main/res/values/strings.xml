@@ -409,6 +409,7 @@
     <string name="type_key">type</string>
     <string name="title_key">title</string>
     <string name="message_key">message</string>
+    <string name="message">Message</string>
     <string name="lead_string_key">lead</string>
     <string name="viewing_id_key">viewing_id</string>
     <string name="centre_id_key">centre_id</string>

@@ -83,12 +83,12 @@
             app:destination="@id/discoverCategoryFragment" />
     </fragment>
 
-    <!--    <activity-->
-    <!--        android:id="@+id/navigation_record"-->
-    <!--        android:name="com.limor.app.scenes.main.fragments.record.RecordActivity"-->
-    <!--        android:label="RecordActivity"-->
-    <!--        tools:layout="@layout/activity_record">-->
-    <!--    </activity>-->
+        <activity
+            android:id="@+id/navigation_record"
+            android:name="com.limor.app.scenes.main.fragments.record.RecordActivity"
+            android:label="RecordActivity"
+            tools:layout="@layout/activity_record">
+        </activity>
 
         <fragment
             android:id="@+id/navigation_notifications"

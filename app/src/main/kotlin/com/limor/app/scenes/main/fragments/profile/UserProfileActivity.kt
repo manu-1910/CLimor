@@ -42,7 +42,7 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector {
 //        uiUser = bundle?.get("user") as UIUser?
 
         bundle?.let{
-            binding.toolbar.tvToolbarTitle.text = it.getString("user_name")
+            binding.toolbar.tvToolbarTitle.text = it.getString(UserProfileFragment.USER_NAME_KEY)
 
         }
         

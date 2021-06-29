@@ -130,7 +130,8 @@ class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
                     position: Int
                 ) {
                     val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-                    userProfileIntent.putExtra("user_name", item.username)
+                    userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, item.username)
+                    userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, item.id)
                     startActivity(userProfileIntent)
                 }
 

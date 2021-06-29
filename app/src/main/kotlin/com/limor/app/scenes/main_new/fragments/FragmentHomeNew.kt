@@ -13,6 +13,7 @@ import com.limor.app.R
 import com.limor.app.databinding.FragmentHomeNewBinding
 import com.limor.app.di.Injectable
 import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main_new.adapters.HomeFeedAdapter
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
@@ -37,6 +38,7 @@ class FragmentHomeNew : FragmentWithLoading(), Injectable {
     }
 
     override fun load() {
+        model.getUserProfile()
         model.loadHomeFeed()
     }
 
@@ -49,6 +51,11 @@ class FragmentHomeNew : FragmentWithLoading(), Injectable {
             it?.let {
                 switchCommonVisibility(isLoading = false)
                 setDataToRecyclerView(it)
+            }
+        })
+        model.userProfileData.observe(viewLifecycleOwner,{
+            it?.let{
+                PrefsHandler.saveCurrentUserId(requireContext(),it.id)
             }
         })
     }

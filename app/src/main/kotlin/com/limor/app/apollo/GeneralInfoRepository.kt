@@ -66,6 +66,16 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         Timber.d("Got User -> ${createUserResult.username}")
         return createUserResult
     }
+    suspend fun getUserProfileById(id: Int): GetUserProfileByIdQuery.GetUserById? {
+        val query = GetUserProfileByIdQuery(id)
+        val queryResult = withContext(Dispatchers.IO){
+            apollo.launchQuery(query)
+        }
+        val createUserResult: GetUserProfileByIdQuery.GetUserById =
+            queryResult?.data?.getUserById ?: return null
+        Timber.d("Got User -> ${createUserResult.username}  ${createUserResult.id}  ")
+        return createUserResult
+    }
 
     suspend fun getBlockedUsers(): ArrayList<GetBlockedUsersQuery.GetBlockedUser?>? {
         val query = GetBlockedUsersQuery(10,10)

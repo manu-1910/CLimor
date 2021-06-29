@@ -7,20 +7,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.limor.app.GetUserProfileQuery
 import com.limor.app.R
 import com.limor.app.databinding.FragmentProfileBinding
 import com.limor.app.di.Injectable
+import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.main.fragments.profile.UserFollowersFollowingsActivity
 import com.limor.app.scenes.main.fragments.profile.adapters.ProfileViewPagerAdapter
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import javax.inject.Inject
 
 
-class ProfileFragment : Fragment(), Injectable {
+class ProfileFragment : FragmentWithLoading(), Injectable {
 
 
     @Inject
@@ -42,7 +45,7 @@ class ProfileFragment : Fragment(), Injectable {
         super.onViewCreated(view, savedInstanceState)
 
 
-        binding.toggleGender.check(R.id.btnCasts)
+        binding.toggleProfileButtons.check(R.id.btnCasts)
 
 
         model.userProfileData.observe(viewLifecycleOwner, Observer {
@@ -52,11 +55,16 @@ class ProfileFragment : Fragment(), Injectable {
                 binding.profileLink.text = it.website
                 binding.profileFollowers.text = "${it.followers_count}"
                 binding.profileFollowing.text = "${it.following_count}"
-                Glide.with(requireContext()).load(it.images?.small_url).into(binding.profileDp)
+                Glide.with(requireContext()).load(it.images?.small_url)
+                    .placeholder(R.mipmap.ic_launcher_round)
+                    .error(R.mipmap.ic_launcher_round)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(binding.profileDp)
                 setupViewPager(it)
             }
         })
-        model.getUserProfile()
+
+        load()
 
 
 
@@ -76,22 +84,26 @@ class ProfileFragment : Fragment(), Injectable {
 
         }
 
-        binding.toggleGender.addOnButtonCheckedListener { toggleButton, checkedId, isChecked ->
+        binding.toggleProfileButtons.addOnButtonCheckedListener { toggleButton, checkedId, isChecked ->
             if (isChecked) {
-                val gender = when (checkedId) {
-                    R.id.btnCasts -> 0
-                    R.id.btnPatron -> 1
-                    else -> 0
+                when (checkedId) {
+                    R.id.btnCasts -> binding.profileViewpager.currentItem = 0
+                    else -> binding.profileViewpager.currentItem = 1
                 }
-                //move viewpager
             }
         }
 
     }
 
+    override fun load() {
+        model.getUserProfile()
+    }
+
+    override val errorLiveData: LiveData<String>
+        get() = model.profileErrorLiveData
+
     private fun setupViewPager(it: GetUserProfileQuery.GetUser) {
         val adapter = ProfileViewPagerAdapter(childFragmentManager, lifecycle)
-
         binding.profileViewpager.adapter = adapter
 
 

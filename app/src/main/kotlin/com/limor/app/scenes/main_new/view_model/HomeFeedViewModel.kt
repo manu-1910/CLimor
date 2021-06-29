@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.FeedItemsQuery
 import com.limor.app.GetBlockedUsersQuery
+import com.limor.app.GetUserProfileByIdQuery
 import com.limor.app.GetUserProfileQuery
 import com.limor.app.apollo.Apollo
 import com.limor.app.apollo.GeneralInfoRepository
@@ -39,6 +40,11 @@ class HomeFeedViewModel @Inject constructor(
     val userProfileData: LiveData<GetUserProfileQuery.GetUser?>
         get() = _userProfileData
 
+    private var _userProfileIdData =
+        MutableLiveData<GetUserProfileByIdQuery.GetUserById?>()
+    val userProfileIdData: LiveData<GetUserProfileByIdQuery.GetUserById?>
+        get() = _userProfileIdData
+
     fun loadHomeFeed() {
         viewModelScope.launch {
             try {
@@ -63,8 +69,16 @@ class HomeFeedViewModel @Inject constructor(
         }
     }
 
-    suspend fun getBlockedUsers(): ArrayList<GetBlockedUsersQuery.GetBlockedUser?>? {
-        return generalInfoRepository.getBlockedUsers()
+    fun getUserById(id: Int){
+        viewModelScope.launch {
+            try {
+                val user = generalInfoRepository.getUserProfileById(id)
+                _userProfileIdData.postValue(user)
+            } catch (e: Exception) {
+                _profileErrorLiveData.postValue(e.localizedMessage)
+            }
+        }
     }
+
 
 }

@@ -13,14 +13,18 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.limor.app.GetUserProfileByIdQuery
 import com.limor.app.GetUserProfileQuery
 import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.UserProfileFragmentBinding
 import com.limor.app.di.Injectable
 import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
+import com.limor.app.scenes.auth_new.util.PrefsHandler
+import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.fragments.profile.adapters.ProfileViewPagerAdapter
 import com.limor.app.scenes.main.fragments.settings.SettingsActivity
+import com.limor.app.scenes.main_new.MainActivityNew
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import kotlinx.android.synthetic.main.fragment_new_auth_loading_include.*
 import javax.inject.Inject
@@ -28,7 +32,12 @@ import javax.inject.Inject
 class UserProfileFragment : FragmentWithLoading(), Injectable {
 
 
-    private lateinit var user: GetUserProfileQuery.GetUser
+    companion object{
+        const val USER_ID_KEY = "user_id"
+        const val USER_NAME_KEY = "username"
+    }
+
+    private lateinit var user: GetUserProfileByIdQuery.GetUserById
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -48,16 +57,54 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if((activity) is MainActivityNew){
+            binding.toolbar.root.visibility = View.VISIBLE
+        }else{
+            binding.toolbar.root.visibility = View.GONE
+        }
 
         binding.toggleProfileButtons.check(R.id.btnCasts)
+        load()
+        binding.followers.setOnClickListener {
+            startActivity(Intent(requireContext(), UserFollowersFollowingsActivity::class.java)
+                .putExtra(Constants.TAB_KEY, Constants.TAB_FOLLOWERS)
+                .putExtra("user_name", user.username)
+                .putExtra("user_id", user.id)
+            )
+        }
+        binding.following.setOnClickListener {
 
+            startActivity(Intent(requireContext(), UserFollowersFollowingsActivity::class.java)
+                .putExtra(Constants.TAB_KEY,Constants.TAB_FOLLOWINGS)
+                .putExtra("user_name", user.username)
+                .putExtra("user_id", user.id)
+            )
 
+        }
+        binding.toolbar.btnUserSettings.setOnClickListener {
+            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+        }
+        binding.toggleProfileButtons.addOnButtonCheckedListener { toggleButton, checkedId, isChecked ->
+            if (isChecked) {
+                 when (checkedId) {
+                    R.id.btnCasts -> binding.profileViewpager.currentItem = 0
+                    else -> binding.profileViewpager.currentItem = 1
+                }
+            }
+        }
+        binding.toolbar.btnBack.setOnClickListener {
+            it.findNavController().popBackStack()
+        }
 
-        model.userProfileData.observe(viewLifecycleOwner, Observer {
+    }
+
+    override fun subscribeToViewModel() {
+        super.subscribeToViewModel()
+
+        model.userProfileIdData.observe(viewLifecycleOwner, Observer {
             it?.let {
                 user = it
                 switchCommonVisibility(false)
-               // binding.profileLayout.visibility = View.VISIBLE
                 binding.profileName.text = it.username
                 binding.profileDesc.text = it.description
                 binding.profileLink.text = it.website
@@ -68,60 +115,50 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
                     .error(R.mipmap.ic_launcher_round)
                     .apply(RequestOptions.circleCropTransform())
                     .into(binding.profileDp)
+                setupViewForUser(it)
                 setupViewPager(it)
             }
         })
 
-        load()
+        model.profileErrorLiveData.observe(viewLifecycleOwner,{
+            binding.profileMainContainer.visibility = View.GONE
+        })
 
+    }
 
+    private fun setupViewForUser(user: GetUserProfileByIdQuery.GetUserById) {
 
-        binding.followers.setOnClickListener {
-            startActivity(Intent(requireContext(), UserFollowersFollowingsActivity::class.java)
-                .putExtra(Constants.TAB_KEY, Constants.TAB_FOLLOWERS)
-                .putExtra("user_name", user.username)
-                .putExtra("user_id", user.id)
-            )
-        }
+        binding.profileMainContainer.visibility = View.VISIBLE
+        if(user.id != PrefsHandler.getCurrentUserId(requireContext())){
 
-        binding.following.setOnClickListener {
+            //Views Handle specific to Selected user
 
-            startActivity(Intent(requireContext(), UserFollowersFollowingsActivity::class.java)
-                .putExtra(Constants.TAB_KEY,Constants.TAB_FOLLOWINGS)
-                .putExtra("user_name", user.username)
-                .putExtra("user_id", user.id)
-            )
+            binding.otherUserNormalLayout.visibility = View.VISIBLE
 
-        }
+        }else{
 
-        binding.toolbar.btnUserSettings.setOnClickListener {
-            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+            //Views Handled specific to current user
+
 
         }
 
-        binding.toggleProfileButtons.addOnButtonCheckedListener { toggleButton, checkedId, isChecked ->
-            if (isChecked) {
-                 when (checkedId) {
-                    R.id.btnCasts -> binding.profileViewpager.currentItem = 0
-                    else -> binding.profileViewpager.currentItem = 1
-                }
-            }
-        }
-
-        binding.toolbar.btnBack.setOnClickListener {
-            it.findNavController().popBackStack()
-        }
 
     }
 
     override fun load() {
-        model.getUserProfile()
+
+        activity?.intent?.extras?.getInt(USER_ID_KEY)?.let{
+            model.getUserById(28)
+        }?:run{
+            model.getUserById(PrefsHandler.getCurrentUserId(requireContext()))
+        }
+
     }
 
     override val errorLiveData: LiveData<String>
-        get() = model.homeFeedErrorLiveData
+        get() = model.profileErrorLiveData
 
-    private fun setupViewPager(it: GetUserProfileQuery.GetUser) {
+    private fun setupViewPager(it: GetUserProfileByIdQuery.GetUserById) {
         val adapter = ProfileViewPagerAdapter(childFragmentManager, lifecycle)
         binding.profileViewpager.adapter = adapter
 
@@ -130,6 +167,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
     override fun onResume() {
         super.onResume()
-        model.getUserProfile()
+        load()
     }
 }
