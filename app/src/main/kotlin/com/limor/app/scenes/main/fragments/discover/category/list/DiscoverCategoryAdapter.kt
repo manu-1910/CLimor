@@ -2,6 +2,7 @@ package com.limor.app.scenes.main.fragments.discover.category.list
 
 import android.content.Context
 import com.limor.app.scenes.main.fragments.discover.common.mock.MockCast
+import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.GroupieAdapter
 
 class DiscoverCategoryAdapter(
@@ -21,10 +22,10 @@ class DiscoverCategoryAdapter(
         add(topCastsSection)
     }
 
-    fun updateFeaturedCasts(featuredCasts: List<MockCast>) {
+    fun updateFeaturedCasts(featuredCasts: List<CastUIModel>) {
         featuredCastsSection.updateFeaturedCasts(featuredCasts)
     }
-    fun updateTopCasts(topCasts: List<MockCast>) {
+    fun updateTopCasts(topCasts: List<CastUIModel>) {
         topCastsSection.updateTopCasts(topCasts)
     }
 }

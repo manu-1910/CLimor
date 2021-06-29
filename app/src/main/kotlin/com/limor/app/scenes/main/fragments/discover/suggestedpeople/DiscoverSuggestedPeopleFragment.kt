@@ -14,7 +14,7 @@ import com.limor.app.scenes.main.fragments.discover.suggestedpeople.list.Suggest
 import com.xwray.groupie.GroupieAdapter
 import javax.inject.Inject
 
-class DiscoverSuggestedPeopleFragment: BaseFragment() {
+class DiscoverSuggestedPeopleFragment : BaseFragment() {
 
     private var _binding: FragmentDiscoverSuggestedPeopleBinding? = null
     private val binding get() = _binding!!
@@ -52,7 +52,9 @@ class DiscoverSuggestedPeopleFragment: BaseFragment() {
         viewModel.suggestedPeople.observe(viewLifecycleOwner) { suggestedPeople ->
             suggestedPeopleAdapter.update(
                 suggestedPeople.map {
-                    SuggestedPersonBigItem(it)
+                    SuggestedPersonBigItem(person = it, onFollowClick = { person ->
+                        viewModel.onFollowClick(person)
+                    })
                 }
             )
         }

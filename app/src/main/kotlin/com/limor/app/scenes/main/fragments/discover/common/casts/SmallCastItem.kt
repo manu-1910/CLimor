@@ -5,12 +5,12 @@ import com.bumptech.glide.Glide
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverSmallCastBinding
 import com.limor.app.scenes.auth_new.util.ToastMaker
-import com.limor.app.scenes.main.fragments.discover.common.mock.MockCast
+import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.viewbinding.BindableItem
 import java.time.Duration
 
 class SmallCastItem(
-    val cast: MockCast,
+    val cast: CastUIModel,
     private val spanSize: Int = 1
 ) : BindableItem<ItemDiscoverSmallCastBinding>() {
 
@@ -21,16 +21,16 @@ class SmallCastItem(
 
     override fun bind(viewBinding: ItemDiscoverSmallCastBinding, position: Int) {
         viewBinding.apply {
-            authorName.text = cast.owner.name
-            castName.text = cast.name
-            castDuration.text = getCastDuration(cast.duration)
+            authorName.text = cast.owner.getFullName()
+            castName.text = cast.title
+            castDuration.text = getCastDuration(cast.audio.duration)
 
             Glide.with(root)
-                .load(cast.imageUrl)
+                .load(cast.imageLinks.medium)
                 .into(castImage)
 
             Glide.with(root)
-                .load(cast.owner.imageUrl)
+                .load(cast.owner.imageLinks.small)
                 .circleCrop()
                 .into(ownerIcon)
 

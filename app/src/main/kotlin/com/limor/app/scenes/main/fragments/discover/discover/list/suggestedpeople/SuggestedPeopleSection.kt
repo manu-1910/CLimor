@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.navigation.NavController
 import com.limor.app.R
 import com.limor.app.scenes.main.fragments.discover.common.HeaderItem
-import com.limor.app.scenes.main.fragments.discover.common.mock.MockPerson
+import com.limor.app.uimodels.UserUIModel
 import com.xwray.groupie.Section
 
 class SuggestedPeopleSection(
@@ -16,7 +16,7 @@ class SuggestedPeopleSection(
         private const val SUGGESTED_PEOPLE_ITEM_POSITION = 1
     }
 
-    fun updateSuggestedPeople(suggestedPeople: List<MockPerson>) {
+    fun updateSuggestedPeople(suggestedPeople: List<UserUIModel>) {
         if (suggestedPeople.isNotEmpty()) {
             setHeaderIfNeeded()
         }

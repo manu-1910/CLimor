@@ -8,13 +8,13 @@ import com.limor.app.databinding.ItemDiscoverBigCastBinding
 import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration.Companion.GRID_CAST_ITEM
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration.Companion.GRID_CAST_ITEM_TYPE_KEY
-import com.limor.app.scenes.main.fragments.discover.common.mock.MockCast
 import com.limor.app.scenes.utils.DateUiUtil
+import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.viewbinding.BindableItem
 import java.time.Duration
 
 class BigCastItem(
-    val cast: MockCast,
+    val cast: CastUIModel,
     private val width: Int = -1,
     private val spanSize: Int = 2
 ) : BindableItem<ItemDiscoverBigCastBinding>() {
@@ -29,23 +29,23 @@ class BigCastItem(
                 root.updateLayoutParams { width = this@BigCastItem.width }
             }
 
-            authorName.text = cast.owner.name
+            authorName.text = cast.owner.getFullName()
             val dateAndLocationText = "${
                 DateUiUtil.getPastDateDaysTextDescription(
-                    cast.date,
+                    cast.createdAt,
                     root.context
                 )
-            } - ${cast.location}"
+            } - ${cast.address}"
             dateLocation.text = dateAndLocationText
-            castName.text = cast.name
-            castDuration.text = getCastDuration(cast.duration)
+            castName.text = cast.title
+            castDuration.text = getCastDuration(cast.audio.duration)
 
             Glide.with(root)
-                .load(cast.imageUrl)
+                .load(cast.imageLinks.medium)
                 .into(castImage)
 
             Glide.with(root)
-                .load(cast.owner.imageUrl)
+                .load(cast.owner.imageLinks.small)
                 .circleCrop()
                 .into(ownerIcon)
 
