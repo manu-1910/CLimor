@@ -1,0 +1,30 @@
+query SearchUsers($term: String!, $limit: Int!, $offset: Int!) {
+    searchUsers(term: $term, limit: $limit, offset: $offset) {
+        id
+        first_name
+        username
+        last_name
+        images {
+            small_url
+            medium_url
+            large_url
+            original_url
+        }
+        blocked
+        followed
+        blocked_by
+        followed_by
+        following_count
+        followers_count
+        description
+        website
+        gender
+        date_of_birth
+        notifications_enabled
+        active
+        suspended
+        verified
+        autoplay_enabled
+        sharing_url
+    }
+}

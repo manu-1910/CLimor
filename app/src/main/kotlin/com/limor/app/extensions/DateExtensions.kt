@@ -23,3 +23,7 @@ fun Long.epochSecondToLocalDateTime(): LocalDateTime {
 fun Long.epochMilliToLocalDateTime(): LocalDateTime {
     return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toLocalDateTime()
 }
+
+fun String.toLocalDate(): LocalDate {
+    return LocalDate.parse(this)
+}

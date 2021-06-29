@@ -6,10 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.components.tabselector.TabSelectorView
 import com.limor.app.databinding.FragmentDiscoverSearchBinding
+import com.limor.app.extensions.makeVisible
 import com.limor.app.extensions.px
 import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchViewModel.SearchResult
 import com.limor.app.scenes.main.fragments.discover.search.list.DiscoverSearchAdapter
@@ -52,13 +54,13 @@ class DiscoverSearchFragment : BaseFragment() {
         binding.resultList.adapter = resultAdapter
         binding.resultList.addItemDecoration(VerticalSpacingItemDecoration(16.px))
         binding.tabSelectorView.apply {
-            setMode(TabSelectorView.Mode.FIXED)
-            setTabs(tabs.values.toList())
             setOnTabSelectedListener { tabName, position ->
                 selectedTab = tabs.keys.elementAt(position)
                 resultAdapter.clear()
                 performSearch(binding.searchItem.searchBar.getCurrentSearchQuery())
             }
+            setMode(TabSelectorView.Mode.FIXED)
+            setTabs(tabs.values.toList())
         }
 
         binding.searchItem.searchBar.apply {
@@ -73,6 +75,15 @@ class DiscoverSearchFragment : BaseFragment() {
                     resultAdapter.clear()
                 }
             )
+            // Automatically open keyboard
+            requestFocusOnText()
+        }
+
+        binding.searchItem.btnBack.apply {
+            makeVisible()
+            setOnClickListener {
+                it.findNavController().popBackStack()
+            }
         }
     }
 
@@ -98,6 +109,11 @@ class DiscoverSearchFragment : BaseFragment() {
             is SearchResult.Categories -> selectedTab == Tab.CATEGORIES
             is SearchResult.Hashtags -> selectedTab == Tab.HASHTAGS
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     enum class Tab {

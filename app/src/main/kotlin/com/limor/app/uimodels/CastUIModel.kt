@@ -2,6 +2,9 @@ package com.limor.app.uimodels
 
 import android.os.Parcelable
 import com.limor.app.GetFeaturedCastsQuery
+import com.limor.app.GetPodcastsByCategoryQuery
+import com.limor.app.GetPodcastsByHashtagQuery
+import com.limor.app.GetTopCastsQuery
 import com.limor.app.extensions.epochSecondToLocalDateTime
 import kotlinx.android.parcel.Parcelize
 import java.time.LocalDateTime
@@ -38,30 +41,64 @@ data class CastUIModel(
 
 fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =
     CastUIModel(
-        id = id!!,
-        owner = owner!!.mapToUIModel(),
-        title = title!!,
-        address = address!!,
-        imageLinks = images!!.mapToUIModel(),
-        caption = caption!!,
+        id = id!!, owner = owner!!.mapToUIModel(), title = title!!, address = address!!,
+        imageLinks = images!!.mapToUIModel(), caption = caption!!,
         createdAt = created_at!!.toLong().epochSecondToLocalDateTime(),
         updatedAt = updated_at!!.toLong().epochSecondToLocalDateTime(),
-        latitude = latitude!!.toFloat(),
-        longitude = longitude!!.toFloat(),
-        isLiked = liked!!,
-        isReported = reported!!,
-        isRecasted = recasted!!,
-        isListened = listened!!,
-        isBookmarked = bookmarked!!,
-        listensCount = number_of_listens!!,
-        likesCount = number_of_likes!!,
-        recastsCount = number_of_recasts!!,
-        commentsCount = number_of_comments!!,
-        sharesCount = number_of_shares!!,
-        audio = audio!!.mapToUIModel(),
-        isActive = active!!,
-        sharingUrl = sharing_url!!,
-        tags = tags!!.caption!!.map { it!!.mapToUIModel() },
-        mentions = mentions!!.mapToUIModel(),
+        latitude = latitude!!.toFloat(), longitude = longitude!!.toFloat(), isLiked = liked!!,
+        isReported = reported!!, isRecasted = recasted!!, isListened = listened!!,
+        isBookmarked = bookmarked!!, listensCount = number_of_listens!!,
+        likesCount = number_of_likes!!, recastsCount = number_of_recasts!!,
+        commentsCount = number_of_comments!!, sharesCount = number_of_shares!!,
+        audio = audio!!.mapToUIModel(), isActive = active!!, sharingUrl = sharing_url!!,
+        tags = tags!!.caption!!.map { it!!.mapToUIModel() }, mentions = mentions!!.mapToUIModel(),
+        links = links!!.mapToUIModel(),
+    )
+
+fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
+    CastUIModel(
+        id = id!!, owner = owner!!.mapToUIModel(), title = title!!, address = address!!,
+        imageLinks = images!!.mapToUIModel(), caption = caption!!,
+        createdAt = created_at!!.toLong().epochSecondToLocalDateTime(),
+        updatedAt = updated_at!!.toLong().epochSecondToLocalDateTime(),
+        latitude = latitude!!.toFloat(), longitude = longitude!!.toFloat(), isLiked = liked!!,
+        isReported = reported!!, isRecasted = recasted!!, isListened = listened!!,
+        isBookmarked = bookmarked!!, listensCount = number_of_listens!!,
+        likesCount = number_of_likes!!, recastsCount = number_of_recasts!!,
+        commentsCount = number_of_comments!!, sharesCount = number_of_shares!!,
+        audio = audio!!.mapToUIModel(), isActive = active!!, sharingUrl = sharing_url!!,
+        tags = tags!!.caption!!.map { it!!.mapToUIModel() }, mentions = mentions!!.mapToUIModel(),
+        links = links!!.mapToUIModel(),
+    )
+
+fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
+    CastUIModel(
+        id = id!!, owner = owner!!.mapToUIModel(), title = title!!, address = address!!,
+        imageLinks = images!!.mapToUIModel(), caption = caption!!,
+        createdAt = created_at!!.toLong().epochSecondToLocalDateTime(),
+        updatedAt = updated_at!!.toLong().epochSecondToLocalDateTime(),
+        latitude = latitude!!.toFloat(), longitude = longitude!!.toFloat(), isLiked = liked!!,
+        isReported = reported!!, isRecasted = recasted!!, isListened = listened!!,
+        isBookmarked = bookmarked!!, listensCount = number_of_listens!!,
+        likesCount = number_of_likes!!, recastsCount = number_of_recasts!!,
+        commentsCount = number_of_comments!!, sharesCount = number_of_shares!!,
+        audio = audio!!.mapToUIModel(), isActive = active!!, sharingUrl = sharing_url!!,
+        tags = tags!!.caption!!.map { it!!.mapToUIModel() }, mentions = mentions!!.mapToUIModel(),
+        links = links!!.mapToUIModel(),
+    )
+
+fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
+    CastUIModel(
+        id = id!!, owner = owner!!.mapToUIModel(), title = title!!, address = address!!,
+        imageLinks = images!!.mapToUIModel(), caption = caption!!,
+        createdAt = created_at!!.toLong().epochSecondToLocalDateTime(),
+        updatedAt = updated_at!!.toLong().epochSecondToLocalDateTime(),
+        latitude = latitude!!.toFloat(), longitude = longitude!!.toFloat(), isLiked = liked!!,
+        isReported = reported!!, isRecasted = recasted!!, isListened = listened!!,
+        isBookmarked = bookmarked!!, listensCount = number_of_listens!!,
+        likesCount = number_of_likes!!, recastsCount = number_of_recasts!!,
+        commentsCount = number_of_comments!!, sharesCount = number_of_shares!!,
+        audio = audio!!.mapToUIModel(), isActive = active!!, sharingUrl = sharing_url!!,
+        tags = tags!!.caption!!.map { it!!.mapToUIModel() }, mentions = mentions!!.mapToUIModel(),
         links = links!!.mapToUIModel(),
     )

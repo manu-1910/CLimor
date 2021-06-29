@@ -2,6 +2,9 @@ package com.limor.app.uimodels
 
 import android.os.Parcelable
 import com.limor.app.GetFeaturedCastsQuery
+import com.limor.app.GetPodcastsByCategoryQuery
+import com.limor.app.GetPodcastsByHashtagQuery
+import com.limor.app.GetTopCastsQuery
 import kotlinx.android.parcel.Parcelize
 import java.time.Duration
 
@@ -16,6 +19,36 @@ data class AudioUIModel(
 ) : Parcelable
 
 fun GetFeaturedCastsQuery.Audio.mapToUIModel() =
+    AudioUIModel(
+        url = audio_url!!,
+        totalLength = total_length!!,
+        totalSamples = total_samples!!,
+        duration = Duration.ofSeconds(duration!!.toLong()),
+        sampleRate = sample_rate!!.toFloat(),
+        originalUrl = original_audio_url
+    )
+
+fun GetTopCastsQuery.Audio.mapToUIModel() =
+    AudioUIModel(
+        url = audio_url!!,
+        totalLength = total_length!!,
+        totalSamples = total_samples!!,
+        duration = Duration.ofSeconds(duration!!.toLong()),
+        sampleRate = sample_rate!!.toFloat(),
+        originalUrl = original_audio_url
+    )
+
+fun GetPodcastsByCategoryQuery.Audio.mapToUIModel() =
+    AudioUIModel(
+        url = audio_url!!,
+        totalLength = total_length!!,
+        totalSamples = total_samples!!,
+        duration = Duration.ofSeconds(duration!!.toLong()),
+        sampleRate = sample_rate!!.toFloat(),
+        originalUrl = original_audio_url
+    )
+
+fun GetPodcastsByHashtagQuery.Audio.mapToUIModel() =
     AudioUIModel(
         url = audio_url!!,
         totalLength = total_length!!,

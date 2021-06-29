@@ -1,0 +1,7 @@
+query SearchHashtags($tag: String!, $limit: Int!, $offset: Int!) {
+    searchTags(tag: $tag, limit: $limit, offset: $offset) {
+        id
+        text
+        count
+    }
+}
