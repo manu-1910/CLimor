@@ -16,7 +16,7 @@
         android:id="@+id/profile_main_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
         <com.google.android.material.appbar.AppBarLayout
@@ -148,9 +148,11 @@
                                 android:layout_below="@+id/profile_followers"
                                 android:layout_marginTop="10dp"
                                 android:contentDescription="@string/play"
-                                android:src="@drawable/ic_play" />
+                                android:src="@drawable/ic_play"
+                                android:visibility="invisible"/>
 
                             <SeekBar
+                                android:visibility="invisible"
                                 android:id="@+id/pr_progress"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -166,6 +168,7 @@
                                 android:thumb="@drawable/seekbar_thumb" />
 
                             <TextView
+                                android:visibility="invisible"
                                 android:id="@+id/time_start"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -180,6 +183,7 @@
                                 android:textSize="@dimen/textSizeTiny" />
 
                             <TextView
+                                android:visibility="invisible"
                                 android:id="@+id/time_duration"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"

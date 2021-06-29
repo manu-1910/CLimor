@@ -22,12 +22,12 @@ import com.limor.app.databinding.FragmentUsersBlockedBinding
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.settings.adapters.AdapterBlockedUsers
 import com.limor.app.scenes.main.viewmodels.GetBlockedUsersViewModel
-import kotlinx.android.synthetic.main.fragment_empty_scenario.*
 import kotlinx.android.synthetic.main.fragment_users_blocked.*
 import org.jetbrains.anko.cancelButton
-import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.onRefresh
+import org.jetbrains.anko.yesButton
+import timber.log.Timber
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -41,7 +41,7 @@ class BlockedUsersFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val  model: SettingsViewModel by viewModels { viewModelFactory }
+    private val  model: SettingsViewModel by viewModels({activity as SettingsActivity}) { viewModelFactory }
 
     private lateinit var binding: FragmentUsersBlockedBinding
     var app: App? = null
@@ -84,23 +84,33 @@ class BlockedUsersFragment : BaseFragment() {
         initApiCallDeleteBlockedUser()
         initSwipeAndRefreshLayout()
         initRecyclerView()
-
         model.blockedUsersData.observe(viewLifecycleOwner, Observer {
-            if (it?.size == 0) {
+            Timber.d("blocked users observe -> $it")
+            if(it?.size == 0){
                 showEmptyScenario()
-            } else {
+            }else{
+                //switchCommonVisibility(false)
                 isRequestingNewData = false
-                val adapter = (binding.rvBlockedUsers.adapter as AdapterBlockedUsers)
+                val adapter = ( binding.rvBlockedUsers.adapter as AdapterBlockedUsers)
                 arrayList.addAll(it!!)
                 adapter.notifyDataSetChanged()
                 hideEmptyScenario()
             }
+
+            hideProgressBar()
         })
 
-        reload()
+
 
 
     }
+
+    /*override fun load() {
+        reload()
+    }
+
+    override val errorLiveData: LiveData<String>
+        get() = model.blockedUserErrorLiveData*/
 
     private fun configureEmptyScenario() {
         binding.layEmptyScenario.ivEmptyScenario.visibility = View.GONE
@@ -111,7 +121,7 @@ class BlockedUsersFragment : BaseFragment() {
     }
 
     private fun initToolbar() {
-
+        model.setToolbarTitle(resources.getString(R.string.title_blocked_users))
     }
 
     private fun initRecyclerView() {
@@ -133,9 +143,9 @@ class BlockedUsersFragment : BaseFragment() {
                     position: Int
                 ) {
                     if(item.blocked!!) {
-                        onUnblockButtonClicked(item)
+                        onUnblockButtonClicked(item,position)
                     } else {
-                        onBlockButtonClicked(item)
+                        onBlockButtonClicked(item,position)
                     }
                 }
 
@@ -188,19 +198,21 @@ class BlockedUsersFragment : BaseFragment() {
 
     }
 
-    private fun onUnblockButtonClicked(item: GetBlockedUsersQuery.GetBlockedUser) {
+    private fun onUnblockButtonClicked(item: GetBlockedUsersQuery.GetBlockedUser, position: Int) {
         alert(getString(R.string.confirmation_unblock_user)) {
-            okButton {
+            yesButton {
                 performUnblockUser(item)
+                blockedUsersAdapter.updateItem(item, position )
             }
             cancelButton {  }
         }.show()
     }
 
-    private fun onBlockButtonClicked(item: GetBlockedUsersQuery.GetBlockedUser) {
+    private fun onBlockButtonClicked(item: GetBlockedUsersQuery.GetBlockedUser, position: Int) {
         alert(getString(R.string.confirmation_block_user)) {
-            okButton {
+            yesButton {
                 performBlockUser(item)
+                blockedUsersAdapter.updateItem(item, position )
             }
             cancelButton {  }
         }.show()
@@ -219,21 +231,21 @@ class BlockedUsersFragment : BaseFragment() {
     }
 
     private fun initSwipeAndRefreshLayout() {
-        laySwipeRefresh?.setProgressBackgroundColorSchemeColor(
+        binding.laySwipeRefresh?.setProgressBackgroundColorSchemeColor(
             ContextCompat.getColor(
                 requireContext(),
                 R.color.colorPrimaryDark
             )
         )
 
-        laySwipeRefresh?.setColorSchemeColors(
+        binding.laySwipeRefresh?.setColorSchemeColors(
             ContextCompat.getColor(
                 requireContext(),
                 R.color.brandPrimary500
             )
         )
 
-        laySwipeRefresh?.onRefresh {
+        binding.laySwipeRefresh?.onRefresh {
             reload()
         }
     }
@@ -242,7 +254,9 @@ class BlockedUsersFragment : BaseFragment() {
     private fun reload() {
         isLastPage = false
         model.blockUsersOffset = 0
+        arrayList.clear()
         hideEmptyScenario()
+        showProgressBar()
         model.clearBlockedUsers()
         rvBlockedUsers?.recycledViewPool?.clear()
         rvBlockedUsers.adapter?.notifyDataSetChanged()
@@ -251,8 +265,12 @@ class BlockedUsersFragment : BaseFragment() {
 
 
     private fun initApiCallGetBlockedUsers() {
-        model.getBlockedUsers(arrayList.size)
-        hideProgressBar()
+        if(model.blockedUsersData.value == null || model.blockedUsersData.value?.size == 0){
+            model.getBlockedUsers(arrayList.size)
+        }else{
+            model.clearBlockedUsers()
+            model.getBlockedUsers(0)
+        }
 
     }
 
@@ -266,7 +284,7 @@ class BlockedUsersFragment : BaseFragment() {
     }
 
     private fun showProgressBar() {
-        laySwipeRefresh?.let {
+        binding.laySwipeRefresh.let {
             if (!it.isRefreshing) {
                 it.isRefreshing = true
             }
@@ -274,7 +292,7 @@ class BlockedUsersFragment : BaseFragment() {
     }
 
     private fun hideProgressBar() {
-        laySwipeRefresh?.let {
+        binding.laySwipeRefresh.let {
             if (it.isRefreshing) {
                 it.isRefreshing = false
             }
@@ -282,13 +300,14 @@ class BlockedUsersFragment : BaseFragment() {
     }
 
     private fun hideEmptyScenario() {
-        layEmptyScenario.visibility = View.GONE
-        rvBlockedUsers.visibility = View.VISIBLE
+        binding.layEmptyScenario.root.visibility = View.GONE
+        binding.rvBlockedUsers.visibility = View.VISIBLE
     }
 
     private fun showEmptyScenario() {
-        layEmptyScenario.visibility = View.VISIBLE
-        rvBlockedUsers.visibility = View.GONE
+
+        binding.layEmptyScenario.root.visibility = View.VISIBLE
+        binding.rvBlockedUsers.visibility = View.GONE
     }
 
 

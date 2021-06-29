@@ -130,16 +130,11 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
         binding.profileMainContainer.visibility = View.VISIBLE
         if(user.id != PrefsHandler.getCurrentUserId(requireContext())){
-
             //Views Handle specific to Selected user
-
             binding.otherUserNormalLayout.visibility = View.VISIBLE
 
         }else{
-
             //Views Handled specific to current user
-
-
         }
 
 

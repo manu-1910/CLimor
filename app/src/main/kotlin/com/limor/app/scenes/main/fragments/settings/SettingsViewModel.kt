@@ -20,13 +20,21 @@ class SettingsViewModel @Inject constructor(
     val generalInfoRepository: GeneralInfoRepository,
     val userInfoProvider: UserInfoProvider,
 ) : ViewModel() {
+    private var _settingsToolBarTitle =
+        MutableLiveData<String>()
+    val settingsToolBarTitle: LiveData<String>
+        get() = _settingsToolBarTitle
+
     var blockedUsersLimit: Int = 16
     var blockUsersOffset: Int = 0
     private var _blockedUsersData =
-        MutableLiveData<ArrayList<GetBlockedUsersQuery.GetBlockedUser?>>()
-    val blockedUsersData: LiveData<ArrayList<GetBlockedUsersQuery.GetBlockedUser?>>
+        MutableLiveData<List<GetBlockedUsersQuery.GetBlockedUser?>>()
+    val blockedUsersData: LiveData<List<GetBlockedUsersQuery.GetBlockedUser?>>
         get() = _blockedUsersData
-
+    private var _blockedUserErrorLiveData =
+        MutableLiveData<String>()
+    val blockedUserErrorLiveData: LiveData<String>
+        get() = _blockedUserErrorLiveData
     private var _userInfoLiveData =
         MutableLiveData<GetUserProfileQuery.GetUser?>()
     val userInfoLiveData: LiveData<GetUserProfileQuery.GetUser?>
@@ -57,6 +65,7 @@ class SettingsViewModel @Inject constructor(
                 Timber.d("Got Blocked -> $blockedUsers")
             } catch (e: Exception) {
                 Timber.d("Got Blocked -> $e")
+                _blockedUserErrorLiveData.postValue(e.localizedMessage)
             }
         }
         viewModelScope.launch {
@@ -156,6 +165,11 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             userInfoProvider.unFollowUser(id)
         }
+    }
+
+    fun setToolbarTitle(title: String) {
+        _settingsToolBarTitle.value = title
+         clearBlockedUsers()
     }
 
 }

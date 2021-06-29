@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.ViewCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -47,6 +48,7 @@ class SettingsFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val  model: SettingsViewModel by viewModels({activity as SettingsActivity}) { viewModelFactory }
 
     private var rootView: View? = null
 
@@ -175,7 +177,7 @@ class SettingsFragment : BaseFragment() {
 
 
     private fun configureToolbar() {
-
+        model.setToolbarTitle( resources.getString(R.string.settings))
     }
 
 

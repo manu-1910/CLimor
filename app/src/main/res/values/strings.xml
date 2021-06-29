@@ -599,4 +599,5 @@
     <string name="code_hasnt_been_sent">Code has not been sent</string>
 
     <string name="accounts">Accounts</string>
+    <string name="edit_profile">Edit Profile</string>
 </resources>

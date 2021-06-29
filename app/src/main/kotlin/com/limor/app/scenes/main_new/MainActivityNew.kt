@@ -8,6 +8,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
 import com.limor.app.R
+import com.limor.app.databinding.ActivityMainNewBinding
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
@@ -17,12 +18,20 @@ import javax.inject.Inject
 class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector {
     @Inject
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
-
+    lateinit var binding: ActivityMainNewBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        AndroidInjection.inject(this)
-        setContentView(R.layout.activity_main_new)
+        binding = ActivityMainNewBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setupFabClickListener()
         setUpBottomNavigation()
+    }
+
+    private fun setupFabClickListener() {
+        binding.fab.setOnClickListener {
+            navController.navigate(R.id.navigation_record)
+        }
     }
 
     lateinit var navController: NavController

@@ -35,7 +35,8 @@ class EditProfileFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val model: SettingsViewModel by viewModels { viewModelFactory }
+    private val  model: SettingsViewModel by viewModels({activity as SettingsActivity}) { viewModelFactory }
+
 
     @Inject
     lateinit var sessionManager: SessionManager
@@ -74,6 +75,8 @@ class EditProfileFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         user = sessionManager.getStoredUser()
+
+        configureToolbar()
         addViewModelOrbservers()
         addClickListeners()
         fetchRequiredData()
@@ -93,6 +96,9 @@ class EditProfileFragment : BaseFragment() {
 
         })
 
+    }
+    private fun configureToolbar() {
+        model.setToolbarTitle( resources.getString(R.string.edit_profile))
     }
 
     private fun addClickListeners() {

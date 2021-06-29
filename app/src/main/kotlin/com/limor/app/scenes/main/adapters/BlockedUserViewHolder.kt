@@ -31,21 +31,12 @@ class BlockedUserViewHolder(
     fun bind(currentItem: GetBlockedUsersQuery.GetBlockedUser, position: Int) {
 
         Timber.d("Blocked -> %s", currentItem)
-        if (currentItem.blocked!!) {
-            CommonsKt.setButtonFollowerStylePressed(
-                btnFollow,
-                false,
-                R.string.block,
-                R.string.unblock
-            )
-        } else {
-            CommonsKt.setButtonFollowerStylePressed(
-                btnFollow,
-                true,
-                R.string.block,
-                R.string.unblock
-            )
-        }
+        CommonsKt.setButtonFollowerStylePressed(
+            btnFollow,
+            false,
+            R.string.block,
+            R.string.unblock
+        )
 
         btnFollow.onClick {
 
