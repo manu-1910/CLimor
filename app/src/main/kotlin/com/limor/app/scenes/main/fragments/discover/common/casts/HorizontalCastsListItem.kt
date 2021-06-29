@@ -4,7 +4,6 @@ import android.view.View
 import com.limor.app.R
 import com.limor.app.databinding.ItemHorizontalCastsListBinding
 import com.limor.app.extensions.px
-import com.limor.app.scenes.main.fragments.discover.common.mock.MockCast
 import com.limor.app.scenes.utils.recycler.HorizontalSpacingItemDecoration
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.GroupieAdapter
@@ -16,6 +15,7 @@ class HorizontalCastsListItem : BindableItem<ItemHorizontalCastsListBinding>() {
         private val ITEM_WIDTH: Int = 308.px
         private val ITEM_SPACING: Int = 16.px
     }
+
     private var horizontalCastsListAdapter = GroupieAdapter()
 
     override fun bind(viewBinding: ItemHorizontalCastsListBinding, position: Int) {

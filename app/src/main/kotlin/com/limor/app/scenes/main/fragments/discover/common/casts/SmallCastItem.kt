@@ -6,6 +6,7 @@ import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverSmallCastBinding
 import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.uimodels.CastUIModel
+import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
 import java.time.Duration
 
@@ -48,4 +49,29 @@ class SmallCastItem(
     override fun getLayout() = R.layout.item_discover_small_cast
     override fun initializeViewBinding(view: View) = ItemDiscoverSmallCastBinding.bind(view)
     override fun getSpanSize(spanCount: Int, position: Int) = spanSize
+
+    override fun isSameAs(other: Item<*>): Boolean {
+        if (other is SmallCastItem) {
+            return other == this
+        }
+        return false
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as SmallCastItem
+
+        if (cast != other.cast) return false
+        if (spanSize != other.spanSize) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = cast.hashCode()
+        result = 31 * result + spanSize
+        return result
+    }
 }

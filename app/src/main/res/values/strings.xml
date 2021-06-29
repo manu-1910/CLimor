@@ -599,5 +599,8 @@
     <string name="code_hasnt_been_sent">Code has not been sent</string>
 
     <string name="accounts">Accounts</string>
+    <string name="posts">Posts</string>
+    <string name="in_top">In top</string>
+    <string name="recent">Recent</string>
     <string name="edit_profile">Edit Profile</string>
 </resources>

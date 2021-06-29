@@ -72,6 +72,9 @@
         <argument
             android:name="category"
             app:argType="string" />
+        <action
+            android:id="@+id/action_discoverCategoryFragment_to_discoverFeaturedCastsFragment"
+            app:destination="@id/discoverFeaturedCastsFragment" />
     </fragment>
     <fragment
         android:id="@+id/discoverAllCategoriesFragment"
@@ -109,5 +112,17 @@
     <fragment
         android:id="@+id/discoverSearchFragment"
         android:name="com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchFragment"
-        android:label="DiscoverSearchFragment" />
+        android:label="DiscoverSearchFragment" >
+        <action
+            android:id="@+id/action_discoverSearchFragment_to_discoverHashtagFragment"
+            app:destination="@id/discoverHashtagFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/discoverHashtagFragment"
+        android:name="com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment"
+        android:label="DiscoverHashtagFragment" >
+        <argument
+            android:name="HASHTAG_KEY"
+            app:argType="com.limor.app.uimodels.CastUIModel" />
+    </fragment>
 </navigation>

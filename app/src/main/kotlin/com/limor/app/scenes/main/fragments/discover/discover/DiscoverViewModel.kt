@@ -10,6 +10,7 @@ import com.limor.app.uimodels.UserUIModel
 import com.limor.app.usecases.GetCategoriesUseCase
 import com.limor.app.usecases.GetFeaturedCastsUseCase
 import com.limor.app.usecases.GetSuggestedPeopleUseCase
+import com.limor.app.usecases.GetTopCastsUseCase
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class DiscoverViewModel @Inject constructor(
     private val getCategoriesUseCase: GetCategoriesUseCase,
     private val getSuggestedPeopleUseCase: GetSuggestedPeopleUseCase,
-    private val getFeaturedCastsUseCase: GetFeaturedCastsUseCase
+    private val getFeaturedCastsUseCase: GetFeaturedCastsUseCase,
+    private val getTopCastsUseCase: GetTopCastsUseCase,
 ) : ViewModel() {
 
     private val _categories = MutableLiveData<List<CategoryUIModel>>()
@@ -36,6 +38,19 @@ class DiscoverViewModel @Inject constructor(
         loadCategories()
         loadSuggestedPeople()
         loadFeaturedCasts()
+        loadTopCasts()
+    }
+
+    private fun loadTopCasts() {
+        viewModelScope.launch {
+            getTopCastsUseCase.execute()
+                .onSuccess {
+                    _topCasts.value = it
+                }
+                .onFailure {
+                    Timber.e(it, "Error while getting featured casts")
+                }
+        }
     }
 
     private fun loadFeaturedCasts() {
