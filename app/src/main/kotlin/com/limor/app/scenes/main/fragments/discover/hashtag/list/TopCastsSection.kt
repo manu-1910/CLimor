@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main.fragments.discover.category.list
+package com.limor.app.scenes.main.fragments.discover.hashtag.list
 
 import android.content.Context
 import com.limor.app.R
@@ -36,7 +36,7 @@ class TopCastsSection(
         if (groupCount == 0) {
             setHeader(
                 HeaderItem(
-                    context.getString(R.string.top_casts)
+                    context.getString(R.string.in_top)
                 )
             )
             add(castsInnerSection)

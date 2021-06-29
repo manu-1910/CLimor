@@ -8,8 +8,10 @@ import com.limor.app.databinding.ItemDiscoverBigCastBinding
 import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration.Companion.GRID_CAST_ITEM
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration.Companion.GRID_CAST_ITEM_TYPE_KEY
+import com.limor.app.scenes.main.fragments.discover.discover.list.suggestedpeople.SuggestedPersonItem
 import com.limor.app.scenes.utils.DateUiUtil
 import com.limor.app.uimodels.CastUIModel
+import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
 import java.time.Duration
 
@@ -67,4 +69,31 @@ class BigCastItem(
     override fun initializeViewBinding(view: View) = ItemDiscoverBigCastBinding.bind(view)
 
     override fun getSpanSize(spanCount: Int, position: Int) = spanSize
+
+    override fun isSameAs(other: Item<*>): Boolean {
+        if (other is BigCastItem) {
+            return other == this
+        }
+        return false
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as BigCastItem
+
+        if (cast != other.cast) return false
+        if (width != other.width) return false
+        if (spanSize != other.spanSize) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = cast.hashCode()
+        result = 31 * result + width
+        result = 31 * result + spanSize
+        return result
+    }
 }

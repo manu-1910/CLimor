@@ -1,9 +1,8 @@
 package com.limor.app.uimodels
 
 import android.os.Parcelable
-import com.limor.app.GetFeaturedCastsQuery
-import com.limor.app.SuggestedPeopleQuery
-import com.limor.app.extensions.epochSecondToLocalDate
+import com.limor.app.*
+import com.limor.app.extensions.toLocalDate
 import kotlinx.android.parcel.Parcelize
 import java.time.LocalDate
 
@@ -42,7 +41,7 @@ fun GetFeaturedCastsQuery.Owner.mapToUIModel(): UserUIModel =
         isBlockedBy = blocked_by!!, isFollowedBy = followed_by!!,
         followingCount = following_count!!, followersCount = followers_count!!,
         description = description!!, website = website!!, gender = gender!!,
-        dateOfBirth = date_of_birth!!.toLong().epochSecondToLocalDate(),
+        dateOfBirth = date_of_birth!!.toLocalDate(),
         areNotificationsEnabled = notifications_enabled!!, isActive = active!!,
         isSuspended = suspended!!, isVerified = verified!!, isAutoplayEnabled = autoplay_enabled!!,
         sharingUrl = sharing_url!!
@@ -55,7 +54,59 @@ fun SuggestedPeopleQuery.GetSuggestedUser.mapToUIModel(): UserUIModel =
         isBlockedBy = blocked_by!!, isFollowedBy = followed_by!!,
         followingCount = following_count!!, followersCount = followers_count!!,
         description = description!!, website = website!!, gender = gender!!,
-        dateOfBirth = date_of_birth!!.toLong().epochSecondToLocalDate(),
+        dateOfBirth = date_of_birth!!.toLocalDate(),
+        areNotificationsEnabled = notifications_enabled!!, isActive = active!!,
+        isSuspended = suspended!!, isVerified = verified!!, isAutoplayEnabled = autoplay_enabled!!,
+        sharingUrl = sharing_url!!
+    )
+
+fun GetTopCastsQuery.Owner.mapToUIModel(): UserUIModel =
+    UserUIModel(
+        id = id, username = username!!, firstName = first_name!!, lastName = last_name!!,
+        imageLinks = images!!.mapToUIModel(), isBlocked = blocked!!, isFollowed = followed!!,
+        isBlockedBy = blocked_by!!, isFollowedBy = followed_by!!,
+        followingCount = following_count!!, followersCount = followers_count!!,
+        description = description!!, website = website!!, gender = gender!!,
+        dateOfBirth = date_of_birth!!.toLocalDate(),
+        areNotificationsEnabled = notifications_enabled!!, isActive = active!!,
+        isSuspended = suspended!!, isVerified = verified!!, isAutoplayEnabled = autoplay_enabled!!,
+        sharingUrl = sharing_url!!
+    )
+
+fun SearchUsersQuery.SearchUser.mapToUIModel(): UserUIModel =
+    UserUIModel(
+        id = id, username = username!!, firstName = first_name!!, lastName = last_name!!,
+        imageLinks = images!!.mapToUIModel(), isBlocked = blocked!!, isFollowed = followed!!,
+        isBlockedBy = blocked_by!!, isFollowedBy = followed_by!!,
+        followingCount = following_count!!, followersCount = followers_count!!,
+        description = description!!, website = website!!, gender = gender!!,
+        dateOfBirth = date_of_birth!!.toLocalDate(),
+        areNotificationsEnabled = notifications_enabled!!, isActive = active!!,
+        isSuspended = suspended!!, isVerified = verified!!, isAutoplayEnabled = autoplay_enabled!!,
+        sharingUrl = sharing_url!!
+    )
+
+fun GetPodcastsByCategoryQuery.Owner.mapToUIModel(): UserUIModel =
+    UserUIModel(
+        id = id, username = username!!, firstName = first_name!!, lastName = last_name!!,
+        imageLinks = images!!.mapToUIModel(), isBlocked = blocked!!, isFollowed = followed!!,
+        isBlockedBy = blocked_by!!, isFollowedBy = followed_by!!,
+        followingCount = following_count!!, followersCount = followers_count!!,
+        description = description!!, website = website!!, gender = gender!!,
+        dateOfBirth = date_of_birth!!.toLocalDate(),
+        areNotificationsEnabled = notifications_enabled!!, isActive = active!!,
+        isSuspended = suspended!!, isVerified = verified!!, isAutoplayEnabled = autoplay_enabled!!,
+        sharingUrl = sharing_url!!
+    )
+
+fun GetPodcastsByHashtagQuery.Owner.mapToUIModel(): UserUIModel =
+    UserUIModel(
+        id = id, username = username!!, firstName = first_name!!, lastName = last_name!!,
+        imageLinks = images!!.mapToUIModel(), isBlocked = blocked!!, isFollowed = followed!!,
+        isBlockedBy = blocked_by!!, isFollowedBy = followed_by!!,
+        followingCount = following_count!!, followersCount = followers_count!!,
+        description = description!!, website = website!!, gender = gender!!,
+        dateOfBirth = date_of_birth!!.toLocalDate(),
         areNotificationsEnabled = notifications_enabled!!, isActive = active!!,
         isSuspended = suspended!!, isVerified = verified!!, isAutoplayEnabled = autoplay_enabled!!,
         sharingUrl = sharing_url!!

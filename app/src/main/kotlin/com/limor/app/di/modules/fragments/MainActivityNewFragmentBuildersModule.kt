@@ -4,6 +4,7 @@ import com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategori
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverCategoryFragment
 import com.limor.app.scenes.main.fragments.discover.discover.DiscoverFragment
 import com.limor.app.scenes.main.fragments.discover.featuredcasts.DiscoverFeaturedCastsFragment
+import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchFragment
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleFragment
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
@@ -37,6 +38,9 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeUserProfileFragmentInjector(): UserProfileFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeDiscoverHashtagFragmentInjector(): DiscoverHashtagFragment
 
 }
 

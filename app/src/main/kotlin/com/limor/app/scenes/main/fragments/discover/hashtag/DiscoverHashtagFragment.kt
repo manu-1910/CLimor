@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main.fragments.discover.category
+package com.limor.app.scenes.main.fragments.discover.hashtag
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,24 +10,23 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.limor.app.common.BaseFragment
-import com.limor.app.databinding.FragmentDiscoverCategoryBinding
-import com.limor.app.scenes.main.fragments.discover.category.list.DiscoverCategoryAdapter
+import com.limor.app.databinding.FragmentDiscoverHashtagBinding
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration
-import com.limor.app.uimodels.CategoryUIModel
+import com.limor.app.scenes.main.fragments.discover.hashtag.list.DiscoverHashtagAdapter
+import com.limor.app.uimodels.TagUIModel
 import javax.inject.Inject
 
-class DiscoverCategoryFragment : BaseFragment() {
-
+class DiscoverHashtagFragment: BaseFragment() {
     companion object {
-        const val CATEGORY_KEY = "CATEGORY_KEY"
+        const val HASHTAG_KEY = "HASHTAG_KEY"
     }
 
-    private var _binding: FragmentDiscoverCategoryBinding? = null
+    private var _binding: FragmentDiscoverHashtagBinding? = null
     private val binding get() = _binding!!
 
-    private val category: CategoryUIModel by lazy { requireArguments().getParcelable(CATEGORY_KEY)!! }
-    private val discoverCategoryAdapter by lazy {
-        DiscoverCategoryAdapter(
+    private val hashtag: TagUIModel by lazy { requireArguments().getParcelable(HASHTAG_KEY)!! }
+    private val discoverHashtagAdapter by lazy {
+        DiscoverHashtagAdapter(
             requireContext(),
             findNavController()
         )
@@ -35,16 +34,16 @@ class DiscoverCategoryFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val viewModel: DiscoverCategoryViewModel by viewModels { viewModelFactory }
+    private val viewModel: DiscoverHashtagViewModel by viewModels { viewModelFactory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentDiscoverCategoryBinding.inflate(inflater)
+        _binding = FragmentDiscoverHashtagBinding.inflate(inflater)
 
-        viewModel.loadCasts(category.id)
+        viewModel.loadCasts(hashtag.id)
 
         initViews()
         subscribeForEvents()
@@ -53,25 +52,27 @@ class DiscoverCategoryFragment : BaseFragment() {
 
     private fun initViews() {
         binding.list.apply {
-            layoutManager = GridLayoutManager(context, discoverCategoryAdapter.spanCount).apply {
-                spanSizeLookup = discoverCategoryAdapter.spanSizeLookup
-                adapter = discoverCategoryAdapter
+            layoutManager = GridLayoutManager(context, discoverHashtagAdapter.spanCount).apply {
+                spanSizeLookup = discoverHashtagAdapter.spanSizeLookup
+                adapter = discoverHashtagAdapter
                 addItemDecoration(GridCastItemDecoration())
             }
         }
 
-        binding.toolbar.title.text = category.name
+        binding.toolbar.title.text = hashtag.tag
         binding.toolbar.btnBack.setOnClickListener {
             it.findNavController().popBackStack()
         }
+
+        discoverHashtagAdapter.updatePostsCount(hashtag)
     }
 
     private fun subscribeForEvents() {
-        viewModel.featuredCasts.observe(viewLifecycleOwner) {
-            discoverCategoryAdapter.updateFeaturedCasts(it)
-        }
         viewModel.topCasts.observe(viewLifecycleOwner) {
-            discoverCategoryAdapter.updateTopCasts(it)
+            discoverHashtagAdapter.updateTopCasts(it)
+        }
+        viewModel.recentCasts.observe(viewLifecycleOwner) {
+            discoverHashtagAdapter.updateRecentCasts(it)
         }
     }
 

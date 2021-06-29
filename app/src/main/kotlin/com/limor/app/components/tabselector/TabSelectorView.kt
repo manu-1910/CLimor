@@ -53,6 +53,7 @@ class TabSelectorView(context: Context, attrs: AttributeSet) : FrameLayout(conte
                 )
             }
         )
+        tabSelectionListener(tabs[0], 0)
     }
 
     fun setOnTabSelectedListener(onTabSelected: (tabName: String, position: Int) -> Unit) {

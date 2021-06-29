@@ -9,8 +9,10 @@ import com.limor.app.scenes.authentication.viewmodels.*
 import com.limor.app.scenes.main.fragments.profile.FollowViewModelNew
 import com.limor.app.scenes.main.fragments.settings.SettingsViewModel
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategoriesViewModel
+import com.limor.app.scenes.main.fragments.discover.category.DiscoverCategoryViewModel
 import com.limor.app.scenes.main.fragments.discover.discover.DiscoverViewModel
 import com.limor.app.scenes.main.fragments.discover.featuredcasts.DiscoverFeaturedCastsViewModel
+import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagViewModel
 import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchViewModel
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleViewModel
 import com.limor.app.scenes.main.viewmodels.*
@@ -274,6 +276,16 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(DiscoverViewModel::class)
     abstract fun bindDiscoverViewModel(viewModel: DiscoverViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverCategoryViewModel::class)
+    abstract fun bindDiscoverCategoryViewModel(viewModel: DiscoverCategoryViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverHashtagViewModel::class)
+    abstract fun bindDiscoverHashtagViewModel(viewModel: DiscoverHashtagViewModel): ViewModel
 
     @Binds
     @IntoMap
