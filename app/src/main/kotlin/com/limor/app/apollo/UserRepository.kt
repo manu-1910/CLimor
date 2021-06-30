@@ -25,8 +25,15 @@ class UserRepository @Inject constructor(val apollo: Apollo){
         return updateUserNameResult
     }
 
-    suspend fun updateUserProfile(userName: String,firstName:String,lastName:String,bio:String,website:String): String? {
-        val query = UpdateUserProfileMutation(userName,firstName,lastName,website,bio)
+    suspend fun updateUserProfile(
+        userName: String,
+        firstName: String,
+        lastName: String,
+        bio: String,
+        website: String,
+        imageURL: String?
+    ): String? {
+        val query = UpdateUserProfileMutation(userName,firstName,lastName,website,bio, Input.fromNullable(imageURL))
         val queryResult = apollo.mutate(query)
         val updateUserNameResult =
             queryResult?.data?.updateUser?.status
@@ -92,6 +99,22 @@ class UserRepository @Inject constructor(val apollo: Apollo){
         val query = DeleteFriendMutation(id)
         val result = apollo.mutate(query)
         val status = result?.data?.deleteFriends?.followed
+        Timber.d("sendUserOnboardingStatus -> $status")
+        return status
+    }
+
+    suspend fun blockUser(id: Int): Boolean? {
+        val query = BlockUserMutation(id)
+        val result = apollo.mutate(query)
+        val status = result?.data?.blockUsers?.blocked
+        Timber.d("sendUserOnboardingStatus -> $status")
+        return status
+    }
+
+    suspend fun unblockUser(id: Int): Boolean? {
+        val query = UnBlockUserMutation(id)
+        val result = apollo.mutate(query)
+        val status = result?.data?.unblockUsers?.blocked
         Timber.d("sendUserOnboardingStatus -> $status")
         return status
     }

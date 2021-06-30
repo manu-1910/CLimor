@@ -168,6 +168,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:maxLines="1"
+                        app:prefixText="http://"
                         android:textColor="@color/black"
                         android:fontFamily="@font/roboto_bold"/>
 
