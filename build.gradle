@@ -42,6 +42,7 @@ allprojects {
     repositories {
         jcenter()
         maven { url "https://jitpack.io" }
+        maven { url "https://sdk.smartlook.com/android/release"}
     }
 }
 task clean(type: Delete) {

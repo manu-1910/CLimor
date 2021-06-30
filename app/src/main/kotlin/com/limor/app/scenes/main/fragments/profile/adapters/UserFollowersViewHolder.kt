@@ -9,83 +9,86 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.limor.app.FollowersQuery
 import com.limor.app.R
+import com.limor.app.databinding.ItemUserFollowersBinding
 import com.limor.app.scenes.utils.CommonsKt
-import com.limor.app.uimodels.UIUser
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.sdk23.listeners.onLongClick
+import timber.log.Timber
 import java.util.*
 
 class UserFollowersViewHolder(
-    inflater: LayoutInflater,
-    parent: ViewGroup,
-    private val listener: UserFollowersAdapter.OnFollowerClickListener,
-    val context: Context
-) : RecyclerView.ViewHolder(
-    inflater.inflate(
-        R.layout.fragment_followers_followings_user_item,
-        parent,
-        false
-    )
-) {
+    val binding: ItemUserFollowersBinding, val listener: UserFollowersAdapter.OnFollowerClickListener
+) : RecyclerView.ViewHolder(binding.root) {
+    private var ivUser: ImageView = binding.ivUser
+    private var btnFollow: Button = binding.btnFollow
+    private var tvCapitals: TextView = binding.tvTitle
+    private var tvUsername: TextView = binding.tvSubtitle
 
+    fun bind(currentItem: FollowersQuery.GetFollower, position: Int) {
 
-    private var ivUser: ImageView = itemView.findViewById(R.id.ivUser)
-    private var btnFollow: Button = itemView.findViewById(R.id.btnFollow)
-    private var tvCapitals: TextView = itemView.findViewById(R.id.tvCapitals)
-    private var tvUsername: TextView = itemView.findViewById(R.id.tvUsername)
-
-    fun bind(currentItem: UIUser, position: Int) {
-        if (currentItem.followed) {
-            CommonsKt.setButtonLimorStylePressed(btnFollow, false, R.string.follow, R.string.following)
+        Timber.d("Follower -> " + currentItem.followed)
+        if (currentItem.followed!!) {
+            CommonsKt.setButtonFollowerStylePressed(
+                btnFollow,
+                false,
+                R.string.follow,
+                R.string.unfollow
+            )
         } else {
-            CommonsKt.setButtonLimorStylePressed(btnFollow, true, R.string.follow, R.string.following)
+            CommonsKt.setButtonFollowerStylePressed(
+                btnFollow,
+                true,
+                R.string.follow,
+                R.string.unfollow
+            )
         }
 
         btnFollow.onClick {
 
-            if (currentItem.followed) {
-                CommonsKt.setButtonLimorStylePressed(btnFollow, true, R.string.follow, R.string.following)
+            /*if (currentItem.followed) {
+                CommonsKt.setButtonFollowerStylePressed(
+                    btnFollow,
+                    false,
+                    R.string.follow,
+                    R.string.following
+                )
             } else {
-                CommonsKt.setButtonLimorStylePressed(btnFollow, false, R.string.follow, R.string.following)
-            }
+                CommonsKt.setButtonFollowerStylePressed(
+                    btnFollow,
+                    true,
+                    R.string.follow,
+                    R.string.following
+                )
+
+            }*/
 
             listener.onFollowClicked(currentItem, position)
         }
 
-//        var firstName = ""
-//        currentItem.first_name?.let {
-//            firstName = it
-//        }
-//
-//        var lastName = ""
-//        currentItem.last_name?.let {
-//            lastName = it
-//        }
-//        val fullname = context.getString(R.string.user_fullname, firstName, lastName)
+        val firstName = currentItem.first_name
+        val lastName = currentItem.last_name
+       val fullname = binding.root.context.getString(R.string.user_fullname, firstName, lastName)
 
-        var usernameCapitals = ""
-        var finalUsername = ""
-        currentItem.username?.let {
-            finalUsername = it
-            usernameCapitals = when {
-                it.length == 1 -> it.toUpperCase(Locale.getDefault())
-                it.length >= 2 -> it.substring(0, 2).toUpperCase(Locale.getDefault())
-                else -> ""
-            }
-        }
-        tvCapitals.text = usernameCapitals
+        tvCapitals.text = fullname
         tvCapitals.onClick { listener.onUserClicked(currentItem, position) }
 
-        tvUsername.text = finalUsername
+        tvUsername.text = currentItem.description
         tvUsername.onClick { listener.onUserClicked(currentItem, position) }
+
+        binding.root.onLongClick {
+             listener.onUserLongClicked(currentItem,position)
+            return@onLongClick true
+        }
 
 
         Glide.with(itemView.context)
-            .load(currentItem.images.small_url)
+            .load(currentItem.images?.small_url)
             .placeholder(R.mipmap.ic_launcher_round)
             .error(R.mipmap.ic_launcher_round)
             .apply(RequestOptions.circleCropTransform())
-            .into(ivUser)
+            .into(binding.ivUser)
         ivUser.onClick { listener.onUserClicked(currentItem, position) }
 
     }

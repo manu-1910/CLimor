@@ -5,13 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentDiscoverCategoryBinding
 import com.limor.app.scenes.main.fragments.discover.category.list.DiscoverCategoryAdapter
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration
 import com.limor.app.uimodels.CategoryUIModel
+import javax.inject.Inject
 
 class DiscoverCategoryFragment : BaseFragment() {
 
@@ -23,8 +26,16 @@ class DiscoverCategoryFragment : BaseFragment() {
     private val binding get() = _binding!!
 
     private val category: CategoryUIModel by lazy { requireArguments().getParcelable(CATEGORY_KEY)!! }
-    private val discoverCategoryAdapter by lazy { DiscoverCategoryAdapter(requireContext()) }
-    private val viewModel: DiscoverCategoryViewModel by viewModels()
+    private val discoverCategoryAdapter by lazy {
+        DiscoverCategoryAdapter(
+            requireContext(),
+            findNavController()
+        )
+    }
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val viewModel: DiscoverCategoryViewModel by viewModels { viewModelFactory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,6 +43,9 @@ class DiscoverCategoryFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDiscoverCategoryBinding.inflate(inflater)
+
+        viewModel.loadCasts(category.id)
+
         initViews()
         subscribeForEvents()
         return binding.root

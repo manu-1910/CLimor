@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/brandSecondary400"
+    android:background="@color/white"
     android:gravity="center_vertical"
     android:orientation="vertical"
     android:padding="@dimen/marginHuge">
@@ -13,7 +13,7 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/home_icon_empty_scenario"
+        android:src="@drawable/like_icon_empty_scenario"
         tools:ignore="ContentDescription" />
 
     <TextView
@@ -26,7 +26,7 @@
         android:layout_marginBottom="@dimen/marginSmall"
         android:gravity="center"
         android:text="@string/title_home"
-        android:textColor="@color/brandSecondary200"
+        android:textColor="@color/black"
         android:textSize="@dimen/textSizeLarge"
         android:textStyle="bold" />
 

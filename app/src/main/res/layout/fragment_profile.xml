@@ -1,241 +1,273 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/brandSecondary400">
+    android:id="@+id/m_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <View
-        android:id="@+id/upperDivider"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/brandSecondary300"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/layProfileTop"
+
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/upperDivider">
+        android:layout_marginTop="?attr/actionBarSize"
+        android:background="@color/white"
+        android:theme="@style/ThemeOverlay.AppCompat.Light">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/ivUser"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginStart="@dimen/marginMedium"
-                android:layout_marginTop="@dimen/marginMedium"
-                android:contentDescription="@string/user_picture"
-                android:src="@drawable/publish_placeholder"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/ivVerifiedUser"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_toEndOf="@+id/ivUser"
-                android:contentDescription="@string/verified"
-                android:src="@drawable/verified"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/ivUser"
-                app:layout_constraintEnd_toEndOf="@id/ivUser" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        <LinearLayout
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/marginMedium"
-            android:layout_marginTop="@dimen/marginMedium"
-            android:layout_marginEnd="@dimen/marginMedium"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tvBio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto"
-                android:textColor="@color/white"
-                android:textSize="@dimen/textSizeSmall"
-                android:layout_marginBottom="@dimen/marginMedium"
-                tools:ignore="HardcodedText" />
-
-            <RelativeLayout
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                >
-
-                <LinearLayout
-                    android:id="@+id/lytFollowers"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_alignParentStart="true">
-
-                    <TextView
-                        android:id="@+id/tvNumberFollowers"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_medium"
-                        android:text="0"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/textSizeSmall"
-                        tools:ignore="HardcodedText" />
-
-                    <TextView
-                        android:id="@+id/tvFollowers"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" Followers"
-                        android:textColor="@color/brandSecondary100"
-                        tools:ignore="HardcodedText" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/lytFollowing"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_toEndOf="@+id/lytFollowers"
-                    android:layout_marginStart="@dimen/marginMedium">
-                    <TextView
-                        android:id="@+id/tvNumberFollowing"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_medium"
-                        android:text="0"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/textSizeSmall"
-                        tools:ignore="HardcodedText" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" Following"
-                        android:textColor="@color/brandSecondary100"
-                        tools:ignore="HardcodedText" />
-
-                </LinearLayout>
-
-            </RelativeLayout>
-
+            android:layout_height="match_parent"
+            app:contentScrim="@color/transparent"
+            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
 
             <LinearLayout
-                android:id="@+id/layFollows"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/marginMedium"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layProfileTop">
+                android:orientation="vertical">
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnFollow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:background="@drawable/bg_round_yellow_ripple"
-                    android:text="@string/follow"
-                    android:textAllCaps="false"
-                    android:textColor="@color/brandSecondary500" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="20dp">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/profile_dp"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:src="@drawable/placeholder_noti" />
+
+                        <TextView
+                            android:id="@+id/profile_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="15dp"
+                            android:layout_toEndOf="@+id/profile_dp"
+                            android:fontFamily="@font/roboto_bold"
+                            android:text="Irfan Sazzad"
+                            android:textColor="@color/black"
+                            android:textSize="17sp" />
+
+                        <TextView
+                            android:id="@+id/profile_desc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/profile_name"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_toEndOf="@+id/profile_dp"
+                            android:fontFamily="@font/roboto"
+                            android:text="Footballer and Rugby journalist bringing you the latest news"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/profile_link"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/profile_desc"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_toEndOf="@+id/profile_dp"
+                            android:autoLink="web"
+                            android:fontFamily="@font/roboto"
+                            android:text="https://www.company123.com"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/profile_followers"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/profile_link"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_toEndOf="@+id/profile_dp"
+                            android:fontFamily="@font/roboto_bold"
+                            android:text="100 K"
+                            android:textColor="@color/black"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/followers"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/profile_link"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_toEndOf="@+id/profile_followers"
+                            android:fontFamily="@font/roboto"
+                            android:text="Followers"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/profile_following"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/profile_link"
+                            android:layout_marginStart="35dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_toEndOf="@+id/followers"
+                            android:fontFamily="@font/roboto_bold"
+                            android:text="60 K"
+                            android:textColor="@color/black"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/following"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/profile_link"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_toEndOf="@+id/profile_following"
+                            android:fontFamily="@font/roboto"
+                            android:text="Following"
+                            android:textSize="14sp" />
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/play"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_below="@+id/profile_followers"
+                            android:layout_marginTop="10dp"
+                            android:contentDescription="@string/play"
+                            android:src="@drawable/ic_play" />
+
+                        <SeekBar
+                            android:id="@+id/pr_progress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignTop="@+id/play"
+                            android:layout_alignBottom="@+id/play"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="6dp"
+                            android:layout_toEndOf="@+id/profile_dp"
+                            android:maxHeight="4dp"
+                            android:minHeight="4dp"
+                            android:progress="50"
+                            android:progressDrawable="@drawable/custom_seekbar_progress"
+                            android:thumb="@drawable/seekbar_thumb" />
+
+                        <TextView
+                            android:id="@+id/time_start"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/pr_progress"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="@dimen/marginTiny"
+                            android:layout_toEndOf="@+id/profile_dp"
+                            android:fontFamily="@font/roboto"
+                            android:gravity="start"
+                            android:text="00:00"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="@dimen/textSizeTiny" />
+
+                        <TextView
+                            android:id="@+id/time_duration"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/pr_progress"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginTop="@dimen/marginTiny"
+                            android:layout_marginEnd="15dp"
+                            android:fontFamily="@font/roboto_medium"
+                            android:gravity="end"
+                            android:text="00:00"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="@dimen/textSizeTiny" />
+
+                    </RelativeLayout>
+                </LinearLayout>
+
             </LinearLayout>
 
-            <Button
-                android:id="@+id/btnBlock"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:layout_marginTop="@dimen/marginMedium"
-                android:background="@drawable/bg_round_yellow_ripple"
-                android:text="@string/block"
-                android:textAllCaps="false"
-                android:textColor="@color/brandSecondary500"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layProfileTop" />
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-        </LinearLayout>
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layViewPager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/marginMedium"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@id/loweDivider"
-        app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layProfileTop">
-
-
-        <View
-            android:id="@+id/barDecoratorUp"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/brandSecondary300"
-            app:layout_constraintStart_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/viewPager" />
-
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_layout"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barDecoratorUp"
-            app:tabGravity="fill"
-            app:tabMaxWidth="0dp"
-            app:tabMode="fixed"
-            app:tabSelectedTextColor="@color/brandPrimary500"
-            app:tabTextColor="@color/brandSecondary100" />
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/rectangle_1"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:layout_marginEnd="24dp"
+                android:alpha="0.06"
+                android:background="@drawable/shape_grey_gender"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggleProfileButtons"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_alignStart="@+id/rectangle_1"
+                android:layout_alignTop="@+id/rectangle_1"
+                android:layout_alignEnd="@+id/rectangle_1"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCasts"
+                    style="@style/ButtonStyleGenderOutlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Casts"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.button.MaterialButton
+
+                    android:id="@+id/btnPatron"
+                    style="@style/ButtonStyleGenderOutlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Patron" />
+
+            </com.google.android.material.button.MaterialButtonToggleGroup>
 
 
-        <View
-            android:id="@+id/barDecoratorDown"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/brandSecondary300"
-            app:layout_constraintStart_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tab_layout" />
+        </RelativeLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barDecoratorDown" />
-
-        <!--        </androidx.viewpager.widget.ViewPager>-->
-
-    </LinearLayout>
-
-
-
-    <View
-        android:id="@+id/loweDivider"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/profileViewpager"
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/brandSecondary300"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include
+            android:layout_centerInParent="true"
+            layout="@layout/fragment_new_auth_loading_include"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

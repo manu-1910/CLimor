@@ -1,6 +1,8 @@
 package com.limor.app.apollo
 
 import com.limor.app.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -51,5 +53,66 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         list.forEach {
             Timber.d(it.toString())
         }
+    }
+
+
+    suspend fun getUserProfile(): GetUserProfileQuery.GetUser? {
+        val query = GetUserProfileQuery()
+        val queryResult = withContext(Dispatchers.IO) {
+            apollo.launchQuery(query)
+        }
+        val createUserResult: GetUserProfileQuery.GetUser =
+            queryResult?.data?.getUser ?: return null
+        Timber.d("Got User -> ${createUserResult.username}")
+        return createUserResult
+    }
+    suspend fun getUserProfileById(id: Int): GetUserProfileByIdQuery.GetUserById? {
+        val query = GetUserProfileByIdQuery(id)
+        val queryResult = withContext(Dispatchers.IO){
+            apollo.launchQuery(query)
+        }
+        val createUserResult: GetUserProfileByIdQuery.GetUserById =
+            queryResult?.data?.getUserById ?: return null
+        Timber.d("Got User -> ${createUserResult.username}  ${createUserResult.id}  ")
+        return createUserResult
+    }
+
+    suspend fun getBlockedUsers(limit:Int,offset:Int): List<GetBlockedUsersQuery.GetBlockedUser?>? {
+        val query = GetBlockedUsersQuery(limit,offset)
+        val queryResult = withContext(Dispatchers.IO) {
+            apollo.launchQuery(query)
+        }
+        val createUserResult: List<GetBlockedUsersQuery.GetBlockedUser?> =
+            queryResult?.data?.getBlockedUsers ?: return null
+        Timber.d("Got Blocked Users -> ${createUserResult.size}")
+        return createUserResult
+    }
+
+    suspend fun getFollowers(limit:Int,offset:Int): List<FollowersQuery.GetFollower?>? {
+        val query = FollowersQuery(limit,offset)
+        val queryResult = withContext(Dispatchers.IO){
+            apollo.launchQuery(query)
+        }
+        val createUserResult: List<FollowersQuery.GetFollower?> =
+            queryResult?.data?.getFollowers ?: return null
+        Timber.d("Got FF -> ${createUserResult.size}")
+        return createUserResult
+    }
+    suspend fun getFollowings(limit:Int,offset:Int): List<FriendsQuery.GetFriend?>? {
+        val query = FriendsQuery(limit,offset)
+        val queryResult = withContext(Dispatchers.IO){
+            apollo.launchQuery(query)
+        }
+        val createUserResult: List<FriendsQuery.GetFriend?> =
+            queryResult?.data?.getFriends?: return null
+        Timber.d("Got FF -> ${createUserResult.size}")
+        return createUserResult
+    }
+
+    suspend fun getSuggestedPeople(): List<SuggestedPeopleQuery.GetSuggestedUser>? {
+        return apollo.launchQuery(SuggestedPeopleQuery())
+            ?.data?.getSuggestedUsers?.filterNotNull()?.also {
+                Timber.d("getSuggestedPeople() -> $it")
+            }
     }
 }

@@ -138,7 +138,7 @@ class UserFollowersFragment(private val uiUser: UIUser) : BaseFragment() {
 
 
     private fun initApiCallGetFollowers() {
-        val output = viewModelFollowers.transform(
+       /* val output = viewModelFollowers.transform(
             GetUserFollowersViewModel.Input(
                 getFollowersTrigger, uiUser.id
             )
@@ -164,7 +164,7 @@ class UserFollowersFragment(private val uiUser: UIUser) : BaseFragment() {
             tvNoFollowers?.text = getString(R.string.no_followers_error_message)
             showProgress(false)
             CommonsKt.handleOnApiError(app!!, context!!, this, it)
-        })
+        })*/
 
     }
 
@@ -194,7 +194,7 @@ class UserFollowersFragment(private val uiUser: UIUser) : BaseFragment() {
 
 
     private fun configureAdapter() {
-        val layoutManager = LinearLayoutManager(context)
+       /* val layoutManager = LinearLayoutManager(context)
         rvFollowers?.layoutManager = layoutManager
         followersAdapter = context?.let {
             UserFollowersAdapter(
@@ -259,7 +259,7 @@ class UserFollowersFragment(private val uiUser: UIUser) : BaseFragment() {
             DividerItemDecoration.VERTICAL
         )
         context?.getDrawable(R.drawable.divider_item_recyclerview)?.let { divider.setDrawable(it) }
-        rvFollowers?.addItemDecoration(divider)
+        rvFollowers?.addItemDecoration(divider)*/
 
     }
 
@@ -278,7 +278,7 @@ class UserFollowersFragment(private val uiUser: UIUser) : BaseFragment() {
             )
         )
 
-        output.response.observe(this, Observer {
+       /* output.response.observe(this, Observer {
             if (it.code != 0) {
                 revertUserFollowedState()
             }else{
@@ -295,12 +295,12 @@ class UserFollowersFragment(private val uiUser: UIUser) : BaseFragment() {
             view?.hideKeyboard()
             revertUserFollowedState()
             CommonsKt.handleOnApiError(app!!, context!!, this, it)
-        })
+        })*/
     }
 
 
     private fun apiCallDeleteFriend() {
-        val output = viewModelDeleteFriend.transform(
+      /*  val output = viewModelDeleteFriend.transform(
             DeleteFriendViewModel.Input(
                 deleteFriendDataTrigger
             )
@@ -323,7 +323,7 @@ class UserFollowersFragment(private val uiUser: UIUser) : BaseFragment() {
             view?.hideKeyboard()
             revertUserFollowedState()
             CommonsKt.handleOnApiError(app!!, context!!, this, it)
-        })
+        })*/
     }
 
 

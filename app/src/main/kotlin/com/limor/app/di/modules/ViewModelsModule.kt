@@ -6,8 +6,14 @@ import com.limor.app.common.ViewModelFactory
 import com.limor.app.di.ViewModelKey
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.authentication.viewmodels.*
+import com.limor.app.scenes.main.fragments.profile.FollowViewModelNew
+import com.limor.app.scenes.main.fragments.settings.SettingsViewModel
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategoriesViewModel
+import com.limor.app.scenes.main.fragments.discover.category.DiscoverCategoryViewModel
 import com.limor.app.scenes.main.fragments.discover.discover.DiscoverViewModel
+import com.limor.app.scenes.main.fragments.discover.featuredcasts.DiscoverFeaturedCastsViewModel
+import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagViewModel
+import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchViewModel
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleViewModel
 import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
@@ -265,8 +271,28 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(DiscoverSearchViewModel::class)
+    abstract fun bindDiscoverSearchViewModelViewModel(viewModel: DiscoverSearchViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(DiscoverViewModel::class)
     abstract fun bindDiscoverViewModel(viewModel: DiscoverViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverCategoryViewModel::class)
+    abstract fun bindDiscoverCategoryViewModel(viewModel: DiscoverCategoryViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverHashtagViewModel::class)
+    abstract fun bindDiscoverHashtagViewModel(viewModel: DiscoverHashtagViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscoverFeaturedCastsViewModel::class)
+    abstract fun bindDiscoverFeaturedCastsViewModel(viewModel: DiscoverFeaturedCastsViewModel): ViewModel
 
     @Binds
     @IntoMap
@@ -286,4 +312,14 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(PodcastFullPlayerViewModel::class)
     abstract fun bindPodcastFullPlayerViewModel(viewModel: PodcastFullPlayerViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SettingsViewModel::class)
+    abstract fun bindSettingsViewModel(viewModel: SettingsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(FollowViewModelNew::class)
+    abstract fun bindFollowViewModel(viewModel: FollowViewModelNew): ViewModel
 }

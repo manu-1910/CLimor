@@ -2,7 +2,7 @@ package com.limor.app.scenes.main.fragments.discover.featuredcasts.list
 
 import com.limor.app.scenes.main.fragments.discover.common.casts.BigCastItem
 import com.limor.app.scenes.main.fragments.discover.common.casts.SmallCastItem
-import com.limor.app.scenes.main.fragments.discover.common.mock.MockCast
+import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.GroupieAdapter
 
 class DiscoverFeaturedCastsAdapter(
@@ -17,7 +17,7 @@ class DiscoverFeaturedCastsAdapter(
         spanCount = SPAN_COUNT
     }
 
-    fun updateFeaturedCasts(featuredCasts: List<MockCast>) {
+    fun updateFeaturedCasts(featuredCasts: List<CastUIModel>) {
         update(
             featuredCasts.mapIndexed { index, cast ->
                 when {

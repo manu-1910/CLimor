@@ -10,6 +10,7 @@ import com.limor.app.di.AppInjector
 import com.limor.app.di.components.AppComponent
 import com.limor.app.util.CrashReportingTree
 import com.novoda.merlin.MerlinsBeard
+import com.smartlook.sdk.smartlook.Smartlook
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -58,6 +59,8 @@ class App : Application(), HasActivityInjector, HasServiceInjector {
         //Initialize Facebook SDK
         FacebookSdk.sdkInitialize(this)
 
+        initSmartLook()
+
         initLogging()
 
 //        AndroidAudioConverter.load(this, object : ILoadCallback {
@@ -70,6 +73,12 @@ class App : Application(), HasActivityInjector, HasServiceInjector {
 //                println("FFmpeg loaded error")
 //            }
 //        })
+
+
+    }
+
+    private fun initSmartLook() {
+        Smartlook.setupAndStartRecording(BuildConfig.SMART_LOOK_API_KEY);
     }
 
     private fun initLogging() {

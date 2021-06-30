@@ -305,6 +305,7 @@
     <string name="profile_casts_title">Casts</string>
     <string name="confirmation_block_user">Are you sure you want to block this user?</string>
     <string name="confirmation_unblock_user">Are you sure you want to unblock this user?</string>
+    <string name="confirmation_unfollow_user">Are you sure you want to unfollow this user?</string>
     <string name="unblock">Unblock</string>
     <string name="error_blocking_user">There was an error blocking this user, please try again later</string>
     <string name="success_blocking_user">User blocked correctly</string>
@@ -321,13 +322,13 @@
     <string name="settings_title_follow_people">FOLLOW PEOPLE</string>
     <string name="settings_find_facebook_friends">Find Facebook Friends</string>
     <string name="settings_find_twitter_friends">Find Twitter Friends</string>
-    <string name="settings_title_account">ACCOUNT</string>
+    <string name="settings_title_account">Account</string>
     <string name="settings_edit_profile">Edit Profile</string>
     <string name="settings_change_password">Change Password</string>
     <string name="settings_request_verification">Request Verification</string>
     <string name="settings_push_notifications">Push Notifications</string>
     <string name="settings_autoplay">Autoplay</string>
-    <string name="settings_title_about">ABOUT</string>
+    <string name="settings_title_about">About</string>
     <string name="settings_privacy_policy">Privacy Policy</string>
     <string name="settings_terms">Terms &amp; Conditions</string>
     <string name="settings_report_a_problem">Report a Problem</string>
@@ -354,7 +355,7 @@
     <string name="request_from">Support request from</string>
 
     <!-- EditProfile screen -->
-    <string name="settings_title_profile">PROFILE</string>
+    <string name="settings_title_profile">Profile</string>
     <string name="title_personal_information">PERSONAL INFORMATION</string>
     <string name="title_under_record">Record your voice bio. (Max 1 min)</string>
     <string name="hint_fullname">Full Name</string>
@@ -375,7 +376,7 @@
     <string name="settings_blocked_users">Blocked Users</string>
     <string name="title_blocked_users">Blocked Users</string>
     <string name="delete_podcast_ok">Podcast deleted successfully</string>
-    <string name="empty_scenario_blocked_users">You don\'t have blocked people</string>
+    <string name="empty_scenario_blocked_users">You don\'t have any blocked user</string>
     <string name="error_content_unavailable">The content you are trying to access is not longer available or you don’t have access to it.</string>
     <string name="error_deleting_comment">The comment could not be deleted. Please try again later.</string>
     <string name="comment_deleted_ok">Comment deleted correctly</string>
@@ -408,6 +409,7 @@
     <string name="type_key">type</string>
     <string name="title_key">title</string>
     <string name="message_key">message</string>
+    <string name="message">Message</string>
     <string name="lead_string_key">lead</string>
     <string name="viewing_id_key">viewing_id</string>
     <string name="centre_id_key">centre_id</string>
@@ -587,6 +589,7 @@
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
     <string name="days_ago">%d days ago</string>
+    <string name="lorem">Lorem Ipsum is simply dummy text of the...</string>
 
     <string name="why_are_you_reporting">Why are you reporting?</string>
     <string name="spam_or_scam">Spam or Scam</string>
@@ -596,6 +599,10 @@
     <string name="code_hasnt_been_sent">Code has not been sent</string>
 
     <string name="accounts">Accounts</string>
+    <string name="posts">Posts</string>
+    <string name="in_top">In top</string>
+    <string name="recent">Recent</string>
+    <string name="edit_profile">Edit Profile</string>
     <string name="hint_write_a_comment">Write a comment...</string>
     <string name="left">left</string>
 </resources>

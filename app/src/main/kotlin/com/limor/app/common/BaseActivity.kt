@@ -33,6 +33,7 @@ import org.jetbrains.anko.toast
 import javax.inject.Inject
 
 abstract class BaseActivity : AppCompatActivity() {
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 

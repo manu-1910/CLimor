@@ -3,7 +3,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/brandSecondary500">
+        android:background="@color/primaryYellowColor">
 
     <ImageView
             android:id="@+id/ivSplashLogo"
@@ -13,6 +13,6 @@
             android:layout_marginEnd="@dimen/marginVeryHuge"
             android:layout_marginStart="@dimen/marginVeryHuge"
             android:contentDescription="@string/app_name"
-            app:srcCompat="@drawable/logotype" />
+            app:srcCompat="@drawable/limor_logo" />
 
 </FrameLayout>

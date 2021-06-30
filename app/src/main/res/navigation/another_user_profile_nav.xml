@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/profile_fragment"
-        android:name="com.limor.app.scenes.main.fragments.ProfileFragment"
+        android:name="com.limor.app.scenes.main.fragments.profile.UserProfileFragment"
         android:label="ProfileFragment"
-        tools:layout="@layout/fragment_profile">
+        tools:layout="@layout/user_profile_fragment">
     </fragment>
 
 </navigation>

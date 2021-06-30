@@ -81,6 +81,9 @@
         <argument
             android:name="category"
             app:argType="string" />
+        <action
+            android:id="@+id/action_discoverCategoryFragment_to_discoverFeaturedCastsFragment"
+            app:destination="@id/discoverFeaturedCastsFragment" />
     </fragment>
     <fragment
         android:id="@+id/discoverAllCategoriesFragment"
@@ -92,23 +95,25 @@
             app:destination="@id/discoverCategoryFragment" />
     </fragment>
 
-    <!--    <activity-->
-    <!--        android:id="@+id/navigation_record"-->
-    <!--        android:name="com.limor.app.scenes.main.fragments.record.RecordActivity"-->
-    <!--        android:label="RecordActivity"-->
-    <!--        tools:layout="@layout/activity_record">-->
-    <!--    </activity>-->
+        <activity
+            android:id="@+id/navigation_record"
+            android:name="com.limor.app.scenes.main.fragments.record.RecordActivity"
+            android:label="RecordActivity"
+            tools:layout="@layout/activity_record">
+        </activity>
+
+        <fragment
+            android:id="@+id/navigation_notifications"
+            android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
+            android:label="NotificationsFragment"
+            tools:layout="@layout/fragment_dummy">
+        </fragment>
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
-        android:label="NotificationsFragment"
-        tools:layout="@layout/fragment_dummy"/>
-    <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
+        android:name="com.limor.app.scenes.main.fragments.profile.UserProfileFragment"
         android:label="ProfileFragment"
-        tools:layout="@layout/fragment_dummy"/>
+        tools:layout="@layout/user_profile_fragment"/>
     <fragment
         android:id="@+id/discoverSuggestedPeopleFragment"
         android:name="com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleFragment"
@@ -116,5 +121,17 @@
     <fragment
         android:id="@+id/discoverSearchFragment"
         android:name="com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchFragment"
-        android:label="DiscoverSearchFragment" />
+        android:label="DiscoverSearchFragment" >
+        <action
+            android:id="@+id/action_discoverSearchFragment_to_discoverHashtagFragment"
+            app:destination="@id/discoverHashtagFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/discoverHashtagFragment"
+        android:name="com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment"
+        android:label="DiscoverHashtagFragment" >
+        <argument
+            android:name="HASHTAG_KEY"
+            app:argType="com.limor.app.uimodels.CastUIModel" />
+    </fragment>
 </navigation>

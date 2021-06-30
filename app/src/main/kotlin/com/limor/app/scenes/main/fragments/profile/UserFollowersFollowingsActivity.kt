@@ -1,30 +1,26 @@
 package com.limor.app.scenes.main.fragments.profile
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.viewpager.widget.ViewPager
-import com.google.android.material.tabs.TabLayout
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
-import com.limor.app.uimodels.UIUser
+import com.limor.app.common.Constants
+import com.limor.app.databinding.ActivityFollowersAndFollowingBinding
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
-import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
-import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.btnClose
-import kotlinx.android.synthetic.main.toolbar_with_searchview.*
-import org.jetbrains.anko.sdk23.listeners.onClick
-import org.jetbrains.anko.toast
+import timber.log.Timber
 import javax.inject.Inject
 
 
 class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInjector {
 
+    private lateinit var binding: ActivityFollowersAndFollowingBinding
     var rootView: View? = null
-    private var uiUser: UIUser? = null
-    private var tabToShow: String = ""
+    var userId: Int? = 0
+    var userName: String? = ""
 
     @Inject
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -35,19 +31,20 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
         fun newInstance() = UserFollowersFollowingsActivity()
     }
 
-    var followersCount = 0;
-    var followingsCount = 0;
+    var followersCount = 0
+    var followingsCount = 0
 
 
     override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> = fragmentInjector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_followers_followings)
+        overridePendingTransition(0, 0)
 
-        val bundle = intent?.extras
-        uiUser = bundle?.get("user") as UIUser
-        tabToShow = bundle?.getString("tabToShow").toString()
+        binding = ActivityFollowersAndFollowingBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        Timber.d("USER FOLLOW created FF")
 
         configureToolbar()
 
@@ -56,118 +53,83 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
     }
 
 
-    private fun configureToolbar(){
-        //Toolbar title
-        if(uiUser!=null){
-            if (uiUser!!.username.isNullOrEmpty()){
-                tvToolbarTitle?.text = getString(R.string.username)
-            }else{
-                tvToolbarTitle?.text = uiUser!!.username
-            }
+    private fun configureToolbar() {
+        intent?.extras?.let{
+            userName = it.getString("user_name")
+            userId = it.getInt("user_id")
         }
-
-        //Toolbar Left
-        btnClose.onClick {
-            this.finish()
-        }
-
-        //Search View
-        search_view.setOnQueryTextListener(object :
-            androidx.appcompat.widget.SearchView.OnQueryTextListener {
-            override fun onQueryTextChange(newText: String): Boolean {
-                if (newText.isNotEmpty() && newText.length > 3) {
-                    //searchLocations(newText)
-                    println(newText)
-                }
-                return false
-            }
-
-            override fun onQueryTextSubmit(query: String): Boolean {
-                if (query.isNotEmpty() && query.length > 3) {
-                    //searchLocations(query)
-                    println(query)
-                } else {
-                    toast(getString(R.string.min_3_chars))
-                }
-                return false
-            }
-        })
+        binding.toolbar.tvToolbarTitle.text = userName
     }
 
 
-    private fun configureViewPager(){
-        val viewPager: ViewPager = findViewById(R.id.view_pager_followers_followings)
-        val tabs: TabLayout = findViewById(R.id.tabs)
+    private fun configureViewPager() {
+        val viewPager: ViewPager2 = binding.followViewPager
         val names = arrayOf(
-            getString(R.string.followers_count, uiUser?.followers_count),
-            getString(R.string.followings_count, uiUser?.following_count)
+            getString(R.string.followers_count, followersCount),
+            getString(R.string.followings_count, followingsCount)
         )
 
-        val adapter = object : FragmentStatePagerAdapter(
-            supportFragmentManager,
-            BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
+        val adapter = object : FragmentStateAdapter(
+            supportFragmentManager, lifecycle
         ) {
-            override fun getItem(position: Int): Fragment {
-                if(position == 0){
-                    return UserFollowersFragment.newInstance(uiUser!!)
-                }else{
-                    return UserFollowingsFragment.newInstance(uiUser!!)
-                }
-            }
 
-            override fun getCount() : Int {
+
+            override fun getItemCount(): Int {
                 return names.size
             }
 
-            override fun getPageTitle(position: Int): CharSequence {
-                return names[position]
+            override fun createFragment(position: Int): Fragment {
+                return if (position == 0) {
+                    UserFollowersFragmentNew.newInstance("")
+                } else {
+                    UserFollowingsFragmentNew.newInstance("")
+                }
             }
 
-            // this is necessary. Without this, app will crash when you are in a different fragment
-            // and then push back and it goes back to this fragment.
-            // the fragmentstatepageradapter saves states between different fragments of the adapter itself
-            // but if you go to a different fragment, for example home, and the push back and the navigation
-            // goes back to this profile fragment, the fragmentstatepageradapter will try to restore the
-            // state of the adapter fragments but they are not alive anymore.
-            override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
+            /*override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
                 try {
                     super.restoreState(state, loader)
                 } catch (e: Exception) {
-//                        Timber.e("Error Restore State of Fragment : %s", e.message)
                 }
-            }
+            }*/
         }
         viewPager.adapter = adapter
+        viewPager.isUserInputEnabled = false
+        viewPager.offscreenPageLimit = 2
 
-        tabs.setupWithViewPager(viewPager)
-        tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                tab?.let {
-                    val myFragment = adapter.instantiateItem(viewPager, it.position)
-//                            if (myFragment is UserFollowersFragment) {
-//                                myFragment.scrollToTop()
-//                            }
+
+        binding.toggleGender.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                when (checkedId) {
+                    R.id.btnFollowers -> viewPager.currentItem = 0
+                    R.id.btnFollowing -> viewPager.currentItem = 1
                 }
             }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-
-            }
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-
-            }
-        })
-
-        if (!tabToShow.isNullOrEmpty()){
-            if(tabToShow.trim().equals("followers")){
-                val tab: TabLayout.Tab? = tabs.getTabAt(0)
-                tab?.select()
-            }else{
-                val tab: TabLayout.Tab? = tabs.getTabAt(1)
-                tab?.select()
-            }
         }
+
+
+        val bundle = intent?.extras
+        bundle?.let {
+            when (bundle.getString(Constants.TAB_KEY)) {
+                Constants.TAB_FOLLOWERS -> {
+                    binding.toggleGender.check(R.id.btnFollowers)
+                    viewPager.currentItem = 0
+                }
+                Constants.TAB_FOLLOWINGS -> {
+                    binding.toggleGender.check(R.id.btnFollowing)
+                    viewPager.currentItem = 1
+                }
+
+            }
+        } ?: run {
+            binding.toggleGender.check(R.id.btnFollowers)
+        }
+
+
+        binding.toolbar.btnClose.setOnClickListener {
+            finish()
+        }
+
 
     }
 

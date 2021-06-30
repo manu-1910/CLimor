@@ -18,10 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.limor.app.R
 import com.limor.app.common.SingleLiveEvent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 
 fun View.showSnackbar(snackbarText: String, timeLength: Int) {
     Snackbar.make(this, snackbarText, timeLength).show()
@@ -124,7 +121,7 @@ fun View.makeGone() {
 val View.viewScope: CoroutineScope
     get() {
         val storedScope = getTag(R.string.view_coroutine_scope) as? CoroutineScope
-        if (storedScope != null) return storedScope
+        if (storedScope != null && storedScope.isActive) return storedScope
 
         val newScope = ViewCoroutineScope()
         if (isAttachedToWindow) {
