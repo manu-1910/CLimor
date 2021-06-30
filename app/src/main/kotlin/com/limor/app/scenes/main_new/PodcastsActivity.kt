@@ -132,14 +132,6 @@ class PodcastsActivity : AppCompatActivity() {
 
     private fun setOnClicks() {
         binding.btnPodcastMore.setOnClickListener {
-//            val bundle = bundleOf(
-//                ArgsConverter.LABEL_DIALOG_REPORT_PODCAST to ArgsConverter.encodeFeedItemAsReportDialogArgs(
-//                    item!!
-//                )
-//            )
-//
-//            it.findNavController()
-//                .navigate(R.id.action_navigation_home_to_dialog_report_podcast, bundle)
         }
 
         binding.btnPodcastPlayExtended.setOnClickListener {

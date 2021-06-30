@@ -26,7 +26,6 @@ class PlayerBinder(
     private var audioService: AudioService? = null
     private var playerStatus: PlayerStatus? = null
     private var lastPlayingPosition = 0L
-    private var lastPodcastId: Int = -1
 
     private val _playerStatusLiveData = MutableLiveData<PlayerStatus?>()
     val playerStatusLiveData: LiveData<PlayerStatus?>
@@ -126,15 +125,6 @@ class PlayerBinder(
                 )
             }
         }
-
-//        val positionToStart =
-//            if (podcast.id != lastPodcastId) {
-//                lastPodcastId = podcast.id
-//                0
-//            } else
-//                lastPlayingPosition
-//
-//        audioService?.play(podcast.audio?.audio_url, positionToStart)
     }
 
     fun bindToAudioService() {
@@ -144,7 +134,6 @@ class PlayerBinder(
             }
         }
     }
-
 
     fun stopAudioService() {
         audioService?.pause()
