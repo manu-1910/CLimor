@@ -596,4 +596,6 @@
     <string name="code_hasnt_been_sent">Code has not been sent</string>
 
     <string name="accounts">Accounts</string>
+    <string name="hint_write_a_comment">Write a comment...</string>
+    <string name="left">left</string>
 </resources>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  Copyright (C) 2018 The Android Open Source Project
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by motionlicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetStart="@+id/start"
+        motion:duration="10000"
+        motion:motionInterpolator="easeOut">
+
+        <OnSwipe
+            motion:dragDirection="dragDown"
+            motion:targetId="@id/ivPodcastBackground"
+            motion:touchAnchorSide="top" />
+
+        <KeyFrameSet>
+            <KeyAttribute
+                android:alpha="0.00"
+                motion:framePosition="1"
+                motion:motionTarget="@id/shadowTop" />
+            <KeyAttribute
+                android:alpha="0.00"
+                motion:framePosition="100"
+                motion:motionTarget="@id/shadowTop" />
+            <KeyAttribute
+                android:alpha="0.00"
+                motion:framePosition="1"
+                motion:motionTarget="@id/shadowBottom" />
+            <KeyAttribute
+                android:alpha="0.00"
+                motion:framePosition="100"
+                motion:motionTarget="@id/shadowBottom" />
+
+            <KeyAttribute
+                android:alpha="0.00"
+                motion:framePosition="0"
+                motion:motionTarget="@id/includeMiniPlayer" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                motion:framePosition="50"
+                motion:motionTarget="@id/includeMiniPlayer" />
+            <KeyAttribute
+                android:alpha="0.1"
+                motion:framePosition="75"
+                motion:motionTarget="@id/includeMiniPlayer" />
+
+            <KeyAttribute
+                android:alpha="0.5"
+                motion:framePosition="10"
+                motion:motionTarget="@id/svPodcastInfo" />
+            <KeyAttribute
+                android:alpha="0.0"
+                motion:framePosition="40"
+                motion:motionTarget="@id/svPodcastInfo" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                motion:framePosition="100"
+                motion:motionTarget="@id/svPodcastInfo" />
+
+            <KeyAttribute
+                android:alpha="0.5"
+                motion:framePosition="50"
+                motion:motionTarget="@+id/ivPodcastBackground" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                motion:framePosition="100"
+                motion:motionTarget="@+id/ivPodcastBackground" />
+
+
+            <KeyAttribute
+                android:alpha="0.5"
+                motion:framePosition="50"
+                motion:motionTarget="@+id/lpiPodcastProgress" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                motion:framePosition="100"
+                motion:motionTarget="@+id/lpiPodcastProgress" />
+            <KeyAttribute
+                android:alpha="0.5"
+                motion:framePosition="50"
+                motion:motionTarget="@+id/tvRecastPlayCurrentPosition" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                motion:framePosition="100"
+                motion:motionTarget="@+id/tvRecastPlayCurrentPosition" />
+            <KeyAttribute
+                android:alpha="0.5"
+                motion:framePosition="50"
+                motion:motionTarget="@+id/tvRecastPlayMaxPosition" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                motion:framePosition="100"
+                motion:motionTarget="@+id/tvRecastPlayMaxPosition" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                motion:framePosition="100"
+                motion:motionTarget="@+id/btnPodcastPlayPrevious" />
+            <KeyAttribute
+                android:alpha="0.5"
+                motion:framePosition="50"
+                motion:motionTarget="@+id/btnPodcastPlayPrevious" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                motion:framePosition="100"
+                motion:motionTarget="@+id/btnPodcastRewindBack" />
+            <KeyAttribute
+                android:alpha="0.5"
+                motion:framePosition="50"
+                motion:motionTarget="@+id/btnPodcastRewindBack" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                motion:framePosition="100"
+                motion:motionTarget="@+id/btnPodcastPlayExtended" />
+            <KeyAttribute
+                android:alpha="0.5"
+                motion:framePosition="50"
+                motion:motionTarget="@+id/btnPodcastPlayExtended" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                motion:framePosition="100"
+                motion:motionTarget="@+id/btnPodcastRewindForward" />
+            <KeyAttribute
+                android:alpha="0.5"
+                motion:framePosition="50"
+                motion:motionTarget="@+id/btnPodcastRewindForward" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                motion:framePosition="100"
+                motion:motionTarget="@+id/btnPodcastPlayNext" />
+            <KeyAttribute
+                android:alpha="0.5"
+                motion:framePosition="50"
+                motion:motionTarget="@+id/btnPodcastPlayNext" />
+
+        </KeyFrameSet>
+    </Transition>
+
+    <ConstraintSet android:id="@id/start">
+        <Constraint android:id="@+id/ivPodcastBackground" />
+
+        <Constraint
+            android:id="@+id/flMotionTarget"
+            motion:layout_constraintTop_toTopOf="parent" />
+
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@id/end">
+
+        <Constraint
+            android:id="@+id/ivPodcastBackground"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent" />
+
+        <Constraint
+            android:id="@+id/shadowBottom"
+            android:layout_width="0dp"
+            android:layout_height="0dp" />
+        <Constraint
+            android:id="@+id/shadowTop"
+            android:layout_width="0dp"
+            android:layout_height="0dp" />
+
+<!--        <Constraint-->
+<!--            android:id="@+id/btnPodcastStartVoiceComment"-->
+<!--            motion:layout_constraintBottom_toBottomOf="parent"-->
+<!--            android:visibility="gone"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp" />-->
+<!--        <Constraint-->
+<!--            android:id="@+id/filledTextField"-->
+<!--            motion:layout_constraintBottom_toBottomOf="parent"-->
+<!--            android:visibility="gone"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp" />-->
+<!--        <Constraint-->
+<!--            android:id="@+id/btnPodcastSendComment"-->
+<!--            motion:layout_constraintBottom_toBottomOf="parent"-->
+<!--            android:visibility="gone"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp" />-->
+
+        <Constraint
+            android:id="@+id/svPodcastInfo"
+            android:layout_width="match_parent"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            />
+
+        <Constraint
+            android:id="@+id/flMotionTarget"
+            android:layout_height="100dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent" />
+    </ConstraintSet>
+</MotionScene>

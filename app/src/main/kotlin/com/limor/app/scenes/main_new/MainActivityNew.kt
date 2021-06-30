@@ -1,12 +1,13 @@
 package com.limor.app.scenes.main_new
 
 import android.os.Bundle
-import android.view.View
+import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import com.limor.app.R
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -19,6 +20,16 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector {
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Enable Activity Transitions. Optionally enable Activity transitions in your
+        // theme with <item name=”android:windowActivityTransitions”>true</item>.
+        window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+
+        // Attach a callback used to capture the shared elements from this Activity to be used
+        // by the container transform transition
+        setExitSharedElementCallback(MaterialContainerTransformSharedElementCallback())
+
+        // Keep system bars (status bar, navigation bar) persistent throughout the transition.
+        window.sharedElementsUseOverlay = false
         super.onCreate(savedInstanceState)
 //        AndroidInjection.inject(this)
         setContentView(R.layout.activity_main_new)

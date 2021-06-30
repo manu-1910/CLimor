@@ -12,7 +12,16 @@
         <action
             android:id="@+id/action_navigation_home_to_dialog_report_podcast"
             app:destination="@id/dialog_report_podcast"></action>
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_podcast_activity"
+            app:destination="@id/navigation_podcast_activity" />
     </fragment>
+
+    <fragment
+        android:id="@+id/navigation_podcast_activity"
+        android:name="com.limor.app.scenes.main_new.fragments.FragmentHomePodcast"
+        android:label="PodcastActivity"
+        tools:layout="@layout/activity_podcast"/>
 
     <dialog
         android:id="@+id/dialog_report_podcast"

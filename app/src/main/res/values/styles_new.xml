@@ -14,6 +14,16 @@
         <item name="textInputStyle">@style/TextInputLayoutWithError</item>
     </style>
 
+    <style name="MaterialMainTheme.Podcast">
+        <item name="android:windowActivityTransitions">true</item>
+
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/dark_transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="colorPrimaryDark">@android:color/transparent</item>
+    </style>
+
     <style name="ButtonStyleMain" parent="Widget.MaterialComponents.Button">
         <item name="materialThemeOverlay">@style/MaterialMainTheme</item>
         <item name="android:textColor">@color/main_button_text_color</item>
@@ -153,4 +163,31 @@
         <item name="android:textColor">@color/gender_button_text</item>
     </style>
 
+    <style name="TextInputLayoutComment" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="boxBackgroundColor">#F0F3F8</item>
+        <item name="boxStrokeColor">@color/transparent</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="errorIconDrawable">@null</item>
+        <item name="counterEnabled">false</item>
+        <item name="errorEnabled">false</item>
+        <item name="boxStrokeErrorColor">@color/stroke_error_color</item>
+        <item name="errorTextColor">@color/stroke_error_color</item>
+        <item name="android:textColorHint">@color/subtitle_text_color</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.App.SmallComponent.Rounded24</item>
+    </style>
+    <style name="ShapeAppearance.App.SmallComponent.Rounded24" parent="">
+        <item name="cornerSize">24dp</item>
+    </style>
+
+    <style name="TransparentBackgroundDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTitleStyle">@null</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:gravity">center</item>
+    </style>
 </resources>
