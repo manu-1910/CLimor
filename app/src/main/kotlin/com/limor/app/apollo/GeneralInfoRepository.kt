@@ -1,6 +1,7 @@
 package com.limor.app.apollo
 
 import com.limor.app.*
+import com.limor.app.usecases.CreateBlockedUserUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber

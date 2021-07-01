@@ -35,6 +35,12 @@ class TabSelectorView(context: Context, attrs: AttributeSet) : FrameLayout(conte
                 onItemSelected(item as TabItem)
             }
         }
+
+    }
+
+    fun selectTabAt(position: Int){
+        val item = tabsAdapter.getItem(position)
+        onItemSelected(item as TabItem)
     }
 
     fun setMode(mode: Mode) {
