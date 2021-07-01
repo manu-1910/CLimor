@@ -65,17 +65,24 @@ query FeedItemsQuery {
             sharing_url
             tags {
                 caption {
+                    tag_id
                     tag
+                    start_index
+                    end_index
                 }
             }
             mentions {
                 content {
                     username
                     user_id
+                    start_index
+                    end_index
                 }
                 caption {
                     username
                     user_id
+                    start_index
+                    end_index
                 }
             }
             links {

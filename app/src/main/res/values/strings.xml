@@ -605,4 +605,6 @@
     <string name="in_top">In top</string>
     <string name="recent">Recent</string>
     <string name="edit_profile">Edit Profile</string>
+    <string name="hint_write_a_comment">Write a comment...</string>
+    <string name="left">left</string>
 </resources>
