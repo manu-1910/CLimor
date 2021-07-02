@@ -26,7 +26,6 @@
     <string name="you_have_no_permissions_facebook">You have not granted the required permissions to login with Facebook. We need your email address.</string>
 
 
-
     <!-- Bottom Menu Navigation Strings -->
     <string name="bottom_menu_home">Home</string>
     <string name="bottom_menu_discover">Discover</string>
@@ -186,19 +185,13 @@
     <string name="no_drafts_title">No Drafts</string>
 
 
-
-
     <!-- Facebook strings -->
     <string name="facebook_app_id">818672961600074</string>
     <string name="fb_login_protocol_scheme">fb818672961600074</string>
 
 
-
-
-
     <string name="error_403_forgot_password">Your request has been registered. If your email exists in our system, you\'ll receive an email to reset your password.</string>
     <string name="error_500_or_higher">Sorry, we couldn\'t process your request. Please, try again later.</string>
-
 
 
     <!-- Profile fragment -->
@@ -377,8 +370,6 @@
     <string name="title_blocked_users">Blocked Users</string>
     <string name="delete_podcast_ok">Podcast deleted successfully</string>
     <string name="empty_scenario_blocked_users">You don\'t have any blocked user</string>
-    <string name="empty_scenario_followers">You don\'t have any followers</string>
-    <string name="empty_scenario_following">No one is following you</string>
     <string name="error_content_unavailable">The content you are trying to access is not longer available or you don’t have access to it.</string>
     <string name="error_deleting_comment">The comment could not be deleted. Please try again later.</string>
     <string name="comment_deleted_ok">Comment deleted correctly</string>
@@ -608,4 +599,5 @@
     <string name="hint_write_a_comment">Write a comment...</string>
     <string name="left">left</string>
     <string name="feed_is_empty_message">Home feed is empty</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
