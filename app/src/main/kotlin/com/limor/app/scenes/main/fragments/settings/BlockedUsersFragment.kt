@@ -20,6 +20,7 @@ import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentUsersBlockedBinding
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main.fragments.settings.adapters.AdapterBlockedUsers
 import com.limor.app.scenes.main.viewmodels.GetBlockedUsersViewModel
 import kotlinx.android.synthetic.main.fragment_users_blocked.*
@@ -134,7 +135,8 @@ class BlockedUsersFragment : BaseFragment() {
                     position: Int
                 ) {
                     val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-                    userProfileIntent.putExtra("user", item.username)
+                    userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, item.username)
+                    userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, item.id)
                     startActivity(userProfileIntent)
                 }
 
@@ -220,6 +222,7 @@ class BlockedUsersFragment : BaseFragment() {
 
     private fun performUnblockUser(item: GetBlockedUsersQuery.GetBlockedUser) {
 
+        model.createBlockedUser(item.id)
     }
 
     private fun performBlockUser(item: GetBlockedUsersQuery.GetBlockedUser) {

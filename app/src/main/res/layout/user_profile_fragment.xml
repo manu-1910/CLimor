@@ -16,7 +16,7 @@
         android:id="@+id/profile_main_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
         <com.google.android.material.appbar.AppBarLayout
@@ -270,40 +270,13 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
 
-                <com.google.android.material.button.MaterialButtonToggleGroup
-                    android:id="@+id/toggleProfileButtons"
+                <com.limor.app.components.tabselector.TabSelectorView
+                    android:id="@+id/tabSelectorView"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_alignStart="@+id/rectangle_1"
-                    android:layout_alignTop="@+id/rectangle_1"
-                    android:layout_alignEnd="@+id/rectangle_1"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:selectionRequired="true"
-                    app:singleSelection="true">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnCasts"
-                        style="@style/ButtonStyleGenderOutlined"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Casts"
-                        android:textSize="14sp" />
-
-                    <com.google.android.material.button.MaterialButton
-
-                        android:id="@+id/btnPatron"
-                        style="@style/ButtonStyleGenderOutlined"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Patron" />
-
-                </com.google.android.material.button.MaterialButtonToggleGroup>
-
+                    app:layout_constraintStart_toStartOf="parent" />
 
             </RelativeLayout>
         </com.google.android.material.appbar.AppBarLayout>

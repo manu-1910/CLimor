@@ -89,7 +89,7 @@ class UserFollowersFragmentNew(private val uiUser: String) : BaseFragment() {
         model.followersData.observe(viewLifecycleOwner, Observer{
             Timber.d("observe -> $it")
             if(it?.size == 0){
-                    showEmptyScenario()
+                   // showEmptyScenario()
             }else{
                  isRequestingNewData = false
                  val adapter = ( binding.rvBlockedUsers.adapter as UserFollowersAdapter )
@@ -106,8 +106,8 @@ class UserFollowersFragmentNew(private val uiUser: String) : BaseFragment() {
 
     private fun configureEmptyScenario() {
         binding.layEmptyScenario.ivEmptyScenario.visibility = View.GONE
-        binding.layEmptyScenario.tvTitleEmptyScenario.text = getString(R.string.title_blocked_users)
-        binding.layEmptyScenario.tvDescriptionEmptyScenario.text = getString(R.string.empty_scenario_blocked_users)
+        binding.layEmptyScenario.tvTitleEmptyScenario.text = ""
+        binding.layEmptyScenario.tvDescriptionEmptyScenario.text = getString(R.string.empty_scenario_followers)
         binding.layEmptyScenario.tvActionEmptyScenario.visibility = View.GONE
     }
 

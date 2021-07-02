@@ -388,16 +388,15 @@ class AudioService : Service() {
 
     }
 
-    fun forward() {
-        if (exoPlayer.currentPosition + PLAYBACK_SKIP_INCREMENTS < exoPlayer.duration) {
-            exoPlayer.seekTo(exoPlayer.currentPosition + PLAYBACK_SKIP_INCREMENTS)
+    fun forward(skipLength: Long = PLAYBACK_SKIP_INCREMENTS) {
+        if (exoPlayer.currentPosition + skipLength < exoPlayer.duration) {
+            exoPlayer.seekTo(exoPlayer.currentPosition + skipLength)
         }
     }
 
-    fun rewind() {
-        if (exoPlayer.currentPosition - PLAYBACK_SKIP_INCREMENTS > 0) {
-            exoPlayer.seekTo(exoPlayer.currentPosition - PLAYBACK_SKIP_INCREMENTS)
+    fun rewind(skipLength: Long = PLAYBACK_SKIP_INCREMENTS) {
+        if (exoPlayer.currentPosition - skipLength > 0) {
+            exoPlayer.seekTo(exoPlayer.currentPosition - skipLength)
         }
     }
-
 }

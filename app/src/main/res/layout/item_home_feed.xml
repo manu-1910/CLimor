@@ -13,7 +13,9 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/cpiPodcastListeningProgress"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/limor_orange_primary"/>
 
     <View
         android:id="@+id/shadowTop"

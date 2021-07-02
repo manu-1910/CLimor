@@ -377,6 +377,8 @@
     <string name="title_blocked_users">Blocked Users</string>
     <string name="delete_podcast_ok">Podcast deleted successfully</string>
     <string name="empty_scenario_blocked_users">You don\'t have any blocked user</string>
+    <string name="empty_scenario_followers">You don\'t have any followers</string>
+    <string name="empty_scenario_following">No one is following you</string>
     <string name="error_content_unavailable">The content you are trying to access is not longer available or you don’t have access to it.</string>
     <string name="error_deleting_comment">The comment could not be deleted. Please try again later.</string>
     <string name="comment_deleted_ok">Comment deleted correctly</string>
@@ -603,4 +605,6 @@
     <string name="in_top">In top</string>
     <string name="recent">Recent</string>
     <string name="edit_profile">Edit Profile</string>
+    <string name="hint_write_a_comment">Write a comment...</string>
+    <string name="left">left</string>
 </resources>
