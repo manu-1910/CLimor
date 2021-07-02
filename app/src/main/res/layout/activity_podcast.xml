@@ -13,8 +13,8 @@
         android:id="@+id/ivPodcastBackground"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/white"
-        android:src="@color/blue200"
+        android:scaleType="centerCrop"
+        tools:src="@color/blue200"
         app:layout_constraintDimensionRatio="H, 1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -564,5 +564,11 @@
         android:src="@drawable/ic_comments_footer_send"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_comments_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+         />
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

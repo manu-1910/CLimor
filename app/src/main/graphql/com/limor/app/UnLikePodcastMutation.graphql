@@ -1,0 +1,5 @@
+mutation UnLikePodcastMutation($podcastId: Int!) {
+    unlikePodcast(podcastId: $podcastId) {
+        destroyed
+    }
+}

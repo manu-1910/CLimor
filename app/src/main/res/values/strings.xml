@@ -605,4 +605,5 @@
     <string name="edit_profile">Edit Profile</string>
     <string name="hint_write_a_comment">Write a comment...</string>
     <string name="left">left</string>
+    <string name="feed_is_empty_message">Home feed is empty</string>
 </resources>

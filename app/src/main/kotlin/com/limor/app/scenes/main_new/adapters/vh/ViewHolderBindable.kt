@@ -4,11 +4,10 @@ import android.content.Context
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.limor.app.FeedItemsQuery
 
-abstract class ViewHolderBindable(private val viewBinding: ViewBinding) :
+abstract class ViewHolderBindable<T>(private val viewBinding: ViewBinding) :
     RecyclerView.ViewHolder(viewBinding.root) {
-    abstract fun bind(item: FeedItemsQuery.FeedItem)
+    abstract fun bind(item: T)
 
     val context: Context
         get() = itemView.context

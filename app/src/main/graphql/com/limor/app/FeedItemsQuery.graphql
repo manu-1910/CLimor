@@ -1,5 +1,5 @@
-query FeedItemsQuery {
-    FeedItems {
+query FeedItemsQuery($limit: Int!,$offset:Int!){
+    getFeedItems(limit: $limit,offset: $offset) {
         id
         podcast {
             id
