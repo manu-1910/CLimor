@@ -30,20 +30,7 @@ class HomeFeedViewModel @Inject constructor(
     val homeFeedErrorLiveData: LiveData<String>
         get() = _homeFeedErrorLiveData
 
-    private var _profileErrorLiveData =
-        MutableLiveData<String>()
-    val profileErrorLiveData: LiveData<String>
-        get() = _profileErrorLiveData
 
-    private var _userProfileData =
-        MutableLiveData<GetUserProfileQuery.GetUser?>()
-    val userProfileData: LiveData<GetUserProfileQuery.GetUser?>
-        get() = _userProfileData
-
-    private var _userProfileIdData =
-        MutableLiveData<GetUserProfileByIdQuery.GetUserById?>()
-    val userProfileIdData: LiveData<GetUserProfileByIdQuery.GetUserById?>
-        get() = _userProfileIdData
 
     fun loadHomeFeed() {
         viewModelScope.launch {
@@ -58,27 +45,6 @@ class HomeFeedViewModel @Inject constructor(
     }
 
 
-    fun getUserProfile(){
-        viewModelScope.launch {
-            try {
-                val user = generalInfoRepository.getUserProfile()
-                _userProfileData.postValue(user)
-            } catch (e: Exception) {
-                _profileErrorLiveData.postValue(e.localizedMessage)
-            }
-        }
-    }
-
-    fun getUserById(id: Int){
-        viewModelScope.launch {
-            try {
-                val user = generalInfoRepository.getUserProfileById(id)
-                _userProfileIdData.postValue(user)
-            } catch (e: Exception) {
-                _profileErrorLiveData.postValue(e.localizedMessage)
-            }
-        }
-    }
 
 
 }

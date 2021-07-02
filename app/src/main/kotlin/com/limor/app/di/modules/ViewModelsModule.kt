@@ -6,7 +6,7 @@ import com.limor.app.common.ViewModelFactory
 import com.limor.app.di.ViewModelKey
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.authentication.viewmodels.*
-import com.limor.app.scenes.main.fragments.profile.FollowViewModelNew
+import com.limor.app.scenes.main.fragments.profile.UserProfileViewModel
 import com.limor.app.scenes.main.fragments.settings.SettingsViewModel
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategoriesViewModel
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverCategoryViewModel
@@ -320,6 +320,6 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(FollowViewModelNew::class)
-    abstract fun bindFollowViewModel(viewModel: FollowViewModelNew): ViewModel
+    @ViewModelKey(UserProfileViewModel::class)
+    abstract fun bindFollowViewModel(viewModel: UserProfileViewModel): ViewModel
 }

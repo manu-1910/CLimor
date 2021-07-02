@@ -44,4 +44,12 @@ object JwtChecker {
         }
         return false
     }
+
+    suspend fun getUserIdFromJwt(): Int? {
+        return withContext(Dispatchers.IO) {
+            val token = AuthInterceptor.getToken(forceRefresh = true)
+            val jwt = createJwtObjectFromToken(token) ?: return@withContext null
+            jwt.claims["luid"]?.asInt()
+        }
+    }
 }

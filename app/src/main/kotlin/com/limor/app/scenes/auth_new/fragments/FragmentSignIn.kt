@@ -1,6 +1,8 @@
 package com.limor.app.scenes.auth_new.fragments
 
+import android.content.Context
 import android.os.Bundle
+import android.telephony.TelephonyManager
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
@@ -139,6 +141,13 @@ class FragmentSignIn : Fragment() {
                     countries[position]
                 )
             }
+        val tM = requireContext().getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        val countryCodeValue = tM.networkCountryIso
+        val country: Country? = countries.find { it.codeLetters.lowercase() == countryCodeValue}
+        Timber.d("${country?.codeLetters}  $countryCodeValue")
+        country?.let{
+            model.setCountrySelected(country)
+        }
         model.countrySelected?.let {
             editText.setText(it.visualFormat, false)
         }

@@ -18,7 +18,6 @@ import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
 import com.google.android.material.snackbar.Snackbar
 import com.limor.app.App
-import com.limor.app.GetUserProfileQuery
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
@@ -29,6 +28,7 @@ import com.limor.app.scenes.main.viewmodels.UpdateUserViewModel
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.uimodels.UIErrorResponse
 import com.limor.app.uimodels.UIUser
+import com.limor.app.uimodels.UserUIModel
 import com.yalantis.ucrop.UCrop
 import io.reactivex.subjects.PublishSubject
 import org.jetbrains.anko.design.snackbar
@@ -36,7 +36,6 @@ import timber.log.Timber
 import java.io.File
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 class EditProfileFragment : BaseFragment() {
@@ -45,7 +44,7 @@ class EditProfileFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val  model: SettingsViewModel by viewModels({activity as SettingsActivity}) { viewModelFactory }
+    private val model: SettingsViewModel by viewModels({ activity as SettingsActivity }) { viewModelFactory }
 
 
     @Inject
@@ -56,7 +55,7 @@ class EditProfileFragment : BaseFragment() {
 
     private lateinit var binding: FragmentEditProfileBinding
     var app: App? = null
-    var profileImageUploaded = true
+    var profileImageUploaded = false
     var profileHasImage = false
     var profileImageUrlFinal = ""
     var tempPhotoPath = ""
@@ -94,9 +93,10 @@ class EditProfileFragment : BaseFragment() {
 
     private fun addViewModelOrbservers() {
         model.userInfoLiveData.observe(viewLifecycleOwner, Observer { user ->
-            user?.let{
-                currentUser = UIUserUpdateModel.createFrom(it)!!
+            user?.let {
+                currentUser = UIUserUpdateModel.createFrom(it)
                 bindUserDataToViews()
+                hideLoading()
             }
         })
 
@@ -104,13 +104,21 @@ class EditProfileFragment : BaseFragment() {
             it?.let {
                 binding.root.showSnackbar(it, Snackbar.LENGTH_SHORT)
             }
-
-
+            hideLoading()
         })
 
     }
+
+    private fun hideLoading() {
+        binding.loading.visibility = View.GONE
+    }
+
+    private fun showLoading() {
+        binding.loading.visibility = View.VISIBLE
+    }
+
     private fun configureToolbar() {
-        model.setToolbarTitle( resources.getString(R.string.edit_profile))
+        model.setToolbarTitle(resources.getString(R.string.edit_profile))
     }
 
     private fun addClickListeners() {
@@ -119,7 +127,7 @@ class EditProfileFragment : BaseFragment() {
         }
 
         binding.btnChoosePhoto.setOnClickListener {
-             loadImagePicker()
+            loadImagePicker()
 
         }
 
@@ -188,39 +196,40 @@ class EditProfileFragment : BaseFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
-         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
 
-             // Get a list of picked files
-             val filesSelected = ImagePicker.getImages(data) as ArrayList<Image>
-             if (filesSelected.size > 0) {
+            // Get a list of picked files
+            val filesSelected = ImagePicker.getImages(data) as ArrayList<Image>
+            if (filesSelected.size > 0) {
 
-                 // we'll prepare the outputfile
-                 val croppedImagesDir = File(
-                     context?.getExternalFilesDir(null)?.absolutePath,
-                     Constants.LOCAL_FOLDER_CROPPED_IMAGES
-                 )
-                 if (!croppedImagesDir.exists()) {
-                     val isDirectoryCreated = croppedImagesDir.mkdir()
-                 }
-                 val fileName = Date().time.toString() + filesSelected[0].path.substringAfterLast("/")
-                 val outputFile = File(croppedImagesDir, fileName)
+                // we'll prepare the outputfile
+                val croppedImagesDir = File(
+                    context?.getExternalFilesDir(null)?.absolutePath,
+                    Constants.LOCAL_FOLDER_CROPPED_IMAGES
+                )
+                if (!croppedImagesDir.exists()) {
+                    val isDirectoryCreated = croppedImagesDir.mkdir()
+                }
+                val fileName =
+                    Date().time.toString() + filesSelected[0].path.substringAfterLast("/")
+                val outputFile = File(croppedImagesDir, fileName)
 
-                 // and then, we'll perform the crop itself
-                 performCrop(filesSelected[0].path, outputFile)
-             }
+                // and then, we'll perform the crop itself
+                performCrop(filesSelected[0].path, outputFile)
+            }
 
-             // this will run when coming from the cropActivity and everything is ok
-         } else if (resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
-             val resultUri = UCrop.getOutput(data!!)
-             profileHasImage = true
-             Glide.with(requireContext()).load(resultUri).into(binding.profileImage)
-             //Add the photopath to recording item
-             tempPhotoPath = resultUri?.path.toString()
-         } else if (resultCode == UCrop.RESULT_ERROR) {
-             val cropError = UCrop.getError(data!!)
-             Timber.d(cropError)
-         }
-         super.onActivityResult(requestCode, resultCode, data)
+            // this will run when coming from the cropActivity and everything is ok
+        } else if (resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            val resultUri = UCrop.getOutput(data!!)
+            profileHasImage = true
+            Glide.with(requireContext()).load(resultUri).into(binding.profileImage)
+            //Add the photopath to recording item
+            tempPhotoPath = resultUri?.path.toString()
+        } else if (resultCode == UCrop.RESULT_ERROR) {
+            val cropError = UCrop.getError(data!!)
+            Timber.d(cropError)
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
 
@@ -262,13 +271,13 @@ class EditProfileFragment : BaseFragment() {
                         binding.root.snackbar("Image upload Failed. Try again")
                         Timber.d("Image upload to AWS error: $error")
                     }
-                }, Commons.IMAGE_TYPE_ATTACHMENT
+                }, Commons.IMAGE_TYPE_PROFILE
             )
         } else {
             val imageFile = File(tempPhotoPath)
             Commons.getInstance().handleImage(
                 context,
-                Commons.IMAGE_TYPE_PODCAST,
+                Commons.IMAGE_TYPE_PROFILE,
                 imageFile,
                 "podcast_photo"
             )
@@ -278,16 +287,19 @@ class EditProfileFragment : BaseFragment() {
 
 
     private fun readyToUpdate() {
-         if (profileHasImage) {
-             if (profileImageUploaded) {
-                 profileImageUploaded = false
-                 callToApiUpdateUser()
-             }else{
-                 publishProfileImage()
-             }
-         } else {
-             callToApiUpdateUser()
-         }
+        showLoading()
+        if (profileHasImage) {
+            if (profileImageUploaded) {
+                profileImageUploaded = false
+                callToApiUpdateUser()
+            } else {
+                publishProfileImage()
+            }
+            Timber.d("Image $profileImageUploaded")
+        } else {
+            Timber.d("No Image")
+            callToApiUpdateUser()
+        }
     }
 
 
@@ -299,16 +311,16 @@ class EditProfileFragment : BaseFragment() {
         var website: String?,
         var imageURL: String?
     ) {
-        companion object{
-            fun createFrom(it: GetUserProfileQuery.GetUser): UIUserUpdateModel? {
+        companion object {
+            fun createFrom(it: UserUIModel): UIUserUpdateModel {
                 return it.let { user ->
                     UIUserUpdateModel(
                         user.username,
-                        user.first_name,
-                        user.last_name,
+                        user.firstName,
+                        user.lastName,
                         user.description,
                         user.website,
-                        user.images?.small_url
+                        user.imageLinks.small
                     )
                 }
             }

@@ -38,17 +38,16 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val bundle = intent?.extras
+       // val bundle = intent?.extras
 //        uiUser = bundle?.get("user") as UIUser?
 
-        bundle?.let{
+        /*bundle?.let{
             binding.toolbar.tvToolbarTitle.text = it.getString(UserProfileFragment.USER_NAME_KEY)
-
-        }
+        }*/
         
-        binding.toolbar.btnClose.setOnClickListener {
+       /* binding.toolbar.btnClose.setOnClickListener {
             finish()
-        }
+        }*/
 
 
         setupNavigationController()

@@ -33,7 +33,10 @@ class UserRepository @Inject constructor(val apollo: Apollo){
         website: String,
         imageURL: String?
     ): String? {
-        val query = UpdateUserProfileMutation(userName,firstName,lastName,website,bio, Input.fromNullable(imageURL))
+        var imageUrl: Input<String> = if(imageURL == null){
+            Input.absent()
+        }else Input.fromNullable(imageURL)
+        val query = UpdateUserProfileMutation(userName,firstName,lastName,website,bio, imageUrl)
         val queryResult = apollo.mutate(query)
         val updateUserNameResult =
             queryResult?.data?.updateUser?.status
