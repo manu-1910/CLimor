@@ -95,9 +95,9 @@
 
         <fragment
             android:id="@+id/navigation_notifications"
-            android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
-            android:label="NotificationsFragment"
-            tools:layout="@layout/fragment_dummy">
+            android:name="com.limor.app.scenes.notifications.Notification"
+            android:label="Notification"
+            tools:layout="@layout/fragment_notification">
         </fragment>
 
     <fragment

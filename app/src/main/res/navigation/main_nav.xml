@@ -18,9 +18,9 @@
     </activity>
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.limor.app.scenes.main.fragments.FragmentStub"
-        android:label="NotificationsFragment"
-        tools:layout="@layout/fragment_stub">
+        android:name="com.limor.app.scenes.notifications.Notification"
+        android:label="Notification"
+        tools:layout="@layout/fragment_notification">
     </fragment>
     <fragment
         android:id="@+id/navigation_profile"
