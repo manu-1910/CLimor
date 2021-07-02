@@ -2,25 +2,23 @@ package com.limor.app.scenes.main_new.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import com.limor.app.FeedItemsQuery
 import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.databinding.ItemHomeFeedRecastedBinding
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderBindable
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderPodcast
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderRecast
+import com.limor.app.scenes.main_new.view_model.PodcastMiniPlayerViewModel
 
-class HomeFeedAdapter(private val dataSet: MutableList<FeedItemsQuery.FeedItem>) :
-    RecyclerView.Adapter<ViewHolderBindable>() {
-
-    fun addData(newData: List<FeedItemsQuery.FeedItem>){
-        val toAdd = newData.filter { !dataSet.contains(it) }
-        dataSet.addAll(toAdd)
-        notifyDataSetChanged()
-    }
+class HomeFeedAdapter(
+    private val model: PodcastMiniPlayerViewModel
+) : ListAdapter<FeedItemsQuery.FeedItem, ViewHolderBindable>(HomeFeedDiffCallback()) {
 
     override fun getItemViewType(position: Int): Int {
-        val recasted = dataSet[position].recasted == true
+
+        val recasted = getItem(position).recasted == true
         return if (recasted) ITEM_TYPE_RECASTED else ITEM_TYPE_PODCAST
     }
 
@@ -34,24 +32,38 @@ class HomeFeedAdapter(private val dataSet: MutableList<FeedItemsQuery.FeedItem>)
             ITEM_TYPE_RECASTED -> {
                 val binding =
                     ItemHomeFeedRecastedBinding.inflate(inflater, viewGroup, false)
-                ViewHolderRecast(binding)
+                ViewHolderRecast(binding, model)
             }
             else -> {
                 val binding = ItemHomeFeedBinding.inflate(inflater, viewGroup, false)
-                ViewHolderPodcast(binding)
+                ViewHolderPodcast(binding, model)
             }
         }
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolderBindable, position: Int) {
-        viewHolder.bind(dataSet[position])
+        viewHolder.bind(getItem(position))
     }
-
-    override fun getItemCount() = dataSet.size
 
     companion object {
         private const val ITEM_TYPE_PODCAST = 1
         private const val ITEM_TYPE_RECASTED = 2
+    }
+}
+
+class HomeFeedDiffCallback : DiffUtil.ItemCallback<FeedItemsQuery.FeedItem>() {
+    override fun areItemsTheSame(
+        oldItem: FeedItemsQuery.FeedItem,
+        newItem: FeedItemsQuery.FeedItem
+    ): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(
+        oldItem: FeedItemsQuery.FeedItem,
+        newItem: FeedItemsQuery.FeedItem
+    ): Boolean {
+        return oldItem == newItem
     }
 }
 

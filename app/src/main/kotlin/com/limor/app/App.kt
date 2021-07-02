@@ -78,7 +78,7 @@ class App : Application(), HasActivityInjector, HasServiceInjector {
     }
 
     private fun initSmartLook() {
-        Smartlook.setupAndStartRecording(BuildConfig.SMART_LOOK_API_KEY);
+     //   Smartlook.setupAndStartRecording(BuildConfig.SMART_LOOK_API_KEY);
     }
 
     private fun initLogging() {

@@ -256,11 +256,17 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".scenes.main_new.MainActivityNew"
-            android:launchMode="singleInstance"
+        <activity
+            android:name=".scenes.main_new.MainActivityNew"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/MaterialMainTheme.FullScreen">
-        </activity>
+            android:theme="@style/MaterialMainTheme.FullScreen" />
+
+        <activity
+            android:name=".scenes.main_new.PodcastsActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/MaterialMainTheme.Podcast" />
 
 
     </application>

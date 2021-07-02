@@ -20,7 +20,7 @@ class HomeFeedViewModel @Inject constructor(
     val generalInfoRepository: GeneralInfoRepository
 ) : ViewModel() {
 
-    private var _homeFeedLiveData =
+    private val _homeFeedLiveData =
         MutableLiveData<List<FeedItemsQuery.FeedItem>?>()
     val homeFeedLiveData: LiveData<List<FeedItemsQuery.FeedItem>?>
         get() = _homeFeedLiveData

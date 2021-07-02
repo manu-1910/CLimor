@@ -198,13 +198,15 @@ class UserInfoProvider @Inject constructor(
     }
 
 
-    suspend fun updateUserProfile(userName: String, firstName:String, lastName:String, bio:String, website:String) :String? {
-        return try {
-            userRepository.updateUserProfile(userName,firstName,lastName,bio,website)
-        } catch (e: Exception) {
-            Timber.e(e)
-            null
-        }
+    suspend fun updateUserProfile(
+        userName: String,
+        firstName: String,
+        lastName: String,
+        bio: String,
+        website: String,
+        imageURL: String?
+    ) :String? {
+       return userRepository.updateUserProfile(userName,firstName,lastName,bio,website,imageURL)
     }
 
     suspend fun startFollowingUser(id: Int) {
@@ -219,6 +221,23 @@ class UserInfoProvider @Inject constructor(
     suspend fun unFollowUser(id: Int) {
         try {
             userRepository.unFollowUser(id)
+        } catch (e: Exception) {
+            Timber.e(e)
+            null
+        }
+    }
+
+    suspend fun blockUser(id: Int) {
+        try {
+            userRepository.blockUser(id)
+        } catch (e: Exception) {
+            Timber.e(e)
+            null
+        }
+    }
+    suspend fun unblockUser(id: Int) {
+        try {
+            userRepository.startFollowingUser(id)
         } catch (e: Exception) {
             Timber.e(e)
             null
