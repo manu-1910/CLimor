@@ -161,14 +161,16 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     }
 
     private fun setupConditionalViews(user: UserUIModel) {
-        if ((activity) is MainActivityNew) {
-            binding.otherUserNormalLayout.visibility = View.VISIBLE
-        }
         lifecycleScope.launch {
-            Timber.d("LUID CHAECK "+ user.id+ " "+JwtChecker.getUserIdFromJwt())
+           if(user.id != JwtChecker.getUserIdFromJwt()){
+               binding.otherUserNormalLayout.visibility = View.VISIBLE
+           }else{
+
+           }
+            binding.profileMainContainer.visibility = View.VISIBLE
+            switchCommonVisibility(false)
         }
-        binding.profileMainContainer.visibility = View.VISIBLE
-        switchCommonVisibility(false)
+
     }
 
     private fun setDataToProfileViews(it: UserUIModel) {

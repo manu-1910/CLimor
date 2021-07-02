@@ -15,8 +15,6 @@ import com.limor.app.scenes.main.fragments.discover.featuredcasts.DiscoverFeatur
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagViewModel
 import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchViewModel
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleViewModel
-import com.limor.app.scenes.main.fragments.profile.FollowViewModelNew
-import com.limor.app.scenes.main.fragments.settings.SettingsViewModel
 import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastControlViewModel
