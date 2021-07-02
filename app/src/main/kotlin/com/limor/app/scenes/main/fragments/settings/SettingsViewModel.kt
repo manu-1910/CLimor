@@ -45,6 +45,7 @@ class SettingsViewModel @Inject constructor(
     val userUpdatedResponse: LiveData<String?>
         get() = _userUpdatedResponse
 
+
     private var _followersData =
         MutableLiveData<List<FollowersQuery.GetFollower?>?>()
     val followersData: LiveData<List<FollowersQuery.GetFollower?>?>
@@ -130,16 +131,18 @@ class SettingsViewModel @Inject constructor(
         firstName: String,
         lastName: String,
         bio: String,
-        website: String
+        website: String,
+        imageURL: String?
     ) {
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    userInfoProvider.updateUserProfile(userName, firstName, lastName, bio, website)
+                    userInfoProvider.updateUserProfile(userName, firstName, lastName, bio, website, imageURL)
                 }
                 _userUpdatedResponse.postValue(response)
                 Timber.d("Updated UserInfo -> $response")
             } catch (e: Exception) {
+                _userUpdatedResponse.postValue("Unable to Update Now")
                 Timber.d("Updated UserInfo -> $e")
             }
         }
@@ -154,14 +157,12 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun followUser(id: Int) {
-
         viewModelScope.launch {
             userInfoProvider.startFollowingUser(id)
         }
     }
 
     fun unFollowUser(id: Int) {
-
         viewModelScope.launch {
             userInfoProvider.unFollowUser(id)
         }
@@ -170,6 +171,19 @@ class SettingsViewModel @Inject constructor(
     fun setToolbarTitle(title: String) {
         _settingsToolBarTitle.value = title
          clearBlockedUsers()
+    }
+
+    fun createBlockedUser(id: Int) {
+        viewModelScope.launch {
+            userInfoProvider.blockUser(id)
+        }
+    }
+
+    fun unblockUser(id: Int) {
+        viewModelScope.launch {
+            userInfoProvider.unblockUser(id)
+        }
+
     }
 
 }

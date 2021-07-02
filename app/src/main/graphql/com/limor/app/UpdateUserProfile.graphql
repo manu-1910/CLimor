@@ -1,10 +1,12 @@
-mutation UpdateUserProfile($userName: String!, $firstName:String!,$lastName:String!,$websiteUrl:String!,$bio:String!){
+mutation UpdateUserProfile($userName: String!, $firstName:String!,$lastName:String!,
+    $websiteUrl:String!,$bio:String!, $imageURL: String){
     updateUser(user:{
         firstName:$firstName,
         lastName:$lastName,
         username:$userName,
         websiteURL:$websiteUrl
-        bio:$bio
+        bio:$bio,
+        imageURL:$imageURL
     }){
         status,
         message

@@ -8,9 +8,11 @@ import androidx.viewpager2.widget.ViewPager2
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.common.Constants
+import com.limor.app.components.tabselector.TabSelectorView
 import com.limor.app.databinding.ActivityFollowersAndFollowingBinding
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
+import kotlinx.android.synthetic.main.user_profile_fragment.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -27,8 +29,15 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
 
 
     companion object {
-        val TAG: String = UserFollowersFollowingsActivity::class.java.simpleName
-        fun newInstance() = UserFollowersFollowingsActivity()
+        const val USER_ID_KEY = "user_id"
+        const val USER_NAME_KEY = "user_name"
+    }
+
+    private val tabs by lazy {
+        mapOf(
+            Tab.FOLLOWERS to getString(R.string.followers),
+            Tab.FOLLOWING to getString(R.string.following)
+        )
     }
 
     var followersCount = 0
@@ -44,8 +53,6 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
         binding = ActivityFollowersAndFollowingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        Timber.d("USER FOLLOW created FF")
-
         configureToolbar()
 
         configureViewPager()
@@ -55,8 +62,8 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
 
     private fun configureToolbar() {
         intent?.extras?.let{
-            userName = it.getString("user_name")
-            userId = it.getInt("user_id")
+            userName = it.getString(USER_NAME_KEY)
+            userId = it.getInt(USER_ID_KEY)
         }
         binding.toolbar.tvToolbarTitle.text = userName
     }
@@ -86,25 +93,22 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
                 }
             }
 
-            /*override fun restoreState(state: Parcelable?, loader: ClassLoader?) {
-                try {
-                    super.restoreState(state, loader)
-                } catch (e: Exception) {
-                }
-            }*/
         }
         viewPager.adapter = adapter
         viewPager.isUserInputEnabled = false
         viewPager.offscreenPageLimit = 2
 
 
-        binding.toggleGender.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            if (isChecked) {
-                when (checkedId) {
-                    R.id.btnFollowers -> viewPager.currentItem = 0
-                    R.id.btnFollowing -> viewPager.currentItem = 1
-                }
+
+        binding.tabSelectorView.apply {
+            setOnTabSelectedListener { tabName, position ->
+                binding.followViewPager.currentItem = position
             }
+            setMode(TabSelectorView.Mode.FIXED)
+            setTabs(tabs.values.toList())
+        }
+        binding.tabSelectorView.setOnTabSelectedListener { tabName, position ->
+            binding.followViewPager.currentItem = position
         }
 
 
@@ -112,11 +116,11 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
         bundle?.let {
             when (bundle.getString(Constants.TAB_KEY)) {
                 Constants.TAB_FOLLOWERS -> {
-                    binding.toggleGender.check(R.id.btnFollowers)
+                    tabSelectorView.selectTabAt(0)
                     viewPager.currentItem = 0
                 }
                 Constants.TAB_FOLLOWINGS -> {
-                    binding.toggleGender.check(R.id.btnFollowing)
+                    tabSelectorView.selectTabAt(1)
                     viewPager.currentItem = 1
                 }
 
@@ -133,5 +137,8 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
 
     }
 
+    enum class Tab {
+        FOLLOWERS, FOLLOWING
+    }
 
 }
