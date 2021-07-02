@@ -4,12 +4,16 @@ import com.limor.app.FeedItemsQuery
 import com.limor.app.uimodels.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class PodcastMapper {
 
     companion object {
         suspend fun podcastToUIPodcast(podcast: FeedItemsQuery.Podcast): UIPodcast {
-            return  withContext(Dispatchers.Default){
+            return withContext(Dispatchers.Default) {
                 UIPodcast(
                     active = podcast.active ?: false,
                     address = podcast.address,
@@ -17,56 +21,56 @@ class PodcastMapper {
                         audio_url = podcast.audio?.audio_url ?: "",
                         original_audio_url = podcast.audio?.original_audio_url ?: "",
                         duration = podcast.audio?.duration ?: 0,
-                        total_samples = (podcast.audio?.total_samples ?: 0).toDouble() ,
+                        total_samples = (podcast.audio?.total_samples ?: 0).toDouble(),
                         total_length = (podcast.audio?.total_length ?: 0).toDouble()
                     ),
                     bookmarked = podcast.bookmarked ?: false,
                     caption = podcast.caption ?: "",
-                    created_at = podcast.created_at?.toInt() ?: 0,
-                    id = podcast.id ?: 0,
+                    created_at = getMillsFromDateString(podcast.created_at ?: "").toInt(),
+                id = podcast.id ?: 0,
+                images = UIImages(
+                    podcast.images?.large_url ?: "",
+                    podcast.images?.medium_url ?: "",
+                    podcast.images?.original_url ?: "",
+                    podcast.images?.small_url ?: ""
+                ),
+                latitude = podcast.latitude,
+                liked = podcast.liked ?: false,
+                links = UILinks(
+                    ArrayList(getLinkWebsites(podcast)),
+                    ArrayList(getLinkContent(podcast)),
+                    ArrayList(getLinkCaption(podcast))
+                ),
+                listened = podcast.listened ?: false,
+                longitude = podcast.longitude,
+                mentions = UIMentions(
+                    UIContentMentionItemsArray(
+                        ArrayList(getMentionsContent(podcast))
+                    )
+                ),
+                number_of_comments = podcast.number_of_comments ?: 0,
+                number_of_likes = podcast.number_of_likes ?: 0,
+                number_of_listens = podcast.number_of_listens ?: 0,
+                number_of_recasts = podcast.number_of_recasts ?: 0,
+                recasted = podcast.recasted ?: false,
+                reported = podcast.reported ?: false,
+                saved = false, //NO OTHER OPTION
+                sharing_url = podcast.sharing_url,
+                tags = UITagsArray(ArrayList(getTagsContent(podcast))),
+                title = podcast.title ?: "",
+                updated_at = getMillsFromDateString(podcast.updated_at ?: "").toInt(),
+                user = UIUser().copy(
+                    id = podcast.owner?.id ?: 0,
+                    first_name = podcast.owner?.first_name,
+                    last_name = podcast.owner?.last_name,
                     images = UIImages(
-                        podcast.images?.large_url ?: "",
-                        podcast.images?.medium_url ?: "",
-                        podcast.images?.original_url ?: "",
-                        podcast.images?.small_url ?: ""
-                    ),
-                    latitude = podcast.latitude,
-                    liked = podcast.liked ?: false,
-                    links = UILinks(
-                        ArrayList(getLinkWebsites(podcast)),
-                        ArrayList(getLinkContent(podcast)),
-                        ArrayList(getLinkCaption(podcast))
-                    ),
-                    listened = podcast.listened ?: false,
-                    longitude = podcast.longitude,
-                    mentions = UIMentions(
-                        UIContentMentionItemsArray(
-                            ArrayList(getMentionsContent(podcast))
-                        )
-                    ),
-                    number_of_comments = podcast.number_of_comments ?: 0,
-                    number_of_likes = podcast.number_of_likes ?: 0,
-                    number_of_listens = podcast.number_of_listens ?: 0,
-                    number_of_recasts = podcast.number_of_recasts ?: 0,
-                    recasted = podcast.recasted ?: false,
-                    reported = podcast.reported ?: false,
-                    saved = false, //NO OTHER OPTION
-                    sharing_url = podcast.sharing_url,
-                    tags = UITagsArray(ArrayList(getTagsContent(podcast))),
-                    title = podcast.title ?: "",
-                    updated_at = podcast.updated_at?.toInt() ?: 0,
-                    user = UIUser().copy(
-                        id = podcast.owner?.id ?: 0,
-                        first_name = podcast.owner?.first_name,
-                        last_name = podcast.owner?.last_name,
-                        images = UIImages(
-                            podcast.owner?.images?.large_url ?: "",
-                            podcast.owner?.images?.medium_url ?: "",
-                            podcast.owner?.images?.original_url ?: "",
-                            podcast.owner?.images?.small_url ?: ""
-                        )
-                    ),
-                    category = null //NO OTHER OPTION
+                        podcast.owner?.images?.large_url ?: "",
+                        podcast.owner?.images?.medium_url ?: "",
+                        podcast.owner?.images?.original_url ?: "",
+                        podcast.owner?.images?.small_url ?: ""
+                    )
+                ),
+                category = null //NO OTHER OPTION
                 )
             }
 
@@ -127,5 +131,16 @@ class PodcastMapper {
         private fun wrapWithDefaultInt(origin: Int?): Int = origin ?: 0
         private fun wrapWithDefaultLong(origin: Long?): Long = origin ?: 0L
         private fun wrapWithDefaultDouble(origin: Double?): Double = (origin ?: 0) as Double
+
+        fun getMillsFromDateString(origin: String): Long {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+            return try {
+                val date: Date? = dateFormat.parse(origin)
+                date?.time ?: 0L
+            } catch (e: ParseException) {
+                e.printStackTrace()
+                0L
+            }
+        }
     }
 }

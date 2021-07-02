@@ -33,7 +33,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.limor.app.BuildConfig
 import com.limor.app.R
-import com.limor.app.scenes.main.MainActivity
+import com.limor.app.scenes.main_new.MainActivityNew
 import com.limor.app.uimodels.UIPodcast
 import org.jetbrains.anko.runOnUiThread
 import timber.log.Timber
@@ -129,7 +129,7 @@ class AudioService : Service() {
                     PendingIntent.getActivity(
                         applicationContext,
                         0,
-                        Intent(applicationContext, MainActivity::class.java),
+                        Intent(applicationContext, MainActivityNew::class.java),
                         PendingIntent.FLAG_UPDATE_CURRENT
                     )
 

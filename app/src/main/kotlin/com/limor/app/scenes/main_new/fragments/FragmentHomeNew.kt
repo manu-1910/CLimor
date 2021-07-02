@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialFade
@@ -22,20 +23,22 @@ import com.limor.app.scenes.main_new.PodcastsActivity
 import com.limor.app.scenes.main_new.adapters.HomeFeedAdapter
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
-import com.limor.app.scenes.main_new.view_model.PodcastMiniPlayerViewModel
+import com.limor.app.scenes.main_new.view_model.PodcastControlViewModel
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
 import kotlinx.android.synthetic.main.fragment_home_new.*
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import javax.inject.Inject
+
 
 class FragmentHomeNew : FragmentWithLoading(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val homeFeedViewModel: HomeFeedViewModel by viewModels { viewModelFactory }
-    private val podcastPlayerViewModel: PodcastMiniPlayerViewModel by viewModels { viewModelFactory }
+    private val podcastPlayerViewModel: PodcastControlViewModel by viewModels { viewModelFactory }
 
     lateinit var binding: FragmentHomeNewBinding
     private lateinit var playerBinder: PlayerBinder
@@ -49,6 +52,18 @@ class FragmentHomeNew : FragmentWithLoading(), Injectable {
         subscribeToPlayerUpdates()
         binding = FragmentHomeNewBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initSwipeToRefresh()
+    }
+
+    private fun initSwipeToRefresh() {
+        binding.swipeToRefresh.setColorSchemeResources(R.color.colorAccent)
+        binding.swipeToRefresh.setOnRefreshListener {
+            load()
+        }
     }
 
     private fun initPlayerBinder() {
@@ -83,7 +98,7 @@ class FragmentHomeNew : FragmentWithLoading(), Injectable {
     }
 
     override fun load() {
-        homeFeedViewModel.loadHomeFeed()
+        homeFeedViewModel.loadHomeFeed(0)
     }
 
     override val errorLiveData: LiveData<String>
@@ -92,8 +107,11 @@ class FragmentHomeNew : FragmentWithLoading(), Injectable {
     override fun subscribeToViewModel() {
         super.subscribeToViewModel()
         homeFeedViewModel.homeFeedLiveData.observe(viewLifecycleOwner, {
+            binding.swipeToRefresh.isRefreshing = false
             it?.let {
                 switchCommonVisibility(isLoading = false)
+                if (it.isEmpty())
+                    showEmptyContentMessage(R.string.feed_is_empty_message)
                 setDataToRecyclerView(it)
             }
         })
@@ -107,9 +125,16 @@ class FragmentHomeNew : FragmentWithLoading(), Injectable {
                 showMiniPlayerView(podcast)
             }
         }
+
+        podcastPlayerViewModel.podcastUpdatedLiveData.observe(viewLifecycleOwner) {
+            it?.let {
+                // for now, will update the list
+                load()
+            }
+        }
     }
 
-    private fun setDataToRecyclerView(list: List<FeedItemsQuery.FeedItem>) {
+    private fun setDataToRecyclerView(list: List<FeedItemsQuery.GetFeedItem>) {
         val adapter = binding.rvHome.adapter
         if (adapter != null) {
             (adapter as HomeFeedAdapter).submitList(list)
@@ -118,8 +143,10 @@ class FragmentHomeNew : FragmentWithLoading(), Injectable {
         }
     }
 
-    private fun setUpRecyclerView(list: List<FeedItemsQuery.FeedItem>) {
+    private fun setUpRecyclerView(list: List<FeedItemsQuery.GetFeedItem>) {
         val layoutManager = LinearLayoutManager(requireContext())
+        binding.rvHome.itemAnimator = null
+
         binding.rvHome.layoutManager = layoutManager
         val itemMargin = resources.getDimension(R.dimen.marginMedium).toInt()
         binding.rvHome.addItemDecoration(MarginItemDecoration(itemMargin))
@@ -134,8 +161,8 @@ class FragmentHomeNew : FragmentWithLoading(), Injectable {
         binding.includeMiniPlayer.tvMiniPlayerTitle.text = podcast.title ?: ""
 
         binding.includeMiniPlayer.btnCloseMiniPlayer.setOnClickListener {
+            changePodcastMiniPlayerVisibility(false)
             playerBinder.stopAudioService()
-//            changePodcastMiniPlayerVisibility(false)
         }
         changePodcastMiniPlayerVisibility(true)
         binding.includeMiniPlayer.btnMiniPlayerPlay.setOnClickListener {
@@ -153,16 +180,17 @@ class FragmentHomeNew : FragmentWithLoading(), Injectable {
         binding.includeMiniPlayer.clMiniPlayer.isEnabled = visible
     }
 
-    private fun openPodcastActivity(feedItem: FeedItemsQuery.FeedItem) {
-        val bundle = PodcastMiniPlayerViewModel.feedItemToBundle(feedItem)
-        val intent = Intent(requireContext(), PodcastsActivity::class.java)
-        intent.putExtras(bundle)
-        val options = ActivityOptions.makeSceneTransitionAnimation(
-            requireActivity(),
-//            binding.someFooter,
-            binding.includeMiniPlayer.clMiniPlayer,
-            "podcast_player_transition_label" // The transition name to be matched in Activity B.
-        )
-        startActivity(intent, options.toBundle())
+    private fun openPodcastActivity(feedItem: FeedItemsQuery.GetFeedItem) {
+        lifecycleScope.launch {
+            val bundle = PodcastControlViewModel.feedItemToBundle(feedItem)
+            val intent = Intent(requireContext(), PodcastsActivity::class.java)
+            intent.putExtras(bundle)
+            val options = ActivityOptions.makeSceneTransitionAnimation(
+                requireActivity(),
+                binding.includeMiniPlayer.clMiniPlayer,
+                "podcast_player_transition_label" // The transition name to be matched in Activity B.
+            )
+            startActivity(intent, options.toBundle())
+        }
     }
 }

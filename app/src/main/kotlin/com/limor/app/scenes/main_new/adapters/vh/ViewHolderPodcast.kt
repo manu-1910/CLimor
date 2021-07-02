@@ -8,12 +8,14 @@ import com.limor.app.FeedItemsQuery
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.extensions.loadImage
+import com.limor.app.scenes.auth_new.util.colorStateList
 import com.limor.app.scenes.main_new.utils.ArgsConverter
 import com.limor.app.scenes.main_new.utils.ArgsConverter.Companion.LABEL_DIALOG_REPORT_PODCAST
-import com.limor.app.scenes.main_new.view_model.PodcastMiniPlayerViewModel
+import com.limor.app.scenes.main_new.view_model.PodcastControlViewModel
 
-class ViewHolderPodcast(val binding: ItemHomeFeedBinding,val model: PodcastMiniPlayerViewModel) : ViewHolderBindable(binding) {
-    override fun bind(item: FeedItemsQuery.FeedItem) {
+class ViewHolderPodcast(val binding: ItemHomeFeedBinding, val model: PodcastControlViewModel) :
+    ViewHolderBindable<FeedItemsQuery.GetFeedItem>(binding) {
+    override fun bind(item: FeedItemsQuery.GetFeedItem) {
         setPodcastGeneralInfo(item)
         setPodcastOwnerInfo(item)
         setPodcastCounters(item)
@@ -21,15 +23,16 @@ class ViewHolderPodcast(val binding: ItemHomeFeedBinding,val model: PodcastMiniP
         loadImages(item)
         setOnClicks(item)
         addTags(item)
+        setActiveIcons(item)
     }
 
-    private fun setPodcastGeneralInfo(item: FeedItemsQuery.FeedItem) {
+    private fun setPodcastGeneralInfo(item: FeedItemsQuery.GetFeedItem) {
         binding.tvPodcastLength.text = item.podcast?.audio?.duration?.toString() ?: ""
         binding.tvPodcastTitle.text = item.podcast?.title ?: ""
         binding.tvPodcastSubtitle.text = item.podcast?.caption ?: ""
     }
 
-    private fun setPodcastOwnerInfo(item: FeedItemsQuery.FeedItem) {
+    private fun setPodcastOwnerInfo(item: FeedItemsQuery.GetFeedItem) {
         binding.tvPodcastUserName.text =
             StringBuilder(item.podcast?.owner?.first_name ?: "").append("_")
                 .append((item.podcast?.owner?.last_name ?: ""))
@@ -39,7 +42,7 @@ class ViewHolderPodcast(val binding: ItemHomeFeedBinding,val model: PodcastMiniP
                 .append(item.podcast?.address)
     }
 
-    private fun setPodcastCounters(item: FeedItemsQuery.FeedItem) {
+    private fun setPodcastCounters(item: FeedItemsQuery.GetFeedItem) {
         binding.tvPodcastLikes.text = item.podcast?.number_of_likes?.toString() ?: ""
         binding.tvPodcastRecast.text = item.podcast?.number_of_recasts?.toString() ?: ""
         binding.tvPodcastComments.text = item.podcast?.number_of_comments?.toString() ?: ""
@@ -47,11 +50,11 @@ class ViewHolderPodcast(val binding: ItemHomeFeedBinding,val model: PodcastMiniP
         binding.tvPodcastNumberOfListeners.text = item.podcast?.number_of_listens?.toString() ?: ""
     }
 
-    private fun setAudioInfo(item: FeedItemsQuery.FeedItem) {
+    private fun setAudioInfo(item: FeedItemsQuery.GetFeedItem) {
         binding.cpiPodcastListeningProgress.progress = itemViewType
     }
 
-    private fun loadImages(item: FeedItemsQuery.FeedItem) {
+    private fun loadImages(item: FeedItemsQuery.GetFeedItem) {
         binding.ivPodcastAvatar.loadImage(
             item.podcast?.owner?.images?.small_url ?: ""
         )
@@ -65,7 +68,7 @@ class ViewHolderPodcast(val binding: ItemHomeFeedBinding,val model: PodcastMiniP
         )
     }
 
-    private fun setOnClicks(item: FeedItemsQuery.FeedItem) {
+    private fun setOnClicks(item: FeedItemsQuery.GetFeedItem) {
         binding.btnPodcastMore.setOnClickListener {
             val bundle = bundleOf(
                 LABEL_DIALOG_REPORT_PODCAST to ArgsConverter.encodeFeedItemAsReportDialogArgs(item)
@@ -76,12 +79,17 @@ class ViewHolderPodcast(val binding: ItemHomeFeedBinding,val model: PodcastMiniP
         }
         binding.clItemPodcastFeed.setOnClickListener {
             model.changePodcastFullScreenVisibility(item)
-//            it.findNavController()
-//                .navigate(R.id.action_navigation_home_to_navigation_podcast_activity)
+        }
+
+        binding.btnPodcastLikes.setOnClickListener {
+            if (item.podcast?.liked == false)
+                model.likePodcast(item.podcast.id ?: 0)
+            else
+                model.unlikePodcast(item.podcast?.id ?: 0)
         }
     }
 
-    private fun addTags(item: FeedItemsQuery.FeedItem) {
+    private fun addTags(item: FeedItemsQuery.GetFeedItem) {
         item.podcast?.tags?.caption?.forEach {
             addTags(it)
         }
@@ -94,5 +102,12 @@ class ViewHolderPodcast(val binding: ItemHomeFeedBinding,val model: PodcastMiniP
                 (v as TextView).text = StringBuilder("#").append(caption?.tag ?: "")
                 binding.llPodcastTags.addView(v)
             }
+    }
+
+    private fun setActiveIcons(item: FeedItemsQuery.GetFeedItem) {
+        val tint = colorStateList(binding.root.context,
+            if (item.podcast?.liked == true) R.color.colorAccent else R.color.white)
+        binding.btnPodcastLikes.imageTintList = tint
+        binding.tvPodcastLikes.setTextColor(tint)
     }
 }

@@ -4,7 +4,6 @@ import com.limor.app.di.modules.fragments.*
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.MainActivity
-import com.limor.app.scenes.main.fragments.CategoriesActivity
 import com.limor.app.scenes.main.fragments.onboarding.OnBoardingActivity
 import com.limor.app.scenes.main.fragments.player.AudioPlayerActivity
 import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
@@ -126,6 +125,10 @@ abstract class ActivitiesModule {
     @ContributesAndroidInjector
     abstract fun contributeAuthActivityNewInjector(): AuthActivityNew
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(
+        modules = [
+            PodcastActivitNewFragmentBuildersModule::class
+        ]
+    )
     abstract fun contributePodcastsActivityInjector(): PodcastsActivity
 }
