@@ -21,8 +21,8 @@ data class AudioUIModel(
 fun GetFeaturedCastsQuery.Audio.mapToUIModel() =
     AudioUIModel(
         url = audio_url!!,
-        totalLength = total_length!!,
-        totalSamples = total_samples!!,
+        totalLength = total_length!!.toInt(),
+        totalSamples = total_samples!!.toInt(),
         duration = Duration.ofSeconds(duration!!.toLong()),
         sampleRate = sample_rate!!.toFloat(),
         originalUrl = original_audio_url
@@ -31,8 +31,8 @@ fun GetFeaturedCastsQuery.Audio.mapToUIModel() =
 fun GetTopCastsQuery.Audio.mapToUIModel() =
     AudioUIModel(
         url = audio_url!!,
-        totalLength = total_length!!,
-        totalSamples = total_samples!!,
+        totalLength = total_length!!.toInt(),
+        totalSamples = total_samples!!.toInt(),
         duration = Duration.ofSeconds(duration!!.toLong()),
         sampleRate = sample_rate!!.toFloat(),
         originalUrl = original_audio_url
@@ -41,8 +41,8 @@ fun GetTopCastsQuery.Audio.mapToUIModel() =
 fun GetPodcastsByCategoryQuery.Audio.mapToUIModel() =
     AudioUIModel(
         url = audio_url!!,
-        totalLength = total_length!!,
-        totalSamples = total_samples!!,
+        totalLength = total_length!!.toInt(),
+        totalSamples = total_samples!!.toInt(),
         duration = Duration.ofSeconds(duration!!.toLong()),
         sampleRate = sample_rate!!.toFloat(),
         originalUrl = original_audio_url
@@ -51,8 +51,8 @@ fun GetPodcastsByCategoryQuery.Audio.mapToUIModel() =
 fun GetPodcastsByHashtagQuery.Audio.mapToUIModel() =
     AudioUIModel(
         url = audio_url!!,
-        totalLength = total_length!!,
-        totalSamples = total_samples!!,
+        totalLength = total_length!!.toInt(),
+        totalSamples = total_samples!!.toInt(),
         duration = Duration.ofSeconds(duration!!.toLong()),
         sampleRate = sample_rate!!.toFloat(),
         originalUrl = original_audio_url

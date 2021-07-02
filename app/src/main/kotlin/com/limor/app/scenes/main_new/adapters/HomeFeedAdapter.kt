@@ -10,11 +10,13 @@ import com.limor.app.databinding.ItemHomeFeedRecastedBinding
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderBindable
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderPodcast
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderRecast
-import com.limor.app.scenes.main_new.view_model.PodcastMiniPlayerViewModel
+import com.limor.app.scenes.main_new.view_model.PodcastControlViewModel
 
 class HomeFeedAdapter(
-    private val model: PodcastMiniPlayerViewModel
-) : ListAdapter<FeedItemsQuery.FeedItem, ViewHolderBindable>(HomeFeedDiffCallback()) {
+    private val model: PodcastControlViewModel
+) : ListAdapter<FeedItemsQuery.GetFeedItem, ViewHolderBindable<FeedItemsQuery.GetFeedItem>>(
+    HomeFeedDiffCallback()
+) {
 
     override fun getItemViewType(position: Int): Int {
 
@@ -22,11 +24,17 @@ class HomeFeedAdapter(
         return if (recasted) ITEM_TYPE_RECASTED else ITEM_TYPE_PODCAST
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolderBindable {
+    override fun onCreateViewHolder(
+        viewGroup: ViewGroup,
+        viewType: Int
+    ): ViewHolderBindable<FeedItemsQuery.GetFeedItem> {
         return getViewHolderByViewType(viewGroup, viewType)
     }
 
-    private fun getViewHolderByViewType(viewGroup: ViewGroup, viewType: Int): ViewHolderBindable {
+    private fun getViewHolderByViewType(
+        viewGroup: ViewGroup,
+        viewType: Int
+    ): ViewHolderBindable<FeedItemsQuery.GetFeedItem> {
         val inflater = LayoutInflater.from(viewGroup.context)
         return when (viewType) {
             ITEM_TYPE_RECASTED -> {
@@ -41,7 +49,10 @@ class HomeFeedAdapter(
         }
     }
 
-    override fun onBindViewHolder(viewHolder: ViewHolderBindable, position: Int) {
+    override fun onBindViewHolder(
+        viewHolder: ViewHolderBindable<FeedItemsQuery.GetFeedItem>,
+        position: Int
+    ) {
         viewHolder.bind(getItem(position))
     }
 
@@ -51,17 +62,17 @@ class HomeFeedAdapter(
     }
 }
 
-class HomeFeedDiffCallback : DiffUtil.ItemCallback<FeedItemsQuery.FeedItem>() {
+class HomeFeedDiffCallback : DiffUtil.ItemCallback<FeedItemsQuery.GetFeedItem>() {
     override fun areItemsTheSame(
-        oldItem: FeedItemsQuery.FeedItem,
-        newItem: FeedItemsQuery.FeedItem
+        oldItem: FeedItemsQuery.GetFeedItem,
+        newItem: FeedItemsQuery.GetFeedItem
     ): Boolean {
         return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(
-        oldItem: FeedItemsQuery.FeedItem,
-        newItem: FeedItemsQuery.FeedItem
+        oldItem: FeedItemsQuery.GetFeedItem,
+        newItem: FeedItemsQuery.GetFeedItem
     ): Boolean {
         return oldItem == newItem
     }

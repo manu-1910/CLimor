@@ -4,6 +4,7 @@ import com.limor.app.*
 import com.limor.app.uimodels.UserUIModel
 import com.limor.app.uimodels.mapToUIModel
 import com.limor.app.usecases.CreateBlockedUserUseCase
+import com.limor.app.apollo.Apollo.Companion.LOAD_PORTION
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -41,11 +42,14 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         return genders
     }
 
-    suspend fun fetchHomeFeed(): List<FeedItemsQuery.FeedItem>? {
-        val query = FeedItemsQuery()
+    suspend fun fetchHomeFeed(
+        limit: Int = LOAD_PORTION,
+        offset: Int = 0
+    ): List<FeedItemsQuery.GetFeedItem>? {
+        val query = FeedItemsQuery(limit, offset)
         val result = apollo.launchQuery(query)
-        var feedItems: List<FeedItemsQuery.FeedItem?> =
-            result?.data?.feedItems ?: return null
+        var feedItems: List<FeedItemsQuery.GetFeedItem?> =
+            result?.data?.getFeedItems ?: return null
         feedItems = feedItems.filterNotNull()
         logList(feedItems)
         return feedItems

@@ -5,15 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.FeedItemsQuery
-import com.limor.app.GetBlockedUsersQuery
 import com.limor.app.GetUserProfileByIdQuery
 import com.limor.app.GetUserProfileQuery
-import com.limor.app.apollo.Apollo
 import com.limor.app.apollo.GeneralInfoRepository
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import timber.log.Timber
 import javax.inject.Inject
 
 class HomeFeedViewModel @Inject constructor(
@@ -21,8 +17,8 @@ class HomeFeedViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _homeFeedLiveData =
-        MutableLiveData<List<FeedItemsQuery.FeedItem>?>()
-    val homeFeedLiveData: LiveData<List<FeedItemsQuery.FeedItem>?>
+        MutableLiveData<List<FeedItemsQuery.GetFeedItem>?>()
+    val homeFeedLiveData: LiveData<List<FeedItemsQuery.GetFeedItem>?>
         get() = _homeFeedLiveData
 
     private var _homeFeedErrorLiveData =
@@ -32,15 +28,16 @@ class HomeFeedViewModel @Inject constructor(
 
 
 
-    fun loadHomeFeed() {
+    fun loadHomeFeed(offset:Int = 0) {
         viewModelScope.launch {
             try {
-                val feedItems = generalInfoRepository.fetchHomeFeed()
+                val feedItems = generalInfoRepository.fetchHomeFeed(offset = offset)
                 _homeFeedLiveData.postValue(feedItems)
+                delay(300)
+                _homeFeedLiveData.postValue(null)
             } catch (e: Exception) {
                 _homeFeedErrorLiveData.postValue(e.localizedMessage)
             }
-
         }
     }
 

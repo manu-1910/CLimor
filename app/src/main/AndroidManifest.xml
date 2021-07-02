@@ -157,10 +157,10 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity
+      <!--  <activity
             android:name=".scenes.main.fragments.discover.DiscoverPodcastsByCategoryActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"/> -->
 
         <meta-data
             android:name="io.fabric.ApiKey"
@@ -210,13 +210,15 @@
             android:exported="false" />
 
         <!--FCM-->
-        <service
+       <service
             android:name=".scenes.notifications.MyFirebaseMessagingService"
             android:stopWithTask="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+
         <service
             android:name=".scenes.notifications.UtilsRegistrationIntentService"
             android:exported="false"></service>
