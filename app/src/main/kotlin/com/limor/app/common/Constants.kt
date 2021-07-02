@@ -14,7 +14,6 @@ class Constants{
         // Autofollow Limor
         val LIMOR_ACCOUNT_ID: Int = BuildConfig.LIMOR_ACCOUNT_ID
 
-
         // Authorization
         val CLIENT_ID: String = BuildConfig.CLIENT_ID
         val CLIENT_SECRET: String = BuildConfig.CLIENT_SECRET
