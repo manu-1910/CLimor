@@ -27,7 +27,7 @@ class SuggestedPersonItem(val suggestedPerson: UserUIModel) :
         viewBinding.personNickname.text = suggestedPerson.username
 
         Glide.with(viewBinding.personImage)
-            .load(suggestedPerson.imageLinks.small)
+            .load(suggestedPerson.imageLinks?.small)
             .circleCrop()
             .into(viewBinding.personImage)
     }

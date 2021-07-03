@@ -207,11 +207,11 @@ class UserFollowersFragmentNew(private val uiUser: String) : BaseFragment() {
     }
 
     private fun performFollow(item: FollowersQuery.GetFollower) {
-            model.followUser(item.id)
+            model.followUser(item.id!!)
     }
 
     private fun performUnfollow(item: FollowersQuery.GetFollower) {
-            model.unFollowUser(item.id)
+            model.unFollowUser(item.id!!)
 
     }
 

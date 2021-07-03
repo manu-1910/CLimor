@@ -222,7 +222,7 @@ class BlockedUsersFragment : BaseFragment() {
 
     private fun performUnblockUser(item: GetBlockedUsersQuery.GetBlockedUser) {
 
-        model.createBlockedUser(item.id)
+        model.createBlockedUser(item.id!!)
     }
 
     private fun performBlockUser(item: GetBlockedUsersQuery.GetBlockedUser) {

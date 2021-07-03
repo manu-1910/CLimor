@@ -15,12 +15,17 @@ class SuggestedPersonBigItem(
 
     override fun bind(viewBinding: ItemDiscoverSuggestedPersonBigBinding, position: Int) {
         viewBinding.fullName.text = person.getFullName()
-        viewBinding.personImage.loadCircleImage(person.imageLinks.small)
+        person.imageLinks?.small?.let {
+            viewBinding.personImage.loadCircleImage(it)
+        }
+
         viewBinding.description.text = person.description
-        viewBinding.followBtn.apply {
-            isFollowed = person.isFollowed
-            setOnClickListener {
-                onFollowClick(person)
+        person.isFollowed?.let {
+            viewBinding.followBtn.apply {
+                isFollowed = person.isFollowed
+                setOnClickListener {
+                    onFollowClick(person)
+                }
             }
         }
         viewBinding.root.setOnClickListener {

@@ -22,16 +22,18 @@ class SmallCastItem(
 
     override fun bind(viewBinding: ItemDiscoverSmallCastBinding, position: Int) {
         viewBinding.apply {
-            authorName.text = cast.owner.getFullName()
+            authorName.text = cast.owner?.getFullName()
             castName.text = cast.title
-            castDuration.text = getCastDuration(cast.audio.duration)
+            cast.audio?.duration?.let {
+                castDuration.text = getCastDuration(cast.audio.duration)
+            }
 
             Glide.with(root)
-                .load(cast.imageLinks.medium)
+                .load(cast.imageLinks?.medium)
                 .into(castImage)
 
             Glide.with(root)
-                .load(cast.owner.imageLinks.small)
+                .load(cast.owner?.imageLinks?.small)
                 .circleCrop()
                 .into(ownerIcon)
 

@@ -320,7 +320,7 @@ class EditProfileFragment : BaseFragment() {
                         user.lastName,
                         user.description,
                         user.website,
-                        user.imageLinks.small
+                        user.imageLinks?.small
                     )
                 }
             }

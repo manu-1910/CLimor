@@ -13,7 +13,7 @@ class GetFeaturedCastsUseCase @Inject constructor(
 ) {
 
     suspend fun execute(
-        limit: Int = -1,
+        limit: Int = Int.MAX_VALUE,
         offset: Int = 0
     ): Result<List<CastUIModel>> = runCatching {
         withContext(dispatcherProvider.io) {

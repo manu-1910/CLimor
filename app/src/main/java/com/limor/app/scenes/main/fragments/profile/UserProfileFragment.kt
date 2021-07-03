@@ -180,7 +180,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         binding.profileLink.text = it.website
         binding.profileFollowers.text = "${it.followersCount}"
         binding.profileFollowing.text = "${it.followingCount}"
-        Glide.with(requireContext()).load(it.imageLinks.small)
+        Glide.with(requireContext()).load(it.imageLinks?.small)
             .placeholder(R.mipmap.ic_launcher_round)
             .error(R.mipmap.ic_launcher_round)
             .apply(RequestOptions.circleCropTransform())

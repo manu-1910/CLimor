@@ -43,12 +43,12 @@ class DiscoverViewModel @Inject constructor(
 
     private fun loadTopCasts() {
         viewModelScope.launch {
-            getTopCastsUseCase.execute()
+            getTopCastsUseCase.execute(limit = 10)
                 .onSuccess {
                     _topCasts.value = it
                 }
                 .onFailure {
-                    Timber.e(it, "Error while getting featured casts")
+                    Timber.e(it, "Error while getting top casts")
                 }
         }
     }
