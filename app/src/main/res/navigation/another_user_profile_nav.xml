@@ -12,12 +12,12 @@
         tools:layout="@layout/user_profile_fragment">
         <action
             android:id="@+id/action_profile_fragment_to_dialog_user_actions2"
-            app:destination="@id/dialog_user_actions" />
+            app:destination="@id/dialog_user_profile_actions" />
     </fragment>
 
 
     <dialog
-        android:id="@+id/dialog_user_actions"
+        android:id="@+id/dialog_user_profile_actions"
         android:name="com.limor.app.scenes.profile.DialogUserProfileActions"
         android:label="Dialog Report Podcast"
         tools:layout="@layout/dialog_other_user_actions">

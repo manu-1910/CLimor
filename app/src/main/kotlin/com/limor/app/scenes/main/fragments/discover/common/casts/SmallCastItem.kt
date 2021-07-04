@@ -1,10 +1,13 @@
 package com.limor.app.scenes.main.fragments.discover.common.casts
 
+import android.content.Intent
 import android.view.View
 import com.bumptech.glide.Glide
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverSmallCastBinding
 import com.limor.app.scenes.auth_new.util.ToastMaker
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
@@ -39,6 +42,14 @@ class SmallCastItem(
 
             root.setOnClickListener {
                 ToastMaker.showToast(it.context, "Not implemented")
+            }
+
+            authorName.setOnClickListener {
+                val userProfileIntent =
+                    Intent(viewBinding.root.context, UserProfileActivity::class.java)
+                userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, cast.owner?.username)
+                userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, cast.owner?.id)
+                it.context.startActivity(userProfileIntent)
             }
         }
     }

@@ -118,7 +118,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         }
 
         binding.toolbar.btnBack.setOnClickListener {
-            it.findNavController().popBackStack()
+            (activity)?.onBackPressed()
         }
     }
 
@@ -127,7 +127,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             startActivity(Intent(requireContext(), SettingsActivity::class.java))
         } else {
             //Show Other user actions dialog
-            findNavController().navigate(R.id.action_profile_fragment_to_dialog_user_actions2)
+            findNavController().navigate(R.id.dialog_user_profile_actions)
         }
 
     }
@@ -136,7 +136,11 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         if ((activity) is MainActivityNew) {
             binding.toolbar.title.text = getString(R.string.title_profile)
         } else {
-            binding.toolbar.title.text = ""
+            activity?.intent?.extras?.getString(USER_NAME_KEY)?.let {
+                binding.toolbar.title.text = it
+            }?:run{
+                binding.toolbar.title.text = ""
+            }
             binding.toolbar.btnUserSettings.setImageResource(R.drawable.ic_three_dots_black)
 
         }
@@ -155,7 +159,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
         model.profileErrorLiveData.observe(viewLifecycleOwner, {
             binding.profileMainContainer.visibility = View.GONE
-            switchCommonVisibility(hasError = true)
         })
 
     }
@@ -164,11 +167,8 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         lifecycleScope.launch {
            if(user.id != JwtChecker.getUserIdFromJwt()){
                binding.otherUserNormalLayout.visibility = View.VISIBLE
-           }else{
-
            }
             binding.profileMainContainer.visibility = View.VISIBLE
-            switchCommonVisibility(false)
         }
 
     }
@@ -185,6 +185,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             .error(R.mipmap.ic_launcher_round)
             .apply(RequestOptions.circleCropTransform())
             .into(binding.profileDp)
+        switchCommonVisibility()
 
     }
 
