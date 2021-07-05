@@ -50,3 +50,11 @@ fun GetPodcastsByHashtagQuery.Images.mapToUIModel(): ImageLinksUIModel {
 fun GetPodcastsByHashtagQuery.Images1.mapToUIModel(): ImageLinksUIModel {
     return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
 }
+
+fun GetUserProfileQuery.Images.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+}
+
+fun GetUserProfileByIdQuery.Images.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+}

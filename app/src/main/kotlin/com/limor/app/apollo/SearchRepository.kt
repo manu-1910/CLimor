@@ -9,7 +9,7 @@ class SearchRepository @Inject constructor(private val apollo: Apollo) {
 
     suspend fun searchUsers(
         term: String,
-        limit: Int = -1,
+        limit: Int = Int.MAX_VALUE,
         offset: Int = 0
     ): List<SearchUsersQuery.SearchUser> {
         return apollo.launchQuery(
@@ -23,7 +23,7 @@ class SearchRepository @Inject constructor(private val apollo: Apollo) {
 
     suspend fun searchHashtags(
         term: String,
-        limit: Int = -1,
+        limit: Int = Int.MAX_VALUE,
         offset: Int = 0
     ): List<SearchHashtagsQuery.SearchTag> {
         return apollo.launchQuery(

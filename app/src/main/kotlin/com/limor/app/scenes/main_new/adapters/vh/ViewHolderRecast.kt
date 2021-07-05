@@ -9,11 +9,11 @@ import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedRecastedBinding
 import com.limor.app.extensions.loadImage
 import com.limor.app.scenes.main_new.utils.ArgsConverter
-import com.limor.app.scenes.main_new.view_model.PodcastMiniPlayerViewModel
+import com.limor.app.scenes.main_new.view_model.PodcastControlViewModel
 
-class ViewHolderRecast(val binding: ItemHomeFeedRecastedBinding,val model: PodcastMiniPlayerViewModel) :
-    ViewHolderBindable(binding) {
-    override fun bind(item: FeedItemsQuery.FeedItem) {
+class ViewHolderRecast(val binding: ItemHomeFeedRecastedBinding,val model: PodcastControlViewModel) :
+    ViewHolderBindable<FeedItemsQuery.GetFeedItem>(binding) {
+    override fun bind(item: FeedItemsQuery.GetFeedItem) {
 
         binding.tvRecastUserName.text =
             StringBuilder(item.recaster?.first_name ?: "").append("_")
@@ -66,7 +66,7 @@ class ViewHolderRecast(val binding: ItemHomeFeedRecastedBinding,val model: Podca
         }
     }
 
-    private fun addTags(item: FeedItemsQuery.FeedItem) {
+    private fun addTags(item: FeedItemsQuery.GetFeedItem) {
         item.podcast?.tags?.caption?.forEach {
             addTags(it)
         }

@@ -10,6 +10,7 @@ import com.limor.app.GetBlockedUsersQuery
 import com.limor.app.GetUserProfileQuery
 import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.scenes.auth_new.model.UserInfoProvider
+import com.limor.app.uimodels.UserUIModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -36,8 +37,8 @@ class SettingsViewModel @Inject constructor(
     val blockedUserErrorLiveData: LiveData<String>
         get() = _blockedUserErrorLiveData
     private var _userInfoLiveData =
-        MutableLiveData<GetUserProfileQuery.GetUser?>()
-    val userInfoLiveData: LiveData<GetUserProfileQuery.GetUser?>
+        MutableLiveData<UserUIModel?>()
+    val userInfoLiveData: LiveData<UserUIModel?>
         get() = _userInfoLiveData
 
     private var _userUpdatedResponse =
@@ -117,11 +118,14 @@ class SettingsViewModel @Inject constructor(
                 val userInfo = withContext(Dispatchers.IO) {
                     generalInfoRepository.getUserProfile()
                 }
-                _userInfoLiveData.postValue(userInfo)
+                userInfo?.let{
+                    _userInfoLiveData.postValue(it)
+                }
                 Timber.d("Got UserInfo -> $userInfo")
             } catch (e: Exception) {
                 Timber.d("Got UserInfo -> $e")
             }
+
         }
 
     }

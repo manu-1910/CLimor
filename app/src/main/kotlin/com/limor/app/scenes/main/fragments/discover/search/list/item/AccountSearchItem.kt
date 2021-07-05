@@ -14,7 +14,9 @@ class AccountSearchItem(
     override fun bind(viewBinding: ItemDiscoverSearchAccountBinding, position: Int) {
         viewBinding.accountName.text = account.getFullName()
         viewBinding.accountNickname.text = account.username
-        viewBinding.accountImage.loadCircleImage(account.imageLinks.small)
+        account.imageLinks?.small?.let {
+            viewBinding.accountImage.loadCircleImage(it)
+        }
     }
 
     override fun getLayout() = R.layout.item_discover_search_account

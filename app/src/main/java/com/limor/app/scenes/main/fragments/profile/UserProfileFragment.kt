@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -19,11 +21,15 @@ import com.limor.app.components.tabselector.TabSelectorView
 import com.limor.app.databinding.UserProfileFragmentBinding
 import com.limor.app.di.Injectable
 import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
+import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.adapters.ProfileViewPagerAdapter
 import com.limor.app.scenes.main.fragments.settings.SettingsActivity
 import com.limor.app.scenes.main_new.MainActivityNew
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
+import com.limor.app.uimodels.UserUIModel
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 class UserProfileFragment : FragmentWithLoading(), Injectable {
@@ -34,11 +40,11 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         const val USER_NAME_KEY = "username"
     }
 
-    private lateinit var user: GetUserProfileByIdQuery.GetUserById
+    private lateinit var user: UserUIModel
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val model: HomeFeedViewModel by viewModels { viewModelFactory }
+    private val model: UserProfileViewModel by viewModels { viewModelFactory }
 
     private lateinit var binding: UserProfileFragmentBinding
     private val tabs by lazy {
@@ -108,42 +114,47 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         }
 
         binding.toolbar.btnUserSettings.setOnClickListener {
-            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+            handleOptionsClick()
         }
 
         binding.toolbar.btnBack.setOnClickListener {
-            it.findNavController().popBackStack()
+            (activity)?.onBackPressed()
         }
+    }
+
+    private fun handleOptionsClick() {
+        if ((activity) is MainActivityNew) {
+            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+        } else {
+            //Show Other user actions dialog
+            findNavController().navigate(R.id.dialog_user_profile_actions)
+        }
+
     }
 
     private fun setupDefaultView() {
         if ((activity) is MainActivityNew) {
-            binding.toolbar.root.visibility = View.VISIBLE
+            binding.toolbar.title.text = getString(R.string.title_profile)
         } else {
-            binding.toolbar.root.visibility = View.GONE
+            activity?.intent?.extras?.getString(USER_NAME_KEY)?.let {
+                binding.toolbar.title.text = it
+            }?:run{
+                binding.toolbar.title.text = ""
+            }
+            binding.toolbar.btnUserSettings.setImageResource(R.drawable.ic_three_dots_black)
+
         }
     }
 
     override fun subscribeToViewModel() {
         super.subscribeToViewModel()
 
-        model.userProfileIdData.observe(viewLifecycleOwner, {
+        model.userProfileData.observe(viewLifecycleOwner, {
             it?.let {
-                user = it
-                switchCommonVisibility(false)
-                binding.profileName.text = it.username
-                binding.profileDesc.text = it.description
-                binding.profileLink.text = it.website
-                binding.profileFollowers.text = "${it.followers_count}"
-                binding.profileFollowing.text = "${it.following_count}"
-                Glide.with(requireContext()).load(it.images?.small_url)
-                    .placeholder(R.mipmap.ic_launcher_round)
-                    .error(R.mipmap.ic_launcher_round)
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(binding.profileDp)
-                setupViewForUser(it)
-
+                setDataToProfileViews(it)
+                setupConditionalViews(it)
             }
+
         })
 
         model.profileErrorLiveData.observe(viewLifecycleOwner, {
@@ -152,26 +163,46 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
     }
 
-    private fun setupViewForUser(user: GetUserProfileByIdQuery.GetUserById) {
+    private fun setupConditionalViews(user: UserUIModel) {
+        lifecycleScope.launch {
+           if(user.id != JwtChecker.getUserIdFromJwt()){
+               binding.otherUserNormalLayout.visibility = View.VISIBLE
+           }
+            binding.profileMainContainer.visibility = View.VISIBLE
+        }
 
+    }
 
-        if (user.id != PrefsHandler.getCurrentUserId(requireContext())) {
-            //Current User
-            binding.otherUserNormalLayout.visibility = View.VISIBLE
-
-        } // else Other user
-
-        binding.profileMainContainer.visibility = View.VISIBLE
+    private fun setDataToProfileViews(it: UserUIModel) {
+        user = it
+        binding.profileName.text = it.username
+        binding.profileDesc.text = it.description
+        binding.profileLink.text = it.website
+        binding.profileFollowers.text = "${it.followersCount}"
+        binding.profileFollowing.text = "${it.followingCount}"
+        Glide.with(requireContext()).load(it.imageLinks?.small)
+            .placeholder(R.mipmap.ic_launcher_round)
+            .error(R.mipmap.ic_launcher_round)
+            .apply(RequestOptions.circleCropTransform())
+            .into(binding.profileDp)
+        switchCommonVisibility()
 
     }
 
     override fun load() {
 
-        activity?.intent?.extras?.getInt(USER_ID_KEY)?.let {
-            model.getUserById(28)
-        } ?: run {
-            model.getUserById(PrefsHandler.getCurrentUserId(requireContext()))
+        when (activity) {
+            is MainActivityNew -> {
+                model.getUserProfile()
+               // model.getUserById(PrefsHandler.getCurrentUserId(requireContext()))
+            }
+            is UserProfileActivity -> {
+                activity?.intent?.extras?.getInt(USER_ID_KEY)?.let {
+                    model.getUserById(it)
+                }
+            }
         }
+
 
 
 

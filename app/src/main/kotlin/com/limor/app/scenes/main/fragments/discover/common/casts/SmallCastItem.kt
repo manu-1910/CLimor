@@ -1,10 +1,13 @@
 package com.limor.app.scenes.main.fragments.discover.common.casts
 
+import android.content.Intent
 import android.view.View
 import com.bumptech.glide.Glide
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverSmallCastBinding
 import com.limor.app.scenes.auth_new.util.ToastMaker
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
@@ -22,21 +25,31 @@ class SmallCastItem(
 
     override fun bind(viewBinding: ItemDiscoverSmallCastBinding, position: Int) {
         viewBinding.apply {
-            authorName.text = cast.owner.getFullName()
+            authorName.text = cast.owner?.getFullName()
             castName.text = cast.title
-            castDuration.text = getCastDuration(cast.audio.duration)
+            cast.audio?.duration?.let {
+                castDuration.text = getCastDuration(cast.audio.duration)
+            }
 
             Glide.with(root)
-                .load(cast.imageLinks.medium)
+                .load(cast.imageLinks?.medium)
                 .into(castImage)
 
             Glide.with(root)
-                .load(cast.owner.imageLinks.small)
+                .load(cast.owner?.imageLinks?.small)
                 .circleCrop()
                 .into(ownerIcon)
 
             root.setOnClickListener {
                 ToastMaker.showToast(it.context, "Not implemented")
+            }
+
+            authorName.setOnClickListener {
+                val userProfileIntent =
+                    Intent(viewBinding.root.context, UserProfileActivity::class.java)
+                userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, cast.owner?.username)
+                userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, cast.owner?.id)
+                it.context.startActivity(userProfileIntent)
             }
         }
     }

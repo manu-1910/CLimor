@@ -12,7 +12,7 @@ class ArgsConverter {
     companion object {
         const val LABEL_DIALOG_REPORT_PODCAST = "dialog_report_podcast"
 
-        fun encodeFeedItemAsReportDialogArgs(item: FeedItemsQuery.FeedItem): String {
+        fun encodeFeedItemAsReportDialogArgs(item: FeedItemsQuery.GetFeedItem): String {
             val args = ReportDialogArgs(item.podcast?.id ?: 0, item.podcast?.owner?.id ?: 0)
             return encodeReportDialogArgs(args)
         }

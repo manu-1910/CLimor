@@ -10,25 +10,25 @@ import java.time.LocalDate
 data class UserUIModel(
     val id: Int,
     val username: String?,
-    val firstName: String,
-    val lastName: String,
-    val imageLinks: ImageLinksUIModel,
-    val isBlocked: Boolean,
-    val isFollowed: Boolean,
-    val isBlockedBy: Boolean,
-    val isFollowedBy: Boolean,
-    val followingCount: Int,
-    val followersCount: Int,
-    val description: String,
-    val website: String,
-    val gender: String,
-    val dateOfBirth: LocalDate,
-    val areNotificationsEnabled: Boolean,
-    val isActive: Boolean,
-    val isSuspended: Boolean,
-    val isVerified: Boolean,
-    val isAutoplayEnabled: Boolean,
-    val sharingUrl: String,
+    val firstName: String?,
+    val lastName: String?,
+    val imageLinks: ImageLinksUIModel?,
+    val isBlocked: Boolean?,
+    val isFollowed: Boolean?,
+    val isBlockedBy: Boolean?,
+    val isFollowedBy: Boolean?,
+    val followingCount: Int?,
+    val followersCount: Int?,
+    val description: String?,
+    val website: String?,
+    val gender: String?,
+    val dateOfBirth: LocalDate? = null,
+    val areNotificationsEnabled: Boolean?,
+    val isActive: Boolean?,
+    val isSuspended: Boolean?,
+    val isVerified: Boolean?,
+    val isAutoplayEnabled: Boolean?,
+    val sharingUrl: String?,
 ) : Parcelable {
 
     fun getFullName() = String.format("%s %s", firstName, lastName)
@@ -36,78 +36,99 @@ data class UserUIModel(
 
 fun GetFeaturedCastsQuery.Owner.mapToUIModel(): UserUIModel =
     UserUIModel(
-        id = id, username = username!!, firstName = first_name!!, lastName = last_name!!,
-        imageLinks = images!!.mapToUIModel(), isBlocked = blocked!!, isFollowed = followed!!,
-        isBlockedBy = blocked_by!!, isFollowedBy = followed_by!!,
-        followingCount = following_count!!, followersCount = followers_count!!,
-        description = description!!, website = website!!, gender = gender!!,
-        dateOfBirth = date_of_birth!!.toLocalDate(),
-        areNotificationsEnabled = notifications_enabled!!, isActive = active!!,
-        isSuspended = suspended!!, isVerified = verified!!, isAutoplayEnabled = autoplay_enabled!!,
-        sharingUrl = sharing_url!!
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = blocked, isFollowed = followed,
+        isBlockedBy = blocked_by, isFollowedBy = followed_by,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = website, gender = gender,
+        areNotificationsEnabled = notifications_enabled, isActive = active,
+        isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
+        sharingUrl = sharing_url
     )
 
 fun SuggestedPeopleQuery.GetSuggestedUser.mapToUIModel(): UserUIModel =
     UserUIModel(
-        id = id, username = username!!, firstName = first_name!!, lastName = last_name!!,
-        imageLinks = images!!.mapToUIModel(), isBlocked = blocked!!, isFollowed = followed!!,
-        isBlockedBy = blocked_by!!, isFollowedBy = followed_by!!,
-        followingCount = following_count!!, followersCount = followers_count!!,
-        description = description!!, website = website!!, gender = gender!!,
-        dateOfBirth = date_of_birth!!.toLocalDate(),
-        areNotificationsEnabled = notifications_enabled!!, isActive = active!!,
-        isSuspended = suspended!!, isVerified = verified!!, isAutoplayEnabled = autoplay_enabled!!,
-        sharingUrl = sharing_url!!
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = blocked, isFollowed = followed,
+        isBlockedBy = blocked_by, isFollowedBy = followed_by,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = website, gender = gender,
+        areNotificationsEnabled = notifications_enabled, isActive = active,
+        isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
+        sharingUrl = sharing_url
     )
 
 fun GetTopCastsQuery.Owner.mapToUIModel(): UserUIModel =
     UserUIModel(
-        id = id, username = username!!, firstName = first_name!!, lastName = last_name!!,
-        imageLinks = images!!.mapToUIModel(), isBlocked = blocked!!, isFollowed = followed!!,
-        isBlockedBy = blocked_by!!, isFollowedBy = followed_by!!,
-        followingCount = following_count!!, followersCount = followers_count!!,
-        description = description!!, website = website!!, gender = gender!!,
-        dateOfBirth = date_of_birth!!.toLocalDate(),
-        areNotificationsEnabled = notifications_enabled!!, isActive = active!!,
-        isSuspended = suspended!!, isVerified = verified!!, isAutoplayEnabled = autoplay_enabled!!,
-        sharingUrl = sharing_url!!
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = blocked, isFollowed = followed,
+        isBlockedBy = blocked_by, isFollowedBy = followed_by,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = website, gender = gender,
+        areNotificationsEnabled = notifications_enabled, isActive = active,
+        isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
+        sharingUrl = sharing_url
     )
 
 fun SearchUsersQuery.SearchUser.mapToUIModel(): UserUIModel =
     UserUIModel(
-        id = id, username = username!!, firstName = first_name!!, lastName = last_name!!,
-        imageLinks = images!!.mapToUIModel(), isBlocked = blocked!!, isFollowed = followed!!,
-        isBlockedBy = blocked_by!!, isFollowedBy = followed_by!!,
-        followingCount = following_count!!, followersCount = followers_count!!,
-        description = description!!, website = website!!, gender = gender!!,
-        dateOfBirth = date_of_birth!!.toLocalDate(),
-        areNotificationsEnabled = notifications_enabled!!, isActive = active!!,
-        isSuspended = suspended!!, isVerified = verified!!, isAutoplayEnabled = autoplay_enabled!!,
-        sharingUrl = sharing_url!!
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = blocked, isFollowed = followed,
+        isBlockedBy = blocked_by, isFollowedBy = followed_by,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = website, gender = gender,
+        areNotificationsEnabled = notifications_enabled, isActive = active,
+        isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
+        sharingUrl = sharing_url
     )
 
 fun GetPodcastsByCategoryQuery.Owner.mapToUIModel(): UserUIModel =
     UserUIModel(
-        id = id, username = username!!, firstName = first_name!!, lastName = last_name!!,
-        imageLinks = images!!.mapToUIModel(), isBlocked = blocked!!, isFollowed = followed!!,
-        isBlockedBy = blocked_by!!, isFollowedBy = followed_by!!,
-        followingCount = following_count!!, followersCount = followers_count!!,
-        description = description!!, website = website!!, gender = gender!!,
-        dateOfBirth = date_of_birth!!.toLocalDate(),
-        areNotificationsEnabled = notifications_enabled!!, isActive = active!!,
-        isSuspended = suspended!!, isVerified = verified!!, isAutoplayEnabled = autoplay_enabled!!,
-        sharingUrl = sharing_url!!
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = blocked, isFollowed = followed,
+        isBlockedBy = blocked_by, isFollowedBy = followed_by,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = website, gender = gender,
+        areNotificationsEnabled = notifications_enabled, isActive = active,
+        isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
+        sharingUrl = sharing_url
     )
 
 fun GetPodcastsByHashtagQuery.Owner.mapToUIModel(): UserUIModel =
     UserUIModel(
-        id = id, username = username!!, firstName = first_name!!, lastName = last_name!!,
-        imageLinks = images!!.mapToUIModel(), isBlocked = blocked!!, isFollowed = followed!!,
-        isBlockedBy = blocked_by!!, isFollowedBy = followed_by!!,
-        followingCount = following_count!!, followersCount = followers_count!!,
-        description = description!!, website = website!!, gender = gender!!,
-        dateOfBirth = date_of_birth!!.toLocalDate(),
-        areNotificationsEnabled = notifications_enabled!!, isActive = active!!,
-        isSuspended = suspended!!, isVerified = verified!!, isAutoplayEnabled = autoplay_enabled!!,
-        sharingUrl = sharing_url!!
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = blocked, isFollowed = followed,
+        isBlockedBy = blocked_by, isFollowedBy = followed_by,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = website, gender = gender,
+        areNotificationsEnabled = notifications_enabled, isActive = active,
+        isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
+        sharingUrl = sharing_url
+    )
+
+
+fun GetUserProfileQuery.GetUser.mapToUIModel(): UserUIModel =
+    UserUIModel(
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = blocked, isFollowed = followed,
+        isBlockedBy = blocked_by, isFollowedBy = followed_by,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = website, gender = gender,
+        dateOfBirth = date_of_birth?.toLocalDate(),
+        areNotificationsEnabled = notifications_enabled, isActive = active,
+        isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
+        sharingUrl = sharing_url
+    )
+
+fun GetUserProfileByIdQuery.GetUserById.mapToUIModel(): UserUIModel =
+    UserUIModel(
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = blocked, isFollowed = followed,
+        isBlockedBy = blocked_by, isFollowedBy = followed_by,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = website, gender = gender,
+        dateOfBirth = date_of_birth?.toLocalDate(),
+        areNotificationsEnabled = notifications_enabled, isActive = active,
+        isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
+        sharingUrl = sharing_url
     )

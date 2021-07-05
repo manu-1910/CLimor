@@ -12,7 +12,7 @@ class FollowPersonUseCase @Inject constructor(
 ) {
     suspend fun execute(person: UserUIModel) {
         return withContext(dispatcherProvider.io) {
-            if (person.isFollowed) {
+            if (person.isFollowed!!) {
                 repository.unFollowUser(person.id)
             } else {
                 repository.followUser(person.id)

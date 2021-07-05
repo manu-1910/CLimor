@@ -18,8 +18,10 @@ import com.limor.app.databinding.FragmentProfileBinding
 import com.limor.app.di.Injectable
 import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.main.fragments.profile.UserFollowersFollowingsActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileViewModel
 import com.limor.app.scenes.main.fragments.profile.adapters.ProfileViewPagerAdapter
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
+import com.limor.app.uimodels.UserUIModel
 import javax.inject.Inject
 
 
@@ -28,7 +30,7 @@ class ProfileFragment : FragmentWithLoading(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val model: HomeFeedViewModel by viewModels { viewModelFactory }
+    private val model: UserProfileViewModel by viewModels { viewModelFactory }
 
     private lateinit var binding: FragmentProfileBinding
 
@@ -53,9 +55,9 @@ class ProfileFragment : FragmentWithLoading(), Injectable {
                 binding.profileName.text = it.username
                 binding.profileDesc.text = it.description
                 binding.profileLink.text = it.website
-                binding.profileFollowers.text = "${it.followers_count}"
-                binding.profileFollowing.text = "${it.following_count}"
-                Glide.with(requireContext()).load(it.images?.small_url)
+                binding.profileFollowers.text = "${it.followersCount}"
+                binding.profileFollowing.text = "${it.followingCount}"
+                Glide.with(requireContext()).load(it.imageLinks?.small)
                     .placeholder(R.mipmap.ic_launcher_round)
                     .error(R.mipmap.ic_launcher_round)
                     .apply(RequestOptions.circleCropTransform())
@@ -102,7 +104,7 @@ class ProfileFragment : FragmentWithLoading(), Injectable {
     override val errorLiveData: LiveData<String>
         get() = model.profileErrorLiveData
 
-    private fun setupViewPager(it: GetUserProfileQuery.GetUser) {
+    private fun setupViewPager(it: UserUIModel) {
         val adapter = ProfileViewPagerAdapter(childFragmentManager, lifecycle)
         binding.profileViewpager.adapter = adapter
 

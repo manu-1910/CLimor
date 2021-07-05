@@ -1,7 +1,10 @@
 package com.limor.app.apollo
 
 import com.limor.app.*
+import com.limor.app.uimodels.UserUIModel
+import com.limor.app.uimodels.mapToUIModel
 import com.limor.app.usecases.CreateBlockedUserUseCase
+import com.limor.app.apollo.Apollo.Companion.LOAD_PORTION
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -39,11 +42,14 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         return genders
     }
 
-    suspend fun fetchHomeFeed(): List<FeedItemsQuery.FeedItem>? {
-        val query = FeedItemsQuery()
+    suspend fun fetchHomeFeed(
+        limit: Int = LOAD_PORTION,
+        offset: Int = 0
+    ): List<FeedItemsQuery.GetFeedItem>? {
+        val query = FeedItemsQuery(limit, offset)
         val result = apollo.launchQuery(query)
-        var feedItems: List<FeedItemsQuery.FeedItem?> =
-            result?.data?.feedItems ?: return null
+        var feedItems: List<FeedItemsQuery.GetFeedItem?> =
+            result?.data?.getFeedItems ?: return null
         feedItems = feedItems.filterNotNull()
         logList(feedItems)
         return feedItems
@@ -57,7 +63,7 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
     }
 
 
-    suspend fun getUserProfile(): GetUserProfileQuery.GetUser? {
+    suspend fun getUserProfile(): UserUIModel? {
         val query = GetUserProfileQuery()
         val queryResult = withContext(Dispatchers.IO) {
             apollo.launchQuery(query)
@@ -65,9 +71,9 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         val createUserResult: GetUserProfileQuery.GetUser =
             queryResult?.data?.getUser ?: return null
         Timber.d("Got User -> ${createUserResult.username}")
-        return createUserResult
+        return createUserResult.mapToUIModel()
     }
-    suspend fun getUserProfileById(id: Int): GetUserProfileByIdQuery.GetUserById? {
+    suspend fun getUserProfileById(id: Int): UserUIModel? {
         val query = GetUserProfileByIdQuery(id)
         val queryResult = withContext(Dispatchers.IO){
             apollo.launchQuery(query)
@@ -75,7 +81,7 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         val createUserResult: GetUserProfileByIdQuery.GetUserById =
             queryResult?.data?.getUserById ?: return null
         Timber.d("Got User -> ${createUserResult.username}  ${createUserResult.id}  ")
-        return createUserResult
+        return createUserResult.mapToUIModel()
     }
 
     suspend fun getBlockedUsers(limit:Int,offset:Int): List<GetBlockedUsersQuery.GetBlockedUser?>? {

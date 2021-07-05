@@ -607,4 +607,7 @@
     <string name="edit_profile">Edit Profile</string>
     <string name="hint_write_a_comment">Write a comment...</string>
     <string name="left">left</string>
+    <string name="feed_is_empty_message">Home feed is empty</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="limor_patron_suggestion">Gain access and get all the latest features</string>
 </resources>

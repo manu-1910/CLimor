@@ -1,6 +1,8 @@
 package com.limor.app.scenes.auth_new.fragments
 
+import android.content.Context
 import android.os.Bundle
+import android.telephony.TelephonyManager
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +22,7 @@ import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.Country
 import com.limor.app.scenes.auth_new.util.AfterTextWatcher
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.*
+import timber.log.Timber
 import java.lang.ref.WeakReference
 
 
@@ -100,6 +103,13 @@ class FragmentSignEnterPhone : Fragment() {
                     countries[position]
                 )
             }
+        val tM = requireContext().getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        val countryCodeValue = tM.networkCountryIso
+        val country: Country? = countries.find { it.codeLetters.lowercase() == countryCodeValue}
+        Timber.d("%s", "${country?.codeLetters}  $countryCodeValue")
+        country?.let{
+            model.setCountrySelected(country)
+        }
         model.countrySelected?.let {
             editText.setText(it.visualFormat, false)
         }

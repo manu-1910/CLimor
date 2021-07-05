@@ -9,7 +9,7 @@ import javax.inject.Inject
 class CastsRepository @Inject constructor(private val apollo: Apollo) {
 
     suspend fun getFeaturedCasts(
-        limit: Int = -1,
+        limit: Int = Int.MAX_VALUE,
         offset: Int = 0
     ): List<GetFeaturedCastsQuery.GetFeaturedCast> {
         return apollo.launchQuery(GetFeaturedCastsQuery(limit, offset))
@@ -17,7 +17,7 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
     }
 
     suspend fun getTopCasts(
-        limit: Int = -1,
+        limit: Int = Int.MAX_VALUE,
         offset: Int = 0
     ): List<GetTopCastsQuery.GetTopCast> {
         return apollo.launchQuery(GetTopCastsQuery(limit, offset))
@@ -26,7 +26,7 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
 
     suspend fun getCastsByCategory(
         categoryId: Int,
-        limit: Int = -1,
+        limit: Int = Int.MAX_VALUE,
         offset: Int = 0
     ): List<GetPodcastsByCategoryQuery.GetPodcastsByCategory> {
         return apollo.launchQuery(GetPodcastsByCategoryQuery(categoryId, limit, offset))
@@ -35,7 +35,7 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
 
     suspend fun getCastsByHashtag(
         tagId: Int,
-        limit: Int = -1,
+        limit: Int = Int.MAX_VALUE,
         offset: Int = 0
     ): List<GetPodcastsByHashtagQuery.GetPodcastsByTag> {
         return apollo.launchQuery(GetPodcastsByHashtagQuery(tagId, limit, offset))

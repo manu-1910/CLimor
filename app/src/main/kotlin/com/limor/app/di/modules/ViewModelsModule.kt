@@ -6,7 +6,7 @@ import com.limor.app.common.ViewModelFactory
 import com.limor.app.di.ViewModelKey
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.authentication.viewmodels.*
-import com.limor.app.scenes.main.fragments.profile.FollowViewModelNew
+import com.limor.app.scenes.main.fragments.profile.UserProfileViewModel
 import com.limor.app.scenes.main.fragments.settings.SettingsViewModel
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategoriesViewModel
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverCategoryViewModel
@@ -17,8 +17,8 @@ import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchViewMod
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleViewModel
 import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
+import com.limor.app.scenes.main_new.view_model.PodcastControlViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastFullPlayerViewModel
-import com.limor.app.scenes.main_new.view_model.PodcastMiniPlayerViewModel
 import com.limor.app.scenes.notifications.PushNotificationsViewModel
 import dagger.Binds
 import dagger.Module
@@ -306,8 +306,8 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(PodcastMiniPlayerViewModel::class)
-    abstract fun bindPodcastMiniPlayerViewModel(viewModel: PodcastMiniPlayerViewModel): ViewModel
+    @ViewModelKey(PodcastControlViewModel::class)
+    abstract fun bindPodcastMiniPlayerViewModel(viewModel: PodcastControlViewModel): ViewModel
     @Binds
     @IntoMap
     @ViewModelKey(PodcastFullPlayerViewModel::class)
@@ -320,6 +320,6 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(FollowViewModelNew::class)
-    abstract fun bindFollowViewModel(viewModel: FollowViewModelNew): ViewModel
+    @ViewModelKey(UserProfileViewModel::class)
+    abstract fun bindFollowViewModel(viewModel: UserProfileViewModel): ViewModel
 }

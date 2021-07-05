@@ -3,23 +3,30 @@ package com.limor.app.scenes.auth_new.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.CallSuper
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.fragment_new_auth_loading_include.*
+import timber.log.Timber
 
 abstract class FragmentWithLoading : Fragment() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Timber.d("OnCreate")
+        load()
+    }
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        subscribeToViewModel()
         switchCommonVisibility(isLoading = true)
+        subscribeToViewModel()
         btnRetry.setOnClickListener {
             switchCommonVisibility(isLoading = true)
             load()
         }
-        load()
     }
 
     abstract fun load()
@@ -39,6 +46,12 @@ abstract class FragmentWithLoading : Fragment() {
         val errorVisibility = if (shouldShowError) View.VISIBLE else View.GONE
         tvErrorMessage.visibility = errorVisibility
         btnRetry.visibility = errorVisibility
+        tvEmptyContent.visibility = View.GONE
         pbLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+
+    protected fun showEmptyContentMessage(@StringRes message: Int) {
+        tvEmptyContent.visibility = View.VISIBLE
+        tvEmptyContent.setText(message)
     }
 }
