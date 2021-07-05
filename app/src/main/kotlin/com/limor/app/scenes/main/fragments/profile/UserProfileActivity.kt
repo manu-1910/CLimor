@@ -5,6 +5,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.facebook.BuildConfig
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.databinding.ActivityProfileBinding

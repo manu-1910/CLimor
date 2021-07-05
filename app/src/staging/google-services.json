@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "225144640476",
+    "project_id": "limor-staging",
+    "storage_bucket": "limor-staging.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:225144640476:android:350a21583f83792ea57519",
+        "android_client_info": {
+          "package_name": "com.limor.app.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "225144640476-q3i6ce81tuc9o1nf1st3a8sefa9hd1ts.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-yIQEoUtvUTY37an8Fck8VsZDRq0nSpM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "225144640476-q3i6ce81tuc9o1nf1st3a8sefa9hd1ts.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "225144640476-oenar486gac40maj28abjd4fospba3jo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.limor.app.staging",
+                "app_store_id": "1574471515"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
