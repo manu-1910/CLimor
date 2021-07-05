@@ -67,8 +67,7 @@ class NotificationAdapter : RecyclerView.Adapter<NotificationAdapter.ViewHolder>
             }
         }
 
-
-
+        
     }
 
 }
