@@ -2,21 +2,23 @@ package com.limor.app.scenes.main_new.adapters.vh
 
 import android.widget.TextView
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
-import com.limor.app.FeedItemsQuery
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
+import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.loadImage
-import com.limor.app.extensions.toLocalDateTime
-import com.limor.app.scenes.auth_new.util.colorStateList
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
-import com.limor.app.scenes.main_new.view_model.PodcastControlViewModel
-import com.limor.app.scenes.utils.DateUiUtil
+import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.TagUIModel
 
-class ViewHolderPodcast(val binding: ItemHomeFeedBinding, val model: PodcastControlViewModel) :
-    ViewHolderBindable<FeedItemsQuery.GetFeedItem>(binding) {
-    override fun bind(item: FeedItemsQuery.GetFeedItem) {
+class ViewHolderPodcast(
+    val binding: ItemHomeFeedBinding,
+    private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
+    private val onCastClick: (cast: CastUIModel) -> Unit,
+) : ViewHolderBindable<CastUIModel>(binding) {
+    override fun bind(item: CastUIModel) {
         setPodcastGeneralInfo(item)
         setPodcastOwnerInfo(item)
         setPodcastCounters(item)
@@ -24,95 +26,97 @@ class ViewHolderPodcast(val binding: ItemHomeFeedBinding, val model: PodcastCont
         loadImages(item)
         setOnClicks(item)
         addTags(item)
-        setActiveIcons(item)
+        initLikeState(item)
     }
 
-    private fun setPodcastGeneralInfo(item: FeedItemsQuery.GetFeedItem) {
-        binding.tvPodcastLength.text = item.podcast?.audio?.duration?.toString() ?: ""
-        binding.tvPodcastTitle.text = item.podcast?.title ?: ""
-        binding.tvPodcastSubtitle.text = item.podcast?.caption ?: ""
+    private fun setPodcastGeneralInfo(item: CastUIModel) {
+        binding.tvPodcastLength.text = item.audio?.duration?.let {
+            "${it.toMinutes()}m ${it.minusMinutes(it.toMinutes()).seconds}s"
+        }
+        binding.tvPodcastTitle.text = item.title
+        binding.tvPodcastSubtitle.text = item.caption
     }
 
-    private fun setPodcastOwnerInfo(item: FeedItemsQuery.GetFeedItem) {
-        binding.tvPodcastUserName.text =
-            StringBuilder(item.podcast?.owner?.first_name ?: "").append("_")
-                .append((item.podcast?.owner?.last_name ?: ""))
-
-        val dateAndLocationText = "${
-            item.podcast?.created_at?.let { createdAt ->
-                DateUiUtil.getPastDateDaysTextDescription(
-                    createdAt.toLocalDateTime(),
-                    context
-                )
-            }
-        } - ${item.podcast?.address}"
-        binding.tvPodcastUserSubtitle.text = dateAndLocationText
+    private fun setPodcastOwnerInfo(item: CastUIModel) {
+        binding.tvPodcastUserName.text = item.owner?.getFullName()
+        binding.tvPodcastUserSubtitle.text = item.getCreationDateAndPlace(context)
     }
 
-    private fun setPodcastCounters(item: FeedItemsQuery.GetFeedItem) {
-        binding.tvPodcastLikes.text = item.podcast?.number_of_likes?.toString() ?: ""
-        binding.tvPodcastRecast.text = item.podcast?.number_of_recasts?.toString() ?: ""
-        binding.tvPodcastComments.text = item.podcast?.number_of_comments?.toString() ?: ""
-        binding.tvPodcastReply.text = item.podcast?.number_of_shares?.toString() ?: ""
-        binding.tvPodcastNumberOfListeners.text = item.podcast?.number_of_listens?.toString() ?: ""
+    private fun setPodcastCounters(item: CastUIModel) {
+        binding.tvPodcastLikes.text = item.likesCount?.toString()
+        binding.tvPodcastRecast.text = item.recastsCount?.toString()
+        binding.tvPodcastComments.text = item.commentsCount?.toString()
+        binding.tvPodcastReply.text = item.sharesCount?.toString()
+        binding.tvPodcastNumberOfListeners.text = item.listensCount?.toString()
     }
 
-    private fun setAudioInfo(item: FeedItemsQuery.GetFeedItem) {
+    private fun setAudioInfo(item: CastUIModel) {
         binding.cpiPodcastListeningProgress.progress = itemViewType
     }
 
-    private fun loadImages(item: FeedItemsQuery.GetFeedItem) {
-        binding.ivPodcastAvatar.loadImage(
-            item.podcast?.owner?.images?.small_url ?: ""
-        )
+    private fun loadImages(item: CastUIModel) {
+        item.owner?.imageLinks?.small?.let {
+            binding.ivPodcastAvatar.loadCircleImage(it)
+            binding.ivAvatarImageListening.loadCircleImage(it)
+        }
 
-        binding.ivAvatarImageListening.loadImage(
-            item.podcast?.owner?.images?.small_url ?: ""
-        )
-
-        binding.ivPodcastBackground.loadImage(
-            item.podcast?.images?.medium_url ?: ""
-        )
+        item.imageLinks?.medium?.let {
+            binding.ivPodcastBackground.loadImage(it)
+        }
     }
 
-    private fun setOnClicks(item: FeedItemsQuery.GetFeedItem) {
+    private fun setOnClicks(item: CastUIModel) {
         binding.btnPodcastMore.setOnClickListener {
-            val bundle = bundleOf(DialogPodcastMoreActions.CAST_ID_KEY to item.podcast!!.id)
+            val bundle = bundleOf(DialogPodcastMoreActions.CAST_ID_KEY to item.id)
 
             it.findNavController()
                 .navigate(R.id.action_navigation_home_to_dialog_report_podcast, bundle)
         }
-        binding.clItemPodcastFeed.setOnClickListener {
-            model.changePodcastFullScreenVisibility(item)
-        }
 
-        binding.btnPodcastLikes.setOnClickListener {
-            if (item.podcast?.liked == false)
-                model.likePodcast(item.podcast.id ?: 0)
-            else
-                model.unlikePodcast(item.podcast?.id ?: 0)
+        binding.clItemPodcastFeed.setOnClickListener {
+            onCastClick(item)
         }
     }
 
-    private fun addTags(item: FeedItemsQuery.GetFeedItem) {
-        item.podcast?.tags?.caption?.forEach {
+
+    private fun addTags(item: CastUIModel) {
+        item.tags?.forEach {
             addTags(it)
         }
     }
 
-    private fun addTags(caption: FeedItemsQuery.Caption?) {
+    private fun addTags(tag: TagUIModel) {
         binding.llPodcastTags.removeAllViews()
         AsyncLayoutInflater(binding.root.context)
             .inflate(R.layout.item_podcast_tag, binding.llPodcastTags) { v, _, _ ->
-                (v as TextView).text = StringBuilder("#").append(caption?.tag ?: "")
+                (v as TextView).text = StringBuilder("#").append(tag.tag)
                 binding.llPodcastTags.addView(v)
             }
     }
 
-    private fun setActiveIcons(item: FeedItemsQuery.GetFeedItem) {
-        val tint = colorStateList(binding.root.context,
-            if (item.podcast?.liked == true) R.color.colorAccent else R.color.white)
-        binding.btnPodcastLikes.imageTintList = tint
-        binding.tvPodcastLikes.setTextColor(tint)
+    private fun initLikeState(item: CastUIModel) {
+        fun applyLikeStyle(isLiked: Boolean) {
+            binding.tvPodcastLikes.setTextColor(
+                ContextCompat.getColor(
+                    binding.root.context,
+                    if (isLiked) R.color.textAccent else R.color.white
+                )
+            )
+        }
+
+        binding.apply {
+            applyLikeStyle(item.isLiked!!)
+            btnPodcastLikes.isLiked = item.isLiked
+
+            btnPodcastLikes.setOnClickListener {
+                val isLiked = btnPodcastLikes.isLiked
+                val likesCount = binding.tvPodcastLikes.text.toString().toInt()
+
+                applyLikeStyle(isLiked)
+                binding.tvPodcastLikes.text = (if (isLiked) likesCount + 1 else likesCount - 1).toString()
+
+                onLikeClick(item.id, isLiked)
+            }
+        }
     }
 }

@@ -54,22 +54,6 @@
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <include
-        layout="@layout/fragment_new_auth_loading_include"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <!--    <View-->
-    <!--        android:id="@+id/someFooter"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="100dp"-->
-    <!--        android:background="@color/colorAccent"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        android:transitionName="podcast_player_transition_label"-->
-    <!--        app:layout_constraintTop_toTopOf="parent"-->
-    <!--        />-->
-    <include
         android:id="@+id/includeMiniPlayer"
         layout="@layout/item_mini_player"
         android:layout_width="match_parent"

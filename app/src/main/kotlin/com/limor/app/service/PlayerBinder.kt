@@ -6,8 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import androidx.lifecycle.*
-import com.limor.app.FeedItemsQuery
-import com.limor.app.scenes.main_new.utils.PodcastMapper
+import com.limor.app.uimodels.CastUIModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -54,7 +53,7 @@ class PlayerBinder(
                     lastPlayingPosition = playingPosition
                     val percent = getProgressPercent(
                         lastPlayingPosition,
-                        audioService?.uiPodcast?.audio?.duration ?: 0
+                        audioService?.uiPodcast?.audio?.duration?.seconds ?: 0
                     )
                     _currentPlayPositionLiveData.postValue(lastPlayingPosition to percent)
 
@@ -78,7 +77,7 @@ class PlayerBinder(
         unbindAudioService()
     }
 
-    fun startPlayPodcast(scope: CoroutineScope, podcast: FeedItemsQuery.Podcast) {
+    fun startPlayPodcast(scope: CoroutineScope, podcast: CastUIModel) {
         scope.launch {
             while (audioService == null){
                 bindToAudioService()
@@ -88,26 +87,19 @@ class PlayerBinder(
             //same podcast case
             if(podcast.id == audioService?.uiPodcast?.id){
                 if(playerStatus !is PlayerStatus.Playing)
-                    playPause(podcast)
+                    playPause()
                 return@launch
             }
 
-            val uiPodcast =
-                try {
-                    PodcastMapper.podcastToUIPodcast(podcast)
-                } catch (e: Exception) {
-                    Timber.e(e)
-                    return@launch
-                }
-            AudioService.newIntent(contextReference.get()!!, uiPodcast, 1L)
+            AudioService.newIntent(contextReference.get()!!, podcast, 1L)
                 .also { intent ->
                     contextReference.get()!!.startService(intent)
                 }
         }
     }
 
-    fun playPause(podcast: FeedItemsQuery.Podcast) {
-        if (audioService == null || podcast.id == null) return
+    fun playPause() {
+        if (audioService == null) return
 
         when (playerStatus) {
             is PlayerStatus.Playing -> {
@@ -119,7 +111,7 @@ class PlayerBinder(
             }
             is PlayerStatus.Ended -> {
                 audioService?.play(
-                    audioService?.uiPodcast?.audio?.audio_url,
+                    audioService?.uiPodcast?.audio?.url,
                     1L,
                     1F
                 )
@@ -162,8 +154,8 @@ class PlayerBinder(
     }
 
     companion object {
-        fun getProgressPercent(currentPosition: Long?, duration: Int?): Int {
-            if (currentPosition == null || duration == null || duration == 0) return 0
+        fun getProgressPercent(currentPosition: Long?, duration: Long?): Int {
+            if (currentPosition == null || duration == null || duration == 0L) return 0
             return (currentPosition * 100 / duration).toInt()
         }
     }

@@ -34,7 +34,7 @@ class UserPodcastsViewModel @Inject constructor(
     fun likeCast(cast: CastUIModel, like: Boolean) {
         viewModelScope.launch {
             runCatching {
-                likePodcastUseCase.execute(cast, like)
+                likePodcastUseCase.execute(cast.id, like)
             }.onFailure {
                 Timber.e(it, "Error while liking cast")
             }

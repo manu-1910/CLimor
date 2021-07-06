@@ -34,7 +34,7 @@ import com.google.android.exoplayer2.util.Util
 import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.scenes.main_new.MainActivityNew
-import com.limor.app.uimodels.UIPodcast
+import com.limor.app.uimodels.CastUIModel
 import org.jetbrains.anko.runOnUiThread
 import timber.log.Timber
 import java.util.*
@@ -64,7 +64,7 @@ class AudioService : Service() {
         @MainThread
         fun newIntent(
             context: Context,
-            podcast: UIPodcast,
+            podcast: CastUIModel,
             startPosition: Long,
             position: Int = -1
         ) =
@@ -88,7 +88,7 @@ class AudioService : Service() {
     private var playerNotificationManager: PlayerNotificationManager? = null
     private var mediaSession: MediaSessionCompat? = null
     private var mediaSessionConnector: MediaSessionConnector? = null
-    var uiPodcast: UIPodcast? = null
+    var uiPodcast: CastUIModel? = null
 
     private var _currentPlayingPosition = MutableLiveData<Long>().apply { value = 0 }
     var currentPlayingPosition: LiveData<Long> = _currentPlayingPosition
@@ -246,12 +246,12 @@ class AudioService : Service() {
     private fun handleIntent(intent: Intent?) {
         intent?.let {
             if (intent.hasExtra(ARG_PODCAST)) {
-                uiPodcast = intent.getSerializableExtra(ARG_PODCAST) as UIPodcast
+                uiPodcast = intent.getParcelableExtra(ARG_PODCAST)
                 val startPosition =
                     intent.getLongExtra(ARG_START_POSITION, C.POSITION_UNSET.toLong())
                 val playbackSpeed = 1f
 
-                play(uiPodcast?.audio?.audio_url, startPosition, playbackSpeed)
+                play(uiPodcast?.audio?.url, startPosition, playbackSpeed)
                 feedPosition = intent.getIntExtra(ARG_FEED_POSITION, -1)
 
                 Timber.w("AudioService - Playing podcast id %d", uiPodcast?.id)

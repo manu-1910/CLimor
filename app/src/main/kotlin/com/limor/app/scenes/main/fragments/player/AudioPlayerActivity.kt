@@ -21,6 +21,7 @@ import com.limor.app.R
 import com.limor.app.scenes.main.viewmodels.CreatePodcastDropOffViewModel
 import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerStatus
+import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.UIPodcast
 import dagger.android.AndroidInjection
 import dagger.android.DispatchingAndroidInjector
@@ -51,7 +52,7 @@ class AudioPlayerActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
     private lateinit var viewModelCreatePodcastDropOff : CreatePodcastDropOffViewModel
     private val createCommentDropOffDataTrigger = PublishSubject.create<Unit>()
-    private var lastProgressTrackedPodcast : UIPodcast? = null
+    private var lastProgressTrackedPodcast : CastUIModel? = null
     private var lastProgressTrackedTen : Int = 0
 
 
@@ -107,7 +108,7 @@ class AudioPlayerActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
 
     private fun onPodcastPlayingStopped() {
-        val podcastDurationSec = audioService?.uiPodcast?.audio?.total_length?.toFloat() ?: 0.0f
+        val podcastDurationSec = audioService?.uiPodcast?.audio?.totalLength?.toFloat() ?: 0.0f
         val duration : Double = podcastDurationSec * 1000.0
         val position = audioService?.currentPlayingPosition?.value ?: 0
         val currentPercentage = position.toFloat() * 100f / duration.toFloat()
@@ -123,7 +124,7 @@ class AudioPlayerActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
 
     private fun checkIfDropOffAndSendIfNeeded(position: Long) {
-        audioService?.uiPodcast?.audio?.total_length?.let {duration ->
+        audioService?.uiPodcast?.audio?.totalLength?.let {duration ->
 
             val currentPercentage = position.toFloat() * 100f / duration.toFloat()
 
