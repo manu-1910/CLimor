@@ -101,9 +101,9 @@
         android:label="RecordActivity"
         tools:layout="@layout/activity_record"></activity>
 
-<fragment
+        <fragment
             android:id="@+id/navigation_notifications"
-            android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
+            android:name="com.limor.app.scenes.notifications.Notification"
             android:label="Notification"
             tools:layout="@layout/fragment_notification">
         </fragment>
