@@ -45,6 +45,7 @@ allprojects {
 
     // this is necessary to use cropActivity: https://github.com/Yalantis/uCrop
     repositories {
+        google()
         jcenter()
         maven { url "https://jitpack.io" }
         maven { url "https://sdk.smartlook.com/android/release"}

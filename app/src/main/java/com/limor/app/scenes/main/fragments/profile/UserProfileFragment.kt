@@ -70,8 +70,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         setupListeners()
 
 
-        setupViewPager()
-
         observeProfileActions()
     }
 
@@ -179,6 +177,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             it?.let {
                 setDataToProfileViews(it)
                 setupConditionalViews(it)
+                setupViewPager(it)
             }
 
         })
@@ -240,7 +239,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     }
 
     override fun load() {
-
         when (activity) {
             is MainActivityNew -> {
                 model.getUserProfile()
@@ -259,8 +257,8 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     override val errorLiveData: LiveData<String>
         get() = model.profileErrorLiveData
 
-    private fun setupViewPager() {
-        val adapter = ProfileViewPagerAdapter(childFragmentManager, lifecycle)
+    private fun setupViewPager(user: UserUIModel) {
+        val adapter = ProfileViewPagerAdapter(user.id, childFragmentManager, lifecycle)
         binding.profileViewpager.adapter = adapter
     }
 

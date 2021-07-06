@@ -1,9 +1,6 @@
 package com.limor.app.apollo
 
-import com.limor.app.GetFeaturedCastsQuery
-import com.limor.app.GetPodcastsByCategoryQuery
-import com.limor.app.GetPodcastsByHashtagQuery
-import com.limor.app.GetTopCastsQuery
+import com.limor.app.*
 import javax.inject.Inject
 
 class CastsRepository @Inject constructor(private val apollo: Apollo) {
@@ -40,5 +37,14 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
     ): List<GetPodcastsByHashtagQuery.GetPodcastsByTag> {
         return apollo.launchQuery(GetPodcastsByHashtagQuery(tagId, limit, offset))
             ?.data?.getPodcastsByTag?.filterNotNull() ?: emptyList()
+    }
+
+    suspend fun getCastsByUser(
+        userId: Int,
+        limit: Int = Int.MAX_VALUE,
+        offset: Int = 0
+    ): List<GetUserPodcastsQuery.GetUserPodcast> {
+        return apollo.launchQuery(GetUserPodcastsQuery(userId, limit, offset))
+            ?.data?.getUserPodcasts?.filterNotNull() ?: emptyList()
     }
 }

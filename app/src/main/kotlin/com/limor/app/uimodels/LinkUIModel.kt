@@ -1,10 +1,7 @@
 package com.limor.app.uimodels
 
 import android.os.Parcelable
-import com.limor.app.GetFeaturedCastsQuery
-import com.limor.app.GetPodcastsByCategoryQuery
-import com.limor.app.GetPodcastsByHashtagQuery
-import com.limor.app.GetTopCastsQuery
+import com.limor.app.*
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -108,6 +105,34 @@ fun GetPodcastsByCategoryQuery.Links.mapToUIModel() =
     )
 
 fun GetPodcastsByHashtagQuery.Links.mapToUIModel() =
+    LinkUIModel(
+        website = website!!.map {
+            LinkUIModel.LinkDataUIModel(
+                id = it!!.id!!,
+                link = it.link!!,
+                startIndex = it.start_index!!,
+                endIndex = it.end_index!!,
+            )
+        },
+        content = content!!.map {
+            LinkUIModel.LinkDataUIModel(
+                id = it!!.id!!,
+                link = it.link!!,
+                startIndex = it.start_index!!,
+                endIndex = it.end_index!!,
+            )
+        },
+        caption = caption!!.map {
+            LinkUIModel.LinkDataUIModel(
+                id = it!!.id!!,
+                link = it.link!!,
+                startIndex = it.start_index!!,
+                endIndex = it.end_index!!,
+            )
+        },
+    )
+
+fun GetUserPodcastsQuery.Links.mapToUIModel() =
     LinkUIModel(
         website = website!!.map {
             LinkUIModel.LinkDataUIModel(

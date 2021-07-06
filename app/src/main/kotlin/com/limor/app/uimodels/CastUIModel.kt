@@ -1,10 +1,7 @@
 package com.limor.app.uimodels
 
 import android.os.Parcelable
-import com.limor.app.GetFeaturedCastsQuery
-import com.limor.app.GetPodcastsByCategoryQuery
-import com.limor.app.GetPodcastsByHashtagQuery
-import com.limor.app.GetTopCastsQuery
+import com.limor.app.*
 import com.limor.app.extensions.epochSecondToLocalDateTime
 import com.limor.app.extensions.toLocalDate
 import com.limor.app.extensions.toLocalDateTime
@@ -90,6 +87,22 @@ fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
     )
 
 fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
+    CastUIModel(
+        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address,
+        imageLinks = images?.mapToUIModel(), caption = caption!!,
+        createdAt = created_at?.toLocalDateTime(),
+        updatedAt = updated_at?.toLocalDateTime(),
+        latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked,
+        isReported = reported, isRecasted = recasted, isListened = listened,
+        isBookmarked = bookmarked, listensCount = number_of_listens,
+        likesCount = number_of_likes, recastsCount = number_of_recasts,
+        commentsCount = number_of_comments, sharesCount = number_of_shares,
+        audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
+        tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
+        links = links?.mapToUIModel(),
+    )
+
+fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
     CastUIModel(
         id = id!!, owner = owner?.mapToUIModel(), title = title, address = address,
         imageLinks = images?.mapToUIModel(), caption = caption!!,
