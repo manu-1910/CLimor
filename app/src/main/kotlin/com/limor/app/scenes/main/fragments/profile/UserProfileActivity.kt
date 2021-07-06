@@ -2,7 +2,10 @@ package com.limor.app.scenes.main.fragments.profile
 
 import android.os.Bundle
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.facebook.BuildConfig
@@ -22,6 +25,8 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector {
     @Inject
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     lateinit var navController: NavController
+
+    private val model: UserProfileViewModel by viewModels { viewModelFactory }
 
     lateinit var binding : ActivityProfileBinding
 

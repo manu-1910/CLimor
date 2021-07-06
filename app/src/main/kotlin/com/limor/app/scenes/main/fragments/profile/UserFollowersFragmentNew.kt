@@ -37,7 +37,7 @@ import javax.inject.Inject
 
 
 
-class UserFollowersFragmentNew(private val uiUser: String) : BaseFragment() {
+class UserFollowersFragmentNew(private val uiUserId: Int?) : BaseFragment() {
 
     private lateinit var arrayList: ArrayList<FollowersQuery.GetFollower?>
     private var isLastPage: Boolean = false
@@ -56,7 +56,7 @@ class UserFollowersFragmentNew(private val uiUser: String) : BaseFragment() {
 
     companion object {
         val TAG: String = UserFollowersFragmentNew::class.java.simpleName
-        fun newInstance( uiUser: String) = UserFollowersFragmentNew(uiUser)
+        fun newInstance( uiUser: Int?) = UserFollowersFragmentNew(uiUser)
         private const val OFFSET_INFINITE_SCROLL: Int = 10
     }
 
@@ -256,10 +256,10 @@ class UserFollowersFragmentNew(private val uiUser: String) : BaseFragment() {
     private fun initApiCallGetBlockedUsers() {
 
         if(model.followersData.value == null || model.followersData.value?.size == 0){
-            model.getFollowers(arrayList.size)
+            model.getFollowers(uiUserId,arrayList.size)
         }else{
             model.clearFollowers()
-            model.getFollowers(0)
+            model.getFollowers(uiUserId,0)
         }
 
     }

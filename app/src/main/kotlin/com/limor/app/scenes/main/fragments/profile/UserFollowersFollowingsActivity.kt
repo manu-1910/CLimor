@@ -20,7 +20,7 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
 
     private lateinit var binding: ActivityFollowersAndFollowingBinding
     var rootView: View? = null
-    var userId: Int? = 0
+    var userId: Int? = null
     var userName: String? = ""
 
     @Inject
@@ -86,9 +86,9 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
 
             override fun createFragment(position: Int): Fragment {
                 return if (position == 0) {
-                    UserFollowersFragmentNew.newInstance("")
+                    UserFollowersFragmentNew.newInstance(userId)
                 } else {
-                    UserFollowingsFragmentNew.newInstance("")
+                    UserFollowingsFragmentNew.newInstance(userId)
                 }
             }
 

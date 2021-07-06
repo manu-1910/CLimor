@@ -2,6 +2,7 @@ package com.limor.app.scenes.main.fragments.profile.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
@@ -12,7 +13,10 @@ import com.bumptech.glide.request.RequestOptions
 import com.limor.app.FollowersQuery
 import com.limor.app.R
 import com.limor.app.databinding.ItemUserFollowersBinding
+import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.utils.CommonsKt
+import kotlinx.coroutines.coroutineScope
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.sdk23.listeners.onLongClick
 import timber.log.Timber
@@ -45,6 +49,13 @@ class UserFollowersViewHolder(
             )
         }
 
+        if(currentItem.id == JwtChecker.getUserIdFromJwtSingle()){
+            btnFollow.visibility = View.GONE
+        }else{
+            btnFollow.visibility = View.VISIBLE
+        }
+
+
         btnFollow.onClick {
 
             /*if (currentItem.followed) {
@@ -66,7 +77,6 @@ class UserFollowersViewHolder(
 
             listener.onFollowClicked(currentItem, position)
         }
-
         val firstName = currentItem.first_name
         val lastName = currentItem.last_name
        val fullname = binding.root.context.getString(R.string.user_fullname, firstName, lastName)

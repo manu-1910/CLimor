@@ -189,34 +189,40 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     }
 
     private fun setupConditionalViews(user: UserUIModel) {
+
         lifecycleScope.launch {
             if (user.id != JwtChecker.getUserIdFromJwt()) {
-                binding.otherUserNormalLayout.visibility = View.VISIBLE
+                if (user.isBlocked == false) {
+
+                    if (user.isFollowed == true) {
+                        //Followed state
+
+                        binding.btnFollow.setBackgroundResource(R.drawable.bg_round_bluish_ripple)
+                        binding.btnFollow.text = getString(R.string.unfollow)
+                        ToastMaker.showToast(requireContext(), "Unfollow UI")
+
+                    } else {
+                        //New User State
+                        binding.btnFollow.setBackgroundResource(R.drawable.bg_round_yellow_ripple)
+                        binding.btnFollow.text = getString(R.string.follow)
+                        ToastMaker.showToast(requireContext(), "Follow UI")
+                    }
+
+                    binding.otherUserNormalLayout.visibility = View.VISIBLE
+                    binding.profileViewpager.visibility = View.VISIBLE
+                    binding.tabSelectorView.visibility = View.VISIBLE
+
+                } else {
+                    //Blocked State
+                    binding.otherUserNormalLayout.visibility = View.GONE
+                    binding.profileViewpager.visibility = View.GONE
+                    binding.tabSelectorView.visibility = View.GONE
+                    ToastMaker.showToast(requireContext(), "Blocked UI")
+                }
             }
             binding.profileMainContainer.visibility = View.VISIBLE
 
-            if (user.isBlocked == false) {
 
-                if (user.isFollowed == true) {
-                    //Followed state
-
-                    binding.btnFollow.setBackgroundResource(R.drawable.bg_round_bluish_ripple)
-                    binding.btnFollow.text = getString(R.string.unfollow)
-                    ToastMaker.showToast(requireContext(), "Unfollow UI")
-
-                } else {
-                    //New User State
-                    binding.btnFollow.setBackgroundResource(R.drawable.bg_round_yellow_ripple)
-                    binding.btnFollow.text = getString(R.string.follow)
-                    ToastMaker.showToast(requireContext(), "Follow UI")
-                    binding.otherUserNormalLayout.visibility = View.VISIBLE
-                }
-
-            } else {
-                //Blocked State
-                binding.otherUserNormalLayout.visibility = View.GONE
-                ToastMaker.showToast(requireContext(), "Blocked UI")
-            }
         }
 
 
