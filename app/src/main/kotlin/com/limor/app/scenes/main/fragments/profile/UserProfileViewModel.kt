@@ -30,10 +30,6 @@ class UserProfileViewModel @Inject constructor(
     val userProfileData: LiveData<UserUIModel?>
         get() = _userProfileData
 
-
-
-
-
     fun getUserProfile(){
         viewModelScope.launch {
             try {

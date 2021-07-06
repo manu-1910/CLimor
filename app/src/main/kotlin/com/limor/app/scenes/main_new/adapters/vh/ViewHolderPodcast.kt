@@ -9,8 +9,7 @@ import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.extensions.loadImage
 import com.limor.app.scenes.auth_new.util.colorStateList
-import com.limor.app.scenes.main_new.utils.ArgsConverter
-import com.limor.app.scenes.main_new.utils.ArgsConverter.Companion.LABEL_DIALOG_REPORT_PODCAST
+import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.view_model.PodcastControlViewModel
 
 class ViewHolderPodcast(val binding: ItemHomeFeedBinding, val model: PodcastControlViewModel) :
@@ -70,9 +69,7 @@ class ViewHolderPodcast(val binding: ItemHomeFeedBinding, val model: PodcastCont
 
     private fun setOnClicks(item: FeedItemsQuery.GetFeedItem) {
         binding.btnPodcastMore.setOnClickListener {
-            val bundle = bundleOf(
-                LABEL_DIALOG_REPORT_PODCAST to ArgsConverter.encodeFeedItemAsReportDialogArgs(item)
-            )
+            val bundle = bundleOf(DialogPodcastMoreActions.CAST_ID_KEY to item.podcast!!.id)
 
             it.findNavController()
                 .navigate(R.id.action_navigation_home_to_dialog_report_podcast, bundle)

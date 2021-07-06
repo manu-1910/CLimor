@@ -9,7 +9,7 @@
         android:id="@+id/feed_fragment"
         android:name="com.limor.app.scenes.main.fragments.PodcastsByTagFragment"
         android:label="PodcastsByTagFragment"
-        tools:layout="@layout/fragment_feed">
+        tools:layout="@layout/fragment_user_casts">
 
     </fragment>
 

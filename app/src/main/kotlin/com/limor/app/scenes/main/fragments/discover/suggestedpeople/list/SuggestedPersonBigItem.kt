@@ -13,7 +13,7 @@ import com.xwray.groupie.viewbinding.BindableItem
 
 class SuggestedPersonBigItem(
     val person: UserUIModel,
-    val onFollowClick: (person: UserUIModel) -> Unit
+    val onFollowClick: (person: UserUIModel, follow: Boolean) -> Unit
 ) : BindableItem<ItemDiscoverSuggestedPersonBigBinding>() {
 
     override fun bind(viewBinding: ItemDiscoverSuggestedPersonBigBinding, position: Int) {
@@ -27,7 +27,7 @@ class SuggestedPersonBigItem(
             viewBinding.followBtn.apply {
                 isFollowed = person.isFollowed
                 setOnClickListener {
-                    onFollowClick(person)
+                    onFollowClick(person, viewBinding.followBtn.isFollowed)
                 }
             }
         }

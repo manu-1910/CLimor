@@ -52,8 +52,8 @@ class DiscoverSuggestedPeopleFragment : BaseFragment() {
         viewModel.suggestedPeople.observe(viewLifecycleOwner) { suggestedPeople ->
             suggestedPeopleAdapter.update(
                 suggestedPeople.map {
-                    SuggestedPersonBigItem(person = it, onFollowClick = { person ->
-                        viewModel.onFollowClick(person)
+                    SuggestedPersonBigItem(person = it, onFollowClick = { person, follow ->
+                        viewModel.onFollowClick(person, follow)
                     })
                 }
             )

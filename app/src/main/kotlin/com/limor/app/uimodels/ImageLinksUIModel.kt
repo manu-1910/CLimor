@@ -58,3 +58,11 @@ fun GetUserProfileQuery.Images.mapToUIModel(): ImageLinksUIModel {
 fun GetUserProfileByIdQuery.Images.mapToUIModel(): ImageLinksUIModel {
     return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
 }
+
+fun GetUserPodcastsQuery.Images.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+}
+
+fun GetUserPodcastsQuery.Images1.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+}

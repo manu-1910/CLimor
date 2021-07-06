@@ -5,14 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.limor.app.GetUserProfileQuery
 import com.limor.app.R
 import com.limor.app.databinding.FragmentProfileBinding
 import com.limor.app.di.Injectable
@@ -20,7 +18,6 @@ import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.main.fragments.profile.UserFollowersFollowingsActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileViewModel
 import com.limor.app.scenes.main.fragments.profile.adapters.ProfileViewPagerAdapter
-import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.uimodels.UserUIModel
 import javax.inject.Inject
 
@@ -104,11 +101,9 @@ class ProfileFragment : FragmentWithLoading(), Injectable {
     override val errorLiveData: LiveData<String>
         get() = model.profileErrorLiveData
 
-    private fun setupViewPager(it: UserUIModel) {
-        val adapter = ProfileViewPagerAdapter(childFragmentManager, lifecycle)
+    private fun setupViewPager(user: UserUIModel) {
+        val adapter = ProfileViewPagerAdapter(user.id, childFragmentManager, lifecycle)
         binding.profileViewpager.adapter = adapter
-
-
     }
 
     override fun onResume() {

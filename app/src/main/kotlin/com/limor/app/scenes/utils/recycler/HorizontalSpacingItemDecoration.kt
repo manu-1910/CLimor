@@ -22,7 +22,7 @@ class HorizontalSpacingItemDecoration(
         if (position == 0 && includeFirstItem) {
             outRect.left = spacing
         }
-        if (position == parent.childCount - 1 && !includeLastItem) {
+        if (position == parent.adapter?.itemCount?.minus(1) && !includeLastItem) {
             return
         }
         outRect.right = spacing

@@ -3,7 +3,6 @@ package com.limor.app.apollo
 import com.limor.app.*
 import com.limor.app.uimodels.UserUIModel
 import com.limor.app.uimodels.mapToUIModel
-import com.limor.app.usecases.CreateBlockedUserUseCase
 import com.limor.app.apollo.Apollo.Companion.LOAD_PORTION
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -62,7 +61,6 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         }
     }
 
-
     suspend fun getUserProfile(): UserUIModel? {
         val query = GetUserProfileQuery()
         val queryResult = withContext(Dispatchers.IO) {
@@ -73,6 +71,7 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         Timber.d("Got User -> ${createUserResult.username}")
         return createUserResult.mapToUIModel()
     }
+
     suspend fun getUserProfileById(id: Int): UserUIModel? {
         val query = GetUserProfileByIdQuery(id)
         val queryResult = withContext(Dispatchers.IO){

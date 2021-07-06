@@ -15,7 +15,7 @@ class PodcastInteractionsRepository @Inject constructor(val apollo: Apollo) {
         return result?.data?.likePodcast?.podcast_id
     }
 
-    suspend fun unLikePodcast(podcastId: Int): Int? {
+    suspend fun unLikePodcast(podcastId: Int): Int {
         val mutation = UnLikePodcastMutation(podcastId)
         val result = apollo.mutate(mutation)
         return podcastId

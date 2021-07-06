@@ -8,7 +8,7 @@ import com.limor.app.FeedItemsQuery
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedRecastedBinding
 import com.limor.app.extensions.loadImage
-import com.limor.app.scenes.main_new.utils.ArgsConverter
+import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.view_model.PodcastControlViewModel
 
 class ViewHolderRecast(val binding: ItemHomeFeedRecastedBinding,val model: PodcastControlViewModel) :
@@ -55,11 +55,7 @@ class ViewHolderRecast(val binding: ItemHomeFeedRecastedBinding,val model: Podca
 
         addTags(item)
         binding.btnPodcastMore.setOnClickListener {
-            val bundle = bundleOf(
-                ArgsConverter.LABEL_DIALOG_REPORT_PODCAST to ArgsConverter.encodeFeedItemAsReportDialogArgs(
-                    item
-                )
-            )
+            val bundle = bundleOf(DialogPodcastMoreActions.CAST_ID_KEY to item.podcast!!.id)
 
             it.findNavController()
                 .navigate(R.id.action_navigation_home_to_dialog_report_podcast, bundle)
