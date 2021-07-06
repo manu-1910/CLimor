@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main. fragments.profile
+package com.limor.app.scenes.main.fragments.profile
 
 import android.content.Intent
 import android.os.Bundle

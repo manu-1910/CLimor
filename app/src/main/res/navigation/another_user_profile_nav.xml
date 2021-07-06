@@ -21,7 +21,9 @@
         android:name="com.limor.app.scenes.profile.DialogUserProfileActions"
         android:label="Dialog Report Podcast"
         tools:layout="@layout/dialog_other_user_actions">
-
+        <argument
+            android:name="user"
+            app:argType="com.limor.app.uimodels.UserUIModel" />
     </dialog>
 
 </navigation>

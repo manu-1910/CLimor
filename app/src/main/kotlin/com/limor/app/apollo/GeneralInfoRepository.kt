@@ -80,7 +80,7 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         }
         val createUserResult: GetUserProfileByIdQuery.GetUserById =
             queryResult?.data?.getUserById ?: return null
-        Timber.d("Got User -> ${createUserResult.username}  ${createUserResult.id}  ")
+        Timber.d("Got User -> $createUserResult  ")
         return createUserResult.mapToUIModel()
     }
 

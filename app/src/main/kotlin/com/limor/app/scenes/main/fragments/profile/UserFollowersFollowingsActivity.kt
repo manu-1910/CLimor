@@ -13,7 +13,6 @@ import com.limor.app.databinding.ActivityFollowersAndFollowingBinding
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.user_profile_fragment.*
-import timber.log.Timber
 import javax.inject.Inject
 
 
