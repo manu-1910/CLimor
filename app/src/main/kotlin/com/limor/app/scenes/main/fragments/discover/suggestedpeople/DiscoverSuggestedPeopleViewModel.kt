@@ -31,10 +31,10 @@ class DiscoverSuggestedPeopleViewModel @Inject constructor(
         }
     }
 
-    fun onFollowClick(person: UserUIModel) {
+    fun onFollowClick(person: UserUIModel, follow: Boolean) {
         viewModelScope.launch {
             try {
-                followPersonUseCase.execute(person)
+                followPersonUseCase.execute(person, follow)
             } catch (ex: Exception) {
                 Timber.e(ex, "Error while following person")
             }

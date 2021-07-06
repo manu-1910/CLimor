@@ -15,6 +15,7 @@ import com.limor.app.scenes.main.fragments.discover.featuredcasts.DiscoverFeatur
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagViewModel
 import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchViewModel
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleViewModel
+import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsViewModel
 import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastControlViewModel
@@ -88,11 +89,6 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(FeedByTagViewModel::class)
     abstract fun bindFeedByTagViewModel(feedByTagViewModel: FeedByTagViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(GetPodcastsByUserIDViewModel::class)
-    abstract fun bindGetPodcastsByUserIDViewModel(getPodcastsByUserIDViewModel: GetPodcastsByUserIDViewModel): ViewModel
 
     @Binds
     @IntoMap
@@ -322,4 +318,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(UserProfileViewModel::class)
     abstract fun bindFollowViewModel(viewModel: UserProfileViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(UserPodcastsViewModel::class)
+    abstract fun bindUserPodcastsViewModel(viewModel: UserPodcastsViewModel): ViewModel
 }

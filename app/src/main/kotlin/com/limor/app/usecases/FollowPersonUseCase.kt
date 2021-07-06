@@ -10,12 +10,12 @@ class FollowPersonUseCase @Inject constructor(
     private val repository: FollowRepository,
     private val dispatcherProvider: DispatcherProvider
 ) {
-    suspend fun execute(person: UserUIModel) {
+    suspend fun execute(person: UserUIModel, follow: Boolean) {
         return withContext(dispatcherProvider.io) {
-            if (person.isFollowed!!) {
-                repository.unFollowUser(person.id)
-            } else {
+            if (follow) {
                 repository.followUser(person.id)
+            } else {
+                repository.unFollowUser(person.id)
             }
         }
     }

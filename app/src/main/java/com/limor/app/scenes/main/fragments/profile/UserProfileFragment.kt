@@ -9,12 +9,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.limor.app.GetUserProfileByIdQuery
 import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.components.tabselector.TabSelectorView
@@ -22,14 +20,11 @@ import com.limor.app.databinding.UserProfileFragmentBinding
 import com.limor.app.di.Injectable
 import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.auth_new.util.JwtChecker
-import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.adapters.ProfileViewPagerAdapter
 import com.limor.app.scenes.main.fragments.settings.SettingsActivity
 import com.limor.app.scenes.main_new.MainActivityNew
-import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.uimodels.UserUIModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 class UserProfileFragment : FragmentWithLoading(), Injectable {
@@ -70,9 +65,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         setupDefaultView()
 
         setupListeners()
-
-
-        setupViewPager()
     }
 
     private fun setupListeners() {
@@ -153,6 +145,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             it?.let {
                 setDataToProfileViews(it)
                 setupConditionalViews(it)
+                setupViewPager(it)
             }
 
         })
@@ -190,7 +183,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     }
 
     override fun load() {
-
         when (activity) {
             is MainActivityNew -> {
                 model.getUserProfile()
@@ -202,18 +194,13 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
                 }
             }
         }
-
-
-
-
-
     }
 
     override val errorLiveData: LiveData<String>
         get() = model.profileErrorLiveData
 
-    private fun setupViewPager() {
-        val adapter = ProfileViewPagerAdapter(childFragmentManager, lifecycle)
+    private fun setupViewPager(user: UserUIModel) {
+        val adapter = ProfileViewPagerAdapter(user.id, childFragmentManager, lifecycle)
         binding.profileViewpager.adapter = adapter
     }
 

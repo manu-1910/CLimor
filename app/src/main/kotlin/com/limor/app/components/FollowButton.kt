@@ -1,12 +1,9 @@
 package com.limor.app.components
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.util.AttributeSet
-import android.view.ContextThemeWrapper
 import android.widget.Button
 import android.widget.FrameLayout
-import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import com.limor.app.R
 

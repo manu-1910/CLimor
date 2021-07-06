@@ -8,6 +8,7 @@ import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragm
 import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchFragment
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleFragment
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
+import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsFragmentNew
 import com.limor.app.scenes.main_new.fragments.FragmentHomeNew
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -41,6 +42,9 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeDiscoverHashtagFragmentInjector(): DiscoverHashtagFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeUserPodcastsFragmentNewInjector(): UserPodcastsFragmentNew
 
 }
 
