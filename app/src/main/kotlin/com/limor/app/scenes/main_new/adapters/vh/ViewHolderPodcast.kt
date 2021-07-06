@@ -8,9 +8,11 @@ import com.limor.app.FeedItemsQuery
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.extensions.loadImage
+import com.limor.app.extensions.toLocalDateTime
 import com.limor.app.scenes.auth_new.util.colorStateList
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.view_model.PodcastControlViewModel
+import com.limor.app.scenes.utils.DateUiUtil
 
 class ViewHolderPodcast(val binding: ItemHomeFeedBinding, val model: PodcastControlViewModel) :
     ViewHolderBindable<FeedItemsQuery.GetFeedItem>(binding) {
@@ -36,9 +38,15 @@ class ViewHolderPodcast(val binding: ItemHomeFeedBinding, val model: PodcastCont
             StringBuilder(item.podcast?.owner?.first_name ?: "").append("_")
                 .append((item.podcast?.owner?.last_name ?: ""))
 
-        binding.tvPodcastUserSubtitle.text =
-            StringBuilder(item.podcast?.created_at.toString()).append(" ")
-                .append(item.podcast?.address)
+        val dateAndLocationText = "${
+            item.podcast?.created_at?.let { createdAt ->
+                DateUiUtil.getPastDateDaysTextDescription(
+                    createdAt.toLocalDateTime(),
+                    context
+                )
+            }
+        } - ${item.podcast?.address}"
+        binding.tvPodcastUserSubtitle.text = dateAndLocationText
     }
 
     private fun setPodcastCounters(item: FeedItemsQuery.GetFeedItem) {
