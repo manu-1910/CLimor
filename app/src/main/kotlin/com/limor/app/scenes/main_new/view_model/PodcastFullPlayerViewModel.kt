@@ -19,6 +19,11 @@ class PodcastFullPlayerViewModel @Inject constructor(
     val commentsLiveData: LiveData<List<GetCommentsByPodcastsQuery.GetCommentsByPodcast>?>
         get() = _commentsLiveData
 
+    private val _commentsErrorData =
+        MutableLiveData<String>()
+    val commentsErrorData: LiveData<String>
+        get() = _commentsErrorData
+
     fun loadComments(podcastId: Int) {
         if (podcastId == 0)
             return
@@ -26,10 +31,10 @@ class PodcastFullPlayerViewModel @Inject constructor(
             try {
                 val comments = podcastInteractionsRepository.getCommentsByPodcast(podcastId)
                 _commentsLiveData.value = comments
-                delay(300)
-                _commentsLiveData.value = null
+                /*delay(300)
+                _commentsLiveData.value = null*/
             } catch (e: Exception) {
-                //TODO deliver error to user
+                _commentsErrorData.value = e.localizedMessage
             }
         }
     }

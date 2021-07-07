@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.IOException
 
-const val GRAPHQL_ENDPOINT = BuildConfig.BASE_URL
+const val GRAPHQL_ENDPOINT = BuildConfig.END_POINT
 
 class ApolloImpl(val client: ApolloClient) : Apollo {
 

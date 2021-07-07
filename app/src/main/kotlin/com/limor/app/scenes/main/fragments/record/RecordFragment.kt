@@ -770,8 +770,8 @@ class RecordFragment : BaseFragment() {
             draftViewModel = ViewModelProvider(it, viewModelFactory)
                 .get(DraftViewModel::class.java)
 
-            locationsViewModel = ViewModelProvider(it, viewModelFactory)
-                .get(LocationsViewModel::class.java)
+           /* locationsViewModel = ViewModelProvider(it, viewModelFactory)
+                .get(LocationsViewModel::class.java)*/
         }
     }
 
