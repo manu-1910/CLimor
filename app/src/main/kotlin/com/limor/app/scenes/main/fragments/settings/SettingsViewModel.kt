@@ -84,11 +84,11 @@ class SettingsViewModel @Inject constructor(
         _blockedUsersData.postValue(ArrayList())
     }
 
-    fun getFollowers(offset: Int) {
+    fun getFollowers(userId:Int?,offset: Int) {
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 val blockedUsers = withContext(Dispatchers.IO) {
-                    generalInfoRepository.getFollowers(blockedUsersLimit, offset)
+                    generalInfoRepository.getFollowers(userId,blockedUsersLimit, offset)
                 }
                 _followersData.postValue(blockedUsers)
                 Timber.d("Got Follow -> $blockedUsers")
@@ -98,16 +98,16 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun getFollowings(offset: Int) {
+    fun getFollowings(userId:Int?,offset: Int) {
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 val blockedUsers = withContext(Dispatchers.IO) {
-                    generalInfoRepository.getFollowings(blockedUsersLimit, offset)
+                    generalInfoRepository.getFollowings(userId,blockedUsersLimit, offset)
                 }
                 _followingsData.postValue(blockedUsers)
-                Timber.d("Got Follow -> $blockedUsers")
+                Timber.d("Got Following -> $blockedUsers")
             } catch (e: Exception) {
-                Timber.d("Got Follow -> $e")
+                Timber.d("Got Following -> $e")
             }
         }
     }

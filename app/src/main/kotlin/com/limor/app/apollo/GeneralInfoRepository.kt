@@ -1,5 +1,6 @@
 package com.limor.app.apollo
 
+import com.apollographql.apollo.api.Input
 import com.limor.app.*
 import com.limor.app.uimodels.UserUIModel
 import com.limor.app.uimodels.mapToUIModel
@@ -79,7 +80,7 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         }
         val createUserResult: GetUserProfileByIdQuery.GetUserById =
             queryResult?.data?.getUserById ?: return null
-        Timber.d("Got User -> ${createUserResult.username}  ${createUserResult.id}  ")
+        Timber.d("Got User -> $createUserResult  ")
         return createUserResult.mapToUIModel()
     }
 
@@ -94,8 +95,9 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         return createUserResult
     }
 
-    suspend fun getFollowers(limit:Int,offset:Int): List<FollowersQuery.GetFollower?>? {
-        val query = FollowersQuery(limit,offset)
+    suspend fun getFollowers(userId:Int?,limit:Int,offset:Int): List<FollowersQuery.GetFollower?>? {
+        val id = Input.fromNullable(userId)
+        val query = FollowersQuery(id,limit,offset)
         val queryResult = withContext(Dispatchers.IO){
             apollo.launchQuery(query)
         }
@@ -104,8 +106,9 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         Timber.d("Got FF -> ${createUserResult.size}")
         return createUserResult
     }
-    suspend fun getFollowings(limit:Int,offset:Int): List<FriendsQuery.GetFriend?>? {
-        val query = FriendsQuery(limit,offset)
+    suspend fun getFollowings(userId:Int?,limit:Int,offset:Int): List<FriendsQuery.GetFriend?>? {
+        val id = Input.fromNullable(userId)
+        val query = FriendsQuery(id,limit,offset)
         val queryResult = withContext(Dispatchers.IO){
             apollo.launchQuery(query)
         }

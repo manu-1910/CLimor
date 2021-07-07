@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main. fragments.profile
+package com.limor.app.scenes.main.fragments.profile
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,24 +11,18 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.App
-import com.limor.app.FollowersQuery
 import com.limor.app.FriendsQuery
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentUsersBlockedBinding
-import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
-import com.limor.app.scenes.main.fragments.profile.adapters.UserFollowersAdapter
 import com.limor.app.scenes.main.fragments.profile.adapters.UserFollowingsAdapter
 import com.limor.app.scenes.main.fragments.settings.SettingsViewModel
 import com.limor.app.scenes.main.viewmodels.GetBlockedUsersViewModel
 import kotlinx.android.synthetic.main.fragment_users_blocked.*
-import kotlinx.android.synthetic.main.item_grid_casts_list.view.*
-import kotlinx.coroutines.Dispatchers
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
@@ -39,7 +33,7 @@ import javax.inject.Inject
 
 
 
-class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
+class UserFollowingsFragmentNew(private val uiUserId: Int?) : BaseFragment() {
 
     private lateinit var arrayList: ArrayList<FriendsQuery.GetFriend?>
     private var isLastPage: Boolean = false
@@ -61,7 +55,7 @@ class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
 
     companion object {
         val TAG: String = UserFollowersFragmentNew::class.java.simpleName
-        fun newInstance( uiUser: String) = UserFollowersFragmentNew(uiUser)
+        fun newInstance( uiUser: Int?) = UserFollowersFragmentNew(uiUser)
         private const val OFFSET_INFINITE_SCROLL: Int = 10
     }
 
@@ -261,10 +255,10 @@ class UserFollowingsFragmentNew(private val uiUser: String) : BaseFragment() {
 
     private fun initApiCallGetBlockedUsers() {
         if(model.followingsData.value == null || model.followingsData.value?.size == 0){
-            model.getFollowings(arrayList.size)
+            model.getFollowings(uiUserId,arrayList.size)
         }else{
             model.clearFollowing()
-            model.getFollowings(0)
+            model.getFollowings(uiUserId,0)
         }
     }
 

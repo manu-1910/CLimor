@@ -5,12 +5,13 @@ import com.apollographql.apollo.api.Mutation
 import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.Query
 import com.apollographql.apollo.api.Response
+import com.limor.app.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.IOException
 
-const val GRAPHQL_ENDPOINT = "https://apigateway.dev.limor.ie/graphql"
+const val GRAPHQL_ENDPOINT = BuildConfig.END_POINT
 
 class ApolloImpl(val client: ApolloClient) : Apollo {
 

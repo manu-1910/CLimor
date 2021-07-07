@@ -68,6 +68,14 @@ android {
             keyPassword BETA_KEY_PASSWORD
         }
 
+        staging {
+            storeFile file("${System.env.HOME}/dev/keystores/limor_beta.jks")
+            storeFile file("keystores/limor_beta.jks")
+            storePassword BETA_PASSWORD
+            keyAlias BETA_KEY_ALIAS
+            keyPassword BETA_KEY_PASSWORD
+        }
+
         release {
             storeFile file("${System.env.HOME}/dev/keystores/limor_production.jks")
             storeFile file("keystores/limor_production.jks")
@@ -83,7 +91,8 @@ android {
             resValue "string", "APP_LABEL", "Limor Dev"
             buildConfigField "String", "CLIENT_ID", '"0dfe2bcc2df49782dd737f8763c37e991b9666369903dae249bef54fc66c12d6"'
             buildConfigField "String", "CLIENT_SECRET", '"54d3d2ddbceceab3960dd1deb565e44ea8cf827a7364720ed9679b9cce73ccca"'
-            buildConfigField "String", "BASE_URL", '"https://limor-api-development.herokuapp.com/"'
+            buildConfigField "String", "BASE_URL", '"https://limor-api-staging.herokuapp.com/"'
+            buildConfigField "String", "END_POINT", '"https://apigateway.dev.limor.ie/graphql"'
             buildConfigField "String", "AWS_S3_IDENTITY_POOL", '"eu-west-1:dd6cfc23-c34c-4ecf-b99d-a8a130db8169"'
             buildConfigField "String", "AWS_S3_BUCKET", '"limor-platform-development"'
             resValue "string", "BRANCH_KEY", "key_test_lkDI7HqFLvjE4vZBtBQRxpbaDuh52F3t"
@@ -109,6 +118,32 @@ android {
             buildConfigField "String", "CLIENT_ID", '"2711e12535ceb15773fe87dc691bcb8c26295bb1434f7d8f4912006dff6a189c"'
             buildConfigField "String", "CLIENT_SECRET", '"af570a038fbb5e9eb7c5338068f57b5a22c119d5fd273909f38b1cf4f9acd996"'
             buildConfigField "String", "BASE_URL", '"https://limor-api-staging.herokuapp.com/"'
+            buildConfigField "String", "AWS_S3_IDENTITY_POOL", '"eu-west-1:dd6cfc23-c34c-4ecf-b99d-a8a130db8169"'
+            buildConfigField "String", "AWS_S3_BUCKET", '"limor-platform-staging"'
+            resValue "string", "BRANCH_KEY", "key_test_lkDI7HqFLvjE4vZBtBQRxpbaDuh52F3t"
+            resValue "string", "GOOGLE_MAPS_KEY", "AIzaSyCFxp58xVwtoNQ-PDuNBsNqE2CH31_BF18"
+
+            buildConfigField "boolean", "REPORT_CRASHES", "false"
+            buildConfigField "String",  "ANALYTICS_TRACKING_ID", '"UA-123275575-1"'
+
+            buildConfigField "int", "LIMOR_ACCOUNT_ID", '350'
+            buildConfigField "String", "SMART_LOOK_API_KEY", '"6a6016ead4a7f1fbb773ff00f25092544289f292"'
+
+            minifyEnabled false
+            debuggable true
+            zipAlignEnabled true
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.beta
+        }
+
+        staging {
+            applicationIdSuffix ".staging"
+            resValue "string", "APP_LABEL", "Limor Staging"
+            buildConfigField "String", "CLIENT_ID", '"2711e12535ceb15773fe87dc691bcb8c26295bb1434f7d8f4912006dff6a189c"'
+            buildConfigField "String", "CLIENT_SECRET", '"af570a038fbb5e9eb7c5338068f57b5a22c119d5fd273909f38b1cf4f9acd996"'
+            buildConfigField "String", "BASE_URL", '"https://limor-api-staging.herokuapp.com/"'
+            buildConfigField "String", "END_POINT", '"https://apigateway.staging.limor.ie/graphql"'
             buildConfigField "String", "AWS_S3_IDENTITY_POOL", '"eu-west-1:dd6cfc23-c34c-4ecf-b99d-a8a130db8169"'
             buildConfigField "String", "AWS_S3_BUCKET", '"limor-platform-staging"'
             resValue "string", "BRANCH_KEY", "key_test_lkDI7HqFLvjE4vZBtBQRxpbaDuh52F3t"

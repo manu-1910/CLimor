@@ -38,6 +38,7 @@
                 app:iconSize="14dp" />
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginStart="20dp"
@@ -45,10 +46,11 @@
                 android:background="#F0F3F8" />
 
             <Button
-                android:id="@+id/btnReportCast"
+                android:visibility="gone"
+                android:id="@+id/btnUnBlockUser"
                 style="@style/ButtonTextStyle.Icon"
                 android:layout_width="match_parent"
-                android:text="@string/report_user"
+                android:text="@string/unblock"
                 android:textColor="@color/black"
                 app:icon="@drawable/ic_report_podcast"
                 app:iconGravity="textStart"
@@ -63,7 +65,7 @@
                 android:background="#F0F3F8" />
 
             <Button
-                android:id="@+id/btnDeleteCast"
+                android:id="@+id/btnBlockUser"
                 style="@style/ButtonTextStyle.Icon.Red"
                 android:layout_width="match_parent"
                 android:text="@string/block_user"

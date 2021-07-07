@@ -3,6 +3,7 @@ package com.limor.app.di.modules.fragments
 import com.limor.app.scenes.main.fragments.ProfileFragment
 import com.limor.app.scenes.main.fragments.profile.*
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsFragmentNew
+import com.limor.app.scenes.profile.DialogUserProfileActions
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -26,4 +27,7 @@ abstract class UserProfileActivityFragmentsBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeUserPodcastsFragmentNewInjector(): UserPodcastsFragmentNew
+
+    @ContributesAndroidInjector
+    abstract fun contributeDialogUserProfileActionsFragmentInjector(): DialogUserProfileActions
 }

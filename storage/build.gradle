@@ -46,6 +46,9 @@ android {
         beta {
             minifyEnabled false
         }
+        staging {
+            minifyEnabled false
+        }
         release{
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

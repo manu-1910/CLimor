@@ -1,5 +1,5 @@
-query Friends($limit: Int!,$offset:Int!) {
-    getFriends(limit: $limit,offset: $offset){
+query Friends($userId:Int,$limit: Int!,$offset:Int!) {
+    getFriends(userId: $userId, limit: $limit,offset: $offset){
         id,
         username,
         first_name,

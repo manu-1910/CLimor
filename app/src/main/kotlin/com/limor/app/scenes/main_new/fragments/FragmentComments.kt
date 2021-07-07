@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.limor.app.GetCommentsByPodcastsQuery
 import com.limor.app.databinding.FragmentCommentsBinding
@@ -13,19 +15,22 @@ import com.limor.app.di.Injectable
 import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.main_new.adapters.PodcastCommentsAdapter
 import com.limor.app.scenes.main_new.view_model.PodcastFullPlayerViewModel
+import javax.inject.Inject
 
 class FragmentComments : FragmentWithLoading(), Injectable {
 
-//    @Inject
-//    lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val model: PodcastFullPlayerViewModel by activityViewModels  ()
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val model: PodcastFullPlayerViewModel by viewModels {viewModelFactory }
 
     private lateinit var binding: FragmentCommentsBinding
     private var podcastId: Int = 0
-    override fun load(){} //model.loadComments(podcastId)
+    override fun load(){
+        model.loadComments(podcastId)
+    }
 
     override val errorLiveData: LiveData<String>
-        get() = TODO("Not yet implemented")
+        get() = model.commentsErrorData
 
     override fun onCreate(savedInstanceState: Bundle?) {
         getArgs()
