@@ -1,83 +1,61 @@
-package com.limor.app.scenes.main_new
+package com.limor.app.scenes.main_new.fragments
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.limor.app.R
-import com.limor.app.databinding.ActivityPodcastBinding
+import com.limor.app.common.BaseFragment
+import com.limor.app.databinding.FragmentExtendedPlayerBinding
 import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.loadImage
 import com.limor.app.scenes.auth_new.util.colorStateList
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
-import com.limor.app.scenes.main_new.fragments.FragmentComments
-import com.limor.app.scenes.main_new.utils.PodcastActivityTransitionHandler
-import com.limor.app.scenes.main_new.view_model.PodcastFullPlayerViewModel
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
-import dagger.android.AndroidInjection
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
-
-class PodcastsActivity : AppCompatActivity(), HasSupportFragmentInjector {
+class ExtendedPlayerFragment : BaseFragment() {
 
     companion object {
         private const val CAST_KEY = "CAST_KEY"
-        fun getIntent(context: Context, cast: CastUIModel): Intent {
-            return Intent(context, PodcastsActivity::class.java).apply {
-                putExtras(
-                    bundleOf(
-                        CAST_KEY to cast
-                    )
-                )
+        fun newInstance(cast: CastUIModel): ExtendedPlayerFragment {
+            return ExtendedPlayerFragment().apply {
+                arguments = bundleOf(CAST_KEY to cast)
             }
         }
     }
 
-    @Inject
-    lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
+    private var _binding: FragmentExtendedPlayerBinding? = null
+    private val binding get() = _binding!!
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val model: PodcastFullPlayerViewModel by viewModels { viewModelFactory }
     private val likePodcastViewModel: LikePodcastViewModel by viewModels { viewModelFactory }
+    private val podcast: CastUIModel by lazy { requireArguments()[CAST_KEY] as CastUIModel }
 
-    private val playerBinder: PlayerBinder = PlayerBinder(this, WeakReference(this))
-    private val podcast: CastUIModel by lazy { intent.getParcelableExtra(CAST_KEY) }
+    private lateinit var playerBinder: PlayerBinder
 
-    lateinit var binding: ActivityPodcastBinding
-    override fun onCreate(savedInstanceState: Bundle?) {
-        PodcastActivityTransitionHandler.setUpWindowTransition(weakReference)
-        super.onCreate(savedInstanceState)
-        AndroidInjection.inject(this)
-        initBinding()
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentExtendedPlayerBinding.inflate(inflater, container, false)
         bindViews()
-        subscribeToPlayerUpdates()
+        playerBinder = PlayerBinder(this, WeakReference(requireContext().applicationContext))
+        return binding.root
     }
-
-    private fun initBinding() {
-        binding = ActivityPodcastBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        binding.root.addTransitionListener(
-            PodcastActivityTransitionHandler.transitionListener(weakReference)
-        )
-    }
-
-    val weakReference get() = WeakReference(this)
 
     private fun bindViews() {
         setPodcastGeneralInfo()
@@ -97,7 +75,7 @@ class PodcastsActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
     private fun setPodcastOwnerInfo() {
         binding.tvPodcastUserName.text = podcast.owner?.getFullName()
-        binding.tvPodcastUserSubtitle.text = podcast.getCreationDateAndPlace(this)
+        binding.tvPodcastUserSubtitle.text = podcast.getCreationDateAndPlace(requireContext())
     }
 
     private fun setPodcastCounters() {
@@ -165,7 +143,7 @@ class PodcastsActivity : AppCompatActivity(), HasSupportFragmentInjector {
 //             Navigation.findNavController(this, R.id.nav_host_fragment).navigate(R.id.fragmentCommets) bundle)
             val fragment = FragmentComments()
             fragment.arguments = bundle
-            supportFragmentManager.commit {
+            parentFragmentManager.commit {
                 setReorderingAllowed(true)
                 add(R.id.fragment_comments_container, fragment, "FragmentCommentTag")
             }
@@ -180,7 +158,7 @@ class PodcastsActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
     private fun addTagsItems(tag: TagUIModel) {
         binding.llPodcastTags.removeAllViews()
-        AsyncLayoutInflater(this)
+        AsyncLayoutInflater(requireContext())
             .inflate(R.layout.item_podcast_tag, binding.llPodcastTags) { v, _, _ ->
                 (v as TextView).text = StringBuilder("#").append(tag.tag)
                 binding.llPodcastTags.addView(v)
@@ -195,6 +173,4 @@ class PodcastsActivity : AppCompatActivity(), HasSupportFragmentInjector {
         binding.btnPodcastLikes.isLiked = podcast.isLiked!!
         binding.tvPodcastLikes.setTextColor(tint)
     }
-
-    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
 }

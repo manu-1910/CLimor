@@ -5,19 +5,16 @@
     android:id="@+id/clMiniPlayer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
     android:background="@drawable/dialog_white_rounded_shape"
     android:elevation="4dp"
-    android:enabled="false"
-    android:transitionName="podcast_player_transition_label"
-    android:visibility="invisible">
+    android:enabled="false">
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/cpiPodcastListeningProgress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         app:indicatorColor="@color/colorAccent"
         app:indicatorDirectionCircular="clockwise"
         app:indicatorSize="68dp"

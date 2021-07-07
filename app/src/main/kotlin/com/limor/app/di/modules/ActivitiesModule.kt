@@ -3,11 +3,8 @@ package com.limor.app.di.modules
 import com.limor.app.di.modules.fragments.*
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.authentication.SignActivity
-import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.fragments.onboarding.OnBoardingActivity
 import com.limor.app.scenes.main.fragments.player.AudioPlayerActivity
-import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
-import com.limor.app.scenes.main.fragments.podcast.PodcastsByTagActivity
 import com.limor.app.scenes.main.fragments.profile.ReportActivity
 import com.limor.app.scenes.main.fragments.profile.UserFollowersFollowingsActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
@@ -15,7 +12,6 @@ import com.limor.app.scenes.main.fragments.record.RecordActivity
 import com.limor.app.scenes.main.fragments.settings.SettingsActivity
 import com.limor.app.scenes.main.fragments.setup_patron.SetupPatronActivity
 import com.limor.app.scenes.main_new.MainActivityNew
-import com.limor.app.scenes.main_new.PodcastsActivity
 import com.limor.app.scenes.splash.SplashActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -98,11 +94,4 @@ abstract class ActivitiesModule {
 
     @ContributesAndroidInjector
     abstract fun contributeAuthActivityNewInjector(): AuthActivityNew
-
-    @ContributesAndroidInjector(
-        modules = [
-            PodcastActivitNewFragmentBuildersModule::class
-        ]
-    )
-    abstract fun contributePodcastsActivityInjector(): PodcastsActivity
 }

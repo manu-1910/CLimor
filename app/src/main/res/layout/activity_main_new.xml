@@ -47,5 +47,4 @@
         android:backgroundTint="?attr/colorAccent"
         android:src="@drawable/record" />
 
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

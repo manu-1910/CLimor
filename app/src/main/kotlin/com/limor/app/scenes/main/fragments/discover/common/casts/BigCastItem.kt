@@ -6,12 +6,14 @@ import androidx.core.view.updateLayoutParams
 import com.bumptech.glide.Glide
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverBigCastBinding
+import com.limor.app.extensions.getActivity
 import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration.Companion.GRID_CAST_ITEM
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration.Companion.GRID_CAST_ITEM_TYPE_KEY
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
-import com.limor.app.scenes.main_new.PodcastsActivity
+import com.limor.app.scenes.utils.PlayerViewManager
+import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
@@ -50,9 +52,7 @@ class BigCastItem(
                 .into(ownerIcon)
 
             root.setOnClickListener {
-                it.context.startActivity(
-                    PodcastsActivity.getIntent(it.context, cast)
-                )
+                (it.context.getActivity() as? PlayerViewManager)?.showExtendedPlayer(cast)
             }
 
             moreBtn.setOnClickListener {
