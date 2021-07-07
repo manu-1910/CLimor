@@ -12,11 +12,13 @@ import com.limor.app.extensions.loadImage
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
+import org.jetbrains.anko.backgroundColor
 
 class ViewHolderPodcast(
     val binding: ItemHomeFeedBinding,
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
     private val onCastClick: (cast: CastUIModel) -> Unit,
+    private val onRecastClick: (castId: Int) -> Unit,
 ) : ViewHolderBindable<CastUIModel>(binding) {
     override fun bind(item: CastUIModel) {
         setPodcastGeneralInfo(item)
@@ -76,8 +78,27 @@ class ViewHolderPodcast(
         binding.clItemPodcastFeed.setOnClickListener {
             onCastClick(item)
         }
+
+        binding.btnPodcastRecast.setOnClickListener {
+            onRecastClick(item.id)
+            applyRecastState()
+        }
     }
 
+    private fun applyRecastState(){
+        binding.tvPodcastRecast.setTextColor(
+            ContextCompat.getColor(
+                binding.root.context,
+                R.color.textAccent
+            )
+        )
+        val recastCount = binding.tvPodcastRecast.text.toString().toInt()
+        binding.btnPodcastRecast.setColorFilter(ContextCompat.getColor(
+            binding.root.context,
+            R.color.textAccent
+        ))
+        binding.tvPodcastRecast.text = (recastCount + 1).toString()
+    }
 
     private fun addTags(item: CastUIModel) {
         item.tags?.forEach {

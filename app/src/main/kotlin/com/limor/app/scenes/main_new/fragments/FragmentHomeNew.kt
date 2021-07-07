@@ -17,6 +17,7 @@ import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentHomeNewBinding
 import com.limor.app.extensions.loadCircleImage
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
+import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main_new.PodcastsActivity
 import com.limor.app.scenes.main_new.adapters.HomeFeedAdapter
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
@@ -37,6 +38,7 @@ class FragmentHomeNew : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val homeFeedViewModel: HomeFeedViewModel by viewModels { viewModelFactory }
     private val likePodcastViewModel: LikePodcastViewModel by viewModels { viewModelFactory }
+    private val recastPodcastViewModel : RecastPodcastViewModel by viewModels { viewModelFactory }
 
     lateinit var binding: FragmentHomeNewBinding
     private lateinit var playerBinder: PlayerBinder
@@ -130,6 +132,9 @@ class FragmentHomeNew : BaseFragment() {
             },
             onCastClick = { cast ->
                 openPodcastActivity(cast)
+            },
+            onReCastClick = { castId ->
+                recastPodcastViewModel.reCast(castId)
             }
         ).apply { submitList(list) }
         rvHome.adapter = adapter
