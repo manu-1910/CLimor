@@ -25,15 +25,7 @@ class CastItem(
     override fun bind(viewBinding: ItemUserCastBinding, position: Int) {
         viewBinding.apply {
             tvPodcastUserName.text = cast.owner?.getFullName()
-            val dateAndLocationText = "${
-                cast.createdAt?.let {
-                    DateUiUtil.getPastDateDaysTextDescription(
-                        cast.createdAt,
-                        root.context
-                    )
-                }
-            } - ${cast.address}"
-            tvPodcastUserSubtitle.text = dateAndLocationText
+            tvPodcastUserSubtitle.text = cast.getCreationDateAndPlace(root.context)
 
             tvPodcastLength.text = cast.audio?.duration?.let {
                 "${it.toMinutes()}m ${it.minusMinutes(it.toMinutes()).seconds}s"

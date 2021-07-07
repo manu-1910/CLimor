@@ -42,7 +42,7 @@ class DiscoverCategoryViewModel @Inject constructor(
                     Timber.e(it, "Error while getting featured casts")
                 }*/
 
-            getPodcastsByCategoryUseCase.execute(categoryId, limit = 5, offset = -1)
+            getPodcastsByCategoryUseCase.execute(categoryId, limit = 5, offset = 0)
                 .onSuccess {
                     _topCasts.value = it
                 }

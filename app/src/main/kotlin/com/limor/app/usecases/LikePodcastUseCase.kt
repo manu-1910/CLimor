@@ -10,12 +10,12 @@ class LikePodcastUseCase @Inject constructor(
     private val repository: PodcastInteractionsRepository,
     private val dispatcherProvider: DispatcherProvider
 ) {
-    suspend fun execute(cast: CastUIModel, like: Boolean) {
+    suspend fun execute(castId: Int, like: Boolean) {
         return withContext(dispatcherProvider.io) {
             if (like) {
-                repository.likePodcast(cast.id)
+                repository.likePodcast(castId)
             } else {
-                repository.unLikePodcast(cast.id)
+                repository.unLikePodcast(castId)
             }
         }
     }

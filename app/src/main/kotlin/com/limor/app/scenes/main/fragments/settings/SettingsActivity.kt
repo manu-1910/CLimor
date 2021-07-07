@@ -2,24 +2,18 @@ package com.limor.app.scenes.main.fragments.settings
 
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.databinding.DataBindingUtil
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import com.limor.app.R
-import com.limor.app.common.BaseActivity
+import com.limor.app.common.ViewModelFactory
 import com.limor.app.databinding.ActivitySettingsBinding
-import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
-import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.view.*
 import javax.inject.Inject
 
-
-class SettingsActivity : BaseActivity(), HasSupportFragmentInjector {
+class SettingsActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
 
     private lateinit var navHostFragment: NavHostFragment
@@ -29,8 +23,10 @@ class SettingsActivity : BaseActivity(), HasSupportFragmentInjector {
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
     lateinit var navController: NavController
 
-
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
     val model: SettingsViewModel by viewModels { viewModelFactory }
+
     companion object {
         val TAG: String = SettingsActivity::class.java.simpleName
         fun newInstance() = SettingsActivity()

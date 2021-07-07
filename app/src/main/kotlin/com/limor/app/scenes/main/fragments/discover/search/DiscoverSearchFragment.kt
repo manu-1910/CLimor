@@ -27,7 +27,11 @@ class DiscoverSearchFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: DiscoverSearchViewModel by viewModels { viewModelFactory }
 
-    private val resultAdapter = DiscoverSearchAdapter()
+    private val resultAdapter = DiscoverSearchAdapter(
+        onFollowUserClick = { account, follow ->
+            viewModel.followUser(account, follow)
+        }
+    )
 
     private val tabs by lazy {
         mapOf(

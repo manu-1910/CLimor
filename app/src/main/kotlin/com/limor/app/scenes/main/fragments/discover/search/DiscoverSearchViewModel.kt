@@ -8,6 +8,7 @@ import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchFragmen
 import com.limor.app.uimodels.CategoryUIModel
 import com.limor.app.uimodels.TagUIModel
 import com.limor.app.uimodels.UserUIModel
+import com.limor.app.usecases.FollowPersonUseCase
 import com.limor.app.usecases.SearchCategoriesUseCase
 import com.limor.app.usecases.SearchHashtagsUseCase
 import com.limor.app.usecases.SearchUsersUseCase
@@ -20,6 +21,7 @@ class DiscoverSearchViewModel @Inject constructor(
     private val searchUsersUseCase: SearchUsersUseCase,
     private val searchCategoriesUseCase: SearchCategoriesUseCase,
     private val searchHashtagsUseCase: SearchHashtagsUseCase,
+    private val followPersonUseCase: FollowPersonUseCase
 ) : ViewModel() {
 
     private val _searchResult = MutableLiveData<SearchResult>()
@@ -47,6 +49,16 @@ class DiscoverSearchViewModel @Inject constructor(
                         .onSuccess { _searchResult.value = SearchResult.Hashtags(it) }
                         .onFailure { Timber.e(it, "Error while searching for hashtags") }
                 }
+            }
+        }
+    }
+
+    fun followUser(account: UserUIModel, follow: Boolean) {
+        viewModelScope.launch {
+            try {
+                followPersonUseCase.execute(account, follow)
+            } catch (ex: Exception) {
+                Timber.e(ex, "Error while following person: $account")
             }
         }
     }

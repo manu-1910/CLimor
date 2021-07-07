@@ -66,3 +66,15 @@ fun GetUserPodcastsQuery.Images.mapToUIModel(): ImageLinksUIModel {
 fun GetUserPodcastsQuery.Images1.mapToUIModel(): ImageLinksUIModel {
     return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
 }
+
+fun FeedItemsQuery.Images.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+}
+
+fun FeedItemsQuery.Images1.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+}
+
+fun FeedItemsQuery.Images2.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+}

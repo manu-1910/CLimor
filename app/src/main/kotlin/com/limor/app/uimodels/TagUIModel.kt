@@ -59,3 +59,11 @@ fun GetUserPodcastsQuery.Caption.mapToUIModel() =
         startIndex = start_index!!,
         endIndex = end_index!!
     )
+
+fun FeedItemsQuery.Caption.mapToUIModel() =
+    TagUIModel(
+        id = tag_id!!,
+        tag = tag!!,
+        startIndex = start_index!!,
+        endIndex = end_index!!
+    )

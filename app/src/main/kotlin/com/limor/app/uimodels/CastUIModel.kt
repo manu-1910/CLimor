@@ -1,10 +1,10 @@
 package com.limor.app.uimodels
 
+import android.content.Context
 import android.os.Parcelable
 import com.limor.app.*
-import com.limor.app.extensions.epochSecondToLocalDateTime
-import com.limor.app.extensions.toLocalDate
 import com.limor.app.extensions.toLocalDateTime
+import com.limor.app.scenes.utils.DateUiUtil
 import kotlinx.android.parcel.Parcelize
 import java.time.LocalDateTime
 
@@ -35,8 +35,23 @@ data class CastUIModel(
     val sharingUrl: String?,
     val tags: List<TagUIModel>?,
     val mentions: MentionUIModel?,
-    val links: LinkUIModel?
-) : Parcelable
+    val links: LinkUIModel?,
+    val recaster: UserUIModel?
+) : Parcelable {
+
+    /**
+     * X days ago - Berlin
+     * Today - Berlin
+     */
+    fun getCreationDateAndPlace(context: Context) = "${
+        createdAt?.let {
+            DateUiUtil.getPastDateDaysTextDescription(
+                createdAt,
+                context
+            )
+        }
+    } - $address"
+}
 
 fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =
     CastUIModel(
@@ -51,7 +66,7 @@ fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =
         commentsCount = number_of_comments, sharesCount = number_of_shares,
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(),
+        links = links?.mapToUIModel(), recaster = null
     )
 
 fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
@@ -67,7 +82,7 @@ fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
         commentsCount = number_of_comments, sharesCount = number_of_shares,
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(),
+        links = links?.mapToUIModel(), recaster = null
     )
 
 fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
@@ -83,7 +98,7 @@ fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
         commentsCount = number_of_comments, sharesCount = number_of_shares,
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(),
+        links = links?.mapToUIModel(), recaster = null
     )
 
 fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
@@ -99,7 +114,7 @@ fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
         commentsCount = number_of_comments, sharesCount = number_of_shares,
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(),
+        links = links?.mapToUIModel(), recaster = null
     )
 
 fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
@@ -115,5 +130,23 @@ fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
         commentsCount = number_of_comments, sharesCount = number_of_shares,
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(),
+        links = links?.mapToUIModel(), recaster = null
+    )
+
+fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
+    CastUIModel(
+        id = id!!, owner = podcast?.owner?.mapToUIModel(), title = podcast?.title,
+        address = podcast?.address, imageLinks = podcast?.images?.mapToUIModel(),
+        caption = podcast?.caption, createdAt = podcast?.created_at?.toLocalDateTime(),
+        updatedAt = podcast?.updated_at?.toLocalDateTime(), latitude = podcast?.latitude?.toFloat(),
+        longitude = podcast?.longitude?.toFloat(), isLiked = podcast?.liked,
+        isReported = podcast?.reported, isRecasted = podcast?.recasted,
+        isListened = podcast?.listened, isBookmarked = podcast?.bookmarked,
+        listensCount = podcast?.number_of_listens, likesCount = podcast?.number_of_likes,
+        recastsCount = podcast?.number_of_recasts, commentsCount = podcast?.number_of_comments,
+        sharesCount = podcast?.number_of_shares, audio = podcast?.audio?.mapToUIModel(),
+        isActive = podcast?.active, sharingUrl = podcast?.sharing_url,
+        tags = podcast?.tags?.caption?.map { it!!.mapToUIModel() },
+        mentions = podcast?.mentions?.mapToUIModel(),
+        links = podcast?.links?.mapToUIModel(), recaster = recaster?.mapToUIModel()
     )
