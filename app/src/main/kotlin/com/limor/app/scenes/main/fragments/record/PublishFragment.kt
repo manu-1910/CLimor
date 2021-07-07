@@ -802,6 +802,8 @@ class PublishFragment : BaseFragment() {
                     imageFile,
                     "podcast_photo"
                 )
+                isImageChosen = true
+                updatePublishBtnState()
             }
             Glide.with(requireContext()).load(imageFile).into(draftImage!!)  // Uri of the picture
             lytImagePlaceholder?.visibility = View.INVISIBLE

@@ -191,6 +191,7 @@
                             android:layout_marginEnd="@dimen/marginTwenty"
                             app:boxStrokeColor="@color/colorAccent"
                             app:boxStrokeWidth="2dp"
+                            android:visibility="gone"
                             app:hintTextAppearance="@style/TextHintStyle"
                             app:hintTextColor="@color/colorAccent">
 
@@ -215,6 +216,7 @@
 
 
                         <TextView
+                            android:visibility="gone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/marginTwenty"
@@ -331,7 +333,7 @@
                             android:layout_marginStart="@dimen/marginTwenty"
                             android:layout_marginTop="@dimen/marginTwenty"
                             android:layout_marginEnd="@dimen/marginTwenty"
-                            android:visibility="visible">
+                            android:visibility="gone">
 
                             <TextView
                                 android:id="@+id/textLocation"
