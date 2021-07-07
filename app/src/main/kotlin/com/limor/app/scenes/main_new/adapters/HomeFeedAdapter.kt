@@ -13,7 +13,8 @@ import com.limor.app.uimodels.CastUIModel
 
 class HomeFeedAdapter(
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
-    private val onCastClick: (cast: CastUIModel) -> Unit
+    private val onCastClick: (cast: CastUIModel) -> Unit,
+    private val onReCastClick: (castId: Int) -> Unit
 ) : ListAdapter<CastUIModel, ViewHolderBindable<CastUIModel>>(
     HomeFeedDiffCallback()
 ) {
@@ -43,7 +44,7 @@ class HomeFeedAdapter(
             }
             else -> {
                 val binding = ItemHomeFeedBinding.inflate(inflater, viewGroup, false)
-                ViewHolderPodcast(binding, onLikeClick, onCastClick)
+                ViewHolderPodcast(binding, onLikeClick, onCastClick, onReCastClick)
             }
         }
     }

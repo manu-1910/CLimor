@@ -10,10 +10,12 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.limor.app.R
+import com.limor.app.di.Injectable
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.data.LanguageWrapper
 import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
@@ -21,12 +23,15 @@ import com.limor.app.scenes.main.viewmodels.LanguagesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.MAIN
 import kotlinx.android.synthetic.main.fragment_languages.*
+import javax.inject.Inject
 
 
-class LanguagesFragment : FragmentWithLoading() {
+class LanguagesFragment : FragmentWithLoading(), Injectable {
 
-    private val model: LanguagesViewModel by activityViewModels()
-    private val publishViewModel: PublishViewModel by activityViewModels()
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val model: LanguagesViewModel by activityViewModels {viewModelFactory}
+    private val publishViewModel: PublishViewModel by activityViewModels() {viewModelFactory}
 
     override fun onCreateView(
         inflater: LayoutInflater,

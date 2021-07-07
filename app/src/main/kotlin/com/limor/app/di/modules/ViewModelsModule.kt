@@ -81,6 +81,16 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(PublishCategoriesViewModel::class)
+    abstract fun bindPublishCatagoryViewModel(publishCatagoryViewModel: PublishCategoriesViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LanguagesViewModel::class)
+    abstract fun bindLanguagesViewModel(languagesViewModel: LanguagesViewModel) : ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(FeedViewModel::class)
     abstract fun bindFeedViewModel(feedViewModel: FeedViewModel): ViewModel
 
@@ -323,4 +333,9 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(LikePodcastViewModel::class)
     abstract fun bindLikePodcastViewModel(viewModel: LikePodcastViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(RecastPodcastViewModel::class)
+    abstract fun bindRecastPodcastViewModel(viewModel: RecastPodcastViewModel): ViewModel
 }

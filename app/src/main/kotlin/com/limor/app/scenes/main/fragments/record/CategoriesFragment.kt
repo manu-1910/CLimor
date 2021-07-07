@@ -8,9 +8,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.limor.app.R
+import com.limor.app.di.Injectable
 import com.limor.app.scenes.auth_new.data.CategoryWrapper
 import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.main.viewmodels.PublishCategoriesViewModel
@@ -18,12 +20,15 @@ import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.BACKGROUND
 import com.limor.app.scenes.utils.MAIN
 import kotlinx.android.synthetic.main.fragment_publish_categories.*
+import javax.inject.Inject
 
 
-class CategoriesFragment : FragmentWithLoading() {
+class CategoriesFragment : FragmentWithLoading(), Injectable {
 
-    private val model: PublishCategoriesViewModel by activityViewModels()
-    private val publishViewModel: PublishViewModel by activityViewModels()
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val model: PublishCategoriesViewModel by activityViewModels {viewModelFactory}
+    private val publishViewModel: PublishViewModel by activityViewModels {viewModelFactory}
 
     override fun onCreateView(
         inflater: LayoutInflater,
