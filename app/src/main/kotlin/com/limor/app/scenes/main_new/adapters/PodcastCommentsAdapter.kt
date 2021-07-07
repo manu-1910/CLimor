@@ -8,10 +8,9 @@ import com.limor.app.GetCommentsByPodcastsQuery
 import com.limor.app.databinding.ItemPodcastCommentBinding
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderBindable
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderPodcastComment
-import com.limor.app.scenes.main_new.view_model.PodcastControlViewModel
 
 class PodcastCommentsAdapter(
-    private val model: PodcastControlViewModel
+
 ) : ListAdapter<GetCommentsByPodcastsQuery.GetCommentsByPodcast, ViewHolderBindable<GetCommentsByPodcastsQuery.GetCommentsByPodcast>>(
     CommentsDiffCallback()
 ) {
@@ -29,7 +28,7 @@ class PodcastCommentsAdapter(
     ): ViewHolderBindable<GetCommentsByPodcastsQuery.GetCommentsByPodcast> {
         val inflater = LayoutInflater.from(viewGroup.context)
         val binding = ItemPodcastCommentBinding.inflate(inflater, viewGroup, false)
-        return ViewHolderPodcastComment(binding, model)
+        return ViewHolderPodcastComment(binding)
     }
 
     override fun onBindViewHolder(

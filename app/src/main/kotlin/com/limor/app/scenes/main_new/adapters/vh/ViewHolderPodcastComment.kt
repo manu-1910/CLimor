@@ -3,11 +3,9 @@ package com.limor.app.scenes.main_new.adapters.vh
 import com.limor.app.GetCommentsByPodcastsQuery
 import com.limor.app.databinding.ItemPodcastCommentBinding
 import com.limor.app.extensions.loadCircleImage
-import com.limor.app.scenes.main_new.view_model.PodcastControlViewModel
 
 class ViewHolderPodcastComment(
-    val binding: ItemPodcastCommentBinding,
-    val model: PodcastControlViewModel
+    val binding: ItemPodcastCommentBinding
 ) :
     ViewHolderBindable<GetCommentsByPodcastsQuery.GetCommentsByPodcast>(binding) {
 

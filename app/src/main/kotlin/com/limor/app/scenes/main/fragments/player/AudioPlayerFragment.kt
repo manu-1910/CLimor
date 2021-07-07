@@ -226,12 +226,12 @@ class AudioPlayerFragment : BaseFragment() {
 
                         item.podcast?.audio?.audio_url?.let { _ ->
 
-                            AudioService.newIntent(requireContext(), item.podcast!!, 1L)
+                            /*AudioService.newIntent(requireContext(), item.podcast!!, 1L)
                                 .also { intent ->
                                     requireContext().startService(intent)
                                     val activity = requireActivity() as BaseActivity
                                     activity.showMiniPlayer()
-                                }
+                                }*/
 
                         }
 

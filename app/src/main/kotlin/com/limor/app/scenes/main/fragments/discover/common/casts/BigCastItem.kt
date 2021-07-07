@@ -11,7 +11,7 @@ import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDec
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration.Companion.GRID_CAST_ITEM_TYPE_KEY
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
-import com.limor.app.scenes.utils.DateUiUtil
+import com.limor.app.scenes.main_new.PodcastsActivity
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
@@ -34,15 +34,7 @@ class BigCastItem(
             }
 
             authorName.text = cast.owner?.getFullName()
-            val dateAndLocationText = "${
-                cast.createdAt?.let {
-                    DateUiUtil.getPastDateDaysTextDescription(
-                        cast.createdAt,
-                        root.context
-                    )
-                }
-            } - ${cast.address}"
-            dateLocation.text = dateAndLocationText
+            dateLocation.text = cast.getCreationDateAndPlace(root.context)
             castName.text = cast.title
             cast.audio?.duration?.let {
                 castDuration.text = getCastDuration(cast.audio.duration)
@@ -58,8 +50,11 @@ class BigCastItem(
                 .into(ownerIcon)
 
             root.setOnClickListener {
-                ToastMaker.showToast(it.context, "Not implemented")
+                it.context.startActivity(
+                    PodcastsActivity.getIntent(it.context, cast)
+                )
             }
+
             moreBtn.setOnClickListener {
                 ToastMaker.showToast(it.context, "Not implemented")
             }

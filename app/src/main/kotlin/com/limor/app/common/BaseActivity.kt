@@ -21,7 +21,7 @@ import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerStatus
-import com.limor.app.uimodels.UIPodcast
+import com.limor.app.uimodels.CastUIModel
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.mini_player_view.*
 import kotlinx.android.synthetic.main.mini_player_view.view.*
@@ -48,7 +48,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     private var lastPlayingPosition = 0
-    private var podcast: UIPodcast? = null
+    private var podcast: CastUIModel? = null
 
 
     private val connection = object : ServiceConnection {
@@ -113,11 +113,11 @@ abstract class BaseActivity : AppCompatActivity() {
     private fun setupMiniPlayerUi() {
         try {
             miniPlayerView!!.visibility = View.VISIBLE
-            Glide.with(miniPlayerView!!.iv_audio).load(audioService?.uiPodcast?.images?.small_url)
+            Glide.with(miniPlayerView!!.iv_audio).load(audioService?.uiPodcast?.imageLinks?.small)
                 .centerCrop().into(miniPlayerView!!.iv_audio)
             miniPlayerView!!.tv_audio_title.text = audioService?.uiPodcast?.caption
 
-            val durationMillis = audioService?.uiPodcast?.audio?.total_length?.toInt()
+            val durationMillis = audioService?.uiPodcast?.audio?.totalLength
 
             miniPlayerView!!.progress_audio_playback.max = durationMillis ?: 0
             miniPlayerView!!.progress_audio_playback.progress = lastPlayingPosition
@@ -169,7 +169,7 @@ abstract class BaseActivity : AppCompatActivity() {
                     is PlayerStatus.Ended -> {
                         setPlayerUiPaused()
                         audioService?.play(
-                            audioService?.uiPodcast?.audio?.audio_url,
+                            audioService?.uiPodcast?.audio?.url,
                             1L,
                             1F
                         )
@@ -260,10 +260,6 @@ abstract class BaseActivity : AppCompatActivity() {
         if (miniPlayerView != null) {
             bindToAudioService()
         }
-    }
-
-    fun updatePodcast(podcast: UIPodcast){
-        this.podcast = podcast
     }
 
     protected fun trackBackgroudProgress(isRunning: Boolean) {

@@ -7,25 +7,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialFade
-import com.limor.app.FeedItemsQuery
 import com.limor.app.R
+import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentHomeNewBinding
-import com.limor.app.di.Injectable
 import com.limor.app.extensions.loadCircleImage
-import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
+import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.main_new.PodcastsActivity
 import com.limor.app.scenes.main_new.adapters.HomeFeedAdapter
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
-import com.limor.app.scenes.main_new.view_model.PodcastControlViewModel
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
+import com.limor.app.uimodels.CastUIModel
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -33,12 +31,12 @@ import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 
-class FragmentHomeNew : FragmentWithLoading(), Injectable {
+class FragmentHomeNew : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val homeFeedViewModel: HomeFeedViewModel by viewModels { viewModelFactory }
-    private val podcastPlayerViewModel: PodcastControlViewModel by viewModels { viewModelFactory }
+    private val likePodcastViewModel: LikePodcastViewModel by viewModels { viewModelFactory }
 
     lateinit var binding: FragmentHomeNewBinding
     private lateinit var playerBinder: PlayerBinder
@@ -48,21 +46,27 @@ class FragmentHomeNew : FragmentWithLoading(), Injectable {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        binding = FragmentHomeNewBinding.inflate(inflater, container, false)
         initPlayerBinder()
         subscribeToPlayerUpdates()
-        binding = FragmentHomeNewBinding.inflate(inflater, container, false)
+        initViews()
         return binding.root
+    }
+
+    private fun initViews() {
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initSwipeToRefresh()
+        subscribeToViewModel()
     }
 
     private fun initSwipeToRefresh() {
         binding.swipeToRefresh.setColorSchemeResources(R.color.colorAccent)
         binding.swipeToRefresh.setOnRefreshListener {
-            load()
+            homeFeedViewModel.loadHomeFeed()
         }
     }
 
@@ -97,44 +101,14 @@ class FragmentHomeNew : FragmentWithLoading(), Injectable {
         }
     }
 
-    override fun load() {
-        homeFeedViewModel.loadHomeFeed(0)
-    }
-
-    override val errorLiveData: LiveData<String>
-        get() = homeFeedViewModel.homeFeedErrorLiveData
-
-    override fun subscribeToViewModel() {
-        super.subscribeToViewModel()
-        homeFeedViewModel.homeFeedLiveData.observe(viewLifecycleOwner, {
+    private fun subscribeToViewModel() {
+        homeFeedViewModel.homeFeedData.observe(viewLifecycleOwner) { casts ->
             binding.swipeToRefresh.isRefreshing = false
-            it?.let {
-                switchCommonVisibility(isLoading = false)
-                if (it.isEmpty())
-                    showEmptyContentMessage(R.string.feed_is_empty_message)
-                setDataToRecyclerView(it)
-            }
-        })
-        podcastPlayerViewModel.changePodcastFullScreenVisibility.observe(viewLifecycleOwner) {
-            it?.podcast?.let { podcast ->
-                playerBinder.bindToAudioService()
-                binding.includeMiniPlayer.clMiniPlayer.setOnClickListener { _ ->
-                    openPodcastActivity(it)
-                }
-                openPodcastActivity(it)
-                showMiniPlayerView(podcast)
-            }
-        }
-
-        podcastPlayerViewModel.podcastUpdatedLiveData.observe(viewLifecycleOwner) {
-            it?.let {
-                // for now, will update the list
-                load()
-            }
+            setDataToRecyclerView(casts)
         }
     }
 
-    private fun setDataToRecyclerView(list: List<FeedItemsQuery.GetFeedItem>) {
+    private fun setDataToRecyclerView(list: List<CastUIModel>) {
         val adapter = binding.rvHome.adapter
         if (adapter != null) {
             (adapter as HomeFeedAdapter).submitList(list)
@@ -143,22 +117,29 @@ class FragmentHomeNew : FragmentWithLoading(), Injectable {
         }
     }
 
-    private fun setUpRecyclerView(list: List<FeedItemsQuery.GetFeedItem>) {
+    private fun setUpRecyclerView(list: List<CastUIModel>) {
         val layoutManager = LinearLayoutManager(requireContext())
         binding.rvHome.itemAnimator = null
 
         binding.rvHome.layoutManager = layoutManager
         val itemMargin = resources.getDimension(R.dimen.marginMedium).toInt()
         binding.rvHome.addItemDecoration(MarginItemDecoration(itemMargin))
-        val adapter = HomeFeedAdapter(podcastPlayerViewModel).apply { submitList(list) }
+        val adapter = HomeFeedAdapter(
+            onLikeClick = { castId, like ->
+                likePodcastViewModel.likeCast(castId, like)
+            },
+            onCastClick = { cast ->
+                openPodcastActivity(cast)
+            }
+        ).apply { submitList(list) }
         rvHome.adapter = adapter
     }
 
-    private fun showMiniPlayerView(podcast: FeedItemsQuery.Podcast) {
-        binding.includeMiniPlayer.ivAvatarMiniPlayer.loadCircleImage(
-            podcast.images?.small_url ?: ""
-        )
-        binding.includeMiniPlayer.tvMiniPlayerTitle.text = podcast.title ?: ""
+    private fun showMiniPlayerView(podcast: CastUIModel) {
+        podcast.imageLinks?.small?.let {
+            binding.includeMiniPlayer.ivAvatarMiniPlayer.loadCircleImage(it)
+        }
+        binding.includeMiniPlayer.tvMiniPlayerTitle.text = podcast.title
 
         binding.includeMiniPlayer.btnCloseMiniPlayer.setOnClickListener {
             changePodcastMiniPlayerVisibility(false)
@@ -166,7 +147,10 @@ class FragmentHomeNew : FragmentWithLoading(), Injectable {
         }
         changePodcastMiniPlayerVisibility(true)
         binding.includeMiniPlayer.btnMiniPlayerPlay.setOnClickListener {
-            playerBinder.playPause(podcast)
+            playerBinder.playPause()
+        }
+        binding.includeMiniPlayer.clMiniPlayer.setOnClickListener { _ ->
+            openPodcastActivity(podcast)
         }
     }
 
@@ -180,11 +164,9 @@ class FragmentHomeNew : FragmentWithLoading(), Injectable {
         binding.includeMiniPlayer.clMiniPlayer.isEnabled = visible
     }
 
-    private fun openPodcastActivity(feedItem: FeedItemsQuery.GetFeedItem) {
+    private fun openPodcastActivity(cast: CastUIModel) {
         lifecycleScope.launch {
-            val bundle = PodcastControlViewModel.feedItemToBundle(feedItem)
-            val intent = Intent(requireContext(), PodcastsActivity::class.java)
-            intent.putExtras(bundle)
+            val intent = PodcastsActivity.getIntent(requireContext(), cast)
             val options = ActivityOptions.makeSceneTransitionAnimation(
                 requireActivity(),
                 binding.includeMiniPlayer.clMiniPlayer,

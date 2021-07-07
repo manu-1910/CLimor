@@ -44,11 +44,11 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
     suspend fun fetchHomeFeed(
         limit: Int = LOAD_PORTION,
         offset: Int = 0
-    ): List<FeedItemsQuery.GetFeedItem>? {
+    ): List<FeedItemsQuery.GetFeedItem> {
         val query = FeedItemsQuery(limit, offset)
         val result = apollo.launchQuery(query)
         var feedItems: List<FeedItemsQuery.GetFeedItem?> =
-            result?.data?.getFeedItems ?: return null
+            result?.data?.getFeedItems ?: return emptyList()
         feedItems = feedItems.filterNotNull()
         logList(feedItems)
         return feedItems

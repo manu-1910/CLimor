@@ -12,7 +12,6 @@ import com.limor.app.databinding.FragmentCommentsBinding
 import com.limor.app.di.Injectable
 import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.main_new.adapters.PodcastCommentsAdapter
-import com.limor.app.scenes.main_new.view_model.PodcastControlViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastFullPlayerViewModel
 
 class FragmentComments : FragmentWithLoading(), Injectable {
@@ -20,7 +19,6 @@ class FragmentComments : FragmentWithLoading(), Injectable {
 //    @Inject
 //    lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: PodcastFullPlayerViewModel by activityViewModels  ()
-    private val controlModel: PodcastControlViewModel by activityViewModels ()
 
     private lateinit var binding: FragmentCommentsBinding
     private var podcastId: Int = 0
@@ -66,7 +64,7 @@ class FragmentComments : FragmentWithLoading(), Injectable {
             val layoutManager = LinearLayoutManager(requireContext())
             binding.rvComments.layoutManager = layoutManager
             binding.rvComments.adapter =
-                PodcastCommentsAdapter(controlModel).apply { submitList(list) }
+                PodcastCommentsAdapter().apply { submitList(list) }
         } else
             (binding.rvComments.adapter as PodcastCommentsAdapter).submitList(list)
     }

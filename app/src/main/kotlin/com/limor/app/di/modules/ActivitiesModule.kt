@@ -42,15 +42,6 @@ abstract class ActivitiesModule {
     )
     abstract fun contributeRecordActivityInjector(): RecordActivity
 
-
-    @ContributesAndroidInjector(
-        modules = [
-            (PodcastDetailsActivityFragmentsBuildersModule::class)
-        ]
-    )
-    abstract fun contributePodcastDetailsActivityInjector(): PodcastDetailsActivity
-
-
     @ContributesAndroidInjector(
         modules = [
             (UserProfileActivityFragmentsBuildersModule::class)

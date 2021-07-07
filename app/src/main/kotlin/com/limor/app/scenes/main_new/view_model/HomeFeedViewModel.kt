@@ -4,44 +4,32 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.limor.app.FeedItemsQuery
-import com.limor.app.GetUserProfileByIdQuery
-import com.limor.app.GetUserProfileQuery
-import com.limor.app.apollo.GeneralInfoRepository
-import kotlinx.coroutines.delay
+import com.limor.app.uimodels.CastUIModel
+import com.limor.app.usecases.GetHomeFeedCastsUseCase
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 class HomeFeedViewModel @Inject constructor(
-    val generalInfoRepository: GeneralInfoRepository
+   private val getHomeFeedCastsUseCase: GetHomeFeedCastsUseCase
 ) : ViewModel() {
 
-    private val _homeFeedLiveData =
-        MutableLiveData<List<FeedItemsQuery.GetFeedItem>?>()
-    val homeFeedLiveData: LiveData<List<FeedItemsQuery.GetFeedItem>?>
-        get() = _homeFeedLiveData
+    private val _homeFeedData = MutableLiveData<List<CastUIModel>>()
+    val homeFeedData: LiveData<List<CastUIModel>> get() = _homeFeedData
 
-    private var _homeFeedErrorLiveData =
-        MutableLiveData<String>()
-    val homeFeedErrorLiveData: LiveData<String>
-        get() = _homeFeedErrorLiveData
-
-
-
-    fun loadHomeFeed(offset:Int = 0) {
-        viewModelScope.launch {
-            try {
-                val feedItems = generalInfoRepository.fetchHomeFeed(offset = offset)
-                _homeFeedLiveData.postValue(feedItems)
-                delay(300)
-                _homeFeedLiveData.postValue(null)
-            } catch (e: Exception) {
-                _homeFeedErrorLiveData.postValue(e.localizedMessage)
-            }
-        }
+    init {
+        loadHomeFeed()
     }
 
-
-
-
+    fun loadHomeFeed(offset: Int = 0) {
+        viewModelScope.launch {
+            getHomeFeedCastsUseCase.execute(limit = 20, offset = offset)
+                .onSuccess {
+                    _homeFeedData.value = it
+                }
+                .onFailure {
+                    Timber.e(it, "Error while fetching home feed")
+                }
+        }
+    }
 }
