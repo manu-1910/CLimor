@@ -5,21 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.addCallback
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.os.bundleOf
-import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentExtendedPlayerBinding
-import com.limor.app.extensions.loadCircleImage
-import com.limor.app.extensions.loadImage
+import com.limor.app.extensions.*
 import com.limor.app.scenes.auth_new.util.colorStateList
+import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
+import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
 import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.uimodels.TagUIModel
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -42,9 +44,24 @@ class ExtendedPlayerFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val likePodcastViewModel: LikePodcastViewModel by viewModels { viewModelFactory }
+    private val commentsViewModel: CommentsViewModel by viewModels { viewModelFactory }
     private val podcast: CastUIModel by lazy { requireArguments()[CAST_KEY] as CastUIModel }
 
     private lateinit var playerBinder: PlayerBinder
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback {
+            (activity as? PlayerViewManager)?.showPlayer(
+                PlayerViewManager.PlayerArgs(
+                    PlayerViewManager.PlayerType.SMALL,
+                    podcast
+                )
+            )
+            isEnabled = false
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,7 +71,37 @@ class ExtendedPlayerFragment : BaseFragment() {
         _binding = FragmentExtendedPlayerBinding.inflate(inflater, container, false)
         bindViews()
         playerBinder = PlayerBinder(this, WeakReference(requireContext().applicationContext))
+        subscribeToPlayerUpdates()
+        subscribeToCommentUpdates()
+        loadFirstComment()
         return binding.root
+    }
+
+    private fun loadFirstComment() {
+        commentsViewModel.loadComments(podcast.id, limit = 1)
+    }
+
+    private fun subscribeToCommentUpdates() {
+        commentsViewModel.comments.observe(viewLifecycleOwner) { comments ->
+            val firstComment = comments.firstOrNull()
+            if (firstComment != null) {
+                binding.tvFirstCollapsedComment.text = firstComment.content
+                firstComment.user?.imageLinks?.small?.let { imageUrl ->
+                    binding.ivAvatarFirstCollapsedComment.loadCircleImage(imageUrl)
+                }
+                binding.firstCollapsedCommentVisibilityGroup.makeVisible()
+                binding.noCommentsMessage.makeGone()
+                binding.llExtendCommentsHeader.isEnabled = true
+            } else {
+                binding.firstCollapsedCommentVisibilityGroup.makeGone()
+                binding.noCommentsMessage.makeVisible()
+                binding.llExtendCommentsHeader.isEnabled = false
+            }
+        }
+
+        commentsViewModel.commentAddEvent.observe(viewLifecycleOwner) {
+            loadFirstComment()
+        }
     }
 
     private fun bindViews() {
@@ -90,12 +137,12 @@ class ExtendedPlayerFragment : BaseFragment() {
     }
 
     private fun subscribeToPlayerUpdates() {
-        playerBinder.currentPlayPositionLiveData.observe(this) {
+        playerBinder.currentPlayPositionLiveData.observe(viewLifecycleOwner) {
             binding.lpiPodcastProgress.progress = it.second
             binding.tvRecastPlayCurrentPosition.text = (it.first ?: 0 / 1000).toString()
         }
 
-        playerBinder.playerStatusLiveData.observe(this) {
+        playerBinder.playerStatusLiveData.observe(viewLifecycleOwner) {
             if (it == null) return@observe
             when (it) {
                 is PlayerStatus.Cancelled -> Timber.d("Player Canceled")
@@ -139,14 +186,22 @@ class ExtendedPlayerFragment : BaseFragment() {
         }
 
         binding.llExtendCommentsHeader.setOnClickListener {
-            val bundle = bundleOf(FragmentComments.PODCAST_ID_EXTRA to podcast.id)
-//             Navigation.findNavController(this, R.id.nav_host_fragment).navigate(R.id.fragmentCommets) bundle)
-            val fragment = FragmentComments()
-            fragment.arguments = bundle
-            parentFragmentManager.commit {
-                setReorderingAllowed(true)
-                add(R.id.fragment_comments_container, fragment, "FragmentCommentTag")
-            }
+            val fragment = FragmentComments.newInstance(podcast)
+            parentFragmentManager.beginTransaction()
+                .addToBackStack(FragmentComments.TAG)
+                .replace(R.id.fragment_comments_container, fragment, FragmentComments.TAG)
+                .commit()
+        }
+
+        binding.btnPodcastSendComment.setOnClickListener {
+            commentsViewModel.addComment(
+                podcast.id,
+                binding.commentText.text.toString(),
+                ownerId = podcast.id,
+                ownerType = CommentUIModel.OWNER_TYPE_PODCAST
+            )
+            binding.commentText.text = null
+            binding.commentText.hideKeyboard()
         }
     }
 

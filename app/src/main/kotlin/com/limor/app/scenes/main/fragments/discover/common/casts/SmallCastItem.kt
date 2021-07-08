@@ -5,9 +5,12 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverSmallCastBinding
+import com.limor.app.extensions.getActivity
 import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
+import com.limor.app.scenes.utils.PlayerViewManager
+import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
@@ -41,7 +44,7 @@ class SmallCastItem(
                 .into(ownerIcon)
 
             root.setOnClickListener {
-                ToastMaker.showToast(it.context, "Not implemented")
+                (it.context.getActivity() as? PlayerViewManager)?.showExtendedPlayer(cast)
             }
 
             authorName.setOnClickListener {

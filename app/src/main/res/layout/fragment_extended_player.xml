@@ -491,6 +491,24 @@
                 app:layout_constraintTop_toTopOf="@id/ivAvatarFirstCollapsedComment"
                 tools:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry" />
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/firstCollapsedCommentVisibilityGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                app:constraint_referenced_ids="ivAvatarFirstCollapsedComment, tvFirstCollapsedComment"/>
+
+            <TextView
+                android:id="@+id/no_comments_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_comments_message"
+                android:textColor="@color/subtitle_text_color"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/llExtendCommentsHeader" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
@@ -542,6 +560,7 @@
         app:layout_constraintStart_toEndOf="@+id/btnPodcastStartVoiceComment">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/comment_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="3" />

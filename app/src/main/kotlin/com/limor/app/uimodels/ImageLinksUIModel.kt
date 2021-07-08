@@ -78,3 +78,11 @@ fun FeedItemsQuery.Images1.mapToUIModel(): ImageLinksUIModel {
 fun FeedItemsQuery.Images2.mapToUIModel(): ImageLinksUIModel {
     return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
 }
+
+fun GetCommentsByPodcastsQuery.Images.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+}
+
+fun GetCommentsByPodcastsQuery.Images1.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+}

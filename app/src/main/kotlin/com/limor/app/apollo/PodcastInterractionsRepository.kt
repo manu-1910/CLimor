@@ -2,7 +2,6 @@ package com.limor.app.apollo
 
 import com.google.gson.Gson
 import com.limor.app.*
-import com.limor.app.apollo.Apollo.Companion.LOAD_PORTION
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -21,7 +20,7 @@ class PodcastInteractionsRepository @Inject constructor(val apollo: Apollo) {
         return podcastId
     }
 
-    suspend fun recastPodcast(podcastId: Int): Int?{
+    suspend fun recastPodcast(podcastId: Int): Int? {
         val mutation = CreateRecastMutation(podcastId)
         val result = apollo.mutate(mutation)
         return podcastId
@@ -39,10 +38,27 @@ class PodcastInteractionsRepository @Inject constructor(val apollo: Apollo) {
 
     suspend fun getCommentsByPodcast(
         podcastId: Int,
-        offset: Int = 0
-    ): List<GetCommentsByPodcastsQuery.GetCommentsByPodcast>? {
-        val query = GetCommentsByPodcastsQuery(podcastId, limit = LOAD_PORTION, offset = offset)
+        offset: Int = 0,
+        limit: Int = Int.MAX_VALUE
+    ): List<GetCommentsByPodcastsQuery.GetCommentsByPodcast> {
+        val query = GetCommentsByPodcastsQuery(podcastId, limit = limit, offset = offset)
         val result = apollo.launchQuery(query)
-        return result?.data?.getCommentsByPodcasts?.filterNotNull()
+        return result?.data?.getCommentsByPodcasts?.filterNotNull() ?: emptyList()
+    }
+
+    suspend fun createComment(
+        podcastId: Int,
+        content: String,
+        ownerId: Int,
+        ownerType: String
+    ): Int? {
+        val mutation = CreateCommentMutation(
+            podcastId = podcastId,
+            content = content,
+            ownerId = ownerId,
+            ownerType = ownerType
+        )
+        val result = apollo.mutate(mutation)
+        return result?.data?.createComment?.id
     }
 }
