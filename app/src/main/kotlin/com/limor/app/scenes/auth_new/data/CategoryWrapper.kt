@@ -8,6 +8,7 @@ data class CategoryWrapper(
     var isSelected: Boolean = false
 ) {
     val name: String get() = queryCategory.name!!
+    val categoryId: Int? get() = queryCategory.id
 }
 
 fun createMockedCategories(): List<CategoryWrapper> {

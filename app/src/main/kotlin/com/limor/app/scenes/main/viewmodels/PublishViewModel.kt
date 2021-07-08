@@ -4,30 +4,40 @@ package com.limor.app.scenes.main.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.limor.app.FeedItemsQuery
+import com.limor.app.apollo.PublishRepository
 import com.limor.app.common.SingleLiveEvent
-import com.limor.app.uimodels.UIErrorResponse
-import com.limor.app.uimodels.UILocations
-import com.limor.app.uimodels.UIPublishRequest
-import com.limor.app.uimodels.UIPublishResponse
+import com.limor.app.type.CreatePodcastInput
+import com.limor.app.uimodels.*
 import com.limor.app.usecases.PublishUseCase
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.square1.limor.remote.extensions.parseSuccessResponse
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
+import timber.log.Timber
 import javax.inject.Inject
 
 
-class PublishViewModel @Inject constructor(private val publishUseCase: PublishUseCase) : ViewModel() {
+class PublishViewModel @Inject constructor(private val publishUseCase: PublishUseCase,
+private val publishRepository: PublishRepository
+) : ViewModel() {
 
     var uiPublishRequest = UIPublishRequest(
         podcast = null
     );
-
+    private val _publishResponseData = MutableLiveData<String?>()
+    val publishResponseData: LiveData<String?>
+    get() = _publishResponseData
     var categorySelected: String = ""
-    var categorySelectedId: Int = 0
+    var categorySelectedId: Int = -1
     var locationSelectedItem: UILocations = UILocations("", 0.0, 0.0, true)
     var languageSelected: String = ""
+    var languageCode: String = ""
     var languageSelectedId: Int = 0
     val tags = arrayListOf<String>()
 
@@ -48,7 +58,7 @@ class PublishViewModel @Inject constructor(private val publishUseCase: PublishUs
         val backgroundWorkingProgress = MutableLiveData<Boolean>()
         val response = MutableLiveData<UIPublishResponse>()
 
-        input.publishTrigger.subscribe({
+        /*input.publishTrigger.subscribe({
             publishUseCase.execute(uiPublishRequest).subscribe({
                 //sessionManager.storeToken(it.data.access_token.token.access_token)
                 response.value = it
@@ -66,7 +76,7 @@ class PublishViewModel @Inject constructor(private val publishUseCase: PublishUs
                 }
 
             })
-        }, {}).addTo(compositeDispose)
+        }, {}).addTo(compositeDispose)*/
 
         return Output(response, backgroundWorkingProgress, errorTracker)
     }
@@ -74,5 +84,21 @@ class PublishViewModel @Inject constructor(private val publishUseCase: PublishUs
     override fun onCleared() {
         if (!compositeDispose.isDisposed) compositeDispose.dispose()
         super.onCleared()
+    }
+
+    suspend fun createPodcast(podcast: CreatePodcastInput):String? {
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = publishRepository.createPodcast(podcast)
+               // _publishResponseData.value = response
+                response
+            } catch (e: Exception) {
+                Timber.e(e)
+               // _publishResponseData.value = null
+                null
+            }
+
+        }
     }
 }

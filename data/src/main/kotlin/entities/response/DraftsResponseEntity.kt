@@ -18,6 +18,8 @@ data class DraftEntity(
     val timeStamps: ArrayList<TimeStampEntity>,
     val date: String?,
     val categoryId: Int?,
+    val languageCode: String?,
+    val language: String?,
     val category: String?,
     val location: LocationsEntity?,
     val parentDraft : DraftEntity?,

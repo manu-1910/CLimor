@@ -23,6 +23,7 @@ import com.limor.app.scenes.main.viewmodels.LanguagesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.MAIN
 import kotlinx.android.synthetic.main.fragment_languages.*
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -31,7 +32,7 @@ class LanguagesFragment : FragmentWithLoading(), Injectable {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: LanguagesViewModel by activityViewModels {viewModelFactory}
-    private val publishViewModel: PublishViewModel by activityViewModels() {viewModelFactory}
+    private val publishViewModel: PublishViewModel by activityViewModels { viewModelFactory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,6 +49,7 @@ class LanguagesFragment : FragmentWithLoading(), Injectable {
     }
 
     override fun load() = model.downloadLanguages()
+    var lastCheckedId = View.NO_ID
 
     override val errorLiveData: LiveData<String>
         get() = model.languagesLiveDataError
@@ -103,10 +105,13 @@ class LanguagesFragment : FragmentWithLoading(), Injectable {
 
     private fun createLanguagesArray(languages: List<LanguageWrapper>) {
         cgLanguages.removeAllViews()
+        cgLanguages.isSingleSelection = true
         val chipsList = languages.map { languageWrapper ->
             getVariantChip(languageWrapper)
         }
-        chipsList.forEach { cgLanguages.addView(it) }
+        chipsList.forEach {
+            it.id = View.generateViewId()
+            cgLanguages.addView(it) }
     }
 
     private fun getVariantChip(language: LanguageWrapper): Chip {
@@ -114,13 +119,19 @@ class LanguagesFragment : FragmentWithLoading(), Injectable {
         chip.apply {
             text = language.name
             MAIN {
-                isChecked = language.isSelected
+               isChecked = (lastCheckedId == chip.id)
             }
             setOnCheckedChangeListener { buttonView, isChecked ->
                 language.isSelected = isChecked
+                lastCheckedId = chip.id
+                if (isChecked) {
+                    publishViewModel.languageSelected = text.toString()
+                    publishViewModel.languageCode = language.code
+                }else{
+                    lastCheckedId = View.NO_ID
+                }
+                Timber.d("Chip -> ${language.code} -- ${language.name}")
                 model.updateLanguagesSelection()
-                if (isChecked) publishViewModel.languageSelected = text.toString()
-                buttonView.hideKeyboard()
             }
         }
         return chip

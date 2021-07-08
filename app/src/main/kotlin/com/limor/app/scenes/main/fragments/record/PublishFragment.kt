@@ -39,11 +39,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
+import com.apollographql.apollo.api.Input
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
@@ -53,6 +55,7 @@ import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter
 import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
 import com.limor.app.App
 import com.limor.app.BuildConfig
+import com.limor.app.CreatePodcastMutation
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
 import com.limor.app.common.BaseFragment
@@ -70,6 +73,9 @@ import com.limor.app.scenes.utils.CommonsKt.Companion.toEditable
 import com.limor.app.scenes.utils.SpecialCharactersInputFilter
 import com.limor.app.scenes.utils.location.MyLocation
 import com.limor.app.scenes.utils.waveform.KeyboardUtils
+import com.limor.app.type.CreatePodcastInput
+import com.limor.app.type.PodcastAudio
+import com.limor.app.type.PodcastMetadata
 import com.limor.app.uimodels.*
 import com.yalantis.ucrop.UCrop
 import io.reactivex.subjects.PublishSubject
@@ -77,12 +83,17 @@ import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
 import kotlinx.android.synthetic.main.fragment_publish.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
+import kotlinx.android.synthetic.main.toolbar_profile.*
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
 import kotlinx.android.synthetic.main.view_cast_published.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.support.v4.runOnUiThread
 import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
 import timber.log.Timber
@@ -141,7 +152,7 @@ class PublishFragment : BaseFragment() {
     private var imageUrlFinal: String? = ""
     private var audioUrlFinal: String? = ""
     private var isPublished: Boolean = false
-    private var listTags = ArrayList<UITags>()
+    private var listTags = ArrayList<TagUIModel>()
     private var listTagsString: HashtagArrayAdapter<Hashtag>? = null
     private var tvSelectedLocation: TextView? = null
     private var tvSelectedCategory: TextView? = null
@@ -276,7 +287,7 @@ class PublishFragment : BaseFragment() {
             uiDraft.location = podcastLocation
         }
 
-        if (!publishViewModel.categorySelected.isNullOrEmpty()) {
+        if (publishViewModel.categorySelected.isNotEmpty()) {
             tvSelectedCategory?.text = publishViewModel.categorySelected
             uiDraft.category = publishViewModel.categorySelected
             uiDraft.categoryId = publishViewModel.categorySelectedId
@@ -284,8 +295,9 @@ class PublishFragment : BaseFragment() {
             updatePublishBtnState()
         }
 
-        if (!publishViewModel.languageSelected.isNullOrEmpty()) {
+        if (publishViewModel.languageSelected.isNotEmpty()) {
             textSelectedLanguage?.text = publishViewModel.languageSelected
+            uiDraft.languageCode = publishViewModel.languageCode
             isLanguageSelected = true
             updatePublishBtnState()
         }
@@ -303,18 +315,56 @@ class PublishFragment : BaseFragment() {
                 && isCaptionValid
                 && isTitleValid
                 && isTagsSelected
-
+        Timber.d(
+            "category -> $isCategorySelected " +
+                    "imageChosen -> $isImageChosen " +
+                    "language -> $isLanguageSelected " +
+                    "caption valid -> $isCaptionValid " +
+                    "tags-> $isTagsSelected" +
+                    "title-> $isTitleValid"
+        )
         btnPublishDraft?.isEnabled = isAllRequiredFieldsFilled
     }
 
     private fun apiCallPublishPodcast() {
-        val output = publishViewModel.transform(
+       /* val output = publishViewModel.transform(
             PublishViewModel.Input(
                 publishPodcastTrigger
             )
-        )
+        )*/
 
-        output.response.observe(viewLifecycleOwner, Observer {
+        publishViewModel.publishResponseData.observe(viewLifecycleOwner,Observer{
+            progressPb.visibility = View.GONE
+            view?.hideKeyboard()
+            it?.let{
+                //Publish Ok
+                Timber.d("Cast Publish Success -> ")
+                convertedFile?.delete()
+                callToDeleteDraft()
+                isPublished = true
+                viewCastPublished.visibility = View.VISIBLE
+                btnDone.onClick {
+                    val mainIntent = Intent(context, MainActivity::class.java)
+                    startActivity(mainIntent)
+                    activity?.finish()
+                }
+            }?:run{
+                //Publish Not Ok
+                val message: StringBuilder = StringBuilder()
+                message.append(getString(R.string.publish_cast_error_message))
+                showUnableToPublishCastDialog(
+                    description = message.toString(),
+                    okText = getString(R.string.try_again),
+                    okAction = {
+                        btnPublishDraft?.callOnClick()
+                    },
+                    negativeText = getString(R.string.description_back),
+                    negativeAction = {
+                    })
+            }
+        })
+
+       /* output.response.observe(viewLifecycleOwner, Observer {
             progressPb.visibility = View.GONE
             view?.hideKeyboard()
 
@@ -348,6 +398,7 @@ class PublishFragment : BaseFragment() {
                     message.append(getString(R.string.publish_cast_error_message))
                 }
 
+
                 if (it.code == 10) {  //Session expired
                     showUnableToPublishCastDialog(
                         getString(R.string.session_expired_error_message),
@@ -379,7 +430,7 @@ class PublishFragment : BaseFragment() {
                     })
 
             }
-        })
+        })*/
     }
 
 
@@ -441,6 +492,7 @@ class PublishFragment : BaseFragment() {
                 publishPodcastImage()
             }
             publishPodcastAudio()
+
         }
 
         layoutCastCategory?.onClick {
@@ -459,10 +511,13 @@ class PublishFragment : BaseFragment() {
         twHastags = object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
-                isTagsSelected = etHashtags.hashtags.count() > 0
-                publishViewModel.tags.clear()
-                publishViewModel.tags.addAll(etHashtags.hashtags.map { "#$it" })
-                updatePublishBtnState()
+                etDraftTags?.hashtags?.let{
+                    isTagsSelected = it.size > 0
+                    publishViewModel.tags.clear()
+                    publishViewModel.tags.addAll(it.map { "#$it" })
+                    updatePublishBtnState()
+                }
+
             }
 
             override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {
@@ -561,6 +616,10 @@ class PublishFragment : BaseFragment() {
         positiveButton.onClick {
             uiDraft.title = editText.text.toString()
             uiDraft.caption = etDraftCaption?.text.toString()
+            uiDraft.languageCode = publishViewModel.languageCode
+            uiDraft.language = publishViewModel.languageSelected
+            uiDraft.category = publishViewModel.categorySelected
+            uiDraft.categoryId = publishViewModel.categorySelectedId
             callToUpdateDraft()
             toast(getString(R.string.draft_inserted))
             requireActivity().finish()
@@ -646,48 +705,57 @@ class PublishFragment : BaseFragment() {
 
 
     private fun publishPodcastAudio() {
-        progressPb.visibility = View.VISIBLE
 
-        Timber.d("Publishing audio podcast")
-        if (!app!!.merlinsBeard!!.isConnected) {
-            progressPb.visibility = View.GONE
-            showUnableToPublishCastDialog(
-                description = getString(R.string.default_no_internet),
-                okText = getString(R.string.ok),
-                okAction = {
+            progressPb.visibility = View.VISIBLE
 
-                })
-            return
-        }
-        convertedFile = WavHelper.convertWavToM4a(requireContext(), uiDraft.filePath!!)
-        convertedFile?.let {
-            //Upload audio file to AWS
-            Commons.getInstance().uploadAudio(
-                context,
-                it,
-                Constants.AUDIO_TYPE_PODCAST,
-                object : Commons.AudioUploadCallback {
-                    override fun onSuccess(audioUrl: String?) {
-                        println("Audio upload to AWS succesfully")
-                        audioUploaded = true
-                        audioUrlFinal = audioUrl
-                        progressPb.visibility = View.GONE
-                        readyToPublish()
-                    }
 
-                    override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
-                    }
+            Timber.d("Publishing audio podcast")
+            if (!app!!.merlinsBeard!!.isConnected) {
 
-                    override fun onError(error: String?) {
-                        progressPb.visibility = View.GONE
-                        audioUploaded = false
-                        alert(getString(R.string.error_uploading_audio)) {
-                            okButton { }
-                        }.show()
-                        Timber.d("Audio upload to AWS error: $error")
-                    }
-                })
-        }
+                progressPb.visibility = View.GONE
+                showUnableToPublishCastDialog(
+                    description = getString(R.string.default_no_internet),
+                    okText = getString(R.string.ok),
+                    okAction = {
+
+                    })
+
+                return
+            }
+            convertedFile = WavHelper.convertWavToM4a(requireContext(), uiDraft.filePath!!)
+            convertedFile?.let {
+                //Upload audio file to AWS
+                Commons.getInstance().uploadAudio(
+                    context,
+                    it,
+                    Constants.AUDIO_TYPE_PODCAST,
+                    object : Commons.AudioUploadCallback {
+                        override fun onSuccess(audioUrl: String?) {
+                            println("Audio upload to AWS succesfully")
+                            audioUploaded = true
+                            audioUrlFinal = audioUrl
+                            progressPb.visibility = View.GONE
+                            readyToPublish()
+                        }
+
+                        override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
+                        }
+
+                        override fun onError(error: String?) {
+                            progressPb.visibility = View.GONE
+                            audioUploaded = false
+                            alert(getString(R.string.error_uploading_audio)) {
+                                okButton { }
+                            }.show()
+                            Timber.d("Audio upload to AWS error: $error")
+                        }
+                    })
+
+            }
+
+
+
+
 
 
     }
@@ -696,16 +764,14 @@ class PublishFragment : BaseFragment() {
     private fun publishPodcastImage() {
         progressPb.visibility = View.VISIBLE
         if (Commons.getInstance().isImageReadyForUpload) {
-
-            // val dialog = AlertProgressBar(requireContext())
-            // dialog.show()
-
-
-            //Upload audio file to AWS
             Commons.getInstance().uploadImage(
                 context,
                 object : Commons.ImageUploadCallback {
-                    override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
+                    override fun onProgressChanged(
+                        id: Int,
+                        bytesCurrent: Long,
+                        bytesTotal: Long
+                    ) {
                         //  dialog.updateProgress(bytesCurrent.toInt(), bytesTotal.toInt())
                     }
 
@@ -750,31 +816,59 @@ class PublishFragment : BaseFragment() {
 
     private fun apiCallPublish() {
         progressPb.visibility = View.VISIBLE
-
-
-        val uiPublishRequest = UIPublishRequest(
-            podcast = UIPodcastRequest(
-                audio = UIAudio(
+        val podcast = CreatePodcastInput(
+                audio = PodcastAudio(
                     audio_url = audioUrlFinal.toString(),
                     original_audio_url = audioUrlFinal.toString(),
                     duration = mediaPlayer.duration,
-                    total_samples = 0.0,
-                    total_length = mediaPlayer.duration.toDouble()
+                    total_samples = 0,
+                    total_length = mediaPlayer.duration,
+                    sample_rate = 0.0
                 ),
-                meta_data = UIMetaData(
+                meta_data = PodcastMetadata(
                     title = etDraftTitle?.text.toString(),
                     caption = etDraftCaption?.text.toString(),
-                    latitude = podcastLocation.latitude.takeIf { podcastLocation.latitude != 0.0 }
-                        ?: 0.0,
-                    longitude = podcastLocation.longitude.takeIf { podcastLocation.longitude != 0.0 }
-                        ?: 0.0,
-                    image_url = imageUrlFinal.toString(),
-                    category_id = publishViewModel.categorySelectedId
+                    latitude = Input.fromNullable(null),
+                    longitude = Input.fromNullable(null),
+                    image_url = Input.fromNullable(imageUrlFinal),
+                    category_id = publishViewModel.categorySelectedId,
+                    language_code = publishViewModel.languageCode,
                 )
-            )
         )
-        publishViewModel.uiPublishRequest = uiPublishRequest
-        publishPodcastTrigger.onNext(Unit)
+        Timber.d("$podcast")
+        lifecycleScope.launch {
+           val response =  withContext(Dispatchers.IO){
+               publishViewModel.createPodcast(podcast)
+           }
+            progressPb.visibility = View.GONE
+            response?.let{
+            Timber.d("Cast Publish Success -> ")
+                convertedFile?.delete()
+                callToDeleteDraft()
+                isPublished = true
+                viewCastPublished.visibility = View.VISIBLE
+                btnDone.onClick {
+                    /*val mainIntent = Intent(context, MainActivity::class.java)
+                    startActivity(mainIntent)*/
+                    activity?.finish()
+                }
+            }?:run{
+                //Publish Not Ok
+                val message: StringBuilder = StringBuilder()
+                message.append(getString(R.string.publish_cast_error_message))
+                showUnableToPublishCastDialog(
+                    description = message.toString(),
+                    okText = getString(R.string.try_again),
+                    okAction = {
+                        btnPublishDraft?.callOnClick()
+                    },
+                    negativeText = getString(R.string.description_back),
+                    negativeAction = {
+                    })
+            }
+        }
+      //  publishViewModel.uiPublishRequest = uiPublishRequest
+       // publishPodcastTrigger.onNext(Unit)
     }
 
 
@@ -803,7 +897,6 @@ class PublishFragment : BaseFragment() {
                     "podcast_photo"
                 )
                 isImageChosen = true
-                updatePublishBtnState()
             }
             Glide.with(requireContext()).load(imageFile).into(draftImage!!)  // Uri of the picture
             lytImagePlaceholder?.visibility = View.INVISIBLE
@@ -814,6 +907,7 @@ class PublishFragment : BaseFragment() {
         }
         if (!uiDraft.category.toString().isNullOrEmpty()) {
             tvSelectedCategory?.text = uiDraft.category
+            this.isCategorySelected = true
         } else {
             tvSelectedCategory?.text = publishViewModel.categorySelected
             uiDraft.category = publishViewModel.categorySelected
@@ -827,7 +921,20 @@ class PublishFragment : BaseFragment() {
         }
         if (publishViewModel.tags.isNotEmpty()) {
             etHashtags.setText(publishViewModel.tags.joinToString(" "))
+            this.isTagsSelected = true
         }
+        uiDraft.categoryId?.let{
+            publishViewModel.categorySelectedId = it
+        }
+        uiDraft.languageCode?.let{
+            if(it.isNotEmpty())
+            publishViewModel.languageCode = it
+        }
+        uiDraft.language?.let{
+            if(it.isNotEmpty())
+            publishViewModel.languageSelected = it
+        }
+        Timber.d("Existing Data: -> $uiDraft")
         updatePublishBtnState()
     }
 
@@ -1189,44 +1296,25 @@ class PublishFragment : BaseFragment() {
 
     private fun callToTagsApiAndShowRecyclerView(tag: String) {
         tagsViewModel.tagToSearch = tag
-        getTagsTrigger.onNext(Unit)
+        tagsViewModel.searchHashTags(tag)
     }
 
 
     private fun apiCallHashTags() {
-        val output = tagsViewModel.transform(
-            TagsViewModel.Input(
-                getTagsTrigger
-            )
-        )
-
-        output.response.observe(viewLifecycleOwner, Observer {
-            if (it.code == 0) {
-                if (it.data.tags.size > 0) {
+        tagsViewModel.searchResult.observe(viewLifecycleOwner,Observer{
+            it?.let{
+                if(it.isNotEmpty()){
                     listTagsString?.clear()
-                    doAsync {
-                        listTags.clear()
-                        listTags.addAll(it.data.tags)
-
-                        uiThread {
-                            for (item in listTags) {
-                                listTagsString?.add(Hashtag(item.text))
-                            }
-                            rvTags?.adapter?.notifyDataSetChanged()
-                        }
+                    listTags.clear()
+                    listTags.addAll(it)
+                    for (item in listTags) {
+                        listTagsString?.add(Hashtag(item.tag))
                     }
+                    rvTags?.adapter?.notifyDataSetChanged()
                 }
-
             }
         })
 
-        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
-            trackBackgroudProgress(it)
-        })
-
-        output.errorMessage.observe(this, Observer {
-            CommonsKt.handleOnApiError(app!!, requireContext(), this, it)
-        })
     }
 
 

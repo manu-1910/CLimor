@@ -191,7 +191,8 @@
                             android:layout_marginEnd="@dimen/marginTwenty"
                             app:boxStrokeColor="@color/colorAccent"
                             app:boxStrokeWidth="2dp"
-                            android:visibility="gone"
+                            android:visibility="visible"
+                            app:helperText="@string/hastag_helper_text"
                             app:hintTextAppearance="@style/TextHintStyle"
                             app:hintTextColor="@color/colorAccent">
 
@@ -233,6 +234,8 @@
                             android:layout_marginStart="@dimen/marginMediumSmall"
                             android:layout_marginEnd="@dimen/marginMediumSmall"
                             android:visibility="gone"
+                            android:paddingBottom="@dimen/margin64"
+                            android:clipToPadding="false"
                             tools:listitem="@layout/tag_item" />
 
 
@@ -531,6 +534,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/black60"
+        android:clickable="true"
+        android:focusable="true"
         android:visibility="gone">
 
 

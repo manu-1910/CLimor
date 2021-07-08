@@ -23,12 +23,14 @@ data class UIDraft(
     var timeStamps: ArrayList<UITimeStamp>?,
     var date: String?,
     var categoryId: Int?,
+    var languageCode: String?,
+    var language: String?,
     var category: String?,
     var location: UILocations?,
     var draftParent : UIDraft?,
     var isNewRecording : Boolean
 ): Serializable {
-    constructor() : this( 0,"", "", "", "", "", 0, 0, false, ArrayList(), "", 0, "", UILocations(), null, false)
+    constructor() : this( 0,"", "", "", "", "", 0, 0, false, ArrayList(), "", 0, "","","", UILocations(), null, false)
 }
 
 

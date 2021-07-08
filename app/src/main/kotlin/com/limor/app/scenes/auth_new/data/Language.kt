@@ -4,6 +4,8 @@ import com.limor.app.LanguagesQuery
 import kotlin.random.Random
 
 data class LanguageWrapper(val language: LanguagesQuery.Language, var isSelected: Boolean = false) {
+    val code: String
+        get() = language.code ?: ""
     val name: String
         get() = language.name ?: ""
     val nativeName: String

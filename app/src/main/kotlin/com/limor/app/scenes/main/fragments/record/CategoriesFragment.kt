@@ -20,6 +20,8 @@ import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.BACKGROUND
 import com.limor.app.scenes.utils.MAIN
 import kotlinx.android.synthetic.main.fragment_publish_categories.*
+import kotlinx.android.synthetic.main.view_follow_button.*
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -27,8 +29,8 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val model: PublishCategoriesViewModel by activityViewModels {viewModelFactory}
-    private val publishViewModel: PublishViewModel by activityViewModels {viewModelFactory}
+    private val model: PublishCategoriesViewModel by activityViewModels { viewModelFactory }
+    private val publishViewModel: PublishViewModel by activityViewModels { viewModelFactory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,6 +46,8 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
     }
 
     override fun load() = model.downloadCategories()
+
+    var lastCheckedId = View.NO_ID
 
     override val errorLiveData: LiveData<String>
         get() = model.categoryLiveDataError
@@ -63,13 +67,16 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
     }
 
     private fun createCategoriesArray(categories: List<CategoryWrapper>) {
+        cgCategories.isSingleSelection = true
         if (categories.isNotEmpty()) cgCategories.removeAllViews()
         BACKGROUND({
             val categoriesChips =
                 categories.map { category ->
                     getVariantChip(category)
                 }
-            MAIN { categoriesChips.forEach { cgCategories.addView(it) } }
+            MAIN { categoriesChips.forEach {
+                it.id = View.generateViewId()
+                cgCategories.addView(it) } }
         })
     }
 
@@ -77,12 +84,24 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
         val chip = layoutInflater.inflate(R.layout.item_chip_category, null) as Chip
         chip.text = category.name
         MAIN {
-            chip.isChecked = category.isSelected
+            chip.isChecked = (lastCheckedId == chip.id)
         }
+        Timber.d("Chip -> ${category.categoryId} -- ${category.name}")
         chip.setOnCheckedChangeListener { buttonView, isChecked ->
-            category.isSelected = isChecked
-            model.updateCategoriesSelection()
-            if (isChecked) publishViewModel.categorySelected = chip.text.toString()
+
+            if (isChecked) {
+                category.isSelected = isChecked
+                lastCheckedId = chip.id
+                publishViewModel.categorySelected = chip.text.toString()
+                category.categoryId?.let {
+                    publishViewModel.categorySelectedId = it
+                }
+                model.updateCategoriesSelection()
+
+            }else{
+                lastCheckedId = View.NO_ID
+                model.updateCategoriesSelection()
+            }
         }
         return chip
     }

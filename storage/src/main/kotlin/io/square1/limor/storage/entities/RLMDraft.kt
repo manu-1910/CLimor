@@ -17,6 +17,8 @@ open class RLMDraft(
     var timeStamps: RealmList<RLMTimeStamp>? = RealmList(),
     var date: String? = "",
     var categoryId: Int? = 0,
+    var languageCode: String? = "",
+    var language: String? = "",
     var category: String? = "",
     var location: RLMLocations? = RLMLocations(),
     var parentDraft : RLMDraft? = null,
