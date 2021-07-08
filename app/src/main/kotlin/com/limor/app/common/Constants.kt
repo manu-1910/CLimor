@@ -62,8 +62,5 @@ class Constants{
         const val ERROR_CODE_FACEBOOK_USER_EXISTS = 1337
         const val ERROR_CODE_FACEBOOK_USER_DOES_NOT_EXISTS = 4
         const val ERROR_CODE_FACEBOOK_USER_EXITS_IN_LIMOR = 3
-
-        // Firebase
-        val STORAGE_URL = BuildConfig.FIREBASE_STORAGE_URL
     }
 }

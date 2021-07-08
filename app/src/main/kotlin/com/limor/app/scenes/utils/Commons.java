@@ -36,6 +36,7 @@ import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
+import com.limor.app.BuildConfig;
 import com.limor.app.R;
 import com.limor.app.common.Constants;
 import com.limor.app.uimodels.UIUser;
@@ -757,7 +758,7 @@ public class Commons {
             return;
         }
         // Firebase
-        FirebaseStorage instance = FirebaseStorage.getInstance(Constants.STORAGE_URL);
+        FirebaseStorage instance = FirebaseStorage.getInstance(BuildConfig.FIREBASE_STORAGE_URL);
         Uri file = Uri.fromFile(imageFile);
         StorageReference storageRef = instance.getReference();
         String fileName = "";
