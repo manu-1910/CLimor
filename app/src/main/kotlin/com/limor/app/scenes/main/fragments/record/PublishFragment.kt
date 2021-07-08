@@ -764,6 +764,12 @@ class PublishFragment : BaseFragment() {
     private fun publishPodcastImage() {
         progressPb.visibility = View.VISIBLE
         if (Commons.getInstance().isImageReadyForUpload) {
+
+            // val dialog = AlertProgressBar(requireContext())
+            // dialog.show()
+
+
+            //Upload audio file to AWS
             Commons.getInstance().uploadImage(
                 context,
                 object : Commons.ImageUploadCallback {
@@ -776,7 +782,7 @@ class PublishFragment : BaseFragment() {
                     }
 
                     override fun onSuccess(imageUrl: String?) {
-                        println("Image upload to AWS succesfully")
+                        println("Image upload to Firebase succesfully")
                         //var imageUploadedUrl = imageUrl
                         imageUploaded = true
                         imageUrlFinal = imageUrl

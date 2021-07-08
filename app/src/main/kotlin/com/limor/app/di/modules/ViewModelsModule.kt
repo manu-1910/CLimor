@@ -18,7 +18,6 @@ import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSugg
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsViewModel
 import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
-import com.limor.app.scenes.main_new.view_model.PodcastFullPlayerViewModel
 import com.limor.app.scenes.notifications.PushNotificationsViewModel
 import dagger.Binds
 import dagger.Module
@@ -153,11 +152,6 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(GetPodcastCommentsViewModel::class)
     abstract fun bindGetPodcastCommentsViewModel(getPodcastCommentsViewModel: GetPodcastCommentsViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(GetCommentCommentsViewModel::class)
-    abstract fun bindGetCommentCommentsViewModel(getCommentCommentsViewModel: GetCommentCommentsViewModel): ViewModel
 
     @Binds
     @IntoMap
@@ -311,11 +305,6 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(PodcastFullPlayerViewModel::class)
-    abstract fun bindPodcastFullPlayerViewModel(viewModel: PodcastFullPlayerViewModel): ViewModel
-
-    @Binds
-    @IntoMap
     @ViewModelKey(SettingsViewModel::class)
     abstract fun bindSettingsViewModel(viewModel: SettingsViewModel): ViewModel
 
@@ -338,4 +327,11 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(RecastPodcastViewModel::class)
     abstract fun bindRecastPodcastViewModel(viewModel: RecastPodcastViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CommentsViewModel::class)
+    abstract fun bindGetCommentsForPodcastViewModel(viewModel: CommentsViewModel): ViewModel
+
+
 }

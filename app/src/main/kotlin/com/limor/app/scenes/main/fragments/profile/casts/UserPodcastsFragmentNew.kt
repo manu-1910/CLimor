@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.limor.app.databinding.FragmentUserCastsBinding
 import com.limor.app.di.Injectable
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
+import com.limor.app.scenes.utils.PlayerViewManager
+import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.GroupieAdapter
 import javax.inject.Inject
@@ -70,7 +72,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     }
 
     private fun onCastClick(cast: CastUIModel) {
-        // TODO
+        (activity as? PlayerViewManager)?.showExtendedPlayer(cast)
     }
 
     private fun onMoreDialogClick(cast: CastUIModel) {

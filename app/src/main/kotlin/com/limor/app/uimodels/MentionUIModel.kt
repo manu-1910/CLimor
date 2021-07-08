@@ -138,3 +138,43 @@ fun FeedItemsQuery.Mentions.mapToUIModel() =
             )
         }
     )
+
+fun GetCommentsByPodcastsQuery.Mentions.mapToUIModel() =
+    MentionUIModel(
+        content = content!!.map {
+            MentionUIModel.MentionDataUIModel(
+                userId = it!!.user_id!!,
+                username = it.username!!,
+                startIndex = it.start_index!!,
+                endIndex = it.end_index!!,
+            )
+        },
+        caption = caption!!.map {
+            MentionUIModel.MentionDataUIModel(
+                userId = it!!.user_id!!,
+                username = it.username!!,
+                startIndex = it.start_index!!,
+                endIndex = it.end_index!!,
+            )
+        }
+    )
+
+fun GetCommentsByPodcastsQuery.Mentions1.mapToUIModel() =
+    MentionUIModel(
+        content = content!!.map {
+            MentionUIModel.MentionDataUIModel(
+                userId = it!!.user_id!!,
+                username = it.username!!,
+                startIndex = it.start_index!!,
+                endIndex = it.end_index!!,
+            )
+        },
+        caption = caption!!.map {
+            MentionUIModel.MentionDataUIModel(
+                userId = it!!.user_id!!,
+                username = it.username!!,
+                startIndex = it.start_index!!,
+                endIndex = it.end_index!!,
+            )
+        }
+    )

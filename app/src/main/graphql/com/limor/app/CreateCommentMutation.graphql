@@ -1,0 +1,5 @@
+mutation CreateCommentMutation($podcastId: Int!, $content: String!, $audioURL: String, $ownerId: Int!, $ownerType: String!, $duration: Int) {
+    createComment(podcastId: $podcastId, content: $content, audioURL: $audioURL, ownerId: $ownerId, ownerType: $ownerType, duration: $duration) {
+        id
+    }
+}
