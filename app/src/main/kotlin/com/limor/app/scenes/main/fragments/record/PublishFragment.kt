@@ -302,7 +302,7 @@ class PublishFragment : BaseFragment() {
                 && isLanguageSelected
                 && isCaptionValid
                 && isTitleValid
-                && isTagsSelected
+                //&& isTagsSelected
 
         btnPublishDraft?.isEnabled = isAllRequiredFieldsFilled
     }
@@ -710,7 +710,7 @@ class PublishFragment : BaseFragment() {
                     }
 
                     override fun onSuccess(imageUrl: String?) {
-                        println("Image upload to AWS succesfully")
+                        println("Image upload to Firebase succesfully")
                         //var imageUploadedUrl = imageUrl
                         imageUploaded = true
                         imageUrlFinal = imageUrl
