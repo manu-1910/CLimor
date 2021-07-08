@@ -64,6 +64,6 @@ class Constants{
         const val ERROR_CODE_FACEBOOK_USER_EXITS_IN_LIMOR = 3
 
         // Firebase
-        const val STORAGE_URL = "gs://limor-5439b.appspot.com/"
+        val STORAGE_URL = BuildConfig.FIREBASE_STORAGE_URL
     }
 }
