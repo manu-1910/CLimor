@@ -21,7 +21,7 @@
         android:id="@+id/navigation_podcast_activity"
         android:name="com.limor.app.scenes.main_new.fragments.FragmentHomePodcast"
         android:label="PodcastActivity"
-        tools:layout="@layout/activity_podcast" />
+        tools:layout="@layout/fragment_extended_player" />
 
     <dialog
         android:id="@+id/dialog_report_podcast"

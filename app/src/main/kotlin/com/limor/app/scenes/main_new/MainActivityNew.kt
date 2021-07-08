@@ -1,42 +1,45 @@
 package com.limor.app.scenes.main_new
 
 import android.os.Bundle
-import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import com.limor.app.R
 import com.limor.app.databinding.ActivityMainNewBinding
+import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
+import com.limor.app.scenes.utils.ActivityPlayerViewManager
+import com.limor.app.scenes.utils.PlayerViewManager
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main_new.*
 import javax.inject.Inject
 
-class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector {
+class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerViewManager {
+
     @Inject
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
+
     lateinit var binding: ActivityMainNewBinding
+    lateinit var playerBinding: ContainerWithSwipeablePlayerBinding
+
+    private var activityPlayerViewManager: ActivityPlayerViewManager? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Enable Activity Transitions. Optionally enable Activity transitions in your
-        // theme with <item name=”android:windowActivityTransitions”>true</item>.
-        window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-
-        // Attach a callback used to capture the shared elements from this Activity to be used
-        // by the container transform transition
-        setExitSharedElementCallback(MaterialContainerTransformSharedElementCallback())
-
-        // Keep system bars (status bar, navigation bar) persistent throughout the transition.
-        window.sharedElementsUseOverlay = false
         super.onCreate(savedInstanceState)
-//        AndroidInjection.inject(this)
-        binding = ActivityMainNewBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+
+        // Attach main activity binding into player container
+        playerBinding = ContainerWithSwipeablePlayerBinding.inflate(layoutInflater)
+        binding =
+            ActivityMainNewBinding.inflate(layoutInflater, playerBinding.contentContainer, true)
+
+        setContentView(playerBinding.root)
         setupFabClickListener()
         setUpBottomNavigation()
+
+        activityPlayerViewManager = ActivityPlayerViewManager(supportFragmentManager, playerBinding)
     }
 
     private fun setupFabClickListener() {
@@ -54,4 +57,19 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector {
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> =
         fragmentInjector
+
+    override fun isPlayerVisible() = activityPlayerViewManager?.isPlayerVisible() ?: false
+
+    override fun showPlayer(args: PlayerViewManager.PlayerArgs) {
+        activityPlayerViewManager?.showPlayer(args)
+    }
+
+    override fun hidePlayer() {
+        activityPlayerViewManager?.hidePlayer()
+    }
+
+    override fun onDestroy() {
+        activityPlayerViewManager = null
+        super.onDestroy()
+    }
 }
