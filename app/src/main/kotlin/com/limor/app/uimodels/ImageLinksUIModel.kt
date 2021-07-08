@@ -6,10 +6,10 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class ImageLinksUIModel(
-    val small: String,
-    val medium: String,
-    val large: String,
-    val original: String,
+    val small: String?,
+    val medium: String?,
+    val large: String?,
+    val original: String?,
 ) : Parcelable
 
 fun SuggestedPeopleQuery.Images.mapToUIModel(): ImageLinksUIModel {
@@ -52,7 +52,7 @@ fun GetPodcastsByHashtagQuery.Images1.mapToUIModel(): ImageLinksUIModel {
 }
 
 fun GetUserProfileQuery.Images.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun GetUserProfileByIdQuery.Images.mapToUIModel(): ImageLinksUIModel {

@@ -254,7 +254,7 @@ class EditProfileFragment : BaseFragment() {
                     override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {}
 
                     override fun onSuccess(imageUrl: String?) {
-                        Timber.d("Image upload to AWS successfully")
+                        Timber.d("Image upload to Firebase storage successfully")
                         //var imageUploadedUrl = imageUrl
                         profileImageUploaded = true
                         if (imageUrl != null) {

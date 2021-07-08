@@ -229,6 +229,7 @@ firebase.auth = "com.google.firebase:firebase-auth-ktx"
 firebase.functions = "com.google.firebase:firebase-functions-ktx"
 firebase.firebase_ads = "com.google.firebase:firebase-ads"
 firebase.dynamic_links = "com.google.firebase:firebase-dynamic-links-ktx"
+firebase.storage = "com.google.firebase:firebase-storage-ktx"
 deps.firebase = firebase
 
 def kotlin = [:]
