@@ -20,7 +20,7 @@ fun GetFeaturedCastsQuery.Audio.mapToUIModel() =
         url = audio_url!!,
         totalLength = total_length!!.toInt(),
         totalSamples = total_samples!!.toInt(),
-        duration = Duration.ofSeconds(duration!!.toLong()),
+        duration = Duration.ofMillis(duration!!.toLong()),
         sampleRate = sample_rate!!.toFloat(),
         originalUrl = original_audio_url
     )
@@ -30,7 +30,7 @@ fun GetTopCastsQuery.Audio.mapToUIModel() =
         url = audio_url!!,
         totalLength = total_length!!.toInt(),
         totalSamples = total_samples!!.toInt(),
-        duration = Duration.ofSeconds(duration!!.toLong()),
+        duration = Duration.ofMillis(duration!!.toLong()),
         sampleRate = sample_rate!!.toFloat(),
         originalUrl = original_audio_url
     )
@@ -40,7 +40,7 @@ fun GetPodcastsByCategoryQuery.Audio.mapToUIModel() =
         url = audio_url!!,
         totalLength = total_length!!.toInt(),
         totalSamples = total_samples!!.toInt(),
-        duration = Duration.ofSeconds(duration!!.toLong()),
+        duration = Duration.ofMillis(duration!!.toLong()),
         sampleRate = sample_rate!!.toFloat(),
         originalUrl = original_audio_url
     )
@@ -50,7 +50,7 @@ fun GetPodcastsByHashtagQuery.Audio.mapToUIModel() =
         url = audio_url!!,
         totalLength = total_length!!.toInt(),
         totalSamples = total_samples!!.toInt(),
-        duration = Duration.ofSeconds(duration!!.toLong()),
+        duration = Duration.ofMillis(duration!!.toLong()),
         sampleRate = sample_rate!!.toFloat(),
         originalUrl = original_audio_url
     )
@@ -60,7 +60,7 @@ fun GetUserPodcastsQuery.Audio.mapToUIModel() =
         url = audio_url!!,
         totalLength = total_length!!.toInt(),
         totalSamples = total_samples!!.toInt(),
-        duration = Duration.ofSeconds(duration!!.toLong()),
+        duration = Duration.ofMillis(duration!!.toLong()),
         sampleRate = sample_rate!!.toFloat(),
         originalUrl = original_audio_url
     )
@@ -70,7 +70,7 @@ fun FeedItemsQuery.Audio.mapToUIModel() =
         url = audio_url!!,
         totalLength = total_length!!.toInt(),
         totalSamples = total_samples!!.toInt(),
-        duration = Duration.ofSeconds(duration!!.toLong()),
+        duration = Duration.ofMillis(duration!!.toLong()),
         sampleRate = sample_rate!!.toFloat(),
         originalUrl = original_audio_url
     )
