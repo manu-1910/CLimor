@@ -30,6 +30,7 @@
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:scaleType="centerCrop"
+        android:clickable="false"
         app:layout_constraintBottom_toBottomOf="@+id/cpiPodcastListeningProgress"
         app:layout_constraintEnd_toEndOf="@+id/cpiPodcastListeningProgress"
         app:layout_constraintStart_toStartOf="@+id/cpiPodcastListeningProgress"
@@ -39,6 +40,7 @@
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="52dp"
         android:layout_height="52dp"
+        android:clickable="false"
         android:src="@color/dark_transparent"
         app:layout_constraintBottom_toBottomOf="@+id/cpiPodcastListeningProgress"
         app:layout_constraintEnd_toEndOf="@+id/cpiPodcastListeningProgress"
