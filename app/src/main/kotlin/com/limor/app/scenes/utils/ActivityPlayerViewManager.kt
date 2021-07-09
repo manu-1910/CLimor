@@ -59,11 +59,6 @@ class ActivityPlayerViewManager(
     }
 
     override fun hidePlayer() {
-        currentFragment?.let {
-            fragmentManager.beginTransaction()
-                .remove(it)
-                .commitNow()
-        }
         playerBinding.playerContainer.makeGone()
         isPlayerVisible = false
         _playerBinder.stop()
