@@ -39,7 +39,8 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         setupFabClickListener()
         setUpBottomNavigation()
 
-        activityPlayerViewManager = ActivityPlayerViewManager(supportFragmentManager, playerBinding)
+        activityPlayerViewManager =
+            ActivityPlayerViewManager(applicationContext, supportFragmentManager, playerBinding)
     }
 
     private fun setupFabClickListener() {
@@ -68,7 +69,10 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         activityPlayerViewManager?.hidePlayer()
     }
 
+    override fun getPlayerBinder() = activityPlayerViewManager!!.getPlayerBinder()
+
     override fun onDestroy() {
+        activityPlayerViewManager?.stop()
         activityPlayerViewManager = null
         super.onDestroy()
     }

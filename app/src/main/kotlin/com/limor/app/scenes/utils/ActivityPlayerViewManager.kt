@@ -1,5 +1,6 @@
 package com.limor.app.scenes.utils
 
+import android.content.Context
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -9,9 +10,11 @@ import com.limor.app.extensions.makeGone
 import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
 import com.limor.app.scenes.main_new.fragments.SmallPlayerFragment
+import com.limor.app.service.PlayerBinder
 import kotlin.math.abs
 
 class ActivityPlayerViewManager(
+    appContext: Context,
     private val fragmentManager: FragmentManager,
     private val playerBinding: ContainerWithSwipeablePlayerBinding
 ) : PlayerViewManager, MotionLayout.TransitionListener {
@@ -20,6 +23,7 @@ class ActivityPlayerViewManager(
     private var currentArgs: PlayerViewManager.PlayerArgs? = null
     private var isPlayerVisible: Boolean = false
     private var lastTransitionProgress = 0f
+    private val _playerBinder: PlayerBinder = PlayerBinder(appContext)
 
     init {
         playerBinding.motionLayout.apply {
@@ -32,6 +36,8 @@ class ActivityPlayerViewManager(
 
     override fun showPlayer(args: PlayerViewManager.PlayerArgs) {
         currentArgs = args
+
+        _playerBinder.start(args.cast)
 
         when (args.playerType) {
             PlayerViewManager.PlayerType.SMALL -> {
@@ -53,13 +59,9 @@ class ActivityPlayerViewManager(
     }
 
     override fun hidePlayer() {
-        currentFragment?.let {
-            fragmentManager.beginTransaction()
-                .remove(it)
-                .commitNow()
-        }
         playerBinding.playerContainer.makeGone()
         isPlayerVisible = false
+        _playerBinder.stop()
     }
 
     override fun onTransitionChange(
@@ -96,6 +98,14 @@ class ActivityPlayerViewManager(
             }
         }
         lastTransitionProgress = progress
+    }
+
+    override fun getPlayerBinder(): PlayerBinder {
+        return _playerBinder
+    }
+
+    fun stop() {
+        _playerBinder.stop()
     }
 
     override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) = Unit

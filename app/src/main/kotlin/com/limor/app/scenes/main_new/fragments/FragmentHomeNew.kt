@@ -16,10 +16,8 @@ import com.limor.app.scenes.main_new.adapters.HomeFeedAdapter
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.utils.PlayerViewManager
-import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.CastUIModel
 import kotlinx.android.synthetic.main.fragment_home_new.*
-import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 class FragmentHomeNew : BaseFragment() {
@@ -31,7 +29,6 @@ class FragmentHomeNew : BaseFragment() {
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
 
     lateinit var binding: FragmentHomeNewBinding
-    private lateinit var playerBinder: PlayerBinder
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,13 +36,7 @@ class FragmentHomeNew : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeNewBinding.inflate(inflater, container, false)
-        initPlayerBinder()
-        initViews()
         return binding.root
-    }
-
-    private fun initViews() {
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,10 +50,6 @@ class FragmentHomeNew : BaseFragment() {
         binding.swipeToRefresh.setOnRefreshListener {
             homeFeedViewModel.loadHomeFeed()
         }
-    }
-
-    private fun initPlayerBinder() {
-        playerBinder = PlayerBinder(this, WeakReference(requireContext()))
     }
 
     private fun subscribeToViewModel() {

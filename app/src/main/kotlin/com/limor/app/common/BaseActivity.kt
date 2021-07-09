@@ -169,7 +169,7 @@ abstract class BaseActivity : AppCompatActivity() {
                     is PlayerStatus.Ended -> {
                         setPlayerUiPaused()
                         audioService?.play(
-                            audioService?.uiPodcast?.audio?.url,
+                            audioService?.uiPodcast,
                             1L,
                             1F
                         )

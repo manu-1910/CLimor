@@ -90,6 +90,9 @@ class AudioService : Service() {
     private var mediaSessionConnector: MediaSessionConnector? = null
     var uiPodcast: CastUIModel? = null
 
+    /**
+     * Current playing position in milliseconds
+     */
     private var _currentPlayingPosition = MutableLiveData<Long>().apply { value = 0 }
     var currentPlayingPosition: LiveData<Long> = _currentPlayingPosition
         get() = _currentPlayingPosition
@@ -251,7 +254,7 @@ class AudioService : Service() {
                     intent.getLongExtra(ARG_START_POSITION, C.POSITION_UNSET.toLong())
                 val playbackSpeed = 1f
 
-                play(uiPodcast?.audio?.url, startPosition, playbackSpeed)
+                play(uiPodcast, startPosition, playbackSpeed)
                 feedPosition = intent.getIntExtra(ARG_FEED_POSITION, -1)
 
                 Timber.w("AudioService - Playing podcast id %d", uiPodcast?.id)
@@ -262,10 +265,12 @@ class AudioService : Service() {
     }
 
     @MainThread
-    fun play(uri: String?, startPosition: Long, playbackSpeed: Float? = null) {
+    fun play(podcast: CastUIModel?, startPosition: Long, playbackSpeed: Float? = null) {
+        this.uiPodcast = podcast
+
         val userAgent = Util.getUserAgent(applicationContext, BuildConfig.APPLICATION_ID)
         val mediaSource = ExtractorMediaSource(
-            Uri.parse(uri),
+            Uri.parse(podcast?.audio?.url),
             DefaultDataSourceFactory(applicationContext, userAgent),
             DefaultExtractorsFactory(),
             null,
@@ -312,9 +317,9 @@ class AudioService : Service() {
             playbackTimer?.scheduleAtFixedRate(
                 object : TimerTask() {
                     override fun run() {
-                        saveLastListeningPosition()
-
                         runOnUiThread {
+                            saveLastListeningPosition()
+
                             if (exoPlayer.duration - exoPlayer.contentPosition <= PLAYBACK_TIMER_DELAY) {
                                 playbackTimer?.cancel()
                             }
