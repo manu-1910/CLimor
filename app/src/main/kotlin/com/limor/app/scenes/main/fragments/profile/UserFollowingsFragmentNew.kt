@@ -75,7 +75,7 @@ class UserFollowingsFragmentNew(private val uiUserId: Int?) : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         initToolbar()
         configureEmptyScenario()
-
+        Timber.d("followings  -> started")
         //Setup animation transition
         ViewCompat.setTranslationZ(view, 1f)
 
@@ -87,7 +87,7 @@ class UserFollowingsFragmentNew(private val uiUserId: Int?) : BaseFragment() {
 
 
         model.followingsData.observe(viewLifecycleOwner, Observer{
-            Timber.d("observe -> $it")
+            Timber.d("followings observe -> $it")
             if(it?.size == 0){
                 //showEmptyScenario()
             }else{
@@ -254,11 +254,11 @@ class UserFollowingsFragmentNew(private val uiUserId: Int?) : BaseFragment() {
 
 
     private fun initApiCallGetBlockedUsers() {
-        if(model.followingsData.value == null || model.followingsData.value?.size == 0){
-            model.getFollowings(uiUserId,arrayList.size)
+        if(model.followingsData.value == null || model.followingsData.value?.size != 0){
+        //    model.getFollowings(uiUserId,arrayList.size)
         }else{
             model.clearFollowing()
-            model.getFollowings(uiUserId,0)
+        //    model.getFollowings(uiUserId,0)
         }
     }
 

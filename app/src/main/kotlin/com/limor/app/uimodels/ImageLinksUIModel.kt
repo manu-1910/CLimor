@@ -13,42 +13,42 @@ data class ImageLinksUIModel(
 ) : Parcelable
 
 fun SuggestedPeopleQuery.Images.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun GetFeaturedCastsQuery.Images1.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun GetFeaturedCastsQuery.Images.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun GetTopCastsQuery.Images.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun GetTopCastsQuery.Images1.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun SearchUsersQuery.Images.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun GetPodcastsByCategoryQuery.Images.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun GetPodcastsByCategoryQuery.Images1.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 fun GetPodcastsByHashtagQuery.Images.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun GetPodcastsByHashtagQuery.Images1.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun GetUserProfileQuery.Images.mapToUIModel(): ImageLinksUIModel {
@@ -56,33 +56,33 @@ fun GetUserProfileQuery.Images.mapToUIModel(): ImageLinksUIModel {
 }
 
 fun GetUserProfileByIdQuery.Images.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun GetUserPodcastsQuery.Images.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun GetUserPodcastsQuery.Images1.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun FeedItemsQuery.Images.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun FeedItemsQuery.Images1.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun FeedItemsQuery.Images2.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun GetCommentsByPodcastsQuery.Images.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
 fun GetCommentsByPodcastsQuery.Images1.mapToUIModel(): ImageLinksUIModel {
-    return ImageLinksUIModel(small_url!!, medium_url!!, large_url!!, original_url!!)
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }

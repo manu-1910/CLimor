@@ -19,7 +19,7 @@ abstract class UserFollowersFollowingsFragmentsBuildersModule {
     abstract fun contributeNewUserFollowersFragmentInjector(): UserFollowersFragmentNew
 
     @ContributesAndroidInjector
-    abstract fun contributeNewUserFollowingsFragmentInjector(): UserFollowingsFragmentNew
+    abstract fun contributeNewUserFollowingsFragmentInjector(): UserFollowings
 
 }
 
