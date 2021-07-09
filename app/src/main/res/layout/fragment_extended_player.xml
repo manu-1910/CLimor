@@ -153,7 +153,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/shadowBottom"
         app:layout_constraintVertical_bias="0.7"
-        app:tint="@color/white" />
+        app:tint="@color/white"
+        android:visibility="invisible"/>
 
     <ImageButton
         android:id="@+id/btnPodcastRewindBack"
@@ -170,7 +171,8 @@
         app:layout_constraintStart_toEndOf="@+id/btnPodcastPlayPrevious"
         app:layout_constraintTop_toTopOf="@id/shadowBottom"
         app:layout_constraintVertical_bias="0.7"
-        app:tint="@color/white" />
+        app:tint="@color/white"
+        android:visibility="invisible"/>
 
     <ProgressBar
         android:id="@+id/audio_buffering_view"
@@ -219,7 +221,8 @@
         app:layout_constraintStart_toEndOf="@+id/btnPodcastPlayExtended"
         app:layout_constraintTop_toTopOf="@id/shadowBottom"
         app:layout_constraintVertical_bias="0.7"
-        app:tint="@color/white" />
+        app:tint="@color/white"
+        android:visibility="invisible"/>
 
     <ImageButton
         android:id="@+id/btnPodcastPlayNext"
@@ -236,7 +239,8 @@
         app:layout_constraintStart_toEndOf="@+id/btnPodcastRewindForward"
         app:layout_constraintTop_toTopOf="@id/shadowBottom"
         app:layout_constraintVertical_bias="0.7"
-        app:tint="@color/white" />
+        app:tint="@color/white"
+        android:visibility="invisible"/>
 
     <View
         android:id="@+id/viewWhiteBackground"
