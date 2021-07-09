@@ -24,7 +24,6 @@ import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.uimodels.TagUIModel
 import timber.log.Timber
-import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 class ExtendedPlayerFragment : BaseFragment() {
@@ -47,7 +46,7 @@ class ExtendedPlayerFragment : BaseFragment() {
     private val commentsViewModel: CommentsViewModel by viewModels { viewModelFactory }
     private val podcast: CastUIModel by lazy { requireArguments()[CAST_KEY] as CastUIModel }
 
-    private lateinit var playerBinder: PlayerBinder
+    private val playerBinder: PlayerBinder by lazy { (requireActivity() as PlayerViewManager).getPlayerBinder() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +69,6 @@ class ExtendedPlayerFragment : BaseFragment() {
     ): View {
         _binding = FragmentExtendedPlayerBinding.inflate(inflater, container, false)
         bindViews()
-        playerBinder = PlayerBinder(this, WeakReference(requireContext().applicationContext))
         subscribeToPlayerUpdates()
         subscribeToCommentUpdates()
         loadFirstComment()
@@ -139,11 +137,10 @@ class ExtendedPlayerFragment : BaseFragment() {
     private fun subscribeToPlayerUpdates() {
         playerBinder.currentPlayPositionLiveData.observe(viewLifecycleOwner) {
             binding.lpiPodcastProgress.progress = it.second
-            binding.tvRecastPlayCurrentPosition.text = (it.first ?: 0 / 1000).toString()
+            binding.tvRecastPlayCurrentPosition.text = (it.first).toString()
         }
 
         playerBinder.playerStatusLiveData.observe(viewLifecycleOwner) {
-            if (it == null) return@observe
             when (it) {
                 is PlayerStatus.Cancelled -> Timber.d("Player Canceled")
                 is PlayerStatus.Ended -> binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_player_play)

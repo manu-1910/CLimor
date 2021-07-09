@@ -1,11 +1,13 @@
 package com.limor.app.scenes.utils
 
+import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.CastUIModel
 
 interface PlayerViewManager {
     fun isPlayerVisible(): Boolean
     fun showPlayer(args: PlayerArgs)
     fun hidePlayer()
+    fun getPlayerBinder(): PlayerBinder
 
     data class PlayerArgs(
         val playerType: PlayerType,
