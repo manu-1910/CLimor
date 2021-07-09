@@ -16,7 +16,7 @@ import com.limor.app.databinding.ItemUserFollowersBinding
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.utils.CommonsKt
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.sdk23.listeners.onLongClick
 import timber.log.Timber
@@ -49,11 +49,17 @@ class UserFollowersViewHolder(
             )
         }
 
-        if(currentItem.id == JwtChecker.getUserIdFromJwtSingle()){
-            btnFollow.visibility = View.GONE
-        }else{
-            btnFollow.visibility = View.VISIBLE
+        CoroutineScope(Dispatchers.Main).launch{
+            val userId = withContext(Dispatchers.IO){
+                JwtChecker.getUserIdFromJwt()
+            }
+            if(currentItem.id == userId){
+                btnFollow.visibility = View.GONE
+            }else{
+                btnFollow.visibility = View.VISIBLE
+            }
         }
+
 
 
         btnFollow.onClick {

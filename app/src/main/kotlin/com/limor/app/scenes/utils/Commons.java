@@ -6,8 +6,10 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
+import android.net.Uri;
 import android.util.TypedValue;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
@@ -21,11 +23,20 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.arthenica.mobileffmpeg.FFmpeg;
 import com.coremedia.iso.boxes.Container;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.ktx.Firebase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
+import com.limor.app.BuildConfig;
 import com.limor.app.R;
 import com.limor.app.common.Constants;
 import com.limor.app.uimodels.UIUser;
@@ -746,7 +757,39 @@ public class Commons {
             imageUploadCallback.onError(context.getString(R.string.error_something_went_wrong));
             return;
         }
-        final String completeUrl = Constants.AWS_IMAGE_BASE_URL + imageUrlToUpload;
+        // Firebase
+        FirebaseStorage instance = FirebaseStorage.getInstance(BuildConfig.FIREBASE_STORAGE_URL);
+        Uri file = Uri.fromFile(imageFile);
+        StorageReference storageRef = instance.getReference();
+        String fileName = "";
+        if(imageType == IMAGE_TYPE_PROFILE && FirebaseAuth.getInstance().getCurrentUser() != null)
+            fileName = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        if(imageType == IMAGE_TYPE_ATTACHMENT && FirebaseAuth.getInstance().getCurrentUser() != null)
+            fileName = FirebaseAuth.getInstance().getCurrentUser().getUid().concat("_").concat(Long.toString(System.currentTimeMillis()));
+        StorageReference riversRef = storageRef.child("images/"+fileName);
+        UploadTask uploadTask = riversRef.putFile(file);
+
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                imageUploadCallback.onError(exception.getLocalizedMessage());
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                riversRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        isImageReadyForUpload = false;
+                        imageUploadCallback.onSuccess(uri.toString());
+                    }
+                });
+            }
+        });
+
+        // AWS
+        /*final String completeUrl = Constants.AWS_IMAGE_BASE_URL + imageUrlToUpload;
         ObjectMetadata metadata = new ObjectMetadata();
         if (imageType == IMAGE_TYPE_ATTACHMENT_VIDEO) {
             metadata.setContentType("video/mp4");
@@ -782,7 +825,7 @@ public class Commons {
             public void onError(int id, Exception ex) {
                 imageUploadCallback.onError(ex.getLocalizedMessage());
             }
-        });
+        });*/
     }
 
 

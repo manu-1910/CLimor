@@ -36,7 +36,7 @@ class SmallPlayerFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val podcast: CastUIModel by lazy { requireArguments()[CAST_KEY] as CastUIModel }
 
-    private lateinit var playerBinder: PlayerBinder
+    private val playerBinder: PlayerBinder by lazy { (requireActivity() as PlayerViewManager).getPlayerBinder() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +44,6 @@ class SmallPlayerFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSmallPlayerBinding.inflate(inflater, container, false)
-        playerBinder = PlayerBinder(this, WeakReference(requireContext().applicationContext))
         initPlayerViews()
         subscribeToPlayerUpdates()
         return binding.root
@@ -58,7 +57,6 @@ class SmallPlayerFragment : BaseFragment() {
 
         binding.btnCloseMiniPlayer.setOnClickListener {
             closePlayer()
-            playerBinder.stopAudioService()
         }
         binding.btnMiniPlayerPlay.setOnClickListener {
             playerBinder.playPause()

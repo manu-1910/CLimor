@@ -9,7 +9,7 @@ import com.limor.app.scenes.auth_new.model.LanguagesProvider
 import javax.inject.Inject
 
 class LanguagesViewModel @Inject constructor(
-    val languagesProvider: LanguagesProvider
+    val languagesProvider: LanguagesProvider,
 ) : ViewModel() {
 
     fun downloadLanguages() = languagesProvider.downloadLanguages(viewModelScope)

@@ -103,7 +103,7 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         }
         val createUserResult: List<FollowersQuery.GetFollower?> =
             queryResult?.data?.getFollowers ?: return null
-        Timber.d("Got FF -> ${createUserResult.size}")
+        Timber.d("Got Followers -> ${createUserResult.size}")
         return createUserResult
     }
     suspend fun getFollowings(userId:Int?,limit:Int,offset:Int): List<FriendsQuery.GetFriend?>? {
@@ -114,7 +114,7 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         }
         val createUserResult: List<FriendsQuery.GetFriend?> =
             queryResult?.data?.getFriends?: return null
-        Timber.d("Got FF -> ${createUserResult.size}")
+        Timber.d("Got Friends -> ${createUserResult.size}")
         return createUserResult
     }
 

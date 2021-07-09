@@ -24,4 +24,5 @@ class PublishCategoriesViewModel @Inject constructor(val categoriesProvider: Cat
     val categoryLiveDataError: LiveData<String>
         get() = categoriesProvider.categoryLiveDataError
 
+
 }

@@ -85,11 +85,13 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
             }
 
             override fun createFragment(position: Int): Fragment {
-                return if (position == 0) {
-                    UserFollowersFragmentNew.newInstance(userId)
-                } else {
-                    UserFollowingsFragmentNew.newInstance(userId)
+                return when(position){
+                    0-> UserFollowersFragmentNew.newInstance(userId)
+                    else->   UserFollowings.newInstance(userId)
                 }
+                //return UserFollowings.newInstance(userId)
+
+
             }
 
         }

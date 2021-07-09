@@ -2,6 +2,7 @@ package com.limor.app.scenes.main.fragments.profile.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
@@ -13,7 +14,12 @@ import com.limor.app.FollowersQuery
 import com.limor.app.FriendsQuery
 import com.limor.app.R
 import com.limor.app.databinding.ItemUserFollowersBinding
+import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.utils.CommonsKt
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.sdk23.listeners.onLongClick
 import timber.log.Timber
@@ -64,7 +70,16 @@ class UserFollowingsViewHolder(
             listener.onUserLongClicked(currentItem,position)
             return@onLongClick true
         }
-
+        CoroutineScope(Dispatchers.Main).launch{
+            val userId = withContext(Dispatchers.IO){
+                JwtChecker.getUserIdFromJwt()
+            }
+            if(currentItem.id == userId){
+                btnFollow.visibility = View.GONE
+            }else{
+                btnFollow.visibility = View.VISIBLE
+            }
+        }
 
         Glide.with(itemView.context)
             .load(currentItem.images?.small_url)
