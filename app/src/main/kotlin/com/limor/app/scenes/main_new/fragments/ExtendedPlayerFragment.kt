@@ -138,16 +138,26 @@ class ExtendedPlayerFragment : BaseFragment() {
         playerBinder.currentPlayPositionLiveData.observe(viewLifecycleOwner) {
             binding.lpiPodcastProgress.progress = it.second
             binding.tvRecastPlayCurrentPosition.text = (it.first).toString()
+            Timber.d("$it")
         }
 
         playerBinder.playerStatusLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is PlayerStatus.Cancelled -> Timber.d("Player Canceled")
-                is PlayerStatus.Ended -> binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_player_play)
-                is PlayerStatus.Error -> Timber.d("Player Error")
-                is PlayerStatus.Other -> Timber.d("Player Other")
-                is PlayerStatus.Paused -> binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_player_play)
-                is PlayerStatus.Playing -> binding.btnPodcastPlayExtended.setImageResource(R.drawable.pause)
+                is PlayerStatus.Ended -> {
+                    binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
+                    binding.audioBufferingView.visibility = View.GONE
+                }
+                is PlayerStatus.Error -> binding.audioBufferingView.visibility = View.GONE
+                is PlayerStatus.Other -> binding.audioBufferingView.visibility = View.VISIBLE
+                is PlayerStatus.Paused -> {
+                    binding.audioBufferingView.visibility = View.GONE
+                    binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
+                }
+                is PlayerStatus.Playing -> {
+                    binding.audioBufferingView.visibility = View.GONE
+                    binding.btnPodcastPlayExtended.setImageResource(R.drawable.pause)
+                }
             }
         }
     }

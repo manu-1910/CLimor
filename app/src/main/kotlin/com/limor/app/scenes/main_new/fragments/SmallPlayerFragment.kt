@@ -61,6 +61,9 @@ class SmallPlayerFragment : BaseFragment() {
         binding.btnMiniPlayerPlay.setOnClickListener {
             playerBinder.playPause()
         }
+        binding.ivAvatarMiniPlayer.setOnClickListener {
+            playerBinder.playPause()
+        }
         binding.clMiniPlayer.setOnClickListener { _ ->
             openExtendedPlayer()
         }
