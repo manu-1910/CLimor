@@ -22,224 +22,224 @@ data class LinkUIModel(
 
 fun GetFeaturedCastsQuery.Links.mapToUIModel() =
     LinkUIModel(
-        website = website!!.map {
+        website = website?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        content = content!!.map {
+        } ?: emptyList(),
+        content = content?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        caption = caption!!.map {
+        } ?: emptyList(),
+        caption = caption?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
+        } ?: emptyList(),
     )
 
 fun GetTopCastsQuery.Links.mapToUIModel() =
     LinkUIModel(
-        website = website!!.map {
+        website = website?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        content = content!!.map {
+        } ?: emptyList(),
+        content = content?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        caption = caption!!.map {
+        } ?: emptyList(),
+        caption = caption?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
+        } ?: emptyList(),
     )
 
 fun GetPodcastsByCategoryQuery.Links.mapToUIModel() =
     LinkUIModel(
-        website = website!!.map {
+        website = website?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        content = content!!.map {
+        } ?: emptyList(),
+        content = content?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        caption = caption!!.map {
+        } ?: emptyList(),
+        caption = caption?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
+        } ?: emptyList(),
     )
 
 fun GetPodcastsByHashtagQuery.Links.mapToUIModel() =
     LinkUIModel(
-        website = website!!.map {
+        website = website?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        content = content!!.map {
+        } ?: emptyList(),
+        content = content?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        caption = caption!!.map {
+        } ?: emptyList(),
+        caption = caption?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
+        } ?: emptyList(),
     )
 
 fun GetUserPodcastsQuery.Links.mapToUIModel() =
     LinkUIModel(
-        website = website!!.map {
+        website = website?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        content = content!!.map {
+        } ?: emptyList(),
+        content = content?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        caption = caption!!.map {
+        } ?: emptyList(),
+        caption = caption?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
+        } ?: emptyList(),
     )
 
 fun FeedItemsQuery.Links.mapToUIModel() =
     LinkUIModel(
-        website = website!!.map {
+        website = website?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        content = content!!.map {
+        } ?: emptyList(),
+        content = content?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        caption = caption!!.map {
+        } ?: emptyList(),
+        caption = caption?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
+        } ?: emptyList(),
     )
 
 fun GetCommentsByPodcastsQuery.Links1.mapToUIModel() =
     LinkUIModel(
-        website = website!!.map {
+        website = website?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        content = content!!.map {
+        } ?: emptyList(),
+        content = content?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        caption = caption!!.map {
+        } ?: emptyList(),
+        caption = caption?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
+        } ?: emptyList(),
     )
 
 fun GetCommentsByPodcastsQuery.Links.mapToUIModel() =
     LinkUIModel(
-        website = website!!.map {
+        website = website?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        content = content!!.map {
+        } ?: emptyList(),
+        content = content?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
-        caption = caption!!.map {
+        } ?: emptyList(),
+        caption = caption?.map {
             LinkUIModel.LinkDataUIModel(
                 id = it!!.id!!,
                 link = it.link!!,
                 startIndex = it.start_index!!,
                 endIndex = it.end_index!!,
             )
-        },
+        } ?: emptyList(),
     )

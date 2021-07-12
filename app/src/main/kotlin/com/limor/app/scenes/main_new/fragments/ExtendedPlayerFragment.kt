@@ -51,7 +51,7 @@ class ExtendedPlayerFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        requireActivity().onBackPressedDispatcher.addCallback {
+        requireActivity().onBackPressedDispatcher.addCallback(owner = this) {
             (activity as? PlayerViewManager)?.showPlayer(
                 PlayerViewManager.PlayerArgs(
                     PlayerViewManager.PlayerType.SMALL,

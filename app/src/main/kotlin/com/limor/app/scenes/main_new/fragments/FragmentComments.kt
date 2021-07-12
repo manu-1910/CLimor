@@ -43,7 +43,7 @@ class FragmentComments : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        requireActivity().onBackPressedDispatcher.addCallback {
+        requireActivity().onBackPressedDispatcher.addCallback(owner = this) {
             parentFragmentManager
                 .beginTransaction()
                 .remove(this@FragmentComments)
