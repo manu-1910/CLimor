@@ -1,6 +1,5 @@
 mutation LikePodcastMutation($podcastId: Int!) {
     likePodcast(podcastId: $podcastId) {
-        podcast_id,
-        user_id
+        podcast_id
     }
 }
