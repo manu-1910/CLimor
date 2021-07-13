@@ -28,6 +28,7 @@
 
     <Transition
         android:id="@+id/general_transition"
+        app:duration="500"
         app:constraintSetEnd="@+id/end"
         app:constraintSetStart="@+id/start">
         <OnSwipe

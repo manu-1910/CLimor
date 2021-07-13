@@ -146,6 +146,7 @@
         android:padding="8dp"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_player_play_previous"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/shadowBottom"
         app:layout_constraintEnd_toStartOf="@+id/btnPodcastRewindBack"
         app:layout_constraintHorizontal_bias="0.5"
@@ -153,8 +154,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/shadowBottom"
         app:layout_constraintVertical_bias="0.7"
-        app:tint="@color/white"
-        android:visibility="invisible"/>
+        app:tint="@color/white" />
 
     <ImageButton
         android:id="@+id/btnPodcastRewindBack"
@@ -171,23 +171,21 @@
         app:layout_constraintStart_toEndOf="@+id/btnPodcastPlayPrevious"
         app:layout_constraintTop_toTopOf="@id/shadowBottom"
         app:layout_constraintVertical_bias="0.7"
-        app:tint="@color/white"
-        android:visibility="invisible"/>
+        app:tint="@color/white" />
 
     <ProgressBar
         android:id="@+id/audio_buffering_view"
         android:layout_width="44dp"
         android:layout_height="44dp"
+        android:indeterminate="true"
+        android:visibility="gone"
         app:indicatorColor="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="@id/shadowBottom"
         app:layout_constraintEnd_toStartOf="@+id/btnPodcastRewindForward"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnPodcastRewindBack"
         app:layout_constraintTop_toTopOf="@id/shadowBottom"
-        app:layout_constraintVertical_bias="0.7"
-        android:indeterminate="true"
-        android:visibility="gone"
-        />
+        app:layout_constraintVertical_bias="0.7" />
 
     <ImageButton
         android:id="@+id/btnPodcastPlayExtended"
@@ -221,8 +219,7 @@
         app:layout_constraintStart_toEndOf="@+id/btnPodcastPlayExtended"
         app:layout_constraintTop_toTopOf="@id/shadowBottom"
         app:layout_constraintVertical_bias="0.7"
-        app:tint="@color/white"
-        android:visibility="invisible"/>
+        app:tint="@color/white" />
 
     <ImageButton
         android:id="@+id/btnPodcastPlayNext"
@@ -233,14 +230,14 @@
         android:padding="8dp"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_player_play_next"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/shadowBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnPodcastRewindForward"
         app:layout_constraintTop_toTopOf="@id/shadowBottom"
         app:layout_constraintVertical_bias="0.7"
-        app:tint="@color/white"
-        android:visibility="invisible"/>
+        app:tint="@color/white" />
 
     <View
         android:id="@+id/viewWhiteBackground"

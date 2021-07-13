@@ -11,6 +11,7 @@ import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
 import com.limor.app.scenes.main_new.fragments.SmallPlayerFragment
 import com.limor.app.service.PlayerBinder
+import timber.log.Timber
 import kotlin.math.abs
 
 class ActivityPlayerViewManager(
@@ -85,7 +86,7 @@ class ActivityPlayerViewManager(
             }
         } else {
             // from end to start
-            val atStart = progress < 0.1f
+            val atStart = progress < 0.2f
             if (atStart && currentFragment !is SmallPlayerFragment) {
                 val transaction = fragmentManager.beginTransaction()
                 transaction

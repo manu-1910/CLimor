@@ -9,13 +9,15 @@ import androidx.lifecycle.ViewModelProvider
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentSmallPlayerBinding
+import com.limor.app.extensions.DURATION_READABLE_FORMAT_2
 import com.limor.app.extensions.loadCircleImage
+import com.limor.app.extensions.toReadableFormat
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
 import com.limor.app.uimodels.CastUIModel
 import timber.log.Timber
-import java.lang.ref.WeakReference
+import java.time.Duration
 import javax.inject.Inject
 
 class SmallPlayerFragment : BaseFragment() {
@@ -58,29 +60,27 @@ class SmallPlayerFragment : BaseFragment() {
         binding.btnCloseMiniPlayer.setOnClickListener {
             closePlayer()
         }
-        binding.btnMiniPlayerPlay.setOnClickListener {
-            playerBinder.playPause()
-        }
         binding.ivAvatarMiniPlayer.setOnClickListener {
             playerBinder.playPause()
         }
-        binding.clMiniPlayer.setOnClickListener { _ ->
+        binding.clMiniPlayer.setOnClickListener {
             openExtendedPlayer()
         }
     }
 
     private fun subscribeToPlayerUpdates() {
-        playerBinder.currentPlayPositionLiveData.observe(viewLifecycleOwner) {
-            binding.cpiPodcastListeningProgress.progress = it.second
-            binding.tvMiniplayerSubtitle.text =
-                StringBuilder((it.first ?: 0 / 1000).toString()).append(" ")
-                    .append(getString(R.string.left))
+        playerBinder.currentPlayPositionLiveData.observe(viewLifecycleOwner) { (seconds, percentage) ->
+            binding.cpiPodcastListeningProgress.progress = percentage
+            binding.tvMiniplayerSubtitle.text = getString(
+                R.string.left, Duration.ofSeconds(seconds).toReadableFormat(
+                    DURATION_READABLE_FORMAT_2
+                )
+            )
         }
 
         playerBinder.playerStatusLiveData.observe(viewLifecycleOwner) {
-            if (it == null) return@observe
             when (it) {
-                is PlayerStatus.Cancelled -> closePlayer()
+                is PlayerStatus.Cancelled -> Timber.d("Player Cancelled")
                 is PlayerStatus.Ended -> binding.btnMiniPlayerPlay.setImageResource(
                     R.drawable.ic_player_play
                 )
@@ -107,5 +107,10 @@ class SmallPlayerFragment : BaseFragment() {
 
     private fun closePlayer() {
         (activity as? PlayerViewManager)?.hidePlayer()
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }
