@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -14,7 +15,6 @@ import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentExtendedPlayerBinding
 import com.limor.app.extensions.*
-import com.limor.app.scenes.auth_new.util.colorStateList
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.utils.PlayerViewManager
@@ -24,6 +24,7 @@ import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.uimodels.TagUIModel
 import timber.log.Timber
+import java.time.Duration
 import javax.inject.Inject
 
 class ExtendedPlayerFragment : BaseFragment() {
@@ -110,7 +111,7 @@ class ExtendedPlayerFragment : BaseFragment() {
         loadImages()
         setOnClicks()
         addTags()
-        setActiveIcons()
+        initLikeState()
     }
 
     private fun setPodcastGeneralInfo() {
@@ -131,14 +132,15 @@ class ExtendedPlayerFragment : BaseFragment() {
     }
 
     private fun setAudioInfo() {
-        binding.tvRecastPlayMaxPosition.text = podcast.audio?.duration?.toString() ?: ""
+        binding.tvRecastPlayMaxPosition.text = podcast.audio?.duration?.toReadableFormat(
+            DURATION_READABLE_FORMAT_1)
     }
 
     private fun subscribeToPlayerUpdates() {
-        playerBinder.currentPlayPositionLiveData.observe(viewLifecycleOwner) {
-            binding.lpiPodcastProgress.progress = it.second
-            binding.tvRecastPlayCurrentPosition.text = (it.first).toString()
-            Timber.d("$it")
+        playerBinder.currentPlayPositionLiveData.observe(viewLifecycleOwner) { (seconds, percentage) ->
+            binding.lpiPodcastProgress.progress = percentage
+            binding.tvRecastPlayCurrentPosition.text =
+                Duration.ofSeconds(seconds).toReadableFormat(DURATION_READABLE_FORMAT_1)
         }
 
         playerBinder.playerStatusLiveData.observe(viewLifecycleOwner) {
@@ -188,10 +190,6 @@ class ExtendedPlayerFragment : BaseFragment() {
             playerBinder.forward(5000L)
         }
 
-        binding.btnPodcastLikes.setOnClickListener {
-            likePodcastViewModel.likeCast(podcast.id, binding.btnPodcastLikes.isLiked)
-        }
-
         binding.llExtendCommentsHeader.setOnClickListener {
             val fragment = FragmentComments.newInstance(podcast)
             parentFragmentManager.beginTransaction()
@@ -227,12 +225,36 @@ class ExtendedPlayerFragment : BaseFragment() {
             }
     }
 
-    private fun setActiveIcons() {
-        val tint = colorStateList(
-            binding.root.context,
-            if (podcast.isLiked == true) R.color.colorAccent else R.color.subtitle_text_color
-        )
-        binding.btnPodcastLikes.isLiked = podcast.isLiked!!
-        binding.tvPodcastLikes.setTextColor(tint)
+    private fun initLikeState() {
+        fun applyLikeStyle(isLiked: Boolean) {
+            binding.tvPodcastLikes.setTextColor(
+                ContextCompat.getColor(
+                    binding.root.context,
+                    if (isLiked) R.color.textAccent else R.color.subtitle_text_color
+                )
+            )
+        }
+
+        binding.apply {
+            tvPodcastLikes.text = podcast.likesCount.toString()
+            applyLikeStyle(podcast.isLiked!!)
+            btnPodcastLikes.isLiked = podcast.isLiked!!
+
+            btnPodcastLikes.setOnClickListener {
+                val isLiked = btnPodcastLikes.isLiked
+                val likesCount = binding.tvPodcastLikes.text.toString().toInt()
+
+                applyLikeStyle(isLiked)
+                binding.tvPodcastLikes.text =
+                    (if (isLiked) likesCount + 1 else likesCount - 1).toString()
+
+                likePodcastViewModel.likeCast(podcast.id, isLiked)
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }

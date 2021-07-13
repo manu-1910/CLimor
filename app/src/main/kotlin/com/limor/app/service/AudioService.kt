@@ -387,21 +387,21 @@ class AudioService : Service() {
         override fun onPlayerError(e: ExoPlaybackException?) {
             uiPodcast?.let { _playerStatusLiveData.value = PlayerStatus.Error(it.id, e) }
         }
-
-
-
-
     }
 
     fun forward(skipLength: Long = PLAYBACK_SKIP_INCREMENTS) {
         if (exoPlayer.currentPosition + skipLength < exoPlayer.duration) {
             exoPlayer.seekTo(exoPlayer.currentPosition + skipLength)
+        } else {
+            exoPlayer.seekTo(exoPlayer.duration)
         }
     }
 
     fun rewind(skipLength: Long = PLAYBACK_SKIP_INCREMENTS) {
         if (exoPlayer.currentPosition - skipLength > 0) {
             exoPlayer.seekTo(exoPlayer.currentPosition - skipLength)
+        } else {
+            exoPlayer.seekTo(0)
         }
     }
 }
