@@ -2,12 +2,14 @@ package com.limor.app.scenes.main.fragments.profile.casts
 
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.limor.app.R
 import com.limor.app.databinding.ItemUserCastBinding
 import com.limor.app.extensions.dp
 import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.loadImage
 import com.limor.app.extensions.px
+import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.utils.DateUiUtil
 import com.limor.app.scenes.utils.recycler.HorizontalSpacingItemDecoration
 import com.limor.app.uimodels.CastUIModel
@@ -20,7 +22,7 @@ class CastItem(
     private val onCastClick: (CastUIModel) -> Unit,
     private val onLikeClick: (CastUIModel, like: Boolean) -> Unit,
     private val onMoreDialogClick: (CastUIModel) -> Unit,
-    private val onRecastClick: (CastUIModel) -> Unit
+    private val onRecastClick: (CastUIModel) -> RecastPodcastViewModel
 ) : BindableItem<ItemUserCastBinding>() {
 
     override fun bind(viewBinding: ItemUserCastBinding, position: Int) {
@@ -82,12 +84,14 @@ class CastItem(
             }
 
             btnPodcastRecast.setOnClickListener {
-                applyRecastStyle(viewBinding , true)
-                val recastCount = tvPodcastRecast.text.toString().toInt()
-                tvPodcastRecast.text = (recastCount + 1).toString()
-                btnPodcastRecast.recasted = true
-
-                onRecastClick(cast)
+                val viewModel : RecastPodcastViewModel = onRecastClick(cast)
+                viewBinding.root.findViewTreeLifecycleOwner()?.let { it1 ->
+                    viewModel.recatedResponse.observe(it1, {
+                        tvPodcastRecast.text = it?.first.toString()
+                        applyRecastStyle(binding = viewBinding, it?.second == true)
+                        btnPodcastRecast.recasted = it?.second == true
+                    })
+                }
             }
 
 

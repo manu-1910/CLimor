@@ -45,7 +45,6 @@ class RecastButton(context: Context, attrs: AttributeSet) : FrameLayout(context,
 
     override fun setOnClickListener(l : OnClickListener?){
         val wrapper = OnClickListener {
-            recasted = true
             l?.onClick(it)
         }
         recastBtn.setOnClickListener(wrapper)
@@ -61,18 +60,8 @@ class RecastButton(context: Context, attrs: AttributeSet) : FrameLayout(context,
         recastBtn.apply {
             if(isRecasted){
                 imageTintList = ColorStateList.valueOf(recastedColor)
-                /*setColorFilter(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.textAccent
-                    ))*/
             } else{
                 imageTintList = ColorStateList.valueOf(notRecastedColor)
-                /*setColorFilter(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.white
-                    ))*/
             }
         }
     }

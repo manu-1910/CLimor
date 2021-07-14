@@ -92,6 +92,7 @@ class FragmentHomeNew : BaseFragment() {
             },
             onReCastClick = { castId ->
                 recastPodcastViewModel.reCast(castId)
+                recastPodcastViewModel
             }
         ).apply { submitList(list) }
         rvHome.adapter = adapter

@@ -5,6 +5,7 @@ import android.widget.TextView
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
@@ -12,6 +13,7 @@ import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.loadImage
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
+import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
@@ -21,7 +23,7 @@ class ViewHolderPodcast(
     val binding: ItemHomeFeedBinding,
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
     private val onCastClick: (cast: CastUIModel) -> Unit,
-    private val onRecastClick: (castId: Int) -> Unit,
+    private val onRecastClick: (castId: Int) -> RecastPodcastViewModel,
 ) : ViewHolderBindable<CastUIModel>(binding) {
     override fun bind(item: CastUIModel) {
         setPodcastGeneralInfo(item)
@@ -91,12 +93,14 @@ class ViewHolderPodcast(
         }
 
         binding.btnPodcastRecast.setOnClickListener {
-            applyRecastStyle(true)
-            val recastCount = binding.tvPodcastRecast.text.toString().toInt()
-            binding.tvPodcastRecast.text = (recastCount + 1).toString()
-            binding.btnPodcastRecast.recasted = true
-
-            onRecastClick(item.id)
+            val viewModel : RecastPodcastViewModel = onRecastClick(item.id)
+            binding.root.findViewTreeLifecycleOwner()?.let { it1 ->
+                viewModel.recatedResponse.observe(it1, {
+                    binding.tvPodcastRecast.text = it?.first.toString()
+                    applyRecastStyle(it?.second == true)
+                    binding.btnPodcastRecast.recasted = it?.second == true
+                })
+            }
         }
     }
 

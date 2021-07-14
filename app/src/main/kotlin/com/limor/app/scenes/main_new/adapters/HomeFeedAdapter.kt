@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.databinding.ItemHomeFeedRecastedBinding
+import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderBindable
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderPodcast
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderRecast
@@ -14,7 +15,7 @@ import com.limor.app.uimodels.CastUIModel
 class HomeFeedAdapter(
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
     private val onCastClick: (cast: CastUIModel) -> Unit,
-    private val onReCastClick: (castId: Int) -> Unit
+    private val onReCastClick: (castId: Int) -> RecastPodcastViewModel
 ) : ListAdapter<CastUIModel, ViewHolderBindable<CastUIModel>>(
     HomeFeedDiffCallback()
 ) {
