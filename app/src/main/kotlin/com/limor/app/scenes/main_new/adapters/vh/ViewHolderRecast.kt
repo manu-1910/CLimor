@@ -17,15 +17,15 @@ class ViewHolderRecast(
 ) : ViewHolderBindable<CastUIModel>(binding) {
     override fun bind(item: CastUIModel) {
 
-        binding.tvRecastUserName.text = item.recaster?.getFullName()
+        binding.tvRecastUserName.text = item.recaster?.username
         binding.tvRecastUserSubtitle.text = item.getCreationDateAndPlace(context)
 
-        binding.tvRecastMessage.text = "???"
+        binding.tvRecastMessage.text = ""
 
         binding.tvRecastPlayCurrentPosition.text = "???"
         binding.tvRecastPlayMaxPosition.text = "???"
 
-        binding.tvPodcastUserName.text = item.owner?.getFullName()
+        binding.tvPodcastUserName.text = item.owner?.username
 
         binding.tvPodcastUserSubtitle.text = item.getCreationDateAndPlace(context)
 

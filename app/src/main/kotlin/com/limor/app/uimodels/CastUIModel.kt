@@ -14,6 +14,7 @@ data class CastUIModel(
     val owner: UserUIModel?,
     val title: String?,
     val address: String?,
+    val recasted: Boolean?,
     val imageLinks: ImageLinksUIModel?,
     val caption: String?,
     val createdAt: LocalDateTime?,
@@ -55,7 +56,7 @@ data class CastUIModel(
 
 fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =
     CastUIModel(
-        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address,
+        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
         imageLinks = images?.mapToUIModel(), caption = caption!!,
         createdAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
@@ -71,7 +72,7 @@ fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =
 
 fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
     CastUIModel(
-        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address,
+        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
         imageLinks = images?.mapToUIModel(), caption = caption!!,
         createdAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
@@ -87,7 +88,7 @@ fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
 
 fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
     CastUIModel(
-        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address,
+        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
         imageLinks = images?.mapToUIModel(), caption = caption!!,
         createdAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
@@ -103,7 +104,7 @@ fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
 
 fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
     CastUIModel(
-        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address,
+        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
         imageLinks = images?.mapToUIModel(), caption = caption!!,
         createdAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
@@ -119,7 +120,7 @@ fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
 
 fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
     CastUIModel(
-        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address,
+        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
         imageLinks = images?.mapToUIModel(), caption = caption!!,
         createdAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
@@ -136,7 +137,7 @@ fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
 fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
     CastUIModel(
         id = podcast!!.id!!, owner = podcast.owner?.mapToUIModel(), title = podcast.title,
-        address = podcast.address, imageLinks = podcast.images?.mapToUIModel(),
+        address = podcast.address, recasted = recasted, imageLinks = podcast.images?.mapToUIModel(),
         caption = podcast.caption, createdAt = podcast.created_at?.toLocalDateTime(),
         updatedAt = podcast.updated_at?.toLocalDateTime(), latitude = podcast.latitude?.toFloat(),
         longitude = podcast.longitude?.toFloat(), isLiked = podcast.liked,

@@ -29,6 +29,7 @@ class ViewHolderPodcast(
         setOnClicks(item)
         addTags(item)
         initLikeState(item)
+        initRecastState(item)
     }
 
     private fun setPodcastGeneralInfo(item: CastUIModel) {
@@ -40,7 +41,7 @@ class ViewHolderPodcast(
     }
 
     private fun setPodcastOwnerInfo(item: CastUIModel) {
-        binding.tvPodcastUserName.text = item.owner?.getFullName()
+        binding.tvPodcastUserName.text = item.owner?.username
         binding.tvPodcastUserSubtitle.text = item.getCreationDateAndPlace(context)
     }
 
@@ -80,24 +81,13 @@ class ViewHolderPodcast(
         }
 
         binding.btnPodcastRecast.setOnClickListener {
-            onRecastClick(item.id)
-            applyRecastState()
-        }
-    }
+            applyRecastStyle(true)
+            val recastCount = binding.tvPodcastRecast.text.toString().toInt()
+            binding.tvPodcastRecast.text = (recastCount + 1).toString()
+            binding.btnPodcastRecast.recasted = true
 
-    private fun applyRecastState(){
-        binding.tvPodcastRecast.setTextColor(
-            ContextCompat.getColor(
-                binding.root.context,
-                R.color.textAccent
-            )
-        )
-        val recastCount = binding.tvPodcastRecast.text.toString().toInt()
-        binding.btnPodcastRecast.setColorFilter(ContextCompat.getColor(
-            binding.root.context,
-            R.color.textAccent
-        ))
-        binding.tvPodcastRecast.text = (recastCount + 1).toString()
+            onRecastClick(item.id)
+        }
     }
 
     private fun addTags(item: CastUIModel) {
@@ -140,4 +130,24 @@ class ViewHolderPodcast(
             }
         }
     }
+
+    private fun initRecastState(item: CastUIModel){
+        binding.tvPodcastRecast.text = item.recastsCount.toString()
+        binding.btnPodcastRecast.recasted = item.isRecasted == true
+        applyRecastStyle(item.isRecasted == true)
+    }
+
+    private fun applyRecastStyle(isRecasted : Boolean){
+        binding.tvPodcastRecast.setTextColor(
+            if(isRecasted) ContextCompat.getColor(
+                binding.root.context,
+                R.color.textAccent
+            ) else
+                ContextCompat.getColor(
+                    binding.root.context,
+                    R.color.white
+                )
+        )
+    }
+
 }

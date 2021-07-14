@@ -356,18 +356,18 @@
                 tools:text="100" />
 
 
-            <ImageButton
+            <com.limor.app.components.RecastButton
                 android:id="@+id/btnPodcastRecast"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="16dp"
-                android:background="@color/transparent"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_podcast_recast"
                 app:layout_constraintBottom_toBottomOf="@+id/btnPodcastLikes"
                 app:layout_constraintStart_toEndOf="@+id/tvPodcastLikes"
                 app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes"
-                app:tint="@color/subtitle_text_color" />
+                android:background="@color/transparent"
+                app:tint="@color/subtitle_text_color"
+                app:not_recasted_color="@color/subtitle_text_color"
+                app:recast_color="@color/textAccent"/>
 
             <TextView
                 android:id="@+id/tvPodcastRecast"

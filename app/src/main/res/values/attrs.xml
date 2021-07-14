@@ -62,4 +62,9 @@
         <attr name="liked_res" format="reference"/>
         <attr name="unliked_res" format="reference"/>
     </declare-styleable>
+
+    <declare-styleable name="RecastButton">
+        <attr name="recast_color" format="color"/>
+        <attr name="not_recasted_color" format="color"/>
+    </declare-styleable>
 </resources>

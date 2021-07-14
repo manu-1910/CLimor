@@ -1,6 +1,5 @@
 mutation CreateRecastMutation($podcastid : Int!){
     createRecast(podcastId: $podcastid){
-        podcast_id,
-        user_id
+        podcast_id
     }
 }

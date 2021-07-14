@@ -17,6 +17,7 @@ import com.limor.app.databinding.FragmentExtendedPlayerBinding
 import com.limor.app.extensions.*
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
+import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
@@ -45,6 +46,7 @@ class ExtendedPlayerFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val likePodcastViewModel: LikePodcastViewModel by viewModels { viewModelFactory }
     private val commentsViewModel: CommentsViewModel by viewModels { viewModelFactory }
+    private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
     private val podcast: CastUIModel by lazy { requireArguments()[CAST_KEY] as CastUIModel }
 
     private val playerBinder: PlayerBinder by lazy { (requireActivity() as PlayerViewManager).getPlayerBinder() }
@@ -188,6 +190,18 @@ class ExtendedPlayerFragment : BaseFragment() {
 
         binding.btnPodcastRewindForward.setOnClickListener {
             playerBinder.forward(5000L)
+        }
+
+        binding.btnPodcastRecast.setOnClickListener {
+            val recastCount = binding.tvPodcastRecast.text.toString().toInt()
+            binding.tvPodcastRecast.text = (recastCount + 1).toString()
+            binding.btnPodcastRecast.recasted = true
+            binding.tvPodcastRecast.setTextColor(
+                ContextCompat.getColor(
+                    binding.tvPodcastRecast.context,
+                    R.color.textAccent))
+
+            recastPodcastViewModel.reCast(castId = podcast.id)
         }
 
         binding.llExtendCommentsHeader.setOnClickListener {

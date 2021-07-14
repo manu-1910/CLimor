@@ -20,7 +20,7 @@ class HomeFeedAdapter(
 ) {
 
     override fun getItemViewType(position: Int): Int {
-        val recasted = getItem(position).isRecasted == true
+        val recasted = getItem(position).recasted == true
         return if (recasted) ITEM_TYPE_RECASTED else ITEM_TYPE_PODCAST
     }
 
