@@ -1,6 +1,6 @@
 package com.limor.app.di.modules.fragments
 
-import com.limor.app.scenes.main_new.fragments.FragmentComments
+import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

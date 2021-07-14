@@ -145,10 +145,10 @@
     </style>
 
     <style name="BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/bottomSheetStyleWrapper</item>
+        <item name="bottomSheetStyle">@style/bottomSheetStyleWrapper2</item>
     </style>
 
-    <style name="bottomSheetStyleWrapper" parent="Widget.Design.BottomSheet.Modal">
+    <style name="bottomSheetStyleWrapper2" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
     </style>
 

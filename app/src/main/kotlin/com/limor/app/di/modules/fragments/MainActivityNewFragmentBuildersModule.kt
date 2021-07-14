@@ -10,7 +10,7 @@ import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSugg
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsFragmentNew
 import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
-import com.limor.app.scenes.main_new.fragments.FragmentComments
+import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.fragments.FragmentHomeNew
 import com.limor.app.scenes.main_new.fragments.SmallPlayerFragment
 import dagger.Module

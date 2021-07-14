@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="52dp"
+    android:paddingBottom="8dp">
+
+    <ImageView
+        android:id="@+id/ivCommentAvatar"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/tvCommentName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/roboto_bold"
+        android:maxLength="25"
+        android:maxLines="1"
+        android:textColor="@color/textPrimary"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/ivCommentAvatar"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Test Person" />
+
+    <TextView
+        android:id="@+id/tvCommentDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:textColor="@color/subtitle_text_color"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/ivCommentAvatar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/ivCommentAvatar"
+        app:layout_constraintTop_toBottomOf="@id/tvCommentName"
+        tools:text="2 days ago" />
+
+    <TextView
+        android:id="@+id/tvCommentContent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/subtitle_text_color"
+        app:layout_constraintEnd_toStartOf="@id/btnCommentLike"
+        app:layout_constraintStart_toStartOf="@id/tvCommentName"
+        app:layout_constraintTop_toBottomOf="@+id/tvCommentDate"
+        tools:text="@string/lorem" />
+
+    <com.limor.app.components.LikeButton
+        android:id="@+id/btnCommentLike"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/transparent"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvCommentContent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvCommentContent" />
+
+    <TextView
+        android:id="@+id/likes_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/roboto_medium"
+        android:textColor="@color/textSecondary"
+        app:layout_constraintStart_toStartOf="@+id/tvCommentContent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCommentContent"
+        tools:text="1 Like" />
+
+    <TextView
+        android:id="@+id/reply_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/roboto_medium"
+        android:text="@string/reply"
+        android:textColor="@color/colorAccent"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@+id/likes_count"
+        app:layout_constraintTop_toBottomOf="@+id/tvCommentContent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

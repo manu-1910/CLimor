@@ -6,7 +6,7 @@
     app:startDestination="@id/toFragmentCommets">
     <fragment
         android:id="@+id/toFragmentCommets"
-        android:name="com.limor.app.scenes.main_new.fragments.FragmentComments"
+        android:name="com.limor.app.scenes.main_new.fragments.comments.FragmentComments"
         android:label="FragmentComments"
         tools:layout="@layout/fragment_comments">
     </fragment>

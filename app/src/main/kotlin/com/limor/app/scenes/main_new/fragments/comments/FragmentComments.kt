@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main_new.fragments
+package com.limor.app.scenes.main_new.fragments.comments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,16 +8,19 @@ import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import com.limor.app.common.BaseFragment
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.limor.app.R
 import com.limor.app.databinding.FragmentCommentsBinding
-import com.limor.app.extensions.loadImage
+import com.limor.app.di.Injectable
+import com.limor.app.extensions.dismissFragment
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
-import com.limor.app.scenes.main_new.adapters.vh.PodcastCommentItem
+import com.limor.app.scenes.main_new.fragments.comments.list.ParentCommentSection
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.GroupieAdapter
 import javax.inject.Inject
 
-class FragmentComments : BaseFragment() {
+class FragmentComments : BottomSheetDialogFragment(), Injectable {
 
     companion object {
         val TAG = FragmentComments::class.qualifiedName
@@ -43,11 +46,9 @@ class FragmentComments : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setStyle(STYLE_NORMAL, R.style.CustomBottomSheet)
         requireActivity().onBackPressedDispatcher.addCallback(owner = this) {
-            parentFragmentManager
-                .beginTransaction()
-                .remove(this@FragmentComments)
-                .commit()
+            dismissFragment()
             isEnabled = false
         }
     }
@@ -58,24 +59,42 @@ class FragmentComments : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCommentsBinding.inflate(inflater, container, false)
-
-        binding.rvComments.adapter = adapter
         viewModel.loadComments(cast.id)
-
-        cast.imageLinks?.large?.let {
-            binding.ivPodcastBackground.loadImage(it)
-        }
-
+        initViews()
         subscribeForComments()
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        BottomSheetBehavior.from(
+            dialog!!.findViewById(com.google.android.material.R.id.design_bottom_sheet)
+        ).apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
+        }
+    }
+
+    private fun initViews() {
+        binding.commentsList.adapter = adapter
+        binding.closeBtn.setOnClickListener {
+            dismissFragment()
+        }
     }
 
     private fun subscribeForComments() {
         viewModel.comments.observe(viewLifecycleOwner) { comments ->
+            val _comments = comments + comments + comments + comments + comments + comments + comments + comments + comments + comments + comments + comments
             adapter.update(
-                comments.map {
-                    PodcastCommentItem(it)
+                _comments.map {
+                    ParentCommentSection(
+                        comment = it,
+                        onReplyClick = { parentComment, childComment ->
+
+                        },
+                        onViewMoreCommentsClick = { comment ->
+
+                        }
+                    )
                 }
             )
         }

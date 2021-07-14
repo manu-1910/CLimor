@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentExtendedPlayerBinding
@@ -18,6 +19,7 @@ import com.limor.app.extensions.*
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
+import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
@@ -205,11 +207,9 @@ class ExtendedPlayerFragment : BaseFragment() {
         }
 
         binding.llExtendCommentsHeader.setOnClickListener {
-            val fragment = FragmentComments.newInstance(podcast)
-            parentFragmentManager.beginTransaction()
-                .addToBackStack(FragmentComments.TAG)
-                .replace(R.id.fragment_comments_container, fragment, FragmentComments.TAG)
-                .commit()
+            FragmentComments.newInstance(podcast)
+                .show(parentFragmentManager, FragmentComments.TAG)
+
         }
 
         binding.btnPodcastSendComment.setOnClickListener {
