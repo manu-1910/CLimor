@@ -31,7 +31,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatImageButton
-        android:visibility="gone"
+        android:visibility="visible"
         android:id="@+id/btn_notification"
         style="@style/Widget.AppCompat.Toolbar.Button.Navigation"
         android:layout_width="@dimen/toolbar_button_size"

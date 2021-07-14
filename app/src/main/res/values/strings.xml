@@ -612,4 +612,5 @@
     <string name="limor_patron_suggestion">Gain access and get all the latest features</string>
     <string name="hastag_helper_text">Use \"#\" for hashtags</string>
     <string name="no_comments_message">There are no comments yet</string>
+    <string name="bottom_menu_messenger">Messages</string>
 </resources>

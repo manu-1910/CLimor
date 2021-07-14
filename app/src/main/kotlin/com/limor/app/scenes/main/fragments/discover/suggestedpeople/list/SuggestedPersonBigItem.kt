@@ -33,16 +33,22 @@ class SuggestedPersonBigItem(
         }
 
         viewBinding.fullName.setOnClickListener {
-            val userProfileIntent = Intent(viewBinding.root.context, UserProfileActivity::class.java)
-            userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, person.username)
-            userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, person.id)
-            viewBinding.root.context.startActivity(userProfileIntent)
+            openUserProfile(viewBinding)
+        }
+        viewBinding.personImage.setOnClickListener {
+            openUserProfile(viewBinding)
         }
         viewBinding.root.setOnClickListener {
             ToastMaker.showToast(it.context, "Not implemented")
         }
     }
 
+    private fun openUserProfile(viewBinding: ItemDiscoverSuggestedPersonBigBinding){
+        val userProfileIntent = Intent(viewBinding.root.context, UserProfileActivity::class.java)
+        userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, person.username)
+        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, person.id)
+        viewBinding.root.context.startActivity(userProfileIntent)
+    }
     override fun getLayout() = R.layout.item_discover_suggested_person_big
     override fun initializeViewBinding(view: View) =
         ItemDiscoverSuggestedPersonBigBinding.bind(view)

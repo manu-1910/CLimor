@@ -60,12 +60,19 @@ class BigCastItem(
             }
 
             authorName.setOnClickListener {
-                val userProfileIntent = Intent(viewBinding.root.context, UserProfileActivity::class.java)
-                userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, cast.owner?.username)
-                userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY,cast.owner?.id)
-                it.context.startActivity(userProfileIntent)
+                openUserProfile(this)
+            }
+            ownerIcon.setOnClickListener {
+                openUserProfile(this)
             }
         }
+    }
+
+    private fun openUserProfile(viewBinding: ItemDiscoverBigCastBinding) {
+        val userProfileIntent = Intent(viewBinding.root.context, UserProfileActivity::class.java)
+        userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, cast.owner?.username)
+        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY,cast.owner?.id)
+        viewBinding.root.context.startActivity(userProfileIntent)
     }
 
     private fun getCastDuration(duration: Duration): String {

@@ -199,13 +199,13 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
                         binding.btnFollow.setBackgroundResource(R.drawable.bg_round_bluish_ripple)
                         binding.btnFollow.text = getString(R.string.unfollow)
-                        ToastMaker.showToast(requireContext(), "Unfollow UI")
+                        //ToastMaker.showToast(requireContext(), "Unfollow UI")
 
                     } else {
                         //New User State
                         binding.btnFollow.setBackgroundResource(R.drawable.bg_round_yellow_ripple)
                         binding.btnFollow.text = getString(R.string.follow)
-                        ToastMaker.showToast(requireContext(), "Follow UI")
+                        //ToastMaker.showToast(requireContext(), "Follow UI")
                     }
 
                     binding.otherUserNormalLayout.visibility = View.VISIBLE
@@ -217,7 +217,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
                     binding.otherUserNormalLayout.visibility = View.GONE
                     binding.profileViewpager.visibility = View.GONE
                     binding.tabSelectorView.visibility = View.GONE
-                    ToastMaker.showToast(requireContext(), "Blocked UI")
+                    //ToastMaker.showToast(requireContext(), "Blocked UI")
                 }
             }
             binding.profileMainContainer.visibility = View.VISIBLE

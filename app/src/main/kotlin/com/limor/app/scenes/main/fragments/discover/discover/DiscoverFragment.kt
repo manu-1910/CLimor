@@ -13,6 +13,7 @@ import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentDiscoverBinding
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration
 import com.limor.app.scenes.main.fragments.discover.discover.list.DiscoverAdapter
+import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
 
 class DiscoverFragment : BaseFragment() {
@@ -48,6 +49,9 @@ class DiscoverFragment : BaseFragment() {
 
         binding.toolbar.btnBack.setOnClickListener {
             it.findNavController().popBackStack()
+        }
+        binding.toolbar.btnNotification.setOnClickListener {
+            toast("Notifications Coming Soon")
         }
     }
 

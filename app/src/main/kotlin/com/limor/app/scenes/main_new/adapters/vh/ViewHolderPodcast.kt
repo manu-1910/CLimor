@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main_new.adapters.vh
 
+import android.content.Intent
 import android.widget.TextView
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.ContextCompat
@@ -9,6 +10,8 @@ import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.loadImage
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
@@ -80,6 +83,13 @@ class ViewHolderPodcast(
             onCastClick(item)
         }
 
+        binding.tvPodcastUserName.setOnClickListener {
+            openUserProfile(item)
+        }
+        binding.ivPodcastAvatar.setOnClickListener {
+            openUserProfile(item)
+        }
+
         binding.btnPodcastRecast.setOnClickListener {
             applyRecastStyle(true)
             val recastCount = binding.tvPodcastRecast.text.toString().toInt()
@@ -88,6 +98,13 @@ class ViewHolderPodcast(
 
             onRecastClick(item.id)
         }
+    }
+
+    private fun openUserProfile(item: CastUIModel) {
+        val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+        userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, item.owner?.username)
+        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, item.owner?.id)
+        context.startActivity(userProfileIntent)
     }
 
     private fun addTags(item: CastUIModel) {

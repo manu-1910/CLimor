@@ -18,6 +18,7 @@ import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.uimodels.CastUIModel
 import kotlinx.android.synthetic.main.fragment_home_new.*
+import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
 
 class FragmentHomeNew : BaseFragment() {
@@ -43,6 +44,13 @@ class FragmentHomeNew : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         initSwipeToRefresh()
         subscribeToViewModel()
+        setOnClicks()
+    }
+
+    private fun setOnClicks() {
+        binding.btnNotification.setOnClickListener {
+            toast("Notifications Coming Soon")
+        }
     }
 
     private fun initSwipeToRefresh() {

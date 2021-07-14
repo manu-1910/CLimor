@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main_new.adapters.vh
 
+import android.content.Intent
 import android.widget.TextView
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.os.bundleOf
@@ -8,6 +9,8 @@ import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedRecastedBinding
 import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.loadImage
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
@@ -56,6 +59,21 @@ class ViewHolderRecast(
             it.findNavController()
                 .navigate(R.id.action_navigation_home_to_dialog_report_podcast, bundle)
         }
+
+        binding.tvRecastUserName.setOnClickListener {
+            openUserProfile(item)
+        }
+
+        binding.ivRecastAvatar.setOnClickListener {
+            openUserProfile(item)
+        }
+
+    }
+    private fun openUserProfile(item: CastUIModel) {
+        val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+        userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, item.owner?.username)
+        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, item.owner?.id)
+        context.startActivity(userProfileIntent)
     }
 
     private fun addTags(item: CastUIModel) {
