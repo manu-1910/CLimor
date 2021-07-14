@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.limor.app.databinding.FragmentUserCastsBinding
 import com.limor.app.di.Injectable
+import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
@@ -33,6 +34,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: UserPodcastsViewModel by viewModels { viewModelFactory }
+    private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
 
     private val userId: Int by lazy { requireArguments().getInt(USER_ID_KEY) }
 
@@ -65,6 +67,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                         onCastClick = ::onCastClick,
                         onLikeClick = { cast, like -> viewModel.likeCast(cast, like) },
                         onMoreDialogClick = ::onMoreDialogClick,
+                        onRecastClick = {cast -> recastPodcastViewModel.reCast(castId = cast.id)}
                     )
                 }
             )

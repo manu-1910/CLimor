@@ -766,6 +766,7 @@ public class Commons {
             fileName = FirebaseAuth.getInstance().getCurrentUser().getUid();
         if(imageType == IMAGE_TYPE_ATTACHMENT && FirebaseAuth.getInstance().getCurrentUser() != null)
             fileName = FirebaseAuth.getInstance().getCurrentUser().getUid().concat("_").concat(Long.toString(System.currentTimeMillis()));
+        fileName += imageUrlToUpload.substring(imageUrlToUpload.lastIndexOf("."));
         StorageReference riversRef = storageRef.child("images/"+fileName);
         UploadTask uploadTask = riversRef.putFile(file);
 

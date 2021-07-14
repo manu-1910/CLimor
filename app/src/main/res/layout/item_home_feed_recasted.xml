@@ -87,6 +87,7 @@
         android:background="@color/transparent"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_play_recast"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="@id/ivRecastIcon"
         app:layout_constraintTop_toBottomOf="@+id/tvRecastMessage" />
 
@@ -102,7 +103,8 @@
         app:layout_constraintTop_toTopOf="@id/btnPlayRecast"
         app:trackColor="#F0F3F8"
         app:trackCornerRadius="4dp"
-        tools:progress="25" />
+        tools:progress="25"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/tvRecastPlayCurrentPosition"
@@ -113,7 +115,8 @@
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="@id/lpiRecastProgress"
         app:layout_constraintTop_toBottomOf="@id/lpiRecastProgress"
-        tools:text="00:30" />
+        tools:text="00:30"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/tvRecastPlayMaxPosition"
@@ -124,7 +127,8 @@
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="@id/lpiRecastProgress"
         app:layout_constraintTop_toBottomOf="@id/lpiRecastProgress"
-        tools:text="02:00" />
+        tools:text="02:00"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/guideline2"

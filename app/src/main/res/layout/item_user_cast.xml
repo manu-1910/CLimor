@@ -108,7 +108,7 @@
         tools:text="100" />
 
 
-    <ImageButton
+    <com.limor.app.components.RecastButton
         android:id="@+id/btnPodcastRecast"
         android:layout_width="24dp"
         android:layout_height="24dp"

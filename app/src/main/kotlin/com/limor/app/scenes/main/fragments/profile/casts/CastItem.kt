@@ -20,6 +20,7 @@ class CastItem(
     private val onCastClick: (CastUIModel) -> Unit,
     private val onLikeClick: (CastUIModel, like: Boolean) -> Unit,
     private val onMoreDialogClick: (CastUIModel) -> Unit,
+    private val onRecastClick: (CastUIModel) -> Unit
 ) : BindableItem<ItemUserCastBinding>() {
 
     override fun bind(viewBinding: ItemUserCastBinding, position: Int) {
@@ -45,6 +46,8 @@ class CastItem(
             tvPodcastComments.text = cast.commentsCount.toString()
             tvPodcastReply.text = cast.sharesCount.toString()
             tvPodcastNumberOfListeners.text = cast.listensCount.toString()
+
+            initRecastState(viewBinding, cast)
 
             cpiPodcastListeningProgress.progress = 50 // TODO change to the real value
 
@@ -77,7 +80,38 @@ class CastItem(
             btnPodcastMore.setOnClickListener {
                 onMoreDialogClick(cast)
             }
+
+            btnPodcastRecast.setOnClickListener {
+                applyRecastStyle(viewBinding , true)
+                val recastCount = tvPodcastRecast.text.toString().toInt()
+                tvPodcastRecast.text = (recastCount + 1).toString()
+                btnPodcastRecast.recasted = true
+
+                onRecastClick(cast)
+            }
+
+
         }
+
+    }
+
+    private fun initRecastState(binding: ItemUserCastBinding, item: CastUIModel){
+        binding.tvPodcastRecast.text = item.recastsCount.toString()
+        binding.btnPodcastRecast.recasted = item.isRecasted == true
+        applyRecastStyle(binding, item.isRecasted == true)
+    }
+
+    private fun applyRecastStyle(binding: ItemUserCastBinding, isRecasted : Boolean){
+        binding.tvPodcastRecast.setTextColor(
+            if(isRecasted) ContextCompat.getColor(
+                binding.tvPodcastRecast.context,
+                R.color.textAccent
+            ) else
+                ContextCompat.getColor(
+                    binding.tvPodcastRecast.context,
+                    R.color.white
+                )
+        )
     }
 
     private fun initLikeState(binding: ItemUserCastBinding, cast: CastUIModel) {
