@@ -16,8 +16,9 @@ class CommentChildItem(
     val parentComment: CommentUIModel,
     val comment: CommentUIModel,
     val isSimplified: Boolean,
-    val onReplyClick: (parentComment: CommentUIModel, replyToComment: CommentUIModel) -> Unit
-): BindableItem<ItemChildCommentBinding>() {
+    val onReplyClick: (parentComment: CommentUIModel, replyToComment: CommentUIModel) -> Unit,
+    val onLikeClick: (comment: CommentUIModel, liked: Boolean) -> Unit,
+) : BindableItem<ItemChildCommentBinding>() {
 
     override fun bind(viewBinding: ItemChildCommentBinding, position: Int) {
         viewBinding.tvCommentName.text = comment.user?.getFullName()
@@ -31,11 +32,6 @@ class CommentChildItem(
             viewBinding.ivCommentAvatar.loadCircleImage(it)
         }
         viewBinding.tvCommentContent.text = comment.content
-        viewBinding.likesCount.text = viewBinding.root.context.resources.getQuantityString(
-            R.plurals.likes_count,
-            comment.likesCount ?: 0,
-            comment.likesCount ?: 0
-        )
         viewBinding.replyBtn.setOnClickListener {
             onReplyClick(parentComment, comment)
         }
@@ -44,6 +40,36 @@ class CommentChildItem(
             viewBinding.tvCommentContent.ellipsize = TextUtils.TruncateAt.END
         } else {
             viewBinding.tvCommentContent.maxLines = Int.MAX_VALUE
+        }
+        initLikeState(viewBinding)
+    }
+
+    private fun initLikeState(binding: ItemChildCommentBinding) {
+        binding.apply {
+            btnCommentLike.isLiked = comment.isLiked!!
+            likesCount.text = root.context.resources.getQuantityString(
+                R.plurals.likes_count,
+                comment.likesCount ?: 0,
+                comment.likesCount ?: 0
+            )
+
+            btnCommentLike.setOnClickListener {
+                val isLiked = btnCommentLike.isLiked
+                val newLikesCount = if (isLiked) {
+                    likesCount.text.toString().toInt() + 1
+                } else {
+                    likesCount.text.toString().toInt() - 1
+                }
+
+
+                likesCount.text = root.context.resources.getQuantityString(
+                    R.plurals.likes_count,
+                    newLikesCount,
+                    newLikesCount
+                )
+
+                onLikeClick(comment, isLiked)
+            }
         }
     }
 

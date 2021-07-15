@@ -71,6 +71,9 @@ class FragmentComments : BaseFragment() {
                         },
                         onViewMoreCommentsClick = { comment ->
                             goToReplies(comment)
+                        },
+                        onLikeClick = { comment, liked ->
+                            viewModel.likeComment(comment, liked)
                         }
                     )
                 }
@@ -82,7 +85,7 @@ class FragmentComments : BaseFragment() {
         parentComment: CommentUIModel,
         replyToComment: CommentUIModel? = null
     ) {
-        FragmentCommentReplies.newInstance(parentComment, replyToComment)
+        FragmentCommentReplies.newInstance(parentComment.id, replyToComment?.id)
             .also {
                 parentFragmentManager.beginTransaction()
                     .add(R.id.comment_container, it)

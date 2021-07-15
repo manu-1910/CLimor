@@ -14,13 +14,14 @@ import com.xwray.groupie.Section
  * | -------------------- |
  * |   CommentChildItem   | <--- Not always present
  * | -------------------- |
- * | ViewMoreCommentsItem |
+ * | ViewMoreCommentsItem | <--- Not always present
  * ------------------------
  */
 class ParentCommentSection(
     val comment: CommentUIModel,
     val onReplyClick: (parentComment: CommentUIModel, replyToComment: CommentUIModel?) -> Unit,
-    val onViewMoreCommentsClick: (CommentUIModel) -> Unit
+    val onViewMoreCommentsClick: (CommentUIModel) -> Unit,
+    val onLikeClick: (comment: CommentUIModel, liked: Boolean) -> Unit,
 ) : Section() {
 
     init {
@@ -30,7 +31,8 @@ class ParentCommentSection(
                 onReplyClick = {
                     // In this case user tries to reply to the parent comment
                     onReplyClick(it, it)
-                }
+                },
+                onLikeClick = onLikeClick
             )
         )
         comment.innerComments.firstOrNull()?.let { childComment ->
@@ -39,7 +41,8 @@ class ParentCommentSection(
                     comment,
                     childComment,
                     isSimplified = true,
-                    onReplyClick = onReplyClick
+                    onReplyClick = onReplyClick,
+                    onLikeClick = onLikeClick
                 )
             )
             add(ViewMoreCommentsItem(comment, onViewMoreCommentsClick))

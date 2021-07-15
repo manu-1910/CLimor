@@ -22,16 +22,16 @@ class FragmentCommentReplies : BaseFragment() {
 
     companion object {
         val TAG = FragmentCommentReplies::class.qualifiedName
-        private const val PARENT_COMMENT_KEY = "PARENT_COMMENT_KEY"
-        private const val CHILD_REPLY_COMMENT_KEY = "CHILD_REPLY_COMMENT_KEY"
+        private const val PARENT_COMMENT_ID_KEY = "PARENT_COMMENT_ID_KEY"
+        private const val CHILD_REPLY_COMMENT_ID_KEY = "CHILD_REPLY_COMMENT_ID_KEY"
         fun newInstance(
-            parentComment: CommentUIModel,
-            replyToComment: CommentUIModel? = null
+            parentCommentId: Int,
+            replyToCommentId: Int? = null
         ): FragmentCommentReplies {
             return FragmentCommentReplies().apply {
                 arguments = bundleOf(
-                    PARENT_COMMENT_KEY to parentComment,
-                    CHILD_REPLY_COMMENT_KEY to replyToComment,
+                    PARENT_COMMENT_ID_KEY to parentCommentId,
+                    CHILD_REPLY_COMMENT_ID_KEY to replyToCommentId,
                 )
             }
         }
@@ -41,16 +41,8 @@ class FragmentCommentReplies : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: CommentsViewModel by viewModels { viewModelFactory }
 
-    private val parentComment: CommentUIModel by lazy {
-        requireArguments().getParcelable(
-            PARENT_COMMENT_KEY
-        )!!
-    }
-    private val replyToComment: CommentUIModel? by lazy {
-        requireArguments().getParcelable(
-            CHILD_REPLY_COMMENT_KEY
-        )
-    }
+    private val parentCommentId: Int by lazy { requireArguments().getInt(PARENT_COMMENT_ID_KEY) }
+    private var replyToCommentId: Int? = null
 
     private var _binding: FragmentCommentRepliesBinding? = null
     private val binding get() = _binding!!
@@ -63,6 +55,10 @@ class FragmentCommentReplies : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCommentRepliesBinding.inflate(inflater, container, false)
+
+        replyToCommentId = requireArguments().getInt(CHILD_REPLY_COMMENT_ID_KEY, -1)
+            .takeIf { it != -1 }
+
         initViews()
         subscribeForComments()
         return binding.root
@@ -76,17 +72,19 @@ class FragmentCommentReplies : BaseFragment() {
         binding.backBtn.setOnClickListener {
             dismissFragment()
         }
-        fillList(parentComment)
-
-        if (replyToComment != null) {
-            onReplyClick(replyToComment!!)
-        }
+        viewModel.loadCommentById(parentCommentId)
     }
 
     private fun fillList(parentComment: CommentUIModel) {
         adapter.clear()
         adapter.add(
-            CommentParentItem(parentComment, onReplyClick = ::onReplyClick)
+            CommentParentItem(
+                parentComment,
+                onReplyClick = ::onReplyClick,
+                onLikeClick = { comment, liked ->
+                    viewModel.likeComment(comment, liked)
+                }
+            )
         )
         parentComment.innerComments.forEach { childComment ->
             adapter.add(
@@ -95,6 +93,9 @@ class FragmentCommentReplies : BaseFragment() {
                     childComment,
                     onReplyClick = { _, replyChildComment -> onReplyClick(replyChildComment) },
                     isSimplified = false,
+                    onLikeClick = { comment, liked ->
+                        viewModel.likeComment(comment, liked)
+                    }
                 )
             )
         }
@@ -103,7 +104,18 @@ class FragmentCommentReplies : BaseFragment() {
     private fun subscribeForComments() {
         viewModel.comment.observe(viewLifecycleOwner) { updatedComment ->
             if (updatedComment != null) {
-                fillList(parentComment)
+                fillList(updatedComment)
+
+                if (replyToCommentId != null) {
+                    onReplyClick(
+                        if (updatedComment.id == replyToCommentId) {
+                            updatedComment
+                        } else {
+                            updatedComment.innerComments.first { it.id == replyToCommentId }
+                        }
+                    )
+                    replyToCommentId = null
+                }
             } else {
                 dismissFragment()
             }

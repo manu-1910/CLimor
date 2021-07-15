@@ -1,16 +1,19 @@
 package com.limor.app.scenes.main_new.fragments.comments.list.item
 
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.limor.app.R
 import com.limor.app.databinding.ItemParentCommentBinding
 import com.limor.app.extensions.loadCircleImage
 import com.limor.app.scenes.utils.DateUiUtil
+import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
 import com.xwray.groupie.viewbinding.BindableItem
 
 class CommentParentItem(
     val comment: CommentUIModel,
-    val onReplyClick: (parentComment: CommentUIModel) -> Unit
+    val onReplyClick: (parentComment: CommentUIModel) -> Unit,
+    val onLikeClick: (parentComment: CommentUIModel, liked: Boolean) -> Unit,
 ): BindableItem<ItemParentCommentBinding>() {
 
     override fun bind(viewBinding: ItemParentCommentBinding, position: Int) {
@@ -27,6 +30,18 @@ class CommentParentItem(
         }
         viewBinding.replyBtn.setOnClickListener {
             onReplyClick(comment)
+        }
+        initLikeState(viewBinding)
+    }
+
+    private fun initLikeState(binding: ItemParentCommentBinding) {
+        binding.apply {
+            btnCommentLike.isLiked = comment.isLiked!!
+
+            btnCommentLike.setOnClickListener {
+                val isLiked = btnCommentLike.isLiked
+                onLikeClick(comment, isLiked)
+            }
         }
     }
 

@@ -9,6 +9,7 @@ import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.usecases.AddCommentUseCase
 import com.limor.app.usecases.GetCommentByIdUseCase
 import com.limor.app.usecases.GetCommentsForPodcastUseCase
+import com.limor.app.usecases.LikeCommentUseCase
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -17,6 +18,7 @@ class CommentsViewModel @Inject constructor(
     private val getCommentsForPodcastUseCase: GetCommentsForPodcastUseCase,
     private val addCommentUseCase: AddCommentUseCase,
     private val getCommentByIdUseCase: GetCommentByIdUseCase,
+    private val likeCommentUseCase: LikeCommentUseCase,
 ) : ViewModel() {
 
     private val _comments = MutableLiveData<List<CommentUIModel>>()
@@ -74,9 +76,13 @@ class CommentsViewModel @Inject constructor(
         }
     }
 
-    fun likeComment(commentUIModel: CommentUIModel, like: Boolean) {
+    fun likeComment(comment: CommentUIModel, like: Boolean) {
         viewModelScope.launch {
-
+            try {
+                likeCommentUseCase.execute(comment.id, like)
+            } catch (ex: Exception) {
+                Timber.e(ex, "Error while liking comment with id = ${comment.id}")
+            }
         }
     }
 }

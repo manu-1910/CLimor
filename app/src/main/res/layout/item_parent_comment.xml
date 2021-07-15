@@ -22,9 +22,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
+        android:fontFamily="@font/roboto_bold"
         android:maxLength="25"
         android:maxLines="1"
-        android:fontFamily="@font/roboto_bold"
         android:textColor="@color/textPrimary"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -112,7 +112,8 @@
         android:background="@color/transparent"
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivCommentAvatar" />
+        app:layout_constraintTop_toBottomOf="@id/ivCommentAvatar"
+        app:unliked_color="@color/textPrimary" />
 
     <TextView
         android:id="@+id/reply_btn"
