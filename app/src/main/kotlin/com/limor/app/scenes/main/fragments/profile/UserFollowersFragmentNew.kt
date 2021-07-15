@@ -153,7 +153,7 @@ class UserFollowersFragmentNew(private val uiUserId: Int?) : BaseFragment() {
 
             })
 
-        binding.rvBlockedUsers.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+       /* binding.rvBlockedUsers.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
@@ -183,7 +183,7 @@ class UserFollowersFragmentNew(private val uiUserId: Int?) : BaseFragment() {
                     }
                 }
             }
-        })
+        })*/
         binding.rvBlockedUsers.adapter = blockedUsersAdapter
         binding.rvBlockedUsers.setHasFixedSize(false)
     }
@@ -240,10 +240,8 @@ class UserFollowersFragmentNew(private val uiUserId: Int?) : BaseFragment() {
         isLastPage = false
         model.blockUsersOffset = 0
         hideEmptyScenario()
-        model.clearFollowers()
+       // model.clearFollowers()
         arrayList.clear()
-        rvBlockedUsers?.recycledViewPool?.clear()
-        rvBlockedUsers.adapter?.notifyDataSetChanged()
         requestNewData()
     }
 

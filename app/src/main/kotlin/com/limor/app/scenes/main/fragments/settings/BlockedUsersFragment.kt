@@ -64,7 +64,7 @@ class BlockedUsersFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentUsersBlockedBinding.inflate(inflater,container,false)
 
         app = context?.applicationContext as App
@@ -81,8 +81,6 @@ class BlockedUsersFragment : BaseFragment() {
 
         bindViewModel()
         initApiCallGetBlockedUsers()
-        initApiCallCreateBlockedUser()
-        initApiCallDeleteBlockedUser()
         initSwipeAndRefreshLayout()
         initRecyclerView()
         model.blockedUsersData.observe(viewLifecycleOwner, Observer {
@@ -106,12 +104,7 @@ class BlockedUsersFragment : BaseFragment() {
 
     }
 
-    /*override fun load() {
-        reload()
-    }
 
-    override val errorLiveData: LiveData<String>
-        get() = model.blockedUserErrorLiveData*/
 
     private fun configureEmptyScenario() {
         binding.layEmptyScenario.ivEmptyScenario.visibility = View.GONE
@@ -193,7 +186,7 @@ class BlockedUsersFragment : BaseFragment() {
             }
         })
         binding.rvBlockedUsers.adapter = blockedUsersAdapter
-        binding.rvBlockedUsers?.setHasFixedSize(false)
+        binding.rvBlockedUsers.setHasFixedSize(false)
     }
 
     private fun setViewModelVariables() {
@@ -221,8 +214,7 @@ class BlockedUsersFragment : BaseFragment() {
     }
 
     private fun performUnblockUser(item: GetBlockedUsersQuery.GetBlockedUser) {
-
-        model.createBlockedUser(item.id!!)
+        model.unblockUser(item.id!!)
     }
 
     private fun performBlockUser(item: GetBlockedUsersQuery.GetBlockedUser) {
@@ -237,7 +229,7 @@ class BlockedUsersFragment : BaseFragment() {
         binding.laySwipeRefresh?.setProgressBackgroundColorSchemeColor(
             ContextCompat.getColor(
                 requireContext(),
-                R.color.colorPrimaryDark
+                R.color.white
             )
         )
 
@@ -314,12 +306,5 @@ class BlockedUsersFragment : BaseFragment() {
     }
 
 
-    private fun initApiCallDeleteBlockedUser() {
-
-    }
-
-    private fun initApiCallCreateBlockedUser() {
-
-    }
 
 }

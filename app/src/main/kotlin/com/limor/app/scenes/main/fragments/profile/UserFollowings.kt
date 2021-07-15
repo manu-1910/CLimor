@@ -140,6 +140,7 @@ class UserFollowings(private val uiUserId: Int?) : BaseFragment() {
                     Timber.d("Followings ->%s", item.toString())
                     if(item.followed!!) {
                         requestUnfollow(item,position)
+
                     } else {
 
                         startFollowing(item)
@@ -152,7 +153,7 @@ class UserFollowings(private val uiUserId: Int?) : BaseFragment() {
 
             })
 
-        binding.rvBlockedUsers.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        /*binding.rvBlockedUsers.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
@@ -182,7 +183,7 @@ class UserFollowings(private val uiUserId: Int?) : BaseFragment() {
                     }
                 }
             }
-        })
+        })*/
         binding.rvBlockedUsers.adapter = blockedUsersAdapter
         binding.rvBlockedUsers.setHasFixedSize(false)
     }
@@ -194,6 +195,7 @@ class UserFollowings(private val uiUserId: Int?) : BaseFragment() {
     private fun requestUnfollow(item: FriendsQuery.GetFriend, position:Int) {
         alert(getString(R.string.confirmation_unfollow_user)) {
             okButton {
+                blockedUsersAdapter.updateItem(item,position)
                 unfollowUser(item)
             }
             cancelButton {  }
@@ -202,6 +204,7 @@ class UserFollowings(private val uiUserId: Int?) : BaseFragment() {
 
     private fun unfollowUser(item: FriendsQuery.GetFriend) {
         item.id?.let {
+
             model.unFollowUser(item.id)
         }
     }
@@ -236,16 +239,14 @@ class UserFollowings(private val uiUserId: Int?) : BaseFragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        reload()
-    }
 
     private fun reload() {
         isLastPage = false
         model.blockUsersOffset = 0
         hideEmptyScenario()
-        model.clearFollowing()
+        showProgressBar()
+        //model.clearFollowing()
+        isRequestingNewData = false
         arrayList.clear()
         rvBlockedUsers?.recycledViewPool?.clear()
         rvBlockedUsers.adapter?.notifyDataSetChanged()
@@ -257,7 +258,7 @@ class UserFollowings(private val uiUserId: Int?) : BaseFragment() {
         if(model.followingsData.value == null || model.followingsData.value?.size != 0){
             model.getFollowings(uiUserId,arrayList.size)
         }else{
-            model.clearFollowing()
+            //model.clearFollowing()
             model.getFollowings(uiUserId,0)
         }
     }
