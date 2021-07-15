@@ -84,16 +84,8 @@ class CastItem(
             }
 
             btnPodcastRecast.setOnClickListener {
-                /*val viewModel : RecastPodcastViewModel = */onRecastClick(cast)
-                /*viewBinding.root.findViewTreeLifecycleOwner()?.let { it1 ->
-                    viewModel.recatedResponse.observe(it1, {
-                        tvPodcastRecast.text = it?.count.toString()
-                        applyRecastStyle(binding = viewBinding, it?.recasted == true)
-                        btnPodcastRecast.recasted = it?.recasted == true
-                    })
-                }*/
+                onRecastClick(cast)
             }
-
 
         }
 

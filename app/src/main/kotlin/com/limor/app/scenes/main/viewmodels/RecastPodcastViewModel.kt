@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.CreateRecastMutation
+import com.limor.app.uimodels.CreateRecastUIModel
 import com.limor.app.usecases.RecastPodcastUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,8 +16,8 @@ class RecastPodcastViewModel  @Inject constructor(
     private val recastPodcastUseCase: RecastPodcastUseCase) : ViewModel() {
 
     private var _recastedResponse =
-        MutableLiveData<CreateRecastMutation.CreateRecast?>()
-    val recatedResponse: LiveData<CreateRecastMutation.CreateRecast?>
+        MutableLiveData<CreateRecastUIModel?>()
+    val recatedResponse: LiveData<CreateRecastUIModel?>
         get() = _recastedResponse
 
     fun reCast(castId: Int) {

@@ -93,14 +93,7 @@ class ViewHolderPodcast(
         }
 
         binding.btnPodcastRecast.setOnClickListener {
-            /*val viewModel : RecastPodcastViewModel = */onRecastClick(item.id)
-            /*binding.root.findViewTreeLifecycleOwner()?.let { it1 ->
-                viewModel.recatedResponse.observe(it1, {
-                    binding.tvPodcastRecast.text = it?.count.toString()
-                    applyRecastStyle(it?.recasted == true)
-                    binding.btnPodcastRecast.recasted = it?.recasted == true
-                })
-            }*/
+            onRecastClick(item.id)
         }
     }
 
