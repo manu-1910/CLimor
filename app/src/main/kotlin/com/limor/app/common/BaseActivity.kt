@@ -68,10 +68,10 @@ abstract class BaseActivity : AppCompatActivity() {
                         stopAudioService()
                     }
                     is PlayerStatus.Playing -> {
-                        if (miniPlayerView!!.tag != audioService?.uiPodcast?.id) {
+                        /*if (miniPlayerView!!.tag != audioService?.uiPodcast?.id) {
                             miniPlayerView!!.tag = audioService?.uiPodcast?.id
                             setupMiniPlayerUi()
-                        }
+                        }*/
 
                         setPlayerUiPlaying()
 
@@ -98,11 +98,11 @@ abstract class BaseActivity : AppCompatActivity() {
             })
 
 
-            // Show player after config change.
+            /*// Show player after config change.
             val podcast = audioService?.uiPodcast
             if (podcast != null) {
                 setupMiniPlayerUi()
-            }
+            }*/
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -111,7 +111,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     private fun setupMiniPlayerUi() {
-        try {
+        /*try {
             miniPlayerView!!.visibility = View.VISIBLE
             Glide.with(miniPlayerView!!.iv_audio).load(audioService?.uiPodcast?.imageLinks?.small)
                 .centerCrop().into(miniPlayerView!!.iv_audio)
@@ -125,7 +125,7 @@ abstract class BaseActivity : AppCompatActivity() {
             miniPlayerView!!.tv_duration.text = Commons.getHumanReadableTimeFromMillis(durationMillis!!)
         } catch (e: Exception) {
             e.printStackTrace()
-        }
+        }*/
 
     }
 
@@ -149,7 +149,7 @@ abstract class BaseActivity : AppCompatActivity() {
             miniPlayerView!!.iv_comments.onClick {
                 val podcastDetailsIntent =
                     Intent(it?.context, PodcastDetailsActivity::class.java)
-                podcastDetailsIntent.putExtra("podcast", audioService?.uiPodcast)
+                //podcastDetailsIntent.putExtra("podcast", audioService?.uiPodcast)
                 podcastDetailsIntent.putExtra("commenting", true)
                 podcastDetailsIntent.putExtra("position", audioService?.feedPosition)
                 startActivityForResult(podcastDetailsIntent, MainActivity.REQUEST_AUDIO_PLAYER)
@@ -167,19 +167,19 @@ abstract class BaseActivity : AppCompatActivity() {
                         setPlayerUiPlaying()
                     }
                     is PlayerStatus.Ended -> {
-                        setPlayerUiPaused()
+                        /*setPlayerUiPaused()
                         audioService?.play(
                             audioService?.uiPodcast,
                             1L,
                             1F
-                        )
+                        )*/
                     }
                 }
 
             }
 
             miniPlayerView!!.fl_launch_maximised_player.onClick {
-                audioService?.let {
+                /*audioService?.let {
                     if(podcast != null) it.uiPodcast = podcast
                 }
                 val audioPlayerIntent = Intent(this, AudioPlayerActivity::class.java)
@@ -188,7 +188,7 @@ abstract class BaseActivity : AppCompatActivity() {
                     audioService?.uiPodcast
                 )
                 startActivityForResult(audioPlayerIntent, MainActivity.REQUEST_AUDIO_PLAYER)
-                overridePendingTransition(R.anim.push_up_in_enter_no_alpha, 0)
+                overridePendingTransition(R.anim.push_up_in_enter_no_alpha, 0)*/
             }
         }
 

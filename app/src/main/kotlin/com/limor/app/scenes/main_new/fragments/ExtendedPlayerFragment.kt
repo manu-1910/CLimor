@@ -156,7 +156,7 @@ class ExtendedPlayerFragment : BaseFragment() {
                     binding.audioBufferingView.visibility = View.GONE
                 }
                 is PlayerStatus.Error -> binding.audioBufferingView.visibility = View.GONE
-                is PlayerStatus.Other -> binding.audioBufferingView.visibility = View.VISIBLE
+                is PlayerStatus.Buffering -> binding.audioBufferingView.visibility = View.VISIBLE
                 is PlayerStatus.Paused -> {
                     binding.audioBufferingView.visibility = View.GONE
                     binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)

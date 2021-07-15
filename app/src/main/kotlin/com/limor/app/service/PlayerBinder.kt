@@ -8,7 +8,6 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.distinctUntilChanged
-import com.limor.app.uimodels.CastUIModel
 import timber.log.Timber
 
 class PlayerBinder(
@@ -17,7 +16,7 @@ class PlayerBinder(
 
     private var audioService: AudioService? = null
     private var playerStatus: PlayerStatus? = null
-    private var currentPodcast: CastUIModel? = null
+    private var currentAudioTrack: AudioService.AudioTrack? = null
 
     private val _playerStatusLiveData = MutableLiveData<PlayerStatus?>()
     val playerStatusLiveData: LiveData<PlayerStatus?>
@@ -45,7 +44,7 @@ class PlayerBinder(
 
                     val percent = getProgressPercent(
                         playingPositionMillis,
-                        currentPodcast?.audio?.duration?.toMillis() ?: 0
+                        currentAudioTrack?.duration?.toMillis() ?: 0
                     )
                     val playingPositionSeconds = playingPositionMillis / 1000
                     _currentPlayPositionLiveData.postValue(playingPositionSeconds to percent)
@@ -57,8 +56,8 @@ class PlayerBinder(
         }
     }
 
-    fun start(podcast: CastUIModel) {
-        currentPodcast = podcast
+    fun start(audioTrack: AudioService.AudioTrack) {
+        currentAudioTrack = audioTrack
 
         if (audioService == null) {
             bindToAudioService()
@@ -84,7 +83,7 @@ class PlayerBinder(
             }
             else -> {
                 audioService?.play(
-                    currentPodcast,
+                    currentAudioTrack,
                     1L,
                     1F
                 )
@@ -100,6 +99,10 @@ class PlayerBinder(
         audioService?.rewind(seekTo)
     }
 
+    fun seekTo(positionMs: Int) {
+        audioService?.seekTo(positionMs)
+    }
+
     private fun bindToAudioService() {
         if (audioService == null) {
             AudioService.newIntent(appContext).also { intent ->
@@ -110,7 +113,7 @@ class PlayerBinder(
 
     private fun unbindAudioService() {
         if (audioService != null) {
-            audioService?.pause()
+            audioService?.stop()
             appContext.unbindService(connection)
             audioService = null
             playerStatus = null

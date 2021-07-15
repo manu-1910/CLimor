@@ -63,6 +63,11 @@
         <attr name="unliked_res" format="reference"/>
     </declare-styleable>
 
+    <declare-styleable name="PlayButton">
+        <attr name="play_res" format="reference"/>
+        <attr name="pause_res" format="reference"/>
+    </declare-styleable>
+
     <declare-styleable name="RecastButton">
         <attr name="recast_color" format="color"/>
         <attr name="not_recasted_color" format="color"/>

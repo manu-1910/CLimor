@@ -11,7 +11,7 @@ import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
 import com.limor.app.scenes.main_new.fragments.SmallPlayerFragment
 import com.limor.app.service.PlayerBinder
-import timber.log.Timber
+import com.limor.app.uimodels.mapToAudioTrack
 import kotlin.math.abs
 
 class ActivityPlayerViewManager(
@@ -38,7 +38,7 @@ class ActivityPlayerViewManager(
     override fun showPlayer(args: PlayerViewManager.PlayerArgs) {
         currentArgs = args
 
-        _playerBinder.start(args.cast)
+        _playerBinder.start(args.cast.audio!!.mapToAudioTrack(title = args.cast.title))
 
         when (args.playerType) {
             PlayerViewManager.PlayerType.SMALL -> {

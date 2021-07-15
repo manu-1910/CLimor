@@ -1,20 +1,23 @@
 package com.limor.app.scenes.main_new.fragments.comments.list.item
 
 import android.view.View
-import androidx.core.content.ContextCompat
 import com.limor.app.R
+import com.limor.app.components.CommentAudioPlayerView
 import com.limor.app.databinding.ItemParentCommentBinding
 import com.limor.app.extensions.loadCircleImage
+import com.limor.app.extensions.makeGone
+import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.utils.DateUiUtil
-import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
 import com.xwray.groupie.viewbinding.BindableItem
+import com.xwray.groupie.viewbinding.GroupieViewHolder
+import java.time.Duration
 
 class CommentParentItem(
     val comment: CommentUIModel,
     val onReplyClick: (parentComment: CommentUIModel) -> Unit,
     val onLikeClick: (parentComment: CommentUIModel, liked: Boolean) -> Unit,
-): BindableItem<ItemParentCommentBinding>() {
+) : BindableItem<ItemParentCommentBinding>() {
 
     override fun bind(viewBinding: ItemParentCommentBinding, position: Int) {
         viewBinding.tvCommentName.text = comment.user?.getFullName()
@@ -32,6 +35,18 @@ class CommentParentItem(
             onReplyClick(comment)
         }
         initLikeState(viewBinding)
+        initAudioPlayer(viewBinding)
+    }
+
+    private fun initAudioPlayer(binding: ItemParentCommentBinding) {
+        binding.audioPlayer.apply {
+            if (comment.audio != null) {
+                makeVisible()
+                initialize(comment.audio)
+            } else {
+                makeGone()
+            }
+        }
     }
 
     private fun initLikeState(binding: ItemParentCommentBinding) {

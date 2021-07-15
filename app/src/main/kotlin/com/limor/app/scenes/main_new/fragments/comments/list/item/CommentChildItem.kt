@@ -5,6 +5,8 @@ import android.view.View
 import com.limor.app.R
 import com.limor.app.databinding.ItemChildCommentBinding
 import com.limor.app.extensions.loadCircleImage
+import com.limor.app.extensions.makeGone
+import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.utils.DateUiUtil
 import com.limor.app.uimodels.CommentUIModel
 import com.xwray.groupie.viewbinding.BindableItem
@@ -42,6 +44,18 @@ class CommentChildItem(
             viewBinding.tvCommentContent.maxLines = Int.MAX_VALUE
         }
         initLikeState(viewBinding)
+        initAudioPlayer(viewBinding)
+    }
+
+    private fun initAudioPlayer(binding: ItemChildCommentBinding) {
+        binding.audioPlayer.apply {
+            if (comment.audio != null) {
+                makeVisible()
+                initialize(comment.audio)
+            } else {
+                makeGone()
+            }
+        }
     }
 
     private fun initLikeState(binding: ItemChildCommentBinding) {
