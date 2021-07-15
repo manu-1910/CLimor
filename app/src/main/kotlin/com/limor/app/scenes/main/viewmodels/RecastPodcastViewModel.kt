@@ -1,12 +1,10 @@
 package com.limor.app.scenes.main.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.CreateRecastMutation
-import com.limor.app.usecases.LikePodcastUseCase
 import com.limor.app.usecases.RecastPodcastUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,7 +20,7 @@ class RecastPodcastViewModel  @Inject constructor(
         get() = _recastedResponse
 
     fun reCast(castId: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             runCatching {
                 val result = recastPodcastUseCase.execute(castId)
                 _recastedResponse.postValue(result)
