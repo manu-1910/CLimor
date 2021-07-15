@@ -61,4 +61,12 @@ class PodcastInteractionsRepository @Inject constructor(val apollo: Apollo) {
         val result = apollo.mutate(mutation)
         return result?.data?.createComment?.id
     }
+
+    suspend fun getCommentById(
+        commentId: Int
+    ): GetCommentsByIdQuery.GetCommentsById? {
+        val query = GetCommentsByIdQuery(commentId)
+        val result = apollo.launchQuery(query)
+        return result?.data?.getCommentsById
+    }
 }

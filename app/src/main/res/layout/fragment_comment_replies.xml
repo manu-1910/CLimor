@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/bg_comments">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout4"
@@ -27,12 +28,12 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
             android:layout_marginTop="22dp"
             android:fontFamily="@font/roboto_medium"
-            android:text="@string/comments"
+            android:text="@string/replies"
             android:textColor="@color/textPrimary"
             android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -48,6 +49,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/title" />
 
+        <ImageView
+            android:id="@+id/back_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            app:layout_constraintBottom_toBottomOf="@+id/title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/title"
+            app:srcCompat="@drawable/arrow_left" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -58,7 +69,7 @@
         android:layout_weight="1"
         android:orientation="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/entry_container"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout3"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
 
     <androidx.constraintlayout.widget.ConstraintLayout

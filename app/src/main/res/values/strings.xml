@@ -615,6 +615,7 @@
     <string name="bottom_menu_messenger">Messages</string>
 
     <string name="author">Author</string>
+    <string name="replies">Replies</string>
     <string name="view_more_comments">View %d more comments…</string>
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>

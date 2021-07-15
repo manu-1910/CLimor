@@ -178,3 +178,43 @@ fun GetCommentsByPodcastsQuery.Mentions1.mapToUIModel() =
             )
         } ?: emptyList()
     )
+
+fun GetCommentsByIdQuery.Mentions.mapToUIModel() =
+    MentionUIModel(
+        content = content?.map {
+            MentionUIModel.MentionDataUIModel(
+                userId = it!!.user_id!!,
+                username = it.username!!,
+                startIndex = it.start_index!!,
+                endIndex = it.end_index!!,
+            )
+        } ?: emptyList(),
+        caption = caption?.map {
+            MentionUIModel.MentionDataUIModel(
+                userId = it!!.user_id!!,
+                username = it.username!!,
+                startIndex = it.start_index!!,
+                endIndex = it.end_index!!,
+            )
+        } ?: emptyList()
+    )
+
+fun GetCommentsByIdQuery.Mentions1.mapToUIModel() =
+    MentionUIModel(
+        content = content?.map {
+            MentionUIModel.MentionDataUIModel(
+                userId = it!!.user_id!!,
+                username = it.username!!,
+                startIndex = it.start_index!!,
+                endIndex = it.end_index!!,
+            )
+        } ?: emptyList(),
+        caption = caption?.map {
+            MentionUIModel.MentionDataUIModel(
+                userId = it!!.user_id!!,
+                username = it.username!!,
+                startIndex = it.start_index!!,
+                endIndex = it.end_index!!,
+            )
+        } ?: emptyList()
+    )

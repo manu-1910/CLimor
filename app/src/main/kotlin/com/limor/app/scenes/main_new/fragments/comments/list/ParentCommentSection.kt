@@ -19,7 +19,7 @@ import com.xwray.groupie.Section
  */
 class ParentCommentSection(
     val comment: CommentUIModel,
-    val onReplyClick: (parentComment: CommentUIModel, childComment: CommentUIModel?) -> Unit,
+    val onReplyClick: (parentComment: CommentUIModel, replyToComment: CommentUIModel?) -> Unit,
     val onViewMoreCommentsClick: (CommentUIModel) -> Unit
 ) : Section() {
 
@@ -28,7 +28,8 @@ class ParentCommentSection(
             CommentParentItem(
                 comment,
                 onReplyClick = {
-                    onReplyClick(it, null)
+                    // In this case user tries to reply to the parent comment
+                    onReplyClick(it, it)
                 }
             )
         )

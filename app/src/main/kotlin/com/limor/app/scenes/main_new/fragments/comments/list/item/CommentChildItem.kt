@@ -16,7 +16,7 @@ class CommentChildItem(
     val parentComment: CommentUIModel,
     val comment: CommentUIModel,
     val isSimplified: Boolean,
-    val onReplyClick: (parentComment: CommentUIModel, childComment: CommentUIModel) -> Unit
+    val onReplyClick: (parentComment: CommentUIModel, replyToComment: CommentUIModel) -> Unit
 ): BindableItem<ItemChildCommentBinding>() {
 
     override fun bind(viewBinding: ItemChildCommentBinding, position: Int) {

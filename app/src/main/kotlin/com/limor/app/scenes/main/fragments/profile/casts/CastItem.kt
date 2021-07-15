@@ -37,7 +37,7 @@ class CastItem(
                 ivAvatarImageListening.loadCircleImage(it)
             }
 
-            cast.imageLinks?.medium?.let {
+            cast.imageLinks?.large?.let {
                 ivPodcastBackground.loadImage(it)
             }
 

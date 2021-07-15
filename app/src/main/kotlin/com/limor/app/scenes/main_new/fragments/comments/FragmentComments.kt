@@ -4,23 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.limor.app.R
+import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentCommentsBinding
-import com.limor.app.di.Injectable
 import com.limor.app.extensions.dismissFragment
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main_new.fragments.comments.list.ParentCommentSection
 import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.CommentUIModel
 import com.xwray.groupie.GroupieAdapter
 import javax.inject.Inject
 
-class FragmentComments : BottomSheetDialogFragment(), Injectable {
+class FragmentComments : BaseFragment() {
 
     companion object {
         val TAG = FragmentComments::class.qualifiedName
@@ -43,16 +41,6 @@ class FragmentComments : BottomSheetDialogFragment(), Injectable {
 
     private val adapter = GroupieAdapter()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setStyle(STYLE_NORMAL, R.style.CustomBottomSheet)
-        requireActivity().onBackPressedDispatcher.addCallback(owner = this) {
-            dismissFragment()
-            isEnabled = false
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,38 +53,45 @@ class FragmentComments : BottomSheetDialogFragment(), Injectable {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        BottomSheetBehavior.from(
-            dialog!!.findViewById(com.google.android.material.R.id.design_bottom_sheet)
-        ).apply {
-            state = BottomSheetBehavior.STATE_EXPANDED
-        }
-    }
-
     private fun initViews() {
         binding.commentsList.adapter = adapter
         binding.closeBtn.setOnClickListener {
-            dismissFragment()
+            parentFragment?.dismissFragment()
         }
     }
 
     private fun subscribeForComments() {
         viewModel.comments.observe(viewLifecycleOwner) { comments ->
-            val _comments = comments + comments + comments + comments + comments + comments + comments + comments + comments + comments + comments + comments
             adapter.update(
-                _comments.map {
+                comments.map {
                     ParentCommentSection(
                         comment = it,
-                        onReplyClick = { parentComment, childComment ->
-
+                        onReplyClick = { parentComment, replyToComment ->
+                            goToReplies(parentComment, replyToComment)
                         },
                         onViewMoreCommentsClick = { comment ->
-
+                            goToReplies(comment)
                         }
                     )
                 }
             )
         }
+    }
+
+    private fun goToReplies(
+        parentComment: CommentUIModel,
+        replyToComment: CommentUIModel? = null
+    ) {
+        FragmentCommentReplies.newInstance(parentComment, replyToComment)
+            .also {
+                parentFragmentManager.beginTransaction()
+                    .add(R.id.comment_container, it)
+                    .commit()
+            }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }

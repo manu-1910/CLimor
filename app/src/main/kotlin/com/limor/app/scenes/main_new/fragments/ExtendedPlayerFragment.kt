@@ -20,6 +20,7 @@ import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
+import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
@@ -207,9 +208,8 @@ class ExtendedPlayerFragment : BaseFragment() {
         }
 
         binding.llExtendCommentsHeader.setOnClickListener {
-            FragmentComments.newInstance(podcast)
+            RootCommentsFragment.newInstance(podcast)
                 .show(parentFragmentManager, FragmentComments.TAG)
-
         }
 
         binding.btnPodcastSendComment.setOnClickListener {

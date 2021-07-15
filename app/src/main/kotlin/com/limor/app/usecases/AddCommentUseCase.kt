@@ -13,14 +13,21 @@ class AddCommentUseCase @Inject constructor(
         podcastId: Int,
         content: String,
         ownerId: Int,
-        ownerType: String
+        ownerType: String,
+        audioURI: String? = null
     ): Result<Int> {
         return runCatching {
-            require(content.isNotBlank()) {
+            require(content.isNotBlank() && audioURI == null) {
                 "Comment should not be empty"
             }
             withContext(dispatcherProvider.io) {
-                repository.createComment(podcastId, content, ownerId, ownerType)!!
+                // TODO @Maksym
+                //if (audioURI != null) {
+                    //val audioURL = uploadAudioUseCase.execute(audioURI)
+                    //repository.createComment(podcastId, content, ownerId, ownerType, audioURL)!!
+                //} else {
+                    repository.createComment(podcastId, content, ownerId, ownerType)!!
+                //}
             }
         }
     }
