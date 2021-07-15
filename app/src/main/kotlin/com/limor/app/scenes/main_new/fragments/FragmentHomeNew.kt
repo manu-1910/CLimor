@@ -65,6 +65,9 @@ class FragmentHomeNew : BaseFragment() {
             binding.swipeToRefresh.isRefreshing = false
             setDataToRecyclerView(casts)
         }
+        recastPodcastViewModel.recatedResponse.observe(viewLifecycleOwner){
+            homeFeedViewModel.loadHomeFeed()
+        }
     }
 
     private fun setDataToRecyclerView(list: List<CastUIModel>) {
@@ -92,7 +95,6 @@ class FragmentHomeNew : BaseFragment() {
             },
             onReCastClick = { castId ->
                 recastPodcastViewModel.reCast(castId)
-                recastPodcastViewModel
             }
         ).apply { submitList(list) }
         rvHome.adapter = adapter

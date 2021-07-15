@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.limor.app.CreateRecastMutation
 import com.limor.app.usecases.LikePodcastUseCase
 import com.limor.app.usecases.RecastPodcastUseCase
 import kotlinx.coroutines.Dispatchers
@@ -16,18 +17,18 @@ class RecastPodcastViewModel  @Inject constructor(
     private val recastPodcastUseCase: RecastPodcastUseCase) : ViewModel() {
 
     private var _recastedResponse =
-        MutableLiveData<Pair<Int?, Boolean?>?>()
-    val recatedResponse: LiveData<Pair<Int?, Boolean?>?>
+        MutableLiveData<CreateRecastMutation.CreateRecast?>()
+    val recatedResponse: LiveData<CreateRecastMutation.CreateRecast?>
         get() = _recastedResponse
 
     fun reCast(castId: Int) {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             runCatching {
                 val result = recastPodcastUseCase.execute(castId)
                 _recastedResponse.postValue(result)
             }.onFailure {
                 Timber.e(it, "Error while recasting")
-                _recastedResponse.postValue(Pair(0, false))
+                _recastedResponse.postValue(null)
             }
         }
     }

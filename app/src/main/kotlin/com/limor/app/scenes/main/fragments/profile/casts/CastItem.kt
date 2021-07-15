@@ -22,7 +22,7 @@ class CastItem(
     private val onCastClick: (CastUIModel) -> Unit,
     private val onLikeClick: (CastUIModel, like: Boolean) -> Unit,
     private val onMoreDialogClick: (CastUIModel) -> Unit,
-    private val onRecastClick: (CastUIModel) -> RecastPodcastViewModel
+    private val onRecastClick: (CastUIModel) -> Unit
 ) : BindableItem<ItemUserCastBinding>() {
 
     override fun bind(viewBinding: ItemUserCastBinding, position: Int) {
@@ -84,14 +84,14 @@ class CastItem(
             }
 
             btnPodcastRecast.setOnClickListener {
-                val viewModel : RecastPodcastViewModel = onRecastClick(cast)
-                viewBinding.root.findViewTreeLifecycleOwner()?.let { it1 ->
+                /*val viewModel : RecastPodcastViewModel = */onRecastClick(cast)
+                /*viewBinding.root.findViewTreeLifecycleOwner()?.let { it1 ->
                     viewModel.recatedResponse.observe(it1, {
-                        tvPodcastRecast.text = it?.first.toString()
-                        applyRecastStyle(binding = viewBinding, it?.second == true)
-                        btnPodcastRecast.recasted = it?.second == true
+                        tvPodcastRecast.text = it?.count.toString()
+                        applyRecastStyle(binding = viewBinding, it?.recasted == true)
+                        btnPodcastRecast.recasted = it?.recasted == true
                     })
-                }
+                }*/
             }
 
 

@@ -20,10 +20,10 @@ class PodcastInteractionsRepository @Inject constructor(val apollo: Apollo) {
         return podcastId
     }
 
-    suspend fun recastPodcast(podcastId: Int): Pair<Int?, Boolean?> {
+    suspend fun recastPodcast(podcastId: Int): CreateRecastMutation.CreateRecast? {
         val mutation = CreateRecastMutation(podcastId)
         val result = apollo.mutate(mutation)
-        return Pair(result?.data?.createRecast?.count, result?.data?.createRecast?.recasted)
+        return result?.data?.createRecast
     }
 
     suspend fun getPodcastById(podcastId: Int): FeedItemsQuery.Podcast {

@@ -23,7 +23,7 @@ class ViewHolderPodcast(
     val binding: ItemHomeFeedBinding,
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
     private val onCastClick: (cast: CastUIModel) -> Unit,
-    private val onRecastClick: (castId: Int) -> RecastPodcastViewModel,
+    private val onRecastClick: (castId: Int) -> Unit,
 ) : ViewHolderBindable<CastUIModel>(binding) {
     override fun bind(item: CastUIModel) {
         setPodcastGeneralInfo(item)
@@ -93,14 +93,14 @@ class ViewHolderPodcast(
         }
 
         binding.btnPodcastRecast.setOnClickListener {
-            val viewModel : RecastPodcastViewModel = onRecastClick(item.id)
-            binding.root.findViewTreeLifecycleOwner()?.let { it1 ->
+            /*val viewModel : RecastPodcastViewModel = */onRecastClick(item.id)
+            /*binding.root.findViewTreeLifecycleOwner()?.let { it1 ->
                 viewModel.recatedResponse.observe(it1, {
-                    binding.tvPodcastRecast.text = it?.first.toString()
-                    applyRecastStyle(it?.second == true)
-                    binding.btnPodcastRecast.recasted = it?.second == true
+                    binding.tvPodcastRecast.text = it?.count.toString()
+                    applyRecastStyle(it?.recasted == true)
+                    binding.btnPodcastRecast.recasted = it?.recasted == true
                 })
-            }
+            }*/
         }
     }
 
