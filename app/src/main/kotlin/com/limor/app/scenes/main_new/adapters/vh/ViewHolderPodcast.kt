@@ -22,6 +22,7 @@ class ViewHolderPodcast(
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
     private val onCastClick: (cast: CastUIModel) -> Unit,
     private val onRecastClick: (castId: Int) -> Unit,
+    private val onCommentsClick: (CastUIModel) -> Unit,
 ) : ViewHolderBindable<CastUIModel>(binding) {
     override fun bind(item: CastUIModel) {
         setPodcastGeneralInfo(item)
@@ -73,7 +74,7 @@ class ViewHolderPodcast(
 
     private fun setOnClicks(item: CastUIModel) {
         binding.btnPodcastMore.setOnClickListener {
-            val bundle = bundleOf(DialogPodcastMoreActions.CAST_ID_KEY to item.id)
+            val bundle = bundleOf(DialogPodcastMoreActions.CAST_KEY to item)
 
             it.findNavController()
                 .navigate(R.id.action_navigation_home_to_dialog_report_podcast, bundle)
@@ -97,6 +98,9 @@ class ViewHolderPodcast(
             binding.btnPodcastRecast.recasted = true
 
             onRecastClick(item.id)
+        }
+        binding.btnPodcastComments.setOnClickListener {
+            onCommentsClick(item)
         }
     }
 

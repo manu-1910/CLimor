@@ -4,23 +4,21 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import com.limor.app.R
 import com.limor.app.databinding.ItemUserCastBinding
-import com.limor.app.extensions.dp
 import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.loadImage
 import com.limor.app.extensions.px
-import com.limor.app.scenes.utils.DateUiUtil
 import com.limor.app.scenes.utils.recycler.HorizontalSpacingItemDecoration
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
-import kotlin.time.seconds
 
 class CastItem(
     val cast: CastUIModel,
     private val onCastClick: (CastUIModel) -> Unit,
     private val onLikeClick: (CastUIModel, like: Boolean) -> Unit,
     private val onMoreDialogClick: (CastUIModel) -> Unit,
-    private val onRecastClick: (CastUIModel) -> Unit
+    private val onRecastClick: (CastUIModel) -> Unit,
+    private val onCommentsClick: (CastUIModel) -> Unit,
 ) : BindableItem<ItemUserCastBinding>() {
 
     override fun bind(viewBinding: ItemUserCastBinding, position: Int) {
@@ -90,7 +88,9 @@ class CastItem(
                 onRecastClick(cast)
             }
 
-
+            btnPodcastComments.setOnClickListener {
+                onCommentsClick(cast)
+            }
         }
 
     }

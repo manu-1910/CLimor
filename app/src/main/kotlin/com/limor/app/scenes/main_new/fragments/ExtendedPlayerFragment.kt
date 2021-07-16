@@ -208,8 +208,9 @@ class ExtendedPlayerFragment : BaseFragment() {
         }
 
         binding.llExtendCommentsHeader.setOnClickListener {
-            RootCommentsFragment.newInstance(podcast)
-                .show(parentFragmentManager, FragmentComments.TAG)
+            RootCommentsFragment.newInstance(podcast).also { fragment ->
+                fragment.show(parentFragmentManager, fragment.requireTag())
+            }
         }
 
         binding.btnPodcastSendComment.setOnClickListener {
