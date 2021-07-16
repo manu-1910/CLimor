@@ -1,10 +1,36 @@
 package com.limor.app.scenes.utils
 
 import android.content.Context
+import android.os.CountDownTimer
 import android.util.AttributeSet
+import android.util.Log
+import android.view.View
 import android.widget.FrameLayout
+import android.widget.Toast
 import com.limor.app.R
+import com.limor.app.scenes.utils.recorder.AppVoiceRecorder
+import com.limor.app.scenes.utils.visualizer.RecordingSampler
 import kotlinx.android.synthetic.main.item_input_with_audio.view.*
+import timber.log.Timber
+import java.io.File
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.math.abs
+
+sealed class InputStatus
+
+object None : InputStatus()
+
+object StartRecord : InputStatus()
+
+object FinishRecord : InputStatus()
+
+object ListenRecord : InputStatus()
+
+object PauseRecord : InputStatus()
+
+object SendData : InputStatus()
 
 
 class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
@@ -13,6 +39,30 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
+    private var status: InputStatus = None
+    set(value) {
+        statusListener?.invoke(value)
+    }
+
+    private val timer = object : CountDownTimer(180000, 1000) {
+        override fun onTick(millisUntilFinished: Long) {
+            val actualSeconds = (180000 - millisUntilFinished)/1000
+            Log.e("!!!", actualSeconds.toString())
+            val minutes = actualSeconds.div(60)
+            val seconds = actualSeconds % 60
+            tvTime.text = "$minutes:${getSeconds(seconds)}"
+        }
+
+        override fun onFinish() {
+
+        }
+
+    }
+
+    private fun getSeconds(seconds: Long) = if(seconds < 10) "0$seconds"  else "$seconds"
+
+    private var statusListener: ((InputStatus) -> Unit)? = null
+
     init {
         initView()
         readAttributes(attrs)
@@ -20,21 +70,64 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
     private fun initView() {
         inflate(context, R.layout.item_input_with_audio, this)
-        btnPodcastStartVoiceComment.setOnClickListener {
-            val visualizerView = findViewById<VisualizerView>(R.id.visualizer)
+        btnPodcastSendComment.setOnClickListener {
+            status = SendData
 
-            val recordingSampler = RecordingSampler()
-            //recordingSampler.setVolumeListener(this) // for custom implements
-
-            recordingSampler.setSamplingInterval(100) // voice sampling interval
-
-            recordingSampler.link(visualizerView) // link to visualizer
-
-
-            recordingSampler.startRecording()
         }
+        btnPodcastStartVoiceComment.setOnClickListener {
+
+            val appVoiceRecorder = AppVoiceRecorder()
+            if(!it.isActivated) {
+                val messageKey = getCurrentTimeString().replace(':', '_') + ".mp3"
+                val mFile = File(context.filesDir, messageKey)
+                appVoiceRecorder.startRecord(mFile)
+                startRecord()
+                btnPodcastStartVoiceComment.isActivated = true
+                llVoice.visibility = VISIBLE
+                btnDeleteVoice.visibility = VISIBLE
+                status = StartRecord
+                Toast.makeText(context, mFile.path + " start record", Toast.LENGTH_SHORT).show()
+            } else {
+                stopRecord()
+                appVoiceRecorder.stopRecord()
+                btnPodcastStartVoiceComment.isActivated = false
+                status = FinishRecord
+                Toast.makeText(context, "stop record", Toast.LENGTH_SHORT).show()
+            }
+
+
+
+        }
+
+        btnDeleteVoice.setOnClickListener {
+            stopRecord()
+            btnPodcastStartVoiceComment.isActivated = false
+            llVoice.visibility = View.GONE
+            btnDeleteVoice.visibility = View.GONE
+            status = None
+        }
+
     }
 
+    private fun stopRecord() {
+        timer.cancel()
+    }
+
+    private fun startRecord() {
+        timer.start()
+    }
+
+    private fun getCurrentTimeString(): String {
+        val currentDate = Date()
+        val timeFormat: DateFormat =
+            SimpleDateFormat("hh:mm:ss dd.MM.yyyy", Locale.getDefault())
+        return timeFormat.format(currentDate)
+    }
+
+    fun initListenerStatus(data: (InputStatus) -> Unit) {
+        statusListener = data
+        statusListener?.invoke(status)
+    }
 
     private fun readAttributes(attrs: AttributeSet?) {
 //        val typedArray =

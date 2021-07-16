@@ -1,5 +1,6 @@
 package com.limor.app.scenes.auth_new
 
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.RECORD_AUDIO
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +17,7 @@ class LimorDebugActivity : AppCompatActivity() {
 //        setOnClicks()
 
         checkPermission(RECORD_AUDIO, 123)
+        checkPermission(READ_EXTERNAL_STORAGE, 122)
     }
 
 //    private fun setOnClicks() {
