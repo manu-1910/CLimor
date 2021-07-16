@@ -72,6 +72,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tvCommentContent" />
 
+    <com.limor.app.components.CommentAudioPlayerView
+        android:id="@+id/audio_player"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/btnCommentLike"
+        app:layout_constraintStart_toEndOf="@+id/ivCommentAvatar"
+        app:layout_constraintTop_toBottomOf="@+id/tvCommentContent"
+        tools:visibility="visible" />
+
     <TextView
         android:id="@+id/likes_count"
         android:layout_width="wrap_content"
@@ -80,7 +93,8 @@
         android:fontFamily="@font/roboto_medium"
         android:textColor="@color/textSecondary"
         app:layout_constraintStart_toStartOf="@+id/tvCommentContent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCommentContent"
+        app:layout_constraintTop_toBottomOf="@+id/audio_player"
+        app:layout_goneMarginTop="12dp"
         tools:text="1 Like" />
 
     <TextView
@@ -94,6 +108,7 @@
         android:textColor="@color/colorAccent"
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/likes_count"
-        app:layout_constraintTop_toBottomOf="@+id/tvCommentContent" />
+        app:layout_constraintTop_toBottomOf="@+id/audio_player"
+        app:layout_goneMarginTop="12dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

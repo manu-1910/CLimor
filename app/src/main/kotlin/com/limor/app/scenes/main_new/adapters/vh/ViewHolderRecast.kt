@@ -54,7 +54,7 @@ class ViewHolderRecast(
         addTags(item)
 
         binding.btnPodcastMore.setOnClickListener {
-            val bundle = bundleOf(DialogPodcastMoreActions.CAST_ID_KEY to item.id)
+            val bundle = bundleOf(DialogPodcastMoreActions.CAST_KEY to item)
 
             it.findNavController()
                 .navigate(R.id.action_navigation_home_to_dialog_report_podcast, bundle)
