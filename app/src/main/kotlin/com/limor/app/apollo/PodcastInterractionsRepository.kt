@@ -1,5 +1,6 @@
 package com.limor.app.apollo
 
+import com.apollographql.apollo.api.Input
 import com.google.gson.Gson
 import com.limor.app.*
 import kotlinx.coroutines.Dispatchers
@@ -50,15 +51,39 @@ class PodcastInteractionsRepository @Inject constructor(val apollo: Apollo) {
         podcastId: Int,
         content: String,
         ownerId: Int,
-        ownerType: String
+        ownerType: String,
+        audioURI: String? = null,
+        duration: Int? = null
     ): Int? {
         val mutation = CreateCommentMutation(
             podcastId = podcastId,
             content = content,
             ownerId = ownerId,
-            ownerType = ownerType
+            ownerType = ownerType,
+            audioURL = Input.fromNullable(audioURI),
+            duration = Input.fromNullable(duration)
         )
         val result = apollo.mutate(mutation)
         return result?.data?.createComment?.id
+    }
+
+    suspend fun getCommentById(
+        commentId: Int
+    ): GetCommentsByIdQuery.GetCommentsById? {
+        val query = GetCommentsByIdQuery(commentId)
+        val result = apollo.launchQuery(query)
+        return result?.data?.getCommentsById
+    }
+
+    suspend fun likeComment(commentId: Int): Int? {
+        val mutation = LikeCommentMutation(commentId)
+        val result = apollo.mutate(mutation)
+        return result?.data?.likeComment?.comment_id
+    }
+
+    suspend fun unLikeComment(commentId: Int): Int? {
+        val mutation = UnLikeCommentMutation(commentId)
+        val result = apollo.mutate(mutation)
+        return result?.data?.unLikeComment?.comment_id
     }
 }

@@ -1,0 +1,180 @@
+query GetCommentsByIdQuery($commentId: Int!){
+    getCommentsById(commentId:$commentId) {
+        id
+        user {
+            id
+            username
+            first_name
+            last_name
+            images {
+                small_url
+                medium_url
+                large_url
+                original_url
+            }
+            blocked
+            followed
+            blocked_by
+            followed_by
+            following_count
+            followers_count
+            description
+            website
+            gender
+            date_of_birth
+            notifications_enabled
+            active
+            suspended
+            verified
+            autoplay_enabled
+            sharing_url
+        }
+        content
+        created_at
+        updated_at
+        mentions {
+            content {
+                start_index
+                end_index
+                user_id
+                username
+            }
+            caption {
+                start_index
+                end_index
+                user_id
+                username
+            }
+        }
+        tags {
+            caption {
+                start_index
+                end_index
+                tag
+                tag_id
+            }
+        }
+        active
+        audio {
+            url
+            duration
+        }
+        type
+        liked
+        number_of_likes
+        owner_id
+        owner_type
+        comments {
+            id
+            user {
+                id
+                username
+                first_name
+                last_name
+                images {
+                    small_url
+                    medium_url
+                    large_url
+                    original_url
+                }
+                blocked
+                followed
+                blocked_by
+                followed_by
+                following_count
+                followers_count
+                description
+                website
+                gender
+                date_of_birth
+                notifications_enabled
+                active
+                suspended
+                verified
+                autoplay_enabled
+                sharing_url
+            }
+            content
+            created_at
+            updated_at
+            mentions {
+                content {
+                    start_index
+                    end_index
+                    user_id
+                    username
+                }
+                caption {
+                    start_index
+                    end_index
+                    user_id
+                    username
+                }
+            }
+            tags {
+                caption {
+                    start_index
+                    end_index
+                    tag
+                    tag_id
+                }
+            }
+            active
+            audio {
+                url
+                duration
+            }
+            type
+            liked
+            number_of_likes
+            owner_id
+            owner_type
+            number_of_listens
+            podcast_id
+            links {
+                content {
+                    start_index
+                    end_index
+                    id
+                    link
+                }
+                caption {
+                    start_index
+                    end_index
+                    id
+                    link
+                }
+                website {
+                    start_index
+                    end_index
+                    id
+                    link
+                }
+            }
+            comment_count
+        }
+        number_of_listens
+        podcast_id
+        links {
+            content {
+                start_index
+                end_index
+                id
+                link
+            }
+            caption {
+                start_index
+                end_index
+                id
+                link
+            }
+            website {
+                start_index
+                end_index
+                id
+                link
+            }
+        }
+        comment_count
+    }
+}

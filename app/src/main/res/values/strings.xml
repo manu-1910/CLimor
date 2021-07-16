@@ -554,7 +554,7 @@
     <string name="sex_other">Other</string>
     <string name="categories">Categories</string>
     <string name="languages">Languages</string>
-    <string name="search_hint">Search...</string>
+    <string name="search_hint">Search…</string>
     <string name="date_less_than_13_yo">You must be 13 years old to sign up</string>
     <string name="select_date">Select date</string>
     <string name="resend_code_in">Resend code in 00:</string>
@@ -591,7 +591,7 @@
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
     <string name="days_ago">%d days ago</string>
-    <string name="lorem">Lorem Ipsum is simply dummy text of the...</string>
+    <string name="lorem">Lorem Ipsum is simply dummy text of the…</string>
 
     <string name="why_are_you_reporting">Why are you reporting?</string>
     <string name="spam_or_scam">Spam or Scam</string>
@@ -605,7 +605,7 @@
     <string name="in_top">In top</string>
     <string name="recent">Recent</string>
     <string name="edit_profile">Edit Profile</string>
-    <string name="hint_write_a_comment">Write a comment...</string>
+    <string name="hint_write_a_comment">Write a comment…</string>
     <string name="left">%s left</string>
     <string name="feed_is_empty_message">Home feed is empty</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -613,4 +613,15 @@
     <string name="hastag_helper_text">Use \"#\" for hashtags</string>
     <string name="no_comments_message">There are no comments yet</string>
     <string name="bottom_menu_messenger">Messages</string>
+
+    <string name="author">Author</string>
+    <string name="replies">Replies</string>
+    <string name="view_more_comments">View %d more comments…</string>
+    <string name="replied_to">Replied to</string>
+    <plurals name="likes_count">
+        <item quantity="one">%d Like</item>
+        <item quantity="other">%d Likes</item>
+    </plurals>
+
+
 </resources>

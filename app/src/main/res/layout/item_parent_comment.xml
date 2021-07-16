@@ -14,21 +14,54 @@
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@color/colorAccent" />
+        tools:src="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/tvCommentName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:textColor="@color/black"
-        android:textSize="17sp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/roboto_bold"
+        android:maxLength="25"
+        android:maxLines="1"
+        android:textColor="@color/textPrimary"
+        android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/btnCommentMore"
         app:layout_constraintStart_toEndOf="@id/ivCommentAvatar"
-        app:layout_constraintTop_toTopOf="@id/ivCommentAvatar"
-        tools:text="Name" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Test Person" />
+
+    <TextView
+        android:id="@+id/author_sign"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/roboto_medium"
+        android:text="@string/author"
+        android:textColor="@color/textSecondary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/tvCommentName"
+        app:layout_constraintEnd_toStartOf="@+id/btnCommentMore"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/dot"
+        app:layout_constraintTop_toTopOf="@+id/tvCommentName" />
+
+    <TextView
+        android:id="@+id/dot"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/roboto_medium"
+        android:text="&#8226;"
+        android:textColor="@color/textSecondary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/tvCommentName"
+        app:layout_constraintStart_toEndOf="@+id/tvCommentName"
+        app:layout_constraintTop_toTopOf="@+id/tvCommentName"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/tvCommentDate"
@@ -42,7 +75,7 @@
         app:layout_constraintEnd_toStartOf="@+id/btnCommentMore"
         app:layout_constraintStart_toEndOf="@id/ivCommentAvatar"
         app:layout_constraintTop_toBottomOf="@id/tvCommentName"
-        tools:text="Name" />
+        tools:text="2 days ago" />
 
     <ImageButton
         android:id="@+id/btnCommentMore"
@@ -79,6 +112,33 @@
         android:background="@color/transparent"
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivCommentAvatar" />
+        app:layout_constraintTop_toBottomOf="@id/ivCommentAvatar"
+        app:unliked_color="@color/textPrimary" />
+
+    <com.limor.app.components.CommentAudioPlayerView
+        android:id="@+id/audio_player"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/btnCommentLike"
+        app:layout_constraintStart_toEndOf="@+id/ivCommentAvatar"
+        app:layout_constraintTop_toBottomOf="@+id/tvCommentContent"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/reply_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/roboto_medium"
+        android:text="@string/reply"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintStart_toEndOf="@+id/ivCommentAvatar"
+        app:layout_constraintTop_toBottomOf="@+id/audio_player"
+        app:layout_goneMarginTop="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

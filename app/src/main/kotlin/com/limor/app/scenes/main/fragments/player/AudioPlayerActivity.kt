@@ -108,7 +108,7 @@ class AudioPlayerActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
 
     private fun onPodcastPlayingStopped() {
-        val podcastDurationSec = audioService?.uiPodcast?.audio?.totalLength?.toFloat() ?: 0.0f
+        /*val podcastDurationSec = audioService?.uiPodcast?.audio?.totalLength?.toFloat() ?: 0.0f
         val duration : Double = podcastDurationSec * 1000.0
         val position = audioService?.currentPlayingPosition?.value ?: 0
         val currentPercentage = position.toFloat() * 100f / duration.toFloat()
@@ -116,7 +116,7 @@ class AudioPlayerActivity : AppCompatActivity(), HasSupportFragmentInjector {
             viewModelCreatePodcastDropOff.idPodcast = it
             viewModelCreatePodcastDropOff.percentage = currentPercentage
             createCommentDropOffDataTrigger.onNext(Unit)
-        }
+        }*/
     }
 
     private fun onPlayingPodcsatPositionChanged(position: Long) {
@@ -124,7 +124,7 @@ class AudioPlayerActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
 
     private fun checkIfDropOffAndSendIfNeeded(position: Long) {
-        audioService?.uiPodcast?.audio?.totalLength?.let {duration ->
+        /*audioService?.uiPodcast?.audio?.totalLength?.let {duration ->
 
             val currentPercentage = position.toFloat() * 100f / duration.toFloat()
 
@@ -146,7 +146,7 @@ class AudioPlayerActivity : AppCompatActivity(), HasSupportFragmentInjector {
             lastProgressTrackedTen = currentTen
 
 //            Timber.d("the new playing position is $position")
-        }
+        }*/
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

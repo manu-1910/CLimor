@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
+import android.os.Parcelable
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -35,8 +36,10 @@ import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.scenes.main_new.MainActivityNew
 import com.limor.app.uimodels.CastUIModel
+import kotlinx.android.parcel.Parcelize
 import org.jetbrains.anko.runOnUiThread
 import timber.log.Timber
+import java.time.Duration
 import java.util.*
 
 private const val PLAYBACK_CHANNEL_ID = "io.square1.limor.playback_channel"
@@ -44,7 +47,7 @@ private const val MEDIA_SESSION_TAG = "io.square1.limor.audio"
 private const val PLAYBACK_NOTIFICATION_ID = 1
 private const val PLAYBACK_TIMER_DELAY = 100L
 private const val PLAYBACK_SKIP_INCREMENTS = 30000L
-private const val ARG_PODCAST = "ARG_PODCAST"
+private const val ARG_AUDIO_TRACK = "ARG_AUDIO_TRACK"
 private const val ARG_START_POSITION = "ARG_START_POSITION"
 private const val ARG_FEED_POSITION = "ARG_FEED_POSITION"
 
@@ -69,7 +72,7 @@ class AudioService : Service() {
             position: Int = -1
         ) =
             Intent(context, AudioService::class.java).apply {
-                putExtra(ARG_PODCAST, podcast)
+                putExtra(ARG_AUDIO_TRACK, podcast)
                 putExtra(ARG_START_POSITION, startPosition)
                 putExtra(ARG_FEED_POSITION, position)
             }
@@ -88,7 +91,7 @@ class AudioService : Service() {
     private var playerNotificationManager: PlayerNotificationManager? = null
     private var mediaSession: MediaSessionCompat? = null
     private var mediaSessionConnector: MediaSessionConnector? = null
-    var uiPodcast: CastUIModel? = null
+    var audioTrack: AudioTrack? = null
 
     /**
      * Current playing position in milliseconds
@@ -106,7 +109,10 @@ class AudioService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        initialize()
+    }
 
+    private fun initialize() {
         exoPlayer = ExoPlayerFactory.newSimpleInstance(this, DefaultTrackSelector())
         val audioAttributes = AudioAttributes.Builder()
             .setUsage(C.USAGE_MEDIA)
@@ -124,7 +130,7 @@ class AudioService : Service() {
             PLAYBACK_NOTIFICATION_ID,
             object : PlayerNotificationManager.MediaDescriptionAdapter {
                 override fun getCurrentContentTitle(player: Player): String {
-                    return uiPodcast?.title ?: "..."
+                    return audioTrack?.title ?: "..."
                 }
 
                 @Nullable
@@ -158,7 +164,7 @@ class AudioService : Service() {
                 }
 
                 override fun onNotificationCancelled(notificationId: Int) {
-                    _playerStatusLiveData.value = PlayerStatus.Cancelled(uiPodcast?.id)
+                    _playerStatusLiveData.value = PlayerStatus.Cancelled
 
                     stopSelf()
                 }
@@ -209,7 +215,7 @@ class AudioService : Service() {
                         putParcelable(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, bitmap)
                     }
 
-                    val title = uiPodcast?.title ?: "..."
+                    val title = audioTrack?.title ?: "..."
 
                     return MediaDescriptionCompat.Builder()
                         .setIconBitmap(bitmap)
@@ -248,16 +254,14 @@ class AudioService : Service() {
     @MainThread
     private fun handleIntent(intent: Intent?) {
         intent?.let {
-            if (intent.hasExtra(ARG_PODCAST)) {
-                uiPodcast = intent.getParcelableExtra(ARG_PODCAST)
+            if (intent.hasExtra(ARG_AUDIO_TRACK)) {
+                audioTrack = intent.getParcelableExtra(ARG_AUDIO_TRACK)
                 val startPosition =
                     intent.getLongExtra(ARG_START_POSITION, C.POSITION_UNSET.toLong())
                 val playbackSpeed = 1f
 
-                play(uiPodcast, startPosition, playbackSpeed)
+                play(audioTrack, startPosition, playbackSpeed)
                 feedPosition = intent.getIntExtra(ARG_FEED_POSITION, -1)
-
-                Timber.w("AudioService - Playing podcast id %d", uiPodcast?.id)
             }
 
         } ?: Timber.w("AudioService - Podcast was not set.")
@@ -265,12 +269,16 @@ class AudioService : Service() {
     }
 
     @MainThread
-    fun play(podcast: CastUIModel?, startPosition: Long, playbackSpeed: Float? = null) {
-        this.uiPodcast = podcast
+    fun play(audioTrack: AudioTrack?, startPosition: Long, playbackSpeed: Float? = null) {
+        if (mediaSession == null) {
+            initialize()
+        }
+
+        this.audioTrack = audioTrack
 
         val userAgent = Util.getUserAgent(applicationContext, BuildConfig.APPLICATION_ID)
         val mediaSource = ExtractorMediaSource(
-            Uri.parse(podcast?.audio?.url),
+            Uri.parse(audioTrack?.url),
             DefaultDataSourceFactory(applicationContext, userAgent),
             DefaultExtractorsFactory(),
             null,
@@ -296,6 +304,19 @@ class AudioService : Service() {
     @MainThread
     fun pause() {
         exoPlayer.playWhenReady = false
+    }
+
+    @MainThread
+    fun stop() {
+        cancelPlaybackMonitor()
+
+        mediaSession?.release()
+        mediaSessionConnector?.setPlayer(null)
+        playerNotificationManager?.setPlayer(null)
+
+        exoPlayer.release()
+
+        mediaSession = null
     }
 
     @MainThread
@@ -366,14 +387,16 @@ class AudioService : Service() {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             if (playbackState == Player.STATE_READY) {
                 if (exoPlayer.playWhenReady) {
-                    uiPodcast?.let { _playerStatusLiveData.value = PlayerStatus.Playing(it.id) }
+                    audioTrack?.let { _playerStatusLiveData.value = PlayerStatus.Playing }
                 } else {// Paused
-                    uiPodcast?.let { _playerStatusLiveData.value = PlayerStatus.Paused(it.id) }
+                    audioTrack?.let { _playerStatusLiveData.value = PlayerStatus.Paused }
                 }
             } else if (playbackState == Player.STATE_ENDED) {
-                uiPodcast?.let { _playerStatusLiveData.value = PlayerStatus.Ended(it.id) }
+                audioTrack?.let { _playerStatusLiveData.value = PlayerStatus.Ended }
+            } else if (playbackState == Player.STATE_BUFFERING) {
+                audioTrack?.let { _playerStatusLiveData.value = PlayerStatus.Buffering }
             } else {
-                uiPodcast?.let { _playerStatusLiveData.value = PlayerStatus.Other(it.id) }
+                audioTrack?.let { _playerStatusLiveData.value = PlayerStatus.Other }
             }
 
             // Only monitor playback to record progress when playing.
@@ -385,8 +408,12 @@ class AudioService : Service() {
         }
 
         override fun onPlayerError(e: ExoPlaybackException?) {
-            uiPodcast?.let { _playerStatusLiveData.value = PlayerStatus.Error(it.id, e) }
+            audioTrack?.let { _playerStatusLiveData.value = PlayerStatus.Error(e) }
         }
+    }
+
+    fun seekTo(positionMs: Int) {
+        exoPlayer.seekTo(positionMs.toLong())
     }
 
     fun forward(skipLength: Long = PLAYBACK_SKIP_INCREMENTS) {
@@ -404,4 +431,11 @@ class AudioService : Service() {
             exoPlayer.seekTo(0)
         }
     }
+
+    @Parcelize
+    data class AudioTrack(
+        val url: String,
+        val title: String?,
+        val duration: Duration
+    ): Parcelable
 }

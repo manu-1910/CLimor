@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.common.SingleLiveEvent
 import com.limor.app.uimodels.CommentUIModel
-import com.limor.app.usecases.AddCommentUseCase
-import com.limor.app.usecases.GetCommentsForPodcastUseCase
+import com.limor.app.uimodels.UICommentRequest
+import com.limor.app.uimodels.UICreateCommentRequest
+import com.limor.app.uimodels.UIPublishRequest
+import com.limor.app.usecases.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -15,6 +17,8 @@ import javax.inject.Inject
 class CommentsViewModel @Inject constructor(
     private val getCommentsForPodcastUseCase: GetCommentsForPodcastUseCase,
     private val addCommentUseCase: AddCommentUseCase,
+    private val getCommentByIdUseCase: GetCommentByIdUseCase,
+    private val likeCommentUseCase: LikeCommentUseCase,
 ) : ViewModel() {
 
     private val _comments = MutableLiveData<List<CommentUIModel>>()
@@ -22,6 +26,9 @@ class CommentsViewModel @Inject constructor(
 
     private val _commentAddEvent = SingleLiveEvent<Int>()
     val commentAddEvent: LiveData<Int> get() = _commentAddEvent
+
+    private val _comment = MutableLiveData<CommentUIModel?>()
+    val comment: LiveData<CommentUIModel?> get() = _comment
 
     fun loadComments(podcastId: Int, limit: Int = Int.MAX_VALUE, offset: Int = 0) {
         viewModelScope.launch {
@@ -35,6 +42,18 @@ class CommentsViewModel @Inject constructor(
         }
     }
 
+    fun loadCommentById(commentId: Int) {
+        viewModelScope.launch {
+            getCommentByIdUseCase.execute(commentId)
+                .onSuccess {
+                    _comment.value = it
+                }
+                .onFailure {
+                    Timber.e(it, "Error while fetching comment with id = $commentId")
+                }
+        }
+    }
+
     /**
      * @param ownerId - podcast or parent comment id
      * @param ownerType - [CommentUIModel.OWNER_TYPE_COMMENT] or [CommentUIModel.OWNER_TYPE_PODCAST]
@@ -43,16 +62,28 @@ class CommentsViewModel @Inject constructor(
         podcastId: Int,
         content: String,
         ownerId: Int,
-        ownerType: String
+        ownerType: String,
+        audioURI: String? = null,
+        duration: Int? = null
     ) {
         viewModelScope.launch {
-            addCommentUseCase.execute(podcastId, content, ownerId, ownerType)
+            addCommentUseCase.execute(podcastId, content, ownerId, ownerType, audioURI, duration)
                 .onFailure {
                     Timber.e(it, "Error while creating comment")
                 }
                 .onSuccess {
                     _commentAddEvent.value = it
                 }
+        }
+    }
+
+    fun likeComment(comment: CommentUIModel, like: Boolean) {
+        viewModelScope.launch {
+            try {
+                likeCommentUseCase.execute(comment.id, like)
+            } catch (ex: Exception) {
+                Timber.e(ex, "Error while liking comment with id = ${comment.id}")
+            }
         }
     }
 }

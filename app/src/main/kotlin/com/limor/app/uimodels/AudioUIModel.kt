@@ -2,6 +2,7 @@ package com.limor.app.uimodels
 
 import android.os.Parcelable
 import com.limor.app.*
+import com.limor.app.service.AudioService
 import kotlinx.android.parcel.Parcelize
 import java.time.Duration
 
@@ -73,4 +74,11 @@ fun FeedItemsQuery.Audio.mapToUIModel() =
         duration = Duration.ofMillis(duration!!.toLong()),
         sampleRate = sample_rate!!.toFloat(),
         originalUrl = original_audio_url
+    )
+
+fun AudioUIModel.mapToAudioTrack(title: String? = null) =
+    AudioService.AudioTrack(
+        url = url,
+        duration = duration,
+        title = title
     )

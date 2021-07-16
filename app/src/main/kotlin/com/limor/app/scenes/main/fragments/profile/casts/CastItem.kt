@@ -17,7 +17,8 @@ class CastItem(
     private val onCastClick: (CastUIModel) -> Unit,
     private val onLikeClick: (CastUIModel, like: Boolean) -> Unit,
     private val onMoreDialogClick: (CastUIModel) -> Unit,
-    private val onRecastClick: (CastUIModel) -> Unit
+    private val onRecastClick: (CastUIModel) -> Unit,
+    private val onCommentsClick: (CastUIModel) -> Unit,
 ) : BindableItem<ItemUserCastBinding>() {
 
     override fun bind(viewBinding: ItemUserCastBinding, position: Int) {
@@ -34,7 +35,7 @@ class CastItem(
                 ivAvatarImageListening.loadCircleImage(it)
             }
 
-            cast.imageLinks?.medium?.let {
+            cast.imageLinks?.large?.let {
                 ivPodcastBackground.loadImage(it)
             }
 
@@ -82,6 +83,9 @@ class CastItem(
                 onRecastClick(cast)
             }
 
+            btnPodcastComments.setOnClickListener {
+                onCommentsClick(cast)
+            }
         }
 
     }

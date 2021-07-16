@@ -1,6 +1,7 @@
 package com.limor.app.uimodels
 
 import android.os.Parcelable
+import com.limor.app.GetCommentsByIdQuery
 import com.limor.app.GetCommentsByPodcastsQuery
 import com.limor.app.extensions.toLocalDateTime
 import kotlinx.android.parcel.Parcelize
@@ -22,7 +23,7 @@ data class CommentUIModel(
     val likesCount: Int?,
     val ownerId: Int,
     val ownerType: String?,
-    val innerComments: List<CommentUIModel>?,
+    val innerComments: List<CommentUIModel>,
     val listensCount: Int?,
     val podcastId: Int,
     val links: LinkUIModel?,
@@ -51,7 +52,7 @@ fun GetCommentsByPodcastsQuery.GetCommentsByPodcast.mapToUIModel() =
         likesCount = number_of_likes,
         ownerId = owner_id!!,
         ownerType = owner_type,
-        innerComments = comments?.mapNotNull { it?.mapToUIModel() },
+        innerComments = comments?.mapNotNull { it?.mapToUIModel() } ?: emptyList(),
         listensCount = number_of_listens,
         podcastId = podcast_id!!,
         links = links?.mapToUIModel(),
@@ -74,7 +75,56 @@ fun GetCommentsByPodcastsQuery.Comment.mapToUIModel() =
         likesCount = number_of_likes,
         ownerId = owner_id!!,
         ownerType = owner_type,
-        innerComments = null, // No inner comments for a already inner comment
+        innerComments = emptyList(), // No inner comments for a already inner comment
+        listensCount = number_of_listens,
+        podcastId = podcast_id!!,
+        links = links?.mapToUIModel(),
+        commentCount = comment_count
+    )
+
+
+
+fun GetCommentsByIdQuery.GetCommentsById.mapToUIModel() =
+    CommentUIModel(
+        id = id!!,
+        user = user?.mapToUIModel(),
+        content = content,
+        createdAt = created_at?.toLocalDateTime(),
+        updatedAt = updated_at?.toLocalDateTime(),
+        mentions = mentions?.mapToUIModel(),
+        tags = tags?.caption?.mapNotNull { it?.mapToUIModel() },
+        isActive = active,
+        audio = audio?.mapToUIModel(),
+        type = type,
+        isLiked = liked,
+        likesCount = number_of_likes,
+        ownerId = owner_id!!,
+        ownerType = owner_type,
+        innerComments = comments?.mapNotNull { it?.mapToUIModel() } ?: emptyList(),
+        listensCount = number_of_listens,
+        podcastId = podcast_id!!,
+        links = links?.mapToUIModel(),
+        commentCount = comment_count
+    )
+
+
+fun GetCommentsByIdQuery.Comment.mapToUIModel() =
+    CommentUIModel(
+        id = id!!,
+        user = user?.mapToUIModel(),
+        content = content,
+        createdAt = created_at?.toLocalDateTime(),
+        updatedAt = updated_at?.toLocalDateTime(),
+        mentions = mentions?.mapToUIModel(),
+        tags = tags?.caption?.mapNotNull { it?.mapToUIModel() },
+        isActive = active,
+        audio = audio?.mapToUIModel(),
+        type = type,
+        isLiked = liked,
+        likesCount = number_of_likes,
+        ownerId = owner_id!!,
+        ownerType = owner_type,
+        innerComments = emptyList(), // No inner comments for a already inner comment
         listensCount = number_of_listens,
         podcastId = podcast_id!!,
         links = links?.mapToUIModel(),

@@ -11,8 +11,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.limor.app.databinding.FragmentUserCastsBinding
 import com.limor.app.di.Injectable
+import com.limor.app.extensions.requireTag
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
+import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
@@ -67,7 +69,12 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                         onCastClick = ::onCastClick,
                         onLikeClick = { cast, like -> viewModel.likeCast(cast, like) },
                         onMoreDialogClick = ::onMoreDialogClick,
-                        onRecastClick = {cast -> recastPodcastViewModel.reCast(castId = cast.id) }
+                        onRecastClick = { cast -> recastPodcastViewModel.reCast(castId = cast.id) },
+                        onCommentsClick = { cast ->
+                            RootCommentsFragment.newInstance(cast).also { fragment ->
+                                fragment.show(parentFragmentManager, fragment.requireTag())
+                            }
+                        }
                     )
                 }
             )
@@ -82,7 +89,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     }
 
     private fun onMoreDialogClick(cast: CastUIModel) {
-        DialogPodcastMoreActions.newInstance(castId = cast.id)
+        DialogPodcastMoreActions.newInstance(cast)
             .show(parentFragmentManager, DialogPodcastMoreActions.TAG)
     }
 }
