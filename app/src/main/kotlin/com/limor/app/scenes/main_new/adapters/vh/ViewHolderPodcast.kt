@@ -15,7 +15,6 @@ import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
-import org.jetbrains.anko.backgroundColor
 
 class ViewHolderPodcast(
     val binding: ItemHomeFeedBinding,
@@ -91,11 +90,6 @@ class ViewHolderPodcast(
         }
 
         binding.btnPodcastRecast.setOnClickListener {
-            applyRecastStyle(true)
-            val recastCount = binding.tvPodcastRecast.text.toString().toInt()
-            binding.tvPodcastRecast.text = (recastCount + 1).toString()
-            binding.btnPodcastRecast.recasted = true
-
             onRecastClick(item.id)
         }
     }
