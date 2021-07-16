@@ -2,7 +2,6 @@ package com.limor.app.components
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt

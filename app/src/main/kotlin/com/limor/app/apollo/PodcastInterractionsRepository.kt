@@ -2,8 +2,6 @@ package com.limor.app.apollo
 
 import com.google.gson.Gson
 import com.limor.app.*
-import com.limor.app.uimodels.CreateRecastUIModel
-import com.limor.app.uimodels.mapToUIModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -22,10 +20,10 @@ class PodcastInteractionsRepository @Inject constructor(val apollo: Apollo) {
         return podcastId
     }
 
-    suspend fun recastPodcast(podcastId: Int): CreateRecastUIModel? {
+    suspend fun recastPodcast(podcastId: Int): CreateRecastMutation.CreateRecast? {
         val mutation = CreateRecastMutation(podcastId)
         val result = apollo.mutate(mutation)
-        return result?.data?.createRecast?.mapToUIModel()
+        return result?.data?.createRecast
     }
 
     suspend fun getPodcastById(podcastId: Int): FeedItemsQuery.Podcast {

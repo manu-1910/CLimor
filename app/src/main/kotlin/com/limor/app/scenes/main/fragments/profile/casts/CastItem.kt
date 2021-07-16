@@ -2,20 +2,15 @@ package com.limor.app.scenes.main.fragments.profile.casts
 
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.limor.app.R
 import com.limor.app.databinding.ItemUserCastBinding
-import com.limor.app.extensions.dp
 import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.loadImage
 import com.limor.app.extensions.px
-import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
-import com.limor.app.scenes.utils.DateUiUtil
 import com.limor.app.scenes.utils.recycler.HorizontalSpacingItemDecoration
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
-import kotlin.time.seconds
 
 class CastItem(
     val cast: CastUIModel,
