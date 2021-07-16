@@ -21,12 +21,12 @@ class AddCommentUseCase @Inject constructor(
                 "Comment should not be empty"
             }
             withContext(dispatcherProvider.io) {
-                if (audioURI != null) {
+                //if (audioURI != null) {
 
-                    repository.createComment(podcastId, content, ownerId, ownerType, audioURL)!!
-                } else {
+                    //repository.createComment(podcastId, content, ownerId, ownerType, audioURL)!!
+                //} else {
                     repository.createComment(podcastId, content, ownerId, ownerType)!!
-                }
+                //}
             }
         }
     }
