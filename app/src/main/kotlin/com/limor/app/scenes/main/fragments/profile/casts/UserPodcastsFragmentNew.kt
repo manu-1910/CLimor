@@ -67,10 +67,13 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                         onCastClick = ::onCastClick,
                         onLikeClick = { cast, like -> viewModel.likeCast(cast, like) },
                         onMoreDialogClick = ::onMoreDialogClick,
-                        onRecastClick = {cast -> recastPodcastViewModel.reCast(castId = cast.id)}
+                        onRecastClick = {cast -> recastPodcastViewModel.reCast(castId = cast.id) }
                     )
                 }
             )
+        }
+        recastPodcastViewModel.recatedResponse.observe(viewLifecycleOwner) {
+            viewModel.loadCasts(userId)
         }
     }
 
