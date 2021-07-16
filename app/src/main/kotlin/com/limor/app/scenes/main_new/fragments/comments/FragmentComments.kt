@@ -79,13 +79,12 @@ class FragmentComments : BaseFragment() {
                                 override fun onSuccess(audioUrl: String?) {
                                     println("Audio upload to AWS succesfully")
                                     viewModel.addComment(
-                                        0,
+                                        cast.id,
                                         it.text,
                                         ownerId = cast.id,
-                                        ownerType = CommentUIModel.OWNER_TYPE_COMMENT,
+                                        ownerType = CommentUIModel.OWNER_TYPE_PODCAST,
                                         audioURI = audioUrl
                                     )
-
                                 }
 
                                 override fun onProgressChanged(
@@ -101,10 +100,10 @@ class FragmentComments : BaseFragment() {
                             })
                     } else {
                         viewModel.addComment(
-                            0,
+                            cast.id,
                             it.text,
                             ownerId = cast.id,
-                            ownerType = CommentUIModel.OWNER_TYPE_COMMENT
+                            ownerType = CommentUIModel.OWNER_TYPE_PODCAST
                         )
                     }
 
@@ -141,7 +140,7 @@ class FragmentComments : BaseFragment() {
         parentComment: CommentUIModel,
         replyToComment: CommentUIModel? = null
     ) {
-        FragmentCommentReplies.newInstance(parentComment.id, replyToComment?.id)
+        FragmentCommentReplies.newInstance(cast.id, parentComment.id, replyToComment?.id)
             .also {
                 parentFragmentManager.beginTransaction()
                     .add(R.id.comment_container, it)

@@ -12,6 +12,7 @@ import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentCommentRepliesBinding
 import com.limor.app.extensions.dismissFragment
+import com.limor.app.extensions.showKeyboard
 import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentChildItem
@@ -28,14 +29,17 @@ class FragmentCommentReplies : BaseFragment() {
 
     companion object {
         val TAG = FragmentCommentReplies::class.qualifiedName
+        private const val CAST_ID_KEY = "CAST_ID_KEY"
         private const val PARENT_COMMENT_ID_KEY = "PARENT_COMMENT_ID_KEY"
         private const val CHILD_REPLY_COMMENT_ID_KEY = "CHILD_REPLY_COMMENT_ID_KEY"
         fun newInstance(
+            castId: Int,
             parentCommentId: Int,
             replyToCommentId: Int? = null
         ): FragmentCommentReplies {
             return FragmentCommentReplies().apply {
                 arguments = bundleOf(
+                    CAST_ID_KEY to castId,
                     PARENT_COMMENT_ID_KEY to parentCommentId,
                     CHILD_REPLY_COMMENT_ID_KEY to replyToCommentId,
                 )
@@ -47,6 +51,7 @@ class FragmentCommentReplies : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: CommentsViewModel by viewModels { viewModelFactory }
 
+    private val castId: Int by lazy { requireArguments().getInt(CAST_ID_KEY) }
     private val parentCommentId: Int by lazy { requireArguments().getInt(PARENT_COMMENT_ID_KEY) }
     private var replyToCommentId: Int? = null
 
@@ -93,9 +98,9 @@ class FragmentCommentReplies : BaseFragment() {
                                 override fun onSuccess(audioUrl: String?) {
                                     println("Audio upload to AWS succesfully")
                                     viewModel.addComment(
-                                        0,
+                                        castId,
                                         it.text,
-                                        ownerId = replyToCommentId ?: 0,
+                                        ownerId = parentCommentId,
                                         ownerType = CommentUIModel.OWNER_TYPE_COMMENT,
                                         audioURI = audioUrl
                                     )
@@ -115,9 +120,9 @@ class FragmentCommentReplies : BaseFragment() {
                             })
                     } else {
                         viewModel.addComment(
-                            0,
+                            castId,
                             it.text,
-                            ownerId = replyToCommentId ?: 0,
+                            ownerId = parentCommentId,
                             ownerType = CommentUIModel.OWNER_TYPE_COMMENT
                         )
                     }
@@ -179,10 +184,8 @@ class FragmentCommentReplies : BaseFragment() {
     }
 
     private fun onReplyClick(comment: CommentUIModel) {
-        binding.taviVoice.requestFocus()
-        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        binding.taviVoice.showKeyboard()
         binding.tvName.text = comment.user?.getFullName()
-
     }
 
     override fun onDestroyView() {

@@ -45,7 +45,9 @@ class ParentCommentSection(
                     onLikeClick = onLikeClick
                 )
             )
-            add(ViewMoreCommentsItem(comment, onViewMoreCommentsClick))
+            if (comment.innerComments.size > 1) {
+                add(ViewMoreCommentsItem(comment, onViewMoreCommentsClick))
+            }
         }
     }
 }

@@ -18,12 +18,11 @@ class AddCommentUseCase @Inject constructor(
         duration: Int? = null
     ): Result<Int> {
         return runCatching {
-            require(content.isNotBlank() && audioURI == null) {
+            require(content.isNotBlank()) {
                 "Comment should not be empty"
             }
             withContext(dispatcherProvider.io) {
                 if (audioURI != null) {
-
                     repository.createComment(podcastId, content, ownerId, ownerType, audioURI, duration)!!
                 } else {
                     repository.createComment(podcastId, content, ownerId, ownerType)!!

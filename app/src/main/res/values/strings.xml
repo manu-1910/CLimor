@@ -618,7 +618,6 @@
     <string name="replies">Replies</string>
     <string name="view_more_comments">View %d more comments…</string>
     <string name="replied_to">Replied to</string>
-    <string name="cancel">Cancel</string>
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
         <item quantity="other">%d Likes</item>

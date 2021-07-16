@@ -70,7 +70,8 @@
         android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/tvCommentContent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tvCommentContent" />
+        app:layout_constraintTop_toTopOf="@+id/tvCommentContent"
+        app:unliked_color="@color/textPrimary" />
 
     <com.limor.app.components.CommentAudioPlayerView
         android:id="@+id/audio_player"

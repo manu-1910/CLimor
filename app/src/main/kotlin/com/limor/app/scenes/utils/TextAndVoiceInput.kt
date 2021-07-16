@@ -76,10 +76,9 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         inflate(context, R.layout.item_input_with_audio, this)
         btnPodcastSendComment.setOnClickListener {
             status = SendData(comment_text.text.toString(), filePath, duration)
-
+            comment_text.text = null
         }
         btnPodcastStartVoiceComment.setOnClickListener {
-
             val appVoiceRecorder = AppVoiceRecorder()
             if(!it.isActivated) {
                 val messageKey = getCurrentTimeString().replace(':', '_') + ".mp3"
@@ -97,9 +96,6 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
                 btnPodcastStartVoiceComment.isActivated = false
                 status = FinishRecord
             }
-
-
-
         }
 
         btnDeleteVoice.setOnClickListener {
@@ -130,10 +126,6 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     fun initListenerStatus(data: (InputStatus) -> Unit) {
         statusListener = data
         statusListener?.invoke(status)
-    }
-
-    fun requestFocus() {
-        comment_text.requestFocus()
     }
 
     private fun readAttributes(attrs: AttributeSet?) {

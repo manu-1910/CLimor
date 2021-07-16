@@ -1,6 +1,7 @@
 package com.limor.app.extensions
 
 import java.time.*
+import java.time.format.DateTimeParseException
 
 fun Long.epochSecondToLocalDate(): LocalDate {
     return Instant.ofEpochSecond(this).atZone(ZoneId.systemDefault())
@@ -26,5 +27,9 @@ fun String.toLocalDate(): LocalDate {
 }
 
 fun String.toLocalDateTime(): LocalDateTime {
-    return ZonedDateTime.parse(this).toLocalDateTime()
+    return try {
+        ZonedDateTime.parse(this).toLocalDateTime()
+    } catch (ex: DateTimeParseException) {
+        LocalDateTime.of(2000, 1, 1, 1, 1)
+    }
 }

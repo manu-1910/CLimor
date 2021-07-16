@@ -69,10 +69,12 @@ class CommentChildItem(
 
             btnCommentLike.setOnClickListener {
                 val isLiked = btnCommentLike.isLiked
+                val textLikesCount =
+                    likesCount.text.toString().takeWhile { it.isDigit() || it == '-' }.toInt()
                 val newLikesCount = if (isLiked) {
-                    likesCount.text.toString().toInt() + 1
+                    textLikesCount + 1
                 } else {
-                    likesCount.text.toString().toInt() - 1
+                    textLikesCount - 1
                 }
 
 

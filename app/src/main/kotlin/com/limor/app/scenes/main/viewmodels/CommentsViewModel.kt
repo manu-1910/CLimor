@@ -67,7 +67,7 @@ class CommentsViewModel @Inject constructor(
         duration: Int? = null
     ) {
         viewModelScope.launch {
-            addCommentUseCase.execute(podcastId, content, ownerId, ownerType)
+            addCommentUseCase.execute(podcastId, content, ownerId, ownerType, audioURI, duration)
                 .onFailure {
                     Timber.e(it, "Error while creating comment")
                 }
