@@ -226,7 +226,7 @@
         android:layout_width="wrap_content"
         android:layout_height="22dp"
         android:layout_marginTop="20dp"
-        android:src="@drawable/ic_headphones"
+        android:src="@drawable/ic_podcast_listening"
         app:layout_constraintEnd_toEndOf="@id/cpiPodcastListeningProgress"
         app:layout_constraintStart_toStartOf="@id/cpiPodcastListeningProgress"
         app:layout_constraintTop_toTopOf="@id/cpiPodcastListeningProgress"
@@ -253,9 +253,9 @@
         android:orientation="horizontal"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/sound_btn"
-        app:layout_constraintStart_toEndOf="@+id/sound_btn"
-        app:layout_constraintTop_toTopOf="@+id/sound_btn">
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ivPodcastBackground"
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
             android:layout_width="14dp"
@@ -283,6 +283,7 @@
         android:gravity="center"
         android:orientation="horizontal"
         android:src="@drawable/ic_sound"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/ivPodcastBackground"
         app:layout_constraintStart_toStartOf="parent"/>
 

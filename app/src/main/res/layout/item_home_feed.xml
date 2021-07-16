@@ -192,7 +192,7 @@
         app:trackCornerRadius="4dp"
         tools:progress="25" />
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivAvatarImageListening"
         android:layout_width="52dp"
         android:layout_height="52dp"

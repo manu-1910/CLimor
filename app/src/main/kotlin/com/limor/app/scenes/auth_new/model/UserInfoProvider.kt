@@ -237,7 +237,7 @@ class UserInfoProvider @Inject constructor(
     }
     suspend fun unblockUser(id: Int) {
         try {
-            userRepository.startFollowingUser(id)
+            userRepository.unblockUser(id)
         } catch (e: Exception) {
             Timber.e(e)
             null

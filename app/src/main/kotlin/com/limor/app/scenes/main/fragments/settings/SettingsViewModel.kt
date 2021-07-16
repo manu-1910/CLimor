@@ -26,7 +26,7 @@ class SettingsViewModel @Inject constructor(
     val settingsToolBarTitle: LiveData<String>
         get() = _settingsToolBarTitle
 
-    var blockedUsersLimit: Int = 16
+    var blockedUsersLimit: Int = -1
     var blockUsersOffset: Int = 0
     private var _blockedUsersData =
         MutableLiveData<List<GetBlockedUsersQuery.GetBlockedUser?>>()
@@ -53,8 +53,8 @@ class SettingsViewModel @Inject constructor(
         get() = _followersData
 
     private var _followingsData =
-        MutableLiveData<List<FriendsQuery.GetFriend?>?>()
-    val followingsData: LiveData<List<FriendsQuery.GetFriend?>?>
+        MutableLiveData<List<FriendsQuery.GetFriend?>>()
+    val followingsData: LiveData<List<FriendsQuery.GetFriend?>>
         get() = _followingsData
 
     fun getBlockedUsers(offset: Int) {
@@ -104,8 +104,10 @@ class SettingsViewModel @Inject constructor(
                 val blockedUsers = withContext(Dispatchers.IO) {
                     generalInfoRepository.getFollowings(userId,blockedUsersLimit, offset)
                 }
-                _followingsData.postValue(blockedUsers)
-                Timber.d("Got Following -> $blockedUsers")
+                blockedUsers?.let{
+                    _followingsData.postValue(it)
+                }
+                Timber.d("Got Following -> $blockedUsers $offset")
             } catch (e: Exception) {
                 Timber.d("Got Following -> $e")
             }

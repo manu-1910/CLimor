@@ -126,8 +126,6 @@ class UserFollowersFollowingsActivity : BaseActivity(), HasSupportFragmentInject
                 }
 
             }
-        } ?: run {
-            binding.toggleGender.check(R.id.btnFollowers)
         }
 
 

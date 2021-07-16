@@ -87,7 +87,7 @@ class UserFollowersViewHolder(
         val lastName = currentItem.last_name
        val fullname = binding.root.context.getString(R.string.user_fullname, firstName, lastName)
 
-        tvCapitals.text = fullname
+        tvCapitals.text = currentItem.username
         tvCapitals.onClick { listener.onUserClicked(currentItem, position) }
 
         tvUsername.text = currentItem.description
