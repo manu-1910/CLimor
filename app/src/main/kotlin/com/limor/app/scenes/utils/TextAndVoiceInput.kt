@@ -4,8 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.limor.app.R
-import com.tyorikan.voicerecordingvisualizer.RecordingSampler
-import com.tyorikan.voicerecordingvisualizer.VisualizerView
 import kotlinx.android.synthetic.main.item_input_with_audio.view.*
 
 
