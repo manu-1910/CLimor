@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/collectorLinearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="22dp"
+    android:layout_marginBottom="14dp"
+    android:orientation="horizontal">
+
+    <ImageButton
+        android:id="@+id/btnPodcastStartVoiceComment"
+        android:layout_width="@dimen/commentFooterHeight"
+        android:layout_height="@dimen/commentFooterHeight"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/player_footer_bottom_shape"
+        android:foreground="?attr/selectableItemBackground"
+        android:padding="14dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/record"
+        android:tint="@color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/filledTextField"
+        style="@style/TextInputLayoutComment"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/commentFooterHeight"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:layout_weight="1"
+        android:hint="@string/hint_write_a_comment"
+        app:endIconDrawable="@drawable/ic_comments_footer_link"
+        app:endIconMode="custom"
+        app:endIconTint="@color/subtitle_text_color"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnPodcastSendComment"
+        app:layout_constraintStart_toEndOf="@+id/btnPodcastStartVoiceComment">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/comment_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="3" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/btnPodcastSendComment"
+        android:layout_width="@dimen/commentFooterHeight"
+        android:layout_height="@dimen/commentFooterHeight"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/player_footer_bottom_shape"
+        android:padding="14dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_comments_footer_send"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btnDeleteVoice"
+        android:layout_width="@dimen/commentFooterHeight"
+        android:layout_height="@dimen/commentFooterHeight"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="26dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/player_footer_bottom_shape"
+        android:padding="14dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_comments_footer_send"
+        app:layout_constraintTop_toBottomOf="@id/btnPodcastStartVoiceComment"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toEndOf="@id/btnDeleteVoice"
+        app:layout_constraintTop_toTopOf="@id/btnDeleteVoice"
+        app:layout_constraintBottom_toBottomOf="@id/btnDeleteVoice"
+        app:layout_constraintEnd_toEndOf="@id/btnPodcastSendComment"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/player_footer_bottom_shape">
+
+
+        <com.tyorikan.voicerecordingvisualizer.VisualizerView
+            android:id="@+id/visualizer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:numColumns="4"
+            app:renderColor="@color/colorAccent"
+            app:renderRange="top" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

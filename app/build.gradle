@@ -445,4 +445,6 @@ dependencies {
 
     //SmartLook
     implementation 'com.smartlook.recording:app:1.8.1-native'
+
+    implementation 'com.tyorikan:voice-recording-visualizer:1.0.3@aar'
 }
