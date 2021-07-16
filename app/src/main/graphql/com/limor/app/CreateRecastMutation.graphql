@@ -1,5 +1,10 @@
-mutation CreateRecastMutation($podcastid : Int!){
-    createRecast(podcastId: $podcastid){
-        podcast_id
+mutation createRecastMutation(
+    $podcastId: Int!
+){
+    createRecast(podcastId : $podcastId){
+        podcast_id,
+        count,
+        recasted,
+        created
     }
 }
