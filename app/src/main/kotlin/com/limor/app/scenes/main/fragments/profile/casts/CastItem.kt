@@ -80,11 +80,6 @@ class CastItem(
             }
 
             btnPodcastRecast.setOnClickListener {
-                applyRecastStyle(viewBinding , true)
-                val recastCount = tvPodcastRecast.text.toString().toInt()
-                tvPodcastRecast.text = (recastCount + 1).toString()
-                btnPodcastRecast.recasted = true
-
                 onRecastClick(cast)
             }
 
