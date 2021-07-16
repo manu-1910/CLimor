@@ -5,6 +5,7 @@ import android.os.CountDownTimer
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.Toast
 import com.limor.app.R
@@ -129,6 +130,10 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     fun initListenerStatus(data: (InputStatus) -> Unit) {
         statusListener = data
         statusListener?.invoke(status)
+    }
+
+    fun requestFocus() {
+        comment_text.requestFocus()
     }
 
     private fun readAttributes(attrs: AttributeSet?) {

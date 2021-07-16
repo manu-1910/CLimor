@@ -4,18 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.limor.app.common.BaseFragment
+import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentCommentRepliesBinding
 import com.limor.app.extensions.dismissFragment
 import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentChildItem
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentParentItem
+import com.limor.app.scenes.utils.Commons
+import com.limor.app.scenes.utils.SendData
 import com.limor.app.uimodels.CommentUIModel
 import com.xwray.groupie.GroupieAdapter
+import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 class FragmentCommentReplies : BaseFragment() {
@@ -72,6 +78,56 @@ class FragmentCommentReplies : BaseFragment() {
         binding.backBtn.setOnClickListener {
             dismissFragment()
         }
+        binding.tvCancel.setOnClickListener {
+            activity?.onBackPressed()
+        }
+        binding.taviVoice.initListenerStatus {
+            when (it) {
+                is SendData -> {
+                    if (it.filePath != null) {
+                        Commons.getInstance().uploadAudio(
+                            context,
+                            File(it.filePath),
+                            Constants.AUDIO_TYPE_PODCAST,
+                            object : Commons.AudioUploadCallback {
+                                override fun onSuccess(audioUrl: String?) {
+                                    println("Audio upload to AWS succesfully")
+                                    viewModel.addComment(
+                                        0,
+                                        it.text,
+                                        ownerId = replyToCommentId ?: 0,
+                                        ownerType = CommentUIModel.OWNER_TYPE_COMMENT,
+                                        audioURI = audioUrl
+                                    )
+
+                                }
+
+                                override fun onProgressChanged(
+                                    id: Int,
+                                    bytesCurrent: Long,
+                                    bytesTotal: Long
+                                ) {
+                                }
+
+                                override fun onError(error: String?) {
+                                    Timber.d("Audio upload to AWS error: $error")
+                                }
+                            })
+                    } else {
+                        viewModel.addComment(
+                            0,
+                            it.text,
+                            ownerId = replyToCommentId ?: 0,
+                            ownerType = CommentUIModel.OWNER_TYPE_COMMENT
+                        )
+                    }
+
+                }
+                else -> {
+
+                }
+            }
+        }
         viewModel.loadCommentById(parentCommentId)
     }
 
@@ -123,8 +179,10 @@ class FragmentCommentReplies : BaseFragment() {
     }
 
     private fun onReplyClick(comment: CommentUIModel) {
-        // TODO @Maksym focus on editText
-        ToastMaker.showToast(requireContext(), "Replying to ${comment.user?.getFullName()}")
+        binding.taviVoice.requestFocus()
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        binding.tvName.text = comment.user?.getFullName()
+
     }
 
     override fun onDestroyView() {

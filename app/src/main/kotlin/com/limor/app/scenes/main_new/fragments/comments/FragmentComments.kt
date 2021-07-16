@@ -9,15 +9,22 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
+import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentCommentsBinding
 import com.limor.app.extensions.dismissFragment
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main_new.fragments.comments.list.ParentCommentSection
+import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.SendData
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.uimodels.UIPublishRequest
 import com.xwray.groupie.GroupieAdapter
+import kotlinx.android.synthetic.main.fragment_publish.*
+import org.jetbrains.anko.okButton
+import org.jetbrains.anko.support.v4.alert
+import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 class FragmentComments : BaseFragment() {
@@ -63,12 +70,44 @@ class FragmentComments : BaseFragment() {
         binding.taviVoice.initListenerStatus {
             when(it) {
                 is SendData -> {
-                    viewModel.addComment(
-                        0,
-                        it.text,
-                        ownerId = cast.id,
-                        ownerType = CommentUIModel.OWNER_TYPE_COMMENT
-                    )
+                    if (it.filePath != null) {
+                        Commons.getInstance().uploadAudio(
+                            context,
+                            File(it.filePath),
+                            Constants.AUDIO_TYPE_PODCAST,
+                            object : Commons.AudioUploadCallback {
+                                override fun onSuccess(audioUrl: String?) {
+                                    println("Audio upload to AWS succesfully")
+                                    viewModel.addComment(
+                                        0,
+                                        it.text,
+                                        ownerId = cast.id,
+                                        ownerType = CommentUIModel.OWNER_TYPE_COMMENT,
+                                        audioURI = audioUrl
+                                    )
+
+                                }
+
+                                override fun onProgressChanged(
+                                    id: Int,
+                                    bytesCurrent: Long,
+                                    bytesTotal: Long
+                                ) {
+                                }
+
+                                override fun onError(error: String?) {
+                                    Timber.d("Audio upload to AWS error: $error")
+                                }
+                            })
+                    } else {
+                        viewModel.addComment(
+                            0,
+                            it.text,
+                            ownerId = cast.id,
+                            ownerType = CommentUIModel.OWNER_TYPE_COMMENT
+                        )
+                    }
+
                 }
                 else -> {
 

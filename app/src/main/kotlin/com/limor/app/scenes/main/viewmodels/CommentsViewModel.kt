@@ -63,7 +63,8 @@ class CommentsViewModel @Inject constructor(
         content: String,
         ownerId: Int,
         ownerType: String,
-        audioURI: String? = null
+        audioURI: String? = null,
+        duration: Int? = null
     ) {
         viewModelScope.launch {
             addCommentUseCase.execute(podcastId, content, ownerId, ownerType)
