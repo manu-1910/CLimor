@@ -79,6 +79,9 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                 }
             )
         }
+        recastPodcastViewModel.recatedResponse.observe(viewLifecycleOwner) {
+            viewModel.loadCasts(userId)
+        }
     }
 
     private fun onCastClick(cast: CastUIModel) {

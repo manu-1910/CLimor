@@ -77,6 +77,7 @@ class ExtendedPlayerFragment : BaseFragment() {
         bindViews()
         subscribeToPlayerUpdates()
         subscribeToCommentUpdates()
+        subscribeToRecastUpdate()
         loadFirstComment()
         return binding.root
     }
@@ -108,6 +109,14 @@ class ExtendedPlayerFragment : BaseFragment() {
         }
     }
 
+    private fun subscribeToRecastUpdate(){
+        recastPodcastViewModel.recatedResponse.observe(viewLifecycleOwner, {
+            binding.tvPodcastRecast.text = it?.count.toString()
+            applyRecastStyle(it?.recasted == true)
+            binding.btnPodcastRecast.recasted = it?.recasted == true
+        })
+    }
+
     private fun bindViews() {
         setPodcastGeneralInfo()
         setPodcastOwnerInfo()
@@ -134,6 +143,9 @@ class ExtendedPlayerFragment : BaseFragment() {
         binding.tvPodcastRecast.text = podcast.recastsCount?.toString()
         binding.tvPodcastComments.text = podcast.commentsCount?.toString()
         binding.tvPodcastNumberOfListeners.text = podcast.listensCount?.toString()
+
+        applyRecastStyle(podcast.isRecasted == true)
+        binding.btnPodcastRecast.recasted = podcast.isRecasted == true
     }
 
     private fun setAudioInfo() {
@@ -196,14 +208,6 @@ class ExtendedPlayerFragment : BaseFragment() {
         }
 
         binding.btnPodcastRecast.setOnClickListener {
-            val recastCount = binding.tvPodcastRecast.text.toString().toInt()
-            binding.tvPodcastRecast.text = (recastCount + 1).toString()
-            binding.btnPodcastRecast.recasted = true
-            binding.tvPodcastRecast.setTextColor(
-                ContextCompat.getColor(
-                    binding.tvPodcastRecast.context,
-                    R.color.textAccent))
-
             recastPodcastViewModel.reCast(castId = podcast.id)
         }
 
@@ -223,6 +227,19 @@ class ExtendedPlayerFragment : BaseFragment() {
             binding.commentText.text = null
             binding.commentText.hideKeyboard()
         }
+    }
+
+    private fun applyRecastStyle(recasted : Boolean){
+        binding.tvPodcastRecast.setTextColor(if (recasted){
+            ContextCompat.getColor(
+                binding.tvPodcastRecast.context,
+                R.color.textAccent)
+        }
+        else{
+            ContextCompat.getColor(
+                binding.tvPodcastRecast.context,
+                R.color.subtitle_text_color)
+        })
     }
 
     private fun addTags() {

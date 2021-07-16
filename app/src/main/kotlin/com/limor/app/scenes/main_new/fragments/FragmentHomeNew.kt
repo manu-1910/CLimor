@@ -67,6 +67,9 @@ class FragmentHomeNew : BaseFragment() {
             binding.swipeToRefresh.isRefreshing = false
             setDataToRecyclerView(casts)
         }
+        recastPodcastViewModel.recatedResponse.observe(viewLifecycleOwner){
+            homeFeedViewModel.loadHomeFeed()
+        }
     }
 
     private fun setDataToRecyclerView(list: List<CastUIModel>) {
