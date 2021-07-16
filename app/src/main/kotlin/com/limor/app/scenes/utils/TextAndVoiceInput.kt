@@ -30,7 +30,7 @@ object ListenRecord : InputStatus()
 
 object PauseRecord : InputStatus()
 
-object SendData : InputStatus()
+class SendData(val text: String, val filePath: String?, val duration: Long) : InputStatus()
 
 
 class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
@@ -43,6 +43,8 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     set(value) {
         statusListener?.invoke(value)
     }
+    private var filePath: String? = null
+    private var duration: Long = 0
 
     private val timer = object : CountDownTimer(180000, 1000) {
         override fun onTick(millisUntilFinished: Long) {
@@ -51,6 +53,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
             val minutes = actualSeconds.div(60)
             val seconds = actualSeconds % 60
             tvTime.text = "$minutes:${getSeconds(seconds)}"
+            duration = actualSeconds
         }
 
         override fun onFinish() {
@@ -71,7 +74,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     private fun initView() {
         inflate(context, R.layout.item_input_with_audio, this)
         btnPodcastSendComment.setOnClickListener {
-            status = SendData
+            status = SendData(comment_text.text.toString(), filePath, duration)
 
         }
         btnPodcastStartVoiceComment.setOnClickListener {
@@ -86,13 +89,12 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
                 llVoice.visibility = VISIBLE
                 btnDeleteVoice.visibility = VISIBLE
                 status = StartRecord
-                Toast.makeText(context, mFile.path + " start record", Toast.LENGTH_SHORT).show()
+                filePath = mFile.path
             } else {
                 stopRecord()
                 appVoiceRecorder.stopRecord()
                 btnPodcastStartVoiceComment.isActivated = false
                 status = FinishRecord
-                Toast.makeText(context, "stop record", Toast.LENGTH_SHORT).show()
             }
 
 

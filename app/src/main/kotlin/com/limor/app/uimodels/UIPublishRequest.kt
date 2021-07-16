@@ -9,7 +9,7 @@ data class UIPublishRequest(
 
 data class UIPodcastRequest(
     var audio: UIAudio,
-    var meta_data: UIMetaData
+    var meta_data: UIMetaData?
 )
 
 data class UIAudio(

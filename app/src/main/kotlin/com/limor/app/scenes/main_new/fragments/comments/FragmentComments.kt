@@ -13,8 +13,10 @@ import com.limor.app.databinding.FragmentCommentsBinding
 import com.limor.app.extensions.dismissFragment
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main_new.fragments.comments.list.ParentCommentSection
+import com.limor.app.scenes.utils.SendData
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
+import com.limor.app.uimodels.UIPublishRequest
 import com.xwray.groupie.GroupieAdapter
 import javax.inject.Inject
 
@@ -57,6 +59,21 @@ class FragmentComments : BaseFragment() {
         binding.commentsList.adapter = adapter
         binding.closeBtn.setOnClickListener {
             parentFragment?.dismissFragment()
+        }
+        binding.taviVoice.initListenerStatus {
+            when(it) {
+                is SendData -> {
+                    viewModel.addComment(
+                        0,
+                        it.text,
+                        ownerId = cast.id,
+                        ownerType = CommentUIModel.OWNER_TYPE_COMMENT
+                    )
+                }
+                else -> {
+
+                }
+            }
         }
     }
 

@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.common.SingleLiveEvent
 import com.limor.app.uimodels.CommentUIModel
-import com.limor.app.usecases.AddCommentUseCase
-import com.limor.app.usecases.GetCommentByIdUseCase
-import com.limor.app.usecases.GetCommentsForPodcastUseCase
-import com.limor.app.usecases.LikeCommentUseCase
+import com.limor.app.uimodels.UICommentRequest
+import com.limor.app.uimodels.UICreateCommentRequest
+import com.limor.app.uimodels.UIPublishRequest
+import com.limor.app.usecases.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
