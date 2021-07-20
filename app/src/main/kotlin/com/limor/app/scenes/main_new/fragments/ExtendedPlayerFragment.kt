@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.bottomsheet.BottomSheetBehavior
+import androidx.lifecycle.lifecycleScope
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentExtendedPlayerBinding
@@ -19,7 +19,6 @@ import com.limor.app.extensions.*
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
-import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.PlayerBinder
@@ -27,8 +26,11 @@ import com.limor.app.service.PlayerStatus
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.uimodels.TagUIModel
+import com.limor.app.uimodels.mapToAudioTrack
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
-import java.time.Duration
 import javax.inject.Inject
 
 class ExtendedPlayerFragment : BaseFragment() {
@@ -51,8 +53,10 @@ class ExtendedPlayerFragment : BaseFragment() {
     private val commentsViewModel: CommentsViewModel by viewModels { viewModelFactory }
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
     private val podcast: CastUIModel by lazy { requireArguments()[CAST_KEY] as CastUIModel }
+    private val podcastAudio get() = podcast.audio!!.mapToAudioTrack()
 
-    private val playerBinder: PlayerBinder by lazy { (requireActivity() as PlayerViewManager).getPlayerBinder() }
+    @Inject
+    lateinit var playerBinder: PlayerBinder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,7 +113,7 @@ class ExtendedPlayerFragment : BaseFragment() {
         }
     }
 
-    private fun subscribeToRecastUpdate(){
+    private fun subscribeToRecastUpdate() {
         recastPodcastViewModel.recatedResponse.observe(viewLifecycleOwner, {
             binding.tvPodcastRecast.text = it?.count.toString()
             applyRecastStyle(it?.recasted == true)
@@ -150,34 +154,44 @@ class ExtendedPlayerFragment : BaseFragment() {
 
     private fun setAudioInfo() {
         binding.tvRecastPlayMaxPosition.text = podcast.audio?.duration?.toReadableFormat(
-            DURATION_READABLE_FORMAT_1)
+            DURATION_READABLE_FORMAT_1
+        )
     }
 
     private fun subscribeToPlayerUpdates() {
-        playerBinder.currentPlayPositionLiveData.observe(viewLifecycleOwner) { (seconds, percentage) ->
-            binding.lpiPodcastProgress.progress = percentage
-            binding.tvRecastPlayCurrentPosition.text =
-                Duration.ofSeconds(seconds).toReadableFormat(DURATION_READABLE_FORMAT_1)
-        }
+        lifecycleScope.launchWhenCreated {
+            playerBinder.getCurrentPlayingPosition(podcastAudio)
+                .onEach { duration ->
+                    binding.lpiPodcastProgress.progress =
+                        ((duration.seconds * 100) / podcast.audio?.duration?.seconds!!).toInt()
+                    binding.tvRecastPlayCurrentPosition.text =
+                        duration.toReadableFormat(DURATION_READABLE_FORMAT_1)
+                }
+                .launchIn(this)
 
-        playerBinder.playerStatusLiveData.observe(viewLifecycleOwner) {
-            when (it) {
-                is PlayerStatus.Cancelled -> Timber.d("Player Canceled")
-                is PlayerStatus.Ended -> {
-                    binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
-                    binding.audioBufferingView.visibility = View.GONE
+            playerBinder.getPlayerStatus(podcastAudio)
+                .onEach {
+                    when (it) {
+                        is PlayerStatus.Ended -> {
+                            binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
+                            binding.audioBufferingView.visibility = View.GONE
+                        }
+                        is PlayerStatus.Error -> binding.audioBufferingView.visibility = View.GONE
+                        is PlayerStatus.Buffering -> binding.audioBufferingView.visibility = View.VISIBLE
+                        is PlayerStatus.Paused -> {
+                            binding.audioBufferingView.visibility = View.GONE
+                            binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
+                        }
+                        is PlayerStatus.Playing -> {
+                            binding.audioBufferingView.visibility = View.GONE
+                            binding.btnPodcastPlayExtended.setImageResource(R.drawable.pause)
+                        }
+                        is PlayerStatus.Cancelled -> Timber.d("Player Canceled")
+                        is PlayerStatus.Init -> Timber.d("Player Init")
+                        is PlayerStatus.Other -> Timber.d("Player Other")
+                    }
                 }
-                is PlayerStatus.Error -> binding.audioBufferingView.visibility = View.GONE
-                is PlayerStatus.Buffering -> binding.audioBufferingView.visibility = View.VISIBLE
-                is PlayerStatus.Paused -> {
-                    binding.audioBufferingView.visibility = View.GONE
-                    binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
-                }
-                is PlayerStatus.Playing -> {
-                    binding.audioBufferingView.visibility = View.GONE
-                    binding.btnPodcastPlayExtended.setImageResource(R.drawable.pause)
-                }
-            }
+                .launchIn(this)
         }
     }
 
@@ -196,7 +210,9 @@ class ExtendedPlayerFragment : BaseFragment() {
         }
 
         binding.btnPodcastPlayExtended.setOnClickListener {
-            playerBinder.playPause()
+            podcast.audio?.let { audio ->
+                playerBinder.playPause(audio.mapToAudioTrack(), showNotification = true)
+            }
         }
 
         binding.btnPodcastRewindBack.setOnClickListener {
@@ -229,17 +245,20 @@ class ExtendedPlayerFragment : BaseFragment() {
         }
     }
 
-    private fun applyRecastStyle(recasted : Boolean){
-        binding.tvPodcastRecast.setTextColor(if (recasted){
-            ContextCompat.getColor(
-                binding.tvPodcastRecast.context,
-                R.color.textAccent)
-        }
-        else{
-            ContextCompat.getColor(
-                binding.tvPodcastRecast.context,
-                R.color.subtitle_text_color)
-        })
+    private fun applyRecastStyle(recasted: Boolean) {
+        binding.tvPodcastRecast.setTextColor(
+            if (recasted) {
+                ContextCompat.getColor(
+                    binding.tvPodcastRecast.context,
+                    R.color.textAccent
+                )
+            } else {
+                ContextCompat.getColor(
+                    binding.tvPodcastRecast.context,
+                    R.color.subtitle_text_color
+                )
+            }
+        )
     }
 
     private fun addTags() {

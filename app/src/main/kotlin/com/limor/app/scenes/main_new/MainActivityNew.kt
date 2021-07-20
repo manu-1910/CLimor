@@ -11,6 +11,7 @@ import com.limor.app.databinding.ActivityMainNewBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
 import com.limor.app.scenes.utils.PlayerViewManager
+import com.limor.app.service.PlayerBinder
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
@@ -24,6 +25,9 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
 
     lateinit var binding: ActivityMainNewBinding
     lateinit var playerBinding: ContainerWithSwipeablePlayerBinding
+
+    @Inject
+    lateinit var playerBinder: PlayerBinder
 
     private var activityPlayerViewManager: ActivityPlayerViewManager? = null
 
@@ -40,7 +44,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         setUpBottomNavigation()
 
         activityPlayerViewManager =
-            ActivityPlayerViewManager(applicationContext, supportFragmentManager, playerBinding)
+            ActivityPlayerViewManager(supportFragmentManager, playerBinding, playerBinder)
     }
 
     private fun setupFabClickListener() {
@@ -68,8 +72,6 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     override fun hidePlayer() {
         activityPlayerViewManager?.hidePlayer()
     }
-
-    override fun getPlayerBinder() = activityPlayerViewManager!!.getPlayerBinder()
 
     override fun onDestroy() {
         activityPlayerViewManager?.stop()

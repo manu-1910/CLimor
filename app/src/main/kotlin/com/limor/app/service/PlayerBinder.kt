@@ -4,51 +4,52 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.ServiceConnection
 import android.os.IBinder
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.distinctUntilChanged
-import timber.log.Timber
+import com.limor.app.common.dispatchers.DispatcherProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.*
+import java.time.Duration
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PlayerBinder(
-    val appContext: Context,
-) : LifecycleObserver {
+@Singleton
+class PlayerBinder @Inject constructor(
+    private val appContext: Context,
+    dispatcherProvider: DispatcherProvider
+) {
+
+    private val playerBinderJob = SupervisorJob()
+    private val playerBinderScope = CoroutineScope(playerBinderJob + dispatcherProvider.main)
 
     private var audioService: AudioService? = null
-    private var playerStatus: PlayerStatus? = null
     private var currentAudioTrack: AudioService.AudioTrack? = null
+    private var showNotification: Boolean = true
 
-    private val _playerStatusLiveData = MutableLiveData<PlayerStatus?>()
-    val playerStatusLiveData: LiveData<PlayerStatus?>
-        get() = _playerStatusLiveData
-
-    // <POSITION to PERCENT>
-    private val _currentPlayPositionLiveData = MutableLiveData<Pair<Long, Int>>()
-    val currentPlayPositionLiveData: LiveData<Pair<Long, Int>>
-        get() = _currentPlayPositionLiveData
-
+    private val currentPlayingPosition = MutableStateFlow(Duration.ZERO)
+    private val playerStatus = MutableStateFlow<PlayerStatus>(PlayerStatus.Init)
 
     private val connection = object : ServiceConnection {
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            val binder = service as AudioService.AudioServiceBinder
-            audioService = binder.service
-            audioService?.playerStatusLiveData?.observeForever {
-                Timber.d("PlayerStatus $it")
-                playerStatus = it
-                _playerStatusLiveData.postValue(playerStatus)
+            audioService = (service as AudioService.AudioServiceBinder).service
+            internalPlayPause(currentAudioTrack!!, showNotification)
+
+            audioService?.let { audioService ->
+                playerBinderJob.cancelChildren()
+                audioService.getPlayerStatus()
+                    .onEach {
+                        playerStatus.value = it
+                    }
+                    .launchIn(playerBinderScope)
+
+                audioService.getCurrentPlayingPosition()
+                    .onEach {
+                        currentPlayingPosition.value = Duration.ofMillis(it)
+                    }
+                    .launchIn(playerBinderScope)
+
             }
-
-            audioService?.currentPlayingPosition?.distinctUntilChanged()
-                ?.observeForever { playingPositionMillis ->
-
-                    val percent = getProgressPercent(
-                        playingPositionMillis,
-                        currentAudioTrack?.duration?.toMillis() ?: 0
-                    )
-                    val playingPositionSeconds = playingPositionMillis / 1000
-                    _currentPlayPositionLiveData.postValue(playingPositionSeconds to percent)
-                }
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -56,39 +57,56 @@ class PlayerBinder(
         }
     }
 
-    fun start(audioTrack: AudioService.AudioTrack) {
-        currentAudioTrack = audioTrack
+    fun getPlayerStatus(audioTrack: AudioService.AudioTrack): Flow<PlayerStatus> {
+        return playerStatus.asStateFlow()
+            .filter {
+                // To make sure that we are listening for the expected track
+                currentAudioTrack == audioTrack
+            }
+    }
+    fun getCurrentPlayingPosition(audioTrack: AudioService.AudioTrack): Flow<Duration> {
+        return currentPlayingPosition.asStateFlow()
+            .filter {
+                // To make sure that we are listening for the expected track
+                currentAudioTrack == audioTrack
+            }
+    }
 
+    fun playPause(audioTrack: AudioService.AudioTrack, showNotification: Boolean) {
+        currentAudioTrack = audioTrack
         if (audioService == null) {
             bindToAudioService()
+        } else {
+            internalPlayPause(audioTrack, showNotification)
+        }
+    }
+
+    private fun internalPlayPause(audioTrack: AudioService.AudioTrack, showNotification: Boolean) {
+        audioService?.let { audioService ->
+            if (audioService.audioTrack != audioTrack) {
+                // Use different track
+                audioService.stop()
+            }
+
+            when (playerStatus.value) {
+                is PlayerStatus.Playing -> {
+                    audioService.pause()
+                }
+                is PlayerStatus.Paused -> {
+                    audioService.resume()
+                }
+                else -> {
+                    audioService.play(
+                        audioTrack,
+                        withNotification = showNotification
+                    )
+                }
+            }
         }
     }
 
     fun stop() {
         unbindAudioService()
-    }
-
-    fun playPause() {
-        if (audioService == null) {
-            Timber.e("Trying to play/pause when service is not bound")
-            return
-        }
-
-        when (playerStatus) {
-            is PlayerStatus.Playing -> {
-                audioService?.pause()
-            }
-            is PlayerStatus.Paused -> {
-                audioService?.resume()
-            }
-            else -> {
-                audioService?.play(
-                    currentAudioTrack,
-                    1L,
-                    1F
-                )
-            }
-        }
     }
 
     fun forward(seekTo: Long) {
@@ -116,14 +134,7 @@ class PlayerBinder(
             audioService?.stop()
             appContext.unbindService(connection)
             audioService = null
-            playerStatus = null
-        }
-    }
-
-    companion object {
-        fun getProgressPercent(currentPosition: Long?, duration: Long?): Int {
-            if (currentPosition == null || duration == null || duration == 0L) return 0
-            return (currentPosition * 100 / duration).toInt()
+            playerStatus.value = PlayerStatus.Init
         }
     }
 }

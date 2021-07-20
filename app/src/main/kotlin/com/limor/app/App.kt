@@ -8,9 +8,9 @@ import com.facebook.FacebookSdk
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.limor.app.di.AppInjector
 import com.limor.app.di.components.AppComponent
+import com.limor.app.service.PlayerBinder
 import com.limor.app.util.CrashReportingTree
 import com.novoda.merlin.MerlinsBeard
-import com.smartlook.sdk.smartlook.Smartlook
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -20,12 +20,13 @@ import io.realm.RealmConfiguration
 import timber.log.Timber
 import javax.inject.Inject
 
-
 class App : Application(), HasActivityInjector, HasServiceInjector {
     @Inject
     lateinit var activityInjector: DispatchingAndroidInjector<Activity>
     @Inject
     lateinit var serviceInjector: DispatchingAndroidInjector<Service>
+    @Inject
+    lateinit var playerBinder: PlayerBinder
 
     private var realm: Realm? = null
     lateinit var firebaseAnalytics: FirebaseAnalytics
