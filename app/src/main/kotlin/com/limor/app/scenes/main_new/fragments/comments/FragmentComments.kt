@@ -18,11 +18,7 @@ import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.SendData
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
-import com.limor.app.uimodels.UIPublishRequest
 import com.xwray.groupie.GroupieAdapter
-import kotlinx.android.synthetic.main.fragment_publish.*
-import org.jetbrains.anko.okButton
-import org.jetbrains.anko.support.v4.alert
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
@@ -70,19 +66,20 @@ class FragmentComments : BaseFragment() {
         binding.taviVoice.initListenerStatus {
             when(it) {
                 is SendData -> {
+
                     if (it.filePath != null) {
                         Commons.getInstance().uploadAudio(
                             context,
                             File(it.filePath),
-                            Constants.AUDIO_TYPE_PODCAST,
+                            Constants.AUDIO_TYPE_COMMENT,
                             object : Commons.AudioUploadCallback {
                                 override fun onSuccess(audioUrl: String?) {
                                     println("Audio upload to AWS succesfully")
                                     viewModel.addComment(
                                         cast.id,
-                                        it.text,
+                                        content = it.text,
                                         ownerId = cast.id,
-                                        ownerType = CommentUIModel.OWNER_TYPE_PODCAST,
+                                        ownerType = CommentUIModel.OWNER_TYPE_COMMENT,
                                         audioURI = audioUrl
                                     )
                                 }
