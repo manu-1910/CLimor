@@ -103,7 +103,6 @@ class FragmentComments : BaseFragment() {
                             ownerType = CommentUIModel.OWNER_TYPE_PODCAST
                         )
                     }
-
                 }
                 else -> {
 

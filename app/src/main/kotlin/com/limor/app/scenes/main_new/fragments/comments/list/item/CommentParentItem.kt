@@ -2,7 +2,6 @@ package com.limor.app.scenes.main_new.fragments.comments.list.item
 
 import android.view.View
 import com.limor.app.R
-import com.limor.app.components.CommentAudioPlayerView
 import com.limor.app.databinding.ItemParentCommentBinding
 import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.makeGone
@@ -10,8 +9,6 @@ import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.utils.DateUiUtil
 import com.limor.app.uimodels.CommentUIModel
 import com.xwray.groupie.viewbinding.BindableItem
-import com.xwray.groupie.viewbinding.GroupieViewHolder
-import java.time.Duration
 
 class CommentParentItem(
     val comment: CommentUIModel,

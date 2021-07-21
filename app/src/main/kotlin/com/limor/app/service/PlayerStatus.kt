@@ -1,6 +1,7 @@
 package com.limor.app.service
 
 sealed class PlayerStatus {
+    object Init : PlayerStatus()
     object Other : PlayerStatus()
     object Playing : PlayerStatus()
     object Paused : PlayerStatus()

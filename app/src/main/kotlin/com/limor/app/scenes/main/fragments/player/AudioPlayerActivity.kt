@@ -70,7 +70,7 @@ class AudioPlayerActivity : AppCompatActivity(), HasSupportFragmentInjector {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as AudioService.AudioServiceBinder
             audioService = binder.service
-            playerControlView!!.player = binder.exoPlayer
+            /*playerControlView!!.player = binder.exoPlayer
 
             audioService?.playerStatusLiveData?.observe(this@AudioPlayerActivity, Observer {
 
@@ -95,11 +95,11 @@ class AudioPlayerActivity : AppCompatActivity(), HasSupportFragmentInjector {
                     }
                 }
 
-            })
+            })*/
 
-            audioService?.currentPlayingPosition?.observe(this@AudioPlayerActivity, Observer{position ->
+            /*audioService?.currentPlayingPosition?.observe(this@AudioPlayerActivity, Observer{position ->
                 onPlayingPodcsatPositionChanged(position)
-            })
+            })*/
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -224,9 +224,9 @@ class AudioPlayerActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
     private fun bindToAudioService() {
         if (audioService == null) {
-            AudioService.newIntent(this).also { intent ->
+            /*AudioService.newIntent(this).also { intent ->
                 bindService(intent, connection, Context.BIND_AUTO_CREATE)
-            }
+            }*/
         }
     }
 
@@ -283,7 +283,7 @@ class AudioPlayerActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
     private fun exitScreen(){
         val resultIntent = Intent()
-        resultIntent.putExtra("position", audioService?.feedPosition)
+        //resultIntent.putExtra("position", audioService?.feedPosition)
         val hostFragment =
             supportFragmentManager.findFragmentById(R.id.navigation_host_fragment_audio_player)
         val currentFragment = hostFragment?.childFragmentManager?.fragments?.get(0)

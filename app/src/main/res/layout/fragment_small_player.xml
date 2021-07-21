@@ -34,8 +34,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/cpiPodcastListeningProgress"
         app:layout_constraintEnd_toEndOf="@+id/cpiPodcastListeningProgress"
         app:layout_constraintStart_toStartOf="@+id/cpiPodcastListeningProgress"
-        app:layout_constraintTop_toTopOf="@+id/cpiPodcastListeningProgress"
-        tools:src="@color/green400" />
+        app:layout_constraintTop_toTopOf="@+id/cpiPodcastListeningProgress" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="52dp"

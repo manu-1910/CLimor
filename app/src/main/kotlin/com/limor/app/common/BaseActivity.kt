@@ -57,7 +57,7 @@ abstract class BaseActivity : AppCompatActivity() {
             val binder = service as AudioService.AudioServiceBinder
             audioService = binder.service
 
-            audioService?.playerStatusLiveData?.observe(this@BaseActivity, Observer {
+            /*audioService?.playerStatusLiveData?.observe(this@BaseActivity, Observer {
 
                 playerStatus = it
 
@@ -68,10 +68,10 @@ abstract class BaseActivity : AppCompatActivity() {
                         stopAudioService()
                     }
                     is PlayerStatus.Playing -> {
-                        /*if (miniPlayerView!!.tag != audioService?.uiPodcast?.id) {
+                        *//*if (miniPlayerView!!.tag != audioService?.uiPodcast?.id) {
                             miniPlayerView!!.tag = audioService?.uiPodcast?.id
                             setupMiniPlayerUi()
-                        }*/
+                        }*//*
 
                         setPlayerUiPlaying()
 
@@ -95,7 +95,7 @@ abstract class BaseActivity : AppCompatActivity() {
                 try {
                     progress_audio_playback.progress = lastPlayingPosition
                 } catch (ex: Exception) { ex.printStackTrace() }
-            })
+            })*/
 
 
             /*// Show player after config change.
@@ -151,7 +151,7 @@ abstract class BaseActivity : AppCompatActivity() {
                     Intent(it?.context, PodcastDetailsActivity::class.java)
                 //podcastDetailsIntent.putExtra("podcast", audioService?.uiPodcast)
                 podcastDetailsIntent.putExtra("commenting", true)
-                podcastDetailsIntent.putExtra("position", audioService?.feedPosition)
+                //podcastDetailsIntent.putExtra("position", audioService?.feedPosition)
                 startActivityForResult(podcastDetailsIntent, MainActivity.REQUEST_AUDIO_PLAYER)
             }
 
@@ -231,9 +231,9 @@ abstract class BaseActivity : AppCompatActivity() {
 
     private fun bindToAudioService() {
         if (audioService == null) {
-            AudioService.newIntent(this).also { intent ->
+            /*AudioService.newIntent(this).also { intent ->
                 bindService(intent, connection, Context.BIND_AUTO_CREATE)
-            }
+            }*/
         } else {
             setupMiniPlayerUi()
         }
