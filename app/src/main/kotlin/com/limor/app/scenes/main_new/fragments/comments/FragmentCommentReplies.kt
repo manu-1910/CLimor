@@ -93,7 +93,7 @@ class FragmentCommentReplies : BaseFragment() {
                         Commons.getInstance().uploadAudio(
                             context,
                             File(it.filePath),
-                            Constants.AUDIO_TYPE_PODCAST,
+                            Constants.AUDIO_TYPE_COMMENT,
                             object : Commons.AudioUploadCallback {
                                 override fun onSuccess(audioUrl: String?) {
                                     println("Audio upload to AWS succesfully")

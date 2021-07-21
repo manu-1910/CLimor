@@ -34,7 +34,6 @@
         android:layout_marginBottom="16dp"
         android:layout_weight="1"
         android:hint="@string/hint_write_a_comment"
-        app:endIconDrawable="@drawable/ic_comments_footer_link"
         app:endIconMode="custom"
         app:endIconTint="@color/subtitle_text_color"
         app:layout_constraintTop_toTopOf="parent"

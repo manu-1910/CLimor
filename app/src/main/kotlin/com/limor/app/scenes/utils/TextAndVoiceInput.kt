@@ -1,5 +1,6 @@
 package com.limor.app.scenes.utils
 
+import android.Manifest
 import android.content.Context
 import android.os.CountDownTimer
 import android.util.AttributeSet
@@ -11,6 +12,7 @@ import android.widget.Toast
 import com.limor.app.R
 import com.limor.app.scenes.utils.recorder.AppVoiceRecorder
 import com.limor.app.scenes.utils.visualizer.RecordingSampler
+import com.limor.app.util.checkPermission
 import kotlinx.android.synthetic.main.item_input_with_audio.view.*
 import timber.log.Timber
 import java.io.File
@@ -50,7 +52,6 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     private val timer = object : CountDownTimer(180000, 1000) {
         override fun onTick(millisUntilFinished: Long) {
             val actualSeconds = (180000 - millisUntilFinished)/1000
-            Log.e("!!!", actualSeconds.toString())
             val minutes = actualSeconds.div(60)
             val seconds = actualSeconds % 60
             tvTime.text = "$minutes:${getSeconds(seconds)}"
@@ -77,11 +78,18 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         btnPodcastSendComment.setOnClickListener {
             status = SendData(comment_text.text.toString(), filePath, duration)
             comment_text.text = null
+            llVoice.visibility = GONE
+            btnDeleteVoice.visibility = GONE
+            stopRecord()
         }
+
+        llVoice.visibility = View.GONE
+        btnDeleteVoice.visibility = View.GONE
+
         btnPodcastStartVoiceComment.setOnClickListener {
             val appVoiceRecorder = AppVoiceRecorder()
             if(!it.isActivated) {
-                val messageKey = getCurrentTimeString().replace(':', '_') + ".mp3"
+                val messageKey = getCurrentTimeString()+ ".mp3"
                 val mFile = File(context.filesDir, messageKey)
                 appVoiceRecorder.startRecord(mFile)
                 startRecord()
@@ -118,9 +126,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
     private fun getCurrentTimeString(): String {
         val currentDate = Date()
-        val timeFormat: DateFormat =
-            SimpleDateFormat("hh:mm:ss dd.MM.yyyy", Locale.getDefault())
-        return timeFormat.format(currentDate)
+        return currentDate.time.toString()
     }
 
     fun initListenerStatus(data: (InputStatus) -> Unit) {
