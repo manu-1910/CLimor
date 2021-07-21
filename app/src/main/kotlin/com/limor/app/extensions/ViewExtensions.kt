@@ -124,10 +124,8 @@ val View.viewScope: CoroutineScope
         if (storedScope != null && storedScope.isActive) return storedScope
 
         val newScope = ViewCoroutineScope()
-        if (isAttachedToWindow) {
-            addOnAttachStateChangeListener(newScope)
-            setTag(R.string.view_coroutine_scope, newScope)
-        } else newScope.cancel()
+        addOnAttachStateChangeListener(newScope)
+        setTag(R.string.view_coroutine_scope, newScope)
 
         return newScope
     }

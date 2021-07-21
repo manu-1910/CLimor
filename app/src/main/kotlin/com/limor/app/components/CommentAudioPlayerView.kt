@@ -7,13 +7,14 @@ import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.SeekBar
 import com.limor.app.App
-import com.limor.app.R
 import com.limor.app.databinding.ViewCommentAudioPlayerBinding
 import com.limor.app.extensions.*
+import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
 import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.mapToAudioTrack
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -22,19 +23,14 @@ import java.time.Duration
 
 class CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
 
-    init {
-        inflate(context, R.layout.view_comment_audio_player, this)
-    }
-
     private val binding = ViewCommentAudioPlayerBinding
         .inflate(LayoutInflater.from(context), this, true)
 
     private var playerBinder: PlayerBinder = App.instance.playerBinder
-    private var commentAudioTrack: AudioCommentUIModel? = null
+    private var commentAudioTrack: AudioService.AudioTrack? = null
 
     init {
         binding.progressSeekbar.apply {
-            progress = 0
             setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
@@ -53,18 +49,18 @@ class CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayou
         }
         binding.playButton.setOnClickListener {
             playerBinder.playPause(
-                commentAudioTrack!!.mapToAudioTrack(),
+                commentAudioTrack!!,
                 showNotification = false
             )
         }
     }
 
     fun initialize(audio: AudioCommentUIModel) {
-        commentAudioTrack = audio
+        commentAudioTrack = audio.mapToAudioTrack()
         setInitialState(audio.duration)
 
-        viewScope.launch {
-            playerBinder.getPlayerStatus(audio.mapToAudioTrack())
+        viewScope.launch(Dispatchers.Main) {
+            playerBinder.getPlayerStatus(commentAudioTrack!!)
                 .onEach { status ->
                     when (status) {
                         is PlayerStatus.Cancelled -> setInitialState(Duration.ZERO)
@@ -74,12 +70,12 @@ class CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayou
                         is PlayerStatus.Paused -> setPausedState()
                         is PlayerStatus.Playing -> setPlayingState()
                         is PlayerStatus.Other -> Timber.d("Other status received: $status")
-                        is PlayerStatus.Init -> TODO()
+                        is PlayerStatus.Init -> setInitialState(Duration.ZERO)
                     }
                 }
                 .launchIn(this)
 
-            playerBinder.getCurrentPlayingPosition(audio.mapToAudioTrack())
+            playerBinder.getCurrentPlayingPosition(commentAudioTrack!!)
                 .onEach { duration ->
                     binding.progressSeekbar.progress = duration.seconds.toInt()
                     binding.currentTime.text = duration.toReadableFormat(

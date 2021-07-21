@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -13,7 +12,6 @@ import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentCommentRepliesBinding
 import com.limor.app.extensions.dismissFragment
 import com.limor.app.extensions.showKeyboard
-import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentChildItem
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentParentItem

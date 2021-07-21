@@ -86,20 +86,24 @@ class PlayerBinder @Inject constructor(
             if (audioService.audioTrack != audioTrack) {
                 // Use different track
                 audioService.stop()
-            }
-
-            when (playerStatus.value) {
-                is PlayerStatus.Playing -> {
-                    audioService.pause()
-                }
-                is PlayerStatus.Paused -> {
-                    audioService.resume()
-                }
-                else -> {
-                    audioService.play(
-                        audioTrack,
-                        withNotification = showNotification
-                    )
+                audioService.play(
+                    audioTrack,
+                    withNotification = showNotification
+                )
+            } else {
+                when (playerStatus.value) {
+                    is PlayerStatus.Playing -> {
+                        audioService.pause()
+                    }
+                    is PlayerStatus.Paused -> {
+                        audioService.resume()
+                    }
+                    else -> {
+                        audioService.play(
+                            audioTrack,
+                            withNotification = showNotification
+                        )
+                    }
                 }
             }
         }

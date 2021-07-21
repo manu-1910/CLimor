@@ -23,20 +23,19 @@
         app:layout_constraintStart_toStartOf="@+id/loading_bar"
         app:layout_constraintTop_toTopOf="@+id/loading_bar" />
 
-    <androidx.appcompat.widget.AppCompatSeekBar
+    <SeekBar
         android:id="@+id/progress_seekbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:maxHeight="4dp"
         android:minHeight="4dp"
-        android:paddingTop="8dip"
+        android:paddingTop="8dp"
+        android:progressDrawable="@drawable/custom_seekbar_progress"
+        android:thumb="@drawable/seekbar_thumb"
         app:layout_constraintBottom_toBottomOf="@+id/play_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/play_button"
-        app:layout_constraintTop_toTopOf="parent"
-        android:progressDrawable="@drawable/custom_seekbar_progress"
-        android:thumb="@drawable/seekbar_thumb" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/current_time"
