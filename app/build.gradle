@@ -28,8 +28,8 @@ android {
         targetSdkVersion build_versions.target_sdk
 
         applicationId globalConfiguration.androidApplicationId
-        versionCode 63
-        versionName "0.0.63"
+        versionCode 64
+        versionName "0.0.64"
 
         testInstrumentationRunner globalConfiguration.testInstrumentationRunner
         testApplicationId globalConfiguration.testApplicationId
@@ -159,7 +159,7 @@ android {
             buildConfigField "int", "LIMOR_ACCOUNT_ID", '350'
             buildConfigField "String", "SMART_LOOK_API_KEY", '"6a6016ead4a7f1fbb773ff00f25092544289f292"'
 
-            buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-5439b.appspot.com/"'
+            buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-staging.appspot.com/images/"'
 
             minifyEnabled false
             debuggable true
