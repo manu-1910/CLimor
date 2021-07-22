@@ -73,7 +73,7 @@ class ActivityPlayerViewManager(
                 val transaction = fragmentManager.beginTransaction()
                 transaction
                     .setCustomAnimations(R.animator.show, 0)
-                currentFragment = ExtendedPlayerFragment.newInstance(currentArgs!!.castId).also {
+                currentFragment = ExtendedPlayerFragment.newInstance(currentArgs!!.castId, true).also {
                     transaction
                         .replace(playerBinding.playerContainer.id, it)
                         .commit()

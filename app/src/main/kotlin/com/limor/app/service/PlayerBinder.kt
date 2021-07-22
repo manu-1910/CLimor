@@ -23,7 +23,8 @@ class PlayerBinder @Inject constructor(
     private val playerBinderScope = CoroutineScope(playerBinderJob + dispatcherProvider.main)
 
     private var audioService: AudioService? = null
-    private var currentAudioTrack: AudioService.AudioTrack? = null
+    var currentAudioTrack: AudioService.AudioTrack? = null
+        private set
     private var showNotification: Boolean = true
 
     private val currentPlayingPosition = MutableStateFlow(Duration.ZERO)
@@ -64,6 +65,7 @@ class PlayerBinder @Inject constructor(
                 currentAudioTrack == audioTrack
             }
     }
+
     fun getCurrentPlayingPosition(audioTrack: AudioService.AudioTrack): Flow<Duration> {
         return currentPlayingPosition.asStateFlow()
             .filter {

@@ -99,10 +99,13 @@ class ExtendedPlayerFragment : BaseFragment() {
             bindViews(cast)
             subscribeToPlayerUpdates(cast)
 
-            if (requireArguments().getBoolean(AUTO_PLAY_KEY, false)) {
-                playerBinder.playPause(cast.audio!!.mapToAudioTrack(), true)
-                // To prevent autoplay on every cast update
-                requireArguments().putBoolean(AUTO_PLAY_KEY, false)
+            val autoPlay = requireArguments().getBoolean(
+                AUTO_PLAY_KEY,
+                false
+            )
+            val audioTrack = cast.audio!!.mapToAudioTrack()
+            if (autoPlay && playerBinder.currentAudioTrack != audioTrack) {
+                playerBinder.playPause(cast.audio.mapToAudioTrack(), true)
             }
         }
     }
@@ -196,7 +199,8 @@ class ExtendedPlayerFragment : BaseFragment() {
                             binding.audioBufferingView.visibility = View.GONE
                         }
                         is PlayerStatus.Error -> binding.audioBufferingView.visibility = View.GONE
-                        is PlayerStatus.Buffering -> binding.audioBufferingView.visibility = View.VISIBLE
+                        is PlayerStatus.Buffering -> binding.audioBufferingView.visibility =
+                            View.VISIBLE
                         is PlayerStatus.Paused -> {
                             binding.audioBufferingView.visibility = View.GONE
                             binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
