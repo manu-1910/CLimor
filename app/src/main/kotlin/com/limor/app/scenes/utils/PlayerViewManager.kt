@@ -9,7 +9,7 @@ interface PlayerViewManager {
 
     data class PlayerArgs(
         val playerType: PlayerType,
-        val cast: CastUIModel
+        val castId: Int
     )
 
     enum class PlayerType {
@@ -17,11 +17,11 @@ interface PlayerViewManager {
     }
 }
 
-fun PlayerViewManager.showExtendedPlayer(cast: CastUIModel) {
+fun PlayerViewManager.showExtendedPlayer(castId: Int) {
     showPlayer(
         PlayerViewManager.PlayerArgs(
             PlayerViewManager.PlayerType.EXTENDED,
-            cast
+            castId
         )
     )
 }

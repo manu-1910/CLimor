@@ -1,22 +1,23 @@
 package com.limor.app.usecases
 
-import com.limor.app.common.executors.PostExecutionThread
-import com.limor.app.mappers.asUIModel
-import com.limor.app.uimodels.UIGetPodcastResponse
-import io.reactivex.Single
-import io.square1.limor.remote.executors.JobExecutor
-import repositories.podcast.PodcastRepository
+import com.limor.app.apollo.CastsRepository
+import com.limor.app.common.dispatchers.DispatcherProvider
+import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.mapToUIModel
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GetPodcastByIDUseCase @Inject constructor(
-    private val podcastRepository: PodcastRepository,
-    private val postExecutionThread: PostExecutionThread,
-    private val jobExecutor: JobExecutor
+    private val repository: CastsRepository,
+    private val dispatcherProvider: DispatcherProvider
 ) {
-    fun execute(id: Int): Single<UIGetPodcastResponse> {
-        return podcastRepository.getPodcastById(id)
-            ?.asUIModel()
-            ?.observeOn(postExecutionThread.getScheduler())
-            ?.subscribeOn(jobExecutor.getScheduler())!!
+
+    suspend fun execute(
+        castId: Int
+    ): Result<CastUIModel> = runCatching {
+        withContext(dispatcherProvider.io) {
+            repository.getCastById(castId)?.mapToUIModel()
+                ?: throw IllegalArgumentException("Cast with ID: $castId is not found")
+        }
     }
 }

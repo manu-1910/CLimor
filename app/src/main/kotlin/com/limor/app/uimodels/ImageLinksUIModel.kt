@@ -94,3 +94,11 @@ fun GetCommentsByIdQuery.Images.mapToUIModel(): ImageLinksUIModel {
 fun GetCommentsByIdQuery.Images1.mapToUIModel(): ImageLinksUIModel {
     return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
+
+fun GetPodcastByIdQuery.Images1.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
+}
+
+fun GetPodcastByIdQuery.Images.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
+}

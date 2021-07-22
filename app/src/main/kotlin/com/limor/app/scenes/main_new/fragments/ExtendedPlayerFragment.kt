@@ -18,6 +18,7 @@ import com.limor.app.databinding.FragmentExtendedPlayerBinding
 import com.limor.app.extensions.*
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
+import com.limor.app.scenes.main.viewmodels.PodcastViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.utils.PlayerViewManager
@@ -27,7 +28,7 @@ import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.uimodels.TagUIModel
 import com.limor.app.uimodels.mapToAudioTrack
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
@@ -36,10 +37,11 @@ import javax.inject.Inject
 class ExtendedPlayerFragment : BaseFragment() {
 
     companion object {
-        private const val CAST_KEY = "CAST_KEY"
-        fun newInstance(cast: CastUIModel): ExtendedPlayerFragment {
+        private const val CAST_ID_KEY = "CAST_ID_KEY"
+        private const val AUTO_PLAY_KEY = "AUTO_PLAY_KEY"
+        fun newInstance(castId: Int, autoPlay: Boolean = false): ExtendedPlayerFragment {
             return ExtendedPlayerFragment().apply {
-                arguments = bundleOf(CAST_KEY to cast)
+                arguments = bundleOf(CAST_ID_KEY to castId, AUTO_PLAY_KEY to autoPlay)
             }
         }
     }
@@ -51,9 +53,11 @@ class ExtendedPlayerFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val likePodcastViewModel: LikePodcastViewModel by viewModels { viewModelFactory }
     private val commentsViewModel: CommentsViewModel by viewModels { viewModelFactory }
+    private val podcastViewModel: PodcastViewModel by viewModels { viewModelFactory }
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
-    private val podcast: CastUIModel by lazy { requireArguments()[CAST_KEY] as CastUIModel }
-    private val podcastAudio get() = podcast.audio!!.mapToAudioTrack()
+    private val castId: Int by lazy { requireArguments()[CAST_ID_KEY] as Int }
+
+    private var playerUpdatesJob: Job? = null
 
     @Inject
     lateinit var playerBinder: PlayerBinder
@@ -65,7 +69,7 @@ class ExtendedPlayerFragment : BaseFragment() {
             (activity as? PlayerViewManager)?.showPlayer(
                 PlayerViewManager.PlayerArgs(
                     PlayerViewManager.PlayerType.SMALL,
-                    podcast
+                    castId
                 )
             )
             isEnabled = false
@@ -78,8 +82,8 @@ class ExtendedPlayerFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentExtendedPlayerBinding.inflate(inflater, container, false)
-        bindViews()
-        subscribeToPlayerUpdates()
+        podcastViewModel.loadCast(castId)
+        subscribeToCastUpdates()
         subscribeToCommentUpdates()
         subscribeToRecastUpdate()
         loadFirstComment()
@@ -87,7 +91,20 @@ class ExtendedPlayerFragment : BaseFragment() {
     }
 
     private fun loadFirstComment() {
-        commentsViewModel.loadComments(podcast.id, limit = 1)
+        commentsViewModel.loadComments(castId, limit = 1)
+    }
+
+    private fun subscribeToCastUpdates() {
+        podcastViewModel.cast.observe(viewLifecycleOwner) { cast ->
+            bindViews(cast)
+            subscribeToPlayerUpdates(cast)
+
+            if (requireArguments().getBoolean(AUTO_PLAY_KEY, false)) {
+                playerBinder.playPause(cast.audio!!.mapToAudioTrack(), true)
+                // To prevent autoplay on every cast update
+                requireArguments().putBoolean(AUTO_PLAY_KEY, false)
+            }
+        }
     }
 
     private fun subscribeToCommentUpdates() {
@@ -121,55 +138,57 @@ class ExtendedPlayerFragment : BaseFragment() {
         })
     }
 
-    private fun bindViews() {
-        setPodcastGeneralInfo()
-        setPodcastOwnerInfo()
-        setPodcastCounters()
-        setAudioInfo()
-        loadImages()
-        setOnClicks()
-        addTags()
-        initLikeState()
+    private fun bindViews(cast: CastUIModel) {
+        setPodcastGeneralInfo(cast)
+        setPodcastOwnerInfo(cast)
+        setPodcastCounters(cast)
+        setAudioInfo(cast)
+        loadImages(cast)
+        setOnClicks(cast)
+        addTags(cast)
+        initLikeState(cast)
     }
 
-    private fun setPodcastGeneralInfo() {
-        binding.tvPodcastTitle.text = podcast.title
-        binding.tvPodcastSubtitle.text = podcast.caption
+    private fun setPodcastGeneralInfo(cast: CastUIModel) {
+        binding.tvPodcastTitle.text = cast.title
+        binding.tvPodcastSubtitle.text = cast.caption
     }
 
-    private fun setPodcastOwnerInfo() {
-        binding.tvPodcastUserName.text = podcast.owner?.getFullName()
-        binding.tvPodcastUserSubtitle.text = podcast.getCreationDateAndPlace(requireContext())
+    private fun setPodcastOwnerInfo(cast: CastUIModel) {
+        binding.tvPodcastUserName.text = cast.owner?.getFullName()
+        binding.tvPodcastUserSubtitle.text = cast.getCreationDateAndPlace(requireContext())
     }
 
-    private fun setPodcastCounters() {
-        binding.tvPodcastLikes.text = podcast.likesCount.toString()
-        binding.tvPodcastRecast.text = podcast.recastsCount?.toString()
-        binding.tvPodcastComments.text = podcast.commentsCount?.toString()
-        binding.tvPodcastNumberOfListeners.text = podcast.listensCount?.toString()
+    private fun setPodcastCounters(cast: CastUIModel) {
+        binding.tvPodcastLikes.text = cast.likesCount.toString()
+        binding.tvPodcastRecast.text = cast.recastsCount?.toString()
+        binding.tvPodcastComments.text = cast.commentsCount?.toString()
+        binding.tvPodcastNumberOfListeners.text = cast.listensCount?.toString()
 
-        applyRecastStyle(podcast.isRecasted == true)
-        binding.btnPodcastRecast.recasted = podcast.isRecasted == true
+        applyRecastStyle(cast.isRecasted == true)
+        binding.btnPodcastRecast.recasted = cast.isRecasted == true
     }
 
-    private fun setAudioInfo() {
-        binding.tvRecastPlayMaxPosition.text = podcast.audio?.duration?.toReadableFormat(
+    private fun setAudioInfo(cast: CastUIModel) {
+        binding.tvRecastPlayMaxPosition.text = cast.audio?.duration?.toReadableFormat(
             DURATION_READABLE_FORMAT_1
         )
     }
 
-    private fun subscribeToPlayerUpdates() {
-        lifecycleScope.launchWhenCreated {
-            playerBinder.getCurrentPlayingPosition(podcastAudio)
+    private fun subscribeToPlayerUpdates(cast: CastUIModel) {
+        playerUpdatesJob?.cancel()
+        playerUpdatesJob = lifecycleScope.launchWhenCreated {
+            val audioModel = cast.audio!!.mapToAudioTrack()
+            playerBinder.getCurrentPlayingPosition(audioModel)
                 .onEach { duration ->
                     binding.lpiPodcastProgress.progress =
-                        ((duration.seconds * 100) / podcast.audio?.duration?.seconds!!).toInt()
+                        ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
                     binding.tvRecastPlayCurrentPosition.text =
                         duration.toReadableFormat(DURATION_READABLE_FORMAT_1)
                 }
                 .launchIn(this)
 
-            playerBinder.getPlayerStatus(podcastAudio)
+            playerBinder.getPlayerStatus(audioModel)
                 .onEach {
                     when (it) {
                         is PlayerStatus.Ended -> {
@@ -195,22 +214,22 @@ class ExtendedPlayerFragment : BaseFragment() {
         }
     }
 
-    private fun loadImages() {
-        podcast.owner?.imageLinks?.small?.let {
+    private fun loadImages(cast: CastUIModel) {
+        cast.owner?.imageLinks?.small?.let {
             binding.ivPodcastAvatar.loadCircleImage(it)
         }
 
-        podcast.imageLinks?.medium?.let {
+        cast.imageLinks?.medium?.let {
             binding.ivPodcastBackground.loadImage(it)
         }
     }
 
-    private fun setOnClicks() {
+    private fun setOnClicks(cast: CastUIModel) {
         binding.btnPodcastMore.setOnClickListener {
         }
 
         binding.btnPodcastPlayExtended.setOnClickListener {
-            podcast.audio?.let { audio ->
+            cast.audio?.let { audio ->
                 playerBinder.playPause(audio.mapToAudioTrack(), showNotification = true)
             }
         }
@@ -224,20 +243,20 @@ class ExtendedPlayerFragment : BaseFragment() {
         }
 
         binding.btnPodcastRecast.setOnClickListener {
-            recastPodcastViewModel.reCast(castId = podcast.id)
+            recastPodcastViewModel.reCast(castId = cast.id)
         }
 
         binding.llExtendCommentsHeader.setOnClickListener {
-            RootCommentsFragment.newInstance(podcast).also { fragment ->
+            RootCommentsFragment.newInstance(cast).also { fragment ->
                 fragment.show(parentFragmentManager, fragment.requireTag())
             }
         }
 
         binding.btnPodcastSendComment.setOnClickListener {
             commentsViewModel.addComment(
-                podcast.id,
+                cast.id,
                 binding.commentText.text.toString(),
-                ownerId = podcast.id,
+                ownerId = cast.id,
                 ownerType = CommentUIModel.OWNER_TYPE_PODCAST
             )
             binding.commentText.text = null
@@ -261,8 +280,8 @@ class ExtendedPlayerFragment : BaseFragment() {
         )
     }
 
-    private fun addTags() {
-        podcast.tags?.forEach {
+    private fun addTags(cast: CastUIModel) {
+        cast.tags?.forEach {
             addTagsItems(it)
         }
     }
@@ -276,7 +295,7 @@ class ExtendedPlayerFragment : BaseFragment() {
             }
     }
 
-    private fun initLikeState() {
+    private fun initLikeState(cast: CastUIModel) {
         fun applyLikeStyle(isLiked: Boolean) {
             binding.tvPodcastLikes.setTextColor(
                 ContextCompat.getColor(
@@ -287,9 +306,9 @@ class ExtendedPlayerFragment : BaseFragment() {
         }
 
         binding.apply {
-            tvPodcastLikes.text = podcast.likesCount.toString()
-            applyLikeStyle(podcast.isLiked!!)
-            btnPodcastLikes.isLiked = podcast.isLiked!!
+            tvPodcastLikes.text = cast.likesCount.toString()
+            applyLikeStyle(cast.isLiked!!)
+            btnPodcastLikes.isLiked = cast.isLiked!!
 
             btnPodcastLikes.setOnClickListener {
                 val isLiked = btnPodcastLikes.isLiked
@@ -299,7 +318,7 @@ class ExtendedPlayerFragment : BaseFragment() {
                 binding.tvPodcastLikes.text =
                     (if (isLiked) likesCount + 1 else likesCount - 1).toString()
 
-                likePodcastViewModel.likeCast(podcast.id, isLiked)
+                likePodcastViewModel.likeCast(cast.id, isLiked)
             }
         }
     }

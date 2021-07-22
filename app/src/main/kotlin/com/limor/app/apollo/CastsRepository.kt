@@ -47,4 +47,11 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
         return apollo.launchQuery(GetUserPodcastsQuery(userId, limit, offset))
             ?.data?.getUserPodcasts?.filterNotNull() ?: emptyList()
     }
+
+    suspend fun getCastById(
+        castId: Int
+    ): GetPodcastByIdQuery.GetPodcastById? {
+        return apollo.launchQuery(GetPodcastByIdQuery(castId))
+            ?.data?.getPodcastById
+    }
 }

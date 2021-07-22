@@ -225,11 +225,6 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(GetPodcastByIdViewModel::class)
-    abstract fun bindGetPodcastByIdViewModel(getPodcastByIdViewModel: GetPodcastByIdViewModel): ViewModel
-
-    @Binds
-    @IntoMap
     @ViewModelKey(PushNotificationsViewModel::class)
     abstract fun bindPushNotificationsViewModel(pushNotificationsViewModel: PushNotificationsViewModel): ViewModel
 
@@ -332,6 +327,11 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(CommentsViewModel::class)
     abstract fun bindGetCommentsForPodcastViewModel(viewModel: CommentsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PodcastViewModel::class)
+    abstract fun bindPodcastViewModel(viewModel: PodcastViewModel): ViewModel
 
 
 }

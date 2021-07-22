@@ -111,7 +111,7 @@ class FragmentHomeNew : BaseFragment() {
         (activity as? PlayerViewManager)?.showPlayer(
             PlayerViewManager.PlayerArgs(
                 PlayerViewManager.PlayerType.EXTENDED,
-                cast
+                cast.id
             )
         )
     }

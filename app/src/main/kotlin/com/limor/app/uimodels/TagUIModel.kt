@@ -99,3 +99,11 @@ fun GetCommentsByIdQuery.Caption3.mapToUIModel() =
         startIndex = start_index!!,
         endIndex = end_index!!
     )
+
+fun GetPodcastByIdQuery.Caption.mapToUIModel() =
+    TagUIModel(
+        id = tag_id!!,
+        tag = tag!!,
+        startIndex = start_index!!,
+        endIndex = end_index!!
+    )

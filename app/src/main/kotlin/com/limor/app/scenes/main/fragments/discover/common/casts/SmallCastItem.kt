@@ -44,7 +44,7 @@ class SmallCastItem(
                 .into(ownerIcon)
 
             root.setOnClickListener {
-                (it.context.getActivity() as? PlayerViewManager)?.showExtendedPlayer(cast)
+                (it.context.getActivity() as? PlayerViewManager)?.showExtendedPlayer(cast.id)
             }
 
             authorName.setOnClickListener {
