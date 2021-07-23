@@ -82,7 +82,7 @@ class FragmentCommentReplies : BaseFragment() {
             dismissFragment()
         }
         binding.tvCancel.setOnClickListener {
-            activity?.onBackPressed()
+            dismissFragment()
         }
         binding.taviVoice.initListenerStatus {
             when (it) {

@@ -85,7 +85,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     }
 
     private fun onCastClick(cast: CastUIModel) {
-        (activity as? PlayerViewManager)?.showExtendedPlayer(cast)
+        (activity as? PlayerViewManager)?.showExtendedPlayer(cast.id)
     }
 
     private fun onMoreDialogClick(cast: CastUIModel) {

@@ -151,3 +151,19 @@ fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
         mentions = podcast.mentions?.mapToUIModel(),
         links = podcast.links?.mapToUIModel(), recaster = recaster?.mapToUIModel()
     )
+
+fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
+    CastUIModel(
+        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
+        imageLinks = images?.mapToUIModel(), caption = caption!!,
+        createdAt = created_at?.toLocalDateTime(),
+        updatedAt = updated_at?.toLocalDateTime(),
+        latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked,
+        isReported = reported, isRecasted = recasted, isListened = listened,
+        isBookmarked = bookmarked, listensCount = number_of_listens,
+        likesCount = number_of_likes, recastsCount = number_of_recasts,
+        commentsCount = number_of_comments, sharesCount = number_of_shares,
+        audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
+        tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
+        links = links?.mapToUIModel(), recaster = null
+    )

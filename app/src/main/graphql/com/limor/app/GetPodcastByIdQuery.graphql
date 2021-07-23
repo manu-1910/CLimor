@@ -5,6 +5,7 @@ query GetPodcastByIdQuery($podcastId: Int!){
             id
             first_name
             last_name
+            username
             images {
                 small_url
                 medium_url

@@ -76,6 +76,16 @@ fun FeedItemsQuery.Audio.mapToUIModel() =
         originalUrl = original_audio_url
     )
 
+fun GetPodcastByIdQuery.Audio.mapToUIModel() =
+    AudioUIModel(
+        url = audio_url!!,
+        totalLength = total_length!!.toInt(),
+        totalSamples = total_samples!!.toInt(),
+        duration = Duration.ofMillis(duration!!.toLong()),
+        sampleRate = sample_rate!!.toFloat(),
+        originalUrl = original_audio_url
+    )
+
 fun AudioUIModel.mapToAudioTrack(title: String? = null) =
     AudioService.AudioTrack(
         url = url,
