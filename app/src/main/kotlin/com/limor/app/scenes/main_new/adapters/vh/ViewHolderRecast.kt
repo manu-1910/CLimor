@@ -7,11 +7,14 @@ import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedRecastedBinding
+import com.limor.app.extensions.getActivity
 import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.loadImage
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
+import com.limor.app.scenes.utils.PlayerViewManager
+import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
 
@@ -68,7 +71,15 @@ class ViewHolderRecast(
             openUserProfile(item)
         }
 
+        binding.castCard.setOnClickListener {
+            onCastClick(item)
+        }
     }
+
+    private fun onCastClick(item: CastUIModel) {
+        (binding.root.context.getActivity() as? PlayerViewManager)?.showExtendedPlayer(item.id)
+    }
+
     private fun openUserProfile(item: CastUIModel) {
         val userProfileIntent = Intent(context, UserProfileActivity::class.java)
         userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, item.owner?.username)
