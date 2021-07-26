@@ -130,6 +130,10 @@ class FragmentComments : BaseFragment() {
                 }
             )
         }
+
+        viewModel.commentAddEvent.observe(viewLifecycleOwner) {
+            viewModel.loadComments(cast.id)
+        }
     }
 
     private fun goToReplies(
