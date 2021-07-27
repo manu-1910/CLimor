@@ -179,6 +179,10 @@ class FragmentCommentReplies : BaseFragment() {
                 dismissFragment()
             }
         }
+
+        viewModel.commentAddEvent.observe(viewLifecycleOwner) {
+            viewModel.loadCommentById(parentCommentId)
+        }
     }
 
     private fun onReplyClick(comment: CommentUIModel) {
