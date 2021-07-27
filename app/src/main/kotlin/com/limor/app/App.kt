@@ -15,6 +15,7 @@ import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.service.PlayerBinder
 import com.limor.app.util.CrashReportingTree
 import com.novoda.merlin.MerlinsBeard
+import com.smartlook.sdk.smartlook.Smartlook
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -105,7 +106,7 @@ class App : Application(), HasActivityInjector, HasServiceInjector {
     }
 
     private fun initSmartLook() {
-        //   Smartlook.setupAndStartRecording(BuildConfig.SMART_LOOK_API_KEY);
+           Smartlook.setupAndStartRecording(BuildConfig.SMART_LOOK_API_KEY);
     }
 
     private fun initLogging() {

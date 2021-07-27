@@ -53,7 +53,7 @@ class PhoneAuthHandler @Inject constructor() :
 
         val optionsBuilder = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber(phone)
-            .setTimeout(60L, TimeUnit.SECONDS)
+            .setTimeout(3, TimeUnit.MINUTES)
             .setActivity(activity!!)
             .setCallbacks(this)
         if (resend && resendToken != null) {
