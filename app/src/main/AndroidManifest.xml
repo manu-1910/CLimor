@@ -74,6 +74,18 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="limorapp.page.link"
+                    android:path="/podcasts"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
 
@@ -233,6 +245,7 @@
                     android:host="limorapp.page.link"
                     android:path="/open"
                     android:scheme="https" />
+
             </intent-filter>
         </activity>
         <activity

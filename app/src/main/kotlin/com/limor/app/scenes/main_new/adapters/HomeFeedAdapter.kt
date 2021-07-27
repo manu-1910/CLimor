@@ -16,6 +16,7 @@ class HomeFeedAdapter(
     private val onCastClick: (cast: CastUIModel) -> Unit,
     private val onReCastClick: (castId: Int) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
+    private val onShareClick: (CastUIModel) -> Unit
 ) : ListAdapter<CastUIModel, ViewHolderBindable<CastUIModel>>(
     HomeFeedDiffCallback()
 ) {
@@ -45,7 +46,7 @@ class HomeFeedAdapter(
             }
             else -> {
                 val binding = ItemHomeFeedBinding.inflate(inflater, viewGroup, false)
-                ViewHolderPodcast(binding, onLikeClick, onCastClick, onReCastClick, onCommentsClick)
+                ViewHolderPodcast(binding, onLikeClick, onCastClick, onReCastClick, onCommentsClick, onShareClick)
             }
         }
     }

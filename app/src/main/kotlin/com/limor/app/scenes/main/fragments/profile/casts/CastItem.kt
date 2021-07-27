@@ -19,6 +19,7 @@ class CastItem(
     private val onMoreDialogClick: (CastUIModel) -> Unit,
     private val onRecastClick: (CastUIModel) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
+    private val onShareClick: (CastUIModel) -> Unit
 ) : BindableItem<ItemUserCastBinding>() {
 
     override fun bind(viewBinding: ItemUserCastBinding, position: Int) {
@@ -71,6 +72,8 @@ class CastItem(
 
             initLikeState(viewBinding, cast)
 
+            btnPodcastReply.shared = cast.isShared == true
+
             clItemPodcastFeed.setOnClickListener {
                 onCastClick(cast)
             }
@@ -85,6 +88,15 @@ class CastItem(
 
             btnPodcastComments.setOnClickListener {
                 onCommentsClick(cast)
+            }
+
+            btnPodcastReply.setOnClickListener {
+                btnPodcastReply.shared = true
+                val shareCount = tvPodcastReply.text.toString().toInt()
+
+                tvPodcastReply.text =  (shareCount + 1).toString()
+                applyShareStyle(this, true)
+                onShareClick(cast)
             }
         }
 
@@ -104,6 +116,19 @@ class CastItem(
             ) else
                 ContextCompat.getColor(
                     binding.tvPodcastRecast.context,
+                    R.color.white
+                )
+        )
+    }
+
+    private fun applyShareStyle(binding: ItemUserCastBinding, isShared : Boolean){
+        binding.tvPodcastReply.setTextColor(
+            if(isShared) ContextCompat.getColor(
+                binding.tvPodcastReply.context,
+                R.color.textAccent
+            ) else
+                ContextCompat.getColor(
+                    binding.tvPodcastReply.context,
                     R.color.white
                 )
         )

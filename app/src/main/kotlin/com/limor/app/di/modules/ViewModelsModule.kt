@@ -333,5 +333,9 @@ abstract class ViewModelsModule {
     @ViewModelKey(PodcastViewModel::class)
     abstract fun bindPodcastViewModel(viewModel: PodcastViewModel): ViewModel
 
+    @Binds
+    @IntoMap
+    @ViewModelKey(SharePodcastViewModel::class)
+    abstract fun bindSharePodcastViewModel(viewModel: SharePodcastViewModel): ViewModel
 
 }

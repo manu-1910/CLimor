@@ -47,6 +47,14 @@ class PodcastInteractionsRepository @Inject constructor(val apollo: Apollo) {
         return result?.data?.getCommentsByPodcasts?.filterNotNull() ?: emptyList()
     }
 
+    suspend fun sharePodcast(
+        podcastId: Int
+    ) : SharePodcastMutation.SharePodcast? {
+        val mutation = SharePodcastMutation(podcastId)
+        val result = apollo.mutate(mutation)
+        return result?.data?.sharePodcast
+    }
+
     suspend fun createComment(
         podcastId: Int,
         content: String,

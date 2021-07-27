@@ -1,0 +1,11 @@
+mutation SharePodcastMutation(
+    $podcastId: Int!
+){
+    sharePodcast(podcastId : $podcastId)
+    {
+        podcast_id,
+        count,
+        shared,
+        created
+    }
+}

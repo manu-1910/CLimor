@@ -1,14 +1,19 @@
 package com.limor.app.scenes.main_new
 
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.limor.app.R
 import com.limor.app.databinding.ActivityMainNewBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
 import com.limor.app.scenes.utils.PlayerViewManager
@@ -19,6 +24,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main_new.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerViewManager {
@@ -48,6 +54,8 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
 
         activityPlayerViewManager =
             ActivityPlayerViewManager(supportFragmentManager, playerBinding, playerBinder)
+
+        checkPodCastDynamicLink()
     }
 
     private fun setupFabClickListener() {
@@ -76,6 +84,39 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         activityPlayerViewManager?.hidePlayer()
     }
 
+    fun checkPodCastDynamicLink(){
+        val castId = PrefsHandler.getPodCastIdOfSharedLink(this)
+        if(castId != 0){
+            castId.let {
+                showPlayer(PlayerViewManager.PlayerArgs(
+                    PlayerViewManager.PlayerType.EXTENDED,
+                    it
+                ))
+            }
+            PrefsHandler.savePodCastIdOfSharedLink(this, 0)
+        } else{
+            FirebaseDynamicLinks.getInstance()
+                .getDynamicLink(intent)
+                .addOnSuccessListener(this) { pendingDynamicLinkData ->
+                    // Get deep link from result (may be null if no link is found)
+                    val deepLink: Uri?
+                    if (pendingDynamicLinkData != null) {
+                        deepLink = pendingDynamicLinkData.link
+                        val td : Int = deepLink?.getQueryParameter("id")?.toInt()!!
+                        td.let {
+                            showPlayer(PlayerViewManager.PlayerArgs(
+                                PlayerViewManager.PlayerType.EXTENDED,
+                                td
+                            ))
+                        }
+                    }
+                }
+                .addOnFailureListener(this) { e ->
+                    Timber.e(e)
+                }
+        }
+    }
+
     override fun onDestroy() {
         activityPlayerViewManager?.stop()
         activityPlayerViewManager = null
@@ -85,7 +126,9 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     override fun onResume() {
         super.onResume()
         intent.extras?.getInt(AppNavigationManager.CAST_KEY)?.let { castId ->
-            activityPlayerViewManager?.showExtendedPlayer(castId)
+            if(castId != 0){
+                activityPlayerViewManager?.showExtendedPlayer(castId)
+            }
         }
     }
 

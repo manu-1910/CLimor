@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 import android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -18,6 +19,7 @@ import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.firebase.FacebookAuthHandler
 import com.limor.app.scenes.auth_new.navigation.AuthNavigator
 import com.limor.app.scenes.auth_new.util.PrefsHandler
+import com.limor.app.scenes.utils.PlayerViewManager
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_auth_new.*
 import kotlinx.coroutines.launch

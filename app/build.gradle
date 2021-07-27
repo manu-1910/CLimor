@@ -104,6 +104,8 @@ android {
             buildConfigField "int", "LIMOR_ACCOUNT_ID", '12'
             buildConfigField "String", "SMART_LOOK_API_KEY", '"6a6016ead4a7f1fbb773ff00f25092544289f292"'
 
+            buildConfigField "String", "IOS_BUNDLE_ID", '"com.limor.app.dev"'
+
             buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-5439b.appspot.com/"'
 
             minifyEnabled false
@@ -130,6 +132,8 @@ android {
 
             buildConfigField "int", "LIMOR_ACCOUNT_ID", '350'
             buildConfigField "String", "SMART_LOOK_API_KEY", '"6a6016ead4a7f1fbb773ff00f25092544289f292"'
+
+            buildConfigField "String", "IOS_BUNDLE_ID", '"com.limor.app.dev"'
 
             buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-5439b.appspot.com/"'
 
@@ -159,6 +163,8 @@ android {
             buildConfigField "int", "LIMOR_ACCOUNT_ID", '350'
             buildConfigField "String", "SMART_LOOK_API_KEY", '"6a6016ead4a7f1fbb773ff00f25092544289f292"'
 
+            buildConfigField "String", "IOS_BUNDLE_ID", '"com.limor.app.staging"'
+
             buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-staging.appspot.com/images/"'
 
             minifyEnabled false
@@ -184,6 +190,8 @@ android {
 
             buildConfigField "int", "LIMOR_ACCOUNT_ID", '12'
             buildConfigField "String", "SMART_LOOK_API_KEY", '"6a6016ead4a7f1fbb773ff00f25092544289f292"'
+
+            buildConfigField "String", "IOS_BUNDLE_ID", '"com.limor.app"'
 
             buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-5439b.appspot.com/"'
 

@@ -22,6 +22,7 @@ class ViewHolderPodcast(
     private val onCastClick: (cast: CastUIModel) -> Unit,
     private val onRecastClick: (castId: Int) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
+    private val onShareClick: (CastUIModel) -> Unit
 ) : ViewHolderBindable<CastUIModel>(binding) {
     override fun bind(item: CastUIModel) {
         setPodcastGeneralInfo(item)
@@ -33,6 +34,7 @@ class ViewHolderPodcast(
         addTags(item)
         initLikeState(item)
         initRecastState(item)
+        initShareState(item)
     }
 
     private fun setPodcastGeneralInfo(item: CastUIModel) {
@@ -95,6 +97,14 @@ class ViewHolderPodcast(
         }
         binding.btnPodcastComments.setOnClickListener {
             onCommentsClick(item)
+        }
+        binding.btnPodcastReply.setOnClickListener {
+            binding.btnPodcastReply.shared = true
+            val shareCount = binding.tvPodcastReply.text.toString().toInt()
+
+            binding.tvPodcastReply.text =  (shareCount + 1).toString()
+            applySharedState(true)
+            onShareClick(item)
         }
     }
 
@@ -162,6 +172,22 @@ class ViewHolderPodcast(
                     binding.root.context,
                     R.color.white
                 )
+        )
+    }
+
+    private fun initShareState(item: CastUIModel){
+        binding.tvPodcastReply.text = item.sharesCount.toString()
+        binding.btnPodcastReply.shared = item.isShared == true
+        applySharedState(item.isShared == true)
+    }
+
+    private fun applySharedState(isShared: Boolean){
+        binding.tvPodcastReply.setTextColor(
+            if(isShared){
+                ContextCompat.getColor(binding.root.context, R.color.textAccent)
+            } else{
+                ContextCompat.getColor(binding.root.context, R.color.white)
+            }
         )
     }
 

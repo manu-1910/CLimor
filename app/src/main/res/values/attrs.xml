@@ -73,6 +73,11 @@
         <attr name="not_recasted_color" format="color"/>
     </declare-styleable>
 
+    <declare-styleable name="ShareButton">
+        <attr name="shared_color" format="color"/>
+        <attr name="not_shared_color" format="color"/>
+    </declare-styleable>
+
     <declare-styleable name="VoicePlayerView">
         <attr name="viewBackground" format="color" />
         <attr name="playPauseBackgroundColor" format="color" />

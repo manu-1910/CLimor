@@ -63,5 +63,10 @@ class Constants{
         const val ERROR_CODE_FACEBOOK_USER_EXISTS = 1337
         const val ERROR_CODE_FACEBOOK_USER_DOES_NOT_EXISTS = 4
         const val ERROR_CODE_FACEBOOK_USER_EXITS_IN_LIMOR = 3
+
+        const val SHARED_PODCAST_ID = "shared_podcast_id"
+        const val LIMER_DOMAIN_URL = "https://limorapp.page.link"
+        const val PODCAST_URL = "https://limorapp.page.link/podcasts?id=%s"
+        const val DOMAIN_URL = "https://limor-5439b.web.app/"
     }
 }
