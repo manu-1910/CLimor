@@ -76,12 +76,13 @@ class SmallPlayerFragment : BaseFragment() {
         binding.btnCloseMiniPlayer.setOnClickListener {
             closePlayer()
         }
-        binding.ivAvatarMiniPlayer.setOnClickListener {
+        binding.btnMiniPlayerPlay.setOnClickListener {
+            Timber.d("LOGGGG")
             cast.audio?.let { audio ->
                 playerBinder.playPause(audio.mapToAudioTrack(), showNotification = true)
             }
         }
-        binding.clMiniPlayer.setOnClickListener {
+        binding.tvMiniPlayerTitle.setOnClickListener {
             openExtendedPlayer()
         }
     }

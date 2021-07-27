@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main_new.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,8 @@ import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentExtendedPlayerBinding
 import com.limor.app.extensions.*
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.main.viewmodels.PodcastViewModel
@@ -266,6 +269,21 @@ class ExtendedPlayerFragment : BaseFragment() {
             binding.commentText.text = null
             binding.commentText.hideKeyboard()
         }
+
+        binding.tvPodcastUserName.setOnClickListener {
+            openUserProfile(cast)
+        }
+
+        binding.ivPodcastAvatar.setOnClickListener {
+            openUserProfile(cast)
+        }
+    }
+
+    private fun openUserProfile(item: CastUIModel) {
+        val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+        userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, item.owner?.username)
+        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, item.owner?.id)
+        startActivity(userProfileIntent)
     }
 
     private fun applyRecastStyle(recasted: Boolean) {

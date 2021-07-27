@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.net.Uri;
+import android.provider.Settings;
 import android.util.TypedValue;
 
 import androidx.annotation.NonNull;

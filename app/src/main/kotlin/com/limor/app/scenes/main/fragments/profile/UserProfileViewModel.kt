@@ -78,5 +78,13 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
+    fun reportUser(reason: String, id: Int?) {
+        id?.let{
+            viewModelScope.launch {
+                userInfoProvider.userRepository.reportUser(id,reason)
+            }
+        }
+    }
+
 
 }

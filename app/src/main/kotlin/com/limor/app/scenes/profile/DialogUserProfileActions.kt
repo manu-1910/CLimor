@@ -17,6 +17,7 @@ import com.limor.app.databinding.DialogOtherUserActionsBinding
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileViewModel
 import com.limor.app.scenes.main.fragments.settings.SettingsActivity
+import com.limor.app.scenes.main_new.fragments.DialogPodcastReportP2
 import com.limor.app.uimodels.UserUIModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -77,6 +78,12 @@ class DialogUserProfileActions : DialogFragment() {
             model.unblockUser(args.id)
             findNavController().previousBackStackEntry?.savedStateHandle?.set("blocked", false)
             findNavController().popBackStack()
+        }
+
+        binding.btnReportUser.setOnClickListener {
+            DialogUserReport.newInstance(args.id)
+                .show(parentFragmentManager, DialogUserReport.TAG)
+            dismiss()
         }
     }
 }

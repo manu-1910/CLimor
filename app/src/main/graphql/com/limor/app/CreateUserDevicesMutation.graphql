@@ -1,0 +1,5 @@
+mutation createUserDevices($deviceId: String!, $token: String!) {
+    createUserDevices(platform: "and",firebaseToken: $token, deviceId: $deviceId) {
+        id
+    }
+}

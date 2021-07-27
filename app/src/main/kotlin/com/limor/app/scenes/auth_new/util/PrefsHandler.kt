@@ -9,6 +9,7 @@ object PrefsHandler {
     private const val LABEL_AUTH_EMAIL_SIGN_IN = "auth_email_sign_in"
     private const val LABEL_NAVIGATION_BREAKPOINT = "auth_navigation_breakpoint"
     private const val LABEL_USER_ID = "current_user_id"
+    private const val LABEL_USER_DEVICE_TOKEN = "current_user_device_token"
 
     fun saveEmailToSignIn(context: Context, email: String) {
         sharedPreferences(context).edit(true) {
@@ -46,4 +47,10 @@ object PrefsHandler {
     }
 
     fun getCurrentUserId(context: Context) = sharedPreferences(context).getInt(LABEL_USER_ID, 0)
+    fun saveUserDeviceToken(context: Context, token: String) {
+        sharedPreferences(context).edit(true) {
+            putString(LABEL_USER_DEVICE_TOKEN, token)
+        }
+    }
+    fun getCurrentUserDeviceToken(context: Context) = sharedPreferences(context).getString(LABEL_USER_DEVICE_TOKEN, null)
 }

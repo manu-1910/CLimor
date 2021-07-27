@@ -1,7 +1,13 @@
 package com.limor.app.apollo
 
+import android.provider.Settings
 import com.apollographql.apollo.api.Input
+import com.google.firebase.messaging.FirebaseMessaging
 import com.limor.app.*
+import com.limor.app.common.Constants
+import com.limor.app.scenes.auth_new.util.PrefsHandler
+import com.limor.app.usecases.CreateUserReportUseCase
+import kotlinx.coroutines.CoroutineScope
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -120,5 +126,22 @@ class UserRepository @Inject constructor(val apollo: Apollo){
         val status = result?.data?.unblockUsers?.blocked
         Timber.d("sendUserOnboardingStatus -> $status")
         return status
+    }
+
+    suspend fun createUserDevice(token:String) {
+            val query = CreateUserDevicesMutation(App.getDeviceId(),token)
+            val result = apollo.mutate(query)
+            val id = result?.data?.createUserDevices?.id
+            id?.let{
+                PrefsHandler.saveUserDeviceToken(App.instance,token)
+            }
+            Timber.d("createUserDevice -> $id")
+    }
+
+    suspend fun reportUser(id: Int, reason: String) {
+        val query = CreateReportsMutation(reason,"",id)
+        val result = apollo.mutate(query)
+        val reported = result?.data?.createReports?.reported
+        Timber.d("  -> $reported")
     }
 }

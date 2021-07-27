@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main.fragments.settings.adapters
 
+import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.FollowersQuery
@@ -10,7 +11,7 @@ import com.limor.app.scenes.main.fragments.profile.adapters.UserFollowersViewHol
 import com.limor.app.uimodels.UIUser
 import org.jetbrains.anko.layoutInflater
 
-class AdapterBlockedUsers(var list: ArrayList<GetBlockedUsersQuery.GetBlockedUser?>, val listener: OnFollowerClickListener)
+class AdapterBlockedUsers(val list: ArrayList<GetBlockedUsersQuery.GetBlockedUser?>, val listener: OnFollowerClickListener)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface OnFollowerClickListener {
@@ -35,7 +36,9 @@ class AdapterBlockedUsers(var list: ArrayList<GetBlockedUsersQuery.GetBlockedUse
     }
 
     fun updateItem(item: GetBlockedUsersQuery.GetBlockedUser, position: Int) {
-        list.removeAt(position)
-        notifyItemRemoved(position)
+        if(list.size>0 && list.size>=position){
+            list.removeAt(position)
+            notifyDataSetChanged()
+        }
     }
 }

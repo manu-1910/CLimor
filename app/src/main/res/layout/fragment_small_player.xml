@@ -25,18 +25,8 @@
         app:trackCornerRadius="4dp"
         tools:progress="25" />
 
-    <ImageView
-        android:id="@+id/ivAvatarMiniPlayer"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
-        android:scaleType="centerCrop"
-        android:clickable="false"
-        app:layout_constraintBottom_toBottomOf="@+id/cpiPodcastListeningProgress"
-        app:layout_constraintEnd_toEndOf="@+id/cpiPodcastListeningProgress"
-        app:layout_constraintStart_toStartOf="@+id/cpiPodcastListeningProgress"
-        app:layout_constraintTop_toTopOf="@+id/cpiPodcastListeningProgress" />
-
     <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/circleImageView2"
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:clickable="false"
@@ -46,19 +36,15 @@
         app:layout_constraintStart_toStartOf="@+id/cpiPodcastListeningProgress"
         app:layout_constraintTop_toTopOf="@+id/cpiPodcastListeningProgress" />
 
-    <ImageButton
-        android:id="@+id/btnMiniPlayerPlay"
+    <ImageView
+        android:id="@+id/ivAvatarMiniPlayer"
         android:layout_width="52dp"
         android:layout_height="52dp"
-        android:background="@color/transparent"
-        android:padding="15dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_player_play"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="@+id/cpiPodcastListeningProgress"
         app:layout_constraintEnd_toEndOf="@+id/cpiPodcastListeningProgress"
         app:layout_constraintStart_toStartOf="@+id/cpiPodcastListeningProgress"
-        app:layout_constraintTop_toTopOf="@+id/cpiPodcastListeningProgress"
-        app:tint="@color/white" />
+        app:layout_constraintTop_toTopOf="@+id/cpiPodcastListeningProgress" />
 
     <TextView
         android:id="@+id/tvMiniPlayerTitle"
@@ -107,4 +93,23 @@
         android:src="@drawable/ic_player_cancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:clickable="true"
+        android:focusable="true"
+        android:id="@+id/btnMiniPlayerPlay"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:background="@color/transparent"
+        android:padding="15dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_player_play"
+        app:layout_constraintBottom_toBottomOf="@+id/cpiPodcastListeningProgress"
+        app:layout_constraintEnd_toEndOf="@+id/cpiPodcastListeningProgress"
+        app:layout_constraintStart_toStartOf="@+id/cpiPodcastListeningProgress"
+        app:layout_constraintTop_toTopOf="@+id/cpiPodcastListeningProgress"
+        app:tint="@color/white" />
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

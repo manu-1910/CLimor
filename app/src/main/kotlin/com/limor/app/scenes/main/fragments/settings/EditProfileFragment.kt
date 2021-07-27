@@ -102,7 +102,8 @@ class EditProfileFragment : BaseFragment() {
 
         model.userUpdatedResponse.observe(viewLifecycleOwner, Observer {
             it?.let {
-                binding.root.showSnackbar(it, Snackbar.LENGTH_SHORT)
+                //binding.root.showSnackbar(it, Snackbar.LENGTH_SHORT)
+                activity?.finish()
             }
             hideLoading()
         })

@@ -9,9 +9,12 @@ import androidx.navigation.ui.setupWithNavController
 import com.limor.app.R
 import com.limor.app.databinding.ActivityMainNewBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
+import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
 import com.limor.app.scenes.utils.PlayerViewManager
+import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.service.PlayerBinder
+import com.limor.app.util.AppNavigationManager
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
@@ -78,4 +81,12 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         activityPlayerViewManager = null
         super.onDestroy()
     }
+
+    override fun onResume() {
+        super.onResume()
+        intent.extras?.getInt(AppNavigationManager.CAST_KEY)?.let { castId ->
+            activityPlayerViewManager?.showExtendedPlayer(castId)
+        }
+    }
+
 }

@@ -10,6 +10,7 @@ class Constants{
         val TERMS_URL = "https://www.limor.ie/terms-and-conditions-of-use"
         val PRIVACY_URL = "https://www.limor.ie/privacy-policy"
         val SUPPORT_EMAIL = "support@limor.ie"
+        val NOTIFICATION_CHANNEL_NAME = "General Notifications"
 
         // Autofollow Limor
         val LIMOR_ACCOUNT_ID: Int = BuildConfig.LIMOR_ACCOUNT_ID

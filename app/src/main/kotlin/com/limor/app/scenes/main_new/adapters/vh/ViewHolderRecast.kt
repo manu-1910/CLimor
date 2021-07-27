@@ -63,11 +63,17 @@ class ViewHolderRecast(
                 .navigate(R.id.action_navigation_home_to_dialog_report_podcast, bundle)
         }
 
+        binding.ivRecastAvatar.setOnClickListener {
+            openRecasterProfile(item)
+        }
         binding.tvRecastUserName.setOnClickListener {
-            openUserProfile(item)
+            openRecasterProfile(item)
         }
 
-        binding.ivRecastAvatar.setOnClickListener {
+        binding.ivPodcastAvatar.setOnClickListener {
+            openUserProfile(item)
+        }
+        binding.tvPodcastUserName.setOnClickListener {
             openUserProfile(item)
         }
 
@@ -84,6 +90,13 @@ class ViewHolderRecast(
         val userProfileIntent = Intent(context, UserProfileActivity::class.java)
         userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, item.owner?.username)
         userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, item.owner?.id)
+        context.startActivity(userProfileIntent)
+    }
+
+    private fun openRecasterProfile(item: CastUIModel) {
+        val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+        userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, item.recaster?.username)
+        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, item.recaster?.id)
         context.startActivity(userProfileIntent)
     }
 

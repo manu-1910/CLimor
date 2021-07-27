@@ -25,12 +25,12 @@
             android:orientation="vertical">
 
             <Button
-                android:visibility="gone"
-                android:id="@+id/btnEditCast"
+                android:visibility="visible"
+                android:id="@+id/btnReportUser"
                 style="@style/ButtonTextStyle.Icon"
                 android:layout_width="match_parent"
                 android:layout_margin="0dp"
-                android:text="@string/edit_cast"
+                android:text="@string/report_user"
                 android:textColor="@color/black"
                 app:icon="@drawable/ic_edit_podcast"
                 app:iconGravity="textStart"

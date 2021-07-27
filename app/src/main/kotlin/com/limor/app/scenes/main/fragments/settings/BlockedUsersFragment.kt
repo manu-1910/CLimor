@@ -2,6 +2,7 @@ package com.limor.app.scenes.main.fragments.settings
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -121,6 +122,7 @@ class BlockedUsersFragment : BaseFragment() {
     private fun initRecyclerView() {
         val layoutManager = LinearLayoutManager(context)
         binding.rvBlockedUsers.layoutManager = layoutManager
+        binding.rvBlockedUsers.itemAnimator = null
         blockedUsersAdapter = AdapterBlockedUsers(arrayList,
             object : AdapterBlockedUsers.OnFollowerClickListener {
                 override fun onUserClicked(
@@ -138,9 +140,8 @@ class BlockedUsersFragment : BaseFragment() {
                     position: Int
                 ) {
                     if(item.blocked!!) {
+                        Log.d("BLOCKING_LIST"," ${arrayList.size} ---- $position")
                         onUnblockButtonClicked(item,position)
-                    } else {
-                        onBlockButtonClicked(item,position)
                     }
                 }
 
@@ -154,7 +155,7 @@ class BlockedUsersFragment : BaseFragment() {
 
             })
 
-        binding.rvBlockedUsers?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        /*binding.rvBlockedUsers?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
@@ -184,7 +185,8 @@ class BlockedUsersFragment : BaseFragment() {
                     }
                 }
             }
-        })
+        })*/
+
         binding.rvBlockedUsers.adapter = blockedUsersAdapter
         binding.rvBlockedUsers.setHasFixedSize(false)
     }
@@ -206,8 +208,8 @@ class BlockedUsersFragment : BaseFragment() {
     private fun onBlockButtonClicked(item: GetBlockedUsersQuery.GetBlockedUser, position: Int) {
         alert(getString(R.string.confirmation_block_user)) {
             yesButton {
-                performBlockUser(item)
-                blockedUsersAdapter.updateItem(item, position )
+                //performBlockUser(item)
+              //  blockedUsersAdapter.updateItem(item, position )
             }
             cancelButton {  }
         }.show()
@@ -300,7 +302,6 @@ class BlockedUsersFragment : BaseFragment() {
     }
 
     private fun showEmptyScenario() {
-
         binding.layEmptyScenario.root.visibility = View.VISIBLE
         binding.rvBlockedUsers.visibility = View.GONE
     }

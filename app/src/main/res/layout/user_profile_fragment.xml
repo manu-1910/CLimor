@@ -47,7 +47,7 @@
                         <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="20dp">
+                            android:padding="20dp">
 
                             <de.hdodenhof.circleimageview.CircleImageView
                                 android:id="@+id/profile_dp"
@@ -149,10 +149,10 @@
                                 android:layout_marginTop="10dp"
                                 android:contentDescription="@string/play"
                                 android:src="@drawable/ic_play"
-                                android:visibility="invisible"/>
+                                android:visibility="gone"/>
 
                             <SeekBar
-                                android:visibility="invisible"
+                                android:visibility="gone"
                                 android:id="@+id/pr_progress"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -168,7 +168,7 @@
                                 android:thumb="@drawable/seekbar_thumb" />
 
                             <TextView
-                                android:visibility="invisible"
+                                android:visibility="gone"
                                 android:id="@+id/time_start"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -183,7 +183,7 @@
                                 android:textSize="@dimen/textSizeTiny" />
 
                             <TextView
-                                android:visibility="invisible"
+                                android:visibility="gone"
                                 android:id="@+id/time_duration"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -240,7 +240,7 @@
                                 android:textAllCaps="false"
                                 android:textColor="@color/black"
                                 android:textSize="12sp"
-                                android:visibility="visible"
+                                android:visibility="gone"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 

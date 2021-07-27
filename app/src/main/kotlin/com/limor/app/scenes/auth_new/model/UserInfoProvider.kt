@@ -6,6 +6,7 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.messaging.FirebaseMessaging
 import com.limor.app.R
 import com.limor.app.apollo.UserRepository
 import com.limor.app.apollo.interceptors.AuthInterceptor
@@ -14,6 +15,10 @@ import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.collect
 import timber.log.Timber
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -89,6 +94,9 @@ class UserInfoProvider @Inject constructor(
                 val formattedDate = parseForUserCreation(dob)
                 Timber.d("Formatted DOB $formattedDate")
                 val response = userRepository.createUser(formattedDate) ?: ""
+                createDeviceToken().collect {
+                    userRepository.createUserDevice(it)
+                }
                 _createUserLiveData.postValue(response)
                 delay(500)
                 _createUserLiveData.postValue(null)
@@ -97,7 +105,17 @@ class UserInfoProvider @Inject constructor(
                 delay(500)
                 _userInfoProviderErrorLiveData.postValue(null)
             }
+
         }
+    }
+
+    @ExperimentalCoroutinesApi
+    suspend fun createDeviceToken() =  callbackFlow<String>{
+        FirebaseMessaging.getInstance().token.addOnSuccessListener {
+            token ->
+            trySend(token)
+        }
+        awaitClose()
     }
 
     fun updateUserName(scope: CoroutineScope, userName: String) {
@@ -238,6 +256,15 @@ class UserInfoProvider @Inject constructor(
     suspend fun unblockUser(id: Int) {
         try {
             userRepository.unblockUser(id)
+        } catch (e: Exception) {
+            Timber.e(e)
+            null
+        }
+    }
+
+    suspend fun reportUser(id: Int,reason:String) {
+        try {
+            userRepository.reportUser(id,reason)
         } catch (e: Exception) {
             Timber.e(e)
             null
