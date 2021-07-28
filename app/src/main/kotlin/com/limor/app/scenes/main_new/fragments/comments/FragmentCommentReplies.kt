@@ -100,7 +100,8 @@ class FragmentCommentReplies : BaseFragment() {
                                         it.text,
                                         ownerId = parentCommentId,
                                         ownerType = CommentUIModel.OWNER_TYPE_COMMENT,
-                                        audioURI = audioUrl
+                                        audioURI = audioUrl,
+                                        duration = it.duration
                                     )
 
                                 }

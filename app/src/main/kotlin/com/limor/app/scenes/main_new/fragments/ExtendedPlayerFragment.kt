@@ -36,7 +36,9 @@ import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
+import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.PlayerViewManager
+import com.limor.app.scenes.utils.SendData
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
 import com.limor.app.uimodels.CastUIModel
@@ -48,6 +50,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 class ExtendedPlayerFragment : BaseFragment() {
@@ -281,28 +284,64 @@ class ExtendedPlayerFragment : BaseFragment() {
             }
         }
 
-        binding.btnPodcastSendComment.setOnClickListener {
-            commentsViewModel.addComment(
-                cast.id,
-                binding.commentText.text.toString(),
-                ownerId = cast.id,
-                ownerType = CommentUIModel.OWNER_TYPE_PODCAST
-            )
-            binding.commentText.text = null
-            binding.commentText.hideKeyboard()
-        }
-
         binding.btnPodcastReply.setOnClickListener {
             btnPodcastReply.shared = true
             sharePodcast(cast)
         }
-
         binding.tvPodcastUserName.setOnClickListener {
             openUserProfile(cast)
         }
 
         binding.ivPodcastAvatar.setOnClickListener {
             openUserProfile(cast)
+        }
+
+        // This is copy pasted from FragmentComments, will need to be refactored later...
+        binding.taviVoice.initListenerStatus {
+            when(it) {
+                is SendData -> {
+
+                    if (it.filePath != null) {
+                        Commons.getInstance().uploadAudio(
+                            context,
+                            File(it.filePath),
+                            Constants.AUDIO_TYPE_COMMENT,
+                            object : Commons.AudioUploadCallback {
+                                override fun onSuccess(audioUrl: String?) {
+                                    commentsViewModel.addComment(
+                                        cast.id,
+                                        content = it.text,
+                                        ownerId = cast.id,
+                                        ownerType = CommentUIModel.OWNER_TYPE_PODCAST,
+                                        audioURI = audioUrl,
+                                        duration = it.duration
+                                    )
+                                }
+
+                                override fun onProgressChanged(
+                                    id: Int,
+                                    bytesCurrent: Long,
+                                    bytesTotal: Long
+                                ) {
+                                }
+
+                                override fun onError(error: String?) {
+                                    Timber.d("Audio upload to AWS error: $error")
+                                }
+                            })
+                    } else {
+                        commentsViewModel.addComment(
+                            cast.id,
+                            it.text,
+                            ownerId = cast.id,
+                            ownerType = CommentUIModel.OWNER_TYPE_PODCAST
+                        )
+                    }
+                }
+                else -> {
+
+                }
+            }
         }
     }
 

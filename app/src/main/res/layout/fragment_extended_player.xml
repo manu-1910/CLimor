@@ -255,7 +255,7 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:paddingTop="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/llDividerCommentsFooter"
+        app:layout_constraintBottom_toTopOf="@+id/entry_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivPodcastBackground">
@@ -530,72 +530,30 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-
-    <!--    FOOTER-->
-
     <LinearLayout
-        android:id="@+id/llDividerCommentsFooter"
+        android:id="@+id/entry_container"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginBottom="16dp"
-        android:background="#F0F3F8"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/btnPodcastStartVoiceComment"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
 
-
-    <ImageButton
-        android:id="@+id/btnPodcastStartVoiceComment"
-        android:layout_width="@dimen/commentFooterHeight"
-        android:layout_height="@dimen/commentFooterHeight"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/player_footer_bottom_shape"
-        android:foreground="?attr/selectableItemBackground"
-        android:padding="14dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/record"
-        android:tint="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/filledTextField"
-        style="@style/TextInputLayoutComment"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/commentFooterHeight"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
-        android:layout_weight="1"
-        android:hint="@string/hint_write_a_comment"
-        app:endIconDrawable="@drawable/ic_comments_footer_link"
-        app:endIconMode="custom"
-        app:endIconTint="@color/subtitle_text_color"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btnPodcastSendComment"
-        app:layout_constraintStart_toEndOf="@+id/btnPodcastStartVoiceComment">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/comment_text"
+        <View
+            android:id="@+id/deli"
+            android:background="#f0f3f8"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginBottom="14dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="3" />
+            android:layout_height="1dp"/>
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <com.limor.app.scenes.utils.TextAndVoiceInput
+            android:id="@+id/taviVoice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-    <ImageButton
-        android:id="@+id/btnPodcastSendComment"
-        android:layout_width="@dimen/commentFooterHeight"
-        android:layout_height="@dimen/commentFooterHeight"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/player_footer_bottom_shape"
-        android:padding="14dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_comments_footer_send"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

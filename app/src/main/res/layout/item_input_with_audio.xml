@@ -5,9 +5,10 @@
     android:id="@+id/collectorLinearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_horizontal"
     android:layout_marginBottom="14dp"
+    android:gravity="center_horizontal"
     android:orientation="horizontal">
+
 
     <ImageButton
         android:id="@+id/btnPodcastStartVoiceComment"
@@ -15,38 +16,14 @@
         android:layout_height="@dimen/commentFooterHeight"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/player_footer_bottom_shape"
+        android:background="@drawable/selector_player_footer_bottom_shape"
         android:foreground="?attr/selectableItemBackground"
         android:padding="14dp"
         android:scaleType="fitCenter"
         android:src="@drawable/selector_voice_record"
         android:tint="@color/black"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/filledTextField"
-        style="@style/TextInputLayoutComment"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/commentFooterHeight"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
-        android:layout_weight="1"
-        android:hint="@string/hint_write_a_comment"
-        app:endIconMode="custom"
-        app:endIconTint="@color/subtitle_text_color"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btnPodcastSendComment"
-        app:layout_constraintStart_toEndOf="@+id/btnPodcastStartVoiceComment">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/comment_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="3" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/btnPodcastSendComment"
@@ -58,60 +35,152 @@
         android:padding="14dp"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_comments_footer_send"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/btnDeleteVoice"
-        android:layout_width="@dimen/commentFooterHeight"
-        android:layout_height="@dimen/commentFooterHeight"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="26dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/player_footer_bottom_shape"
-        android:padding="14dp"
-        android:visibility="gone"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_delete"
-        app:layout_constraintTop_toBottomOf="@id/btnPodcastStartVoiceComment"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/llVoice"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/filledTextField"
+        style="@style/TextInputLayoutComment"
         android:layout_width="0dp"
         android:layout_height="@dimen/commentFooterHeight"
-        app:layout_constraintStart_toEndOf="@id/btnDeleteVoice"
-        app:layout_constraintTop_toBottomOf="@id/btnPodcastStartVoiceComment"
-        android:layout_marginTop="26dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/btnPodcastSendComment"
-        android:layout_marginStart="12dp"
-        android:background="@drawable/player_footer_bottom_shape">
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:hint="@string/hint_write_a_comment"
+        app:endIconMode="custom"
+        app:endIconTint="@color/subtitle_text_color"
+        app:layout_constraintEnd_toStartOf="@+id/btnPodcastSendComment"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/comment_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="3" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutRecordingControls"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/commentFooterHeight"
+
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+
+        android:visibility="gone"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/filledTextField">
 
         <ImageButton
-            android:id="@+id/btnStartPlay"
+            android:id="@+id/btnPodcastStartStopVoice"
             android:layout_width="@dimen/commentFooterHeight"
             android:layout_height="@dimen/commentFooterHeight"
-            android:background="@drawable/player_footer_play_pause"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/selector_player_footer_bottom_shape"
+            android:foreground="?attr/selectableItemBackground"
             android:padding="14dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/selector_play_pause"
-            app:layout_constraintTop_toBottomOf="@id/btnPodcastStartVoiceComment"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:src="@drawable/selector_voice_record"
+            android:tint="@color/black"
 
-        <View
-            android:id="@+id/visualizer"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <RelativeLayout
+            android:id="@+id/layoutPlayer"
             android:layout_width="0dp"
+            android:layout_height="@dimen/commentFooterHeight"
             android:layout_weight="1"
-            android:layout_height="match_parent"/>
+            android:background="@drawable/player_footer_bottom_shape"
+            app:layout_constraintEnd_toStartOf="@id/btnDeleteVoice"
+            app:layout_constraintStart_toEndOf="@+id/btnPodcastStartStopVoice"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="8dp"
-            tools:text="0:10"/>
+            <View
+                android:id="@+id/positionIndicator"
+                android:background="#e5e9f0"
+                android:visibility="invisible"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/commentFooterHeight" />
+
+            <View
+                android:visibility="invisible"
+                android:id="@+id/horizontalLine"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#dde2ea"
+                android:layout_marginEnd="48dp"
+                android:layout_marginStart="12dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerInParent="true" />
+
+            <LinearLayout
+                android:id="@+id/llVoice"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/commentFooterHeight">
+
+                <ImageButton
+                    android:id="@+id/btnStartPlay"
+                    android:layout_width="@dimen/commentFooterPlayerControlHeight"
+                    android:layout_height="@dimen/commentFooterPlayerControlHeight"
+                    android:background="@drawable/player_footer_play_pause"
+                    android:layout_margin="4dp"
+                    android:padding="5dp"
+                    android:visibility="gone"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/selector_play_pause_comments"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/btnPodcastStartVoiceComment" />
+
+                <com.limor.app.scenes.utils.visualizer.RecordVisualizer
+                    android:id="@+id/visualizer"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/commentFooterHeight"
+                    android:layout_weight="1"
+                    app:maxAmp="200"
+                    app:approximateBarDuration="50"
+                    app:barWidth="1.3dp"
+                    app:drawStartPosition="1"
+                    app:drawTimeCodes="false"
+                    app:loadedBarPrimeColor="@color/waveFormColor"
+                    app:timelineBackgroundColor="@android:color/transparent"
+                    app:spaceBetweenBar="2dp" />
+
+
+                <TextView
+                    android:id="@+id/tvTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="8dp"
+                    android:textColor="@color/black"
+                    android:paddingLeft="7dp"
+                    android:paddingRight="7dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"
+                    android:background="@drawable/player_footer_time_shape"
+                    android:text="0:00"
+                    tools:text="0:10" />
+            </LinearLayout>
+        </RelativeLayout>
+
+
+        <ImageButton
+            android:id="@+id/btnDeleteVoice"
+            android:layout_width="@dimen/commentFooterHeight"
+            android:layout_height="@dimen/commentFooterHeight"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/player_footer_bottom_shape"
+
+            android:padding="14dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_delete" />
+
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

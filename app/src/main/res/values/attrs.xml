@@ -26,6 +26,10 @@
         <attr name="barWidth" format="dimension" />
         <attr name="approximateBarDuration" format="integer" />
         <attr name="maxAmp" format="float" />
+        <!-- new style attrs -->
+        <attr name="timelineBackgroundColor" format="color" />
+        <attr name="drawTimeCodes" format="boolean" />
+        <attr name="drawStartPosition" format="float" />
     </declare-styleable>
 
     <declare-styleable name="SearchBar">

@@ -50,13 +50,13 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/comments_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical"
+        android:background="@drawable/comments_background"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@+id/entry_container"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
@@ -69,11 +69,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
+        <View
+            android:id="@+id/deli"
+            android:background="#f0f3f8"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+
         <com.limor.app.scenes.utils.TextAndVoiceInput
             android:id="@+id/taviVoice"
+            android:layout_marginTop="13dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/deli" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

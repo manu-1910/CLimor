@@ -79,8 +79,9 @@ class FragmentComments : BaseFragment() {
                                         cast.id,
                                         content = it.text,
                                         ownerId = cast.id,
-                                        ownerType = CommentUIModel.OWNER_TYPE_COMMENT,
-                                        audioURI = audioUrl
+                                        ownerType = CommentUIModel.OWNER_TYPE_PODCAST,
+                                        audioURI = audioUrl,
+                                        duration = it.duration
                                     )
                                 }
 

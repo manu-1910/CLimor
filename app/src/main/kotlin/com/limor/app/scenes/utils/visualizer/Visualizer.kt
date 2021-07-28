@@ -61,8 +61,9 @@ open class Visualizer : View {
     private lateinit var backgroundBarPrimeColor: Paint
     private lateinit var timelineBackgroundColor: Paint
 
-
     private lateinit var timeCodePaint: Paint
+    private var drawTimeCodes = true
+    private var drawStartPosition = 0.5f
 
     private fun init() {
         backgroundBarPrimeColor = Paint()
@@ -103,6 +104,13 @@ open class Visualizer : View {
             barWidth = typedArray.getDimension(R.styleable.iiVisu_barWidth, 1.3f)
             maxAmp = typedArray.getFloat(R.styleable.iiVisu_maxAmp, 40f)
 
+            timelineBackgroundColor.apply {
+                color = typedArray.getColor(
+                    R.styleable.iiVisu_timelineBackgroundColor,
+                    timelineBackgroundColor.color
+                )
+            }
+
             loadedBarPrimeColor.apply {
                 strokeWidth = barWidth
                 color = typedArray.getColor(
@@ -117,6 +125,16 @@ open class Visualizer : View {
                     context.getColorCompat(R.color.grayWave)
                 )
             }
+
+            drawTimeCodes = typedArray.getBoolean(
+                R.styleable.iiVisu_drawTimeCodes,
+                true
+            )
+
+            drawStartPosition = typedArray.getFloat(
+                R.styleable.iiVisu_drawStartPosition,
+                0.5f
+            )
 
         } finally {
             typedArray.recycle()
@@ -150,15 +168,17 @@ open class Visualizer : View {
             for (i in getStartBar() until getEndBar()) {
                 if (i % barsPerSecond == 0L) {
                     val second = i / barsPerSecond
-                    canvas.drawText(
-                        Commons.getLengthFromEpochForPlayer(TimeUnit.SECONDS.toMillis(second)),
-                        width / 2 - (getBarPosition() - i) * (barWidth + spaceBetweenBar),
-                        height.toFloat() - 5f,
-                        timeCodePaint
-                    )
+                    if (drawTimeCodes) {
+                        canvas.drawText(
+                            Commons.getLengthFromEpochForPlayer(TimeUnit.SECONDS.toMillis(second)),
+                            getDrawStart() - (getBarPosition() - i) * (barWidth + spaceBetweenBar),
+                            height.toFloat() - 5f,
+                            timeCodePaint
+                        )
+                    }
                     count++
                 }
-                val startX = width / 2 - (getBarPosition() - i) * (barWidth + spaceBetweenBar)
+                val startX = getDrawStart() - (getBarPosition() - i) * (barWidth + spaceBetweenBar)
                 drawStraightBar(canvas, startX, getBarHeightAt(i).toInt(), getBaseLine())
             }
         }
@@ -168,20 +188,24 @@ open class Visualizer : View {
         super.onDraw(canvas)
     }
 
+    private fun getDrawStart(): Float {
+        return drawStartPosition * width
+    }
+
     private fun drawStraightBar(canvas: Canvas, startX: Float, height: Int, baseLine: Int) {
         val startY = baseLine + (height / 2).toFloat()
         val stopY = startY - height
-        if (startX <= width / 2) {
+        if (startX <= getDrawStart()) {
             canvas.drawLine(startX, startY, startX, stopY, loadedBarPrimeColor)
         } else {
             canvas.drawLine(startX, startY, startX, stopY, backgroundBarPrimeColor)
         }
     }
 
-    private fun getBaseLine() = height / 2 - 12.px
-    private fun getStartBar() = max(0, getBarPosition().toInt() - maxVisibleBars / 2)
+    private fun getBaseLine() = height / 2 - (if (drawTimeCodes) 12.px else 0)
+    private fun getStartBar() = max(0, getBarPosition().toInt() - (maxVisibleBars * drawStartPosition).toInt())
     private fun getEndBar() = min(amps.size, getStartBar() + maxVisibleBars)
-    private fun getBarHeightAt(i: Int) = (height - 40.px) * max(0.01f, min(amps[i] / maxAmp, 0.9f))
+    private fun getBarHeightAt(i: Int) = (height - (if (drawTimeCodes) 40.px else 0)) * max(0.01f, min(amps[i] / maxAmp, 0.9f))
     private fun getBarPosition() = cursorPosition / tickPerBar.toFloat()
     private fun inRangePosition(position: Float) = min(tickCount.toFloat(), max(0f, position))
     protected fun getTimeStamp(position: Float) = (position.toLong() * tickDuration)

@@ -61,4 +61,6 @@
     <dimen name="search_bar_height">48dp</dimen>
     <dimen name="toolbar_button_size">56dp</dimen>
     <dimen name="commentFooterHeight">48dp</dimen>
+
+    <dimen name="commentFooterPlayerControlHeight">40dp</dimen>
 </resources>
