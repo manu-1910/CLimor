@@ -27,6 +27,12 @@ class PodcastInteractionsRepository @Inject constructor(val apollo: Apollo) {
         return result?.data?.createRecast
     }
 
+    suspend fun deleteRecastPodcast(podcastId: Int): DeleteRecastMutation.DeleteRecast?{
+        val mutation = DeleteRecastMutation(podcastId)
+        val result = apollo.mutate(mutation)
+        return result?.data?.deleteRecast
+    }
+
     suspend fun getPodcastById(podcastId: Int): FeedItemsQuery.Podcast {
         val query = GetPodcastByIdQuery(podcastId)
         val result = apollo.launchQuery(query)

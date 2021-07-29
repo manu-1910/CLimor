@@ -17,7 +17,7 @@ class CastItem(
     private val onCastClick: (CastUIModel) -> Unit,
     private val onLikeClick: (CastUIModel, like: Boolean) -> Unit,
     private val onMoreDialogClick: (CastUIModel) -> Unit,
-    private val onRecastClick: (CastUIModel) -> Unit,
+    private val onRecastClick: (CastUIModel, isRecasted: Boolean) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
     private val onShareClick: (CastUIModel) -> Unit
 ) : BindableItem<ItemUserCastBinding>() {
@@ -82,10 +82,6 @@ class CastItem(
                 onMoreDialogClick(cast)
             }
 
-            btnPodcastRecast.setOnClickListener {
-                onRecastClick(cast)
-            }
-
             btnPodcastComments.setOnClickListener {
                 onCommentsClick(cast)
             }
@@ -103,22 +99,29 @@ class CastItem(
     }
 
     private fun initRecastState(binding: ItemUserCastBinding, item: CastUIModel){
-        binding.tvPodcastRecast.text = item.recastsCount.toString()
-        binding.btnPodcastRecast.recasted = item.isRecasted == true
-        applyRecastStyle(binding, item.isRecasted == true)
-    }
-
-    private fun applyRecastStyle(binding: ItemUserCastBinding, isRecasted : Boolean){
-        binding.tvPodcastRecast.setTextColor(
-            if(isRecasted) ContextCompat.getColor(
-                binding.tvPodcastRecast.context,
-                R.color.textAccent
-            ) else
+        fun applyRecastState(isRecasted: Boolean){
+            binding.tvPodcastRecast.setTextColor(
                 ContextCompat.getColor(
-                    binding.tvPodcastRecast.context,
-                    R.color.white
+                    binding.root.context,
+                    if(isRecasted) R.color.textAccent else R.color.white
                 )
-        )
+            )
+        }
+        binding.apply {
+            applyRecastState(item.isRecasted!!)
+            btnPodcastRecast.recasted = item.isRecasted!!
+
+            btnPodcastRecast.setOnClickListener {
+                val isRecasted = !btnPodcastRecast.recasted
+                val recastCount = binding.tvPodcastRecast.text.toString().toInt()
+
+                applyRecastState(isRecasted)
+                binding.tvPodcastRecast.text = (if (isRecasted) recastCount + 1 else recastCount - 1).toString()
+                binding.btnPodcastRecast.recasted = isRecasted
+
+                onRecastClick(item, isRecasted)
+            }
+        }
     }
 
     private fun applyShareStyle(binding: ItemUserCastBinding, isShared : Boolean){

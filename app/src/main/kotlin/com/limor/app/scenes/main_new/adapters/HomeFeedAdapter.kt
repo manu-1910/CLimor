@@ -14,7 +14,7 @@ import com.limor.app.uimodels.CastUIModel
 class HomeFeedAdapter(
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
     private val onCastClick: (cast: CastUIModel) -> Unit,
-    private val onReCastClick: (castId: Int) -> Unit,
+    private val onReCastClick: (castId: Int, isRecasted: Boolean) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
     private val onShareClick: (CastUIModel) -> Unit
 ) : ListAdapter<CastUIModel, ViewHolderBindable<CastUIModel>>(

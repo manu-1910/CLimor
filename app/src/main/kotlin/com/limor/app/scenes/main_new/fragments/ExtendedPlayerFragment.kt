@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
@@ -26,6 +27,7 @@ import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentExtendedPlayerBinding
+import com.limor.app.databinding.ItemUserCastBinding
 import com.limor.app.extensions.*
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
@@ -37,6 +39,7 @@ import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.utils.Commons
+import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.SendData
 import com.limor.app.service.PlayerBinder
@@ -76,8 +79,10 @@ class ExtendedPlayerFragment : BaseFragment() {
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
     private val castId: Int by lazy { requireArguments()[CAST_ID_KEY] as Int }
     private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
+    private val podcastInteractionViewModel: PodcastInteractionViewModel by activityViewModels { viewModelFactory }
 
     private var playerUpdatesJob: Job? = null
+    private var updatePodcasts: Boolean = false
 
     @Inject
     lateinit var playerBinder: PlayerBinder
@@ -86,6 +91,7 @@ class ExtendedPlayerFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
 
         requireActivity().onBackPressedDispatcher.addCallback(owner = this) {
+            podcastInteractionViewModel.reload.postValue(true)
             (activity as? PlayerViewManager)?.showPlayer(
                 PlayerViewManager.PlayerArgs(
                     PlayerViewManager.PlayerType.SMALL,
@@ -105,7 +111,6 @@ class ExtendedPlayerFragment : BaseFragment() {
         podcastViewModel.loadCast(castId)
         subscribeToCastUpdates()
         subscribeToCommentUpdates()
-        subscribeToRecastUpdate()
         subscribeToShareUpdate()
         loadFirstComment()
         return binding.root
@@ -154,14 +159,6 @@ class ExtendedPlayerFragment : BaseFragment() {
         }
     }
 
-    private fun subscribeToRecastUpdate() {
-        recastPodcastViewModel.recatedResponse.observe(viewLifecycleOwner, {
-            binding.tvPodcastRecast.text = it?.count.toString()
-            applyRecastStyle(it?.recasted == true)
-            binding.btnPodcastRecast.recasted = it?.recasted == true
-        })
-    }
-
     private fun bindViews(cast: CastUIModel) {
         setPodcastGeneralInfo(cast)
         setPodcastOwnerInfo(cast)
@@ -171,6 +168,7 @@ class ExtendedPlayerFragment : BaseFragment() {
         setOnClicks(cast)
         addTags(cast)
         initLikeState(cast)
+        initRecastState(cast)
     }
 
     private fun subscribeToShareUpdate(){
@@ -195,7 +193,8 @@ class ExtendedPlayerFragment : BaseFragment() {
         binding.tvPodcastComments.text = cast.commentsCount?.toString()
         binding.tvPodcastNumberOfListeners.text = cast.listensCount?.toString()
 
-        applyRecastStyle(cast.isRecasted == true)
+        //applyRecastStyle(cast.isRecasted == true)
+        initRecastState(cast)
         binding.btnPodcastRecast.recasted = cast.isRecasted == true
         binding.btnPodcastReply.shared = cast.isShared == true
     }
@@ -274,10 +273,6 @@ class ExtendedPlayerFragment : BaseFragment() {
             playerBinder.forward(5000L)
         }
 
-        binding.btnPodcastRecast.setOnClickListener {
-            recastPodcastViewModel.reCast(castId = cast.id)
-        }
-
         binding.llExtendCommentsHeader.setOnClickListener {
             RootCommentsFragment.newInstance(cast).also { fragment ->
                 fragment.show(parentFragmentManager, fragment.requireTag())
@@ -286,6 +281,7 @@ class ExtendedPlayerFragment : BaseFragment() {
 
         binding.btnPodcastReply.setOnClickListener {
             btnPodcastReply.shared = true
+            updatePodcasts = true
             sharePodcast(cast)
         }
         binding.tvPodcastUserName.setOnClickListener {
@@ -374,17 +370,24 @@ class ExtendedPlayerFragment : BaseFragment() {
             }
         }
 
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_SUBJECT, cast.title)
-            putExtra(Intent.EXTRA_TEXT, dynamicLink.uri.toString())
-            putExtra(Constants.SHARED_PODCAST_ID, cast.id)
-            type = "text/plain"
+        Firebase.dynamicLinks.shortLinkAsync {
+            longLink = dynamicLink.uri
+        }.addOnSuccessListener { (shortLink, flowChartLink) ->
+            try{
+                val sendIntent: Intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_SUBJECT, cast.title)
+                    putExtra(Intent.EXTRA_TEXT, shortLink.toString())
+                    putExtra(Constants.SHARED_PODCAST_ID, cast.id)
+                    type = "text/plain"
+                }
+                val shareIntent = Intent.createChooser(sendIntent, null)
+                launcher.launch(shareIntent)
+            } catch (e: ActivityNotFoundException){}
+
+        }.addOnFailureListener {
+            Timber.d("Failed in creating short dynamic link")
         }
-        val shareIntent = Intent.createChooser(sendIntent, null)
-        try{
-            launcher.launch(shareIntent)
-        } catch (e: ActivityNotFoundException){}
 
     }
 
@@ -395,20 +398,37 @@ class ExtendedPlayerFragment : BaseFragment() {
         startActivity(userProfileIntent)
     }
 
-    private fun applyRecastStyle(recasted: Boolean) {
-        binding.tvPodcastRecast.setTextColor(
-            if (recasted) {
+    private fun initRecastState(item: CastUIModel){
+        fun applyRecastState(isRecasted: Boolean){
+            binding.tvPodcastRecast.setTextColor(
                 ContextCompat.getColor(
-                    binding.tvPodcastRecast.context,
-                    R.color.textAccent
+                    binding.root.context,
+                    if(isRecasted) R.color.textAccent else R.color.subtitle_text_color
                 )
-            } else {
-                ContextCompat.getColor(
-                    binding.tvPodcastRecast.context,
-                    R.color.subtitle_text_color
-                )
+            )
+        }
+        binding.apply {
+            applyRecastState(item.isRecasted!!)
+            btnPodcastRecast.recasted = item.isRecasted!!
+
+            btnPodcastRecast.setOnClickListener {
+                val isRecasted = !btnPodcastRecast.recasted
+                val recastCount = binding.tvPodcastRecast.text.toString().toInt()
+
+                applyRecastState(isRecasted)
+                binding.tvPodcastRecast.text = (if (isRecasted) recastCount + 1 else recastCount - 1).toString()
+                binding.btnPodcastRecast.recasted = isRecasted
+
+                updatePodcasts = true
+
+                if(isRecasted){
+                    recastPodcastViewModel.reCast(castId = item.id)
+                } else{
+                    recastPodcastViewModel.deleteRecast(castId = item.id)
+                }
+
             }
-        )
+        }
     }
 
     private fun addTags(cast: CastUIModel) {
@@ -444,6 +464,8 @@ class ExtendedPlayerFragment : BaseFragment() {
             btnPodcastLikes.setOnClickListener {
                 val isLiked = btnPodcastLikes.isLiked
                 val likesCount = binding.tvPodcastLikes.text.toString().toInt()
+
+                updatePodcasts = true
 
                 applyLikeStyle(isLiked)
                 binding.tvPodcastLikes.text =

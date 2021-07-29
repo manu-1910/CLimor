@@ -20,7 +20,7 @@ class ViewHolderPodcast(
     val binding: ItemHomeFeedBinding,
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
     private val onCastClick: (cast: CastUIModel) -> Unit,
-    private val onRecastClick: (castId: Int) -> Unit,
+    private val onRecastClick: (castId: Int, isRecasted: Boolean) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
     private val onShareClick: (CastUIModel) -> Unit
 ) : ViewHolderBindable<CastUIModel>(binding) {
@@ -92,9 +92,6 @@ class ViewHolderPodcast(
             openUserProfile(item)
         }
 
-        binding.btnPodcastRecast.setOnClickListener {
-            onRecastClick(item.id)
-        }
         binding.btnPodcastComments.setOnClickListener {
             onCommentsClick(item)
         }
@@ -157,9 +154,29 @@ class ViewHolderPodcast(
     }
 
     private fun initRecastState(item: CastUIModel){
-        binding.tvPodcastRecast.text = item.recastsCount.toString()
-        binding.btnPodcastRecast.recasted = item.isRecasted == true
-        applyRecastStyle(item.isRecasted == true)
+        fun applyRecastState(isRecasted: Boolean){
+            binding.tvPodcastRecast.setTextColor(
+                ContextCompat.getColor(
+                    binding.root.context,
+                    if(isRecasted) R.color.textAccent else R.color.white
+                )
+            )
+        }
+        binding.apply {
+            applyRecastState(item.isRecasted!!)
+            btnPodcastRecast.recasted = item.isRecasted!!
+
+            btnPodcastRecast.setOnClickListener {
+                val isRecasted = !btnPodcastRecast.recasted
+                val recastCount = binding.tvPodcastRecast.text.toString().toInt()
+
+                applyRecastState(isRecasted)
+                binding.tvPodcastRecast.text = (if (isRecasted) recastCount + 1 else recastCount - 1).toString()
+                binding.btnPodcastRecast.recasted = isRecasted
+
+                onRecastClick(item.id, isRecasted)
+            }
+        }
     }
 
     private fun applyRecastStyle(isRecasted : Boolean){

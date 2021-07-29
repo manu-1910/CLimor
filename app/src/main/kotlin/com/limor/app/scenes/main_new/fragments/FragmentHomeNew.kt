@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,10 +28,12 @@ import com.limor.app.scenes.main_new.adapters.HomeFeedAdapter
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
+import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.uimodels.CastUIModel
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import org.jetbrains.anko.support.v4.toast
+import timber.log.Timber
 import javax.inject.Inject
 
 class FragmentHomeNew : BaseFragment() {
@@ -41,6 +44,7 @@ class FragmentHomeNew : BaseFragment() {
     private val likePodcastViewModel: LikePodcastViewModel by viewModels { viewModelFactory }
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
     private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
+    private val podcastInteractionViewModel: PodcastInteractionViewModel by activityViewModels { viewModelFactory }
 
     lateinit var binding: FragmentHomeNewBinding
 
@@ -78,11 +82,19 @@ class FragmentHomeNew : BaseFragment() {
             binding.swipeToRefresh.isRefreshing = false
             setDataToRecyclerView(casts)
         }
-        recastPodcastViewModel.recatedResponse.observe(viewLifecycleOwner){
+        recastPodcastViewModel.recastedResponse.observe(viewLifecycleOwner){
+            homeFeedViewModel.loadHomeFeed()
+        }
+        recastPodcastViewModel.deleteRecastResponse.observe(viewLifecycleOwner){
             homeFeedViewModel.loadHomeFeed()
         }
         sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner){
             homeFeedViewModel.loadHomeFeed()
+        }
+        podcastInteractionViewModel.reload.observe(viewLifecycleOwner){
+            if(it == true){
+                homeFeedViewModel.loadHomeFeed()
+            }
         }
     }
 
@@ -109,8 +121,12 @@ class FragmentHomeNew : BaseFragment() {
             onCastClick = { cast ->
                 openPlayer(cast)
             },
-            onReCastClick = { castId ->
-                recastPodcastViewModel.reCast(castId)
+            onReCastClick = { castId, isRecasted ->
+                if(isRecasted){
+                    recastPodcastViewModel.reCast(castId)
+                } else{
+                    recastPodcastViewModel.deleteRecast(castId)
+                }
             },
             onCommentsClick = {cast ->
                 RootCommentsFragment.newInstance(cast).also { fragment ->
@@ -155,17 +171,24 @@ class FragmentHomeNew : BaseFragment() {
             }
         }
 
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_SUBJECT, cast.title)
-            putExtra(Intent.EXTRA_TEXT, dynamicLink.uri.toString())
-            putExtra(Constants.SHARED_PODCAST_ID, cast.id)
-            type = "text/plain"
+        Firebase.dynamicLinks.shortLinkAsync {
+            longLink = dynamicLink.uri
+        }.addOnSuccessListener { (shortLink, flowChartLink) ->
+            try{
+                val sendIntent: Intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_SUBJECT, cast.title)
+                    putExtra(Intent.EXTRA_TEXT, shortLink.toString())
+                    putExtra(Constants.SHARED_PODCAST_ID, cast.id)
+                    type = "text/plain"
+                }
+                val shareIntent = Intent.createChooser(sendIntent, null)
+                launcher.launch(shareIntent)
+            } catch (e: ActivityNotFoundException){}
+
+        }.addOnFailureListener {
+            Timber.d("Failed in creating short dynamic link")
         }
-        val shareIntent = Intent.createChooser(sendIntent, null)
-        try{
-            launcher.launch(shareIntent)
-        } catch (e: ActivityNotFoundException){}
 
     }
 

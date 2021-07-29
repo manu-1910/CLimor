@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,10 +27,12 @@ import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
+import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.GroupieAdapter
+import timber.log.Timber
 import javax.inject.Inject
 
 class UserPodcastsFragmentNew : Fragment(), Injectable {
@@ -49,6 +52,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     private val viewModel: UserPodcastsViewModel by viewModels { viewModelFactory }
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
     private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
+    private val podcastInteractionViewModel: PodcastInteractionViewModel by activityViewModels { viewModelFactory }
 
     private val userId: Int by lazy { requireArguments().getInt(USER_ID_KEY) }
 
@@ -85,17 +89,24 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
             }
         }
 
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_SUBJECT, cast.title)
-            putExtra(Intent.EXTRA_TEXT, dynamicLink.uri.toString())
-            putExtra(Constants.SHARED_PODCAST_ID, cast.id)
-            type = "text/plain"
+        Firebase.dynamicLinks.shortLinkAsync {
+            longLink = dynamicLink.uri
+        }.addOnSuccessListener { (shortLink, flowChartLink) ->
+            try{
+                val sendIntent: Intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_SUBJECT, cast.title)
+                    putExtra(Intent.EXTRA_TEXT, shortLink.toString())
+                    putExtra(Constants.SHARED_PODCAST_ID, cast.id)
+                    type = "text/plain"
+                }
+                val shareIntent = Intent.createChooser(sendIntent, null)
+                launcher.launch(shareIntent)
+            } catch (e: ActivityNotFoundException){}
+
+        }.addOnFailureListener {
+            Timber.d("Failed in creating short dynamic link")
         }
-        val shareIntent = Intent.createChooser(sendIntent, null)
-        try{
-            launcher.launch(shareIntent, ActivityOptionsCompat.makeBasic())
-        } catch (e: ActivityNotFoundException){}
 
     }
 
@@ -126,7 +137,13 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                         onCastClick = ::onCastClick,
                         onLikeClick = { cast, like -> viewModel.likeCast(cast, like) },
                         onMoreDialogClick = ::onMoreDialogClick,
-                        onRecastClick = { cast -> recastPodcastViewModel.reCast(castId = cast.id) },
+                        onRecastClick = { cast , isRecasted ->
+                            if(isRecasted){
+                                recastPodcastViewModel.reCast(cast.id)
+                            } else{
+                                recastPodcastViewModel.deleteRecast(cast.id)
+                            }
+                         },
                         onCommentsClick = { cast ->
                             RootCommentsFragment.newInstance(cast).also { fragment ->
                                 fragment.show(parentFragmentManager, fragment.requireTag())
@@ -139,10 +156,16 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                 }
             )
         }
-        recastPodcastViewModel.recatedResponse.observe(viewLifecycleOwner) {
+        recastPodcastViewModel.recastedResponse.observe(viewLifecycleOwner) {
+            viewModel.loadCasts(userId)
+        }
+        recastPodcastViewModel.deleteRecastResponse.observe(viewLifecycleOwner){
             viewModel.loadCasts(userId)
         }
         sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner){
+            viewModel.loadCasts(userId)
+        }
+        podcastInteractionViewModel.reload.observe(viewLifecycleOwner){
             viewModel.loadCasts(userId)
         }
     }

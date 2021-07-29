@@ -1,0 +1,10 @@
+mutation deleteRecastMutation(
+    $podcastId: Int!
+){
+    deleteRecast(podcastId: $podcastId){
+        podcast_id,
+        count,
+        recasted,
+        destroyed
+    }
+}
