@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentDiscoverBinding
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration
@@ -51,7 +52,7 @@ class DiscoverFragment : BaseFragment() {
             it.findNavController().popBackStack()
         }
         binding.toolbar.btnNotification.setOnClickListener {
-            toast("Notifications Coming Soon")
+            findNavController().navigate(R.id.navigation_notifications)
         }
     }
 

@@ -1,0 +1,6 @@
+mutation UpdateNotificationMutation($id: Int!, $read:Boolean!){
+    updateNotification(notificationId: $id,read:$read){
+        status,
+        message
+    }
+}

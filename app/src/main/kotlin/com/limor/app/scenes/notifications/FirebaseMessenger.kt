@@ -38,7 +38,7 @@ class FirebaseMessenger : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
-        Timber.d("Device Token--> ${remoteMessage.data} --- ${remoteMessage.notification}")
+        Timber.d("Push Notification--> $remoteMessage")
         val notification = remoteMessage.notification
         val data = remoteMessage.data
         try {
@@ -117,8 +117,9 @@ class FirebaseMessenger : FirebaseMessagingService() {
 
     private fun getNavigationIntent(dataObject: JSONObject): Intent? {
         return when (dataObject.get("type")) {
-            "profile" -> AppNavigationManager.navigateToUserProfileIntent(this, dataObject)
-            "cast" -> AppNavigationManager.navigateToExtendedPlayerIntent(this, dataObject)
+            "user" -> AppNavigationManager.navigateToUserProfileIntent(this, dataObject)
+            "comment" -> AppNavigationManager.navigateToUserProfileIntent(this, dataObject)
+            "podcast" -> AppNavigationManager.navigateToExtendedPlayerIntent(this, dataObject)
             else -> AppNavigationManager.navigateToTestProfile(this,26)
 
         }

@@ -1,73 +1,167 @@
 package com.limor.app.scenes.notifications
 
+import android.content.Context
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.limor.app.R
+import com.limor.app.scenes.utils.Commons
+import com.limor.app.scenes.utils.DateUiUtil
+import com.limor.app.scenes.utils.DateUiUtil.getTimeElapsedFromDateString
+import com.limor.app.uimodels.NotiUIMode
 import de.hdodenhof.circleimageview.CircleImageView
+import timber.log.Timber
 
-class NotificationAdapter : RecyclerView.Adapter<NotificationAdapter.ViewHolder>(){
+class NotificationAdapter(val context: Context, val notificationsList: ArrayList<NotiUIMode>) :
+    RecyclerView.Adapter<NotificationAdapter.ViewHolder>() {
 
-    private val pic = arrayOf(
-        R.drawable.pic_three,
-        R.drawable.pic_two,
-        R.drawable.pic_one,
-        R.drawable.pic_four,
-        R.drawable.pic_five,
-        R.drawable.pic_six
-    )
+    private lateinit var castCallback: (castId: Int?) -> Unit
+    private lateinit var userCallback: (userId: Int?, username: String?) -> Unit
+    private lateinit var notiReadCallback: (nId: Int?, read: Boolean) -> Unit
     private val imageicon = arrayOf(
-        R.drawable.ic_comment,
-        R.drawable.ic_comment,
-        R.drawable.ic_comment,
-        R.drawable.ic_comment,
-        R.drawable.ic_comment,
-        R.drawable.ic_comment
+        R.drawable.ic_icon_follower,
+        R.drawable.ic_icon_comment,
+        R.drawable.ic_icon_recast,
+        R.drawable.ic_group_902,
     )
-    private val title = arrayOf("Arina commented on your podcast","Harry commented on your podcast","Mr. Smith commented on your podcast","Angelina commented on your podcast","John sent you a message","Anjali sent you a message")
-    private val time = arrayOf("2 Minutes Ago", "5 Minutes Ago","10 Minutes Ago", "1 Hour Ago", "2 Hours Ago", "5 Hours Ago")
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-     val v = LayoutInflater.from(parent.context).inflate(R.layout.notification_item_new,parent,false)
+        val v = LayoutInflater.from(parent.context)
+            .inflate(R.layout.notification_item_new, parent, false)
         return ViewHolder(v)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.profilePic.setImageResource(pic[position])
-        holder.profileIcon.setImageResource(imageicon[position])
-        holder.title.text = title[position]
-        holder.subTitle.text = time[position]
+
+        if (notificationsList.isNotEmpty() && notificationsList.size > position) {
+            val noti = notificationsList[position]
+
+            noti.let { notification ->
+                Glide.with(context).load(notification.initiator?.imageUrl).into(holder.profilePic)
+                when (notification.notificationType) {
+                    "newFollower" -> holder.profileIcon.setImageResource(imageicon[0])
+                    "podcastComment" -> holder.profileIcon.setImageResource(imageicon[1])
+                    "replyComment" -> holder.profileIcon.setImageResource(imageicon[1])
+                    "podcastLike" -> holder.profileIcon.setImageResource(imageicon[3])
+                    "commentLike" -> holder.profileIcon.setImageResource(imageicon[3])
+                    "recast" -> holder.profileIcon.setImageResource(imageicon[2])
+                    "mention" -> holder.profileIcon.setImageResource(imageicon[1])
+                    "friendJoined" -> holder.profileIcon.setImageResource(imageicon[0])
+                    "followSuggestion" -> holder.profileIcon.setImageResource(imageicon[0])
+                    "engagement" -> holder.profileIcon.setImageResource(imageicon[0])
+                }
+                holder.title.text = notification.message
+                holder.subTitle.text = getTimeElapsedFromDateString(notification.createdAt)
+
+                notification.read?.let {
+                    if (it) {
+                        holder.mainBg.setBackgroundColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.read_background
+                            )
+                        )
+                    } else {
+                        holder.mainBg.setBackgroundColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.un_read_background
+                            )
+                        )
+                    }
+                }
+
+
+                holder.bind(this, position, notificationsList, noti)
+            }
+        }
+
 
     }
 
     override fun getItemCount(): Int {
-     return pic.size
+        return notificationsList.size
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
-
-        var profilePic : CircleImageView
-        var profileIcon : CircleImageView
-        var title : TextView
-        var subTitle : TextView
-
-        init {
-            profilePic =  itemView.findViewById(R.id.iv_user)
-            profileIcon = itemView.findViewById(R.id.circleImageView)
-            title = itemView.findViewById(R.id.tv_title)
-            subTitle =  itemView.findViewById(R.id.tv_subtitle)
-
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun bind(
+            notificationAdapter: NotificationAdapter,
+            position: Int,
+            notificationsList: java.util.ArrayList<NotiUIMode>,
+            noti: NotiUIMode
+        ) {
             itemView.setOnClickListener {
-                var position: Int = adapterPosition
-                var context =  itemView.context
+                //Destination
 
+                if(noti.read == false){
+                    notificationAdapter.notiReadCallback.invoke(
+                        noti.id,
+                        true
+                    )
+                }
+                when (noti.redirectTarget?.type) {
+                    "podcast" -> notificationAdapter.castCallback.invoke(noti.redirectTarget.id)
+                    "user" -> notificationAdapter.userCallback.invoke(
+                        noti.redirectTarget.id,
+                        noti.initiator?.username
+                    )
+                    "comment" -> notificationAdapter.userCallback.invoke(
+                        noti.redirectTarget.id,
+                        noti.initiator?.username
+                    )
+                    else -> Timber.d("Unable to handle this type")
+                }
+                notificationAdapter.updateRead(position)
+
+            }
+
+            profilePic.setOnClickListener {
+                //User Profile Activity
+                notificationAdapter.userCallback.invoke(
+                    noti.initiator?.userId,
+                    noti.initiator?.username
+                )
             }
         }
 
-        
+        var profilePic: CircleImageView = itemView.findViewById(R.id.iv_user)
+        var profileIcon: CircleImageView = itemView.findViewById(R.id.circleImageView)
+        var title: TextView = itemView.findViewById(R.id.tv_title)
+        var subTitle: TextView = itemView.findViewById(R.id.tv_subtitle)
+        var mainBg: ConstraintLayout = itemView.findViewById(R.id.main_notification_bg)
+
+
+
+    }
+
+    private fun updateRead(position: Int) {
+        notificationsList[position] = notificationsList[position].copy(read = true)
+        notifyItemChanged(position)
+    }
+
+    fun addItems(it: List<NotiUIMode>) {
+        notificationsList.clear()
+        notificationsList.addAll(it)
+        notifyDataSetChanged()
+    }
+
+    fun openCastCallback(callback: (castId: Int?) -> Unit) {
+        this.castCallback = callback
+    }
+
+    fun addUserTypeCallback(callback: (userId: Int?, username: String?) -> Unit) {
+        this.userCallback = callback
+    }
+
+    fun addNotificationReadListener(callback: (nId: Int?, read: Boolean) -> Unit) {
+        this.notiReadCallback = callback
     }
 
 }

@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
@@ -66,7 +67,7 @@ class FragmentHomeNew : BaseFragment() {
 
     private fun setOnClicks() {
         binding.btnNotification.setOnClickListener {
-            toast("Notifications Coming Soon")
+           findNavController().navigate(R.id.navigation_notifications)
         }
     }
 

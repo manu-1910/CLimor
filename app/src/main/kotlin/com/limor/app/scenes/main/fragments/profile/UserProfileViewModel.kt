@@ -46,7 +46,9 @@ class UserProfileViewModel @Inject constructor(
     fun getUserById(id: Int){
         viewModelScope.launch {
             try {
+                Timber.d("User Data --> "+ id)
                 val user = generalInfoRepository.getUserProfileById(id)
+                Timber.d("User Data --> "+ user.toString())
                 _userProfileData.postValue(user)
             } catch (e: Exception) {
                 _profileErrorLiveData.postValue(e.localizedMessage)

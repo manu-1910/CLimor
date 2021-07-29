@@ -1,0 +1,27 @@
+query GetUserNotifications($limit: Int!,$offset:Int!) {
+    getUserNotifications(limit: $limit,offset: $offset){
+        count,
+        notifications{
+            id
+            read
+            message
+            notificationType
+            createdAt
+            redirectTarget{
+                id,
+                type
+            }
+            initiator{
+                userId,
+                username,
+                firstName,
+                lastName,
+                imageUrl
+            }
+            receiver{
+                userId,
+                username
+            }
+        }
+    }
+}

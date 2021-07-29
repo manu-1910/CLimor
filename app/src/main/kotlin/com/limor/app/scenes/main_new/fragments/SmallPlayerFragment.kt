@@ -93,11 +93,14 @@ class SmallPlayerFragment : BaseFragment() {
             val audioModel = cast.audio!!.mapToAudioTrack()
             playerBinder.getCurrentPlayingPosition(audioModel)
                 .onEach { duration ->
-                    binding.cpiPodcastListeningProgress.progress =
-                        ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
-                    binding.tvMiniplayerSubtitle.text = getString(
-                        R.string.left, duration.toReadableFormat(DURATION_READABLE_FORMAT_2)
-                    )
+                    if(audioModel.duration.seconds>0){
+                        binding.cpiPodcastListeningProgress.progress =
+                            ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
+                        binding.tvMiniplayerSubtitle.text = getString(
+                            R.string.left, duration.toReadableFormat(DURATION_READABLE_FORMAT_2)
+                        )
+
+                    }
                 }
                 .launchIn(this)
 

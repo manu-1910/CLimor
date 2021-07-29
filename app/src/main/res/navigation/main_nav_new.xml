@@ -11,7 +11,7 @@
         tools:layout="@layout/fragment_home_new">
         <action
             android:id="@+id/action_navigation_home_to_dialog_report_podcast"
-            app:destination="@id/dialog_report_podcast"/>
+            app:destination="@id/dialog_report_podcast" />
         <action
             android:id="@+id/action_navigation_home_to_navigation_podcast_activity"
             app:destination="@id/navigation_podcast_activity" />
@@ -99,14 +99,19 @@
         android:id="@+id/navigation_record"
         android:name="com.limor.app.scenes.main.fragments.record.RecordActivity"
         android:label="RecordActivity"
-        tools:layout="@layout/activity_record"></activity>
+        tools:layout="@layout/activity_record"/>
 
-        <fragment
-            android:id="@+id/navigation_notifications"
-            android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
-            android:label="Notification"
-            tools:layout="@layout/fragment_notification">
-        </fragment>
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="com.limor.app.scenes.notifications.Notification"
+        android:label="Notification"
+        tools:layout="@layout/fragment_notification"/>
+
+    <fragment
+        android:id="@+id/navigation_direct_messenger"
+        android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
+        android:label="Messenger"
+        tools:layout="@layout/fragment_dummy"/>
 
     <fragment
         android:id="@+id/navigation_profile"

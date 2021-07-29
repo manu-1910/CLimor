@@ -123,11 +123,17 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         super.onDestroy()
     }
 
+
+    fun openExtendedPlayer(it: Int) {
+        activityPlayerViewManager?.showExtendedPlayer(it)
+    }
+
+
     override fun onResume() {
         super.onResume()
         intent.extras?.getInt(AppNavigationManager.CAST_KEY)?.let { castId ->
             if(castId != 0){
-                activityPlayerViewManager?.showExtendedPlayer(castId)
+               openExtendedPlayer(castId)
             }
         }
     }

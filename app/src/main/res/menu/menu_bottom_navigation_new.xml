@@ -17,7 +17,7 @@
         android:title="" />
 
     <item
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/navigation_direct_messenger"
         android:icon="@drawable/ic_bottom_nav_message"
         android:title="@string/bottom_menu_messenger" />
 

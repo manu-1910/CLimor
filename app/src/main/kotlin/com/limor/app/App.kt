@@ -29,10 +29,8 @@ import javax.inject.Inject
 class App : Application(), HasActivityInjector, HasServiceInjector {
     @Inject
     lateinit var activityInjector: DispatchingAndroidInjector<Activity>
-
     @Inject
     lateinit var serviceInjector: DispatchingAndroidInjector<Service>
-
     @Inject
     lateinit var playerBinder: PlayerBinder
 

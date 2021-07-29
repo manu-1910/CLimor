@@ -211,10 +211,13 @@ class ExtendedPlayerFragment : BaseFragment() {
             val audioModel = cast.audio!!.mapToAudioTrack()
             playerBinder.getCurrentPlayingPosition(audioModel)
                 .onEach { duration ->
-                    binding.lpiPodcastProgress.progress =
-                        ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
-                    binding.tvRecastPlayCurrentPosition.text =
-                        duration.toReadableFormat(DURATION_READABLE_FORMAT_1)
+                    if(audioModel.duration.seconds>0){
+                        binding.lpiPodcastProgress.progress =
+                            ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
+                        binding.tvRecastPlayCurrentPosition.text =
+                            duration.toReadableFormat(DURATION_READABLE_FORMAT_1)
+                    }
+
                 }
                 .launchIn(this)
 
@@ -271,6 +274,10 @@ class ExtendedPlayerFragment : BaseFragment() {
 
         binding.btnPodcastRewindForward.setOnClickListener {
             playerBinder.forward(5000L)
+        }
+
+        binding.btnPodcastRecast.setOnClickListener {
+            recastPodcastViewModel.reCast(castId = cast.id)
         }
 
         binding.llExtendCommentsHeader.setOnClickListener {
@@ -389,7 +396,16 @@ class ExtendedPlayerFragment : BaseFragment() {
             Timber.d("Failed in creating short dynamic link")
         }
 
+        binding.tvPodcastUserName.setOnClickListener {
+            openUserProfile(cast)
+        }
+
+        binding.ivPodcastAvatar.setOnClickListener {
+            openUserProfile(cast)
+        }
     }
+
+
 
     private fun openUserProfile(item: CastUIModel) {
         val userProfileIntent = Intent(context, UserProfileActivity::class.java)

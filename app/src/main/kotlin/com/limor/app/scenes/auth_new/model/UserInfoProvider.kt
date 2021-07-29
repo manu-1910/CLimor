@@ -60,10 +60,10 @@ class UserInfoProvider @Inject constructor(
             try {
                 val response = userRepository.getUserOnboardingStatus() ?: ""
                 val breakpoint = getBreakpointAccordingToEmailPresence(response)
+                _breakPointLiveData.postValue(breakpoint)
                 createDeviceToken().collect {
                     userRepository.createUserDevice(it)
                 }
-                _breakPointLiveData.postValue(breakpoint)
                 delay(500)
                 _breakPointLiveData.postValue(null)
             } catch (e: Exception) {

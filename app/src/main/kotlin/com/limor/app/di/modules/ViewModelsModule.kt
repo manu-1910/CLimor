@@ -19,6 +19,7 @@ import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsViewModel
 import com.limor.app.scenes.main.viewmodels.*
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
+import com.limor.app.scenes.notifications.NotificationViewModel
 import com.limor.app.scenes.notifications.PushNotificationsViewModel
 import dagger.Binds
 import dagger.Module
@@ -343,5 +344,11 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(PodcastInteractionViewModel::class)
     abstract fun bindPodcastInteractionViewModel(viewModel: PodcastInteractionViewModel): ViewModel
+    @Binds
+    @IntoMap
+    @ViewModelKey(NotificationViewModel::class)
+    abstract fun bindNotificationViewModel(viewModel: NotificationViewModel): ViewModel
+
+
 
 }

@@ -124,4 +124,22 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
                 Timber.d("getSuggestedPeople() -> $it")
             }
     }
+
+    suspend fun fetchNotifications(
+        limit: Int,
+        offset: Int
+    ): List<GetUserNotificationsQuery.Notification?> {
+        val query = GetUserNotificationsQuery(limit, offset)
+        val result = apollo.launchQuery(query)
+        return result?.data?.getUserNotifications?.notifications ?: return emptyList()
+    }
+
+    suspend fun updateReadStatus(
+        id: Int,
+        read: Boolean
+    ): String {
+        val query = UpdateNotificationMutation(id, read)
+        val result = apollo.mutate(query)
+        return result?.data?.updateNotification?.status ?: return "error"
+    }
 }
