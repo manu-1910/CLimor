@@ -164,13 +164,24 @@ class FragmentVerifyPhoneNumber : Fragment() {
         model.resendButtonEnableLiveData.observe(viewLifecycleOwner, Observer {
             fabResendCode.isEnabled = it
         })
-
         model.resendButtonCountDownLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null)
                 tvResendCodeStatus.setText(R.string.didnt_receive_sms_code)
             else
                 tvResendCodeStatus.text =
-                    getString(R.string.resend_code_in) + (if (it < 10) "0$it" else it)
+                    getString(R.string.resend_code_in) + (if (it < 10) " 0$it seconds" else " $it seconds")
         })
+        model.phoneAuthHandler.codeSentListener.observe(viewLifecycleOwner,Observer{
+            if(it){
+                model.enableResend()
+            }
+        })
+
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        model.cancelTimers()
     }
 }

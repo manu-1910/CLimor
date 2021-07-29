@@ -60,6 +60,9 @@ class UserInfoProvider @Inject constructor(
             try {
                 val response = userRepository.getUserOnboardingStatus() ?: ""
                 val breakpoint = getBreakpointAccordingToEmailPresence(response)
+                createDeviceToken().collect {
+                    userRepository.createUserDevice(it)
+                }
                 _breakPointLiveData.postValue(breakpoint)
                 delay(500)
                 _breakPointLiveData.postValue(null)
@@ -94,9 +97,12 @@ class UserInfoProvider @Inject constructor(
                 val formattedDate = parseForUserCreation(dob)
                 Timber.d("Formatted DOB $formattedDate")
                 val response = userRepository.createUser(formattedDate) ?: ""
-                createDeviceToken().collect {
-                    userRepository.createUserDevice(it)
+                if(response == "Success"){
+                    createDeviceToken().collect {
+                        userRepository.createUserDevice(it)
+                    }
                 }
+
                 _createUserLiveData.postValue(response)
                 delay(500)
                 _createUserLiveData.postValue(null)

@@ -38,6 +38,11 @@ class PhoneAuthHandler @Inject constructor() :
     val smsCodeValidationPassed: LiveData<Boolean>
         get() = _smsCodeValidationPassed
 
+    private val _codeSentListener =
+        MutableLiveData<Boolean>().apply { value = false }
+    val codeSentListener: LiveData<Boolean>
+        get() = _codeSentListener
+
     fun init(activityReference: WeakReference<Activity>, scope: CoroutineScope) {
         activityRef = activityReference
         this.scope = scope
@@ -53,7 +58,7 @@ class PhoneAuthHandler @Inject constructor() :
 
         val optionsBuilder = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber(phone)
-            .setTimeout(3, TimeUnit.MINUTES)
+            .setTimeout(120, TimeUnit.SECONDS)
             .setActivity(activity!!)
             .setCallbacks(this)
         if (resend && resendToken != null) {
@@ -94,6 +99,7 @@ class PhoneAuthHandler @Inject constructor() :
         // Save verification ID and resending token so we can use them later
         storedVerificationId = verificationId
         resendToken = token
+        _codeSentListener.value = true
     }
 
     override fun onCodeAutoRetrievalTimeOut(message: String) {

@@ -66,29 +66,30 @@ class AuthViewModelNew @Inject constructor(
     private val _resendButtonCountDownLiveData = MutableLiveData<Int?>().apply { value = null }
 
     val resendButtonEnableLiveData: LiveData<Boolean>
-        get() = _resendButtonEnableLiveData
+        get() = _resendButtonEnableLiveData.apply { false }
 
     val resendButtonCountDownLiveData: LiveData<Int?>
-        get() = _resendButtonCountDownLiveData
+        get() = _resendButtonCountDownLiveData.apply { 60 }
 
     private var countDownTimer: CountDownTimer? = null
 
     fun resendCode() {
+        phoneAuthHandler.sendCodeToPhone(formattedPhone, resend = true, signInCase)
+    }
+
+    fun enableResend() {
         _resendButtonEnableLiveData.postValue(false)
-        _resendButtonCountDownLiveData.postValue(30)
-        countDownTimer = object : CountDownTimer(30000, 1000) {
+        _resendButtonCountDownLiveData.postValue(120)
+        countDownTimer = object : CountDownTimer(120000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 _resendButtonCountDownLiveData.postValue((millisUntilFinished / 1000).toInt())
             }
-
             override fun onFinish() {
                 _resendButtonEnableLiveData.postValue(true)
                 _resendButtonCountDownLiveData.postValue(null)
-                phoneAuthHandler.sendCodeToPhone(formattedPhone, resend = true, signInCase)
             }
         }.start()
     }
-
     private val _countries = MutableLiveData<List<Country>>().apply { value = emptyList() }
 
     val countriesLiveData: LiveData<List<Country>>
@@ -456,6 +457,10 @@ class AuthViewModelNew @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
+        countDownTimer?.cancel()
+    }
+
+    fun cancelTimers() {
         countDownTimer?.cancel()
     }
 }
