@@ -3,6 +3,7 @@ package com.limor.app.scenes.main_new.adapters.vh
 import android.content.Intent
 import android.widget.TextView
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import com.limor.app.R
@@ -56,6 +57,9 @@ class ViewHolderRecast(
 
         addTags(item)
 
+        setPodcastCounters(item)
+        setInterationStatus(item)
+
         binding.btnPodcastMore.setOnClickListener {
             val bundle = bundleOf(DialogPodcastMoreActions.CAST_KEY to item)
 
@@ -80,6 +84,31 @@ class ViewHolderRecast(
         binding.castCard.setOnClickListener {
             onCastClick(item)
         }
+    }
+
+    private fun setPodcastCounters(item: CastUIModel) {
+        binding.tvPodcastLikes.text = item.likesCount?.toString()
+        binding.tvPodcastRecast.text = item.recastsCount?.toString()
+        binding.tvPodcastComments.text = item.commentsCount?.toString()
+        binding.tvPodcastNumberOfListeners.text = item.listensCount?.toString()
+    }
+
+    private fun setInterationStatus(item: CastUIModel){
+        binding.btnPodcastLikes.isLiked = item.isLiked ?: false
+        binding.tvPodcastLikes.setTextColor(
+            ContextCompat.getColor(
+                binding.root.context,
+                if (item.isLiked == true) R.color.textAccent else R.color.subtitle_text_color
+            )
+        )
+        binding.btnPodcastRecast.recasted = item.isRecasted ?: false
+        binding.tvPodcastRecast.setTextColor(
+            ContextCompat.getColor(
+                binding.root.context,
+                if (item.isRecasted == true) R.color.textAccent else R.color.subtitle_text_color
+            )
+        )
+        binding.btnPodcastReply.shared = item.isShared ?: false
     }
 
     private fun onCastClick(item: CastUIModel) {

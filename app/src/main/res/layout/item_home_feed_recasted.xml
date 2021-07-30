@@ -358,4 +358,143 @@
 
     </androidx.cardview.widget.CardView>
 
+    <LinearLayout
+        android:id="@+id/counters_seperator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:background="#F0F3F8"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cast_card" />
+
+
+    <!-- COUNTERS-->
+
+    <com.limor.app.components.LikeButton
+        android:id="@+id/btnPodcastLikes"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/counters_seperator"
+        app:unliked_color="@color/subtitle_text_color"
+        app:unliked_res="@drawable/heart" />
+
+    <TextView
+        android:id="@+id/tvPodcastLikes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/subtitle_text_color"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnPodcastLikes"
+        app:layout_constraintStart_toEndOf="@+id/btnPodcastLikes"
+        app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes"
+        tools:text="100" />
+
+
+    <com.limor.app.components.RecastButton
+        android:id="@+id/btnPodcastRecast"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnPodcastLikes"
+        app:layout_constraintStart_toEndOf="@+id/tvPodcastLikes"
+        app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes"
+        android:background="@color/transparent"
+        app:tint="@color/subtitle_text_color"
+        app:not_recasted_color="@color/subtitle_text_color"
+        app:recast_color="@color/textAccent"/>
+
+    <TextView
+        android:id="@+id/tvPodcastRecast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/subtitle_text_color"
+        app:layout_constraintBottom_toBottomOf="@+id/btnPodcastLikes"
+        app:layout_constraintStart_toEndOf="@+id/btnPodcastRecast"
+        app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes"
+        tools:text="100" />
+
+    <ImageButton
+        android:id="@+id/btnPodcastComments"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        android:background="@color/transparent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_podcast_comment"
+        android:tint="@color/subtitle_text_color"
+        app:layout_constraintBottom_toBottomOf="@+id/btnPodcastLikes"
+        app:layout_constraintStart_toEndOf="@+id/tvPodcastRecast"
+        app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes" />
+
+    <TextView
+        android:id="@+id/tvPodcastComments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/subtitle_text_color"
+        app:layout_constraintBottom_toBottomOf="@+id/btnPodcastLikes"
+        app:layout_constraintStart_toEndOf="@+id/btnPodcastComments"
+        app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes"
+        tools:text="100" />
+
+    <ImageView
+        android:id="@+id/ivPodcastListening"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_podcast_listening"
+        app:layout_constraintBottom_toBottomOf="@+id/btnPodcastLikes"
+        app:layout_constraintStart_toEndOf="@id/tvPodcastComments"
+        app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes"
+        app:tint="@color/subtitle_text_color" />
+
+    <TextView
+        android:id="@+id/tvPodcastNumberOfListeners"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/subtitle_text_color"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnPodcastLikes"
+        app:layout_constraintStart_toEndOf="@id/ivPodcastListening"
+        app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes"
+        tools:text="1.4k" />
+
+    <com.limor.app.components.ShareButton
+        android:id="@+id/btnPodcastReply"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/transparent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_podcast_reply"
+        android:tint="@color/subtitle_text_color"
+        app:shared_color="@color/textAccent"
+        app:not_shared_color="@color/subtitle_text_color"
+        app:layout_constraintBottom_toBottomOf="@+id/btnPodcastLikes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPodcastComments"
+        app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes" />
+
+    <LinearLayout
+        android:id="@+id/llDividerAfterCounters"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="#F0F3F8"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnPodcastLikes" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
