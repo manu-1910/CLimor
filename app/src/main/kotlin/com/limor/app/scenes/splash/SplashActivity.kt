@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import com.google.firebase.ktx.Firebase
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.common.SessionManager
@@ -60,6 +62,21 @@ class SplashActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
+
+        val auth = Firebase.auth
+        val intent = intent
+        val emailLink = intent.data.toString()
+
+        if (auth.isSignInWithEmailLink(emailLink)) {
+            // Forward this to the AuthActivity
+            val authIntent = Intent(applicationContext, AuthActivityNew::class.java)
+            authIntent.data = intent.data
+            authIntent.putExtras(intent)
+            startActivity(authIntent)
+            finish()
+            return
+        }
+
         FirebaseDynamicLinks.getInstance()
             .getDynamicLink(intent)
             .addOnSuccessListener(this) { pendingDynamicLinkData ->
@@ -67,10 +84,11 @@ class SplashActivity : BaseActivity() {
                 val deepLink: Uri?
                 if (pendingDynamicLinkData != null) {
                     deepLink = pendingDynamicLinkData.link
-                    val td : Int? = deepLink?.getQueryParameter("id")?.toInt()
+                    val td: Int? = deepLink?.getQueryParameter("id")?.toInt()
                     td?.let {
                         PrefsHandler.savePodCastIdOfSharedLink(this, it)
                     }
+
                     Timber.d("DeepLink fetched $deepLink")
                 }
             }

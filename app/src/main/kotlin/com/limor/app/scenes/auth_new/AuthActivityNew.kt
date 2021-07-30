@@ -30,11 +30,11 @@ class AuthActivityNew : AppCompatActivity() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val model: AuthViewModelNew  by viewModels { viewModelFactory }
+    private val model: AuthViewModelNew by viewModels { viewModelFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AndroidInjection .inject(this)
+        AndroidInjection.inject(this)
         setContentView(R.layout.activity_auth_new)
         clActivityAuthNew.systemUiVisibility =
             SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -75,8 +75,21 @@ class AuthActivityNew : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        checkFirebaseEmailLogin(intent)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        checkFirebaseEmailLogin(intent)
+    }
+
+    private fun checkFirebaseEmailLogin(sourceIntent: Intent?) {
+        if (sourceIntent == null) {
+            return
+        }
+
         FirebaseDynamicLinks.getInstance()
-            .getDynamicLink(intent)
+            .getDynamicLink(sourceIntent)
             .addOnSuccessListener(this) { pendingDynamicLinkData ->
                 // Get deep link from result (may be null if no link is found)
                 val deepLink: Uri?

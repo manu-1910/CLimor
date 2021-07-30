@@ -67,6 +67,7 @@ class UserInfoProvider @Inject constructor(
                 delay(500)
                 _breakPointLiveData.postValue(null)
             } catch (e: Exception) {
+                e.printStackTrace()
                 _userInfoProviderErrorLiveData.postValue(e.message)
                 delay(500)
                 _userInfoProviderErrorLiveData.postValue(null)
