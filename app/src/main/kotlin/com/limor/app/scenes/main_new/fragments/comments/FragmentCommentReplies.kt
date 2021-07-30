@@ -16,8 +16,10 @@ import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentChildItem
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentParentItem
 import com.limor.app.scenes.utils.Commons
+import com.limor.app.scenes.utils.MissingPermissions
 import com.limor.app.scenes.utils.SendData
 import com.limor.app.uimodels.CommentUIModel
+import com.limor.app.util.requestRecordPermissions
 import com.xwray.groupie.GroupieAdapter
 import timber.log.Timber
 import java.io.File
@@ -86,6 +88,7 @@ class FragmentCommentReplies : BaseFragment() {
         }
         binding.taviVoice.initListenerStatus {
             when (it) {
+                is MissingPermissions -> requestRecordPermissions(requireActivity())
                 is SendData -> {
                     if (it.filePath != null) {
                         Commons.getInstance().uploadAudio(

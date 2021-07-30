@@ -40,6 +40,7 @@ import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
+import com.limor.app.scenes.utils.MissingPermissions
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.SendData
 import com.limor.app.service.PlayerBinder
@@ -48,6 +49,7 @@ import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.uimodels.TagUIModel
 import com.limor.app.uimodels.mapToAudioTrack
+import com.limor.app.util.requestRecordPermissions
 import kotlinx.android.synthetic.main.fragment_extended_player.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -302,6 +304,7 @@ class ExtendedPlayerFragment : BaseFragment() {
         // This is copy pasted from FragmentComments, will need to be refactored later...
         binding.taviVoice.initListenerStatus {
             when(it) {
+                is MissingPermissions -> requestRecordPermissions(requireActivity())
                 is SendData -> {
 
                     if (it.filePath != null) {

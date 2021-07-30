@@ -15,6 +15,8 @@ import android.widget.FrameLayout
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.extensions.*
+import com.limor.app.util.hasRecordPermissions
+import com.limor.app.util.requestRecordPermissions
 import kotlinx.android.synthetic.main.item_input_with_audio.view.*
 import kotlin.math.min
 import java.io.File
@@ -32,6 +34,8 @@ object FinishRecord : InputStatus()
 object ListenRecord : InputStatus()
 
 object PauseRecord : InputStatus()
+
+object MissingPermissions: InputStatus()
 
 class SendData(val text: String, val filePath: String?, val duration: Int) : InputStatus()
 
@@ -121,8 +125,12 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         }
 
         btnPodcastStartVoiceComment.setOnClickListener {
-            showRecordingControls(true)
-            setRecording(true)
+            if (hasRecordPermissions(context)) {
+                showRecordingControls(true)
+                setRecording(true)
+            } else {
+                status = MissingPermissions
+            }
         }
 
         btnDeleteVoice.setOnClickListener {
@@ -236,6 +244,11 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     }
 
     private fun setRecording(shouldRecord: Boolean) {
+
+        if (!hasRecordPermissions(context)) {
+            status = MissingPermissions
+            return
+        }
 
         btnPodcastStartStopVoice.isActivated = shouldRecord
 

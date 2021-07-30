@@ -15,9 +15,11 @@ import com.limor.app.extensions.dismissFragment
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main_new.fragments.comments.list.ParentCommentSection
 import com.limor.app.scenes.utils.Commons
+import com.limor.app.scenes.utils.MissingPermissions
 import com.limor.app.scenes.utils.SendData
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
+import com.limor.app.util.requestRecordPermissions
 import com.xwray.groupie.GroupieAdapter
 import timber.log.Timber
 import java.io.File
@@ -65,6 +67,7 @@ class FragmentComments : BaseFragment() {
         }
         binding.taviVoice.initListenerStatus {
             when(it) {
+                is MissingPermissions -> requestRecordPermissions(requireActivity())
                 is SendData -> {
 
                     if (it.filePath != null) {
