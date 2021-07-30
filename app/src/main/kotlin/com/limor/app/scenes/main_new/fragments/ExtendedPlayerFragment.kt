@@ -282,11 +282,15 @@ class ExtendedPlayerFragment : BaseFragment() {
             recastPodcastViewModel.reCast(castId = cast.id)
         }
 
-        binding.llExtendCommentsHeader.setOnClickListener {
+        val openCommentsClickListener: View.OnClickListener = View.OnClickListener {
             RootCommentsFragment.newInstance(cast).also { fragment ->
                 fragment.show(parentFragmentManager, fragment.requireTag())
             }
         }
+
+        binding.llExtendCommentsHeader.setOnClickListener(openCommentsClickListener)
+        binding.btnPodcastComments.setOnClickListener(openCommentsClickListener)
+        binding.tvPodcastComments.setOnClickListener(openCommentsClickListener)
 
         binding.btnPodcastReply.setOnClickListener {
             btnPodcastReply.shared = true
