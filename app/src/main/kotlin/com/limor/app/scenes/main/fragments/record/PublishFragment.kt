@@ -160,6 +160,8 @@ class PublishFragment : BaseFragment() {
     private var twTitle: TextWatcher? = null
     private var twCaption: TextWatcher? = null
     private var rvTags: RecyclerView? = null
+    private var latitude: Double? = null
+    private var longitude: Double? = null
 
     //Flags to publish podcast
     private var audioUploaded: Boolean = false
@@ -216,7 +218,7 @@ class PublishFragment : BaseFragment() {
             configureMediaPlayerWithButtons()
             updateDraft()
             apiCallPublishPodcast()
-            //getCityOfDevice()
+            getCityOfDevice()
             deleteDraft()
             apiCallHashTags()
         }
@@ -834,8 +836,8 @@ class PublishFragment : BaseFragment() {
                 meta_data = PodcastMetadata(
                     title = etDraftTitle?.text.toString(),
                     caption = etDraftCaption?.text.toString(),
-                    latitude = Input.fromNullable(null),
-                    longitude = Input.fromNullable(null),
+                    latitude = Input.fromNullable(latitude),
+                    longitude = Input.fromNullable(longitude),
                     image_url = Input.fromNullable(imageUrlFinal),
                     category_id = publishViewModel.categorySelectedId,
                     language_code = publishViewModel.languageCode,
@@ -1277,6 +1279,10 @@ class PublishFragment : BaseFragment() {
                         location.longitude,
                         1
                     )
+                    location.let {
+                        latitude = it.latitude
+                        longitude = it.longitude
+                    }
                     when {
                         address[0].locality != null -> {
                             locationsViewModel.uiLocationsRequest.term = address[0].locality

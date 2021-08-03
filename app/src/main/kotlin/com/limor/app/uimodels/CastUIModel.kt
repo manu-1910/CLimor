@@ -1,12 +1,15 @@
 package com.limor.app.uimodels
 
 import android.content.Context
+import android.location.Address
+import android.location.Geocoder
 import android.os.Parcelable
 import com.limor.app.*
 import com.limor.app.extensions.toLocalDateTime
 import com.limor.app.scenes.utils.DateUiUtil
 import kotlinx.android.parcel.Parcelize
 import java.time.LocalDateTime
+import java.util.*
 
 @Parcelize
 data class CastUIModel(
@@ -45,14 +48,38 @@ data class CastUIModel(
      * X days ago - Berlin
      * Today - Berlin
      */
-    fun getCreationDateAndPlace(context: Context) = "${
-        createdAt?.let {
-            DateUiUtil.getPastDateDaysTextDescription(
-                createdAt,
-                context
-            )
+    fun getCreationDateAndPlace(context: Context): String{
+        var location = address
+        if(location.isNullOrEmpty()){
+            location = getLocation(context)
         }
-    } - $address"
+        return "${
+            createdAt?.let {
+                DateUiUtil.getPastDateDaysTextDescription(
+                    createdAt,
+                    context
+                )
+            }
+        } ${if(location.isNullOrEmpty()) "" else " - $location"}"
+    }
+
+    private fun getLocation(context: Context): String{
+        if(latitude != null && longitude != null){
+            val geoCoder = Geocoder(context, Locale.getDefault()) //it is Geocoder
+            try {
+                val address: List<Address> = geoCoder.getFromLocation(
+                    latitude.toDouble(),
+                    longitude.toDouble(),
+                    1
+                )
+                return address[0].locality
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        return ""
+    }
+
 }
 
 fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =
