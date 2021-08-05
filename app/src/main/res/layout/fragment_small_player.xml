@@ -6,9 +6,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
-    android:background="@drawable/dialog_white_rounded_shape"
-    android:elevation="4dp"
-    android:enabled="false">
+    android:elevation="4dp">
+
+    <LinearLayout
+        android:id="@+id/smallPL"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/dialog_white_rounded_shape"/>
+
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/cpiPodcastListeningProgress"
@@ -109,7 +117,6 @@
         app:layout_constraintStart_toStartOf="@+id/cpiPodcastListeningProgress"
         app:layout_constraintTop_toTopOf="@+id/cpiPodcastListeningProgress"
         app:tint="@color/white" />
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
