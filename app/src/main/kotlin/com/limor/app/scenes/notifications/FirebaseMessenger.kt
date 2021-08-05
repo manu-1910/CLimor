@@ -38,16 +38,16 @@ class FirebaseMessenger : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
-        Timber.d("Push Notification--> $remoteMessage")
-        val notification = remoteMessage.notification
+        Timber.d("Pusher--> ${Gson().toJson(remoteMessage)}")
+       // val notification = remoteMessage.notification
         val data = remoteMessage.data
         try {
             val dataObject = JSONObject(Gson().toJson(data))
             var message = ""
             var ttl = ""
-            notification?.let {
-                message = it.body.toString()
-                ttl = it.title.toString()
+            dataObject.let {
+                message = ""
+                ttl = it.getString("title")
             }
 
             getNavigationIntent(dataObject)?.let { sendNotification(ttl, message, it) }
@@ -116,12 +116,11 @@ class FirebaseMessenger : FirebaseMessagingService() {
     }
 
     private fun getNavigationIntent(dataObject: JSONObject): Intent? {
-        return when (dataObject.get("type")) {
+        return when (dataObject.get("targetType")) {
             "user" -> AppNavigationManager.navigateToUserProfileIntent(this, dataObject)
-            "comment" -> AppNavigationManager.navigateToUserProfileIntent(this, dataObject)
+            "comment" -> AppNavigationManager.navigateToExtendedPlayerIntent(this, dataObject)
             "podcast" -> AppNavigationManager.navigateToExtendedPlayerIntent(this, dataObject)
-            else -> AppNavigationManager.navigateToTestProfile(this,26)
-
+            else -> null
         }
     }
 

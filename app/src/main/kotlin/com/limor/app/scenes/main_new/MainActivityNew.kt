@@ -84,17 +84,19 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         activityPlayerViewManager?.hidePlayer()
     }
 
-    fun checkPodCastDynamicLink(){
+    fun checkPodCastDynamicLink() {
         val castId = PrefsHandler.getPodCastIdOfSharedLink(this)
-        if(castId != 0){
+        if (castId != 0) {
             castId.let {
-                showPlayer(PlayerViewManager.PlayerArgs(
-                    PlayerViewManager.PlayerType.EXTENDED,
-                    it
-                ))
+                showPlayer(
+                    PlayerViewManager.PlayerArgs(
+                        PlayerViewManager.PlayerType.EXTENDED,
+                        it
+                    )
+                )
             }
             PrefsHandler.savePodCastIdOfSharedLink(this, 0)
-        } else{
+        } else {
             FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(intent)
                 .addOnSuccessListener(this) { pendingDynamicLinkData ->
@@ -102,12 +104,14 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
                     val deepLink: Uri?
                     if (pendingDynamicLinkData != null) {
                         deepLink = pendingDynamicLinkData.link
-                        val td : Int = deepLink?.getQueryParameter("id")?.toInt()!!
+                        val td: Int = deepLink?.getQueryParameter("id")?.toInt()!!
                         td.let {
-                            showPlayer(PlayerViewManager.PlayerArgs(
-                                PlayerViewManager.PlayerType.EXTENDED,
-                                td
-                            ))
+                            showPlayer(
+                                PlayerViewManager.PlayerArgs(
+                                    PlayerViewManager.PlayerType.EXTENDED,
+                                    td
+                                )
+                            )
                         }
                     }
                 }
@@ -132,8 +136,10 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     override fun onResume() {
         super.onResume()
         intent.extras?.getInt(AppNavigationManager.CAST_KEY)?.let { castId ->
-            if(castId != 0){
-               openExtendedPlayer(castId)
+            if (castId != 0) {
+                Handler().postDelayed({
+                    openExtendedPlayer(castId)
+                }, 500)
             }
         }
     }

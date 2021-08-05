@@ -14,20 +14,20 @@ object AppNavigationManager {
 
     fun navigateToUserProfileIntent(context:Context,data:JSONObject):Intent{
         val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-        userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY,"User Profile")
-        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY,data.getInt("id"))
+        userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY,data.getString("initiatorUsername"))
+        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY,data.getString("initiatorId"))
         return userProfileIntent
     }
 
     fun navigateToExtendedPlayerIntent(context:Context,data:JSONObject): Intent{
         val userProfileIntent = Intent(context, MainActivityNew::class.java)
-        userProfileIntent.putExtra(CAST_KEY,data.getInt("id"))
+        userProfileIntent.putExtra(CAST_KEY,data.getString("targetId").toInt())
         return userProfileIntent
     }
 
     fun navigateToTestProfile(context: Context,i: Int): Intent? {
         val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-        userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY,"User Profile")
+        userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY,"")
         userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY,i)
         return userProfileIntent
     }
