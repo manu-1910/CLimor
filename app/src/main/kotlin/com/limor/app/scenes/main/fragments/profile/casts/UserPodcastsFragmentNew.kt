@@ -171,6 +171,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     }
 
     private fun onCastClick(cast: CastUIModel) {
+        Timber.d("Clicked ${activity}")
         (activity as? PlayerViewManager)?.showExtendedPlayer(cast.id)
     }
 

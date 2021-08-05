@@ -82,10 +82,8 @@ class SmallPlayerFragment : BaseFragment() {
                 playerBinder.playPause(audio.mapToAudioTrack(), showNotification = true)
             }
         }
-        binding.smallPL.setOnClickListener {
-            openExtendedPlayer()
-        }
-        binding.tvMiniPlayerTitle.setOnClickListener {
+        binding.clMiniPlayer.setOnClickListener {
+            Timber.d("Layout click")
             openExtendedPlayer()
         }
     }

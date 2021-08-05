@@ -190,7 +190,7 @@ class ExtendedPlayerFragment : BaseFragment() {
     }
 
     private fun setPodcastOwnerInfo(cast: CastUIModel) {
-        binding.tvPodcastUserName.text = cast.owner?.getFullName()
+        binding.tvPodcastUserName.text = cast.owner?.username
         binding.tvPodcastUserSubtitle.text = cast.getCreationDateAndPlace(requireContext())
     }
 

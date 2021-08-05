@@ -155,7 +155,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     }
 
     private fun setupDefaultView() {
-        if ((activity) is MainActivityNew) {
+       /* if ((activity) is MainActivityNew) {
             binding.toolbar.title.text = getString(R.string.title_profile)
         } else {
             //Toolbar
@@ -167,6 +167,15 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             binding.toolbar.btnUserSettings.setImageResource(R.drawable.ic_three_dots_black)
 
 
+        }*/
+
+        val username = activity?.intent?.extras?.getString(USER_NAME_KEY)
+
+        username?.let {
+            binding.toolbar.title.text = it
+            binding.toolbar.btnUserSettings.setImageResource(R.drawable.ic_three_dots_black)
+        }?: kotlin.run {
+            binding.toolbar.title.text = "Profile"
         }
     }
 
@@ -245,16 +254,13 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     }
 
     override fun load() {
-        when (activity) {
-            is MainActivityNew -> {
-                model.getUserProfile()
-                // model.getUserById(PrefsHandler.getCurrentUserId(requireContext()))
-            }
-            is UserProfileActivity -> {
-                activity?.intent?.extras?.getInt(USER_ID_KEY)?.let {
-                    model.getUserById(it)
-                }
-            }
+
+        val id = activity?.intent?.extras?.getInt(USER_ID_KEY)
+
+        id?.let {
+            model.getUserById(it)
+        }?: kotlin.run {
+            model.getUserProfile()
         }
 
 

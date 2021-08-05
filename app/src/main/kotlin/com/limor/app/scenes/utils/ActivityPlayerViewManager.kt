@@ -10,6 +10,7 @@ import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
 import com.limor.app.scenes.main_new.fragments.SmallPlayerFragment
 import com.limor.app.service.PlayerBinder
+import timber.log.Timber
 import kotlin.math.abs
 
 class ActivityPlayerViewManager(
@@ -34,7 +35,7 @@ class ActivityPlayerViewManager(
 
     override fun showPlayer(args: PlayerViewManager.PlayerArgs) {
         currentArgs = args
-
+        Timber.d("Clicked inside ${currentArgs}")
         when (args.playerType) {
             PlayerViewManager.PlayerType.SMALL -> {
                 playerBinding.playerContainer.makeVisible()
