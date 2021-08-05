@@ -445,29 +445,6 @@
         app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes"
         tools:text="100" />
 
-    <ImageView
-        android:id="@+id/ivPodcastListening"
-        android:layout_width="wrap_content"
-        android:layout_height="24dp"
-        android:layout_marginStart="16dp"
-        android:src="@drawable/ic_podcast_listening"
-        app:layout_constraintBottom_toBottomOf="@+id/btnPodcastLikes"
-        app:layout_constraintStart_toEndOf="@id/tvPodcastComments"
-        app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes"
-        app:tint="@color/subtitle_text_color" />
-
-    <TextView
-        android:id="@+id/tvPodcastNumberOfListeners"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:textColor="@color/subtitle_text_color"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/btnPodcastLikes"
-        app:layout_constraintStart_toEndOf="@id/ivPodcastListening"
-        app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes"
-        tools:text="1.4k" />
-
     <com.limor.app.components.ShareButton
         android:id="@+id/btnPodcastReply"
         android:layout_width="24dp"

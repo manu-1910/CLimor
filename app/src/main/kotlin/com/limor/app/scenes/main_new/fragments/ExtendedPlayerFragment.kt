@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.net.Uri
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -38,6 +39,7 @@ import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
+import com.limor.app.scenes.main_new.view_model.ListenPodcastViewModel
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
 import com.limor.app.scenes.utils.MissingPermissions
@@ -82,6 +84,7 @@ class ExtendedPlayerFragment : BaseFragment() {
     private val castId: Int by lazy { requireArguments()[CAST_ID_KEY] as Int }
     private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
     private val podcastInteractionViewModel: PodcastInteractionViewModel by activityViewModels { viewModelFactory }
+    private val listenPodcastViewModel: ListenPodcastViewModel by viewModels { viewModelFactory }
 
     private var playerUpdatesJob: Job? = null
     private var updatePodcasts: Boolean = false
@@ -102,6 +105,7 @@ class ExtendedPlayerFragment : BaseFragment() {
             )
             isEnabled = false
         }
+        listenPodcastViewModel.listenPodcast(castId)
     }
 
     override fun onCreateView(
@@ -171,6 +175,7 @@ class ExtendedPlayerFragment : BaseFragment() {
         addTags(cast)
         initLikeState(cast)
         initRecastState(cast)
+        initListenState(cast)
     }
 
     private fun subscribeToShareUpdate(){
@@ -199,6 +204,20 @@ class ExtendedPlayerFragment : BaseFragment() {
         initRecastState(cast)
         binding.btnPodcastRecast.recasted = cast.isRecasted == true
         binding.btnPodcastReply.shared = cast.isShared == true
+    }
+
+    private fun initListenState(cast: CastUIModel){
+        binding.tvPodcastNumberOfListeners.setTextColor(
+            ContextCompat.getColor(
+                binding.root.context,
+                if(cast.isListened == true) R.color.textAccent else R.color.subtitle_text_color
+            )
+        )
+        if (cast.isListened == true) {
+            binding.ivPodcastListening.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(binding.root.context, R.color.textAccent))
+        } else {
+            binding.ivPodcastListening.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(binding.root.context, R.color.subtitle_text_color))
+        }
     }
 
     private fun setAudioInfo(cast: CastUIModel) {

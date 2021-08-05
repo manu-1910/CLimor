@@ -1,0 +1,8 @@
+mutation ListenPodcastMutation($podcastId: Int!){
+    listenPodcast(podcastId: $podcastId){
+        podcast_id,
+        count,
+        listened,
+        created
+    }
+}

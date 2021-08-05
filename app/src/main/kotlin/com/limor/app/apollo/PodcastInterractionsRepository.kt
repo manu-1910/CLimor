@@ -100,4 +100,11 @@ class PodcastInteractionsRepository @Inject constructor(val apollo: Apollo) {
         val result = apollo.mutate(mutation)
         return result?.data?.unLikeComment?.comment_id
     }
+
+    suspend fun listenPodcast(podcastId: Int): Boolean?{
+        val mutation = ListenPodcastMutation(podcastId)
+        val result = apollo.mutate(mutation)
+        return result?.data?.listenPodcast?.listened
+    }
+
 }

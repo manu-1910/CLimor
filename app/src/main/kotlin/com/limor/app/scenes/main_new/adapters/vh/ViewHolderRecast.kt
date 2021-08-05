@@ -1,6 +1,7 @@
 package com.limor.app.scenes.main_new.adapters.vh
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.widget.TextView
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.ContextCompat
@@ -90,7 +91,6 @@ class ViewHolderRecast(
         binding.tvPodcastLikes.text = item.likesCount?.toString()
         binding.tvPodcastRecast.text = item.recastsCount?.toString()
         binding.tvPodcastComments.text = item.commentsCount?.toString()
-        binding.tvPodcastNumberOfListeners.text = item.listensCount?.toString()
     }
 
     private fun setInterationStatus(item: CastUIModel){
