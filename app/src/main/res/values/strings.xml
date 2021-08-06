@@ -555,11 +555,11 @@
     <string name="retry">Retry</string>
     <string name="finish">Finish</string>
     <string name="new_onboarding_title1">Welcome to Limor!</string>
-    <string name="new_onboarding_title2"><![CDATA[Tap, Record & Upload as Simple as that]]></string>
-    <string name="new_onboarding_title3"><![CDATA[Publish & Let the World Know your Voice]]></string>
-    <string name="new_onboarding_subtitle1">Lorem Ipsum is simply dummy text of the printing and typesetting</string>
-    <string name="new_onboarding_subtitle2">Lorem Ipsum is simply dummy text of the printing and typesetting</string>
-    <string name="new_onboarding_subtitle3">Lorem Ipsum is simply dummy text of the printing and typesetting</string>
+    <string name="new_onboarding_title2"><![CDATA[Sharing your voice has never been easier ]]></string>
+    <string name="new_onboarding_title3"><![CDATA[Have a conversation with the world]]></string>
+    <string name="new_onboarding_subtitle1">The home of social audio and where voices meet.</string>
+    <string name="new_onboarding_subtitle2"><![CDATA[Record, edit, share & Interact it’s as Simple as that!]]></string>
+    <string name="new_onboarding_subtitle3">Have real conversations, build meaningful relationships</string>
     <string name="sign_in">Sign in</string>
     <string name="welcome_back_to_limor">Welcome back to Limor</string>
     <string name="phone_number">Phone Number</string>
