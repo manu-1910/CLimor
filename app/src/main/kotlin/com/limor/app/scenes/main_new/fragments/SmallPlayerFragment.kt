@@ -82,6 +82,12 @@ class SmallPlayerFragment : BaseFragment() {
                 playerBinder.playPause(audio.mapToAudioTrack(), showNotification = true)
             }
         }
+        binding.ivAvatarMiniPlayer.setOnClickListener {
+            Timber.d("LOGGGG")
+            cast.audio?.let { audio ->
+                playerBinder.playPause(audio.mapToAudioTrack(), showNotification = true)
+            }
+        }
         binding.clMiniPlayer.setOnClickListener {
             Timber.d("Layout click")
             openExtendedPlayer()
