@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.ktx.Firebase
+import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.common.SessionManager
@@ -16,6 +17,7 @@ import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main_new.MainActivityNew
+import com.limor.app.util.AppState
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -52,6 +54,9 @@ class SplashActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if(PrefsHandler.getAppLastState(App.instance) == AppState.BACKGROUND.state){
+            finish()
+        }
         setContentView(R.layout.activity_splash)
         mDelayHandler = Handler()
         mDelayHandler!!.postDelayed(

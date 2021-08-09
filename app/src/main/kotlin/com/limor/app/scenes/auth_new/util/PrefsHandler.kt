@@ -2,6 +2,7 @@ package com.limor.app.scenes.auth_new.util
 
 import android.content.Context
 import androidx.core.content.edit
+import com.limor.app.util.AppState
 
 object PrefsHandler {
 
@@ -11,6 +12,8 @@ object PrefsHandler {
     private const val LABEL_USER_ID = "current_user_id"
     private const val LABEL_USER_DEVICE_TOKEN = "current_user_device_token"
     private const val LABEL_CAST_ID = "cast_id"
+    private const val LABEL_APP_STATE = "app_state"
+    private const val LABEL_APP_LAST_STATE = "app_last_state"
 
     fun saveEmailToSignIn(context: Context, email: String) {
         sharedPreferences(context).edit(true) {
@@ -62,5 +65,24 @@ object PrefsHandler {
         }
     }
     fun getCurrentUserDeviceToken(context: Context) = sharedPreferences(context).getString(LABEL_USER_DEVICE_TOKEN, null)
+
+    fun setAppState(context: Context, appState: AppState){
+        setAppLastState(context, getAppState(context))
+        sharedPreferences(context).edit(true) {
+            putInt(LABEL_APP_STATE, appState.state)
+        }
+    }
+
+    fun getAppState(context: Context): Int = sharedPreferences(context).getInt(
+        LABEL_APP_STATE, -1)
+
+    fun setAppLastState(context: Context, state: Int){
+        sharedPreferences(context).edit(true) {
+            putInt(LABEL_APP_LAST_STATE, state)
+        }
+    }
+
+    fun getAppLastState(context: Context): Int = sharedPreferences(context).getInt(
+        LABEL_APP_LAST_STATE, -1)
 
 }

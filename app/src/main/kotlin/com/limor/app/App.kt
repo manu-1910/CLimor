@@ -5,14 +5,17 @@ import android.app.Application
 import android.app.Service
 import android.provider.Settings
 import androidx.annotation.VisibleForTesting
-import com.facebook.FacebookSdk
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
-import com.limor.app.apollo.UserRepository
 import com.limor.app.di.AppInjector
 import com.limor.app.di.components.AppComponent
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.service.PlayerBinder
+import com.limor.app.util.AppState
 import com.limor.app.util.CrashReportingTree
 import com.novoda.merlin.MerlinsBeard
 import com.smartlook.sdk.smartlook.Smartlook
@@ -26,7 +29,7 @@ import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class App : Application(), HasActivityInjector, HasServiceInjector {
+class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObserver{
     @Inject
     lateinit var activityInjector: DispatchingAndroidInjector<Activity>
     @Inject
@@ -90,8 +93,28 @@ class App : Application(), HasActivityInjector, HasServiceInjector {
 //                println("FFmpeg loaded error")
 //            }
 //        })
+        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+    }
 
+    @OnLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_STOP)
+    fun onAppBackground(){
+        PrefsHandler.setAppState(App.instance, AppState.BACKGROUND)
+    }
 
+    @OnLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_START)
+    fun onAppForeground(){
+        PrefsHandler.setAppState(App.instance, AppState.FOREGROUND)
+    }
+
+    @OnLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_DESTROY)
+    fun onAppDestroyed(){
+        PrefsHandler.setAppState(App.instance, AppState.DESTROYED)
+    }
+
+    @OnLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_CREATE)
+    fun onAppCreated(){
+        PrefsHandler.setAppState(App.instance, AppState.CREATED)
+        PrefsHandler.setAppLastState(App.instance, 3)
     }
 
     private fun getMessageToken() {

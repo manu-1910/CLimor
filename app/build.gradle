@@ -109,6 +109,7 @@ android {
             buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-5439b.appspot.com/"'
 
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://devlimorapp.page.link"'
+            buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
 
             minifyEnabled false
             debuggable true
@@ -140,6 +141,7 @@ android {
             buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-5439b.appspot.com/"'
 
             buildConfigField "String", "LIMOR_DOMAIN_URL", "https://devlimorapp.page.link"
+            buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
 
             minifyEnabled false
             debuggable true
@@ -172,6 +174,7 @@ android {
             buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-staging.appspot.com/images/"'
 
             buildConfigField "String", "LIMOR_DOMAIN_URL", "https://staginglimorapp.page.link"
+            buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-staging.web.app"'
 
             minifyEnabled false
             debuggable true
@@ -202,6 +205,7 @@ android {
             buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-5439b.appspot.com/"'
 
             buildConfigField "String", "LIMOR_DOMAIN_URL", "https://castpreview.limor.ie"
+            buildConfigField "String", "LIMOR_WEB_APP", '"https://castpreview.limor.ie"'
 
             minifyEnabled true
             debuggable false
@@ -271,6 +275,7 @@ dependencies {
     implementation deps.lifecycle.viewmodel
     implementation deps.lifecycle.livedata
     implementation deps.lifecycle.runtime
+    implementation "androidx.lifecycle:lifecycle-process:2.3.1"
     implementation 'androidx.viewpager:viewpager:1.0.0'
     kapt deps.lifecycle.compiler
 

@@ -67,6 +67,6 @@ class Constants{
         const val SHARED_PODCAST_ID = "shared_podcast_id"
         const val LIMER_DOMAIN_URL = BuildConfig.LIMOR_DOMAIN_URL
         const val PODCAST_URL = "https://limorapp.page.link/podcasts?id=%s"
-        const val DOMAIN_URL = "https://limor-5439b.web.app/"
+        const val DOMAIN_URL = BuildConfig.LIMOR_WEB_APP
     }
 }

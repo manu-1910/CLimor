@@ -54,8 +54,6 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
 
         activityPlayerViewManager =
             ActivityPlayerViewManager(supportFragmentManager, playerBinding, playerBinder)
-
-        checkPodCastDynamicLink()
     }
 
     private fun setupFabClickListener() {
@@ -142,6 +140,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
                 }, 500)
             }
         }
+        checkPodCastDynamicLink()
     }
 
 }
