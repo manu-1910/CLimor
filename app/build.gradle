@@ -28,8 +28,8 @@ android {
         targetSdkVersion build_versions.target_sdk
 
         applicationId globalConfiguration.androidApplicationId
-        versionCode 73
-        versionName "0.0.73"
+        versionCode 74
+        versionName "0.0.74"
 
         testInstrumentationRunner globalConfiguration.testInstrumentationRunner
         testApplicationId globalConfiguration.testApplicationId
@@ -111,6 +111,8 @@ android {
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://devlimorapp.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
 
+            buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://devlimorapp.page.link"'
+
             minifyEnabled false
             debuggable true
             zipAlignEnabled true
@@ -142,6 +144,8 @@ android {
 
             buildConfigField "String", "LIMOR_DOMAIN_URL", "https://devlimorapp.page.link"
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
+
+            buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://devlimorapp.page.link"'
 
             minifyEnabled false
             debuggable true
@@ -176,6 +180,8 @@ android {
             buildConfigField "String", "LIMOR_DOMAIN_URL", "https://staginglimorapp.page.link"
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-staging.web.app"'
 
+            buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://staginglimorapp.page.link"'
+
             minifyEnabled false
             debuggable true
             zipAlignEnabled true
@@ -206,6 +212,8 @@ android {
 
             buildConfigField "String", "LIMOR_DOMAIN_URL", "https://castpreview.limor.ie"
             buildConfigField "String", "LIMOR_WEB_APP", '"https://castpreview.limor.ie"'
+
+            buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://castpreview.limor.ie"'
 
             minifyEnabled true
             debuggable false
