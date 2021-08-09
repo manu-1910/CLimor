@@ -1,13 +1,8 @@
 package com.limor.app.apollo
 
-import android.provider.Settings
 import com.apollographql.apollo.api.Input
-import com.google.firebase.messaging.FirebaseMessaging
 import com.limor.app.*
-import com.limor.app.common.Constants
 import com.limor.app.scenes.auth_new.util.PrefsHandler
-import com.limor.app.usecases.CreateUserReportUseCase
-import kotlinx.coroutines.CoroutineScope
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -29,6 +24,14 @@ class UserRepository @Inject constructor(val apollo: Apollo){
             queryResult?.data?.updateUser?.status
         Timber.d("UpdateUserNameMutation -> $updateUserNameResult")
         return updateUserNameResult
+    }
+
+    suspend fun updateUserDOB(dob: String): String? {
+        val query = UpdateUserDOBMutation(dob)
+        val queryResult = apollo.mutate(query)
+        val updateUserDOBResult = queryResult?.data?.updateUser?.status
+        Timber.d("updateUserDOB -> $updateUserDOBResult")
+        return updateUserDOBResult
     }
 
     suspend fun updateUserProfile(

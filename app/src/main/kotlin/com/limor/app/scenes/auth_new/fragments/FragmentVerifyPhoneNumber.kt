@@ -7,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
@@ -112,6 +114,10 @@ class FragmentVerifyPhoneNumber : Fragment() {
         model.submitSmsCode(smsCodesList())
     }
 
+    private fun saveUserDOBAndProceed() {
+        model.updateDOB()
+    }
+
     @SuppressLint("SetTextI18n")
     private fun subscribeToViewModel() {
         tvPhone.text = model.formattedPhone
@@ -152,8 +158,15 @@ class FragmentVerifyPhoneNumber : Fragment() {
 
         model.navigationBreakPointLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
-            model.saveNavigationBreakPoint(requireContext(), it)
-            navigateToFragmentByNavigationBreakpoints(requireActivity(), it)
+
+            // When a migrating user has entered their DOB and verified their phone number but
+            // hasn't changed their onboarding status we need to update the backend with their
+            // newly entered DOB and change the onboarding status
+            if (it == NavigationBreakpoints.DOB_PHONE_COLLECTION.destination) {
+                saveUserDOBAndProceed()
+            } else {
+                navigateToBreakPoint(it)
+            }
         })
 
         model.smsCodeValidationPassed.observe(viewLifecycleOwner, Observer {
@@ -177,7 +190,24 @@ class FragmentVerifyPhoneNumber : Fragment() {
             }
         })
 
+        model.updateUserDOBLiveData.observe(viewLifecycleOwner) {
+            if (it.isNullOrEmpty()) {
+                return@observe
+            }
+            when (it) {
+                "Success" -> navigateToBreakPoint(NavigationBreakpoints.PREFERENCE_COLLECTION.destination)
+                "Failure" -> showError(R.string.could_not_update_dob)
+            }
+        }
+    }
 
+    private fun showError(messageResId: Int) {
+        Toast.makeText(requireContext(), messageResId, Toast.LENGTH_LONG).show()
+    }
+
+    private fun navigateToBreakPoint(breakPointDestination: String) {
+        model.saveNavigationBreakPoint(requireContext(), breakPointDestination)
+        navigateToFragmentByNavigationBreakpoints(requireActivity(), breakPointDestination)
     }
 
     override fun onDestroy() {

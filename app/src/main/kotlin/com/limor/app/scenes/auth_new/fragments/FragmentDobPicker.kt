@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
@@ -27,11 +30,16 @@ class FragmentDobPicker : Fragment() {
         return inflater.inflate(R.layout.fragment_new_auth_dob_picker, container, false)
     }
 
+
+    private fun navigateToPhoneAuth() {
+        findNavController()
+            .navigate(R.id.action_fragment_new_auth_dob_picker_to_fragment_new_auth_phone_enter)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         btnDobPickerContinue.setOnClickListener {
-            it.findNavController()
-                .navigate(R.id.action_fragment_new_auth_dob_picker_to_fragment_new_auth_phone_enter)
+            navigateToPhoneAuth()
         }
 
         btnDobPickerBack.setOnClickListener {

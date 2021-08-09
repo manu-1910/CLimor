@@ -43,6 +43,10 @@ class UserInfoProvider @Inject constructor(
     val updateUserNameLiveData: LiveData<String?>
         get() = _updateUserNameLiveData
 
+    private val _updateUserDOBLiveData = MutableLiveData<String?>().apply { value = null }
+    val updateUserDOBLiveData: LiveData<String?>
+        get() = _updateUserDOBLiveData
+
     private val _updatePreferredInfoLiveData = MutableLiveData<String?>().apply { value = null }
     val updatePreferredInfoLiveData: LiveData<String?>
         get() = _updatePreferredInfoLiveData
@@ -55,6 +59,7 @@ class UserInfoProvider @Inject constructor(
     val userInfoProviderErrorLiveData: LiveData<Any?>
         get() = _userInfoProviderErrorLiveData
 
+    @ExperimentalCoroutinesApi
     fun getUserOnboardingStatus(scope: CoroutineScope) {
         scope.launch(Dispatchers.Default) {
             try {
@@ -68,6 +73,7 @@ class UserInfoProvider @Inject constructor(
                 _breakPointLiveData.postValue(null)
             } catch (e: Exception) {
                 e.printStackTrace()
+                _breakPointLiveData.postValue(null)
                 _userInfoProviderErrorLiveData.postValue(e.message)
                 delay(500)
                 _userInfoProviderErrorLiveData.postValue(null)
@@ -81,6 +87,24 @@ class UserInfoProvider @Inject constructor(
         val hasEmail = JwtChecker.isJwtContainsEmail(jwt)
         return if (hasEmail) response else NavigationBreakpoints.ACCOUNT_CREATION.destination
 
+    }
+
+    fun updateDOB(scope: CoroutineScope, dob: Long) {
+        if (dob == 0L) {
+            return
+        }
+        scope.launch {
+            try {
+                val formattedDate = parseForUserCreation(dob)
+                Timber.d("Formatted DOB $formattedDate")
+                val response = userRepository.updateUserDOB(formattedDate) ?: ""
+                _updateUserDOBLiveData.postValue(response)
+            } catch (e: Exception) {
+                _userInfoProviderErrorLiveData.postValue(e.message)
+                delay(500)
+                _userInfoProviderErrorLiveData.postValue(null)
+            }
+        }
     }
 
     fun createUser(scope: CoroutineScope, dob: Long) {
@@ -121,6 +145,7 @@ class UserInfoProvider @Inject constructor(
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
             token ->
             trySend(token)
+            close()
         }
         awaitClose()
     }

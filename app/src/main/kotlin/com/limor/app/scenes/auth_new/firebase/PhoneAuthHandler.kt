@@ -8,6 +8,8 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.limor.app.R
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import kotlinx.coroutines.CoroutineScope
@@ -68,10 +70,52 @@ class PhoneAuthHandler @Inject constructor() :
         shouldSendCode = false
     }
 
+    private fun linkPhone(credential: PhoneAuthCredential, onDone: () -> Unit = {}) {
+        val firebaseUser = Firebase.auth.currentUser
+
+        if (firebaseUser == null) {
+            Timber.d("No Firebase user to link a phone to.")
+            onDone()
+            return
+        }
+
+        val task = firebaseUser.linkWithCredential(credential)
+        task.addOnCompleteListener {
+            println("onVerificationCompleted: Linked user's phone? ${it.isSuccessful} -> ${it.exception}")
+            onDone()
+        }
+        task.addOnSuccessListener {
+            println("onVerificationCompleted: Linked user's phone successfully -> ${ it.additionalUserInfo }")
+            onDone()
+        }
+        task.addOnFailureListener {
+            println("onVerificationCompleted: Could not link user's phone. Failed with $it")
+            onDone()
+        }
+    }
+
     override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+        onVerificationCompleted(credential, true)
+    }
+
+    private fun onVerificationCompleted(credential: PhoneAuthCredential, isAuto: Boolean) {
         Timber.d("onVerificationCompleted:$credential")
-        Toast.makeText(activity, "Auto verification", Toast.LENGTH_LONG)
-            .show()
+
+        if (isAuto) {
+            Toast.makeText(activity, "Auto verification", Toast.LENGTH_LONG).show()
+        }
+
+        Firebase.auth.currentUser?.let {
+            if (it.isEmailVerified && it.phoneNumber.isNullOrEmpty()) {
+                // user already has email, this is a migration user, so we link his phone number with
+                // the account and consider his phone auth successful
+                linkPhone(credential) {
+                    onPhoneAuthSuccess()
+                }
+                return
+            }
+        }
+
         signInWithPhoneAuthCredential(credential)
     }
 
@@ -115,7 +159,7 @@ class PhoneAuthHandler @Inject constructor() :
                 return@launch
             }
             val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, code)
-            signInWithPhoneAuthCredential(credential)
+            onVerificationCompleted(credential, false)
         }
     }
 

@@ -1,0 +1,9 @@
+mutation UpdateUserDOBMutation($dob: String!){
+    updateUser(user:{
+        dob:$dob,
+        userOnboardingStatus: {    nextStep: "PREFERENCE_COLLECTION"  }
+    }){
+        status,
+        message
+    }
+}

@@ -419,6 +419,9 @@ class AuthViewModelNew @Inject constructor(
     val updateUserNameLiveData: LiveData<String?>
         get() = userInfoProvider.updateUserNameLiveData
 
+    val updateUserDOBLiveData: LiveData<String?>
+        get() = userInfoProvider.updateUserDOBLiveData
+
     fun checkJwtForLuidAndProceed() {
         viewModelScope.launch {
             val userHasBeenCreatedBefore = JwtChecker.isFirebaseJwtContainsLuid()
@@ -440,6 +443,8 @@ class AuthViewModelNew @Inject constructor(
     fun createUser() = userInfoProvider.createUser(viewModelScope, _datePicked.value?.mills ?: 0)
 
     fun updateUserName() = userInfoProvider.updateUserName(viewModelScope, currentUsername)
+
+    fun updateDOB() = userInfoProvider.updateDOB(viewModelScope, _datePicked.value?.mills ?: 0)
 
     fun updatePreferredInfo() {
         val categoriesIds = categoriesProvider.getActiveCategoriesIds()
