@@ -39,6 +39,7 @@ import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
+import com.limor.app.scenes.main_new.fragments.comments.UserMentionFragment
 import com.limor.app.scenes.main_new.view_model.ListenPodcastViewModel
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
@@ -60,7 +61,7 @@ import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
-class ExtendedPlayerFragment : BaseFragment() {
+class ExtendedPlayerFragment : UserMentionFragment() {
 
     companion object {
         private const val CAST_ID_KEY = "CAST_ID_KEY"
@@ -75,8 +76,6 @@ class ExtendedPlayerFragment : BaseFragment() {
     private var _binding: FragmentExtendedPlayerBinding? = null
     private val binding get() = _binding!!
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
     private val likePodcastViewModel: LikePodcastViewModel by viewModels { viewModelFactory }
     private val commentsViewModel: CommentsViewModel by viewModels { viewModelFactory }
     private val podcastViewModel: PodcastViewModel by viewModels { viewModelFactory }
@@ -120,6 +119,12 @@ class ExtendedPlayerFragment : BaseFragment() {
         subscribeToShareUpdate()
         loadFirstComment()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setUpPopup(binding.taviVoice.editText, binding.taviVoice)
     }
 
     private fun loadFirstComment() {

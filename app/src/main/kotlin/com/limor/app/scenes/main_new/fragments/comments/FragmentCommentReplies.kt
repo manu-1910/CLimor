@@ -25,7 +25,7 @@ import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
-class FragmentCommentReplies : BaseFragment() {
+class FragmentCommentReplies : UserMentionFragment() {
 
     companion object {
         val TAG = FragmentCommentReplies::class.qualifiedName
@@ -47,8 +47,6 @@ class FragmentCommentReplies : BaseFragment() {
         }
     }
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: CommentsViewModel by viewModels { viewModelFactory }
 
     private val castId: Int by lazy { requireArguments().getInt(CAST_ID_KEY) }
@@ -73,6 +71,12 @@ class FragmentCommentReplies : BaseFragment() {
         initViews()
         subscribeForComments()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setUpPopup(binding.taviVoice.editText, binding.taviVoice)
     }
 
     private fun initViews() {

@@ -4,9 +4,7 @@ import android.text.TextUtils
 import android.view.View
 import com.limor.app.R
 import com.limor.app.databinding.ItemChildCommentBinding
-import com.limor.app.extensions.loadCircleImage
-import com.limor.app.extensions.makeGone
-import com.limor.app.extensions.makeVisible
+import com.limor.app.extensions.*
 import com.limor.app.scenes.utils.DateUiUtil
 import com.limor.app.uimodels.CommentUIModel
 import com.xwray.groupie.viewbinding.BindableItem
@@ -34,6 +32,8 @@ class CommentChildItem(
             viewBinding.ivCommentAvatar.loadCircleImage(it)
         }
         viewBinding.tvCommentContent.text = comment.content
+        viewBinding.tvCommentContent.highlight(userMentionPattern, R.color.primaryYellowColor)
+
         viewBinding.replyBtn.setOnClickListener {
             onReplyClick(parentComment, comment)
         }

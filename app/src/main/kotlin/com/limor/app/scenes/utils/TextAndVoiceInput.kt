@@ -11,12 +11,12 @@ import android.os.Handler
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewOutlineProvider
+import android.widget.EditText
 import android.widget.FrameLayout
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.extensions.*
 import com.limor.app.util.hasRecordPermissions
-import com.limor.app.util.requestRecordPermissions
 import kotlinx.android.synthetic.main.item_input_with_audio.view.*
 import kotlin.math.min
 import java.io.File
@@ -52,6 +52,8 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     private var filePath: String? = null
     private var duration: Int = 0
     private var mediaDuration: Long = 0
+
+    lateinit var editText: EditText
 
     private val mediaPlayer: MediaPlayer by lazy {
         val mp = MediaPlayer()
@@ -117,6 +119,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
     private fun initView() {
         inflate(context, R.layout.item_input_with_audio, this)
+        editText = comment_text
 
         btnPodcastSendComment.setOnClickListener {
             status = SendData(comment_text.text.toString(), filePath, duration)

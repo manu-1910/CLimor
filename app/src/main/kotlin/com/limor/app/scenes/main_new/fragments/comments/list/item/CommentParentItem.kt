@@ -3,9 +3,7 @@ package com.limor.app.scenes.main_new.fragments.comments.list.item
 import android.view.View
 import com.limor.app.R
 import com.limor.app.databinding.ItemParentCommentBinding
-import com.limor.app.extensions.loadCircleImage
-import com.limor.app.extensions.makeGone
-import com.limor.app.extensions.makeVisible
+import com.limor.app.extensions.*
 import com.limor.app.scenes.utils.DateUiUtil
 import com.limor.app.uimodels.CommentUIModel
 import com.xwray.groupie.viewbinding.BindableItem
@@ -25,6 +23,7 @@ class CommentParentItem(
             )
         }
         viewBinding.tvCommentContent.text = comment.content
+        viewBinding.tvCommentContent.highlight(userMentionPattern, R.color.primaryYellowColor)
         comment.user?.imageLinks?.small?.let {
             viewBinding.ivCommentAvatar.loadCircleImage(it)
         }

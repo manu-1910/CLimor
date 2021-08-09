@@ -6,9 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import com.limor.app.R
-import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentCommentsBinding
 import com.limor.app.extensions.dismissFragment
@@ -23,9 +21,8 @@ import com.limor.app.util.requestRecordPermissions
 import com.xwray.groupie.GroupieAdapter
 import timber.log.Timber
 import java.io.File
-import javax.inject.Inject
 
-class FragmentComments : BaseFragment() {
+class FragmentComments : UserMentionFragment() {
 
     companion object {
         val TAG = FragmentComments::class.qualifiedName
@@ -37,15 +34,12 @@ class FragmentComments : BaseFragment() {
         }
     }
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: CommentsViewModel by viewModels { viewModelFactory }
 
     private val cast: CastUIModel by lazy { requireArguments().getParcelable(CAST_KEY)!! }
 
     private var _binding: FragmentCommentsBinding? = null
     private val binding get() = _binding!!
-
     private val adapter = GroupieAdapter()
 
     override fun onCreateView(
@@ -60,11 +54,18 @@ class FragmentComments : BaseFragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setUpPopup(binding.taviVoice.editText, binding.taviVoice)
+    }
+
     private fun initViews() {
         binding.commentsList.adapter = adapter
         binding.closeBtn.setOnClickListener {
             parentFragment?.dismissFragment()
         }
+
         binding.taviVoice.initListenerStatus {
             when(it) {
                 is MissingPermissions -> requestRecordPermissions(requireActivity())
@@ -156,4 +157,5 @@ class FragmentComments : BaseFragment() {
         _binding = null
         super.onDestroyView()
     }
+
 }
