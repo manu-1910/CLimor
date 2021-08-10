@@ -67,7 +67,7 @@ object PrefsHandler {
     fun getCurrentUserDeviceToken(context: Context) = sharedPreferences(context).getString(LABEL_USER_DEVICE_TOKEN, null)
 
     fun setAppState(context: Context, appState: AppState){
-        setAppLastState(context, getAppState(context))
+        setAppLastState(context, if(appState.state == AppState.BACKGROUND.state) AppState.BACKGROUND.state else getAppState(context))
         sharedPreferences(context).edit(true) {
             putInt(LABEL_APP_STATE, appState.state)
         }

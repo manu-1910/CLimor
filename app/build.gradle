@@ -111,8 +111,6 @@ android {
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://devlimorapp.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
 
-            buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://devlimorapp.page.link"'
-
             minifyEnabled false
             debuggable true
             zipAlignEnabled true
@@ -142,10 +140,8 @@ android {
 
             buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-5439b.appspot.com/"'
 
-            buildConfigField "String", "LIMOR_DOMAIN_URL", "https://devlimorapp.page.link"
-            buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
-
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://devlimorapp.page.link"'
+            buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
 
             minifyEnabled false
             debuggable true
@@ -177,10 +173,8 @@ android {
 
             buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-staging.appspot.com/images/"'
 
-            buildConfigField "String", "LIMOR_DOMAIN_URL", "https://staginglimorapp.page.link"
-            buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-staging.web.app"'
-
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://staginglimorapp.page.link"'
+            buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-staging.web.app"'
 
             minifyEnabled false
             debuggable true
@@ -208,12 +202,10 @@ android {
 
             buildConfigField "String", "IOS_BUNDLE_ID", '"com.limor.app"'
 
-            buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-5439b.appspot.com/"'
-
-            buildConfigField "String", "LIMOR_DOMAIN_URL", "https://castpreview.limor.ie"
-            buildConfigField "String", "LIMOR_WEB_APP", '"https://castpreview.limor.ie"'
+            buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-prod.appspot.com/"'
 
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://castpreview.limor.ie"'
+            buildConfigField "String", "LIMOR_WEB_APP", '"https://castpreview.limor.ie"'
 
             minifyEnabled true
             debuggable false

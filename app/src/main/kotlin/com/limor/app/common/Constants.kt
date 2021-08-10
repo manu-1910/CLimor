@@ -65,8 +65,8 @@ class Constants{
         const val ERROR_CODE_FACEBOOK_USER_EXITS_IN_LIMOR = 3
 
         const val SHARED_PODCAST_ID = "shared_podcast_id"
-        const val LIMER_DOMAIN_URL = BuildConfig.LIMOR_DOMAIN_URL
-        const val PODCAST_URL = "https://limorapp.page.link/podcasts?id=%s"
+        const val LIMOR_DOMAIN_URL = BuildConfig.LIMOR_DOMAIN_URL
+        const val PODCAST_URL = BuildConfig.LIMOR_WEB_APP.plus("/podcasts?id=%s")
         const val DOMAIN_URL = BuildConfig.LIMOR_WEB_APP
     }
 }

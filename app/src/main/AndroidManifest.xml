@@ -75,7 +75,29 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="limorapp.page.link"
+                    android:host="limor-5439b.web.app"
+                    android:path="/podcasts"
+                    android:scheme="https" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="limor-staging.web.app"
+                    android:path="/podcasts"
+                    android:scheme="https" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="castpreview.limor.ie"
                     android:path="/podcasts"
                     android:scheme="https" />
             </intent-filter>
