@@ -157,9 +157,9 @@ class FragmentHomeNew : BaseFragment() {
 
         val dynamicLink = Firebase.dynamicLinks.dynamicLink {
             link = Uri.parse(podcastLink)
-            domainUriPrefix = Constants.LIMER_DOMAIN_URL
+            domainUriPrefix = Constants.LIMOR_DOMAIN_URL
             androidParameters(BuildConfig.APPLICATION_ID) {
-                fallbackUrl = Uri.parse(Constants.DOMAIN_URL)
+                fallbackUrl = Uri.parse(podcastLink)
             }
             iosParameters(BuildConfig.IOS_BUNDLE_ID) {
             }
@@ -179,7 +179,7 @@ class FragmentHomeNew : BaseFragment() {
                 val sendIntent: Intent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_SUBJECT, cast.title)
-                    putExtra(Intent.EXTRA_TEXT, shortLink.toString())
+                    putExtra(Intent.EXTRA_TEXT, "Hey, check out this podcast: $shortLink")
                     putExtra(Constants.SHARED_PODCAST_ID, cast.id)
                     type = "text/plain"
                 }

@@ -10,8 +10,10 @@ import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -23,7 +25,6 @@ import javax.inject.Inject
 class PhoneAuthHandler @Inject constructor() :
     PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
     private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
-    private var storedVerificationId: String? = null
     private var phoneAuthCredential: PhoneAuthCredential? = null
     private var auth: FirebaseAuth = FirebaseAuth.getInstance()
     private lateinit var scope: CoroutineScope
@@ -140,8 +141,10 @@ class PhoneAuthHandler @Inject constructor() :
         Timber.d("onCodeSent: $verificationId")
         Toast.makeText(activity, "Code has been sent", Toast.LENGTH_LONG)
             .show()
+
         // Save verification ID and resending token so we can use them later
-        storedVerificationId = verificationId
+        PrefsHandler.setLastVerificationId(App.instance, verificationId)
+
         resendToken = token
         _codeSentListener.value = true
     }
@@ -153,12 +156,16 @@ class PhoneAuthHandler @Inject constructor() :
     fun enterCodeAndSignIn(code: String) {
         scope.launch {
             _smsCodeValidationErrorMessage.postValue("")
-            if (storedVerificationId == null) {
+
+            val storedVerificationId = PrefsHandler.getLastVerificationId(App.instance)
+            if (storedVerificationId.isNullOrEmpty()) {
                 val message = activity?.getString(R.string.code_hasnt_been_sent)
                 _smsCodeValidationErrorMessage.postValue(message ?: "")
                 return@launch
             }
-            val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, code)
+
+            val credential = PhoneAuthProvider.getCredential(storedVerificationId, code)
+            PrefsHandler.setLastVerificationId(App.instance, null)
             onVerificationCompleted(credential, false)
         }
     }
