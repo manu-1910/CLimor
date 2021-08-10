@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main.fragments.profile
+    package com.limor.app.scenes.main.fragments.profile
 
 import android.content.Intent
 import android.os.Bundle
@@ -78,7 +78,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             ?.observe(viewLifecycleOwner) { blocked ->
                 user = user.copy(isBlocked = blocked)
                 setupConditionalViews(user)
-
             }
     }
 
@@ -255,12 +254,11 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
     override fun load() {
 
-        val id = activity?.intent?.extras?.getInt(USER_ID_KEY)
-
-        id?.let {
-            model.getUserById(it)
-        }?: kotlin.run {
+        val id = activity?.intent?.extras?.getInt(USER_ID_KEY,0)
+        if(id==null || id==0){
             model.getUserProfile()
+        }else{
+            model.getUserById(id)
         }
 
 
