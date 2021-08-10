@@ -14,6 +14,9 @@ object PrefsHandler {
     private const val LABEL_CAST_ID = "cast_id"
     private const val LABEL_APP_STATE = "app_state"
     private const val LABEL_APP_LAST_STATE = "app_last_state"
+    private const val KEY_PHONE_VERIFICATION_ID = "phone_verification_id"
+
+    private fun sp(context: Context) = sharedPreferences(context)
 
     fun saveEmailToSignIn(context: Context, email: String) {
         sharedPreferences(context).edit(true) {
@@ -84,5 +87,14 @@ object PrefsHandler {
 
     fun getAppLastState(context: Context): Int = sharedPreferences(context).getInt(
         LABEL_APP_LAST_STATE, -1)
+
+    fun getLastVerificationId(context: Context) = sp(context).getString(KEY_PHONE_VERIFICATION_ID, null)
+    fun setLastVerificationId(context: Context, id: String?) = sp(context).edit(true) {
+        if (id.isNullOrEmpty()) {
+            remove(KEY_PHONE_VERIFICATION_ID)
+        } else {
+            putString(KEY_PHONE_VERIFICATION_ID, id)
+        }
+    }
 
 }
