@@ -128,8 +128,10 @@ class FirebaseMessenger : FirebaseMessagingService() {
         super.onNewToken(token)
         if(token != PrefsHandler.getCurrentUserDeviceToken(this)){
             //Token has Changed
-            scope.launch {
-                userRepository.createUserDevice(token)
+            if (::userRepository.isInitialized) {
+                scope.launch {
+                    userRepository.createUserDevice(token)
+                }
             }
         }
     }
