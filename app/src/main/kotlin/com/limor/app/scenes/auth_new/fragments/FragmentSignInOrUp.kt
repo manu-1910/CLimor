@@ -1,11 +1,14 @@
 package com.limor.app.scenes.auth_new.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import com.google.firebase.FirebaseApp
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in_or_up.*
 import timber.log.Timber
@@ -36,6 +39,18 @@ class FragmentSignInOrUp : Fragment() {
                 R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_up
             view.findNavController()
                 .navigate(destinationId)
+        }
+
+        addVersionInfo()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun addVersionInfo() {
+        if (BuildConfig.DEBUG) {
+            val env = BuildConfig.AWS_S3_BUCKET.split("-").last()
+            val fbInfo = "Firebase project ID: ${FirebaseApp.getInstance().options.projectId}"
+            val info = "${BuildConfig.VERSION_CODE} (${BuildConfig.VERSION_NAME}) on $env backend"
+            textView7.text = "${textView7.text}\n\n$info\n\n$fbInfo"
         }
     }
 }
