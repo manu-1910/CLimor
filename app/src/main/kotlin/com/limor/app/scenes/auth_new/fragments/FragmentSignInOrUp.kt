@@ -46,10 +46,11 @@ class FragmentSignInOrUp : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun addVersionInfo() {
-        if (BuildConfig.DEBUG) {
-            val env = BuildConfig.AWS_S3_BUCKET.split("-").last()
+        // turns our this is only allowed on development (should not show up on staging and beta)
+        // for sure not on production
+        if (BuildConfig.AWS_S3_BUCKET.indexOf("-development") > 0) {
             val fbInfo = "Firebase project ID: ${FirebaseApp.getInstance().options.projectId}"
-            val info = "${BuildConfig.VERSION_CODE} (${BuildConfig.VERSION_NAME}) on $env backend"
+            val info = "${BuildConfig.VERSION_CODE} (${BuildConfig.VERSION_NAME}) on development backend"
             textView7.text = "${textView7.text}\n\n$info\n\n$fbInfo"
         }
     }
