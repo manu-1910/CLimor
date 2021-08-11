@@ -54,7 +54,7 @@ class SplashActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(PrefsHandler.getAppLastState(App.instance) == AppState.BACKGROUND.state){
+        if(!isEmailSignIn(intent) && PrefsHandler.getAppLastState(App.instance) == AppState.BACKGROUND.state){
             finish()
         }
         setContentView(R.layout.activity_splash)
@@ -65,14 +65,17 @@ class SplashActivity : BaseActivity() {
         )
     }
 
+    private fun isEmailSignIn(intent: Intent): Boolean {
+        val auth = Firebase.auth
+        val emailLink = intent.data.toString()
+
+        return auth.isSignInWithEmailLink(emailLink)
+    }
+
     override fun onStart() {
         super.onStart()
 
-        val auth = Firebase.auth
-        val intent = intent
-        val emailLink = intent.data.toString()
-
-        if (auth.isSignInWithEmailLink(emailLink)) {
+        if (isEmailSignIn(intent)) {
             // Forward this to the AuthActivity
             val authIntent = Intent(applicationContext, AuthActivityNew::class.java)
             authIntent.data = intent.data

@@ -165,7 +165,7 @@ class PhoneAuthHandler @Inject constructor() :
             }
 
             val credential = PhoneAuthProvider.getCredential(storedVerificationId, code)
-            PrefsHandler.setLastVerificationId(App.instance, null)
+            // PrefsHandler.setLastVerificationId(App.instance, null)
             onVerificationCompleted(credential, false)
         }
     }
