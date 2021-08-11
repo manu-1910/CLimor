@@ -100,17 +100,20 @@ class FragmentVerifyPhoneNumber : Fragment() {
         }
 
         btnContinue.setOnClickListener {
-            it.hideKeyboard()
             validateSmsCode()
         }
 
         fabResendCode.setOnClickListener {
             it.hideKeyboard()
+            fabResendCode.isEnabled = false
             model.resendCode()
         }
     }
 
     private fun validateSmsCode() {
+        btnContinue.isEnabled = false
+        btnContinue.hideKeyboard()
+
         model.submitSmsCode(smsCodesList())
     }
 
@@ -137,6 +140,9 @@ class FragmentVerifyPhoneNumber : Fragment() {
                         .getColor(if (hasError) R.color.error_stroke_color else R.color.black)
                 )
             }
+
+            // re-enable the button as the user might want to enter a new OTP
+            btnContinue.isEnabled = true
         })
 
         model.userInfoProviderErrorLiveData.observe(viewLifecycleOwner, Observer {
