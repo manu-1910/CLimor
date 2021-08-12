@@ -189,6 +189,7 @@ android {
             buildConfigField "String", "CLIENT_ID", '"ab080557350d05720908723a056a6874a3ff7658869ace599ded7e3f3d844a89"'
             buildConfigField "String", "CLIENT_SECRET", '"76a25c5d05639556e7fbfc57973c2f9b05d16b35fc7a66239c10aca1ae3c427b"'
             buildConfigField "String", "BASE_URL", '"https://limor-api-production.herokuapp.com/"'
+            buildConfigField "String", "END_POINT", '"https://apigateway.limor.ie/graphql"'
             buildConfigField "String", "AWS_S3_IDENTITY_POOL", '"eu-west-1:8ab3d094-6fd5-4238-8330-b3b7e0c5037f"'
             buildConfigField "String", "AWS_S3_BUCKET", '"limor-platform-production"'
             resValue "string", "BRANCH_KEY", "key_live_fkyI5MsFMrbA5q2CxvMOrcmjCyp8Wq6m"
@@ -204,13 +205,13 @@ android {
 
             buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-prod.appspot.com/"'
 
-            buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://castpreview.limor.ie"'
+            buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://castpreview.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://castpreview.limor.ie"'
 
-            minifyEnabled true
-            debuggable false
+            minifyEnabled false
+            debuggable true
             zipAlignEnabled true
-            useProguard true
+            useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }

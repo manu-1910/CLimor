@@ -97,7 +97,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="castpreview.limor.ie"
+                    android:host="castpreview.page.link"
                     android:path="/podcasts"
                     android:scheme="https" />
             </intent-filter>
