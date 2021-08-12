@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
+import com.limor.app.extensions.formatHumanReadable
 import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.loadImage
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
@@ -55,7 +56,7 @@ class ViewHolderPodcast(
         binding.tvPodcastRecast.text = item.recastsCount?.toString()
         binding.tvPodcastComments.text = item.commentsCount?.toString()
         binding.tvPodcastReply.text = item.sharesCount?.toString()
-        binding.tvPodcastNumberOfListeners.text = item.listensCount?.toString()
+        binding.tvPodcastNumberOfListeners.text = if(item.listensCount == 0) "0" else item.listensCount?.toLong()?.formatHumanReadable
     }
 
     private fun setAudioInfo(item: CastUIModel) {

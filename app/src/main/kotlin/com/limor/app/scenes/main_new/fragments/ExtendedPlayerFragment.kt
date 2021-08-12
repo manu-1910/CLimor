@@ -203,7 +203,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
         binding.tvPodcastLikes.text = cast.likesCount.toString()
         binding.tvPodcastRecast.text = cast.recastsCount?.toString()
         binding.tvPodcastComments.text = cast.commentsCount?.toString()
-        binding.tvPodcastNumberOfListeners.text = cast.listensCount?.toString()
+        binding.tvPodcastNumberOfListeners.text = if(cast.listensCount == 0) "0" else cast.listensCount?.toLong()?.formatHumanReadable
 
         //applyRecastStyle(cast.isRecasted == true)
         initRecastState(cast)

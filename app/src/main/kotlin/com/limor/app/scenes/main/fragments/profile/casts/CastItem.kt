@@ -4,6 +4,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import com.limor.app.R
 import com.limor.app.databinding.ItemUserCastBinding
+import com.limor.app.extensions.formatHumanReadable
 import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.loadImage
 import com.limor.app.extensions.px
@@ -44,7 +45,7 @@ class CastItem(
             tvPodcastRecast.text = cast.recastsCount.toString()
             tvPodcastComments.text = cast.commentsCount.toString()
             tvPodcastReply.text = cast.sharesCount.toString()
-            tvPodcastNumberOfListeners.text = cast.listensCount.toString()
+            tvPodcastNumberOfListeners.text = if(cast.listensCount == 0) "0" else cast.listensCount?.toLong()?.formatHumanReadable
 
             initRecastState(viewBinding, cast)
 
