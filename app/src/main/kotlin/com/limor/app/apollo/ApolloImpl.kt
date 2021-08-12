@@ -42,7 +42,7 @@ class ApolloImpl(val client: ApolloClient) : Apollo {
 
 class GraphqlClientException(message: String) : Exception(message)
 
-fun showHumanizedErrorMessage(e: Exception): String {
+fun showHumanizedErrorMessage(e: Throwable): String {
     if (e is IOException || e.cause is IOException)
         return "Check internet"
     return e.message?.split("->")?.last() ?: "Network client error"

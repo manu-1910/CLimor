@@ -303,7 +303,7 @@ class AuthViewModelNew @Inject constructor(
     fun downloadSuggested() = suggestedProvider.downloadSuggested(viewModelScope)
 
     fun followSuggestedUser(suggestedUser: SuggestedUser) =
-        suggestedProvider.followUser(suggestedUser)
+        suggestedProvider.followUser(suggestedUser, viewModelScope)
 
     val suggestedUsersLiveData: LiveData<List<SuggestedUser>>
         get() = suggestedProvider.suggestedLiveData

@@ -1,12 +1,30 @@
 package com.limor.app.scenes.auth_new.data
 
+import com.limor.app.uimodels.UserUIModel
+
 data class SuggestedUser(
-    val id: Int?,
+    val id: Int,
     val name: String?,
     val nickname: String?,
     val avatar: String?,
-    var selected: Boolean = false
-) {}
+    var selected: Boolean = false,
+    val uiUser: UserUIModel? = null
+) {
+    companion object {
+        fun fromUserUIUser(uiUser: UserUIModel): SuggestedUser {
+            return SuggestedUser(
+                uiUser.id,
+                uiUser.username,
+                uiUser.username,
+                uiUser.imageLinks?.small,
+                false,
+                uiUser
+            )
+        }
+    }
+}
+
+
 
 fun createMockedSuggestedUsers(): List<SuggestedUser> {
     return (1..9).toList().map {
