@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -113,12 +115,21 @@ class FragmentVerifyPhoneNumber : Fragment() {
     private fun validateSmsCode() {
         btnContinue.isEnabled = false
         btnContinue.hideKeyboard()
-
+        resetErrorMessages()
         model.submitSmsCode(smsCodesList())
     }
 
     private fun saveUserDOBAndProceed() {
         model.updateDOB()
+    }
+
+    private fun resetErrorMessages() {
+        tvWrongCode.visibility = View.GONE
+        tvWrongCode.text = ""
+        smsCodeEtList.forEach { et ->
+            et.error = null
+            et.editText?.setTextColor(ContextCompat.getColor(et.context, R.color.black))
+        }
     }
 
     @SuppressLint("SetTextI18n")

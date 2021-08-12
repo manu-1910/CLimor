@@ -155,12 +155,18 @@ class PhoneAuthHandler @Inject constructor() :
 
     fun enterCodeAndSignIn(code: String) {
         scope.launch {
-            _smsCodeValidationErrorMessage.postValue("")
+            // this would enable the 'Continue' button in the FragmentVerifyPhoneNumber, which we
+            // don't need as it's confusing you can continue while the phone verification is
+            // ongoing and can make users click on the button leading to a secondary verification
+            // process
+            // _smsCodeValidationErrorMessage.postValue("")
 
             val storedVerificationId = PrefsHandler.getLastVerificationId(App.instance)
             if (storedVerificationId.isNullOrEmpty()) {
-                val message = activity?.getString(R.string.code_hasnt_been_sent)
-                _smsCodeValidationErrorMessage.postValue(message ?: "")
+                // we should always send an error message regardless of acitivty's availability
+                // otherwise sending an empty message means "no error"
+                val message = activity?.getString(R.string.code_hasnt_been_sent) ?: "Code has not been sent."
+                _smsCodeValidationErrorMessage.postValue(message)
                 return@launch
             }
 
@@ -197,7 +203,10 @@ class PhoneAuthHandler @Inject constructor() :
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
                         // The verification code entered was invalid
                     }
-                    _smsCodeValidationErrorMessage.postValue(task.exception?.localizedMessage ?: "")
+
+                    // We should always notify about an error even if an exception isn't available
+                    val message = task.exception?.localizedMessage ?: "Could not sign in. Generic error."
+                    _smsCodeValidationErrorMessage.postValue(message)
                 }
                 if (successful) {
                     onPhoneAuthSuccess()
