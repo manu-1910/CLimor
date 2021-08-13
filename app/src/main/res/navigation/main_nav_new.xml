@@ -129,6 +129,9 @@
         <action
             android:id="@+id/action_discoverSearchFragment_to_discoverHashtagFragment"
             app:destination="@id/discoverHashtagFragment" />
+        <action
+            android:id="@+id/action_discoverSearchFragment_to_discoverCategoryFragment"
+            app:destination="@id/discoverCategoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/discoverHashtagFragment"

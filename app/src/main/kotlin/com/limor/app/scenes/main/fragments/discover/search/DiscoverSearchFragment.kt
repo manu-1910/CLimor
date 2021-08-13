@@ -4,15 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.components.tabselector.TabSelectorView
 import com.limor.app.databinding.FragmentDiscoverSearchBinding
 import com.limor.app.extensions.makeVisible
 import com.limor.app.extensions.px
+import com.limor.app.scenes.main.fragments.discover.category.DiscoverCategoryFragment
 import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchViewModel.SearchResult
 import com.limor.app.scenes.main.fragments.discover.search.list.DiscoverSearchAdapter
 import com.limor.app.scenes.utils.recycler.VerticalSpacingItemDecoration
@@ -30,6 +33,12 @@ class DiscoverSearchFragment : BaseFragment() {
     private val resultAdapter = DiscoverSearchAdapter(
         onFollowUserClick = { account, follow ->
             viewModel.followUser(account, follow)
+        },
+        onCategoryClick = { category ->
+            findNavController().navigate(
+                R.id.action_discoverSearchFragment_to_discoverCategoryFragment,
+                bundleOf(DiscoverCategoryFragment.CATEGORY_KEY to category)
+            )
         }
     )
 

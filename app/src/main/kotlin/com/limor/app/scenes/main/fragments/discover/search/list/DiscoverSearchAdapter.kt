@@ -4,11 +4,13 @@ import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchViewMod
 import com.limor.app.scenes.main.fragments.discover.search.list.item.AccountSearchItem
 import com.limor.app.scenes.main.fragments.discover.search.list.item.CategorySearchItem
 import com.limor.app.scenes.main.fragments.discover.search.list.item.HashtagSearchItem
+import com.limor.app.uimodels.CategoryUIModel
 import com.limor.app.uimodels.UserUIModel
 import com.xwray.groupie.GroupieAdapter
 
 class DiscoverSearchAdapter(
-    val onFollowUserClick: (account: UserUIModel, follow: Boolean) -> Unit
+    val onFollowUserClick: (account: UserUIModel, follow: Boolean) -> Unit,
+    val onCategoryClick: (category: CategoryUIModel) -> Unit
 ) : GroupieAdapter() {
 
     fun updateSearchResult(result: SearchResult) {
@@ -24,7 +26,7 @@ class DiscoverSearchAdapter(
         clear()
         addAll(
             result.resultList.map { categoryResult ->
-                CategorySearchItem(categoryResult)
+                CategorySearchItem(categoryResult, onCategoryClick)
             }
         )
     }

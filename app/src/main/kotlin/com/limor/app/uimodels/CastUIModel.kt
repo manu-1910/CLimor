@@ -166,7 +166,7 @@ fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
     CastUIModel(
         id = podcast!!.id!!, owner = podcast.owner?.mapToUIModel(), title = podcast.title,
         address = podcast.address, recasted = recasted, imageLinks = podcast.images?.mapToUIModel(),
-        caption = podcast.caption, createdAt = podcast.created_at?.toLocalDateTime(),
+        caption = podcast.caption, createdAt = if(recasted == true) created_at?.toLocalDateTime() else podcast.created_at?.toLocalDateTime(),
         updatedAt = podcast.updated_at?.toLocalDateTime(), latitude = podcast.latitude?.toFloat(),
         longitude = podcast.longitude?.toFloat(), isLiked = podcast.liked, isShared = false,
         isReported = podcast.reported, isRecasted = podcast.recasted,
