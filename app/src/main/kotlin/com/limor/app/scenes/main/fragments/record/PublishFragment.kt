@@ -831,7 +831,7 @@ class PublishFragment : BaseFragment() {
                     duration = mediaPlayer.duration,
                     total_samples = 0,
                     total_length = mediaPlayer.duration,
-                    sample_rate = 0.0
+                    sample_rate = 44100.0
                 ),
                 meta_data = PodcastMetadata(
                     title = etDraftTitle?.text.toString(),
