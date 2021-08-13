@@ -9,6 +9,7 @@ import com.xwray.groupie.viewbinding.BindableItem
 class SearchItem: BindableItem<ItemDiscoverSearchBinding>() {
 
     override fun bind(viewBinding: ItemDiscoverSearchBinding, position: Int) {
+        viewBinding.searchBar.processFocus = false
         viewBinding.searchBar.setOnClickListener {
             it.findNavController().navigate(R.id.action_navigation_discover_to_discoverSearchFragment)
         }

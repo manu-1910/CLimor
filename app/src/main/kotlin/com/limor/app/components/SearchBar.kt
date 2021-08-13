@@ -14,6 +14,7 @@ import com.limor.app.extensions.viewScope
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.sdk23.listeners.onEditorAction
 import org.jetbrains.anko.sdk23.listeners.onFocusChange
 import reactivecircus.flowbinding.android.widget.textChangeEvents
@@ -23,6 +24,13 @@ class SearchBar(context: Context, attrs: AttributeSet) : FrameLayout(context, at
     init {
         inflate(context, R.layout.search_bar, this)
     }
+
+    var processFocus = true
+        set(value) {
+            field = value
+            editText.isFocusableInTouchMode = value
+            editText.isFocusable = value
+        }
 
     private val editText = findViewById<AppCompatEditText>(R.id.search_text)
     private val searchIcon = findViewById<ImageView>(R.id.search_icon)
@@ -106,11 +114,18 @@ class SearchBar(context: Context, attrs: AttributeSet) : FrameLayout(context, at
     }
 
     override fun setOnClickListener(l: OnClickListener?) {
-        editText.onFocusChange { v, hasFocus ->
-            if (hasFocus) {
-                l?.onClick(v)
+        if (processFocus) {
+            editText.onFocusChange { v, hasFocus ->
+                if (hasFocus) {
+                    l?.onClick(v)
+                }
+            }
+        } else {
+            editText.onClick {
+                l?.onClick(it)
             }
         }
+
     }
 
     fun requestFocusOnText() {
