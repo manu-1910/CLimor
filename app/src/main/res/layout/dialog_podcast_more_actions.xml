@@ -34,6 +34,7 @@
                 app:icon="@drawable/ic_edit_podcast"
                 app:iconGravity="textStart"
                 app:iconPadding="8dp"
+                android:visibility="gone"
                 app:iconSize="14dp" />
 
             <LinearLayout
@@ -68,6 +69,24 @@
                 android:text="@string/delete_cast"
                 android:textColor="#FF5A4E"
                 app:icon="@drawable/ic_delete_podcast"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconSize="14dp" />
+            <Button
+                android:id="@+id/btnReportUser"
+                style="@style/ButtonTextStyle.Icon"
+                android:layout_width="match_parent"
+                android:text="@string/report_user"
+                android:textColor="@color/black"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconSize="14dp" />
+            <Button
+                android:id="@+id/btnBlockUser"
+                style="@style/ButtonTextStyle.Icon"
+                android:layout_width="match_parent"
+                android:text="@string/block_user"
+                android:textColor="@color/black"
                 app:iconGravity="textStart"
                 app:iconPadding="8dp"
                 app:iconSize="14dp" />

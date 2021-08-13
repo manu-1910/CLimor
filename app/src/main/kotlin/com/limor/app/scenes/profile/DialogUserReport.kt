@@ -1,5 +1,6 @@
 package com.limor.app.scenes.profile
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -9,12 +10,15 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.limor.app.databinding.DialogReportCastP2Binding
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileViewModel
+import dagger.android.support.AndroidSupportInjection
+import javax.inject.Inject
 
 class DialogUserReport : DialogFragment() {
-    private val model: UserProfileViewModel by viewModels({ activity as UserProfileActivity }) { (activity as UserProfileActivity).viewModelFactory }
+
     companion object {
         val TAG = DialogUserReport::class.qualifiedName
         private const val CAST_ID_KEY = "CAST_ID_KEY"
@@ -24,6 +28,9 @@ class DialogUserReport : DialogFragment() {
             }
         }
     }
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val model: UserProfileViewModel by viewModels{ viewModelFactory }
     private lateinit var binding : DialogReportCastP2Binding
 
     override fun onCreateView(
@@ -40,7 +47,10 @@ class DialogUserReport : DialogFragment() {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         setOnClicks()
     }
-
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        AndroidSupportInjection.inject(this)
+    }
     private fun setOnClicks() {
         binding.btnCancel.setOnClickListener { this.dismiss() }
 

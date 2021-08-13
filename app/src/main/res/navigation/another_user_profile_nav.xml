@@ -26,5 +26,19 @@
             app:argType="com.limor.app.uimodels.UserUIModel" />
     </dialog>
 
+    <dialog
+        android:id="@+id/dialog_report_podcast"
+        android:name="com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions"
+        android:label="Dialog Report Podcast"
+        tools:layout="@layout/dialog_podcast_more_actions">
+        <action
+            android:id="@+id/action_dialog_report_podcast_to_dialog_report_podcast_p2"
+            app:destination="@id/dialog_report_podcast_p2"
+            app:popUpTo="@id/navigation_home" />
+        <argument
+            android:name="DialogReportPodcastArgs"
+            app:argType="string" />
+    </dialog>
+
 </navigation>
 

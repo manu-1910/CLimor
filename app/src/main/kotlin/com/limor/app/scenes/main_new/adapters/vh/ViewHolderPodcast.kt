@@ -5,6 +5,7 @@ import android.widget.TextView
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
@@ -23,7 +24,8 @@ class ViewHolderPodcast(
     private val onCastClick: (cast: CastUIModel) -> Unit,
     private val onRecastClick: (castId: Int, isRecasted: Boolean) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
-    private val onShareClick: (CastUIModel) -> Unit
+    private val onShareClick: (CastUIModel) -> Unit,
+    private val onReloadData: (castId: Int, reload: Boolean) -> Unit
 ) : ViewHolderBindable<CastUIModel>(binding) {
     override fun bind(item: CastUIModel) {
         setPodcastGeneralInfo(item)
@@ -77,9 +79,19 @@ class ViewHolderPodcast(
     private fun setOnClicks(item: CastUIModel) {
         binding.btnPodcastMore.setOnClickListener {
             val bundle = bundleOf(DialogPodcastMoreActions.CAST_KEY to item)
+            val navController = it.findNavController()
+            it.findViewTreeLifecycleOwner()?.let{
+                ownerLife ->
+                navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("reload_feed")?.observe(
+                    ownerLife
+                ){
+                    onReloadData.invoke(item.id,true)
+                }
+                navController.navigate(R.id.action_navigation_home_to_dialog_report_podcast, bundle)
 
-            it.findNavController()
-                .navigate(R.id.action_navigation_home_to_dialog_report_podcast, bundle)
+            }
+
+
         }
 
         binding.clItemPodcastFeed.setOnClickListener {
@@ -100,7 +112,7 @@ class ViewHolderPodcast(
             binding.btnPodcastReply.shared = true
             val shareCount = binding.tvPodcastReply.text.toString().toInt()
 
-            binding.tvPodcastReply.text =  (shareCount + 1).toString()
+            binding.tvPodcastReply.text = (shareCount + 1).toString()
             applySharedState(true)
             onShareClick(item)
         }
@@ -147,32 +159,34 @@ class ViewHolderPodcast(
                 val likesCount = binding.tvPodcastLikes.text.toString().toInt()
 
                 applyLikeStyle(isLiked)
-                binding.tvPodcastLikes.text = (if (isLiked) likesCount + 1 else likesCount - 1).toString()
+                binding.tvPodcastLikes.text =
+                    (if (isLiked) likesCount + 1 else likesCount - 1).toString()
 
                 onLikeClick(item.id, isLiked)
             }
         }
     }
 
-    private fun initRecastState(item: CastUIModel){
-        fun applyRecastState(isRecasted: Boolean){
+    private fun initRecastState(item: CastUIModel) {
+        fun applyRecastState(isRecasted: Boolean) {
             binding.tvPodcastRecast.setTextColor(
                 ContextCompat.getColor(
                     binding.root.context,
-                    if(isRecasted) R.color.textAccent else R.color.white
+                    if (isRecasted) R.color.textAccent else R.color.white
                 )
             )
         }
         binding.apply {
             applyRecastState(item.isRecasted!!)
-            btnPodcastRecast.recasted = item.isRecasted!!
+            btnPodcastRecast.recasted = item.isRecasted
 
             btnPodcastRecast.setOnClickListener {
                 val isRecasted = !btnPodcastRecast.recasted
                 val recastCount = binding.tvPodcastRecast.text.toString().toInt()
 
                 applyRecastState(isRecasted)
-                binding.tvPodcastRecast.text = (if (isRecasted) recastCount + 1 else recastCount - 1).toString()
+                binding.tvPodcastRecast.text =
+                    (if (isRecasted) recastCount + 1 else recastCount - 1).toString()
                 binding.btnPodcastRecast.recasted = isRecasted
 
                 onRecastClick(item.id, isRecasted)
@@ -180,9 +194,9 @@ class ViewHolderPodcast(
         }
     }
 
-    private fun applyRecastStyle(isRecasted : Boolean){
+    private fun applyRecastStyle(isRecasted: Boolean) {
         binding.tvPodcastRecast.setTextColor(
-            if(isRecasted) ContextCompat.getColor(
+            if (isRecasted) ContextCompat.getColor(
                 binding.root.context,
                 R.color.textAccent
             ) else
@@ -193,17 +207,17 @@ class ViewHolderPodcast(
         )
     }
 
-    private fun initShareState(item: CastUIModel){
+    private fun initShareState(item: CastUIModel) {
         binding.tvPodcastReply.text = item.sharesCount.toString()
         binding.btnPodcastReply.shared = item.isShared == true
         applySharedState(item.isShared == true)
     }
 
-    private fun applySharedState(isShared: Boolean){
+    private fun applySharedState(isShared: Boolean) {
         binding.tvPodcastReply.setTextColor(
-            if(isShared){
+            if (isShared) {
                 ContextCompat.getColor(binding.root.context, R.color.textAccent)
-            } else{
+            } else {
                 ContextCompat.getColor(binding.root.context, R.color.white)
             }
         )

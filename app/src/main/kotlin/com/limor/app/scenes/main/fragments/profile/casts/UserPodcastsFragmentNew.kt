@@ -15,10 +15,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
+import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentUserCastsBinding
 import com.limor.app.di.Injectable
@@ -176,7 +178,13 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     }
 
     private fun onMoreDialogClick(cast: CastUIModel) {
-        DialogPodcastMoreActions.newInstance(cast)
-            .show(parentFragmentManager, DialogPodcastMoreActions.TAG)
+        val bundle = bundleOf(DialogPodcastMoreActions.CAST_KEY to cast)
+        val navController = findNavController()
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("reload_feed")?.observe(
+            viewLifecycleOwner
+        ){
+            viewModel.loadCasts(userId)
+        }
+        navController.navigate(R.id.dialog_report_podcast, bundle)
     }
 }

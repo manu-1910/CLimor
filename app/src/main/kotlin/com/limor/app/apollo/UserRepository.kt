@@ -142,7 +142,7 @@ class UserRepository @Inject constructor(val apollo: Apollo){
     }
 
     suspend fun reportUser(id: Int, reason: String) {
-        val query = CreateReportsMutation(reason,"",id)
+        val query = CreateReportsMutation(reason,"User",id)
         val result = apollo.mutate(query)
         val reported = result?.data?.createReports?.reported
         Timber.d("  -> $reported")

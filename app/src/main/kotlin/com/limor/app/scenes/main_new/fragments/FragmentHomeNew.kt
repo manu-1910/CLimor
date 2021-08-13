@@ -136,6 +136,10 @@ class FragmentHomeNew : BaseFragment() {
             },
             onShareClick = { cast ->
                 sharePodcast(cast)
+            },
+            onReloadData = {
+                    _, _ ->
+                homeFeedViewModel.loadHomeFeed()
             }
         ).apply { submitList(list) }
         rvHome.adapter = adapter

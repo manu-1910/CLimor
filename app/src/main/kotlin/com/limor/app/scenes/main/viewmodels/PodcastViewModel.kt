@@ -4,14 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.limor.app.apollo.UserRepository
 import com.limor.app.uimodels.CastUIModel
+import com.limor.app.usecases.GetBlockedUsersUseCase
 import com.limor.app.usecases.GetPodcastByIDUseCase
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
 class PodcastViewModel @Inject constructor(
-    private val getPodcastByIDUseCase: GetPodcastByIDUseCase
+    private val getPodcastByIDUseCase: GetPodcastByIDUseCase,
+    private val getUserUseCase: UserRepository,
 ): ViewModel() {
 
     private val _cast = MutableLiveData<CastUIModel>()
@@ -26,6 +29,24 @@ class PodcastViewModel @Inject constructor(
                 .onFailure {
                     Timber.e(it, "Error while fetching cast with id: $id")
                 }
+        }
+    }
+
+    fun deleteCastById(id: Int) {
+        viewModelScope.launch {
+            getPodcastByIDUseCase.deleteCast(id)
+        }
+    }
+
+    fun blockUser(userId: Int) {
+        viewModelScope.launch {
+            getUserUseCase.blockUser(userId)
+        }
+    }
+
+    fun reportCast(s: String,id:Int?) {
+        viewModelScope.launch {
+            getPodcastByIDUseCase.reportCast(s, id)
         }
     }
 

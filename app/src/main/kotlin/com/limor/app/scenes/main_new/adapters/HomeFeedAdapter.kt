@@ -15,6 +15,7 @@ class HomeFeedAdapter(
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
     private val onCastClick: (cast: CastUIModel) -> Unit,
     private val onReCastClick: (castId: Int, isRecasted: Boolean) -> Unit,
+    private val onReloadData: (castId: Int, reload: Boolean) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
     private val onShareClick: (CastUIModel) -> Unit
 ) : ListAdapter<CastUIModel, ViewHolderBindable<CastUIModel>>(
@@ -46,7 +47,7 @@ class HomeFeedAdapter(
             }
             else -> {
                 val binding = ItemHomeFeedBinding.inflate(inflater, viewGroup, false)
-                ViewHolderPodcast(binding, onLikeClick, onCastClick, onReCastClick, onCommentsClick, onShareClick)
+                ViewHolderPodcast(binding, onLikeClick, onCastClick, onReCastClick, onCommentsClick, onShareClick,onReloadData)
             }
         }
     }

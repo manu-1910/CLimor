@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main_new.fragments
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -8,13 +9,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.limor.app.apollo.CastsRepository
+import com.limor.app.apollo.UserRepository
 import com.limor.app.databinding.DialogPodcastMoreActionsBinding
 import com.limor.app.extensions.makeGone
 import com.limor.app.extensions.makeInVisible
 import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.limor.app.scenes.main.viewmodels.PodcastViewModel
+import com.limor.app.scenes.profile.DialogUserReport
 import com.limor.app.uimodels.CastUIModel
+import dagger.android.support.AndroidSupportInjection
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class DialogPodcastMoreActions : DialogFragment() {
 
@@ -22,12 +33,16 @@ class DialogPodcastMoreActions : DialogFragment() {
         val TAG = DialogPodcastMoreActions::class.qualifiedName
         const val CAST_KEY = "CAST_KEY"
 
-        fun newInstance(cast: CastUIModel): DialogPodcastMoreActions {
+        fun newInstance(cast: CastUIModel
+                        ): DialogPodcastMoreActions {
             return DialogPodcastMoreActions().apply {
                 arguments = bundleOf(CAST_KEY to cast)
             }
         }
     }
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val podcastViewModel : PodcastViewModel by viewModels{viewModelFactory}
 
     private var _binding: DialogPodcastMoreActionsBinding? = null
     private val binding get() = _binding!!
@@ -55,10 +70,18 @@ class DialogPodcastMoreActions : DialogFragment() {
                 // Not current user cast
                 binding.btnDeleteCast.makeGone()
                 binding.btnEditCast.makeGone()
+            }else{
+                binding.btnReportCast.makeGone()
+                binding.btnBlockUser.makeGone()
+                binding.btnReportUser.makeGone()
             }
         }
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        AndroidSupportInjection.inject(this)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -72,6 +95,29 @@ class DialogPodcastMoreActions : DialogFragment() {
             DialogPodcastReportP2.newInstance(cast.id)
                 .show(parentFragmentManager, DialogPodcastReportP2.TAG)
             dismiss()
+        }
+        binding.btnDeleteCast.setOnClickListener {
+            podcastViewModel.deleteCastById(cast.id)
+            findNavController().previousBackStackEntry?.savedStateHandle?.set("reload_feed", true)
+            dismiss()
+        }
+
+        binding.btnBlockUser.setOnClickListener {
+            cast.owner?.id?.let {
+                podcastViewModel.blockUser(it)
+                findNavController().previousBackStackEntry?.savedStateHandle?.set("reload_feed", false)
+                dismiss()
+            }
+
+        }
+
+        binding.btnReportUser.setOnClickListener {
+            cast.owner?.id?.let {
+                DialogUserReport.newInstance(it)
+                    .show(parentFragmentManager, DialogUserReport.TAG)
+                dismiss()
+            }
+
         }
     }
 

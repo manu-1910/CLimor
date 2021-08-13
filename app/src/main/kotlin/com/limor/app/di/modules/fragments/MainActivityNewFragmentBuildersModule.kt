@@ -9,12 +9,11 @@ import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchFragmen
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleFragment
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsFragmentNew
-import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
+import com.limor.app.scenes.main_new.fragments.*
 import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
-import com.limor.app.scenes.main_new.fragments.FragmentHomeNew
-import com.limor.app.scenes.main_new.fragments.SmallPlayerFragment
 import com.limor.app.scenes.main_new.fragments.comments.FragmentCommentReplies
 import com.limor.app.scenes.notifications.Notification
+import com.limor.app.scenes.profile.DialogUserReport
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -65,6 +64,15 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeNotificationsFragment(): Notification
+
+    @ContributesAndroidInjector
+    abstract fun contributePodcastActionsFragment(): DialogPodcastMoreActions
+
+    @ContributesAndroidInjector
+    abstract fun contributeUserReportFragment(): DialogUserReport
+
+    @ContributesAndroidInjector
+    abstract fun contributePodcastReportFragment(): DialogPodcastReportP2
 
 }
 

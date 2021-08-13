@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main_new.fragments
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -8,7 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.limor.app.databinding.DialogReportCastP2Binding
+import com.limor.app.scenes.main.fragments.profile.UserProfileViewModel
+import com.limor.app.scenes.main.viewmodels.PodcastViewModel
+import com.limor.app.scenes.profile.DialogUserReport
+import dagger.android.support.AndroidSupportInjection
+import javax.inject.Inject
 
 class DialogPodcastReportP2 : DialogFragment() {
 
@@ -22,6 +30,9 @@ class DialogPodcastReportP2 : DialogFragment() {
         }
     }
     private var binding : DialogReportCastP2Binding? = null
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val model: PodcastViewModel by viewModels{ viewModelFactory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,6 +51,20 @@ class DialogPodcastReportP2 : DialogFragment() {
 
     private fun setOnClicks() {
         binding!!.btnCancel.setOnClickListener { this.dismiss() }
+
+        binding?.btnAbusiveContent?.setOnClickListener {
+            handleReport("Abusive content")
+            this.dismiss() }
+
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        AndroidSupportInjection.inject(this)
+    }
+
+    private fun handleReport(s: String) {
+        model.reportCast(s,arguments?.getInt(CAST_ID_KEY))
     }
 
     override fun onDestroyView() {

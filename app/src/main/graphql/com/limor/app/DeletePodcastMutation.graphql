@@ -1,0 +1,5 @@
+mutation DeletePodcastMutation($podcastId: Int!) {
+    deletePodcast(podcastId: $podcastId){
+        destroyed
+    }
+}

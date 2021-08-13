@@ -4,12 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.limor.app.FollowersQuery
-import com.limor.app.GetUserProfileByIdQuery
-import com.limor.app.GetUserProfileQuery
+import com.limor.app.*
 import com.limor.app.apollo.Apollo
 import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.scenes.auth_new.model.UserInfoProvider
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.uimodels.UserUIModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -87,6 +86,19 @@ class UserProfileViewModel @Inject constructor(
             }
         }
     }
+
+
+    fun createDeviceToken(token: String) {
+        viewModelScope.launch {
+            userInfoProvider.userRepository.createUserDevice(token)
+        }
+
+    }
+
+    fun testingRepo(token:String){
+        Timber.d("working blindly...")
+    }
+
 
 
 }

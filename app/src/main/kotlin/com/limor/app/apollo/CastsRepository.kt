@@ -1,6 +1,7 @@
 package com.limor.app.apollo
 
 import com.limor.app.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class CastsRepository @Inject constructor(private val apollo: Apollo) {
@@ -53,5 +54,24 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
     ): GetPodcastByIdQuery.GetPodcastById? {
         return apollo.launchQuery(GetPodcastByIdQuery(castId))
             ?.data?.getPodcastById
+    }
+
+    suspend fun deleteCastById(id: Int) {
+
+            val query = DeletePodcastMutation(id)
+            val result = apollo.mutate(query)
+            val reported = result?.data?.deletePodcast?.destroyed
+            Timber.d("Delete podcast  -> $reported")
+
+    }
+
+    suspend fun reportCast(s: String, id: Int?) {
+        id?.let{
+            val query = CreateReportsMutation(s,"Podcast",id)
+            val result = apollo.mutate(query)
+            val reported = result?.data?.createReports?.reported
+            Timber.d("  -> $reported")
+        }
+
     }
 }
