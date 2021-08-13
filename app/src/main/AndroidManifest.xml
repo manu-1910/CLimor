@@ -282,18 +282,18 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".scenes.auth_new.LimorDebugActivity"
-            android:icon="@drawable/ic_alert"
-            android:label="LimorDebug"
-            android:screenOrientation="portrait"
-            android:theme="@style/MaterialMainTheme.FullScreen">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--        <activity-->
+<!--            android:name=".scenes.auth_new.LimorDebugActivity"-->
+<!--            android:icon="@drawable/ic_alert"-->
+<!--            android:label="LimorDebug"-->
+<!--            android:screenOrientation="portrait"-->
+<!--            android:theme="@style/MaterialMainTheme.FullScreen">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
 
         <activity
             android:name=".scenes.main_new.MainActivityNew"
