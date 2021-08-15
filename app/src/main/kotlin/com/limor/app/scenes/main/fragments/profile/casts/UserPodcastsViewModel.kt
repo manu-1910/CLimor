@@ -19,9 +19,13 @@ class UserPodcastsViewModel @Inject constructor(
     private val _casts = MutableLiveData<List<CastUIModel>>()
     val casts: LiveData<List<CastUIModel>> get() = _casts
 
-    fun loadCasts(userId: Int) {
+    fun loadCasts(
+        userId: Int,
+        limit: Int = Int.MAX_VALUE,
+        offset: Int = 0
+    ) {
         viewModelScope.launch {
-            getPodcastsByUserUseCase.execute(userId)
+            getPodcastsByUserUseCase.execute(userId, limit, offset)
                 .onSuccess {
                     _casts.value = it
                 }

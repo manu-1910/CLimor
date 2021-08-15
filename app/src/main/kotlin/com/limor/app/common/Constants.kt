@@ -7,6 +7,8 @@ class Constants{
 
 
     companion object {
+        const val CAST_BATCH_SIZE = 10
+
         val TERMS_URL = "https://www.limor.ie/terms-and-conditions-of-use"
         val PRIVACY_URL = "https://www.limor.ie/privacy-policy"
         val SUPPORT_EMAIL = "support@limor.ie"

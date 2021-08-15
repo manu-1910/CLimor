@@ -128,6 +128,8 @@ versions.circle_progress_bar = '3.0.3'
 versions.groupie = '2.9.0'
 versions.flowbinding = '1.1.0'
 
+versions.paging = "3.0.1"
+
 def support = [:]
 support.annotations = "androidx.annotation:annotation:$versions.annotations"
 support.app_compat = "androidx.appcompat:appcompat:$versions.app_compat"
@@ -300,6 +302,10 @@ deps.event_bus = "org.greenrobot:eventbus:$versions.event_bus"
 deps.super_bottom_sheet = "com.github.andrefrsousa:SuperBottomSheet:$versions.superbottomsheet"
 deps.circular_progress_bar = "com.mikhaellopez:circularprogressbar:$versions.circle_progress_bar"
 deps.flowbinding = "io.github.reactivecircus.flowbinding:flowbinding-android:$versions.flowbinding"
+
+def paging = [:]
+paging.core = "androidx.paging:paging-runtime:$versions.paging"
+deps.paging = paging
 
 ext.deps = deps
 ext.versions = versions

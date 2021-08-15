@@ -17,6 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewbinding.ViewBinding
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
@@ -34,6 +35,7 @@ import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.GroupieAdapter
+import com.xwray.groupie.viewbinding.BindableItem
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -58,19 +60,28 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
 
     private val userId: Int by lazy { requireArguments().getInt(USER_ID_KEY) }
 
+    private var castOffset = 0
+
     private val castsAdapter = GroupieAdapter()
 
-    var launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if(result.resultCode == Activity.RESULT_OK){
-            val intent = result.data
-            val podcastId = intent?.getIntExtra(Constants.SHARED_PODCAST_ID, -1) ?: -1
-            if(podcastId != -1) {
-                sharePodcastViewModel.share(podcastId)
-            }
-        }
+    private val currentCasts = mutableListOf<CastUIModel>()
+    private val loadMoreItem = LoadMoreItem() {
+        updateLoadMore(false)
+        onLoadMore()
     }
 
-    val sharePodcast : (CastUIModel) -> Unit =  { cast ->
+    var launcher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val intent = result.data
+                val podcastId = intent?.getIntExtra(Constants.SHARED_PODCAST_ID, -1) ?: -1
+                if (podcastId != -1) {
+                    sharePodcastViewModel.share(podcastId)
+                }
+            }
+        }
+
+    val sharePodcast: (CastUIModel) -> Unit = { cast ->
 
         val podcastLink = Constants.PODCAST_URL.format(cast.id)
 
@@ -94,7 +105,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         Firebase.dynamicLinks.shortLinkAsync {
             longLink = dynamicLink.uri
         }.addOnSuccessListener { (shortLink, flowChartLink) ->
-            try{
+            try {
                 val sendIntent: Intent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_SUBJECT, cast.title)
@@ -104,7 +115,8 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                 }
                 val shareIntent = Intent.createChooser(sendIntent, null)
                 launcher.launch(shareIntent)
-            } catch (e: ActivityNotFoundException){}
+            } catch (e: ActivityNotFoundException) {
+            }
 
         }.addOnFailureListener {
             Timber.d("Failed in creating short dynamic link")
@@ -118,11 +130,14 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentUserCastsBinding.inflate(inflater)
-        viewModel.loadCasts(userId)
-
         initViews()
         subscribeForEvents()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        loadCasts()
     }
 
     private fun initViews() {
@@ -130,46 +145,88 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         binding.castsList.adapter = castsAdapter
     }
 
+    private fun onLoadMore() {
+        castOffset += Constants.CAST_BATCH_SIZE
+        loadCasts()
+    }
+
     private fun subscribeForEvents() {
         viewModel.casts.observe(viewLifecycleOwner) { casts ->
-            castsAdapter.update(
-                casts.map {
-                    CastItem(
-                        cast = it,
-                        onCastClick = ::onCastClick,
-                        onLikeClick = { cast, like -> viewModel.likeCast(cast, like) },
-                        onMoreDialogClick = ::onMoreDialogClick,
-                        onRecastClick = { cast , isRecasted ->
-                            if(isRecasted){
-                                recastPodcastViewModel.reCast(cast.id)
-                            } else{
-                                recastPodcastViewModel.deleteRecast(cast.id)
-                            }
-                         },
-                        onCommentsClick = { cast ->
-                            RootCommentsFragment.newInstance(cast).also { fragment ->
-                                fragment.show(parentFragmentManager, fragment.requireTag())
-                            }
-                        },
-                        onShareClick = {
-                            sharePodcast(it)
-                        }
-                    )
-                }
-            )
+            onLoadCasts(casts)
         }
         recastPodcastViewModel.recastedResponse.observe(viewLifecycleOwner) {
             viewModel.loadCasts(userId)
         }
-        recastPodcastViewModel.deleteRecastResponse.observe(viewLifecycleOwner){
+        recastPodcastViewModel.deleteRecastResponse.observe(viewLifecycleOwner) {
             viewModel.loadCasts(userId)
         }
-        sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner){
+        sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner) {
             viewModel.loadCasts(userId)
         }
-        podcastInteractionViewModel.reload.observe(viewLifecycleOwner){
-            viewModel.loadCasts(userId)
+        podcastInteractionViewModel.reload.observe(viewLifecycleOwner) {
+            reload()
         }
+    }
+
+    private fun getCastItems(casts: List<CastUIModel>): List<CastItem> {
+        return casts.map {
+            CastItem(
+                cast = it,
+                onCastClick = ::onCastClick,
+                onLikeClick = { cast, like -> viewModel.likeCast(cast, like) },
+                onMoreDialogClick = ::onMoreDialogClick,
+                onRecastClick = { cast, isRecasted ->
+                    if (isRecasted) {
+                        recastPodcastViewModel.reCast(cast.id)
+                    } else {
+                        recastPodcastViewModel.deleteRecast(cast.id)
+                    }
+                },
+                onCommentsClick = { cast ->
+                    RootCommentsFragment.newInstance(cast).also { fragment ->
+                        fragment.show(parentFragmentManager, fragment.requireTag())
+                    }
+                },
+                onShareClick = {
+                    sharePodcast(it)
+                }
+            )
+        }
+    }
+
+    private fun onLoadCasts(casts: List<CastUIModel>) {
+        if (castOffset == 0) {
+            currentCasts.clear()
+        }
+        castOffset += casts.size
+        currentCasts.addAll(casts)
+
+        val items = getCastItems(currentCasts)
+        val all = mutableListOf<BindableItem<out ViewBinding>>()
+        all.addAll(items)
+        if (currentCasts.size >= Constants.CAST_BATCH_SIZE && casts.isNotEmpty()) {
+            all.add(loadMoreItem)
+        }
+
+        val recyclerViewState = binding.castsList.layoutManager?.onSaveInstanceState()
+        castsAdapter.update(all)
+        updateLoadMore(true)
+        binding.castsList.layoutManager?.onRestoreInstanceState(recyclerViewState)
+    }
+
+    private fun updateLoadMore(isEnabled: Boolean) {
+        loadMoreItem.isEnabled = isEnabled
+        // notify the last item (i.e. the LoadMoreItem) has changes so its style is updated.
+        castsAdapter.notifyItemChanged(currentCasts.size)
+    }
+
+    private fun reload() {
+        castOffset = 0
+        loadCasts()
+    }
+
+    private fun loadCasts() {
+        viewModel.loadCasts(userId, Constants.CAST_BATCH_SIZE, castOffset)
     }
 
     private fun onCastClick(cast: CastUIModel) {
@@ -180,11 +237,12 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     private fun onMoreDialogClick(cast: CastUIModel) {
         val bundle = bundleOf(DialogPodcastMoreActions.CAST_KEY to cast)
         val navController = findNavController()
-        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("reload_feed")?.observe(
-            viewLifecycleOwner
-        ){
-            viewModel.loadCasts(userId)
-        }
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("reload_feed")
+            ?.observe(
+                viewLifecycleOwner
+            ) {
+                reload()
+            }
         navController.navigate(R.id.dialog_report_podcast, bundle)
     }
 }
