@@ -1,4 +1,4 @@
-    package com.limor.app.scenes.main.fragments.profile
+package com.limor.app.scenes.main.fragments.profile
 
 import android.content.Intent
 import android.os.Bundle
@@ -39,6 +39,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     }
 
     private lateinit var user: UserUIModel
+    private var isSignedInUser = false;
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -52,6 +53,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         )
     }
     private var selectedTab: Tab = Tab.CASTS
+    private var currentUserId: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,14 +63,12 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setupDefaultView()
 
         setupListeners()
-
 
         observeProfileActions()
     }
@@ -141,7 +141,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     }
 
     private fun handleOptionsClick() {
-        if ((activity) is MainActivityNew) {
+        if (isSignedInUser) {
             startActivity(Intent(requireContext(), SettingsActivity::class.java))
         } else {
             //Show Other user actions dialog
@@ -154,27 +154,37 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     }
 
     private fun setupDefaultView() {
-       /* if ((activity) is MainActivityNew) {
-            binding.toolbar.title.text = getString(R.string.title_profile)
-        } else {
-            //Toolbar
-            activity?.intent?.extras?.getString(USER_NAME_KEY)?.let {
-                binding.toolbar.title.text = it
-            } ?: run {
-                binding.toolbar.title.text = ""
-            }
-            binding.toolbar.btnUserSettings.setImageResource(R.drawable.ic_three_dots_black)
+        /* if ((activity) is MainActivityNew) {
+             binding.toolbar.title.text = getString(R.string.title_profile)
+         } else {
+             //Toolbar
+             activity?.intent?.extras?.getString(USER_NAME_KEY)?.let {
+                 binding.toolbar.title.text = it
+             } ?: run {
+                 binding.toolbar.title.text = ""
+             }
+             binding.toolbar.btnUserSettings.setImageResource(R.drawable.ic_three_dots_black)
 
 
-        }*/
+         }*/
+
+        // ensureToolbar()
+    }
+
+    private fun ensureToolbar() {
+        if (!::binding.isInitialized) {
+            return
+        }
 
         val username = activity?.intent?.extras?.getString(USER_NAME_KEY)
 
-        username?.let {
-            binding.toolbar.title.text = it
+        if (isSignedInUser) {
+            binding.toolbar.title.text = getString(R.string.profile_title)
+
+        } else if (!username.isNullOrEmpty()){
+            binding.toolbar.title.text = username
             binding.toolbar.btnUserSettings.setImageResource(R.drawable.ic_three_dots_black)
-        }?: kotlin.run {
-            binding.toolbar.title.text = "Profile"
+
         }
     }
 
@@ -199,41 +209,38 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     private fun setupConditionalViews(user: UserUIModel) {
 
         lifecycleScope.launch {
-            if (user.id != JwtChecker.getUserIdFromJwt()) {
-                if (user.isBlocked == false) {
+            ensureToolbar()
 
-                    if (user.isFollowed == true) {
-                        //Followed state
+            if (!isSignedInUser && user.isBlocked == false) {
 
-                        binding.btnFollow.setBackgroundResource(R.drawable.bg_round_bluish_ripple)
-                        binding.btnFollow.text = getString(R.string.unfollow)
-                        //ToastMaker.showToast(requireContext(), "Unfollow UI")
+                if (user.isFollowed == true) {
+                    //Followed state
 
-                    } else {
-                        //New User State
-                        binding.btnFollow.setBackgroundResource(R.drawable.bg_round_yellow_ripple)
-                        binding.btnFollow.text = getString(R.string.follow)
-                        //ToastMaker.showToast(requireContext(), "Follow UI")
-                    }
-
-                    binding.otherUserNormalLayout.visibility = View.VISIBLE
-                    binding.profileViewpager.visibility = View.VISIBLE
-                    binding.tabSelectorView.visibility = View.VISIBLE
+                    binding.btnFollow.setBackgroundResource(R.drawable.bg_round_bluish_ripple)
+                    binding.btnFollow.text = getString(R.string.unfollow)
+                    //ToastMaker.showToast(requireContext(), "Unfollow UI")
 
                 } else {
-                    //Blocked State
-                    binding.otherUserNormalLayout.visibility = View.GONE
-                    binding.profileViewpager.visibility = View.GONE
-                    binding.tabSelectorView.visibility = View.GONE
-                    //ToastMaker.showToast(requireContext(), "Blocked UI")
+                    //New User State
+                    binding.btnFollow.setBackgroundResource(R.drawable.bg_round_yellow_ripple)
+                    binding.btnFollow.text = getString(R.string.follow)
+                    //ToastMaker.showToast(requireContext(), "Follow UI")
                 }
+
+                binding.otherUserNormalLayout.visibility = View.VISIBLE
+                binding.profileViewpager.visibility = View.VISIBLE
+                binding.tabSelectorView.visibility = View.VISIBLE
+
+            } else {
+                //Blocked State
+                binding.otherUserNormalLayout.visibility = View.GONE
+                binding.profileViewpager.visibility = View.GONE
+                binding.tabSelectorView.visibility = View.GONE
+                //ToastMaker.showToast(requireContext(), "Blocked UI")
             }
-            binding.profileMainContainer.visibility = View.VISIBLE
-
-
         }
 
-
+        binding.profileMainContainer.visibility = View.VISIBLE
     }
 
     private fun setDataToProfileViews(it: UserUIModel) {
@@ -253,15 +260,28 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     }
 
     override fun load() {
+        if (currentUserId != null && currentUserId != Int.MIN_VALUE) {
+            onUserId()
+            return
+        }
 
-        val id = activity?.intent?.extras?.getInt(USER_ID_KEY,0)
-        if(id==null || id==0){
+        lifecycleScope.launchWhenCreated {
+            currentUserId = JwtChecker.getUserIdFromJwt()
+            onUserId()
+        }
+    }
+
+    private fun onUserId() {
+        val id = activity?.intent?.extras?.getInt(USER_ID_KEY, 0)
+        isSignedInUser = id == null || id == 0 || id == currentUserId
+
+        if (id == null || id == 0) {
             model.getUserProfile()
-        }else{
+        } else {
             model.getUserById(id)
         }
 
-
+        ensureToolbar()
     }
 
     override val errorLiveData: LiveData<String>
