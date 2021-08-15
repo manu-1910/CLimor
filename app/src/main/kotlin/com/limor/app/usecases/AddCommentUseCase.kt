@@ -18,8 +18,8 @@ class AddCommentUseCase @Inject constructor(
         duration: Int? = null
     ): Result<Int> {
         return runCatching {
-            require(content.isNotBlank()) {
-                "Comment should not be empty"
+            require((content.isNotBlank() || !audioURI.isNullOrEmpty())) {
+                "Comment should either have text or audio"
             }
             withContext(dispatcherProvider.io) {
                 if (audioURI != null) {
