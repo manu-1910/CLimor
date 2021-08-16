@@ -43,7 +43,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
 
-    <View
+    <!--<View
         android:id="@+id/rectangle_1"
         android:layout_width="0dp"
         android:layout_height="48dp"
@@ -86,7 +86,7 @@
             android:layout_weight="1"
             android:text="@string/email_address"/>
 
-    </com.google.android.material.button.MaterialButtonToggleGroup>
+    </com.google.android.material.button.MaterialButtonToggleGroup>-->
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/etEnterEmail"
@@ -102,7 +102,7 @@
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toggleSignInMethod">
+        app:layout_constraintTop_toBottomOf="@+id/textView8">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etDobPickerInner"
@@ -152,7 +152,7 @@
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/etPhoneCode"
-        app:layout_constraintTop_toBottomOf="@+id/toggleSignInMethod">
+        app:layout_constraintTop_toBottomOf="@+id/textView8">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etEnterPhoneInner"
@@ -164,6 +164,32 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        android:id="@+id/tvExistingUserEmailSignInDesc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/existing_user_email_signin_description"
+        android:textColor="@color/error_stroke_color"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etEnterPhone"/>
+
+    <TextView
+        android:id="@+id/tvSignInHere"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:text="@string/sign_in_here"
+        android:textColor="@color/colorAccent"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvExistingUserEmailSignInDesc"/>
 
     <Button
         android:id="@+id/btnContinue"
@@ -176,7 +202,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/toggleSignInMethod"
+        app:layout_constraintTop_toTopOf="@+id/textView8"
         app:layout_constraintVertical_bias="0.6" />
 
     <TextView

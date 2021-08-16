@@ -11,11 +11,13 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.AuthActivityNew
@@ -27,9 +29,25 @@ import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.*
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
+
 class FragmentSignIn : Fragment() {
 
     private val model: AuthViewModelNew by activityViewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (model.signInMethodLiveData.value == SignInMethod.EMAIL) {
+                        model.setCurrentSignInMethod(SignInMethod.PHONE)
+                    } else{
+                        this@FragmentSignIn.findNavController().navigateUp()
+                    }
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +62,6 @@ class FragmentSignIn : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setFocusChanges()
         setClickListeners()
-        addToggleClickListener()
         setUpInitialSignUpState()
         setPhoneChangeListener()
         setEmailChangedListeners()
@@ -64,21 +81,8 @@ class FragmentSignIn : Fragment() {
             it.findNavController()
                 .navigate(R.id.action_fragment_new_auth_sign_in_to_fragment_new_auth_dob_picker)
         }
-    }
-
-    /*Toggle state*/
-
-    private fun addToggleClickListener() {
-        toggleSignInMethod.addOnButtonCheckedListener { toggleButton, checkedId, isChecked ->
-            if (isChecked) {
-                val signInMethod = when (checkedId) {
-                    R.id.btnTogglePhone -> SignInMethod.PHONE
-                    R.id.btnToggleEmail -> SignInMethod.EMAIL
-                    else -> SignInMethod.PHONE
-                }
-                model.setCurrentSignInMethod(signInMethod)
-                toggleButton.hideKeyboard()
-            }
+        tvSignInHere.setOnClickListener {
+            model.setCurrentSignInMethod(SignInMethod.EMAIL)
         }
     }
 
@@ -87,12 +91,10 @@ class FragmentSignIn : Fragment() {
             model.setCurrentSignInMethod(SignInMethod.PHONE)
         }
 
-        val checkedId = when (model.signInMethodLiveData.value) {
-            SignInMethod.PHONE -> R.id.btnTogglePhone
-            SignInMethod.EMAIL -> R.id.btnToggleEmail
-            else -> R.id.btnTogglePhone
+        when (model.signInMethodLiveData.value) {
+            SignInMethod.PHONE -> model.setCurrentSignInMethod(SignInMethod.PHONE)
+            SignInMethod.EMAIL -> model.setCurrentSignInMethod(SignInMethod.EMAIL)
         }
-        toggleSignInMethod.check(checkedId)
     }
 
     private fun switchToSignInState(signInMethod: SignInMethod) {
@@ -101,6 +103,8 @@ class FragmentSignIn : Fragment() {
                 etPhoneCode.visibility = View.VISIBLE
                 etEnterPhone.visibility = View.VISIBLE
                 etEnterEmail.visibility = View.GONE
+                tvExistingUserEmailSignInDesc.visibility = View.VISIBLE
+                tvSignInHere.visibility = View.VISIBLE
                 btnContinue.setText(R.string.get_otp)
                 btnContinue.setOnClickListener {
                     model.submitPhoneNumber()
@@ -112,6 +116,8 @@ class FragmentSignIn : Fragment() {
                 etPhoneCode.visibility = View.GONE
                 etEnterPhone.visibility = View.GONE
                 etEnterEmail.visibility = View.VISIBLE
+                tvExistingUserEmailSignInDesc.visibility = View.GONE
+                tvSignInHere.visibility = View.GONE
                 btnContinue.setText(R.string.send_login_link)
                 btnContinue.setOnClickListener {
                     model.checkEmailIsInUse()

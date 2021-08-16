@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="@string/sign_up"
+        android:text="@string/phone_number"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"

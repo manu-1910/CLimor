@@ -24,6 +24,8 @@
     <string name="error_empty_field_template">%1$s must not be empty</string>
     <string name="reset_password">Reset password</string>
     <string name="you_have_no_permissions_facebook">You have not granted the required permissions to login with Facebook. We need your email address.</string>
+    <string name="existing_user_email_signin_description">Are you an existing Limor User? Please Sign In with your email here to access your Account.</string>
+    <string name="sign_in_here"><u>sign in here</u></string>
 
 
     <!-- Bottom Menu Navigation Strings -->
@@ -510,6 +512,7 @@
     <string name="welcome_to_limor">Welcome to Limor</string>
     <string name="welcome_to_limor_description">It’s the simplest and safest way to podcast and build your career</string>
     <string name="sign_up">Sign up</string>
+    <string name="register">Register</string>
     <string name="continue_with_prefered_method">Continue with your preferred method</string>
     <string name="sign_up_use_phone">Use your phone number</string>
     <string name="sig_up_continue_with_google">Continue with Google</string>
@@ -521,6 +524,7 @@
     <string name="sign_up_underline"><u>Sign up</u></string>
     <string name="when_your_birthday">When’s your Birthday?</string>
     <string name="enterBirthHint">Enter Birth Date</string>
+    <string name="dateOfBirth">Birth Date</string>
     <string name="back">Back</string>
     <string name="continue_button">Continue</string>
     <string name="provide_your_phone_number">Provide your Phone Number</string>
