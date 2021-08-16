@@ -193,7 +193,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
     }
 
     private fun setPodcastOwnerInfo(cast: CastUIModel) {
-        binding.tvPodcastUserName.text = cast.owner?.username
+        binding.tvPodcastUserName.text = cast.owner?.getFullName()
         binding.tvPodcastUserSubtitle.text = cast.getCreationDateAndPlace(requireContext())
     }
 

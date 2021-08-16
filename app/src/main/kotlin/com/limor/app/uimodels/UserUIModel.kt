@@ -31,7 +31,7 @@ data class UserUIModel(
     val sharingUrl: String?,
 ) : Parcelable {
 
-    fun getFullName() = String.format("%s %s", firstName, lastName)
+    fun getFullName() = if(firstName == null && lastName == null) username else String.format("%s %s", firstName, lastName)
 }
 
 fun GetFeaturedCastsQuery.Owner.mapToUIModel(): UserUIModel =
