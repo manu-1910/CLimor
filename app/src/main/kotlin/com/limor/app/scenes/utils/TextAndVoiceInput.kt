@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewOutlineProvider
 import android.widget.EditText
 import android.widget.FrameLayout
+import androidx.core.widget.addTextChangedListener
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.extensions.*
@@ -117,14 +118,25 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         }
     }
 
+    private fun updateSendButtonState() {
+        val isActivated = comment_text.text.toString().isNotEmpty() || !filePath.isNullOrEmpty()
+        btnPodcastSendComment.isActivated = isActivated
+    }
+
     private fun initView() {
         inflate(context, R.layout.item_input_with_audio, this)
         editText = comment_text
 
+        comment_text.addTextChangedListener {
+            updateSendButtonState()
+        }
+
         btnPodcastSendComment.setOnClickListener {
-            status = SendData(comment_text.text.toString(), filePath, duration)
-            showRecordingControls(false)
-            comment_text.text = null
+            if (btnPodcastSendComment.isActivated) {
+                status = SendData(comment_text.text.toString(), filePath, duration)
+                showRecordingControls(false)
+                comment_text.text = null
+            }
         }
 
         btnPodcastStartVoiceComment.setOnClickListener {
@@ -165,11 +177,12 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     }
 
     private fun deleteLastFile() {
-        if (filePath.isNullOrEmpty()) {
-            return
+        filePath?.let {
+            val file = File(it)
+            file.delete()
         }
-        val file = File(filePath)
-        file.delete()
+        filePath = null
+        updateSendButtonState()
     }
 
     private fun onReplayComplete() {
@@ -323,6 +336,8 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
         visualizer.makeInVisible()
         horizontalLine.makeVisible()
+
+        updateSendButtonState()
     }
 
     private fun getCurrentTimeString(): String {
