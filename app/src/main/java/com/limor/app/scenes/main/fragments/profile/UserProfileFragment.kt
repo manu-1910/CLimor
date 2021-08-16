@@ -60,6 +60,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         savedInstanceState: Bundle?
     ): View {
         binding = UserProfileFragmentBinding.inflate(inflater, container, false)
+        ensureToolbar()
         return binding.root
     }
 
@@ -181,7 +182,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         if (isSignedInUser) {
             binding.toolbar.title.text = getString(R.string.profile_title)
 
-        } else if (!username.isNullOrEmpty()){
+        } else if (!username.isNullOrEmpty()) {
             binding.toolbar.title.text = username
             binding.toolbar.btnUserSettings.setImageResource(R.drawable.ic_three_dots_black)
 
@@ -197,7 +198,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
                 setupConditionalViews(it)
                 setupViewPager(it)
             }
-
         })
 
         model.profileErrorLiveData.observe(viewLifecycleOwner, {
@@ -208,39 +208,48 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
     private fun setupConditionalViews(user: UserUIModel) {
 
-        lifecycleScope.launch {
-            ensureToolbar()
+        ensureToolbar()
 
-            if (!isSignedInUser && user.isBlocked == false) {
+        binding.btnFollow.visibility = if (isSignedInUser) View.GONE else View.VISIBLE
+        binding.profileMainContainer.visibility = View.VISIBLE
 
-                if (user.isFollowed == true) {
-                    //Followed state
-
-                    binding.btnFollow.setBackgroundResource(R.drawable.bg_round_bluish_ripple)
-                    binding.btnFollow.text = getString(R.string.unfollow)
-                    //ToastMaker.showToast(requireContext(), "Unfollow UI")
-
-                } else {
-                    //New User State
-                    binding.btnFollow.setBackgroundResource(R.drawable.bg_round_yellow_ripple)
-                    binding.btnFollow.text = getString(R.string.follow)
-                    //ToastMaker.showToast(requireContext(), "Follow UI")
-                }
-
-                binding.otherUserNormalLayout.visibility = View.VISIBLE
-                binding.profileViewpager.visibility = View.VISIBLE
-                binding.tabSelectorView.visibility = View.VISIBLE
-
-            } else {
-                //Blocked State
-                binding.otherUserNormalLayout.visibility = View.GONE
-                binding.profileViewpager.visibility = View.GONE
-                binding.tabSelectorView.visibility = View.GONE
-                //ToastMaker.showToast(requireContext(), "Blocked UI")
-            }
+        if (isSignedInUser) {
+            return
         }
 
-        binding.profileMainContainer.visibility = View.VISIBLE
+        setUpOtherPerson()
+    }
+
+    private fun setUpOtherPerson() {
+        if (user.isBlocked == true) {
+
+            //Blocked State
+            binding.otherUserNormalLayout.visibility = View.GONE
+            binding.profileViewpager.visibility = View.GONE
+            binding.tabSelectorView.visibility = View.GONE
+            //ToastMaker.showToast(requireContext(), "Blocked UI")
+
+        } else {
+
+            if (user.isFollowed == true) {
+                //Followed state
+
+                binding.btnFollow.setBackgroundResource(R.drawable.bg_round_bluish_ripple)
+                binding.btnFollow.text = getString(R.string.unfollow)
+                //ToastMaker.showToast(requireContext(), "Unfollow UI")
+
+            } else {
+                //New User State
+                binding.btnFollow.setBackgroundResource(R.drawable.bg_round_yellow_ripple)
+                binding.btnFollow.text = getString(R.string.follow)
+                //ToastMaker.showToast(requireContext(), "Follow UI")
+            }
+
+            binding.otherUserNormalLayout.visibility = View.VISIBLE
+            binding.profileViewpager.visibility = View.VISIBLE
+            binding.tabSelectorView.visibility = View.VISIBLE
+
+        }
     }
 
     private fun setDataToProfileViews(it: UserUIModel) {
