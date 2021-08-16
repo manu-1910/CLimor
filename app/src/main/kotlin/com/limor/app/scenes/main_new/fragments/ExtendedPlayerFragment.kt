@@ -48,10 +48,7 @@ import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.SendData
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
-import com.limor.app.uimodels.CastUIModel
-import com.limor.app.uimodels.CommentUIModel
-import com.limor.app.uimodels.TagUIModel
-import com.limor.app.uimodels.mapToAudioTrack
+import com.limor.app.uimodels.*
 import com.limor.app.util.requestRecordPermissions
 import kotlinx.android.synthetic.main.fragment_extended_player.*
 import kotlinx.coroutines.Job
@@ -140,10 +137,11 @@ class ExtendedPlayerFragment : UserMentionFragment() {
                 AUTO_PLAY_KEY,
                 false
             )
+
             val audioTrack = cast.audio!!.mapToAudioTrack()
-            if (autoPlay && playerBinder.currentAudioTrack != audioTrack) {
-                playerBinder.playPause(cast.audio.mapToAudioTrack(), true)
-            }
+            if (autoPlay && playerBinder.audioTrackIsNotPlaying(audioTrack)) {
+                playerBinder.playPause(audioTrack, true)
+             }
         }
     }
 

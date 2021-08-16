@@ -58,6 +58,10 @@ class PlayerBinder @Inject constructor(
         }
     }
 
+    fun audioTrackIsNotPlaying(audioTrack: AudioService.AudioTrack): Boolean {
+        return currentAudioTrack != audioTrack || playerStatus.value != PlayerStatus.Playing
+    }
+
     fun getPlayerStatus(audioTrack: AudioService.AudioTrack): Flow<PlayerStatus> {
         return playerStatus.asStateFlow()
             .filter {
