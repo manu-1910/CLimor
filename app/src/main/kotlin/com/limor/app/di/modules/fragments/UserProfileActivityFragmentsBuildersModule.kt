@@ -7,6 +7,8 @@ import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.fragments.DialogPodcastReportP2
 import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
 import com.limor.app.scenes.main_new.fragments.SmallPlayerFragment
+import com.limor.app.scenes.main_new.fragments.comments.FragmentCommentReplies
+import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.profile.DialogUserProfileActions
 import com.limor.app.scenes.profile.DialogUserReport
 import dagger.Module
@@ -50,4 +52,10 @@ abstract class UserProfileActivityFragmentsBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeSmallPlayerFragmentInjector(): SmallPlayerFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeCommentsFragmentInjector(): FragmentComments
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentCommentRepliesInjector(): FragmentCommentReplies
 }
