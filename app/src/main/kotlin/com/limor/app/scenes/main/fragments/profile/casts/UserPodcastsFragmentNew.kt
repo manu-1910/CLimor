@@ -146,7 +146,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     }
 
     private fun onLoadMore() {
-        castOffset += Constants.CAST_BATCH_SIZE
+        castOffset = currentCasts.size
         loadCasts()
     }
 
@@ -198,13 +198,13 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         if (castOffset == 0) {
             currentCasts.clear()
         }
-        castOffset += casts.size
+
         currentCasts.addAll(casts)
 
         val items = getCastItems(currentCasts)
         val all = mutableListOf<BindableItem<out ViewBinding>>()
         all.addAll(items)
-        if (currentCasts.size >= Constants.CAST_BATCH_SIZE && casts.isNotEmpty()) {
+        if (currentCasts.size >= Constants.CAST_BATCH_SIZE && casts.size >= Constants.CAST_BATCH_SIZE) {
             all.add(loadMoreItem)
         }
 
