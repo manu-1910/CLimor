@@ -466,6 +466,15 @@ class PublishFragment : BaseFragment() {
         btnToolbarRight.visibility = View.GONE
     }
 
+    private fun startPublishing() {
+        //In the result of those calls I will call the method readyToPublish() to check their flags
+        if (podcastHasImage) {
+            publishPodcastImage()
+        } else {
+            publishPodcastAudio()
+        }
+    }
+
 
     @SuppressLint("ClickableViewAccessibility")
     private fun listeners() {
@@ -489,12 +498,7 @@ class PublishFragment : BaseFragment() {
         }
 
         btnPublishDraft?.onClick {
-            //In the result of those calls I will call the method readyToPublish() to check their flags
-            if (podcastHasImage) {
-                publishPodcastImage()
-            }
-            publishPodcastAudio()
-
+            startPublishing()
         }
 
         layoutCastCategory?.onClick {
@@ -707,9 +711,7 @@ class PublishFragment : BaseFragment() {
 
 
     private fun publishPodcastAudio() {
-
             progressPb.visibility = View.VISIBLE
-
 
             Timber.d("Publishing audio podcast")
             if (!app!!.merlinsBeard!!.isConnected) {
@@ -733,7 +735,6 @@ class PublishFragment : BaseFragment() {
                     Constants.AUDIO_TYPE_PODCAST,
                     object : Commons.AudioUploadCallback {
                         override fun onSuccess(audioUrl: String?) {
-                            println("Audio upload to AWS succesfully")
                             audioUploaded = true
                             audioUrlFinal = audioUrl
                             progressPb.visibility = View.GONE
@@ -765,6 +766,7 @@ class PublishFragment : BaseFragment() {
 
     private fun publishPodcastImage() {
         progressPb.visibility = View.VISIBLE
+
         if (Commons.getInstance().isImageReadyForUpload) {
 
             // val dialog = AlertProgressBar(requireContext())
@@ -784,14 +786,11 @@ class PublishFragment : BaseFragment() {
                     }
 
                     override fun onSuccess(imageUrl: String?) {
-                        println("Image upload to Firebase succesfully")
                         //var imageUploadedUrl = imageUrl
                         imageUploaded = true
                         imageUrlFinal = imageUrl
                         //dialog.dismiss()
-                        progressPb.visibility = View.GONE
-
-                        readyToPublish()
+                        publishPodcastAudio()
                     }
 
                     override fun onStateChanged(id: Int, state: TransferState?) {
