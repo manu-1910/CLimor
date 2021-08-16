@@ -181,6 +181,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
         if (isSignedInUser) {
             binding.toolbar.title.text = getString(R.string.profile_title)
+            binding.toolbar.btnUserSettings.setImageResource(R.drawable.ic_setting)
 
         } else if (!username.isNullOrEmpty()) {
             binding.toolbar.title.text = username
