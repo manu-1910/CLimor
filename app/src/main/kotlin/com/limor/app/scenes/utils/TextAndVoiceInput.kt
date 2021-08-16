@@ -136,6 +136,8 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
                 status = SendData(comment_text.text.toString(), filePath, duration)
                 showRecordingControls(false)
                 comment_text.text = null
+                filePath = null
+                updateSendButtonState()
             }
         }
 
