@@ -43,7 +43,7 @@ class HomeFeedAdapter(
             ITEM_TYPE_RECASTED -> {
                 val binding =
                     ItemHomeFeedRecastedBinding.inflate(inflater, viewGroup, false)
-                ViewHolderRecast(binding)
+                ViewHolderRecast(binding, onLikeClick, onReCastClick, onCommentsClick, onShareClick)
             }
             else -> {
                 val binding = ItemHomeFeedBinding.inflate(inflater, viewGroup, false)
