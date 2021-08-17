@@ -54,9 +54,7 @@ class SplashActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(!isEmailSignIn(intent) && PrefsHandler.getAppLastState(App.instance) == AppState.BACKGROUND.state){
-            finish()
-        }
+
         setContentView(R.layout.activity_splash)
         mDelayHandler = Handler()
         mDelayHandler!!.postDelayed(
