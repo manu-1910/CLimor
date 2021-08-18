@@ -30,7 +30,7 @@ class ViewHolderRecast(
     override fun bind(item: CastUIModel) {
 
         binding.tvRecastUserName.text = item.recaster?.username
-        binding.tvRecastUserSubtitle.text = item.getCreationDateAndPlace(context)
+        binding.tvRecastUserSubtitle.text = item.getCreationDateAndPlace(context, false)
 
         binding.tvRecastMessage.text = ""
 
@@ -39,7 +39,7 @@ class ViewHolderRecast(
 
         binding.tvPodcastUserName.text = item.owner?.username
 
-        binding.tvPodcastUserSubtitle.text = item.getCreationDateAndPlace(context)
+        binding.tvPodcastUserSubtitle.text = item.getCreationDateAndPlace(context, true)
 
         binding.tvPodcastLength.text = item.audio?.duration?.let {
             "${it.toMinutes()}m ${it.minusMinutes(it.toMinutes()).seconds}s"
@@ -66,6 +66,13 @@ class ViewHolderRecast(
         setInterationStatus(item)
         initLikeState(item)
         initRecastState(item)
+
+        binding.btnRecastMore.setOnClickListener {
+            val bundle = bundleOf(DialogPodcastMoreActions.CAST_KEY to item)
+
+            it.findNavController()
+                .navigate(R.id.action_navigation_home_to_dialog_report_podcast, bundle)
+        }
 
         binding.btnPodcastMore.setOnClickListener {
             val bundle = bundleOf(DialogPodcastMoreActions.CAST_KEY to item)

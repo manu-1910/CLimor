@@ -36,7 +36,7 @@ class BigCastItem(
             }
 
             authorName.text = cast.owner?.getFullName()
-            dateLocation.text = cast.getCreationDateAndPlace(root.context)
+            dateLocation.text = cast.getCreationDateAndPlace(root.context, true)
             castName.text = cast.title
             cast.audio?.duration?.let {
                 castDuration.text = getCastDuration(cast.audio.duration)

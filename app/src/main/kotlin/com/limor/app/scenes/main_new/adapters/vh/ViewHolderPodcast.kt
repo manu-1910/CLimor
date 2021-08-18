@@ -50,7 +50,7 @@ class ViewHolderPodcast(
 
     private fun setPodcastOwnerInfo(item: CastUIModel) {
         binding.tvPodcastUserName.text = item.owner?.username
-        binding.tvPodcastUserSubtitle.text = item.getCreationDateAndPlace(context)
+        binding.tvPodcastUserSubtitle.text = item.getCreationDateAndPlace(context, true)
     }
 
     private fun setPodcastCounters(item: CastUIModel) {

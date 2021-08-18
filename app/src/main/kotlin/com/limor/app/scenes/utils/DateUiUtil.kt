@@ -38,4 +38,29 @@ object DateUiUtil {
         }
         return ""
     }
+
+    fun getTimeAgoText(
+        pastDate: LocalDateTime,
+        context: Context
+    ): String {
+        val date = pastDate.minusSeconds(pastDate.second.toLong()).minusMinutes(pastDate.minute.toLong()).minusHours(pastDate.hour.toLong())
+        var now = LocalDateTime.now()
+        val days = ChronoUnit.DAYS.between(now, date).absoluteValue
+        val weeks = ChronoUnit.WEEKS.between(now, date).absoluteValue
+        val months = ChronoUnit.MONTHS.between(now, date).absoluteValue
+        val years = ChronoUnit.YEARS.between(now, date).absoluteValue
+        return when{
+            days == 0L -> context.getString(R.string.today)
+            days == 1L -> context.getString(R.string.yesterday)
+            days < 7L -> context.getString(R.string.days_ago, days)
+            weeks == 1L -> context.getString(R.string.week_ago)
+            (weeks <= 4L && months == 0L) -> context.getString(R.string.weeks_ago, weeks)
+            months == 1L -> context.getString(R.string.month_ago)
+            (months < 12L && years == 0L) -> context.getString(R.string.months_ago, months)
+            years == 1L -> context.getString(R.string.year_ago)
+            years > 1L -> context.getString(R.string.years_ago, years)
+            else -> ""
+        }
+    }
+
 }

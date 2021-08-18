@@ -66,14 +66,18 @@ class DialogPodcastMoreActions : DialogFragment() {
 
             binding.loadingBar.makeGone()
             binding.visibilityGroup.makeVisible()
-            if (currentUserId != cast.owner?.id) {
-                // Not current user cast
+            if(cast.recaster == null){
+                if (currentUserId != cast.owner?.id) {
+                    // Not current user cast
+                    binding.btnDeleteCast.makeGone()
+                    binding.btnEditCast.makeGone()
+                }else{
+                    binding.btnReportCast.makeGone()
+                    binding.btnBlockUser.makeGone()
+                    binding.btnReportUser.makeGone()
+                }
+            } else{
                 binding.btnDeleteCast.makeGone()
-                binding.btnEditCast.makeGone()
-            }else{
-                binding.btnReportCast.makeGone()
-                binding.btnBlockUser.makeGone()
-                binding.btnReportUser.makeGone()
             }
         }
     }

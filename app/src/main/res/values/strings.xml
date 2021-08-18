@@ -588,6 +588,12 @@
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
     <string name="days_ago">%d days ago</string>
+    <string name="week_ago">a week ago</string>
+    <string name="weeks_ago">%d week ago</string>
+    <string name="month_ago">a month ago</string>
+    <string name="months_ago">%d months ago</string>
+    <string name="year_ago">a year ago</string>
+    <string name="years_ago">%d years ago</string>
     <string name="lorem">Lorem Ipsum is simply dummy text of the…</string>
 
     <string name="why_are_you_reporting">Why are you reporting?</string>

@@ -22,6 +22,7 @@ data class CastUIModel(
     val caption: String?,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?,
+    val podcastCreatedAt: LocalDateTime?,
     val latitude: Float?,
     val longitude: Float?,
     val isLiked: Boolean?,
@@ -48,17 +49,26 @@ data class CastUIModel(
      * X days ago - Berlin
      * Today - Berlin
      */
-    fun getCreationDateAndPlace(context: Context): String{
+    fun getCreationDateAndPlace(context: Context, activePodcast: Boolean): String{
         var location = address
         if(location.isNullOrEmpty()){
             location = getLocation(context)
         }
         return "${
-            createdAt?.let {
-                DateUiUtil.getPastDateDaysTextDescription(
-                    createdAt,
-                    context
-                )
+            if(activePodcast) {
+                podcastCreatedAt?.let {
+                    DateUiUtil.getTimeAgoText(
+                        podcastCreatedAt,
+                        context
+                    )
+                }
+            } else {
+                createdAt?.let {
+                    DateUiUtil.getTimeAgoText(
+                        createdAt,
+                        context
+                    )
+                }
             }
         } ${if(location.isNullOrEmpty()) "" else " - $location"}"
     }
@@ -86,7 +96,7 @@ fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =
     CastUIModel(
         id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
         imageLinks = images?.mapToUIModel(), caption = caption!!,
-        createdAt = created_at?.toLocalDateTime(),
+        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
         latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked,
         isReported = reported, isRecasted = recasted, isListened = listened, isShared = false,
@@ -102,7 +112,7 @@ fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
     CastUIModel(
         id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
         imageLinks = images?.mapToUIModel(), caption = caption!!,
-        createdAt = created_at?.toLocalDateTime(),
+        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
         latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked,
         isReported = reported, isRecasted = recasted, isListened = listened, isShared = false,
@@ -118,7 +128,7 @@ fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
     CastUIModel(
         id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
         imageLinks = images?.mapToUIModel(), caption = caption!!,
-        createdAt = created_at?.toLocalDateTime(),
+        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
         latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked,
         isReported = reported, isRecasted = recasted, isListened = listened, isShared = false,
@@ -134,7 +144,7 @@ fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
     CastUIModel(
         id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
         imageLinks = images?.mapToUIModel(), caption = caption!!,
-        createdAt = created_at?.toLocalDateTime(),
+        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
         latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked,
         isReported = reported, isRecasted = recasted, isListened = listened, isShared = false,
@@ -150,7 +160,7 @@ fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
     CastUIModel(
         id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
         imageLinks = images?.mapToUIModel(), caption = caption!!,
-        createdAt = created_at?.toLocalDateTime(),
+        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
         latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked, isShared = false,
         isReported = reported, isRecasted = recasted, isListened = listened,
@@ -166,7 +176,7 @@ fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
     CastUIModel(
         id = podcast!!.id!!, owner = podcast.owner?.mapToUIModel(), title = podcast.title,
         address = podcast.address, recasted = recasted, imageLinks = podcast.images?.mapToUIModel(),
-        caption = podcast.caption, createdAt = if(recasted == true) created_at?.toLocalDateTime() else podcast.created_at?.toLocalDateTime(),
+        caption = podcast.caption, createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = podcast.created_at?.toLocalDateTime(),
         updatedAt = podcast.updated_at?.toLocalDateTime(), latitude = podcast.latitude?.toFloat(),
         longitude = podcast.longitude?.toFloat(), isLiked = podcast.liked, isShared = false,
         isReported = podcast.reported, isRecasted = podcast.recasted,
@@ -184,7 +194,7 @@ fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
     CastUIModel(
         id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
         imageLinks = images?.mapToUIModel(), caption = caption!!,
-        createdAt = created_at?.toLocalDateTime(),
+        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
         latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked,
         isReported = reported, isRecasted = recasted, isListened = listened, isShared = false,

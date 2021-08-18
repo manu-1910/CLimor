@@ -20,6 +20,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
@@ -174,6 +175,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
         setPodcastCounters(cast)
         setAudioInfo(cast)
         loadImages(cast)
+        setViewsVisibility()
         setOnClicks(cast)
         addTags(cast)
         initLikeState(cast)
@@ -194,7 +196,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
 
     private fun setPodcastOwnerInfo(cast: CastUIModel) {
         binding.tvPodcastUserName.text = cast.owner?.getFullName()
-        binding.tvPodcastUserSubtitle.text = cast.getCreationDateAndPlace(requireContext())
+        binding.tvPodcastUserSubtitle.text = cast.getCreationDateAndPlace(requireContext(), true)
     }
 
     private fun setPodcastCounters(cast: CastUIModel) {
@@ -282,8 +284,16 @@ class ExtendedPlayerFragment : UserMentionFragment() {
         }
     }
 
+    private fun setViewsVisibility(){
+        binding.btnPodcastMore.makeVisible()
+    }
+
     private fun setOnClicks(cast: CastUIModel) {
         binding.btnPodcastMore.setOnClickListener {
+            it.findViewTreeLifecycleOwner()?.let {
+                DialogPodcastMoreActions.newInstance(cast)
+                    .show(parentFragmentManager, DialogPodcastMoreActions.TAG)
+            }
         }
 
         binding.btnPodcastPlayExtended.setOnClickListener {
