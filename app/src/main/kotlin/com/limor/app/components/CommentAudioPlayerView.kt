@@ -123,7 +123,10 @@ class CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayou
     }
 
     override fun onDetachedFromWindow() {
-        playerBinder.stop()
+        // only stop the audio if it is playing this comment's audio
+        if (null != commentAudioTrack && playerBinder.currentAudioTrack == commentAudioTrack) {
+            playerBinder.stop()
+        }
         super.onDetachedFromWindow()
     }
 }
