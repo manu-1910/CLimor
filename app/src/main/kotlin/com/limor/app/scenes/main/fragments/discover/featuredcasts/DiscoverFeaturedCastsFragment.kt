@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -55,6 +56,10 @@ class DiscoverFeaturedCastsFragment : BaseFragment() {
         }
 
         binding.toolbar.title.setText(R.string.featured_casts)
+
+        binding.toolbar.btnNotification.setOnClickListener {
+            findNavController().navigate(R.id.navigation_notifications)
+        }
     }
 
     private fun subscribeForEvents() {
