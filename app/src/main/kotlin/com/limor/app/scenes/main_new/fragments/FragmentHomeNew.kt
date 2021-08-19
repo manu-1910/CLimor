@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewbinding.ViewBinding
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
@@ -32,6 +33,7 @@ import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.uimodels.CastUIModel
+import com.xwray.groupie.viewbinding.BindableItem
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import org.jetbrains.anko.support.v4.toast
 import timber.log.Timber
@@ -49,6 +51,10 @@ class FragmentHomeNew : BaseFragment() {
 
     lateinit var binding: FragmentHomeNewBinding
 
+    private var homeFeedAdapter: HomeFeedAdapter? = null
+    private var castOffset = 0
+    private val currentCasts = mutableListOf<CastUIModel>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -61,6 +67,8 @@ class FragmentHomeNew : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initSwipeToRefresh()
+        createAdapter()
+        setUpRecyclerView()
         subscribeToViewModel()
         setOnClicks()
     }
@@ -71,54 +79,73 @@ class FragmentHomeNew : BaseFragment() {
         }
     }
 
+    private fun loadFeeds() {
+        homeFeedViewModel.loadHomeFeed(
+            offset = castOffset,
+            limit = Constants.HOME_FEED_ITEM_BATCH_SIZE
+        )
+    }
+
+    private fun reload() {
+        castOffset = 0
+        homeFeedViewModel.loadHomeFeed()
+    }
+
     private fun initSwipeToRefresh() {
         binding.swipeToRefresh.setColorSchemeResources(R.color.colorAccent)
         binding.swipeToRefresh.setOnRefreshListener {
-            homeFeedViewModel.loadHomeFeed()
+            reload()
         }
+    }
+
+    private fun onLoadCasts(casts: List<CastUIModel>) {
+        if (castOffset == 0) {
+            currentCasts.clear()
+        }
+
+        currentCasts.addAll(casts)
+
+        val all = mutableListOf<CastUIModel>()
+        all.addAll(currentCasts)
+
+
+        val recyclerViewState = binding.rvHome.layoutManager?.onSaveInstanceState()
+        homeFeedAdapter?.apply {
+            loadMore =
+                currentCasts.size >= Constants.HOME_FEED_ITEM_BATCH_SIZE &&
+                        casts.size >= Constants.HOME_FEED_ITEM_BATCH_SIZE
+            submitList(all)
+            isLoading = false
+        }
+        binding.rvHome.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 
     private fun subscribeToViewModel() {
         homeFeedViewModel.homeFeedData.observe(viewLifecycleOwner) { casts ->
             binding.swipeToRefresh.isRefreshing = false
-            setDataToRecyclerView(casts)
+            onLoadCasts(casts)
         }
         likePodcastViewModel.reload.observe(viewLifecycleOwner){
-            homeFeedViewModel.loadHomeFeed()
+            loadFeeds()
         }
         recastPodcastViewModel.recastedResponse.observe(viewLifecycleOwner){
-            homeFeedViewModel.loadHomeFeed()
+            loadFeeds()
         }
         recastPodcastViewModel.deleteRecastResponse.observe(viewLifecycleOwner){
-            homeFeedViewModel.loadHomeFeed()
+            loadFeeds()
         }
         sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner){
-            homeFeedViewModel.loadHomeFeed()
+            loadFeeds()
         }
         podcastInteractionViewModel.reload.observe(viewLifecycleOwner){
             if(it == true){
-                homeFeedViewModel.loadHomeFeed()
+                loadFeeds()
             }
         }
     }
 
-    private fun setDataToRecyclerView(list: List<CastUIModel>) {
-        val adapter = binding.rvHome.adapter
-        if (adapter != null) {
-            (adapter as HomeFeedAdapter).submitList(list)
-        } else {
-            setUpRecyclerView(list)
-        }
-    }
-
-    private fun setUpRecyclerView(list: List<CastUIModel>) {
-        val layoutManager = LinearLayoutManager(requireContext())
-        binding.rvHome.itemAnimator = null
-
-        binding.rvHome.layoutManager = layoutManager
-        val itemMargin = resources.getDimension(R.dimen.marginMedium).toInt()
-        binding.rvHome.addItemDecoration(MarginItemDecoration(itemMargin))
-        val adapter = HomeFeedAdapter(
+    private fun createAdapter() {
+        homeFeedAdapter = HomeFeedAdapter(
             onLikeClick = { castId, like ->
                 likePodcastViewModel.likeCast(castId, like)
             },
@@ -142,10 +169,24 @@ class FragmentHomeNew : BaseFragment() {
             },
             onReloadData = {
                     _, _ ->
-                homeFeedViewModel.loadHomeFeed()
+                loadFeeds()
+            },
+            onLoadMore = {
+                castOffset = currentCasts.size
+                homeFeedAdapter?.isLoading = true
+                loadFeeds()
             }
-        ).apply { submitList(list) }
-        rvHome.adapter = adapter
+        )
+    }
+
+    private fun setUpRecyclerView() {
+        val layoutManager = LinearLayoutManager(requireContext())
+        binding.rvHome.itemAnimator = null
+
+        binding.rvHome.layoutManager = layoutManager
+        val itemMargin = resources.getDimension(R.dimen.marginMedium).toInt()
+        binding.rvHome.addItemDecoration(MarginItemDecoration(itemMargin))
+        rvHome.adapter = homeFeedAdapter
     }
 
     var launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->

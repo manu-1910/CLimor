@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.limor.app.common.Constants
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.usecases.GetHomeFeedCastsUseCase
 import kotlinx.coroutines.launch
@@ -21,9 +22,9 @@ class HomeFeedViewModel @Inject constructor(
         loadHomeFeed()
     }
 
-    fun loadHomeFeed(offset: Int = 0) {
+    fun loadHomeFeed(offset: Int = 0, limit: Int = Constants.HOME_FEED_ITEM_BATCH_SIZE) {
         viewModelScope.launch {
-            getHomeFeedCastsUseCase.execute(limit = 20, offset = offset)
+            getHomeFeedCastsUseCase.execute(limit = limit, offset = offset)
                 .onSuccess {
                     _homeFeedData.value = it
                 }
