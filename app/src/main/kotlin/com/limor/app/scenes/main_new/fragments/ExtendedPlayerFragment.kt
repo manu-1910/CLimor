@@ -226,7 +226,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
     }
 
     private fun setAudioInfo(cast: CastUIModel) {
-        binding.tvRecastPlayMaxPosition.text = cast.audio?.duration?.toReadableFormat(
+        binding.tvRecastPlayMaxPosition.text = cast.audio?.duration?.toReadableStringFormat(
             DURATION_READABLE_FORMAT_1
         )
     }
@@ -241,7 +241,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
                         binding.lpiPodcastProgress.progress =
                             ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
                         binding.tvRecastPlayCurrentPosition.text =
-                            duration.toReadableFormat(DURATION_READABLE_FORMAT_1)
+                            duration.toReadableStringFormat(DURATION_READABLE_FORMAT_3)
                     }
 
                 }

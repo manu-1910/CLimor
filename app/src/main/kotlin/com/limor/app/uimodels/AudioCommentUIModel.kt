@@ -17,7 +17,7 @@ fun GetCommentsByPodcastsQuery.Audio.mapToUIModel(): AudioCommentUIModel? {
     if (url != null && duration != null) {
         return AudioCommentUIModel(
             url = url,
-            duration = Duration.ofSeconds(duration.toLong())
+            duration = Duration.ofMillis(duration.toLong())
         )
     }
     return null
@@ -28,7 +28,7 @@ fun GetCommentsByPodcastsQuery.Audio1.mapToUIModel(): AudioCommentUIModel? {
     if (url != null && duration != null) {
         return AudioCommentUIModel(
             url = url,
-            duration = Duration.ofSeconds(duration.toLong())
+            duration = Duration.ofMillis(duration.toLong())
         )
     }
     return null
@@ -38,7 +38,7 @@ fun GetCommentsByIdQuery.Audio1.mapToUIModel(): AudioCommentUIModel? {
     if (url != null && duration != null) {
         return AudioCommentUIModel(
             url = url,
-            duration = Duration.ofSeconds(duration.toLong())
+            duration = Duration.ofMillis(duration.toLong())
         )
     }
     return null
@@ -47,7 +47,7 @@ fun GetCommentsByIdQuery.Audio.mapToUIModel(): AudioCommentUIModel? {
     if (url != null && duration != null) {
         return AudioCommentUIModel(
             url = url,
-            duration = Duration.ofSeconds(duration.toLong())
+            duration = Duration.ofMillis(duration.toLong())
         )
     }
     return null

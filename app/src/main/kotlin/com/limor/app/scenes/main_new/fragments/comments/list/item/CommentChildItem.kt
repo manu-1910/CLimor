@@ -21,9 +21,9 @@ class CommentChildItem(
 ) : BindableItem<ItemChildCommentBinding>() {
 
     override fun bind(viewBinding: ItemChildCommentBinding, position: Int) {
-        viewBinding.tvCommentName.text = comment.user?.getFullName()
+        viewBinding.tvCommentName.text = comment.user?.username
         viewBinding.tvCommentDate.text = comment.createdAt?.let { createdAt ->
-            DateUiUtil.getPastDateDaysTextDescription(
+            DateUiUtil.getTimeAgoText(
                 createdAt,
                 viewBinding.root.context
             )

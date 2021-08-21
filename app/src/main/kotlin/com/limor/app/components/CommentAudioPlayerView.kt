@@ -78,8 +78,8 @@ class CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayou
             playerBinder.getCurrentPlayingPosition(commentAudioTrack!!)
                 .onEach { duration ->
                     binding.progressSeekbar.progress = duration.seconds.toInt()
-                    binding.currentTime.text = duration.toReadableFormat(
-                        DURATION_READABLE_FORMAT_1
+                    binding.currentTime.text = duration.toReadableStringFormat(
+                        DURATION_READABLE_FORMAT_3
                     )
                 }
                 .launchIn(this)
@@ -91,8 +91,8 @@ class CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayou
         binding.progressSeekbar.max = duration.seconds.toInt()
         enableSeekbar(false)
         binding.playButton.isPaused = true
-        binding.duration.text = duration.toReadableFormat(DURATION_READABLE_FORMAT_1)
-        binding.currentTime.text = Duration.ZERO.toReadableFormat(DURATION_READABLE_FORMAT_1)
+        binding.duration.text = duration.toReadableStringFormat(DURATION_READABLE_FORMAT_3)
+        binding.currentTime.text = Duration.ZERO.toReadableStringFormat(DURATION_READABLE_FORMAT_3)
         binding.loadingBar.makeInVisible()
     }
 
