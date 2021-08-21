@@ -470,5 +470,5 @@ dependencies {
 
     implementation 'com.tyorikan:voice-recording-visualizer:1.0.3@aar'
 
-    implementation 'com.google.android.libraries.places:places:1.1.0'
+    implementation 'com.google.android.libraries.places:places:2.4.0'
 }
