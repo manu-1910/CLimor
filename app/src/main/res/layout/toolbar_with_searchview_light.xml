@@ -55,19 +55,25 @@
             android:layout_below="@+id/btnDone"
             android:background="@color/white">
 
-            <androidx.appcompat.widget.SearchView
-                android:id="@+id/search_view"
-                android:layout_width="match_parent"
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/autoCompleteEditText"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/marginMedium"
-                android:background="@drawable/shape_background_search_view_light"
-                android:imeOptions="actionSearch|flagNoExtractUi"
-                app:queryBackground="@color/transparent"
-                android:theme="@style/SearchViewToolbarTheme"
-                app:iconifiedByDefault="false"
-                app:queryHint="@string/search"
-                android:layoutDirection="rtl"
-                app:searchIcon="@drawable/ic_search" />
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.9"
+                android:layout_margin="16dp"
+                android:gravity="start"
+                android:hint="Enter Location"
+                android:padding="16sp"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grayWave"
+                android:drawableLeft="@drawable/ic_search"
+                android:drawablePadding="12dp"
+                android:background="@drawable/shape_background_search_view"
+                app:layout_constraintStart_toStartOf="@+id/mapLocation"
+                app:layout_constraintEnd_toEndOf="@+id/mapLocation"
+                app:layout_constraintBottom_toBottomOf="parent"/>
         </LinearLayout>
 
     </RelativeLayout>

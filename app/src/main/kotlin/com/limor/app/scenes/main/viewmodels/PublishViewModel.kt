@@ -35,7 +35,6 @@ private val publishRepository: PublishRepository
     get() = _publishResponseData
     var categorySelected: String = ""
     var categorySelectedId: Int = -1
-    var locationSelectedItem: UILocations = UILocations("", 0.0, 0.0, true)
     var languageSelected: String = ""
     var languageCode: String = ""
     var languageSelectedId: Int = 0

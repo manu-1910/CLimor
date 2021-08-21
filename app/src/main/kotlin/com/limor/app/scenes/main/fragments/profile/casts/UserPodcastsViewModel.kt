@@ -25,11 +25,13 @@ class UserPodcastsViewModel @Inject constructor(
         offset: Int = 0
     ) {
         viewModelScope.launch {
+            Timber.d("casts -> $userId $limit $offset")
             getPodcastsByUserUseCase.execute(userId, limit, offset)
                 .onSuccess {
                     _casts.value = it
                 }
                 .onFailure {
+                    _casts.value = emptyList()
                     Timber.e(it, "Error while loading user casts")
                 }
         }

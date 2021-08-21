@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
@@ -26,6 +27,8 @@ import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentUserCastsBinding
 import com.limor.app.di.Injectable
 import com.limor.app.extensions.requireTag
+import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
@@ -36,6 +39,7 @@ import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -143,6 +147,9 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     private fun initViews() {
         binding.castsList.layoutManager = LinearLayoutManager(context)
         binding.castsList.adapter = castsAdapter
+        binding.btnRecordPodcast.setOnClickListener {
+            findNavController().navigate(R.id.navigation_record)
+        }
     }
 
     private fun onLoadMore() {
@@ -197,6 +204,23 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     private fun onLoadCasts(casts: List<CastUIModel>) {
         if (castOffset == 0) {
             currentCasts.clear()
+            Timber.d("mj 0")
+            lifecycleScope.launch {
+                JwtChecker.getUserIdFromJwt()?.let {
+                    if (userId == it) {
+                        if (casts.isEmpty()) {
+                            Timber.d("mj emoty")
+                            binding.noPodcastsLayout.visibility = View.VISIBLE
+                        }
+
+                    } else {
+                        binding.noPodcastsLayout.visibility = View.GONE
+                    }
+                }
+            }
+
+
+
         }
 
         currentCasts.addAll(casts)
@@ -226,6 +250,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     }
 
     private fun loadCasts() {
+        Timber.d("Profile Casts Loading for ${userId}")
         viewModel.loadCasts(userId, Constants.CAST_BATCH_SIZE, castOffset)
     }
 

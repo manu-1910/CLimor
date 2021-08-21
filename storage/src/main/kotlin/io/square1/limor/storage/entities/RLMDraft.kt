@@ -37,8 +37,8 @@ open class RLMTimeStamp(
 
 open class RLMLocations(
     var address: String = "",
-    var latitude: Double = 0.0,
-    var longitude: Double = 0.0,
+    var latitude: Double? = null,
+    var longitude: Double? = null,
     var isSelected: Boolean = false
 ):RealmObject()
 

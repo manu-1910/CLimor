@@ -2,6 +2,8 @@ package com.limor.app.scenes.main.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.facebook.places.Places
 import com.limor.app.common.BaseViewModel
 import com.limor.app.common.SessionManager
 import com.limor.app.common.SingleLiveEvent
@@ -14,6 +16,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.square1.limor.remote.extensions.parseSuccessResponse
+import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import javax.inject.Inject
 

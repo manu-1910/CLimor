@@ -12,7 +12,7 @@ data class LocationsEntityArray(
 
 data class LocationsEntity(
     var address: String,
-    var latitude: Double,
-    var longitude: Double,
+    var latitude: Double?,
+    var longitude: Double?,
     var isSelected: Boolean
 )

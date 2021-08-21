@@ -37,6 +37,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -66,6 +67,7 @@ import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.fragments.record.adapters.HashtagAdapter
 import com.limor.app.scenes.main.viewmodels.*
+import com.limor.app.scenes.main_new.view_model.LocationViewModel
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.CommonsKt.Companion.dpToPx
@@ -117,6 +119,8 @@ class PublishFragment : BaseFragment() {
     private lateinit var locationsViewModel: LocationsViewModel
     private lateinit var tagsViewModel: TagsViewModel
 
+    private val locationViewModel: LocationViewModel by activityViewModels()
+
     lateinit var uiDraft: UIDraft
     private lateinit var mediaPlayer: MediaPlayer
     private var seekHandler = Handler()
@@ -148,7 +152,7 @@ class PublishFragment : BaseFragment() {
     private var etDraftCaption: TextInputEditText? = null
     private var etDraftTags: SocialAutoCompleteTextView? = null
 
-    private var podcastLocation: UILocations = UILocations("", 0.0, 0.0, false)
+    private var podcastLocation: UILocations = UILocations("", null, null, false)
     private var imageUrlFinal: String? = ""
     private var audioUrlFinal: String? = ""
     private var isPublished: Boolean = false
@@ -218,7 +222,8 @@ class PublishFragment : BaseFragment() {
             configureMediaPlayerWithButtons()
             updateDraft()
             apiCallPublishPodcast()
-            getCityOfDevice()
+            //getCityOfDevice()
+
             deleteDraft()
             apiCallHashTags()
         }
@@ -273,8 +278,22 @@ class PublishFragment : BaseFragment() {
         listTagsString = HashtagArrayAdapter(requireContext())
         setupRecyclerTags()
         updatePublishBtnState()
+
+        subscribeToViewModel()
     }
 
+    private fun subscribeToViewModel() {
+        locationViewModel.locationData.observe(viewLifecycleOwner) {
+            onNewLocation(it)
+        }
+    }
+
+    private fun onNewLocation(location: UILocations?) {
+        latitude = location?.latitude
+        longitude = location?.longitude
+        tvSelectedLocation?.text = location?.address
+        uiDraft.location = location
+    }
 
     override fun onResume() {
         super.onResume()
@@ -365,6 +384,9 @@ class PublishFragment : BaseFragment() {
                     })
             }
         })
+
+
+
 
        /* output.response.observe(viewLifecycleOwner, Observer {
             progressPb.visibility = View.GONE
@@ -596,6 +618,8 @@ class PublishFragment : BaseFragment() {
                 }
             }
         }
+
+
 
     }
 
@@ -923,8 +947,8 @@ class PublishFragment : BaseFragment() {
         if (!uiDraft.location?.address.toString().isNullOrEmpty()) {
             tvSelectedLocation?.text = uiDraft.location?.address
         } else {
-            tvSelectedLocation?.text = publishViewModel.locationSelectedItem.address
-            uiDraft.location = publishViewModel.locationSelectedItem
+            tvSelectedLocation?.text = locationViewModel.locationData.value?.address
+            uiDraft.location = locationViewModel.locationData.value
         }
         if (publishViewModel.tags.isNotEmpty()) {
             etHashtags.setText(publishViewModel.tags.joinToString(" "))

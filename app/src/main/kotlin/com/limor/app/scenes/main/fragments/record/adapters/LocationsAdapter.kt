@@ -8,10 +8,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.R
 import com.limor.app.uimodels.UILocations
+import com.limor.app.uimodels.UILocationsList
 
 
 class LocationsAdapter(
-    private val locationsList: ArrayList<UILocations>,
+    private val locationsList: ArrayList<UILocationsList>,
     private val listener: OnItemClickListener
 ) :
     RecyclerView.Adapter<LocationsAdapter.ViewHolder>() {
@@ -36,7 +37,7 @@ class LocationsAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.tvLocations.text = locationsList[position].address
+        holder.tvLocations.text = locationsList[position].mainText
        /* if (locationsList[position].isSelected) {
             holder.ivSelected.visibility = View.VISIBLE
         } else {
@@ -46,6 +47,6 @@ class LocationsAdapter(
     }
 
     interface OnItemClickListener {
-        fun onItemClick(item: UILocations)
+        fun onItemClick(item: UILocationsList)
     }
 }

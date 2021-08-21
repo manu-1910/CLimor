@@ -288,6 +288,19 @@ class EditProfileFragment : BaseFragment() {
 
 
     private fun readyToUpdate() {
+
+        if(binding.etFirstNameInner.text.isNullOrEmpty()){
+            binding.etFirstNameInner.error = "Required"
+            return
+        }
+        if(binding.etLastNameInner.text.isNullOrEmpty()){
+            binding.etLastNameInner.error = "Required"
+            return
+        }
+        if(binding.etUsernameInner.text.isNullOrEmpty()){
+            binding.etUsernameInner.error = "Required"
+            return
+        }
         showLoading()
         if (profileHasImage) {
             if (profileImageUploaded) {
