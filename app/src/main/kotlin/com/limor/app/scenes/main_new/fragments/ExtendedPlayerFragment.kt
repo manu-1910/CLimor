@@ -279,7 +279,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
             binding.ivPodcastAvatar.loadCircleImage(it)
         }
 
-        cast.imageLinks?.medium?.let {
+        cast.imageLinks?.large?.let {
             binding.ivPodcastBackground.loadImage(it)
         }
     }

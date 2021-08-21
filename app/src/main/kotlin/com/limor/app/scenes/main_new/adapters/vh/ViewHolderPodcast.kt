@@ -71,7 +71,7 @@ class ViewHolderPodcast(
             binding.ivAvatarImageListening.loadCircleImage(it)
         }
 
-        item.imageLinks?.medium?.let {
+        item.imageLinks?.large?.let {
             binding.ivPodcastBackground.loadImage(it)
         }
     }
