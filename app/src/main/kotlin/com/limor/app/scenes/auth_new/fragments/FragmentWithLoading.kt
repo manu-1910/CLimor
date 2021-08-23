@@ -25,12 +25,17 @@ abstract class FragmentWithLoading : Fragment() {
         subscribeToViewModel()
         btnRetry.setOnClickListener {
             switchCommonVisibility(isLoading = true)
-            load()
+            loadFromUserAction()
         }
     }
 
     abstract fun load()
     abstract val errorLiveData: LiveData<String>
+
+    // If this gets overridden by subclasses `load()` might not be called
+    open fun loadFromUserAction() {
+        load()
+    }
 
     @CallSuper
     protected open fun subscribeToViewModel() {

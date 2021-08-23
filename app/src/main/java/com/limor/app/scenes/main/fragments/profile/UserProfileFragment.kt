@@ -60,18 +60,76 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         savedInstanceState: Bundle?
     ): View {
         binding = UserProfileFragmentBinding.inflate(inflater, container, false)
-        ensureToolbar()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        checkSignedInUser()
+    }
+
+    override fun loadFromUserAction() {
+        // no super call because it'd call load which we don't need or use anyway
+        loadUserData()
+    }
+
+    override fun load() {
+        // nope.. we don't make use of this func, because it's called on two conflicting occasions:
+        // - automatically on fragment's creation
+        // - initiated by user when clicking retry
+        //
+        // and if we load the user data here then the whole view setup and adapter creation would
+        // be repeated
+    }
+
+    private fun loadUserData() {
+        if (isSignedInUser) {
+            model.getUserProfile()
+        } else {
+            model.getUserById(getIntentUserId())
+        }
+    }
+
+    private fun checkSignedInUser() {
+        lifecycleScope.launchWhenCreated {
+            currentUserId = JwtChecker.getUserIdFromJwt(false)
+            val id = getIntentUserId()
+            isSignedInUser = id == 0 || id == currentUserId
+            setup()
+        }
+    }
+
+    private fun setup() {
+        ensureToolbar()
 
         setupDefaultView()
 
         setupListeners()
 
         observeProfileActions()
+
+        val loadedUserId = model.userProfileData.value?.id
+
+        // if not user is retained in the view model then we just normally load the user data
+        //
+        if (loadedUserId == null) {
+            subscribeToModels()
+            loadUserData()
+
+        } else {
+            // if there already is a user loaded in the model then we need to ensure this isn't
+            // another user and reset it so the subscribers don't load its data, however if it's
+            // the user we want we just let the subscribers consume it
+            //
+            val targetUserId = if (isSignedInUser) currentUserId else getIntentUserId()
+            if (targetUserId == loadedUserId) {
+                subscribeToModels()
+            } else {
+                model.resetUser()
+                subscribeToModels()
+                loadUserData()
+            }
+        }
     }
 
     private fun observeProfileActions() {
@@ -190,9 +248,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         }
     }
 
-    override fun subscribeToViewModel() {
-        super.subscribeToViewModel()
-
+    fun subscribeToModels() {
         model.userProfileData.observe(viewLifecycleOwner, {
             it?.let {
                 setDataToProfileViews(it)
@@ -204,7 +260,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         model.profileErrorLiveData.observe(viewLifecycleOwner, {
             binding.profileMainContainer.visibility = View.GONE
         })
-
     }
 
     private fun setupConditionalViews(user: UserUIModel) {
@@ -269,29 +324,8 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
     }
 
-    override fun load() {
-        if (currentUserId != null && currentUserId != Int.MIN_VALUE) {
-            onUserId()
-            return
-        }
-
-        lifecycleScope.launchWhenCreated {
-            currentUserId = JwtChecker.getUserIdFromJwt()
-            onUserId()
-        }
-    }
-
-    private fun onUserId() {
-        val id = activity?.intent?.extras?.getInt(USER_ID_KEY, 0)
-        isSignedInUser = id == null || id == 0 || id == currentUserId
-
-        if (id == null || id == 0) {
-            model.getUserProfile()
-        } else {
-            model.getUserById(id)
-        }
-
-        ensureToolbar()
+    private fun getIntentUserId(): Int {
+        return activity?.intent?.extras?.getInt(USER_ID_KEY, 0) ?: 0
     }
 
     override val errorLiveData: LiveData<String>
@@ -300,11 +334,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     private fun setupViewPager(user: UserUIModel) {
         val adapter = ProfileViewPagerAdapter(user.id, childFragmentManager, lifecycle)
         binding.profileViewpager.adapter = adapter
-    }
-
-    override fun onResume() {
-        super.onResume()
-        load()
     }
 
     enum class Tab {

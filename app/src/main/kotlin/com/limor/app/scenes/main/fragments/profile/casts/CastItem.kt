@@ -11,6 +11,7 @@ import com.limor.app.extensions.px
 import com.limor.app.scenes.utils.recycler.HorizontalSpacingItemDecoration
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.GroupieAdapter
+import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
 
 class CastItem(
@@ -162,6 +163,16 @@ class CastItem(
                 onLikeClick(cast, isLiked)
             }
         }
+    }
+
+    override fun isSameAs(other: Item<*>): Boolean {
+        if (other !is CastItem) return false
+        return cast.id == other.cast.id
+    }
+
+    override fun hasSameContentAs(other: Item<*>): Boolean {
+        if (other !is CastItem) return false
+        return cast == other.cast
     }
 
     override fun getLayout() = R.layout.item_user_cast

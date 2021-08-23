@@ -206,7 +206,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
             currentCasts.clear()
             Timber.d("mj 0")
             lifecycleScope.launch {
-                JwtChecker.getUserIdFromJwt()?.let {
+                JwtChecker.getUserIdFromJwt(false)?.let {
                     if (userId == it) {
                         if (casts.isEmpty()) {
                             Timber.d("mj emoty")
@@ -239,9 +239,12 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     }
 
     private fun updateLoadMore(isEnabled: Boolean) {
+        val needNotification = isEnabled != loadMoreItem.isEnabled
         loadMoreItem.isEnabled = isEnabled
-        // notify the last item (i.e. the LoadMoreItem) has changes so its style is updated.
-        castsAdapter.notifyItemChanged(currentCasts.size)
+        if (needNotification) {
+            // notify the last item (i.e. the LoadMoreItem) has changes so its style is updated.
+            castsAdapter.notifyItemChanged(currentCasts.size)
+        }
     }
 
     private fun reload() {

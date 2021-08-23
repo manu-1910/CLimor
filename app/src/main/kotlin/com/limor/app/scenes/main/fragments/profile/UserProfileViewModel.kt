@@ -99,6 +99,9 @@ class UserProfileViewModel @Inject constructor(
         Timber.d("working blindly...")
     }
 
+    fun resetUser() {
+        _userProfileData.value = null
+    }
 
 
 }
