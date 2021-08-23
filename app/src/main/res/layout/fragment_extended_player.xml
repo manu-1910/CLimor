@@ -497,6 +497,21 @@
                 android:src="@color/blue200"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/llExtendCommentsHeader" />
+            <TextView
+                android:id="@+id/tvCommentName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:textSize="16sp"
+                android:fontFamily="@font/roboto_bold"
+                android:textColor="@color/textPrimary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ivAvatarFirstCollapsedComment"
+                app:layout_constraintTop_toTopOf="@id/ivAvatarFirstCollapsedComment"
+                tools:text="Person Name" />
 
             <TextView
                 android:id="@+id/tvFirstCollapsedComment"
@@ -504,18 +519,21 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:maxLines="2"
+                android:ellipsize="end"
                 app:layout_constraintBottom_toBottomOf="@+id/ivAvatarFirstCollapsedComment"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/ivAvatarFirstCollapsedComment"
-                app:layout_constraintTop_toTopOf="@id/ivAvatarFirstCollapsedComment"
-                tools:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry" />
+                app:layout_constraintTop_toBottomOf="@id/tvCommentName"
+                tools:text="Lorem Ipsum is simply dummy text  of the printing and typesetting industry" />
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/firstCollapsedCommentVisibilityGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="invisible"
-                app:constraint_referenced_ids="ivAvatarFirstCollapsedComment, tvFirstCollapsedComment" />
+                app:constraint_referenced_ids="ivAvatarFirstCollapsedComment, tvFirstCollapsedComment, tvCommentName" />
 
             <TextView
                 android:id="@+id/no_comments_message"

@@ -154,6 +154,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
                 firstComment.user?.imageLinks?.small?.let { imageUrl ->
                     binding.ivAvatarFirstCollapsedComment.loadCircleImage(imageUrl)
                 }
+                binding.tvCommentName.text = firstComment.user?.username
                 binding.firstCollapsedCommentVisibilityGroup.makeVisible()
                 binding.noCommentsMessage.makeGone()
                 binding.llExtendCommentsHeader.isEnabled = true
@@ -195,7 +196,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
     }
 
     private fun setPodcastOwnerInfo(cast: CastUIModel) {
-        binding.tvPodcastUserName.text = cast.owner?.getFullName()
+        binding.tvPodcastUserName.text = cast.owner?.username
         binding.tvPodcastUserSubtitle.text = cast.getCreationDateAndPlace(requireContext(), true)
     }
 

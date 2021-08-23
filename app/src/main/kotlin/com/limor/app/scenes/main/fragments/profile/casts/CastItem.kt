@@ -26,7 +26,7 @@ class CastItem(
 
     override fun bind(viewBinding: ItemUserCastBinding, position: Int) {
         viewBinding.apply {
-            tvPodcastUserName.text = cast.owner?.getFullName()
+            tvPodcastUserName.text = cast.owner?.username
             tvPodcastUserSubtitle.text = cast.getCreationDateAndPlace(root.context, true)
 
             tvPodcastLength.text = cast.audio?.duration?.let {

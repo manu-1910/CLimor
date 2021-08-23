@@ -28,7 +28,7 @@ class SmallCastItem(
 
     override fun bind(viewBinding: ItemDiscoverSmallCastBinding, position: Int) {
         viewBinding.apply {
-            authorName.text = cast.owner?.getFullName()
+            authorName.text = cast.owner?.username
             castName.text = cast.title
             cast.audio?.duration?.let {
                 castDuration.text = getCastDuration(cast.audio.duration)

@@ -35,7 +35,7 @@ class BigCastItem(
                 root.updateLayoutParams { width = this@BigCastItem.width }
             }
 
-            authorName.text = cast.owner?.getFullName()
+            authorName.text = cast.owner?.username
             dateLocation.text = cast.getCreationDateAndPlace(root.context, true)
             castName.text = cast.title
             cast.audio?.duration?.let {
