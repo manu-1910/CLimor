@@ -37,8 +37,11 @@ class UserMentionPopup(private val editText: EditText, private val dataProvider:
 
     var inputHeight: Int = 0
         set(value) {
+            val wasDifferent = field != value
             field = value
-            adjustPopupPosition()
+            if (wasDifferent) {
+                adjustPopupPosition()
+            }
         }
 
     init {
@@ -98,11 +101,6 @@ class UserMentionPopup(private val editText: EditText, private val dataProvider:
         }
     }
 
-    private fun highlightMentions() {
-
-
-    }
-
     private fun initPopup() {
         popup.inputMethodMode = PopupWindow.INPUT_METHOD_NEEDED
         popup.contentView = binding.root
@@ -115,11 +113,11 @@ class UserMentionPopup(private val editText: EditText, private val dataProvider:
 
     private fun adjustPopupPosition() {
         val maxContentHeight: Int =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) popup.getMaxAvailableHeight(
+            popup.getMaxAvailableHeight(
                 editText,
                 inputHeight,
                 false
-            ) else popup.getMaxAvailableHeight(editText, inputHeight)
+            )
 
         val maxContentWidth = editText.resources.displayMetrics.widthPixels
         binding.root.measure(
