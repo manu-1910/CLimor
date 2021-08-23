@@ -140,15 +140,16 @@ class SettingsViewModel @Inject constructor(
         website: String,
         imageURL: String?
     ) {
+        println("UPdating user image to $imageURL")
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 val response = withContext(Dispatchers.IO) {
                     userInfoProvider.updateUserProfile(userName, firstName, lastName, bio, website, imageURL)
                 }
-                _userUpdatedResponse.postValue(response)
+                _userUpdatedResponse.postValue(USER_UPDATE_SUCCESS)
                 Timber.d("Updated UserInfo -> $response")
             } catch (e: Exception) {
-                _userUpdatedResponse.postValue("Unable to Update Now")
+                _userUpdatedResponse.postValue(USER_UPDATE_FAILURE)
                 Timber.d("Updated UserInfo -> $e")
             }
         }
@@ -192,4 +193,8 @@ class SettingsViewModel @Inject constructor(
 
     }
 
+    companion object {
+        const val USER_UPDATE_SUCCESS = "Success"
+        const val USER_UPDATE_FAILURE = "Failure"
+    }
 }

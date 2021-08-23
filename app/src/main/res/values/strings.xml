@@ -624,6 +624,9 @@
     <string name="could_not_update_dob">Could not update your date of birth. Please try again.</string>
     <string name="profile_title">Profile</string>
     <string name="load_more_label">Load more</string>
+    <string name="image_upload_failed_generic_message">Image upload Failed. Try again</string>
+    <string name="image_processing_failed_generic_message">Processing the image failed, please try again.</string>
+    <string name="could_not_update_profile">Could not update your profile. Please try again.</string>
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
         <item quantity="other">%d Likes</item>
