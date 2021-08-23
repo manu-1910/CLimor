@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Outline
 import android.media.AudioFormat
 import android.media.MediaMetadataRetriever
-import android.media.MediaPlayer
 import android.net.Uri
 import android.os.CountDownTimer
 import android.os.Handler
@@ -52,7 +51,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
             statusListener?.invoke(value)
         }
     private var filePath: String? = null
-    private var duration: Int = 0
+    private var durationMillis: Int = 0
     private var mediaDuration: Long = 0
 
     lateinit var editText: EditText
@@ -77,11 +76,12 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
             // value would be enough to store 24 days worth of milliseconds
             val millis = millisUntilFinished.toInt()
 
-            val actualSeconds = (180000 - millis) / 1000
+            durationMillis = 180000 - millis
+
+            val actualSeconds = durationMillis / 1000
             val minutes = actualSeconds.div(60)
             val seconds = actualSeconds % 60
             tvTime.text = "$minutes:${getSeconds(seconds)}"
-            duration = actualSeconds
         }
 
         override fun onFinish() {
@@ -134,7 +134,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
         btnPodcastSendComment.setOnClickListener {
             if (btnPodcastSendComment.isActivated) {
-                status = SendData(comment_text.text.toString(), filePath, duration)
+                status = SendData(comment_text.text.toString(), filePath, durationMillis)
                 showRecordingControls(false)
                 comment_text.text = null
                 filePath = null
