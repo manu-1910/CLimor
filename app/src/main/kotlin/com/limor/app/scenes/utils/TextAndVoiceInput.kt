@@ -17,6 +17,7 @@ import androidx.core.widget.addTextChangedListener
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.extensions.*
+import com.limor.app.scenes.utils.voicePlayer.LimorMediaPlayer
 import com.limor.app.util.hasRecordPermissions
 import kotlinx.android.synthetic.main.item_input_with_audio.view.*
 import kotlin.math.min
@@ -56,8 +57,8 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
     lateinit var editText: EditText
 
-    private val mediaPlayer: MediaPlayer by lazy {
-        val mp = MediaPlayer()
+    private val mediaPlayer: LimorMediaPlayer by lazy {
+        val mp = LimorMediaPlayer()
         mp.setOnCompletionListener { onReplayComplete() }
         mp.setOnErrorListener { _, _, _ -> true }
         mp
@@ -198,12 +199,22 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
             return
         }
 
+        if (mediaPlayer.lastDataSource != filePath) {
+            // this is a new data source and the easiest thing to do is to dispose of the current
+            // media player and create a new one
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+            }
+            mediaPlayer.reset()
+            playWithFile()
+            return
+        }
+
         // Pause the play if already playing
         if (mediaPlayer.isPlaying) {
             mediaPlayer.pause()
             btnStartPlay.isActivated = false
             return
-
         }
 
         // Resume the play if was previously paused
@@ -218,6 +229,10 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
             return
         }
 
+        playWithFile()
+    }
+
+    private fun playWithFile() {
         // If not pausing or resuming the play then this is the first time the audio is played
         btnStartPlay.isActivated = true
 
@@ -252,7 +267,6 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         } catch (t: Throwable) {
             t.printStackTrace()
         }
-
     }
 
     private fun showRecordingControls(show: Boolean) {
