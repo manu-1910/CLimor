@@ -160,7 +160,8 @@ class SmallPlayerFragment : BaseFragment() {
         (activity as? PlayerViewManager)?.showPlayer(
             PlayerViewManager.PlayerArgs(
                 castId = castId,
-                playerType = PlayerViewManager.PlayerType.EXTENDED
+                playerType = PlayerViewManager.PlayerType.EXTENDED,
+                maximizedFromMiniPlayer = true
             )
         )
     }

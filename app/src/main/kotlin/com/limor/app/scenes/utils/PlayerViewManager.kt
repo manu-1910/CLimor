@@ -9,7 +9,8 @@ interface PlayerViewManager {
 
     data class PlayerArgs(
         val playerType: PlayerType,
-        val castId: Int
+        val castId: Int,
+        val maximizedFromMiniPlayer: Boolean = false
     )
 
     enum class PlayerType {
