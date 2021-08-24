@@ -187,6 +187,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     }
 
     private fun deleteLastFile() {
+        pausePlayer()
         filePath?.let {
             val file = File(it)
             file.delete()
@@ -197,6 +198,10 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
     private fun onReplayComplete() {
         btnStartPlay.isActivated = false
+        resetPositionIndicator()
+    }
+
+    private fun resetPositionIndicator() {
         positionIndicator.x = -positionIndicator.width.toFloat()
         positionIndicator.makeInVisible()
     }
@@ -299,11 +304,22 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
     }
 
+    private fun pausePlayer() {
+        if (mediaPlayer.isPlaying) {
+            mediaPlayer.pause()
+            btnStartPlay.isActivated = false
+        }
+    }
+
     private fun resetRecorderWithNewFile() {
         // delete any previously recorded file
         if (!filePath.isNullOrEmpty()) {
             deleteLastFile()
         }
+
+        pausePlayer()
+
+        resetPositionIndicator()
 
         val fileName = getCurrentTimeString() + ".mp3"
         val file = File(context.filesDir, fileName)
