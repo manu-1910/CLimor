@@ -87,6 +87,10 @@ class PlayerBinder @Inject constructor(
         }
     }
 
+    fun pauseCurrentTrack() {
+        audioService?.pause()
+    }
+
     private fun internalPlayPause(audioTrack: AudioService.AudioTrack, showNotification: Boolean) {
         audioService?.let { audioService ->
             if (audioService.audioTrack != audioTrack) {

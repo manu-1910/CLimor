@@ -14,6 +14,7 @@ import android.view.ViewOutlineProvider
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.core.widget.addTextChangedListener
+import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.extensions.*
@@ -345,7 +346,13 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
     }
 
+    private fun pauseAnyPlayingMedia() {
+        App.instance.playerBinder.pauseCurrentTrack()
+        pausePlayer()
+    }
+
     private fun startRecording() {
+        pauseAnyPlayingMedia()
         horizontalLine.makeInVisible()
 
         isRecording = true
