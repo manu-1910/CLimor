@@ -1,5 +1,6 @@
 package com.limor.app.scenes.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Outline
 import android.media.AudioFormat
@@ -71,21 +72,28 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     private var mRecorder: WaveRecorder? = null
 
     private val timer = object : CountDownTimer(180000, 1000) {
+        @SuppressLint("SetTextI18n")
         override fun onTick(millisUntilFinished: Long) {
             // this is safe to call even though the timer supports Long milliseconds, the max Int
-            // value would be enough to store 24 days worth of milliseconds
+            // value would be enough to store 24 days worth of milliseconds and also the timer is
+            // actually set to 3 minutes max
             val millis = millisUntilFinished.toInt()
 
             durationMillis = 180000 - millis
 
-            val actualSeconds = durationMillis / 1000
+            val actualSeconds = millis / 1000
             val minutes = actualSeconds.div(60)
             val seconds = actualSeconds % 60
             tvTime.text = "$minutes:${getSeconds(seconds)}"
         }
 
         override fun onFinish() {
+            // Stop the recording, because the time limit was reached
+            setRecording(false)
 
+            // Just to be sure there aren't any rounding/calculation issues we set the label
+            // to 0:00
+            tvTime.text = "0:00"
         }
 
     }
@@ -111,7 +119,6 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
                             min(1f, it.currentPosition.toFloat() / mediaDuration.toFloat())
 
                         positionIndicator.x = (positionRatio - 1) * positionIndicator.width
-                        println("Position ratio is: $positionRatio, x at ${positionIndicator.x}")
                     }
                 }
                 seekHandler.postDelayed(this, updateInterval)
