@@ -202,7 +202,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     private fun handleOptionsClick() {
         if (isSignedInUser) {
             startActivity(Intent(requireContext(), SettingsActivity::class.java))
-        } else {
+        } else if (::user.isInitialized){
             //Show Other user actions dialog
             val bundle = bundleOf(
                 DialogUserProfileActions.USER_KEY to user
