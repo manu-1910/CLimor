@@ -79,7 +79,7 @@ class ActivityPlayerViewManager(
     private fun showExtendedPlayer() {
         val args = currentArgs!!
         showFragment<ExtendedPlayerFragment> {
-            ExtendedPlayerFragment.newInstance(args.castId, !args.maximizedFromMiniPlayer)
+            ExtendedPlayerFragment.newInstance(args.castId, !args.maximizedFromMiniPlayer, args.restarted)
         }
     }
 

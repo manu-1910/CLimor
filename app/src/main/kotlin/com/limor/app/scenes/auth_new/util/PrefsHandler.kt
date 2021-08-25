@@ -15,6 +15,7 @@ object PrefsHandler {
     private const val LABEL_APP_STATE = "app_state"
     private const val LABEL_APP_LAST_STATE = "app_last_state"
     private const val KEY_PHONE_VERIFICATION_ID = "phone_verification_id"
+    private const val LABEL_LAST_PLAYED_CAST_ID = "last_played_cast_id"
 
     private fun sp(context: Context) = sharedPreferences(context)
 

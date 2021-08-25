@@ -11,25 +11,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.addCallback
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
 import com.limor.app.R
-import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentExtendedPlayerBinding
-import com.limor.app.databinding.ItemUserCastBinding
 import com.limor.app.extensions.*
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
@@ -38,7 +33,6 @@ import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.main.viewmodels.PodcastViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
-import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.main_new.fragments.comments.UserMentionFragment
 import com.limor.app.scenes.main_new.view_model.ListenPodcastViewModel
@@ -64,9 +58,10 @@ class ExtendedPlayerFragment : UserMentionFragment() {
     companion object {
         private const val CAST_ID_KEY = "CAST_ID_KEY"
         private const val AUTO_PLAY_KEY = "AUTO_PLAY_KEY"
-        fun newInstance(castId: Int, autoPlay: Boolean = false): ExtendedPlayerFragment {
+        private const val RESTARTED = "RESTARTED"
+        fun newInstance(castId: Int, autoPlay: Boolean = false, restarted: Boolean = false): ExtendedPlayerFragment {
             return ExtendedPlayerFragment().apply {
-                arguments = bundleOf(CAST_ID_KEY to castId, AUTO_PLAY_KEY to autoPlay)
+                arguments = bundleOf(CAST_ID_KEY to castId, AUTO_PLAY_KEY to autoPlay, RESTARTED to restarted)
             }
         }
     }
@@ -85,6 +80,9 @@ class ExtendedPlayerFragment : UserMentionFragment() {
 
     private var playerUpdatesJob: Job? = null
     private var updatePodcasts: Boolean = false
+    private var isStartedPlayingInThisObject = false
+
+    private var restarted: Boolean = false
 
     @Inject
     lateinit var playerBinder: PlayerBinder
@@ -102,7 +100,6 @@ class ExtendedPlayerFragment : UserMentionFragment() {
             )
             isEnabled = false
         }
-        listenPodcastViewModel.listenPodcast(castId)
     }
 
     override fun onCreateView(
@@ -139,10 +136,15 @@ class ExtendedPlayerFragment : UserMentionFragment() {
                 false
             )
 
+            restarted = requireArguments().getBoolean(RESTARTED, false)
+
             val audioTrack = cast.audio!!.mapToAudioTrack()
             if (autoPlay && playerBinder.audioTrackIsNotPlaying(audioTrack)) {
                 playerBinder.playPause(audioTrack, true)
              }
+            if(autoPlay || restarted){
+                listenPodcastViewModel.listenPodcast(castId)
+            }
         }
     }
 
@@ -204,12 +206,27 @@ class ExtendedPlayerFragment : UserMentionFragment() {
         binding.tvPodcastLikes.text = cast.likesCount.toString()
         binding.tvPodcastRecast.text = cast.recastsCount?.toString()
         binding.tvPodcastComments.text = cast.commentsCount?.toString()
-        binding.tvPodcastNumberOfListeners.text = if(cast.listensCount == 0) "0" else cast.listensCount?.toLong()?.formatHumanReadable
+
+        var listenCount = cast.listensCount ?: 0
+        binding.tvPodcastNumberOfListeners.tag = listenCount.toString()
+        binding.tvPodcastNumberOfListeners.text = listenCount.toLong().formatHumanReadable
 
         //applyRecastStyle(cast.isRecasted == true)
         initRecastState(cast)
         binding.btnPodcastRecast.recasted = cast.isRecasted == true
         binding.btnPodcastReply.shared = cast.isShared == true
+    }
+
+    private fun updateListenCount(){
+        binding.tvPodcastNumberOfListeners.setTextColor(
+            ContextCompat.getColor(
+                binding.root.context,
+                R.color.textAccent
+            )
+        )
+        binding.ivPodcastListening.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(binding.root.context, R.color.textAccent))
+        binding.tvPodcastNumberOfListeners.text = (binding.tvPodcastNumberOfListeners.tag.toString().toLong() + 1).formatHumanReadable
+        binding.tvPodcastNumberOfListeners.tag = (binding.tvPodcastNumberOfListeners.tag.toString().toLong() + 1).toString()
     }
 
     private fun initListenState(cast: CastUIModel){
@@ -254,6 +271,16 @@ class ExtendedPlayerFragment : UserMentionFragment() {
                         is PlayerStatus.Ended -> {
                             binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
                             binding.audioBufferingView.visibility = View.GONE
+
+                            val autoPlay = requireArguments().getBoolean(
+                                AUTO_PLAY_KEY,
+                                false
+                            )
+
+                            if(isStartedPlayingInThisObject || autoPlay || restarted){
+                                updateListenCount()
+                                restarted = false
+                            }
                         }
                         is PlayerStatus.Error -> binding.audioBufferingView.visibility = View.GONE
                         is PlayerStatus.Buffering -> binding.audioBufferingView.visibility =
@@ -299,6 +326,10 @@ class ExtendedPlayerFragment : UserMentionFragment() {
 
         binding.btnPodcastPlayExtended.setOnClickListener {
             cast.audio?.let { audio ->
+                if(playerBinder.audioTrackIsInInitState(cast.audio.mapToAudioTrack())){
+                    listenPodcastViewModel.listenPodcast(castId)
+                    isStartedPlayingInThisObject = true
+                }
                 playerBinder.playPause(audio.mapToAudioTrack(), showNotification = true)
             }
         }

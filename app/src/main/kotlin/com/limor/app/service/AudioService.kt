@@ -6,10 +6,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.os.Binder
-import android.os.Bundle
-import android.os.IBinder
-import android.os.Parcelable
+import android.os.*
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -222,6 +219,9 @@ class AudioService : Service() {
                 }
                 Player.STATE_ENDED -> {
                     playerStatus.value = PlayerStatus.Ended
+                    Handler().postDelayed(Runnable {
+                        playerStatus.value = PlayerStatus.Init
+                    }, 1000)
                 }
                 else -> {
                     playerStatus.value = PlayerStatus.Other

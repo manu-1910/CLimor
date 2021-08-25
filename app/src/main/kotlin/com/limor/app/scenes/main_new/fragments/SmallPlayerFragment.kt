@@ -13,6 +13,7 @@ import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentSmallPlayerBinding
 import com.limor.app.extensions.*
 import com.limor.app.scenes.main.viewmodels.PodcastViewModel
+import com.limor.app.scenes.main_new.view_model.ListenPodcastViewModel
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
@@ -41,8 +42,10 @@ class SmallPlayerFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val podcastViewModel: PodcastViewModel by viewModels { viewModelFactory }
+    private val listenPodcastViewModel: ListenPodcastViewModel by viewModels { viewModelFactory }
 
     private val castId: Int by lazy { requireArguments()[CAST_ID_KEY] as Int }
+    private var restarted = false
 
     private var playerUpdatesJob: Job? = null
 
@@ -79,6 +82,9 @@ class SmallPlayerFragment : BaseFragment() {
         binding.btnMiniPlayerPlay.setOnClickListener {
             Timber.d("LOGGGG")
             cast.audio?.let { audio ->
+                if(playerBinder.audioTrackIsInInitState(audio.mapToAudioTrack())){
+                    restarted = true
+                }
                 playerBinder.playPause(audio.mapToAudioTrack(), showNotification = true)
             }
         }
@@ -120,6 +126,8 @@ class SmallPlayerFragment : BaseFragment() {
                             binding.btnMiniPlayerPlay.setImageResource(
                                 R.drawable.ic_player_play
                             )
+                            listenPodcastViewModel.listenPodcast(castId)
+                            restarted = false
                         }
                         is PlayerStatus.Error -> {
                             showLoading(false)
@@ -161,12 +169,16 @@ class SmallPlayerFragment : BaseFragment() {
             PlayerViewManager.PlayerArgs(
                 castId = castId,
                 playerType = PlayerViewManager.PlayerType.EXTENDED,
-                maximizedFromMiniPlayer = true
+                maximizedFromMiniPlayer = true,
+                restarted = restarted
             )
         )
     }
 
     private fun closePlayer() {
+        if(restarted){
+            listenPodcastViewModel.listenPodcast(castId)
+        }
         (activity as? PlayerViewManager)?.hidePlayer()
     }
 

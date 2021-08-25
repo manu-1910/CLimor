@@ -426,6 +426,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/btnPodcastLikes"
                 app:layout_constraintStart_toEndOf="@id/ivPodcastListening"
                 app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes"
+                android:tag="0"
                 tools:text="1.4k" />
 
             <com.limor.app.components.ShareButton
