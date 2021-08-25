@@ -12,6 +12,7 @@ import com.limor.app.databinding.ItemHomeFeedRecastedBinding
 import com.limor.app.extensions.getActivity
 import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.loadImage
+import com.limor.app.extensions.throttledClick
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
@@ -99,7 +100,7 @@ class ViewHolderRecast(
             onCastClick(item)
         }
 
-        binding.btnPodcastComments.setOnClickListener {
+        binding.btnPodcastComments.throttledClick {
             onCommentsClick(item)
         }
 

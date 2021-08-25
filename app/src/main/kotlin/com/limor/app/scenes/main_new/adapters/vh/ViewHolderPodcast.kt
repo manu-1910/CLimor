@@ -12,6 +12,7 @@ import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.extensions.formatHumanReadable
 import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.loadImage
+import com.limor.app.extensions.throttledClick
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
@@ -105,9 +106,10 @@ class ViewHolderPodcast(
             openUserProfile(item)
         }
 
-        binding.btnPodcastComments.setOnClickListener {
+        binding.btnPodcastComments.throttledClick {
             onCommentsClick(item)
         }
+
         binding.btnPodcastReply.setOnClickListener {
             binding.btnPodcastReply.shared = true
             val shareCount = binding.tvPodcastReply.text.toString().toInt()

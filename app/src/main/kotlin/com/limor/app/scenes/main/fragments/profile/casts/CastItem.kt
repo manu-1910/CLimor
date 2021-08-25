@@ -4,10 +4,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import com.limor.app.R
 import com.limor.app.databinding.ItemUserCastBinding
-import com.limor.app.extensions.formatHumanReadable
-import com.limor.app.extensions.loadCircleImage
-import com.limor.app.extensions.loadImage
-import com.limor.app.extensions.px
+import com.limor.app.extensions.*
 import com.limor.app.scenes.utils.recycler.HorizontalSpacingItemDecoration
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.GroupieAdapter
@@ -84,7 +81,7 @@ class CastItem(
                 onMoreDialogClick(cast)
             }
 
-            btnPodcastComments.setOnClickListener {
+            btnPodcastComments.throttledClick {
                 onCommentsClick(cast)
             }
 

@@ -1,6 +1,7 @@
 package com.limor.app.extensions
 
 import android.animation.LayoutTransition
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.content.res.Resources
@@ -16,9 +17,25 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.jakewharton.rxbinding3.view.clicks
 import com.limor.app.R
 import com.limor.app.common.SingleLiveEvent
 import kotlinx.coroutines.*
+import java.util.concurrent.TimeUnit
+
+
+/**
+ * Throttles click events by emiting the frist click only within a default time frame of 1500
+ * milliseconds.
+ */
+@SuppressLint("CheckResult")
+fun View.throttledClick(throttleDurationMillis: Long = 1500, onClick: (view: View) -> Unit) {
+    clicks()
+        .throttleFirst(throttleDurationMillis, TimeUnit.MILLISECONDS)
+        .subscribe {
+            onClick(this)
+        }
+}
 
 fun View.showSnackbar(snackbarText: String, timeLength: Int) {
     Snackbar.make(this, snackbarText, timeLength).show()
