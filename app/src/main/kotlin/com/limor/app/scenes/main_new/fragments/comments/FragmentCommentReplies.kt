@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main_new.fragments.comments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,14 +8,18 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentCommentRepliesBinding
 import com.limor.app.extensions.dismissFragment
+import com.limor.app.extensions.highlight
 import com.limor.app.extensions.showKeyboard
+import com.limor.app.extensions.userMentionPattern
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentChildItem
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentParentItem
+import com.limor.app.scenes.main_new.fragments.mentions.UserMentionPopup
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.MissingPermissions
 import com.limor.app.scenes.utils.SendData
@@ -193,9 +198,19 @@ class FragmentCommentReplies : UserMentionFragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun onReplyClick(comment: CommentUIModel) {
-        binding.taviVoice.showKeyboard()
-        binding.tvName.text = comment.user?.getFullName()
+        val username = comment.user?.username ?: return
+
+        binding.tvName.text = username
+        binding.taviVoice.editText.apply {
+            val newText = if (text.isNotEmpty()) "$text @$username " else "@$username "
+            setText(newText)
+            highlight(UserMentionPopup.userMentionPattern, R.color.waveFormColor)
+            setSelection(newText.length)
+            requestFocus()
+            showKeyboard()
+        }
     }
 
     override fun onDestroyView() {

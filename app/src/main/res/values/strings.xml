@@ -621,6 +621,7 @@
     <string name="replies">Replies</string>
     <string name="view_more_comments">View %d more comments…</string>
     <string name="replied_to">Replied to</string>
+    <string name="replying_to">Replying to</string>
     <string name="could_not_update_dob">Could not update your date of birth. Please try again.</string>
     <string name="profile_title">Profile</string>
     <string name="load_more_label">Load more</string>
