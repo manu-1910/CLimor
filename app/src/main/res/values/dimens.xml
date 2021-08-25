@@ -63,4 +63,5 @@
     <dimen name="commentFooterHeight">48dp</dimen>
 
     <dimen name="commentFooterPlayerControlHeight">40dp</dimen>
+    <dimen name="feed_item_image_bottom">16dp</dimen>
 </resources>

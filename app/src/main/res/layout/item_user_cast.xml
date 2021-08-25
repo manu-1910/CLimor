@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="@+id/cpiPodcastListeningProgress"
+        app:layout_constraintBottom_toBottomOf="@+id/guide_like"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/limor_logo" />
@@ -194,14 +194,21 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPodcastReply"
         app:indicatorColor="@color/colorAccent"
         app:indicatorDirectionCircular="clockwise"
         app:indicatorSize="68dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvPodcastReply"
         app:trackColor="@color/dark_transparent"
         app:trackCornerRadius="4dp"
         tools:progress="25" />
+
+    <View
+        android:id="@+id/guide_like"
+        app:layout_constraintTop_toBottomOf="@+id/cpiPodcastListeningProgress"
+        android:layout_marginTop="@dimen/feed_item_image_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivAvatarImageListening"
