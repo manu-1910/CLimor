@@ -119,8 +119,11 @@ public class KeyboardUtils implements ViewTreeObserver.OnGlobalLayoutListener
         mCallback = listener;
 
         mRootView = ((ViewGroup) act.findViewById(android.R.id.content)).getChildAt(0);
-        mRootView.getViewTreeObserver().addOnGlobalLayoutListener(this);
 
+        if (null != mRootView) {
+            mRootView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+        }
+        
         mScreenDensity = act.getResources().getDisplayMetrics().density;
     }
 

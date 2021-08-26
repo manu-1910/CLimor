@@ -109,7 +109,7 @@ class LocationsFragment : BaseFragment() {
         apiCallSearchLocations()
         setupRecycler(listLocations)
 
-        if (locationsViewModel.uiLocationsRequest.term.isNotEmpty()) {
+        if (::locationsViewModel.isInitialized && locationsViewModel.uiLocationsRequest.term.isNotEmpty()) {
             locationsTrigger.onNext(Unit)
         }
     }

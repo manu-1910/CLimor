@@ -7,7 +7,12 @@ class LimorMediaPlayer : MediaPlayer() {
     var lastDataSource: String? = null
 
     override fun setDataSource(path: String?) {
-        super.setDataSource(path)
+        // much better for the audio to not play than to have the app crash on the user..
+        try {
+            super.setDataSource(path)
+        } catch (t: Throwable) {
+            t.printStackTrace()
+        }
         lastDataSource = path
     }
 }

@@ -355,7 +355,7 @@ class PublishFragment : BaseFragment() {
         )*/
 
         publishViewModel.publishResponseData.observe(viewLifecycleOwner,Observer{
-            progressPb.visibility = View.GONE
+            toggleProgressVisibility(View.GONE)
             view?.hideKeyboard()
             it?.let{
                 //Publish Ok
@@ -733,14 +733,26 @@ class PublishFragment : BaseFragment() {
         }
     }
 
+    private fun toggleProgressVisibility(visibility: Int) {
+        if (null == progressPb) {
+            return
+        }
+        progressPb?.let {
+            try {
+                it.visibility = visibility
+            } catch (t: Throwable) {
+                t.printStackTrace()
+            }
+        }
+    }
 
     private fun publishPodcastAudio() {
-            progressPb.visibility = View.VISIBLE
+        toggleProgressVisibility(View.VISIBLE)
 
             Timber.d("Publishing audio podcast")
             if (!app!!.merlinsBeard!!.isConnected) {
 
-                progressPb.visibility = View.GONE
+                toggleProgressVisibility(View.GONE)
                 showUnableToPublishCastDialog(
                     description = getString(R.string.default_no_internet),
                     okText = getString(R.string.ok),
@@ -761,7 +773,7 @@ class PublishFragment : BaseFragment() {
                         override fun onSuccess(audioUrl: String?) {
                             audioUploaded = true
                             audioUrlFinal = audioUrl
-                            progressPb.visibility = View.GONE
+                            toggleProgressVisibility(visibility = View.GONE)
                             readyToPublish()
                         }
 
@@ -769,7 +781,7 @@ class PublishFragment : BaseFragment() {
                         }
 
                         override fun onError(error: String?) {
-                            progressPb.visibility = View.GONE
+                            toggleProgressVisibility(View.GONE)
                             audioUploaded = false
                             alert(getString(R.string.error_uploading_audio)) {
                                 okButton { }
@@ -779,17 +791,11 @@ class PublishFragment : BaseFragment() {
                     })
 
             }
-
-
-
-
-
-
     }
 
 
     private fun publishPodcastImage() {
-        progressPb.visibility = View.VISIBLE
+        toggleProgressVisibility(View.VISIBLE)
 
         if (Commons.getInstance().isImageReadyForUpload) {
 
@@ -822,7 +828,7 @@ class PublishFragment : BaseFragment() {
                     }
 
                     override fun onError(error: String?) {
-                        progressPb.visibility = View.GONE
+                        toggleProgressVisibility(View.GONE)
                         //  dialog.dismiss()
                         imageUploaded = false
                         alert(getString(R.string.error_uploading_image)) {
@@ -846,7 +852,7 @@ class PublishFragment : BaseFragment() {
 
 
     private fun apiCallPublish() {
-        progressPb.visibility = View.VISIBLE
+        toggleProgressVisibility(View.VISIBLE)
         val podcast = CreatePodcastInput(
                 audio = PodcastAudio(
                     audio_url = audioUrlFinal.toString(),
@@ -871,7 +877,7 @@ class PublishFragment : BaseFragment() {
            val response =  withContext(Dispatchers.IO){
                publishViewModel.createPodcast(podcast)
            }
-            progressPb.visibility = View.GONE
+            toggleProgressVisibility(View.GONE)
             response?.let{
             Timber.d("Cast Publish Success -> ")
                 convertedFile?.delete()
@@ -1294,6 +1300,9 @@ class PublishFragment : BaseFragment() {
 
         val locationResult: MyLocation.LocationResult = object : MyLocation.LocationResult() {
             override fun gotLocation(location: Location?) {
+                if (null == context) {
+                    return
+                }
                 //Got the location!
                 val geoCoder = Geocoder(context, Locale.getDefault()) //it is Geocoder
                 try {
