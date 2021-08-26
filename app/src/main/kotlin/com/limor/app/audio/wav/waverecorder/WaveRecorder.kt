@@ -29,13 +29,11 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.media.audiofx.NoiseSuppressor
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * The WaveRecorder class used to record Waveform audio file using AudioRecord class to get the audio stream in PCM encoding
@@ -73,8 +71,8 @@ class WaveRecorder(private var filePath: String) {
     var audioSessionId: Int = -1
         private set
 
-    private var isRecording = false
-    private var isPaused = false
+    private var isRecording = AtomicBoolean() // false by default
+    private var isPaused = AtomicBoolean() // false by default
     private lateinit var audioRecorder: AudioRecord
     private var noiseSuppressor: NoiseSuppressor? = null
 
@@ -115,10 +113,9 @@ class WaveRecorder(private var filePath: String) {
                 bufferSize
             )
 
-
             audioSessionId = audioRecorder.audioSessionId
 
-            isRecording = true
+            isRecording.set(true)
 
             audioRecorder.startRecording()
 
@@ -135,6 +132,8 @@ class WaveRecorder(private var filePath: String) {
         }
     }
 
+    // This runs on Dispatchers.IO only
+    @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun writeAudioDataToStorage() {
         val bufferSize = AudioRecord.getMinBufferSize(
             waveConfig.sampleRate,
@@ -143,20 +142,19 @@ class WaveRecorder(private var filePath: String) {
         )
         val data = ByteArray(bufferSize)
         val outputStream = File(filePath).outputStream()
-        while (isRecording) {
-            val operationStatus = audioRecorder.read(data, 0, bufferSize)
+        while (isRecording.get()) {
+            val readResult = audioRecorder.read(data, 0, bufferSize)
 
-            if (AudioRecord.ERROR_INVALID_OPERATION != operationStatus) {
-                if (!isPaused) outputStream.write(data)
+            // operationStatus is either 0 (SUCCESS) or > 0 indicating the number of bytes that
+            // were read
+            if (readResult >= AudioRecord.SUCCESS && !isPaused.get()) {
+                outputStream.write(data, 0, if (readResult > 0) readResult else bufferSize)
 
-                onAmplitudeListener?.let {
-
+                onAmplitudeListener?.let { reportAmplitude ->
                     withContext(Dispatchers.Default) {
-                        it(calculateAmplitudeMax(data))
+                        reportAmplitude(data.calculateAmplitude())
                     }
                 }
-
-
             }
         }
 
@@ -176,8 +174,11 @@ class WaveRecorder(private var filePath: String) {
      * Stops audio recorder and release resources then writes recorded file headers.
      */
     fun stopRecording() {
+
+        // always reset the flag to avoid any sync issues
+        isRecording.set(false)
+
         if (isAudioRecorderInitialized()) {
-            isRecording = false
             audioRecorder.stop()
             audioRecorder.release()
             audioSessionId = -1
@@ -198,14 +199,14 @@ class WaveRecorder(private var filePath: String) {
         this::audioRecorder.isInitialized && audioRecorder.state == AudioRecord.STATE_INITIALIZED
 
     fun pauseRecording() {
-        isPaused = true
+        isPaused.set(true)
         onStateChangeListener?.let {
             it(RecorderState.PAUSE)
         }
     }
 
     fun resumeRecording() {
-        isPaused = false
+        isPaused.set(false)
         onStateChangeListener?.let {
             it(RecorderState.RECORDING)
         }

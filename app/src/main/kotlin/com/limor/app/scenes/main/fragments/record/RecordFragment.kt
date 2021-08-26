@@ -44,11 +44,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputEditText
 import com.limor.app.App
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
 import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.audio.wav.waverecorder.calculateAmplitude
 import com.limor.app.common.BaseFragment
+import com.limor.app.extensions.throttledClick
 import com.limor.app.scenes.main.viewmodels.DraftViewModel
 import com.limor.app.scenes.main.viewmodels.LocationsViewModel
 import com.limor.app.scenes.utils.Commons
@@ -154,6 +156,7 @@ class RecordFragment : BaseFragment() {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_record, container, false)
             recordVisualizer = rootView?.findViewById(R.id.graphVisualizer)
+            // recordVisualizer?.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         }
         app = context?.applicationContext as App
         return rootView
@@ -235,7 +238,7 @@ class RecordFragment : BaseFragment() {
         }
 
         // Record Button
-        recordButton.onClick {
+        recordButton.throttledClick {
 
             playVisualizer.visibility = View.GONE
             c_meter.visibility = View.VISIBLE
@@ -613,6 +616,9 @@ class RecordFragment : BaseFragment() {
 
         dialogView.noButton.setOnClickListener {
             deleteDraftInRealm(uiDraft!!)
+            stopAudioRecorder()
+            // prevents android.view.WindowLeaked
+            dialog.dismiss()
             activity?.finish()
         }
 
@@ -687,6 +693,7 @@ class RecordFragment : BaseFragment() {
         //Toolbar Left
         btnToolbarLeft.text = getString(R.string.btn_cancel)
         btnToolbarLeft.onClick {
+            stopAudioRecorder()
             activity?.finish()
         }
 
@@ -760,6 +767,7 @@ class RecordFragment : BaseFragment() {
 
             toast(getString(R.string.draft_inserted))
 
+            stopAudioRecorder()
             activity?.finish()
         }
     }
@@ -985,11 +993,21 @@ class RecordFragment : BaseFragment() {
         mRecorder?.waveConfig?.audioEncoding = AudioFormat.ENCODING_PCM_16BIT
         recordVisualizer?.ampNormalizer = { sqrt(it.toFloat()).toInt() }
         mRecorder?.onAmplitudeListener = {
-            runOnUiThread {
-                if (isRecording) {
-                    if (it != 0) {
-                        recordVisualizer?.addAmp(it, mRecorder!!.tickDuration)
+            if (isRecording && null != recordVisualizer) {
+                runOnUiThread {
+                    recordVisualizer?.addAmp(it, mRecorder!!.tickDuration)
+                }
+            } else if (BuildConfig.DEBUG){
+                // This is strictly for debugging should be removed in production, the whole
+                // else if part
+                // TODO
+                // XXX
+                runOnUiThread {
+                    var reason = if (isRecording) "" else "not recording, "
+                    if (null == recordVisualizer) {
+                        reason += "no view ref"
                     }
+                    nextButton.text = reason
                 }
             }
         }
@@ -1097,6 +1115,8 @@ class RecordFragment : BaseFragment() {
             isRecording = true
 
             updateRecordButton()
+            println("isFirstTapRecording -> $isFirstTapRecording")
+            println("mRecorder is -> $mRecorder")
             if (isFirstTapRecording) {
                 isFirstTapRecording = false
                 println("RECORD --> START")
@@ -1126,14 +1146,24 @@ class RecordFragment : BaseFragment() {
 
     }
 
+    private fun stopAudioRecorder(): Boolean {
+        mRecorder?.let {
+            try {
+                it.stopRecording()
+                isRecording = false
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return false
+            }
+        }
+
+        return true
+    }
 
     private fun stopAudio(): Boolean {
         println("RECORD --> STOP")
-        try {
-            mRecorder?.stopRecording()
-            isRecording = false
-        } catch (e: Exception) {
-            e.printStackTrace()
+        val stopped = stopAudioRecorder()
+        if (!stopped) {
             return false
         }
         updateRecordButton()
