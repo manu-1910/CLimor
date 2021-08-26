@@ -82,6 +82,10 @@ data class CastUIModel(
                     longitude.toDouble(),
                     1
                 )
+                // This CAN be null (check the sources)
+                if (null == address || address.isEmpty()) {
+                    return ""
+                }
                 return address[0].locality
             } catch (e: Exception) {
                 e.printStackTrace()
