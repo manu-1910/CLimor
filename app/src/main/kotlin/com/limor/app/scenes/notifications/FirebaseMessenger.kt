@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.apollo.UserRepository
 import com.limor.app.common.Constants
@@ -38,7 +39,11 @@ class FirebaseMessenger : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
-        Timber.d("Pusher--> ${Gson().toJson(remoteMessage)}")
+        if (BuildConfig.DEBUG) {
+            val json = try { Gson().toJson(remoteMessage) } catch (t: Throwable) { "unparsable" }
+            Timber.d("Push message (Pusher) --> $json")
+        }
+
        // val notification = remoteMessage.notification
         val data = remoteMessage.data
         try {
