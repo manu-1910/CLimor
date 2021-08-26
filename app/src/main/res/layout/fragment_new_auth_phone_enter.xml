@@ -54,6 +54,7 @@
         app:layout_constraintTop_toTopOf="@+id/etEnterPhone">
 
         <AutoCompleteTextView
+            android:id="@+id/tvCountryCode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawablePadding="-24dp"
@@ -65,6 +66,15 @@
             android:textSize="14sp" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <View
+        android:id="@+id/vCountryCode"
+        style="@style/TextInputLayoutOutlineDropdownWithError"
+        android:layout_width="108dp"
+        android:layout_height="56dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/etEnterPhone"
+        android:layout_marginStart="24dp"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/etEnterPhone"

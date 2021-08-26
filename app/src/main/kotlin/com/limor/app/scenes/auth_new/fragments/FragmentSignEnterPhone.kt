@@ -22,6 +22,11 @@ import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.Country
 import com.limor.app.scenes.auth_new.util.AfterTextWatcher
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.*
+import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.btnContinue
+import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.clMain
+import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.etEnterPhoneInner
+import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.etPhoneCode
+import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.*
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -71,6 +76,10 @@ class FragmentSignEnterPhone : Fragment() {
         clMain.setOnClickListener {
             clMain.requestFocus()
         }
+
+        vCountryCode.setOnClickListener{
+            it.findNavController().navigate(R.id.action_fragment_new_auth_sign_in_to_fragment_country_code)
+        }
     }
 
     private fun setFocusChanges() {
@@ -82,7 +91,7 @@ class FragmentSignEnterPhone : Fragment() {
     private fun subscribeToViewModel() {
         model.initPhoneAuthHandler(WeakReference(requireActivity()))
         model.countriesLiveData.observe(viewLifecycleOwner, Observer {
-            setCountriesAdapter(it)
+            setCountry(it)
         })
 
         model.phoneIsValidLiveData.observe(viewLifecycleOwner, Observer {
@@ -92,23 +101,16 @@ class FragmentSignEnterPhone : Fragment() {
         })
     }
 
-    private fun setCountriesAdapter(countries: List<Country>) {
-        val items = countries.map { it.visualFormat }
-        val adapter = ArrayAdapter(requireContext(), R.layout.item_phone_code_country_code, items)
+    private fun setCountry(countries: List<Country>) {
         val editText = etPhoneCode.editText as AutoCompleteTextView
-        editText.setAdapter(adapter)
-        editText.onItemClickListener =
-            AdapterView.OnItemClickListener { parent, view, position, id ->
-                model.setCountrySelected(
-                    countries[position]
-                )
-            }
         val tM = requireContext().getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         val countryCodeValue = tM.networkCountryIso
         val country: Country? = countries.find { it.codeLetters.lowercase() == countryCodeValue}
-        Timber.d("%s", "${country?.codeLetters}  $countryCodeValue")
-        country?.let{
-            model.setCountrySelected(country)
+        Timber.d("${country?.codeLetters}  $countryCodeValue")
+        if(model.countrySelected == null){
+            country?.let{
+                model.setCountrySelected(country)
+            }
         }
         model.countrySelected?.let {
             editText.setText(it.visualFormat, false)

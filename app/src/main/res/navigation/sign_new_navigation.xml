@@ -57,6 +57,13 @@
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
             app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
+        <action
+            android:id="@+id/action_fragment_new_auth_sign_in_to_fragment_country_code"
+            app:destination="@id/fragment_country_code"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
     </fragment>
 
     <fragment
@@ -120,6 +127,13 @@
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
             app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
+        <action
+            android:id="@+id/action_fragment_new_auth_sign_in_to_fragment_country_code"
+            app:destination="@id/fragment_country_code"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
     </fragment>
 
     <fragment
@@ -236,6 +250,13 @@
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
             app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_country_code"
+        android:name="com.limor.app.scenes.auth_new.fragments.FragmentCountryCode"
+        android:label="CountryCode"
+        tools:layout="@layout/fragment_country_code">
     </fragment>
 
     <activity

@@ -7,9 +7,8 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.widget.doAfterTextChanged
@@ -18,6 +17,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.textfield.TextInputEditText
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.AuthActivityNew
@@ -84,6 +84,10 @@ class FragmentSignIn : Fragment() {
         tvSignInHere.setOnClickListener {
             model.setCurrentSignInMethod(SignInMethod.EMAIL)
         }
+        countryCodeTV.setOnClickListener {
+            it.findNavController()
+                .navigate(R.id.action_fragment_new_auth_sign_in_to_fragment_country_code)
+        }
     }
 
     private fun setUpInitialSignUpState() {
@@ -136,26 +140,19 @@ class FragmentSignIn : Fragment() {
         })
     }
 
-    private fun setCountriesAdapter(countries: List<Country>) {
-        val items = countries.map { it.visualFormat }
-        val adapter = ArrayAdapter(requireContext(), R.layout.item_phone_code_country_code, items)
+    private fun setCountry(countries: List<Country>) {
         val editText = etPhoneCode.editText as AutoCompleteTextView
-        editText.setAdapter(adapter)
-        editText.onItemClickListener =
-            AdapterView.OnItemClickListener { parent, view, position, id ->
-                model.setCountrySelected(
-                    countries[position]
-                )
-            }
         val tM = requireContext().getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         val countryCodeValue = tM.networkCountryIso
         val country: Country? = countries.find { it.codeLetters.lowercase() == countryCodeValue}
         Timber.d("${country?.codeLetters}  $countryCodeValue")
-        country?.let{
-            model.setCountrySelected(country)
+        if(model.countrySelected == null){
+            country?.let{
+                model.setCountrySelected(country)
+            }
         }
         model.countrySelected?.let {
-            editText.setText(it.visualFormat, false)
+            editText.setText(it.visualFormat)
         }
     }
 
@@ -172,7 +169,7 @@ class FragmentSignIn : Fragment() {
         model.initPhoneAuthHandler(WeakReference(requireActivity()))
 
         model.countriesLiveData.observe(viewLifecycleOwner, Observer {
-            setCountriesAdapter(it)
+            setCountry(it)
         })
 
         model.phoneIsValidLiveData.observe(viewLifecycleOwner, Observer {

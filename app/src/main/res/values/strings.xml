@@ -26,6 +26,7 @@
     <string name="you_have_no_permissions_facebook">You have not granted the required permissions to login with Facebook. We need your email address.</string>
     <string name="existing_user_email_signin_description">Are you an existing Limor User? Please Sign In with your email here to access your Account.</string>
     <string name="sign_in_here"><u>sign in here</u></string>
+    <string name="choose_country">Choose your country</string>
 
 
     <!-- Bottom Menu Navigation Strings -->
