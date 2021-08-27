@@ -110,7 +110,7 @@ class SmallPlayerFragment : BaseFragment() {
                         binding.cpiPodcastListeningProgress.progress =
                             ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
                         binding.tvMiniplayerSubtitle.text = getString(
-                            R.string.left, duration.toReadableStringFormat(DURATION_READABLE_FORMAT_4)
+                            R.string.progress, duration.toReadableStringFormat(DURATION_READABLE_FORMAT_3)
                         )
 
                     }
