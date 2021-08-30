@@ -34,8 +34,6 @@ class FragmentComments : UserMentionFragment() {
         }
     }
 
-    private val viewModel: CommentsViewModel by viewModels { viewModelFactory }
-
     private val cast: CastUIModel by lazy { requireArguments().getParcelable(CAST_KEY)!! }
 
     private var _binding: FragmentCommentsBinding? = null
@@ -48,7 +46,7 @@ class FragmentComments : UserMentionFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCommentsBinding.inflate(inflater, container, false)
-        viewModel.loadComments(cast.id)
+        commentsViewModel.loadComments(cast.id)
         initViews()
         subscribeForComments()
         return binding.root
@@ -72,36 +70,19 @@ class FragmentComments : UserMentionFragment() {
                 is SendData -> {
 
                     if (it.filePath != null) {
-                        Commons.getInstance().uploadAudio(
-                            context,
-                            File(it.filePath),
-                            Constants.AUDIO_TYPE_COMMENT,
-                            object : Commons.AudioUploadCallback {
-                                override fun onSuccess(audioUrl: String?) {
-                                    println("Audio upload to AWS succesfully")
-                                    viewModel.addComment(
-                                        cast.id,
-                                        content = it.text,
-                                        ownerId = cast.id,
-                                        ownerType = CommentUIModel.OWNER_TYPE_PODCAST,
-                                        audioURI = audioUrl,
-                                        duration = it.duration
-                                    )
-                                }
+                        uploadVoiceComment(it.filePath) { audioUrl ->
+                            commentsViewModel.addComment(
+                                cast.id,
+                                content = it.text,
+                                ownerId = cast.id,
+                                ownerType = CommentUIModel.OWNER_TYPE_PODCAST,
+                                audioURI = audioUrl,
+                                duration = it.duration
+                            )
+                        }
 
-                                override fun onProgressChanged(
-                                    id: Int,
-                                    bytesCurrent: Long,
-                                    bytesTotal: Long
-                                ) {
-                                }
-
-                                override fun onError(error: String?) {
-                                    Timber.d("Audio upload to AWS error: $error")
-                                }
-                            })
                     } else {
-                        viewModel.addComment(
+                        commentsViewModel.addComment(
                             cast.id,
                             it.text,
                             ownerId = cast.id,
@@ -117,7 +98,7 @@ class FragmentComments : UserMentionFragment() {
     }
 
     private fun subscribeForComments() {
-        viewModel.comments.observe(viewLifecycleOwner) { comments ->
+        commentsViewModel.comments.observe(viewLifecycleOwner) { comments ->
             adapter.update(
                 comments.map {
                     ParentCommentSection(
@@ -129,15 +110,19 @@ class FragmentComments : UserMentionFragment() {
                             goToReplies(comment)
                         },
                         onLikeClick = { comment, liked ->
-                            viewModel.likeComment(comment, liked)
+                            commentsViewModel.likeComment(comment, liked)
                         }
                     )
                 }
             )
         }
 
-        viewModel.commentAddEvent.observe(viewLifecycleOwner) {
-            viewModel.loadComments(cast.id)
+        commentsViewModel.commentAddEvent.observe(viewLifecycleOwner) {
+            if (it == -1) {
+                reportError(getString(R.string.could_not_save_comment))
+            } else {
+                commentsViewModel.loadComments(cast.id)
+            }
         }
     }
 

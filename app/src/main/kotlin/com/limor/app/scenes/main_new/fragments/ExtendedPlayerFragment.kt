@@ -70,7 +70,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
     private val binding get() = _binding!!
 
     private val likePodcastViewModel: LikePodcastViewModel by viewModels { viewModelFactory }
-    private val commentsViewModel: CommentsViewModel by viewModels { viewModelFactory }
+
     private val podcastViewModel: PodcastViewModel by viewModels { viewModelFactory }
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
     private val castId: Int by lazy { requireArguments()[CAST_ID_KEY] as Int }
@@ -168,7 +168,11 @@ class ExtendedPlayerFragment : UserMentionFragment() {
         }
 
         commentsViewModel.commentAddEvent.observe(viewLifecycleOwner) {
-            loadFirstComment()
+            if (it == -1) {
+                reportError(getString(R.string.could_not_save_comment))
+            } else {
+                loadFirstComment()
+            }
         }
     }
 
@@ -376,33 +380,16 @@ class ExtendedPlayerFragment : UserMentionFragment() {
                 is SendData -> {
 
                     if (it.filePath != null) {
-                        Commons.getInstance().uploadAudio(
-                            context,
-                            File(it.filePath),
-                            Constants.AUDIO_TYPE_COMMENT,
-                            object : Commons.AudioUploadCallback {
-                                override fun onSuccess(audioUrl: String?) {
-                                    commentsViewModel.addComment(
-                                        cast.id,
-                                        content = it.text,
-                                        ownerId = cast.id,
-                                        ownerType = CommentUIModel.OWNER_TYPE_PODCAST,
-                                        audioURI = audioUrl,
-                                        duration = it.duration
-                                    )
-                                }
-
-                                override fun onProgressChanged(
-                                    id: Int,
-                                    bytesCurrent: Long,
-                                    bytesTotal: Long
-                                ) {
-                                }
-
-                                override fun onError(error: String?) {
-                                    Timber.d("Audio upload to AWS error: $error")
-                                }
-                            })
+                        uploadVoiceComment(it.filePath) { audioUrl ->
+                            commentsViewModel.addComment(
+                                cast.id,
+                                content = it.text,
+                                ownerId = cast.id,
+                                ownerType = CommentUIModel.OWNER_TYPE_PODCAST,
+                                audioURI = audioUrl,
+                                duration = it.duration
+                            )
+                        }
                     } else {
                         commentsViewModel.addComment(
                             cast.id,

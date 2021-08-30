@@ -52,8 +52,6 @@ class FragmentCommentReplies : UserMentionFragment() {
         }
     }
 
-    private val viewModel: CommentsViewModel by viewModels { viewModelFactory }
-
     private val castId: Int by lazy { requireArguments().getInt(CAST_ID_KEY) }
     private val parentCommentId: Int by lazy { requireArguments().getInt(PARENT_COMMENT_ID_KEY) }
     private var replyToCommentId: Int? = null
@@ -100,37 +98,18 @@ class FragmentCommentReplies : UserMentionFragment() {
                 is MissingPermissions -> requestRecordPermissions(requireActivity())
                 is SendData -> {
                     if (it.filePath != null) {
-                        Commons.getInstance().uploadAudio(
-                            context,
-                            File(it.filePath),
-                            Constants.AUDIO_TYPE_COMMENT,
-                            object : Commons.AudioUploadCallback {
-                                override fun onSuccess(audioUrl: String?) {
-                                    println("Audio upload to AWS succesfully")
-                                    viewModel.addComment(
-                                        castId,
-                                        it.text,
-                                        ownerId = parentCommentId,
-                                        ownerType = CommentUIModel.OWNER_TYPE_COMMENT,
-                                        audioURI = audioUrl,
-                                        duration = it.duration
-                                    )
-
-                                }
-
-                                override fun onProgressChanged(
-                                    id: Int,
-                                    bytesCurrent: Long,
-                                    bytesTotal: Long
-                                ) {
-                                }
-
-                                override fun onError(error: String?) {
-                                    Timber.d("Audio upload to AWS error: $error")
-                                }
-                            })
+                        uploadVoiceComment(it.filePath) { audioUrl ->
+                            commentsViewModel.addComment(
+                                castId,
+                                it.text,
+                                ownerId = parentCommentId,
+                                ownerType = CommentUIModel.OWNER_TYPE_COMMENT,
+                                audioURI = audioUrl,
+                                duration = it.duration
+                            )
+                        }
                     } else {
-                        viewModel.addComment(
+                        commentsViewModel.addComment(
                             castId,
                             it.text,
                             ownerId = parentCommentId,
@@ -144,7 +123,7 @@ class FragmentCommentReplies : UserMentionFragment() {
                 }
             }
         }
-        viewModel.loadCommentById(parentCommentId)
+        commentsViewModel.loadCommentById(parentCommentId)
     }
 
     private fun fillList(parentComment: CommentUIModel) {
@@ -154,7 +133,7 @@ class FragmentCommentReplies : UserMentionFragment() {
                 parentComment,
                 onReplyClick = ::onReplyClick,
                 onLikeClick = { comment, liked ->
-                    viewModel.likeComment(comment, liked)
+                    commentsViewModel.likeComment(comment, liked)
                 }
             )
         )
@@ -166,7 +145,7 @@ class FragmentCommentReplies : UserMentionFragment() {
                     onReplyClick = { _, replyChildComment -> onReplyClick(replyChildComment) },
                     isSimplified = false,
                     onLikeClick = { comment, liked ->
-                        viewModel.likeComment(comment, liked)
+                        commentsViewModel.likeComment(comment, liked)
                     }
                 )
             )
@@ -174,7 +153,7 @@ class FragmentCommentReplies : UserMentionFragment() {
     }
 
     private fun subscribeForComments() {
-        viewModel.comment.observe(viewLifecycleOwner) { updatedComment ->
+        commentsViewModel.comment.observe(viewLifecycleOwner) { updatedComment ->
             if (updatedComment != null) {
                 fillList(updatedComment)
 
@@ -193,8 +172,12 @@ class FragmentCommentReplies : UserMentionFragment() {
             }
         }
 
-        viewModel.commentAddEvent.observe(viewLifecycleOwner) {
-            viewModel.loadCommentById(parentCommentId)
+        commentsViewModel.commentAddEvent.observe(viewLifecycleOwner) {
+            if (it == -1) {
+                reportError(getString(R.string.could_not_save_comment))
+            } else {
+                commentsViewModel.loadCommentById(parentCommentId)
+            }
         }
     }
 

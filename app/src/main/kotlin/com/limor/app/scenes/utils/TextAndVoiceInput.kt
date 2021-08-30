@@ -322,8 +322,13 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
         resetPositionIndicator()
 
-        val fileName = getCurrentTimeString() + ".mp3"
-        val file = File(context.filesDir, fileName)
+        val recordingDirectory =
+            File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/")
+        if (!recordingDirectory.exists()) {
+            recordingDirectory.mkdir()
+        }
+        val fileName = getCurrentTimeString() + CommonsKt.audioFileFormat
+        val file = File(recordingDirectory, fileName)
         filePath = file.path
 
         val recorder = WaveRecorder(file.path)

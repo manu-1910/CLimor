@@ -3,6 +3,7 @@ package com.limor.app.audio.wav
 import android.content.Context
 import android.media.AudioFormat
 import android.media.AudioRecord
+import com.arthenica.mobileffmpeg.BuildConfig
 import com.arthenica.mobileffmpeg.FFmpeg
 import timber.log.Timber
 import java.io.File
@@ -297,7 +298,7 @@ class WavHelper {
         }
 
 
-        // receives a file path and tries to convert it to wav.
+        // receives a file path and tries to convert it to m4a.
         // it will return the new generated file if success or null if error
         fun convertWavToM4a(context: Context, fileToConvert : String) : File? {
             val path = context.getExternalFilesDir(null)?.absolutePath
@@ -305,6 +306,9 @@ class WavHelper {
             val commandToExecute3 = "-i $fileToConvert $convertedFile"
 
             val rc: Int = FFmpeg.execute(commandToExecute3)
+            if (BuildConfig.DEBUG) {
+                println("FFmpeg command `$commandToExecute3`, resulted in code $rc")
+            }
             if(rc == FFmpeg.RETURN_CODE_SUCCESS) {
                 return convertedFile
             }

@@ -678,15 +678,21 @@ public class Commons {
         final String completeUrl = Constants.AWS_IMAGE_BASE_URL + path;
 
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("audio/amr");
+        metadata.setContentType("audio/mp4");
         CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
                 context,
                 Constants.AWS_IDENTITY_POOL,
                 Regions.EU_WEST_1
         );
         final AmazonS3 s3 = new AmazonS3Client(credentialsProvider);
-        TransferUtility transferUtility = new TransferUtility(s3, context);
-        TransferObserver observer = transferUtility.upload(
+
+        final TransferUtility transferUtility = TransferUtility
+                .builder()
+                .s3Client(s3)
+                .context(context)
+                .build();
+
+        final TransferObserver observer = transferUtility.upload(
                 Constants.AWS_BUCKET,
                 path,
                 audioFile,

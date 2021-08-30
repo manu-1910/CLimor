@@ -70,6 +70,7 @@ class CommentsViewModel @Inject constructor(
             addCommentUseCase.execute(podcastId, content, ownerId, ownerType, audioURI, duration)
                 .onFailure {
                     Timber.e(it, "Error while creating comment")
+                    _commentAddEvent.value = -1
                 }
                 .onSuccess {
                     _commentAddEvent.value = it
