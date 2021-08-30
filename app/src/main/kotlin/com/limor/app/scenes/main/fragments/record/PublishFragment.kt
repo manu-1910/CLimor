@@ -853,6 +853,11 @@ class PublishFragment : BaseFragment() {
 
     private fun apiCallPublish() {
         toggleProgressVisibility(View.VISIBLE)
+
+        val caption = etDraftCaption?.text.toString() ?: ""
+        val tags = etDraftTags?.text.toString() ?: ""
+        val fullCaption = "$caption${if (caption.isEmpty()) "" else "\n\n"}$tags"
+
         val podcast = CreatePodcastInput(
                 audio = PodcastAudio(
                     audio_url = audioUrlFinal.toString(),
@@ -864,7 +869,7 @@ class PublishFragment : BaseFragment() {
                 ),
                 meta_data = PodcastMetadata(
                     title = etDraftTitle?.text.toString(),
-                    caption = etDraftCaption?.text.toString(),
+                    caption = fullCaption,
                     latitude = Input.fromNullable(latitude),
                     longitude = Input.fromNullable(longitude),
                     image_url = Input.fromNullable(imageUrlFinal),
