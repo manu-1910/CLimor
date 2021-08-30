@@ -324,6 +324,9 @@ class DraftsFragment : BaseFragment() {
             }
             //Remove item from the list
             draftsLocalList.removeAt(position)
+            if(draftsLocalList.size == 0){
+                draftViewModel.uiDraft = null
+            }
             //rvDrafts?.adapter?.notifyItemRemoved(position)
             rvDrafts?.adapter?.notifyDataSetChanged()
             //rvDrafts?.adapter?.notifyItemRangeChanged(0, draftsLocalList.size)
