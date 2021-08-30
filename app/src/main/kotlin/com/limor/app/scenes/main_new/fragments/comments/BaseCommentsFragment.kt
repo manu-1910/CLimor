@@ -5,6 +5,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
@@ -15,6 +16,7 @@ import com.limor.app.scenes.main_new.fragments.mentions.UserMentionPopup
 import com.limor.app.scenes.main_new.view_model.UserMentionViewModel
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.uimodels.CommentUIModel
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
@@ -46,16 +48,7 @@ abstract class UserMentionFragment : BaseFragment(), UserMentionPopup.UserMentio
         }
     }
 
-    protected fun uploadVoiceComment(filePath: String?, onDone: ((audioUrl: String?) -> Unit)) {
-        val path = filePath ?: return
-        if (BuildConfig.DEBUG) {
-            println("Will convert $filePath")
-        }
-        val convertedFilePath = WavHelper.convertWavToM4a(requireContext(), path)?.absolutePath
-        if (convertedFilePath.isNullOrEmpty()) {
-            reportError(getString(R.string.could_not_convert_audio))
-            return
-        }
+    private fun uploadConvertedCommentAudio(convertedFilePath: String, onDone: (audioUrl: String?) -> Unit) {
         Commons.getInstance().uploadAudio(
             context,
             File(convertedFilePath),
@@ -82,5 +75,20 @@ abstract class UserMentionFragment : BaseFragment(), UserMentionPopup.UserMentio
                     reportError(error ?: getString(R.string.could_not_upload_audio_message))
                 }
             })
+    }
+
+    protected fun uploadVoiceComment(filePath: String?, onDone: (audioUrl: String?) -> Unit) {
+        val path = filePath ?: return
+        if (BuildConfig.DEBUG) {
+            println("Will convert $filePath")
+        }
+        lifecycleScope.launch {
+            val convertedFilePath = WavHelper.convertWavFileToM4aFile(requireContext(), path)?.absolutePath
+            if (convertedFilePath.isNullOrEmpty()) {
+                reportError(getString(R.string.could_not_convert_audio))
+            } else {
+                uploadConvertedCommentAudio(convertedFilePath, onDone)
+            }
+        }
     }
 }
