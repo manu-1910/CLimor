@@ -740,6 +740,7 @@ class PublishFragment : BaseFragment() {
         progressPb?.let {
             try {
                 it.visibility = visibility
+                progressUpload.indeterminateMode = visibility == View.VISIBLE
             } catch (t: Throwable) {
                 t.printStackTrace()
             }
@@ -749,50 +750,58 @@ class PublishFragment : BaseFragment() {
     private fun publishPodcastAudio() {
         toggleProgressVisibility(View.VISIBLE)
 
-            Timber.d("Publishing audio podcast")
-            if (!app!!.merlinsBeard!!.isConnected) {
+        Timber.d("Publishing audio podcast")
+        if (!app!!.merlinsBeard!!.isConnected) {
 
-                toggleProgressVisibility(View.GONE)
-                showUnableToPublishCastDialog(
-                    description = getString(R.string.default_no_internet),
-                    okText = getString(R.string.ok),
-                    okAction = {
+            toggleProgressVisibility(View.GONE)
+            showUnableToPublishCastDialog(
+                description = getString(R.string.default_no_internet),
+                okText = getString(R.string.ok),
+                okAction = {
 
-                    })
+                })
 
-                return
-            }
-            convertedFile = WavHelper.convertWavToM4a(requireContext(), uiDraft.filePath!!)
-            convertedFile?.let {
-                //Upload audio file to AWS
-                Commons.getInstance().uploadAudio(
-                    context,
-                    it,
-                    Constants.AUDIO_TYPE_PODCAST,
-                    object : Commons.AudioUploadCallback {
-                        override fun onSuccess(audioUrl: String?) {
-                            audioUploaded = true
-                            audioUrlFinal = audioUrl
-                            toggleProgressVisibility(visibility = View.GONE)
-                            readyToPublish()
-                        }
-
-                        override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
-                        }
-
-                        override fun onError(error: String?) {
-                            toggleProgressVisibility(View.GONE)
-                            audioUploaded = false
-                            alert(getString(R.string.error_uploading_audio)) {
-                                okButton { }
-                            }.show()
-                            Timber.d("Audio upload to AWS error: $error")
-                        }
-                    })
-
-            }
+            return
+        }
+        lifecycleScope.launch {
+            convertedFile = WavHelper.convertWavFileToM4aFile(requireContext(), uiDraft.filePath!!)
+            publishConvertedPodcastAudio()
+        }
     }
 
+    private fun publishConvertedPodcastAudio() {
+        val file = convertedFile
+        if (null == file) {
+            alert(getString(R.string.could_not_convert_audio_message)).show()
+            return
+        }
+
+        //Upload audio file to AWS
+        Commons.getInstance().uploadAudio(
+            context,
+            file,
+            Constants.AUDIO_TYPE_PODCAST,
+            object : Commons.AudioUploadCallback {
+                override fun onSuccess(audioUrl: String?) {
+                    audioUploaded = true
+                    audioUrlFinal = audioUrl
+                    toggleProgressVisibility(visibility = View.GONE)
+                    readyToPublish()
+                }
+
+                override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
+                }
+
+                override fun onError(error: String?) {
+                    toggleProgressVisibility(View.GONE)
+                    audioUploaded = false
+                    alert(getString(R.string.error_uploading_audio)) {
+                        okButton { }
+                    }.show()
+                    Timber.d("Audio upload to AWS error: $error")
+                }
+            })
+    }
 
     private fun publishPodcastImage() {
         toggleProgressVisibility(View.VISIBLE)

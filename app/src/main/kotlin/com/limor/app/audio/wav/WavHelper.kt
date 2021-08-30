@@ -5,6 +5,8 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import com.arthenica.mobileffmpeg.BuildConfig
 import com.arthenica.mobileffmpeg.FFmpeg
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
@@ -300,7 +302,7 @@ class WavHelper {
 
         // receives a file path and tries to convert it to m4a.
         // it will return the new generated file if success or null if error
-        fun convertWavToM4a(context: Context, fileToConvert : String) : File? {
+        private fun convertWavToM4aSync(context: Context, fileToConvert : String) : File? {
             val path = context.getExternalFilesDir(null)?.absolutePath
             val convertedFile = File(path, "/limorv2/" + System.currentTimeMillis() + ".m4a")
             val commandToExecute3 = "-i $fileToConvert $convertedFile"
@@ -314,6 +316,11 @@ class WavHelper {
             }
             return null
         }
+
+        suspend fun convertWavFileToM4aFile(context: Context, fileToConvert : String) : File? =
+            withContext(Dispatchers.IO) {
+                convertWavToM4aSync(context, fileToConvert)
+            }
     }
 
 
