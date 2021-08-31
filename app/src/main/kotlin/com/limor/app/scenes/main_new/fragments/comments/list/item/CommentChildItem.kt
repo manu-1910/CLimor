@@ -24,6 +24,7 @@ class CommentChildItem(
     val isSimplified: Boolean,
     val onReplyClick: (parentComment: CommentUIModel, replyToComment: CommentUIModel) -> Unit,
     val onLikeClick: (comment: CommentUIModel, liked: Boolean) -> Unit,
+    val onThreeDotsClick: (parentComment: CommentUIModel, item: CommentChildItem, position: Int) -> Unit,
     val onUserMentionClick: (username: String, userId: Int) -> Unit,
 ) : BindableItem<ItemChildCommentBinding>() {
 
@@ -43,6 +44,9 @@ class CommentChildItem(
 
         viewBinding.replyBtn.setOnClickListener {
             onReplyClick(parentComment, comment)
+        }
+        viewBinding.btnCommentMore.setOnClickListener {
+            onThreeDotsClick(comment, this, position)
         }
         if (isSimplified) {
             viewBinding.tvCommentContent.maxLines = 3
@@ -97,6 +101,15 @@ class CommentChildItem(
     private fun initLikeState(binding: ItemChildCommentBinding) {
         binding.apply {
             btnCommentLike.isLiked = comment.isLiked!!
+
+            comment.likesCount?.let {
+                if (it > 0) {
+                    likesCount.visibility = View.VISIBLE
+                } else {
+                    likesCount.visibility = View.INVISIBLE
+                }
+            }
+
             likesCount.text = root.context.resources.getQuantityString(
                 R.plurals.likes_count,
                 comment.likesCount ?: 0,
@@ -111,6 +124,12 @@ class CommentChildItem(
                     textLikesCount + 1
                 } else {
                     textLikesCount - 1
+                }
+
+                if (newLikesCount > 0) {
+                    likesCount.visibility = View.VISIBLE
+                } else {
+                    likesCount.visibility = View.INVISIBLE
                 }
 
 

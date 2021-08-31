@@ -20,6 +20,7 @@ import com.xwray.groupie.viewbinding.BindableItem
 class CommentParentItem(
     val comment: CommentUIModel,
     val onReplyClick: (parentComment: CommentUIModel) -> Unit,
+    val onThreeDotsClick: (parentComment: CommentUIModel,item: CommentParentItem) -> Unit,
     val onLikeClick: (parentComment: CommentUIModel, liked: Boolean) -> Unit,
     val onUserMentionClick: (username: String, userId: Int) -> Unit,
 ) : BindableItem<ItemParentCommentBinding>() {
@@ -40,6 +41,9 @@ class CommentParentItem(
         }
         viewBinding.replyBtn.setOnClickListener {
             onReplyClick(comment)
+        }
+        viewBinding.btnCommentMore.setOnClickListener {
+            onThreeDotsClick(comment,this)
         }
         initLikeState(viewBinding)
         initAudioPlayer(viewBinding)
@@ -88,9 +92,42 @@ class CommentParentItem(
     private fun initLikeState(binding: ItemParentCommentBinding) {
         binding.apply {
             btnCommentLike.isLiked = comment.isLiked!!
+            comment.likesCount?.let {
+                if (it > 0) {
+                    likesCount.visibility = View.VISIBLE
+                } else {
+                    likesCount.visibility = View.INVISIBLE
+                }
+            }
+            likesCount.text = root.context.resources.getQuantityString(
+                R.plurals.likes_count,
+                comment.likesCount ?: 0,
+                comment.likesCount ?: 0
+            )
+
 
             btnCommentLike.setOnClickListener {
                 val isLiked = btnCommentLike.isLiked
+                val textLikesCount =
+                    likesCount.text.toString().takeWhile { it.isDigit() || it == '-' }.toInt()
+                val newLikesCount = if (isLiked) {
+                    textLikesCount + 1
+                } else {
+                    textLikesCount - 1
+                }
+
+                if (newLikesCount > 0) {
+                    likesCount.visibility = View.VISIBLE
+                } else {
+                    likesCount.visibility = View.INVISIBLE
+                }
+
+                likesCount.text = root.context.resources.getQuantityString(
+                    R.plurals.likes_count,
+                    newLikesCount,
+                    newLikesCount
+                )
+
                 onLikeClick(comment, isLiked)
             }
         }

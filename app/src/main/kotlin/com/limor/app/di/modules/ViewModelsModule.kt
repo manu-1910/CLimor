@@ -334,6 +334,12 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(HandleCommentActionsViewModel::class)
+    abstract fun bindGetHandleCommentActionsViewModel(viewModel: HandleCommentActionsViewModel): ViewModel
+
+
+    @Binds
+    @IntoMap
     @ViewModelKey(PodcastViewModel::class)
     abstract fun bindPodcastViewModel(viewModel: PodcastViewModel): ViewModel
 

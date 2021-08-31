@@ -154,4 +154,8 @@
             android:name="HASHTAG_KEY"
             app:argType="com.limor.app.uimodels.CastUIModel" />
     </fragment>
+    <dialog
+        android:id="@+id/dialogCommentMoreActions"
+        android:name="com.limor.app.scenes.profile.DialogCommentMoreActions"
+        android:label="DialogCommentMoreActions" />
 </navigation>

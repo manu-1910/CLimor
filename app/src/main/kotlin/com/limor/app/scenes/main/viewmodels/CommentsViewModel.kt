@@ -19,6 +19,7 @@ class CommentsViewModel @Inject constructor(
     private val addCommentUseCase: AddCommentUseCase,
     private val getCommentByIdUseCase: GetCommentByIdUseCase,
     private val likeCommentUseCase: LikeCommentUseCase,
+    private val deleteCommentUseCase: DeleteCommentUseCaseNew,
 ) : ViewModel() {
 
     private val _comments = MutableLiveData<List<CommentUIModel>>()
@@ -84,6 +85,16 @@ class CommentsViewModel @Inject constructor(
                 likeCommentUseCase.execute(comment.id, like)
             } catch (ex: Exception) {
                 Timber.e(ex, "Error while liking comment with id = ${comment.id}")
+            }
+        }
+    }
+
+    fun deleteComment(comment: CommentUIModel){
+        viewModelScope.launch {
+            try{
+                deleteCommentUseCase.execute(comment.id)
+            }catch (ex:Exception){
+                Timber.e(ex, "Error while deleting comment with id = ${comment.id}")
             }
         }
     }

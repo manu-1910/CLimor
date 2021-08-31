@@ -50,6 +50,10 @@
             android:name="DialogReportPodcastArgs"
             app:argType="string" />
     </dialog>
+    <dialog
+        android:id="@+id/dialogCommentMoreActions"
+        android:name="com.limor.app.scenes.profile.DialogCommentMoreActions"
+        android:label="DialogCommentMoreActions" />
 
 </navigation>
 

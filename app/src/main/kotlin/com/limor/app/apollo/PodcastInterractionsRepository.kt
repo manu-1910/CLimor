@@ -107,4 +107,9 @@ class PodcastInteractionsRepository @Inject constructor(val apollo: Apollo) {
         return result?.data?.listenPodcast?.listened
     }
 
+    suspend fun deleteComment(commentId: Int): Boolean? {
+        val mutation = DeleteCommentMutation(commentId)
+        val result = apollo.mutate(mutation)
+        return result?.data?.deleteComment?.destroyed
+    }
 }

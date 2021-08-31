@@ -13,6 +13,7 @@ import com.limor.app.scenes.main_new.fragments.*
 import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.fragments.comments.FragmentCommentReplies
 import com.limor.app.scenes.notifications.Notification
+import com.limor.app.scenes.profile.DialogCommentMoreActions
 import com.limor.app.scenes.profile.DialogUserReport
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -73,6 +74,9 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributePodcastReportFragment(): DialogPodcastReportP2
+
+    @ContributesAndroidInjector
+    abstract fun contributeCommentActionsActionsFragmentInjector(): DialogCommentMoreActions
 
 }
 
