@@ -15,6 +15,7 @@ import com.limor.app.databinding.FragmentCommentRepliesBinding
 import com.limor.app.extensions.dismissFragment
 import com.limor.app.extensions.highlight
 import com.limor.app.extensions.showKeyboard
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.extensions.userMentionPattern
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentChildItem
@@ -133,7 +134,10 @@ class FragmentCommentReplies : UserMentionFragment() {
                 parentComment,
                 onReplyClick = ::onReplyClick,
                 onLikeClick = { comment, liked ->
-                    commentsViewModel.likeComment(comment, liked)
+                    viewModel.likeComment(comment, liked)
+                },
+                onUserMentionClick = { username, userId ->
+                    context?.let { context -> UserProfileActivity.show(context, username, userId) }
                 }
             )
         )
@@ -145,7 +149,10 @@ class FragmentCommentReplies : UserMentionFragment() {
                     onReplyClick = { _, replyChildComment -> onReplyClick(replyChildComment) },
                     isSimplified = false,
                     onLikeClick = { comment, liked ->
-                        commentsViewModel.likeComment(comment, liked)
+                        viewModel.likeComment(comment, liked)
+                    },
+                    onUserMentionClick = { username, userId ->
+                        context?.let { context -> UserProfileActivity.show(context, username, userId) }
                     }
                 )
             )

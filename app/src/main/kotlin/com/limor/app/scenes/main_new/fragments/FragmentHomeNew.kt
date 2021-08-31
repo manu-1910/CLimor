@@ -9,9 +9,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.dynamiclinks.ktx.*
@@ -22,6 +24,7 @@ import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentHomeNewBinding
 import com.limor.app.extensions.requireTag
+import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
@@ -178,9 +181,11 @@ class FragmentHomeNew : BaseFragment() {
             onShareClick = { cast ->
                 sharePodcast(cast)
             },
-            onReloadData = {
-                    _, _ ->
+            onReloadData = { _, _ ->
                 reloadCurrentCasts()
+            },
+            onHashTagClick = { hashtag ->
+                (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)
             },
             onLoadMore = {
                 castOffset = currentCasts.size

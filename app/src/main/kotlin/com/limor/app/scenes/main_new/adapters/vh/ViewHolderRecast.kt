@@ -26,7 +26,8 @@ class ViewHolderRecast(
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
     private val onRecastClick: (castId: Int, isRecasted: Boolean) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
-    private val onShareClick: (CastUIModel) -> Unit
+    private val onShareClick: (CastUIModel) -> Unit,
+    private val onHashTagClick: (hashTag: TagUIModel) -> Unit
 ) : ViewHolderBindable<CastUIModel>(binding) {
     override fun bind(item: CastUIModel) {
 
@@ -217,6 +218,9 @@ class ViewHolderRecast(
             .inflate(R.layout.item_podcast_tag, binding.llPodcastTags) { v, _, _ ->
                 (v as TextView).text = StringBuilder("#").append(tag.tag)
                 binding.llPodcastTags.addView(v)
+                v.setOnClickListener {
+                    onHashTagClick(tag)
+                }
             }
     }
 }

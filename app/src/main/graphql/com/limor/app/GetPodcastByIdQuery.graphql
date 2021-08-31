@@ -68,6 +68,7 @@ query GetPodcastByIdQuery($podcastId: Int!){
                 tag
                 start_index
                 end_index
+                count
             }
         }
         mentions {

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -14,11 +15,13 @@ import com.limor.app.R
 import com.limor.app.databinding.ActivityMainNewBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
 import com.limor.app.scenes.auth_new.util.PrefsHandler
+import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.service.PlayerBinder
+import com.limor.app.uimodels.TagUIModel
 import com.limor.app.util.AppNavigationManager
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -74,12 +77,24 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
 
     override fun isPlayerVisible() = activityPlayerViewManager?.isPlayerVisible() ?: false
 
-    override fun showPlayer(args: PlayerViewManager.PlayerArgs) {
-        activityPlayerViewManager?.showPlayer(args)
+    override fun showPlayer(args: PlayerViewManager.PlayerArgs, onTransitioned: (() -> Unit)?) {
+        activityPlayerViewManager?.showPlayer(args, onTransitioned)
     }
 
     override fun hidePlayer() {
         activityPlayerViewManager?.hidePlayer()
+    }
+
+    override fun navigateToHashTag(hashtag: TagUIModel) {
+        navController.apply {
+            if (!popBackStack(R.id.navigation_discover, false)) {
+                navigate(R.id.navigation_discover)
+            }
+            navigate(
+                R.id.action_navigation_discover_to_discoverHashtagFragment,
+                bundleOf(DiscoverHashtagFragment.HASHTAG_KEY to hashtag)
+            )
+        }
     }
 
     fun checkPodCastDynamicLink() {

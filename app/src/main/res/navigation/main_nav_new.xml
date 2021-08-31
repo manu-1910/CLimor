@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_navigation_home_to_navigation_podcast_activity"
             app:destination="@id/navigation_podcast_activity" />
+        <action
+            android:id="@+id/action_navigation_home_to_discoverHashtagFragment"
+            app:destination="@id/discoverHashtagFragment" />
     </fragment>
 
     <fragment
@@ -66,6 +69,9 @@
         <action
             android:id="@+id/action_navigation_discover_to_discoverSearchFragment"
             app:destination="@id/discoverSearchFragment" />
+        <action
+            android:id="@+id/action_navigation_discover_to_discoverHashtagFragment"
+            app:destination="@id/discoverHashtagFragment" />
     </fragment>
 
     <fragment
@@ -117,7 +123,14 @@
         android:id="@+id/navigation_profile"
         android:name="com.limor.app.scenes.main.fragments.profile.UserProfileFragment"
         android:label="ProfileFragment"
-        tools:layout="@layout/user_profile_fragment" />
+        tools:layout="@layout/user_profile_fragment" >
+
+        <action
+            android:id="@+id/action_navigation_profile_to_discoverHashtagFragment"
+            app:destination="@id/discoverHashtagFragment" />
+
+    </fragment>
+
     <fragment
         android:id="@+id/discoverSuggestedPeopleFragment"
         android:name="com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleFragment"

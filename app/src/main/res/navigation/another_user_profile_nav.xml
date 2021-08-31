@@ -13,8 +13,19 @@
         <action
             android:id="@+id/action_profile_fragment_to_dialog_user_actions2"
             app:destination="@id/dialog_user_profile_actions" />
+        <action
+            android:id="@+id/action_another_profile_fragment_to_discoverHashtagFragment"
+            app:destination="@id/discoverHashtagFragment" />
     </fragment>
 
+    <fragment
+        android:id="@+id/discoverHashtagFragment"
+        android:name="com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment"
+        android:label="DiscoverHashtagFragment">
+        <argument
+            android:name="HASHTAG_KEY"
+            app:argType="com.limor.app.uimodels.CastUIModel" />
+    </fragment>
 
     <dialog
         android:id="@+id/dialog_user_profile_actions"

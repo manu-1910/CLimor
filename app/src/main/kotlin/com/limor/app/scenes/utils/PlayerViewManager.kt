@@ -1,11 +1,12 @@
 package com.limor.app.scenes.utils
 
-import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.TagUIModel
 
 interface PlayerViewManager {
     fun isPlayerVisible(): Boolean
-    fun showPlayer(args: PlayerArgs)
+    fun showPlayer(args: PlayerArgs, onTransitioned: (() -> Unit)? = null)
     fun hidePlayer()
+    fun navigateToHashTag(hashtag: TagUIModel)
 
     data class PlayerArgs(
         val playerType: PlayerType,

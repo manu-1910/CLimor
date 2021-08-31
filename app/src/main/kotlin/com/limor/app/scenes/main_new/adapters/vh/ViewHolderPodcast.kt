@@ -26,7 +26,8 @@ class ViewHolderPodcast(
     private val onRecastClick: (castId: Int, isRecasted: Boolean) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
     private val onShareClick: (CastUIModel) -> Unit,
-    private val onReloadData: (castId: Int, reload: Boolean) -> Unit
+    private val onReloadData: (castId: Int, reload: Boolean) -> Unit,
+    private val onHashTagClick: (hashTag: TagUIModel) -> Unit
 ) : ViewHolderBindable<CastUIModel>(binding) {
     override fun bind(item: CastUIModel) {
         setPodcastGeneralInfo(item)
@@ -133,6 +134,9 @@ class ViewHolderPodcast(
         AsyncLayoutInflater(binding.root.context)
             .inflate(R.layout.item_podcast_tag, binding.llPodcastTags) { v, _, _ ->
                 (v as TextView).text = StringBuilder("#").append(tag.tag)
+                v.setOnClickListener {
+                    onHashTagClick(tag)
+                }
                 binding.llPodcastTags.addView(v)
             }
     }

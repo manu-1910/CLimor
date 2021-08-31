@@ -1,6 +1,7 @@
 package com.limor.app.di.modules.fragments
 
 import com.limor.app.scenes.main.fragments.ProfileFragment
+import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.fragments.profile.*
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsFragmentNew
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
@@ -58,4 +59,7 @@ abstract class UserProfileActivityFragmentsBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeFragmentCommentRepliesInjector(): FragmentCommentReplies
+
+    @ContributesAndroidInjector
+    abstract fun contributeDiscoverHashtagFragmentInjector(): DiscoverHashtagFragment
 }

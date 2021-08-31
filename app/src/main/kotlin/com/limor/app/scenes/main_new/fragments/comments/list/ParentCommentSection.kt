@@ -22,6 +22,7 @@ class ParentCommentSection(
     val onReplyClick: (parentComment: CommentUIModel, replyToComment: CommentUIModel?) -> Unit,
     val onViewMoreCommentsClick: (CommentUIModel) -> Unit,
     val onLikeClick: (comment: CommentUIModel, liked: Boolean) -> Unit,
+    val onUserMentionClick: (username: String, userId: Int) -> Unit,
 ) : Section() {
 
     init {
@@ -32,7 +33,8 @@ class ParentCommentSection(
                     // In this case user tries to reply to the parent comment
                     onReplyClick(it, it)
                 },
-                onLikeClick = onLikeClick
+                onLikeClick = onLikeClick,
+                onUserMentionClick = onUserMentionClick
             )
         )
         comment.innerComments.firstOrNull()?.let { childComment ->
@@ -42,7 +44,8 @@ class ParentCommentSection(
                     childComment,
                     isSimplified = true,
                     onReplyClick = onReplyClick,
-                    onLikeClick = onLikeClick
+                    onLikeClick = onLikeClick,
+                    onUserMentionClick = onUserMentionClick
                 )
             )
             if (comment.innerComments.size > 1) {

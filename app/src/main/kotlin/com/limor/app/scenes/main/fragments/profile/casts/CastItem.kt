@@ -7,6 +7,7 @@ import com.limor.app.databinding.ItemUserCastBinding
 import com.limor.app.extensions.*
 import com.limor.app.scenes.utils.recycler.HorizontalSpacingItemDecoration
 import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.TagUIModel
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
@@ -18,7 +19,8 @@ class CastItem(
     private val onMoreDialogClick: (CastUIModel) -> Unit,
     private val onRecastClick: (CastUIModel, isRecasted: Boolean) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
-    private val onShareClick: (CastUIModel) -> Unit
+    private val onShareClick: (CastUIModel) -> Unit,
+    private val onHashTagClick: (hashTag: TagUIModel) -> Unit
 ) : BindableItem<ItemUserCastBinding>() {
 
     override fun bind(viewBinding: ItemUserCastBinding, position: Int) {
@@ -61,7 +63,7 @@ class CastItem(
                 }
                 tagsHorizontalList.adapter = GroupieAdapter().apply {
                     addAll(
-                        tagsList.map { TagItem(it) }
+                        tagsList.map { TagItem(it, onHashTagClick) }
                     )
                 }
             }

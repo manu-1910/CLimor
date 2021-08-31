@@ -52,6 +52,7 @@ query GetCommentsByIdQuery($commentId: Int!){
                 end_index
                 tag
                 tag_id
+                count
             }
         }
         active
@@ -117,6 +118,7 @@ query GetCommentsByIdQuery($commentId: Int!){
                     end_index
                     tag
                     tag_id
+                    count
                 }
             }
             active

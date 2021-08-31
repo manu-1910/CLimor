@@ -27,6 +27,7 @@ import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentUserCastsBinding
 import com.limor.app.di.Injectable
 import com.limor.app.extensions.requireTag
+import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
@@ -200,6 +201,9 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                 },
                 onShareClick = {
                     sharePodcast(it)
+                },
+                onHashTagClick = { hashtag ->
+                    (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)
                 }
             )
         }

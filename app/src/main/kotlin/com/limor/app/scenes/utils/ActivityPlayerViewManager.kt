@@ -10,6 +10,7 @@ import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
 import com.limor.app.scenes.main_new.fragments.SmallPlayerFragment
 import com.limor.app.service.PlayerBinder
+import com.limor.app.uimodels.TagUIModel
 import timber.log.Timber
 
 class ActivityPlayerViewManager(
@@ -29,11 +30,42 @@ class ActivityPlayerViewManager(
         playerBinding.playerContainer.makeGone()
     }
 
+    private fun setTransitionCallback(onTransitioned: (() -> Unit)?) {
+        onTransitioned?.let {
+            playerBinding.motionLayout.addTransitionListener(object : MotionLayout.TransitionListener {
+                override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {
+
+                }
+
+                override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {
+
+                }
+
+                override fun onTransitionCompleted(p0: MotionLayout?, p1: Int) {
+                    it()
+                    playerBinding.motionLayout.removeTransitionListener(this)
+                }
+
+                override fun onTransitionTrigger(
+                    p0: MotionLayout?,
+                    p1: Int,
+                    p2: Boolean,
+                    p3: Float
+                ) {
+
+                }
+            })
+        }
+    }
+
     override fun isPlayerVisible() = isPlayerVisible
 
-    override fun showPlayer(args: PlayerViewManager.PlayerArgs) {
+    override fun showPlayer(args: PlayerViewManager.PlayerArgs, onTransitioned: (() -> Unit)?) {
         currentArgs = args
         Timber.d("Clicked inside ${currentArgs}")
+
+        setTransitionCallback(onTransitioned)
+
         when (args.playerType) {
             PlayerViewManager.PlayerType.SMALL -> {
                 playerBinding.playerContainer.makeVisible()
@@ -57,6 +89,10 @@ class ActivityPlayerViewManager(
         playerBinding.playerContainer.makeGone()
         isPlayerVisible = false
         stop()
+    }
+
+    override fun navigateToHashTag(hashtag: TagUIModel) {
+        // only activities should implement this
     }
 
     fun stop() {

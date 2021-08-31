@@ -68,6 +68,7 @@ query GetUserPodcasts($userId: Int!, $limit: Int!, $offset: Int!) {
                 tag
                 start_index
                 end_index
+                count
             }
         }
         mentions {

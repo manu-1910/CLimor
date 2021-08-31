@@ -52,6 +52,7 @@ query GetCommentsByPodcastsQuery($podcastId: Int!, $limit: Int!, $offset:Int!){
                 end_index
                 tag
                 tag_id
+                count
             }
         }
         active
@@ -117,6 +118,7 @@ query GetCommentsByPodcastsQuery($podcastId: Int!, $limit: Int!, $offset:Int!){
                     end_index
                     tag
                     tag_id
+                    count
                 }
             }
             active

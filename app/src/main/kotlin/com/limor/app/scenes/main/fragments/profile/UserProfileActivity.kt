@@ -1,8 +1,11 @@
 package com.limor.app.scenes.main.fragments.profile
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -14,9 +17,11 @@ import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.databinding.ActivityProfileBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
+import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.PlayerBinder
+import com.limor.app.uimodels.TagUIModel
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import timber.log.Timber
@@ -47,6 +52,13 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector, PlayerVi
     companion object {
         val TAG: String = UserProfileActivity::class.java.simpleName
         fun newInstance() = UserProfileActivity()
+
+        fun show(context: Context, username: String, userId: Int) {
+            val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+            userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, username)
+            userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, userId)
+            context.startActivity(userProfileIntent)
+        }
     }
 
 
@@ -83,13 +95,24 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector, PlayerVi
 
     override fun isPlayerVisible() = activityPlayerViewManager?.isPlayerVisible() ?: false
 
-    override fun showPlayer(args: PlayerViewManager.PlayerArgs) {
+    override fun showPlayer(args: PlayerViewManager.PlayerArgs, onTransitioned: (() -> Unit)?) {
         Timber.d("Clicked opening ${activityPlayerViewManager}")
-        activityPlayerViewManager?.showPlayer(args)
+        activityPlayerViewManager?.showPlayer(args, onTransitioned)
     }
 
     override fun hidePlayer() {
         activityPlayerViewManager?.hidePlayer()
+    }
+
+    override fun navigateToHashTag(hashtag: TagUIModel) {
+        navController.popBackStack(R.id.profile_fragment, false)
+        navController.navigate(
+            R.id.action_another_profile_fragment_to_discoverHashtagFragment,
+            bundleOf(
+                DiscoverHashtagFragment.HASHTAG_KEY to hashtag,
+                DiscoverHashtagFragment.KEY_SHOW_NOTIFICATION_ICON to false
+            )
+        )
     }
 
     override fun onDestroy() {

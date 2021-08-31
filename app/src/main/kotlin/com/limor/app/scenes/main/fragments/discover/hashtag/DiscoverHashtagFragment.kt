@@ -19,12 +19,16 @@ import javax.inject.Inject
 class DiscoverHashtagFragment: BaseFragment() {
     companion object {
         const val HASHTAG_KEY = "HASHTAG_KEY"
+        const val KEY_SHOW_NOTIFICATION_ICON = "KEY_SHOW_NOTIFICATION_ICON"
     }
 
     private var _binding: FragmentDiscoverHashtagBinding? = null
     private val binding get() = _binding!!
 
     private val hashtag: TagUIModel by lazy { requireArguments().getParcelable(HASHTAG_KEY)!! }
+    private val showNotificationIcon: Boolean by lazy {
+        requireArguments().getBoolean(KEY_SHOW_NOTIFICATION_ICON, true)
+    }
     private val discoverHashtagAdapter by lazy {
         DiscoverHashtagAdapter(
             requireContext(),
@@ -58,6 +62,8 @@ class DiscoverHashtagFragment: BaseFragment() {
                 addItemDecoration(GridCastItemDecoration())
             }
         }
+
+        binding.toolbar.btnNotification.visibility = if (showNotificationIcon) View.VISIBLE else View.GONE
 
         binding.toolbar.title.text = hashtag.tag
         binding.toolbar.btnBack.setOnClickListener {

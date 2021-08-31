@@ -18,7 +18,8 @@ fun GetFeaturedCastsQuery.Caption.mapToUIModel() =
         id = tag_id!!,
         tag = tag!!,
         startIndex = start_index!!,
-        endIndex = end_index!!
+        endIndex = end_index!!,
+        count = count!!
     )
 
 fun GetTopCastsQuery.Caption.mapToUIModel() =
@@ -26,7 +27,8 @@ fun GetTopCastsQuery.Caption.mapToUIModel() =
         id = tag_id!!,
         tag = tag!!,
         startIndex = start_index!!,
-        endIndex = end_index!!
+        endIndex = end_index!!,
+        count = count!!
     )
 
 fun SearchHashtagsQuery.SearchTag.mapToUIModel() =
@@ -41,7 +43,8 @@ fun GetPodcastsByCategoryQuery.Caption.mapToUIModel() =
         id = tag_id!!,
         tag = tag!!,
         startIndex = start_index!!,
-        endIndex = end_index!!
+        endIndex = end_index!!,
+        count = count!!
     )
 
 fun GetPodcastsByHashtagQuery.Caption.mapToUIModel() =
@@ -49,7 +52,8 @@ fun GetPodcastsByHashtagQuery.Caption.mapToUIModel() =
         id = tag_id!!,
         tag = tag!!,
         startIndex = start_index!!,
-        endIndex = end_index!!
+        endIndex = end_index!!,
+        count = count!!
     )
 
 fun GetUserPodcastsQuery.Caption.mapToUIModel() =
@@ -57,7 +61,8 @@ fun GetUserPodcastsQuery.Caption.mapToUIModel() =
         id = tag_id!!,
         tag = tag!!,
         startIndex = start_index!!,
-        endIndex = end_index!!
+        endIndex = end_index!!,
+        count = count!!
     )
 
 fun FeedItemsQuery.Caption.mapToUIModel() =
@@ -65,7 +70,8 @@ fun FeedItemsQuery.Caption.mapToUIModel() =
         id = tag_id!!,
         tag = tag!!,
         startIndex = start_index!!,
-        endIndex = end_index!!
+        endIndex = end_index!!,
+        count = count!!
     )
 
 fun GetCommentsByPodcastsQuery.Caption1.mapToUIModel() =
@@ -73,7 +79,8 @@ fun GetCommentsByPodcastsQuery.Caption1.mapToUIModel() =
         id = tag_id!!,
         tag = tag!!,
         startIndex = start_index!!,
-        endIndex = end_index!!
+        endIndex = end_index!!,
+        count = count!!
     )
 
 fun GetCommentsByPodcastsQuery.Caption3.mapToUIModel() =
@@ -81,7 +88,8 @@ fun GetCommentsByPodcastsQuery.Caption3.mapToUIModel() =
         id = tag_id!!,
         tag = tag!!,
         startIndex = start_index!!,
-        endIndex = end_index!!
+        endIndex = end_index!!,
+        count = count!!
     )
 
 fun GetCommentsByIdQuery.Caption1.mapToUIModel() =
@@ -89,7 +97,8 @@ fun GetCommentsByIdQuery.Caption1.mapToUIModel() =
         id = tag_id!!,
         tag = tag!!,
         startIndex = start_index!!,
-        endIndex = end_index!!
+        endIndex = end_index!!,
+        count = count!!
     )
 
 fun GetCommentsByIdQuery.Caption3.mapToUIModel() =
@@ -97,7 +106,8 @@ fun GetCommentsByIdQuery.Caption3.mapToUIModel() =
         id = tag_id!!,
         tag = tag!!,
         startIndex = start_index!!,
-        endIndex = end_index!!
+        endIndex = end_index!!,
+        count = count!!
     )
 
 fun GetPodcastByIdQuery.Caption.mapToUIModel() =
@@ -105,5 +115,6 @@ fun GetPodcastByIdQuery.Caption.mapToUIModel() =
         id = tag_id!!,
         tag = tag!!,
         startIndex = start_index!!,
-        endIndex = end_index!!
+        endIndex = end_index!!,
+        count = count!!
     )

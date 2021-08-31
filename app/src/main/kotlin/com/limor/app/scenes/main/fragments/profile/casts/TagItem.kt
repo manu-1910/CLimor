@@ -7,11 +7,15 @@ import com.limor.app.uimodels.TagUIModel
 import com.xwray.groupie.viewbinding.BindableItem
 
 class TagItem(
-    val tag: TagUIModel
+    val tag: TagUIModel,
+    private val onHashTagClick: (hashTag: TagUIModel) -> Unit
 ) : BindableItem<ItemTagBinding>() {
 
     override fun bind(viewBinding: ItemTagBinding, position: Int) {
         viewBinding.tag.text = String.format("#%s", tag.tag)
+        viewBinding.tag.setOnClickListener {
+            onHashTagClick(tag)
+        }
     }
 
     override fun getLayout() = R.layout.item_tag

@@ -12,6 +12,7 @@ import com.limor.app.scenes.main_new.adapters.vh.ViewHolderBindable
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderPodcast
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderRecast
 import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.TagUIModel
 
 class HomeFeedAdapter(
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
@@ -20,7 +21,8 @@ class HomeFeedAdapter(
     private val onReloadData: (castId: Int, reload: Boolean) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
     private val onShareClick: (CastUIModel) -> Unit,
-    private val onLoadMore: () -> Unit
+    private val onLoadMore: () -> Unit,
+    private val onHashTagClick: (hashTag: TagUIModel) -> Unit
 ) : ListAdapter<CastUIModel, RecyclerView.ViewHolder>(
     HomeFeedDiffCallback()
 ) {
@@ -67,7 +69,7 @@ class HomeFeedAdapter(
             ITEM_TYPE_RECASTED -> {
                 val binding =
                     ItemHomeFeedRecastedBinding.inflate(inflater, viewGroup, false)
-                ViewHolderRecast(binding, onLikeClick, onReCastClick, onCommentsClick, onShareClick)
+                ViewHolderRecast(binding, onLikeClick, onReCastClick, onCommentsClick, onShareClick, onHashTagClick)
             }
             ITEM_TYPE_PODCAST -> {
                 val binding = ItemHomeFeedBinding.inflate(inflater, viewGroup, false)
@@ -78,7 +80,8 @@ class HomeFeedAdapter(
                     onReCastClick,
                     onCommentsClick,
                     onShareClick,
-                    onReloadData
+                    onReloadData,
+                    onHashTagClick
                 )
             }
             else -> {

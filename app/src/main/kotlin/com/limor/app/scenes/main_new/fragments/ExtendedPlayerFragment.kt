@@ -15,10 +15,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
@@ -26,6 +29,7 @@ import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentExtendedPlayerBinding
 import com.limor.app.extensions.*
+import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
@@ -511,12 +515,28 @@ class ExtendedPlayerFragment : UserMentionFragment() {
         }
     }
 
+    private fun onHashTagClick(hashtag: TagUIModel) {
+        val activity = activity as? PlayerViewManager ?: return
+
+        // 1. minimize the extended player
+        activity.showPlayer(PlayerViewManager.PlayerArgs(
+            PlayerViewManager.PlayerType.SMALL,
+            castId
+        )) {
+            // 2. navigate to hash tag fragment
+            activity.navigateToHashTag(hashtag)
+        }
+    }
+
     private fun addTagsItems(tag: TagUIModel) {
         binding.llPodcastTags.removeAllViews()
         AsyncLayoutInflater(requireContext())
             .inflate(R.layout.item_podcast_tag, binding.llPodcastTags) { v, _, _ ->
                 (v as TextView).text = StringBuilder("#").append(tag.tag)
                 binding.llPodcastTags.addView(v)
+                v.setOnClickListener {
+                    onHashTagClick(tag)
+                }
             }
     }
 

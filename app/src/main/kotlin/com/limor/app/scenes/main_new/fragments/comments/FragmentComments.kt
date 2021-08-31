@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main_new.fragments.comments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,8 @@ import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentCommentsBinding
 import com.limor.app.extensions.dismissFragment
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main_new.fragments.comments.list.ParentCommentSection
 import com.limor.app.scenes.utils.Commons
@@ -100,7 +103,7 @@ class FragmentComments : UserMentionFragment() {
     private fun subscribeForComments() {
         commentsViewModel.comments.observe(viewLifecycleOwner) { comments ->
             adapter.update(
-                comments.map {
+                comments.map { it ->
                     ParentCommentSection(
                         comment = it,
                         onReplyClick = { parentComment, replyToComment ->
@@ -110,7 +113,10 @@ class FragmentComments : UserMentionFragment() {
                             goToReplies(comment)
                         },
                         onLikeClick = { comment, liked ->
-                            commentsViewModel.likeComment(comment, liked)
+                            viewModel.likeComment(comment, liked)
+                        },
+                        onUserMentionClick = { username, userId ->
+                            context?.let { context -> UserProfileActivity.show(context, username, userId) }
                         }
                     )
                 }
