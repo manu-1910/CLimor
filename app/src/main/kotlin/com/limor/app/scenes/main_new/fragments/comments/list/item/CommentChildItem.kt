@@ -8,6 +8,7 @@ import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.ItemChildCommentBinding
 import com.limor.app.extensions.*
@@ -81,7 +82,13 @@ class CommentChildItem(
                     onUserMentionClick(mention.username, mention.userId)
                 }
             }
-            spannable.setSpan(clickableSpan, mention.startIndex, mention.endIndex, 0)
+            try {
+                spannable.setSpan(clickableSpan, mention.startIndex, mention.endIndex, 0)
+            } catch (throwable: Throwable) {
+                if (BuildConfig.DEBUG) {
+                    throwable.printStackTrace()
+                }
+            }
         }
         tvCommentContent.text = spannable
         tvCommentContent.movementMethod = LinkMovementMethod.getInstance();
