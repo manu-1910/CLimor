@@ -65,6 +65,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     private val userId: Int by lazy { requireArguments().getInt(USER_ID_KEY) }
 
     private var castOffset = 0
+    private var sharedPodcastId = -1
 
     private val castsAdapter = GroupieAdapter()
 
@@ -76,12 +77,9 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
 
     var launcher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val intent = result.data
-                val podcastId = intent?.getIntExtra(Constants.SHARED_PODCAST_ID, -1) ?: -1
-                if (podcastId != -1) {
-                    sharePodcastViewModel.share(podcastId)
-                }
+            if (sharedPodcastId != -1) {
+                sharePodcastViewModel.share(sharedPodcastId)
+                sharedPodcastId = -1
             }
         }
 
@@ -114,9 +112,9 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_SUBJECT, cast.title)
                     putExtra(Intent.EXTRA_TEXT, "Hey, check out this podcast: $shortLink")
-                    putExtra(Constants.SHARED_PODCAST_ID, cast.id)
                     type = "text/plain"
                 }
+                sharedPodcastId = cast.id
                 val shareIntent = Intent.createChooser(sendIntent, null)
                 launcher.launch(shareIntent)
             } catch (e: ActivityNotFoundException) {
@@ -157,18 +155,24 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         loadCasts()
     }
 
+    private fun reloadCurrentCasts() {
+        val loadedCount = currentCasts.size
+        castOffset = 0
+        viewModel.loadCasts(userId, loadedCount, castOffset)
+    }
+
     private fun subscribeForEvents() {
         viewModel.casts.observe(viewLifecycleOwner) { casts ->
             onLoadCasts(casts)
         }
         recastPodcastViewModel.recastedResponse.observe(viewLifecycleOwner) {
-            viewModel.loadCasts(userId)
+            reloadCurrentCasts()
         }
         recastPodcastViewModel.deleteRecastResponse.observe(viewLifecycleOwner) {
-            viewModel.loadCasts(userId)
+            reloadCurrentCasts()
         }
         sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner) {
-            viewModel.loadCasts(userId)
+            reloadCurrentCasts()
         }
         podcastInteractionViewModel.reload.observe(viewLifecycleOwner) {
             reload()
@@ -273,4 +277,9 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
             }
         navController.navigate(R.id.dialog_report_podcast, bundle)
     }
+
+    private fun scrollList(){
+        binding.castsList.scrollBy(0, 10)
+    }
+
 }

@@ -111,11 +111,6 @@ class ViewHolderPodcast(
         }
 
         binding.btnPodcastReply.setOnClickListener {
-            binding.btnPodcastReply.shared = true
-            val shareCount = binding.tvPodcastReply.text.toString().toInt()
-
-            binding.tvPodcastReply.text = (shareCount + 1).toString()
-            applySharedState(true)
             onShareClick(item)
         }
     }

@@ -86,11 +86,6 @@ class CastItem(
             }
 
             btnPodcastReply.setOnClickListener {
-                btnPodcastReply.shared = true
-                val shareCount = tvPodcastReply.text.toString().toInt()
-
-                tvPodcastReply.text =  (shareCount + 1).toString()
-                applyShareStyle(this, true)
                 onShareClick(cast)
             }
         }

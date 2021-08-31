@@ -83,6 +83,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
     private var isStartedPlayingInThisObject = false
 
     private var restarted: Boolean = false
+    private var sharedPodcastId = -1
 
     @Inject
     lateinit var playerBinder: PlayerBinder
@@ -361,7 +362,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
         binding.tvPodcastComments.setOnClickListener(openCommentsClickListener)
 
         binding.btnPodcastReply.setOnClickListener {
-            btnPodcastReply.shared = true
+            //btnPodcastReply.shared = true
             updatePodcasts = true
             sharePodcast(cast)
         }
@@ -407,10 +408,9 @@ class ExtendedPlayerFragment : UserMentionFragment() {
     }
 
     var launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if(result.resultCode == Activity.RESULT_OK){
-            val intent = result.data
-            val podcastId = intent?.getIntExtra(Constants.SHARED_PODCAST_ID, -1) ?: -1
-            sharePodcastViewModel.share(podcastId)
+        if (sharedPodcastId != -1) {
+            sharePodcastViewModel.share(sharedPodcastId)
+            sharedPodcastId = -1
         }
     }
 
@@ -443,9 +443,9 @@ class ExtendedPlayerFragment : UserMentionFragment() {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_SUBJECT, cast.title)
                     putExtra(Intent.EXTRA_TEXT, "Hey, check out this podcast: $shortLink")
-                    putExtra(Constants.SHARED_PODCAST_ID, cast.id)
                     type = "text/plain"
                 }
+                sharedPodcastId = cast.id
                 val shareIntent = Intent.createChooser(sendIntent, null)
                 launcher.launch(shareIntent)
             } catch (e: ActivityNotFoundException){}

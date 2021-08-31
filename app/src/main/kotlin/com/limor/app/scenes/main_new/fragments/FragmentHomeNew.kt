@@ -14,7 +14,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewbinding.ViewBinding
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
@@ -54,6 +53,8 @@ class FragmentHomeNew : BaseFragment() {
     private var homeFeedAdapter: HomeFeedAdapter? = null
     private var castOffset = 0
     private val currentCasts = mutableListOf<CastUIModel>()
+
+    private var sharedPodcastId = -1
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -126,22 +127,32 @@ class FragmentHomeNew : BaseFragment() {
             onLoadCasts(casts)
         }
         likePodcastViewModel.reload.observe(viewLifecycleOwner){
-            loadFeeds()
+            reloadCurrentCasts()
         }
         recastPodcastViewModel.recastedResponse.observe(viewLifecycleOwner){
-            loadFeeds()
+            reloadCurrentCasts()
         }
         recastPodcastViewModel.deleteRecastResponse.observe(viewLifecycleOwner){
-            loadFeeds()
+            reloadCurrentCasts()
         }
         sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner){
-            loadFeeds()
+            println("Will reload...")
+            reloadCurrentCasts()
         }
         podcastInteractionViewModel.reload.observe(viewLifecycleOwner){
             if(it == true){
-                loadFeeds()
+                reloadCurrentCasts()
             }
         }
+    }
+
+    private fun reloadCurrentCasts() {
+        val loadedCount = currentCasts.size
+        castOffset = 0
+        homeFeedViewModel.loadHomeFeed(
+            offset = castOffset,
+            limit = loadedCount
+        )
     }
 
     private fun createAdapter() {
@@ -169,7 +180,7 @@ class FragmentHomeNew : BaseFragment() {
             },
             onReloadData = {
                     _, _ ->
-                loadFeeds()
+                reloadCurrentCasts()
             },
             onLoadMore = {
                 castOffset = currentCasts.size
@@ -190,12 +201,9 @@ class FragmentHomeNew : BaseFragment() {
     }
 
     var launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if(result.resultCode == Activity.RESULT_OK){
-            val intent = result.data
-            val podcastId = intent?.getIntExtra(Constants.SHARED_PODCAST_ID, -1) ?: -1
-            if(podcastId != -1) {
-                sharePodcastViewModel.share(podcastId)
-            }
+        if(sharedPodcastId != -1) {
+            sharePodcastViewModel.share(sharedPodcastId)
+            sharedPodcastId = -1
         }
     }
 
@@ -228,9 +236,9 @@ class FragmentHomeNew : BaseFragment() {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_SUBJECT, cast.title)
                     putExtra(Intent.EXTRA_TEXT, "Hey, check out this podcast: $shortLink")
-                    putExtra(Constants.SHARED_PODCAST_ID, cast.id)
                     type = "text/plain"
                 }
+                sharedPodcastId = cast.id
                 val shareIntent = Intent.createChooser(sendIntent, null)
                 launcher.launch(shareIntent)
             } catch (e: ActivityNotFoundException){}
@@ -248,6 +256,10 @@ class FragmentHomeNew : BaseFragment() {
                 cast.id
             )
         )
+    }
+
+    private fun scrollList(){
+        binding.rvHome.scrollBy(0, 10)
     }
 
 }
