@@ -507,19 +507,20 @@ class PublishFragment : BaseFragment() {
             onSelectImageClicked()
         }
         btnSaveDraft?.onClick {
-            if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying)
-                mediaPlayer.stop()
+            ensurePreviewIsPaused()
             val isTitleEmpty = etDraftTitle?.text.toString().isEmpty()
             if (isTitleEmpty) {
                 showSaveAsDraftDialog()
             } else {
                 addDataToRecordingItem()
                 toast(getString(R.string.draft_inserted))
+                stopPlayer()
                 activity?.finish()
             }
         }
 
         btnPublishDraft?.onClick {
+            ensurePreviewIsPaused()
             startPublishing()
         }
 
@@ -623,6 +624,24 @@ class PublishFragment : BaseFragment() {
 
     }
 
+    private fun ensurePreviewIsPaused(){
+        if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying){
+            mediaPlayer.pause()
+            btnPlayPause?.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_play
+                )
+            )
+        }
+    }
+
+    private fun stopPlayer(){
+        if (::mediaPlayer.isInitialized){
+            mediaPlayer.stop()
+        }
+    }
+
     private fun showSaveAsDraftDialog() {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = layoutInflater
@@ -652,6 +671,7 @@ class PublishFragment : BaseFragment() {
             uiDraft.categoryId = publishViewModel.categorySelectedId
             callToUpdateDraft()
             toast(getString(R.string.draft_inserted))
+            stopPlayer()
             requireActivity().finish()
         }
 
@@ -901,6 +921,7 @@ class PublishFragment : BaseFragment() {
                 btnDone.onClick {
                     /*val mainIntent = Intent(context, MainActivity::class.java)
                     startActivity(mainIntent)*/
+                    stopPlayer()
                     activity?.finish()
                 }
             }?:run{
