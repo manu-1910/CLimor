@@ -217,7 +217,10 @@ class DraftsFragment : BaseFragment() {
                             }
 
                             newItem.id = System.currentTimeMillis()
-                            val newTitle = getDuplicatedTitle(draftsLocalList[position].title)
+                            var lastDuplicatedItemTitle : String? = getLastDuplicatedItemTitle(draftsLocalList, draftsLocalList[position].title)
+                            if(lastDuplicatedItemTitle == null)
+                                lastDuplicatedItemTitle = draftsLocalList[position].title
+                            val newTitle = getDuplicatedTitle(lastDuplicatedItemTitle)
                             newItem.title = newTitle
 
 
@@ -406,6 +409,23 @@ class DraftsFragment : BaseFragment() {
 
     }
 
+    private fun getLastDuplicatedItemTitle(draftsLocalList: ArrayList<UIDraft>, title: String?): String?{
+        var result : String? = null
+        var id = -1
+        val titleClean = title?.substringBeforeLast("-")?.trim() ?: title
+        draftsLocalList.forEach {
+            val previousTitleClean = it.title?.substringBeforeLast("-")?.trim() ?: ""
+            val lastWord = it.title?.substringAfterLast("-")?.trim() ?: ""
+            if(previousTitleClean == titleClean){
+                var number = lastWord.toIntOrNull()
+                if (number != null && id < number) {
+                    id = number
+                    result = it.title
+                }
+            }
+        }
+        return result
+    }
 
     private fun showEmptyScenario() {
         //Show empty scenario layout
