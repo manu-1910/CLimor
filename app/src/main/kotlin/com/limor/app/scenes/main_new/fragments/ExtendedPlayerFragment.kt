@@ -355,15 +355,15 @@ class ExtendedPlayerFragment : UserMentionFragment() {
             recastPodcastViewModel.reCast(castId = cast.id)
         }
 
-        val openCommentsClickListener: View.OnClickListener = View.OnClickListener {
+        val openCommentsClickListener: (view: View) -> Unit =  {
             RootCommentsFragment.newInstance(cast).also { fragment ->
                 fragment.show(parentFragmentManager, fragment.requireTag())
             }
         }
 
-        binding.llExtendCommentsHeader.setOnClickListener(openCommentsClickListener)
-        binding.btnPodcastComments.setOnClickListener(openCommentsClickListener)
-        binding.tvPodcastComments.setOnClickListener(openCommentsClickListener)
+        binding.llExtendCommentsHeader.throttledClick(onClick = openCommentsClickListener)
+        binding.btnPodcastComments.throttledClick(onClick = openCommentsClickListener)
+        binding.tvPodcastComments.throttledClick(onClick = openCommentsClickListener)
 
         binding.btnPodcastReply.setOnClickListener {
             //btnPodcastReply.shared = true
