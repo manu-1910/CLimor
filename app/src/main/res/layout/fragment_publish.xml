@@ -138,6 +138,7 @@
                                 android:fontFamily="@font/roboto_medium"
                                 android:hint="@string/hint_title"
                                 android:textColor="@color/textPrimary"
+                                android:maxLength="80"
                                 android:textSize="@dimen/textSizeNormal" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -176,6 +177,7 @@
                                 android:gravity="top"
                                 android:hint="@string/hint_caption"
                                 android:lines="3"
+                                android:maxLength="1000"
                                 android:textColor="@color/textPrimary"
                                 android:textSize="@dimen/textSizeNormal" />
                         </com.google.android.material.textfield.TextInputLayout>
