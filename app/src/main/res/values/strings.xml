@@ -186,6 +186,7 @@
     <string name="menu_duplicate_cast">Duplicate cast</string>
     <string name="menu_continue_recording_cast">Continue recording this cast</string>
     <string name="no_drafts_title">No Drafts</string>
+    <string name="draft_exists_error">Draft with this name already exists</string>
 
 
     <!-- Facebook strings -->

@@ -15,6 +15,7 @@
     <dimen name="marginEleven">11dp</dimen>
     <dimen name="marginTwenty">20dp</dimen>
     <dimen name="margin28">28dp</dimen>
+    <dimen name="margin24">24dp</dimen>
     <dimen name="margin38">38dp</dimen>
     <dimen name="margin32">32dp</dimen>
     <dimen name="marginForty">40dp</dimen>

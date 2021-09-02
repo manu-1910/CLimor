@@ -56,14 +56,12 @@ import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter
 import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
 import com.limor.app.App
 import com.limor.app.BuildConfig
-import com.limor.app.CreatePodcastMutation
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.extensions.drawSimpleSelectorDialog
 import com.limor.app.extensions.hideKeyboard
-import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.fragments.record.adapters.HashtagAdapter
 import com.limor.app.scenes.main.viewmodels.*
@@ -82,22 +80,19 @@ import com.limor.app.uimodels.*
 import com.yalantis.ucrop.UCrop
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
+import kotlinx.android.synthetic.main.dialog_with_edittext.*
 import kotlinx.android.synthetic.main.fragment_publish.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
-import kotlinx.android.synthetic.main.toolbar_profile.*
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
 import kotlinx.android.synthetic.main.view_cast_published.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.support.v4.runOnUiThread
 import org.jetbrains.anko.support.v4.toast
-import org.jetbrains.anko.uiThread
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -157,6 +152,7 @@ class PublishFragment : BaseFragment() {
     private var audioUrlFinal: String? = ""
     private var isPublished: Boolean = false
     private var listTags = ArrayList<TagUIModel>()
+    private var existingDraftsTitles = listOf<String>()
     private var listTagsString: HashtagArrayAdapter<Hashtag>? = null
     private var tvSelectedLocation: TextView? = null
     private var tvSelectedCategory: TextView? = null
@@ -223,6 +219,7 @@ class PublishFragment : BaseFragment() {
             updateDraft()
             apiCallPublishPodcast()
             //getCityOfDevice()
+            loadDrafts()
 
             deleteDraft()
             apiCallHashTags()
@@ -280,6 +277,12 @@ class PublishFragment : BaseFragment() {
         updatePublishBtnState()
 
         subscribeToViewModel()
+    }
+
+    private fun loadDrafts() {
+        draftViewModel.loadDraftRealm()?.observe(viewLifecycleOwner, Observer<List<UIDraft>> {
+            existingDraftsTitles = it.mapNotNull { it.title?.lowercase() }
+        })
     }
 
     private fun subscribeToViewModel() {
@@ -650,6 +653,7 @@ class PublishFragment : BaseFragment() {
         val cancelButton = dialogLayout.findViewById<Button>(R.id.cancelButton)
         val editText = dialogLayout.findViewById<TextInputEditText>(R.id.editText)
         val titleText = dialogLayout.findViewById<TextView>(R.id.textTitle)
+        val errorTextView = dialogLayout.findViewById<TextView>(R.id.errorTV)
 
         titleText.text = requireContext().getString(R.string.save_draft_dialog_title)
         editText.filters = arrayOf(SpecialCharactersInputFilter())
@@ -663,16 +667,22 @@ class PublishFragment : BaseFragment() {
         val dialog: AlertDialog = dialogBuilder.create()
 
         positiveButton.onClick {
-            uiDraft.title = editText.text.toString()
-            uiDraft.caption = etDraftCaption?.text.toString()
-            uiDraft.languageCode = publishViewModel.languageCode
-            uiDraft.language = publishViewModel.languageSelected
-            uiDraft.category = publishViewModel.categorySelected
-            uiDraft.categoryId = publishViewModel.categorySelectedId
-            callToUpdateDraft()
-            toast(getString(R.string.draft_inserted))
-            stopPlayer()
-            requireActivity().finish()
+            val exists = checkIfDraftAlreadyExistsWithThisName(editText.text.toString() ?: "")
+            if(exists){
+                errorTextView.visibility = View.VISIBLE
+            } else{
+                errorTextView.visibility = View.GONE
+                uiDraft.title = editText.text.toString()
+                uiDraft.caption = etDraftCaption?.text.toString()
+                uiDraft.languageCode = publishViewModel.languageCode
+                uiDraft.language = publishViewModel.languageSelected
+                uiDraft.category = publishViewModel.categorySelected
+                uiDraft.categoryId = publishViewModel.categorySelectedId
+                callToUpdateDraft()
+                toast(getString(R.string.draft_inserted))
+                stopPlayer()
+                requireActivity().finish()
+            }
         }
 
         cancelButton.onClick {
@@ -698,6 +708,10 @@ class PublishFragment : BaseFragment() {
             window?.setBackgroundDrawable(inset);
             show()
         }
+    }
+
+    private fun checkIfDraftAlreadyExistsWithThisName(draftName: String): Boolean{
+        return existingDraftsTitles.contains(draftName.lowercase())
     }
 
     private fun onSelectImageClicked() {

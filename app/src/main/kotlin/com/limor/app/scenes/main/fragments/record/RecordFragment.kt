@@ -54,6 +54,7 @@ import com.limor.app.extensions.throttledClick
 import com.limor.app.scenes.main.viewmodels.DraftViewModel
 import com.limor.app.scenes.main.viewmodels.LocationsViewModel
 import com.limor.app.scenes.utils.Commons
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.CommonsKt.Companion.audioFileFormat
 import com.limor.app.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import com.limor.app.scenes.utils.SpecialCharactersInputFilter
@@ -65,6 +66,7 @@ import kotlinx.android.synthetic.main.dialog_cancel_draft.view.*
 import kotlinx.android.synthetic.main.dialog_cancel_draft.view.saveButton
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
 import kotlinx.android.synthetic.main.dialog_save_draft.view.*
+import kotlinx.android.synthetic.main.dialog_with_edittext.*
 import kotlinx.android.synthetic.main.fragment_record.*
 import kotlinx.android.synthetic.main.sheet_more_draft.view.*
 import kotlinx.android.synthetic.main.toolbar_default.*
@@ -116,6 +118,8 @@ class RecordFragment : BaseFragment() {
     private val seekHandler: Handler = Handler(Looper.getMainLooper())
     private var needToInitializeMediaPlayer = true
     private var playBackTime = 0L
+
+    private var existingDraftsTitles = listOf<String>()
 
     companion object {
         val TAG: String = RecordFragment::class.java.simpleName
@@ -179,6 +183,7 @@ class RecordFragment : BaseFragment() {
         listeners()
         initApiCallInsertDraft()
         initApiCallDeleteDraft()
+        loadDrafts()
 
         //Check Permissions
         if (!hasPermissions(requireContext(), *PERMISSIONS)) {
@@ -187,6 +192,11 @@ class RecordFragment : BaseFragment() {
 
     }
 
+    private fun loadDrafts() {
+        draftViewModel.loadDraftRealm()?.observe(viewLifecycleOwner, Observer<List<UIDraft>> {
+            existingDraftsTitles = it.mapNotNull { it.title?.lowercase() }
+        })
+    }
 
     private fun listeners() {
         enablePlayButton(false)
@@ -713,6 +723,7 @@ class RecordFragment : BaseFragment() {
         val cancelButton = dialogLayout.findViewById<Button>(R.id.cancelButton)
         val editText = dialogLayout.findViewById<TextInputEditText>(R.id.editText)
         val titleText = dialogLayout.findViewById<TextView>(R.id.textTitle)
+        val errorTV = dialogLayout.findViewById<TextView>(R.id.errorTV)
 
         titleText.text = requireContext().getString(R.string.save_draft_dialog_title)
         editText.filters = arrayOf(SpecialCharactersInputFilter())
@@ -726,8 +737,14 @@ class RecordFragment : BaseFragment() {
         val dialog: AlertDialog = dialogBuilder.create()
 
         positiveButton.onClick {
-            onPositiveClicked(editText.text.toString())
-            dialog.dismiss()
+            val exists = checkIfDraftAlreadyExistsWithThisName(editText.text.toString() ?: "")
+            if(exists){
+                errorTV.visibility = View.VISIBLE
+            } else{
+                errorTV.visibility = View.GONE
+                onPositiveClicked(editText.text.toString())
+                dialog.dismiss()
+            }
         }
 
         cancelButton.onClick {
@@ -772,6 +789,9 @@ class RecordFragment : BaseFragment() {
         }
     }
 
+    private fun checkIfDraftAlreadyExistsWithThisName(draftName: String): Boolean{
+        return existingDraftsTitles.contains(draftName.lowercase())
+    }
 
     private fun bindViewModel() {
         activity?.let {
