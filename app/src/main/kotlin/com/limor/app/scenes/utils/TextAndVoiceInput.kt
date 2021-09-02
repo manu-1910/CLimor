@@ -81,11 +81,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
             val millis = millisUntilFinished.toInt()
 
             durationMillis = 180000 - millis
-
-            val actualSeconds = millis / 1000
-            val minutes = actualSeconds.div(60)
-            val seconds = actualSeconds % 60
-            tvTime.text = "$minutes:${getSeconds(seconds)}"
+            updatePosition(millis)
         }
 
         override fun onFinish() {
@@ -120,11 +116,20 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
                             min(1f, it.currentPosition.toFloat() / mediaDuration.toFloat())
 
                         positionIndicator.x = (positionRatio - 1) * positionIndicator.width
+                        updatePosition(it.currentPosition)
                     }
                 }
                 seekHandler.postDelayed(this, updateInterval)
             }
         }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun updatePosition(millis: Int) {
+        val actualSeconds = millis / 1000
+        val minutes = actualSeconds.div(60)
+        val seconds = actualSeconds % 60
+        tvTime.text = "$minutes:${getSeconds(seconds)}"
     }
 
     private fun updateSendButtonState() {
