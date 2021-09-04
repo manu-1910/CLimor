@@ -70,7 +70,7 @@ class CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayou
                         is PlayerStatus.Paused -> setPausedState()
                         is PlayerStatus.Playing -> setPlayingState()
                         is PlayerStatus.Other -> Timber.d("Other status received: $status")
-                        is PlayerStatus.Init -> setInitialState(Duration.ZERO)
+                        is PlayerStatus.Init -> setInitialState(audio.duration)
                     }
                 }
                 .launchIn(this)
