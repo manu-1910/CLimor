@@ -164,11 +164,12 @@ class ExtendedPlayerFragment : UserMentionFragment() {
                 binding.tvCommentName.text = firstComment.user?.username
                 binding.firstCollapsedCommentVisibilityGroup.makeVisible()
                 binding.noCommentsMessage.makeGone()
-                binding.llExtendCommentsHeader.isEnabled = true
+                binding.llExtendCommentsHeader.makeVisible()
             } else {
                 binding.firstCollapsedCommentVisibilityGroup.makeGone()
                 binding.noCommentsMessage.makeVisible()
                 binding.llExtendCommentsHeader.isEnabled = false
+                binding.llExtendCommentsHeader.makeGone()
             }
         }
 
@@ -182,6 +183,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
     }
 
     private fun bindViews(cast: CastUIModel) {
+        setCommentsCount(cast)
         setPodcastGeneralInfo(cast)
         setPodcastOwnerInfo(cast)
         setPodcastCounters(cast)
@@ -193,6 +195,16 @@ class ExtendedPlayerFragment : UserMentionFragment() {
         initLikeState(cast)
         initRecastState(cast)
         initListenState(cast)
+    }
+
+    private fun setCommentsCount(cast: CastUIModel) {
+        val count = cast.commentsCount ?: 0
+        if (count < 2) {
+            binding.textComments.text = getString(R.string.view_all_comments_label)
+        } else {
+            binding.textComments.text = getString(R.string.view_all_n_comments__with_format, count)
+        }
+
     }
 
     private fun subscribeToShareUpdate(){

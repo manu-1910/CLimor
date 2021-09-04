@@ -461,31 +461,30 @@
             <LinearLayout
                 android:id="@+id/llExtendCommentsHeader"
                 android:layout_width="0dp"
-                android:layout_height="36dp"
+                android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="start|center_vertical"
                 android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingTop="0dp"
+                android:paddingTop="16dp"
                 android:paddingEnd="16dp"
-                android:paddingBottom="0dp"
+                android:paddingBottom="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/llDividerAfterCounters">
 
                 <TextView
+                    android:id="@+id/textComments"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/comments"
-                    android:textColor="@color/subtitle_text_color" />
+                    android:gravity="left|center_vertical"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="16dp"
+                    android:textColor="@color/colorAccent"
+                    android:textStyle="bold"
+                    tools:text="View all 20 comments" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_marginStart="4dp"
-                    android:src="@drawable/ic_comments_extend" />
             </LinearLayout>
 
             <ImageView
@@ -493,7 +492,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+
                 android:src="@color/blue200"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/llExtendCommentsHeader" />
@@ -539,6 +538,7 @@
                 android:id="@+id/no_comments_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingTop="16dp"
                 android:text="@string/no_comments_message"
                 android:textColor="@color/subtitle_text_color"
                 app:layout_constraintBottom_toBottomOf="parent"
