@@ -23,14 +23,14 @@
         android:layout_gravity="bottom"
         app:contentInsetEnd="0dp"
         app:contentInsetStart="0dp"
-        app:elevation="0dp"
+        app:elevation="2dp"
         app:fabAlignmentMode="center">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/navigation"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/sign_up_bottom_shape"
+            android:background="@color/white"
             app:itemIconSize="24dp"
             app:itemIconTint="@color/navigation_button_text_color"
             app:itemTextColor="@color/navigation_button_text_color"
