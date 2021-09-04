@@ -41,6 +41,12 @@ class CommentChildItem(
             viewBinding.ivCommentAvatar.loadCircleImage(it)
         }
 
+        val onUserClick: (view: View) -> Unit =  {
+            onUserClick()
+        }
+        viewBinding.ivCommentAvatar.throttledClick(onClick = onUserClick)
+        viewBinding.tvCommentName.throttledClick(onClick = onUserClick)
+
         setTextWithTagging(viewBinding.tvCommentContent)
 
         viewBinding.replyBtn.setOnClickListener {
@@ -57,6 +63,12 @@ class CommentChildItem(
         }
         initLikeState(viewBinding)
         initAudioPlayer(viewBinding)
+    }
+
+    private fun onUserClick() {
+        val user = comment.user ?: return
+        val username = user.username ?: return
+        onUserMentionClick(username, user.id)
     }
 
     private fun setTextWithTagging(tvCommentContent: TextView) {
