@@ -43,14 +43,14 @@ object DateUiUtil {
         pastDate: LocalDateTime,
         context: Context
     ): String {
+        val now = LocalDateTime.now()
         val date = pastDate.minusSeconds(pastDate.second.toLong()).minusMinutes(pastDate.minute.toLong()).minusHours(pastDate.hour.toLong())
-        var now = LocalDateTime.now()
         val days = ChronoUnit.DAYS.between(now, date).absoluteValue
         val weeks = ChronoUnit.WEEKS.between(now, date).absoluteValue
         val months = ChronoUnit.MONTHS.between(now, date).absoluteValue
         val years = ChronoUnit.YEARS.between(now, date).absoluteValue
         return when{
-            days == 0L -> context.getString(R.string.today)
+            days == 0L -> getTimeAgoWithinDay(now, pastDate, context)
             days == 1L -> context.getString(R.string.yesterday)
             days < 7L -> context.getString(R.string.days_ago, days)
             weeks == 1L -> context.getString(R.string.week_ago)
@@ -61,6 +61,25 @@ object DateUiUtil {
             years > 1L -> context.getString(R.string.years_ago, years)
             else -> ""
         }
+    }
+
+    private fun getTimeAgoWithinDay(now: LocalDateTime, pastDate: LocalDateTime, context: Context): String {
+        // This whole function essentially copies the iOS logic as defined in the iOS project's
+        // Date+TimeAgo.swift
+
+        val hours = ChronoUnit.HOURS.between(now, pastDate).absoluteValue
+        val minutes = ChronoUnit.MINUTES.between(now, pastDate).absoluteValue
+        val seconds = ChronoUnit.SECONDS.between(now, pastDate).absoluteValue
+
+        return when {
+            hours >= 2 -> context.getString(R.string.time_ago__hours_ago, hours)
+            hours == 1L -> context.getString(R.string.time_ago__one_hour_ago)
+            minutes >= 2 -> context.getString(R.string.time_ago__minutes_ago, minutes)
+            minutes == 1L -> context.getString(R.string.time_ago__one_minute_ago)
+            seconds >= 3 -> context.getString(R.string.time_ago__seconds_ago, seconds)
+            else -> context.getString(R.string.time_ago__just_now)
+        }
+
     }
 
 }

@@ -636,6 +636,13 @@
     <string name="could_not_convert_audio">Could not convert audio. Please try again.</string>
     <string name="could_not_upload_audio_message">Could not upload audio. Please try again later.</string>
     <string name="could_not_save_comment">Could not save comment. Please try later.</string>
+    <!-- Time Ago values -->
+    <string name="time_ago__just_now">Just now</string>
+    <string name="time_ago__hours_ago">%d hours ago</string>
+    <string name="time_ago__one_hour_ago">1 hour ago</string>
+    <string name="time_ago__minutes_ago">%d minutes ago</string>
+    <string name="time_ago__one_minute_ago">1 minute ago</string>
+    <string name="time_ago__seconds_ago">%d seconds ago</string>
     <string name="view_all_comments_label">View all comments</string>
     <string name="view_all_n_comments__with_format">View all %d comments</string>
     <plurals name="likes_count">
