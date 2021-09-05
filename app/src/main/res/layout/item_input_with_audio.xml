@@ -57,6 +57,7 @@
             android:id="@+id/comment_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLength="300"
             android:maxLines="3" />
 
     </com.google.android.material.textfield.TextInputLayout>
