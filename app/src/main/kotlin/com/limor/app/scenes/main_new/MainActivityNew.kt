@@ -4,12 +4,15 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.limor.app.R
 import com.limor.app.databinding.ActivityMainNewBinding
@@ -69,7 +72,26 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
 
     private fun setUpBottomNavigation() {
         navController = Navigation.findNavController(this, R.id.nav_host_fragment)
-        navigation.setupWithNavController(navController)
+
+        // This allows for more control on what happens when the bottom bar buttons are clicked.
+        navigation.setOnItemSelectedListener(object: NavigationBarView.OnItemSelectedListener {
+            override fun onNavigationItemSelected(item: MenuItem): Boolean {
+                if (item.itemId == navController.currentDestination?.id) {
+                    return true
+                }
+
+                // Try to navigate to the destination within the current back stack
+                if (navController.popBackStack(item.itemId, inclusive = false, saveState = true)) {
+                    return true
+                }
+
+                // At this point we just have to navigate to the destination
+                navController.navigate(item.itemId)
+
+                // always select the item regardless of how the navigation was handled
+                return true
+            }
+        })
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> =
