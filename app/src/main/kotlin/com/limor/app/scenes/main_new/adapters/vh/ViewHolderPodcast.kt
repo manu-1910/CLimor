@@ -9,10 +9,7 @@ import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
-import com.limor.app.extensions.formatHumanReadable
-import com.limor.app.extensions.loadCircleImage
-import com.limor.app.extensions.loadImage
-import com.limor.app.extensions.throttledClick
+import com.limor.app.extensions.*
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
@@ -27,7 +24,8 @@ class ViewHolderPodcast(
     private val onCommentsClick: (CastUIModel) -> Unit,
     private val onShareClick: (CastUIModel) -> Unit,
     private val onReloadData: (castId: Int, reload: Boolean) -> Unit,
-    private val onHashTagClick: (hashTag: TagUIModel) -> Unit
+    private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
+    private val onUserMentionClick: (username: String, userId: Int) -> Unit,
 ) : ViewHolderBindable<CastUIModel>(binding) {
     override fun bind(item: CastUIModel) {
         setPodcastGeneralInfo(item)
@@ -36,7 +34,6 @@ class ViewHolderPodcast(
         setAudioInfo(item)
         loadImages(item)
         setOnClicks(item)
-        addTags(item)
         initLikeState(item)
         initRecastState(item)
         initShareState(item)
@@ -47,7 +44,13 @@ class ViewHolderPodcast(
             "${it.toMinutes()}m ${it.minusMinutes(it.toMinutes()).seconds}s"
         }
         binding.tvPodcastTitle.text = item.title
-        binding.tvPodcastSubtitle.text = item.caption
+        binding.tvPodcastSubtitle.setTextWithTagging(
+            item.caption,
+            item.mentions,
+            item.tags,
+            onUserMentionClick,
+            onHashTagClick
+        )
     }
 
     private fun setPodcastOwnerInfo(item: CastUIModel) {
@@ -121,24 +124,6 @@ class ViewHolderPodcast(
         userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, item.owner?.username)
         userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, item.owner?.id)
         context.startActivity(userProfileIntent)
-    }
-
-    private fun addTags(item: CastUIModel) {
-        item.tags?.forEach {
-            addTags(it)
-        }
-    }
-
-    private fun addTags(tag: TagUIModel) {
-        binding.llPodcastTags.removeAllViews()
-        AsyncLayoutInflater(binding.root.context)
-            .inflate(R.layout.item_podcast_tag, binding.llPodcastTags) { v, _, _ ->
-                (v as TextView).text = StringBuilder("#").append(tag.tag)
-                v.setOnClickListener {
-                    onHashTagClick(tag)
-                }
-                binding.llPodcastTags.addView(v)
-            }
     }
 
     private fun initLikeState(item: CastUIModel) {

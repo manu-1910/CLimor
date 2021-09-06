@@ -191,7 +191,6 @@ class ExtendedPlayerFragment : UserMentionFragment() {
         loadImages(cast)
         setViewsVisibility()
         setOnClicks(cast)
-        addTags(cast)
         initLikeState(cast)
         initRecastState(cast)
         initListenState(cast)
@@ -215,7 +214,15 @@ class ExtendedPlayerFragment : UserMentionFragment() {
 
     private fun setPodcastGeneralInfo(cast: CastUIModel) {
         binding.tvPodcastTitle.text = cast.title
-        binding.tvPodcastSubtitle.text = cast.caption
+        binding.tvPodcastSubtitle.setTextWithTagging(
+            cast.caption,
+            cast.mentions,
+            cast.tags,
+            { username, userId ->
+                context?.let { context -> UserProfileActivity.show(context, username, userId) }
+            },
+            { hashTag ->  onHashTagClick(hashTag) }
+        )
     }
 
     private fun setPodcastOwnerInfo(cast: CastUIModel) {
@@ -521,12 +528,6 @@ class ExtendedPlayerFragment : UserMentionFragment() {
         }
     }
 
-    private fun addTags(cast: CastUIModel) {
-        cast.tags?.forEach {
-            addTagsItems(it)
-        }
-    }
-
     private fun onHashTagClick(hashtag: TagUIModel) {
         val activity = activity as? PlayerViewManager ?: return
 
@@ -538,18 +539,6 @@ class ExtendedPlayerFragment : UserMentionFragment() {
             // 2. navigate to hash tag fragment
             activity.navigateToHashTag(hashtag)
         }
-    }
-
-    private fun addTagsItems(tag: TagUIModel) {
-        binding.llPodcastTags.removeAllViews()
-        AsyncLayoutInflater(requireContext())
-            .inflate(R.layout.item_podcast_tag, binding.llPodcastTags) { v, _, _ ->
-                (v as TextView).text = StringBuilder("#").append(tag.tag)
-                binding.llPodcastTags.addView(v)
-                v.setOnClickListener {
-                    onHashTagClick(tag)
-                }
-            }
     }
 
     private fun initLikeState(cast: CastUIModel) {

@@ -22,7 +22,8 @@ class HomeFeedAdapter(
     private val onCommentsClick: (CastUIModel) -> Unit,
     private val onShareClick: (CastUIModel) -> Unit,
     private val onLoadMore: () -> Unit,
-    private val onHashTagClick: (hashTag: TagUIModel) -> Unit
+    private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
+    private val onUserMentionClick: (username: String, userId: Int) -> Unit
 ) : ListAdapter<CastUIModel, RecyclerView.ViewHolder>(
     HomeFeedDiffCallback()
 ) {
@@ -69,7 +70,15 @@ class HomeFeedAdapter(
             ITEM_TYPE_RECASTED -> {
                 val binding =
                     ItemHomeFeedRecastedBinding.inflate(inflater, viewGroup, false)
-                ViewHolderRecast(binding, onLikeClick, onReCastClick, onCommentsClick, onShareClick, onHashTagClick)
+                ViewHolderRecast(
+                    binding,
+                    onLikeClick,
+                    onReCastClick,
+                    onCommentsClick,
+                    onShareClick,
+                    onHashTagClick,
+                    onUserMentionClick
+                )
             }
             ITEM_TYPE_PODCAST -> {
                 val binding = ItemHomeFeedBinding.inflate(inflater, viewGroup, false)
@@ -81,7 +90,8 @@ class HomeFeedAdapter(
                     onCommentsClick,
                     onShareClick,
                     onReloadData,
-                    onHashTagClick
+                    onHashTagClick,
+                    onUserMentionClick
                 )
             }
             else -> {

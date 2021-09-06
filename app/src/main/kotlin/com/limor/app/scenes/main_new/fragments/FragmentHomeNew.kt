@@ -25,6 +25,7 @@ import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentHomeNewBinding
 import com.limor.app.extensions.requireTag
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
@@ -191,6 +192,9 @@ class FragmentHomeNew : BaseFragment() {
                 castOffset = currentCasts.size
                 homeFeedAdapter?.isLoading = true
                 loadFeeds()
+            },
+            onUserMentionClick = { username, userId ->
+                context?.let { context -> UserProfileActivity.show(context, username, userId) }
             }
         )
     }
