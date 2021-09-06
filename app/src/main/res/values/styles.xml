@@ -155,5 +155,16 @@
     <style name="ShapeAppearanceOverlay.App.CornerSize50Percent" parent="">
         <item name="cornerSize">50%</item>
     </style>
+
+    <style name="style_profile_heading">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:fontFamily">@font/roboto_bold</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/notification_secondary_text</item>
+        <item name="android:textSize">@dimen/textSize16</item>
+    </style>
 </resources>
 

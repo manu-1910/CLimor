@@ -28,6 +28,8 @@ query GetCommentsByIdQuery($commentId: Int!){
             verified
             autoplay_enabled
             sharing_url
+            voice_bio_url
+            duration
         }
         content
         created_at
@@ -94,6 +96,8 @@ query GetCommentsByIdQuery($commentId: Int!){
                 verified
                 autoplay_enabled
                 sharing_url
+                voice_bio_url
+                duration
             }
             content
             created_at

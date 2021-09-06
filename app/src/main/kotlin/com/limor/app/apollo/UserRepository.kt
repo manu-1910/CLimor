@@ -40,12 +40,24 @@ class UserRepository @Inject constructor(val apollo: Apollo){
         lastName: String,
         bio: String,
         website: String,
-        imageURL: String?
+        imageURL: String?,
+        voiceBioURL: String?,
+        duration: Double?
     ): String? {
         var imageUrl: Input<String> = if(imageURL == null){
             Input.absent()
         }else Input.fromNullable(imageURL)
-        val query = UpdateUserProfileMutation(userName,firstName,lastName,website,bio, imageUrl)
+        val query = UpdateUserProfileMutation(
+            userName,
+            firstName,
+            lastName,
+            website,
+            bio,
+            imageUrl,
+            // always defined, even if null, because if 'absent' server wouldn't set to null
+            Input.fromNullable(voiceBioURL),
+            Input.fromNullable(duration)
+        )
         val queryResult = apollo.mutate(query)
         val updateUserNameResult =
             queryResult?.data?.updateUser?.status

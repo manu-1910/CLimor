@@ -671,6 +671,9 @@ public class Commons {
             case Constants.AUDIO_TYPE_ATTACHMENT:
                 path = Constants.AWS_FOLDER_MESSAGE_ATTACHMENTS + "audioFile_" + String.valueOf(new Random().nextInt((9999 - 1) + 1) + 1) + "_" + System.currentTimeMillis() + audioFileFormat;
                 break;
+            case Constants.AUDIO_TYPE_VOICE_BIO:
+                path = Constants.AWS_FOLDER_VOICE_BIO + "audioFile_" + String.valueOf(new Random().nextInt((9999 - 1) + 1) + 1) + "_" + System.currentTimeMillis() + audioFileFormat;
+                break;
             default:
                 break;
         }

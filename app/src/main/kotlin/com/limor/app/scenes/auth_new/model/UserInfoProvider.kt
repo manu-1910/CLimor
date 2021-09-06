@@ -254,9 +254,20 @@ class UserInfoProvider @Inject constructor(
         lastName: String,
         bio: String,
         website: String,
-        imageURL: String?
+        imageURL: String?,
+        voiceBioURL: String?,
+        durationSeconds: Double?
     ) :String? {
-       return userRepository.updateUserProfile(userName,firstName,lastName,bio,website,imageURL)
+       return userRepository.updateUserProfile(
+           userName,
+           firstName,
+           lastName,
+           bio,
+           website,
+           imageURL,
+           voiceBioURL,
+           durationSeconds
+       )
     }
 
     suspend fun startFollowingUser(id: Int) {

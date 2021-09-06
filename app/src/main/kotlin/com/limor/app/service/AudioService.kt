@@ -138,6 +138,10 @@ class AudioService : Service() {
         exoPlayer.seekTo(positionMs.toLong())
     }
 
+    fun getDurationInMillis(): Long {
+        return exoPlayer.duration
+    }
+
     fun forward(skipLength: Long = PLAYBACK_SKIP_INCREMENTS) {
         if (exoPlayer.currentPosition + skipLength < exoPlayer.duration) {
             exoPlayer.seekTo(exoPlayer.currentPosition + skipLength)

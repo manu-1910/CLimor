@@ -29,6 +29,8 @@ data class UserUIModel(
     val isVerified: Boolean?,
     val isAutoplayEnabled: Boolean?,
     val sharingUrl: String?,
+    var voiceBioURL: String?,
+    var durationSeconds: Double?
 ) : Parcelable {
 
     fun getFullName() = if(firstName == null && lastName == null) username else String.format("%s %s", firstName, lastName)
@@ -43,7 +45,9 @@ fun GetFeaturedCastsQuery.Owner.mapToUIModel(): UserUIModel =
         description = description, website = website, gender = gender,
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )
 
 fun SuggestedPeopleQuery.GetSuggestedUser.mapToUIModel(): UserUIModel =
@@ -55,7 +59,9 @@ fun SuggestedPeopleQuery.GetSuggestedUser.mapToUIModel(): UserUIModel =
         description = description, website = website, gender = gender,
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )
 
 fun GetTopCastsQuery.Owner.mapToUIModel(): UserUIModel =
@@ -67,7 +73,9 @@ fun GetTopCastsQuery.Owner.mapToUIModel(): UserUIModel =
         description = description, website = website, gender = gender,
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )
 
 fun SearchUsersQuery.SearchUser.mapToUIModel(): UserUIModel =
@@ -79,7 +87,9 @@ fun SearchUsersQuery.SearchUser.mapToUIModel(): UserUIModel =
         description = description, website = website, gender = gender,
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )
 
 fun GetPodcastsByCategoryQuery.Owner.mapToUIModel(): UserUIModel =
@@ -91,7 +101,9 @@ fun GetPodcastsByCategoryQuery.Owner.mapToUIModel(): UserUIModel =
         description = description, website = website, gender = gender,
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )
 
 fun GetPodcastsByHashtagQuery.Owner.mapToUIModel(): UserUIModel =
@@ -103,7 +115,9 @@ fun GetPodcastsByHashtagQuery.Owner.mapToUIModel(): UserUIModel =
         description = description, website = website, gender = gender,
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )
 
 
@@ -117,7 +131,9 @@ fun GetUserProfileQuery.GetUser.mapToUIModel(): UserUIModel =
         dateOfBirth = date_of_birth?.toLocalDate(),
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )
 
 
@@ -131,7 +147,9 @@ fun GetUserProfileByIdQuery.GetUserById.mapToUIModel(): UserUIModel =
         dateOfBirth = date_of_birth?.toLocalDate(),
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )
 
 fun GetUserPodcastsQuery.Owner.mapToUIModel(): UserUIModel =
@@ -144,7 +162,9 @@ fun GetUserPodcastsQuery.Owner.mapToUIModel(): UserUIModel =
         dateOfBirth = date_of_birth?.toLocalDate(),
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )
 
 fun FeedItemsQuery.Owner.mapToUIModel(): UserUIModel =
@@ -157,7 +177,9 @@ fun FeedItemsQuery.Owner.mapToUIModel(): UserUIModel =
         dateOfBirth = date_of_birth?.toLocalDate(),
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )
 
 fun FeedItemsQuery.Recaster.mapToUIModel(): UserUIModel =
@@ -170,7 +192,9 @@ fun FeedItemsQuery.Recaster.mapToUIModel(): UserUIModel =
         dateOfBirth = date_of_birth?.toLocalDate(),
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )
 
 fun GetCommentsByPodcastsQuery.User.mapToUIModel(): UserUIModel =
@@ -183,7 +207,9 @@ fun GetCommentsByPodcastsQuery.User.mapToUIModel(): UserUIModel =
         dateOfBirth = date_of_birth?.toLocalDate(),
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )
 
 fun GetCommentsByPodcastsQuery.User1.mapToUIModel(): UserUIModel =
@@ -196,7 +222,9 @@ fun GetCommentsByPodcastsQuery.User1.mapToUIModel(): UserUIModel =
         dateOfBirth = date_of_birth?.toLocalDate(),
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )
 
 fun GetCommentsByIdQuery.User.mapToUIModel(): UserUIModel =
@@ -209,7 +237,9 @@ fun GetCommentsByIdQuery.User.mapToUIModel(): UserUIModel =
         dateOfBirth = date_of_birth?.toLocalDate(),
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )
 
 fun GetCommentsByIdQuery.User1.mapToUIModel(): UserUIModel =
@@ -222,7 +252,9 @@ fun GetCommentsByIdQuery.User1.mapToUIModel(): UserUIModel =
         dateOfBirth = date_of_birth?.toLocalDate(),
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )
 
 fun GetPodcastByIdQuery.Owner.mapToUIModel(): UserUIModel =
@@ -235,5 +267,7 @@ fun GetPodcastByIdQuery.Owner.mapToUIModel(): UserUIModel =
         dateOfBirth = date_of_birth?.toLocalDate(),
         areNotificationsEnabled = notifications_enabled, isActive = active,
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
-        sharingUrl = sharing_url
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration
     )

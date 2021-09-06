@@ -28,6 +28,8 @@ query GetFeaturedCasts($limit: Int!, $offset: Int!) {
             verified
             autoplay_enabled
             sharing_url
+            voice_bio_url
+            duration
         }
         title
         address

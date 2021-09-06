@@ -58,6 +58,17 @@ class PlayerBinder @Inject constructor(
         }
     }
 
+    fun getCurrentTrackDurationInMillis(): Long {
+        return audioService?.getDurationInMillis() ?: 0L
+    }
+
+    fun pauseIfPlaying(audioTrack: AudioService.AudioTrack) {
+        if (audioTrackIsNotPlaying(audioTrack)) {
+            return
+        }
+        pauseCurrentTrack()
+    }
+
     fun audioTrackIsNotPlaying(audioTrack: AudioService.AudioTrack): Boolean {
         return currentAudioTrack != audioTrack || playerStatus.value != PlayerStatus.Playing
     }

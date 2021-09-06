@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/m_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -197,6 +198,17 @@
                                 android:textSize="@dimen/textSizeTiny" />
 
                         </RelativeLayout>
+
+                        <com.limor.app.components.CommentAudioPlayerView
+                            android:id="@+id/audio_player"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="32dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="20dp"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/other_user_normal_layout"

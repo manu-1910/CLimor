@@ -632,6 +632,13 @@
     <string name="image_upload_failed_generic_message">Image upload Failed. Try again</string>
     <string name="image_processing_failed_generic_message">Processing the image failed, please try again.</string>
     <string name="could_not_update_profile">Could not update your profile. Please try again.</string>
+
+    <string name="recording_notification_title">Limor</string>
+    <string name="recording_notification_text">Limor is recording your voice</string>
+    <string name="voice_bio_label_no_bio">Record Voice Bio</string>
+    <string name="voice_bio_label_with_bio">Voice Bio</string>
+    <string name="voice_bio_upload_fail_message">Could not upload voice bio. Please try again.</string>
+
     <string name="could_not_convert_audio_message">Could not convert audio. Please try again later.</string>
     <string name="could_not_convert_audio">Could not convert audio. Please try again.</string>
     <string name="could_not_upload_audio_message">Could not upload audio. Please try again later.</string>
@@ -645,6 +652,7 @@
     <string name="time_ago__seconds_ago">%d seconds ago</string>
     <string name="view_all_comments_label">View all comments</string>
     <string name="view_all_n_comments__with_format">View all %d comments</string>
+
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
         <item quantity="other">%d Likes</item>

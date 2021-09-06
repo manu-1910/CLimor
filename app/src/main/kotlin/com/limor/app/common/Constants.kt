@@ -38,6 +38,8 @@ class Constants{
         const val AWS_FILE_PROFILE_IMAGE_IDENTIFIER = "user_avatar"
         const val AWS_FILE_PODCAST_IMAGE_IDENTIFIER = "podcast_image"
 
+        const val AWS_FOLDER_VOICE_BIO = "user_bio_direct_upload/"
+
         const val AWS_FOLDER_MESSAGE_ATTACHMENTS = "direct_message_attachment_upload/"
         const val AWS_FILE_MESSAGE_ATTACHMENT = "message_attachment"
         const val AWS_FOLDER_TIMELINE_MEDIA_ITEM = "timeline_media_items/"
@@ -52,6 +54,7 @@ class Constants{
         const val AUDIO_TYPE_PODCAST = 2
         const val AUDIO_TYPE_COMMENT = 3
         const val AUDIO_TYPE_ATTACHMENT = 6
+        const val AUDIO_TYPE_VOICE_BIO = 16
 
         const val MAX_API_COMMENTS_PER_COMMENT = 2
 

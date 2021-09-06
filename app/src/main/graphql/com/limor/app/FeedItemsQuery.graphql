@@ -30,6 +30,8 @@ query FeedItemsQuery($limit: Int!,$offset:Int!){
                 verified
                 autoplay_enabled
                 sharing_url
+                voice_bio_url
+                duration
             }
             title
             address
@@ -135,6 +137,8 @@ query FeedItemsQuery($limit: Int!,$offset:Int!){
             verified
             autoplay_enabled
             sharing_url
+            voice_bio_url
+            duration
         }
         recasted
         created_at

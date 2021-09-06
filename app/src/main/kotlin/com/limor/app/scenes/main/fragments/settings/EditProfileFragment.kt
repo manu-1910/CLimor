@@ -17,16 +17,15 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.signature.ObjectKey
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
-import com.google.android.material.snackbar.Snackbar
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.common.SessionManager
 import com.limor.app.databinding.FragmentEditProfileBinding
-import com.limor.app.extensions.showSnackbar
 import com.limor.app.scenes.main.viewmodels.UpdateUserViewModel
 import com.limor.app.scenes.utils.Commons
+import com.limor.app.scenes.utils.VoiceBioEvent
 import com.limor.app.uimodels.UIErrorResponse
 import com.limor.app.uimodels.UIUser
 import com.limor.app.uimodels.UserUIModel
@@ -39,7 +38,7 @@ import java.util.*
 import javax.inject.Inject
 
 
-class EditProfileFragment : BaseFragment() {
+class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
 
     private lateinit var currentUser: UIUserUpdateModel
 
@@ -56,12 +55,14 @@ class EditProfileFragment : BaseFragment() {
 
     private lateinit var binding: FragmentEditProfileBinding
     var app: App? = null
+    var voiceBioUploaded = false
     var profileImageUploaded = false
     var profileHasImage = false
     var profileImageUrlFinal = ""
     var tempPhotoPath = ""
     var user: UIUser? = null
-
+    var newBioPath: String? = null
+    var newBioDurationSeconds: Double? = null
 
     companion object {
         val TAG: String = EditProfileFragment::class.java.simpleName
@@ -103,7 +104,9 @@ class EditProfileFragment : BaseFragment() {
 
         model.userUpdatedResponse.observe(viewLifecycleOwner) {
             when (it) {
-                SettingsViewModel.USER_UPDATE_SUCCESS -> activity?.finish()
+                SettingsViewModel.USER_UPDATE_SUCCESS -> {
+                    SettingsActivity.finishWithResult(activity, true)
+                }
                 SettingsViewModel.USER_UPDATE_FAILURE -> {
                     reportError(R.string.could_not_update_profile)
                     hideLoading()
@@ -140,6 +143,40 @@ class EditProfileFragment : BaseFragment() {
         model.getUserInfo()
     }
 
+    private fun listenForVoiceBioEvents() {
+        binding.voiceBio.onVoiceBioEvents() {
+            when (it) {
+                is VoiceBioEvent.NewVoiceBio -> {
+                    newBioPath = it.path
+                    newBioDurationSeconds = it.durationSeconds
+
+                    ensureNullableVoiceBio()
+
+                    toggleVoiceLabel(it.path)
+                }
+                else -> {
+                    // Do nothing...
+                }
+            }
+        }
+    }
+
+    private fun ensureNullableVoiceBio() {
+        if (newBioPath == null) {
+            currentUser.voiceBioURL = null
+            currentUser.durationSeconds = null
+        }
+    }
+
+    private fun toggleVoiceLabel(source: String?) {
+        binding.tvRecordVoiceBio.setText(
+            if (source.isNullOrEmpty())
+                R.string.voice_bio_label_no_bio
+            else
+                R.string.voice_bio_label_with_bio
+        )
+    }
+
     private fun bindUserDataToViews() {
         currentUser.let {
             binding.etUsernameInner.setText(it.userName)
@@ -147,6 +184,11 @@ class EditProfileFragment : BaseFragment() {
             binding.etLastNameInner.setText(it.lastName)
             binding.etWebUrlInner.setText(it.website)
             binding.etBioInner.setText(it.bio)
+
+            binding.voiceBio.voiceBioAudioURL = it.voiceBioURL
+
+            toggleVoiceLabel(it.voiceBioURL)
+            listenForVoiceBioEvents()
 
             Glide.with(requireContext())
                 .load(it.imageURL)
@@ -170,13 +212,17 @@ class EditProfileFragment : BaseFragment() {
     }
 
     private fun callToApiUpdateUser() {
+        ensureNullableVoiceBio()
+
         model.updateUserInfo(
             binding.etUsernameInner.text.toString(),
             binding.etFirstNameInner.text.toString(),
             binding.etLastNameInner.text.toString(),
             binding.etBioInner.text.toString(),
             binding.etWebUrlInner.text.toString(),
-            currentUser.imageURL
+            currentUser.imageURL,
+            currentUser.voiceBioURL,
+            currentUser.durationSeconds
         )
     }
 
@@ -269,6 +315,19 @@ class EditProfileFragment : BaseFragment() {
         }
     }
 
+    private fun uploadVoiceBio() {
+        val path = newBioPath
+        if (path.isNullOrEmpty()) {
+            return
+        }
+
+        Commons.getInstance().uploadAudio(
+            context,
+            File(path),
+            Constants.AUDIO_TYPE_VOICE_BIO,
+            this
+        )
+    }
 
     private fun publishProfileImage() {
 
@@ -331,7 +390,10 @@ class EditProfileFragment : BaseFragment() {
             return
         }
         showLoading()
-        if (profileHasImage) {
+
+        if (!newBioPath.isNullOrBlank() && !voiceBioUploaded) {
+            uploadVoiceBio()
+        } else if (profileHasImage) {
             if (profileImageUploaded) {
                 profileImageUploaded = false
                 callToApiUpdateUser()
@@ -352,7 +414,9 @@ class EditProfileFragment : BaseFragment() {
         var lastName: String?,
         var bio: String?,
         var website: String?,
-        var imageURL: String?
+        var imageURL: String?,
+        var voiceBioURL: String?,
+        var durationSeconds: Double?
     ) {
         companion object {
             fun createFrom(it: UserUIModel): UIUserUpdateModel {
@@ -363,10 +427,30 @@ class EditProfileFragment : BaseFragment() {
                         user.lastName,
                         user.description,
                         user.website,
-                        user.imageLinks?.large
+                        user.imageLinks?.large,
+                        user.voiceBioURL,
+                        user.durationSeconds
                     )
                 }
             }
         }
+    }
+
+    override fun onSuccess(audioUrl: String?) {
+        // voice bio uploaded
+        currentUser.voiceBioURL = audioUrl
+        currentUser.durationSeconds = newBioDurationSeconds
+        voiceBioUploaded = true
+        readyToUpdate()
+    }
+
+    override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
+        // TODO show voice bio upload progress?
+    }
+
+    override fun onError(error: String?) {
+        Timber.d("Voice bio audio upload to AWS error: $error")
+        reportError(R.string.voice_bio_upload_fail_message)
+        hideLoading()
     }
 }

@@ -1,12 +1,14 @@
 mutation UpdateUserProfile($userName: String!, $firstName:String!,$lastName:String!,
-    $websiteUrl:String!,$bio:String!, $imageURL: String){
+    $websiteUrl:String!,$bio:String!, $imageURL: String, $voiceBioURL: String, $duration: Float){
     updateUser(user:{
         firstName:$firstName,
         lastName:$lastName,
         username:$userName,
         websiteURL:$websiteUrl
         bio:$bio,
-        imageURL:$imageURL
+        imageURL:$imageURL,
+        voiceBioURL:$voiceBioURL,
+        duration:$duration
     }){
         status,
         message

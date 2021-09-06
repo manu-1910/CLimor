@@ -138,13 +138,16 @@ class SettingsViewModel @Inject constructor(
         lastName: String,
         bio: String,
         website: String,
-        imageURL: String?
+        imageURL: String?,
+        voiceBioURL: String?,
+        durationSeconds: Double?
     ) {
         println("UPdating user image to $imageURL")
+        println("Updating user voice bio with duration of $durationSeconds at $voiceBioURL")
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    userInfoProvider.updateUserProfile(userName, firstName, lastName, bio, website, imageURL)
+                    userInfoProvider.updateUserProfile(userName, firstName, lastName, bio, website, imageURL, voiceBioURL, durationSeconds)
                 }
                 _userUpdatedResponse.postValue(USER_UPDATE_SUCCESS)
                 Timber.d("Updated UserInfo -> $response")

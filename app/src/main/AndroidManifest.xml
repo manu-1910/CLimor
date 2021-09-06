@@ -241,6 +241,10 @@
             android:name=".service.AudioService"
             android:exported="false" />
 
+        <service
+            android:name=".service.recording.RecordService"
+            android:exported="false" />
+
         <!--FCM-->
        <service
             android:name=".scenes.notifications.FirebaseMessenger"

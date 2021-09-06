@@ -26,5 +26,7 @@ query GetUserProfileByIdQuery($id: Int!){
         verified
         autoplay_enabled
         sharing_url
+        voice_bio_url
+        duration
     }
 }

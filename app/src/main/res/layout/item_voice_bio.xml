@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View"/>
+        <import type="com.limor.app.scenes.utils.voicebio.VoiceBioUiState" />
+        <import type="com.limor.app.scenes.utils.voicebio.VoiceBioPlayerState" />
+        <variable
+            name="presenter"
+            type="com.limor.app.scenes.utils.voicebio.VoiceBioPresenter" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/circle_button_size">
+
+        <ImageButton
+            android:id="@+id/btn_record_voice_bio"
+            android:layout_width="@dimen/circle_button_size"
+            android:layout_height="@dimen/circle_button_size"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_circle_yellow_ripple"
+            android:src="@drawable/record"
+            android:onClick="@{ () -> presenter.startRecording()}"
+            android:visibility="@{presenter.uiState == VoiceBioUiState.CanRecord ? View.VISIBLE : View.GONE }"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/layoutRecordingControls"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/circle_button_size"
+            android:visibility="@{presenter.uiState == VoiceBioUiState.CanRecordAndPlay ? View.VISIBLE : View.GONE }"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/btn_record"
+                android:layout_width="@dimen/circle_button_size"
+                android:layout_height="@dimen/circle_button_size"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/bg_circle_yellow_ripple"
+                android:foreground="?attr/selectableItemBackground"
+                android:padding="12dp"
+                android:scaleType="fitCenter"
+                android:visibility="@{presenter.playerState == VoiceBioPlayerState.Recording ? View.GONE : View.VISIBLE }"
+                android:src="@drawable/record"
+                android:tint="@color/black"
+                android:onClick="@{ () -> presenter.startRecording()}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <RelativeLayout
+                android:id="@+id/layoutPlayer"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/circle_button_size"
+                android:layout_weight="1"
+                android:background="@drawable/player_footer_bottom_shape"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnDeleteVoice"
+                app:layout_constraintStart_toEndOf="@+id/btnPodcastStartStopVoice">
+
+                <View
+                    android:id="@+id/positionIndicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/circle_button_size"
+                    android:background="#e5e9f0"
+                    app:audioPosition="@{presenter.audioPositionPercentage}"
+                    android:visibility="@{presenter.playerState == VoiceBioPlayerState.Playing ? View.VISIBLE : View.INVISIBLE }"
+                    />
+
+                <View
+                    android:id="@+id/horizontalLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="48dp"
+                    android:background="#dde2ea"
+                    android:visibility="@{presenter.playerState == VoiceBioPlayerState.Recording ? View.INVISIBLE : View.VISIBLE }"
+                    />
+
+                <LinearLayout
+                    android:id="@+id/llVoice"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/commentFooterHeight">
+
+                    <ImageButton
+                        android:id="@+id/btnStartPlay"
+                        android:layout_width="@dimen/small_circle_button_size"
+                        android:layout_height="@dimen/small_circle_button_size"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/player_footer_play_pause"
+                        android:padding="5dp"
+                        android:scaleType="fitCenter"
+                        android:src="@{presenter.playerState == VoiceBioPlayerState.Playing ? @drawable/ic_pause_comments : @drawable/ic_play_triangle }"
+                        android:visibility="@{presenter.playerState == VoiceBioPlayerState.Recording ? View.GONE : View.VISIBLE }"
+                        android:onClick="@{ () -> presenter.playStopRecord()}"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/btnPodcastStartVoiceComment" />
+
+                    <com.limor.app.scenes.utils.visualizer.RecordVisualizer
+                        android:id="@+id/visualizer"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/circle_button_size"
+                        android:layout_weight="1"
+                        app:approximateBarDuration="50"
+                        app:barWidth="1.3dp"
+                        app:drawStartPosition="1"
+                        app:drawTimeCodes="false"
+                        app:loadedBarPrimeColor="@color/waveFormColor"
+                        app:maxAmp="200"
+                        app:spaceBetweenBar="2dp"
+                        android:visibility="@{presenter.playerState == VoiceBioPlayerState.Recording ? View.VISIBLE : View.INVISIBLE }"
+                        app:timelineBackgroundColor="@android:color/transparent" />
+
+                    <TextView
+                        android:id="@+id/tvTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/player_footer_time_shape"
+                        android:paddingLeft="7dp"
+                        android:paddingTop="2dp"
+                        android:paddingRight="7dp"
+                        android:paddingBottom="2dp"
+                        android:textColor="@color/black"
+                        android:text="@{presenter.audioReadablePosition}"
+                        tools:text="0:10" />
+
+                </LinearLayout>
+
+
+                <ImageButton
+                    android:layout_width="@dimen/circle_button_size"
+                    android:layout_height="@dimen/circle_button_size"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/bg_circle_yellow_ripple"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:padding="12dp"
+                    android:scaleType="fitCenter"
+                    android:visibility="@{presenter.playerState == VoiceBioPlayerState.Recording ? View.VISIBLE : View.GONE }"
+                    android:src="@drawable/ic_stop"
+                    android:tint="@color/black"
+                    android:onClick="@{ () -> presenter.stopRecording()}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+            </RelativeLayout>
+
+
+            <ImageButton
+                android:id="@+id/btnDeleteVoice"
+                android:layout_width="@dimen/circle_button_size"
+                android:layout_height="@dimen/circle_button_size"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/player_footer_bottom_shape"
+                android:onClick="@{ () -> presenter.deleteRecord()}"
+                android:padding="12dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_delete" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

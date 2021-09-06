@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
@@ -23,11 +24,14 @@ import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.fragments.profile.adapters.ProfileViewPagerAdapter
-import com.limor.app.scenes.main.fragments.settings.SettingsActivity
+import com.limor.app.scenes.main.fragments.settings.OpenSettings
 import com.limor.app.scenes.main_new.MainActivityNew
 import com.limor.app.scenes.profile.DialogUserProfileActions
+import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.UserUIModel
 import kotlinx.coroutines.launch
+import org.jetbrains.anko.support.v4.startActivityForResult
+import java.time.Duration
 import javax.inject.Inject
 
 class UserProfileFragment : FragmentWithLoading(), Injectable {
@@ -54,6 +58,11 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     }
     private var selectedTab: Tab = Tab.CASTS
     private var currentUserId: Int? = null
+    private val openSettings = registerForActivityResult(OpenSettings()) { settingsHaveChanged ->
+        if (settingsHaveChanged) {
+            loadUserData()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -201,7 +210,8 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
     private fun handleOptionsClick() {
         if (isSignedInUser) {
-            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+            openSettings.launch(null)
+
         } else if (::user.isInitialized){
             //Show Other user actions dialog
             val bundle = bundleOf(
@@ -315,13 +325,30 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         binding.profileLink.text = it.website
         binding.profileFollowers.text = "${it.followersCount}"
         binding.profileFollowing.text = "${it.followingCount}"
-        Glide.with(requireContext()).load(it.imageLinks?.small)
+
+        val url = it.voiceBioURL
+
+        if (url.isNullOrEmpty()) {
+            binding.audioPlayer.visibility = View.GONE
+        } else {
+            val durationMillis = ((it.durationSeconds ?: 0.0) * 1000.0).toLong()
+            binding.audioPlayer.initialize(
+                AudioCommentUIModel(
+                    url = url,
+                    duration = Duration.ofMillis(durationMillis)
+                )
+            )
+            binding.audioPlayer.visibility = View.VISIBLE
+        }
+
+        Glide.with(requireContext())
+            .load(it.imageLinks?.small)
             .placeholder(R.mipmap.ic_launcher_round)
             .error(R.mipmap.ic_launcher_round)
             .apply(RequestOptions.circleCropTransform())
             .into(binding.profileDp)
-        switchCommonVisibility()
 
+        switchCommonVisibility()
     }
 
     private fun getIntentUserId(): Int {
