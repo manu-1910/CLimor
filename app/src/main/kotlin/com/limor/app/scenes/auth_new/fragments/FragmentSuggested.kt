@@ -79,12 +79,6 @@ class FragmentSuggested : FragmentWithLoading() {
     }
 
     private fun buildList(users: List<SuggestedUser>) {
-        val layoutManager = object : GridLayoutManager(requireContext(), 3) {
-            override fun canScrollVertically(): Boolean {
-                return true
-            }
-        }
-        rvSuggestedUsers.layoutManager = layoutManager
         rvSuggestedUsers.adapter = object : SuggestedPeopleAdapter(users) {
             override fun onSuggestedFollowClicked(user: SuggestedUser) {
                 model.followSuggestedUser(user)
