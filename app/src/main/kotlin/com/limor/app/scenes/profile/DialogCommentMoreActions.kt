@@ -20,6 +20,7 @@ import com.limor.app.databinding.DialogOtherUserActionsBinding
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileViewModel
 import com.limor.app.scenes.main.fragments.settings.SettingsActivity
+import com.limor.app.scenes.main.viewmodels.CommentActionType
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main.viewmodels.HandleCommentActionsViewModel
 import com.limor.app.scenes.main_new.fragments.DialogPodcastReportP2
@@ -90,6 +91,7 @@ class DialogCommentMoreActions : DialogFragment() {
         binding.btnCancel.setOnClickListener { this.dismiss() }
 
         binding.btnEditComment.setOnClickListener {
+            model.commentAction(args, CommentActionType.Edit)
             this.dismiss()
         }
 

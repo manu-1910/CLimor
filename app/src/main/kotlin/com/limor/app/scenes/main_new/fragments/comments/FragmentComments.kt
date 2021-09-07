@@ -61,13 +61,14 @@ class FragmentComments : UserMentionFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCommentsBinding.inflate(inflater, container, false)
-        commentsViewModel.loadComments(cast.id)
+        reload()
         cast.owner?.id?.let {
             castOwnerId = it
         }
         getCurrentUser()
         initViews()
         subscribeForComments()
+        subscribeCommons()
         return binding.root
     }
 
@@ -101,16 +102,8 @@ class FragmentComments : UserMentionFragment() {
                     if (it.filePath != null) {
                         uploadWithAudio(it, cast.id, cast.id, CommentUIModel.OWNER_TYPE_PODCAST)
 
-//                        uploadVoiceComment(it.filePath) { audioUrl ->
-//                            commentsViewModel.addComment(
-//                                cast.id,
-//                                content = it.text,
-//                                ownerId = cast.id,
-//                                ownerType = CommentUIModel.OWNER_TYPE_PODCAST,
-//                                audioURI = audioUrl,
-//                                duration = it.duration
-//                            )
-//                        }
+                    } else if (it.existingComment != null) {
+                        commentsViewModel.updateComment(it.existingComment.id, it.text)
 
                     } else {
                         commentsViewModel.addComment(
@@ -168,8 +161,12 @@ class FragmentComments : UserMentionFragment() {
         }
 
         actionsViewModel.actionComment.observe(viewLifecycleOwner) { commentAction ->
-            when(commentAction.type) {
-                CommentActionType.Edit -> editComment(commentAction.comment)
+            val ca = commentAction ?: return@observe
+            when(ca.type) {
+                CommentActionType.Edit -> editComment(ca.comment)
+                else -> {
+
+                }
             }
         }
 
@@ -191,14 +188,6 @@ class FragmentComments : UserMentionFragment() {
             }
 
         })
-    }
-
-    private fun editComment(comment: CommentUIModel) {
-        binding.taviVoice.edit(comment)
-    }
-
-    private fun commentIsEditable(comment: CommentUIModel): Boolean {
-        return isOwnerOf(comment) && comment.type == "text"
     }
 
     private fun handleThreeDotsClick(comment: CommentUIModel, cast: CastUIModel,item: CommentParentItem,section: ParentCommentSection) {
@@ -229,7 +218,8 @@ class FragmentComments : UserMentionFragment() {
             val bundle = bundleOf(
                 DialogCommentMoreActions.COMMENT_KEY to comment,
                 DialogCommentMoreActions.FROM to "comment",
-                DialogCommentMoreActions.ITEM to "child"
+                DialogCommentMoreActions.ITEM to "child",
+                DialogCommentMoreActions.KEY_CAN_EDIT_COMMENT to commentIsEditable(comment)
             )
             findNavController().navigate(R.id.dialogCommentMoreActions, bundle)
         }
@@ -237,11 +227,6 @@ class FragmentComments : UserMentionFragment() {
 
     private fun isOwnerOf(cast: CastUIModel): Boolean {
         return cast.owner?.id == PrefsHandler.getCurrentUserId(requireContext())
-    }
-
-    private fun isOwnerOf(comment: CommentUIModel): Boolean {
-        Timber.d("${comment.user?.id}  -- ${PrefsHandler.getCurrentUserId(requireContext())}")
-        return comment.user?.id == PrefsHandler.getCurrentUserId(requireContext())
     }
 
     private fun goToReplies(

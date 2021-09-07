@@ -19,12 +19,15 @@ import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.extensions.*
+import com.limor.app.scenes.main_new.fragments.mentions.UserMentionPopup
 import com.limor.app.scenes.utils.voicePlayer.LimorMediaPlayer
 import com.limor.app.scenes.utils.voicebio.VoiceBioPresenter
 import com.limor.app.service.recording.CompressedAudioRecorder
 import com.limor.app.service.recording.RecorderCallback
+import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.util.hasRecordPermissions
 import kotlinx.android.synthetic.main.item_input_with_audio.view.*
+import org.jetbrains.anko.appcompat.v7.tintedImageView
 import kotlin.math.min
 import java.io.File
 import java.util.*
@@ -44,7 +47,7 @@ object PauseRecord : InputStatus()
 
 object MissingPermissions: InputStatus()
 
-class SendData(val text: String, val filePath: String?, val duration: Int) : InputStatus()
+class SendData(val text: String, val filePath: String?, val duration: Int, val existingComment: CommentUIModel?) : InputStatus()
 
 class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     context: Context,
@@ -75,6 +78,8 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     private var currentDuration = 0L
 
     lateinit var editText: EditText
+
+    private var editingComment: CommentUIModel? = null
 
     private val mediaPlayer: LimorMediaPlayer by lazy {
         val mp = LimorMediaPlayer()
@@ -135,13 +140,18 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
                 return@allChildren
             }
             it.isEnabled = enable
-            it.alpha = if (enable) 1.0f else 0.2f
+            it.alpha = if (enable) 1.0f else disabledAlpha
         }
     }
 
     private fun sendComment() {
         enableChildren(false)
-        status = SendData(comment_text.text.toString(), filePath, durationMillis)
+        status = SendData(
+            text = comment_text.text.toString(),
+            filePath = filePath,
+            duration = durationMillis,
+            existingComment = editingComment
+        )
         pausePlayer()
     }
 
@@ -151,6 +161,9 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         filePath = null
         updateSendButtonState()
         enableChildren(true)
+        editingComment = null
+
+        toggleRecordButton(true)
     }
 
     private fun initView() {
@@ -434,7 +447,31 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         super.onDetachedFromWindow()
     }
 
+    fun toggleRecordButton(enabled: Boolean) {
+        btnPodcastStartVoiceComment.isEnabled = enabled
+        btnPodcastStartVoiceComment.alpha = if (enabled) 1.0f else disabledAlpha
+    }
+
+    fun edit(comment: CommentUIModel) {
+        this.editingComment = comment
+        setRecording(false)
+        deleteLastFile()
+        status = None
+
+        toggleRecordButton(false)
+
+        editText.apply {
+            val newText= comment.content ?: ""
+            setText(newText)
+            highlight(UserMentionPopup.userMentionPattern, R.color.waveFormColor)
+            setSelection(newText.length)
+            requestFocus()
+            showKeyboard()
+        }
+    }
+
     companion object {
         const val maxVoiceCommentDurationMillis = 3 * 60 * 1000
+        const val disabledAlpha = 0.2f
     }
 }

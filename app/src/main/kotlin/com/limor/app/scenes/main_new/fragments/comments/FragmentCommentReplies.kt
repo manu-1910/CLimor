@@ -18,6 +18,7 @@ import com.limor.app.extensions.showKeyboard
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main.viewmodels.CommentActionType
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main.viewmodels.HandleCommentActionsViewModel
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentChildItem
@@ -91,6 +92,7 @@ class FragmentCommentReplies : UserMentionFragment() {
         getCurrentUser()
         initViews()
         subscribeForComments()
+        subscribeCommons()
         return binding.root
     }
 
@@ -127,16 +129,10 @@ class FragmentCommentReplies : UserMentionFragment() {
                 is SendData -> {
                     if (it.filePath != null) {
                         uploadWithAudio(it, castId, parentCommentId, CommentUIModel.OWNER_TYPE_COMMENT)
-//                        uploadVoiceComment(it.filePath) { audioUrl ->
-//                            commentsViewModel.addComment(
-//                                castId,
-//                                it.text,
-//                                ownerId = parentCommentId,
-//                                ownerType = CommentUIModel.OWNER_TYPE_COMMENT,
-//                                audioURI = audioUrl,
-//                                duration = it.duration
-//                            )
-//                        }
+
+                    } else if (it.existingComment != null) {
+                        commentsViewModel.updateComment(it.existingComment.id, it.text)
+
                     } else {
                         commentsViewModel.addComment(
                             castId,
@@ -241,8 +237,19 @@ class FragmentCommentReplies : UserMentionFragment() {
                     viewModel.deleteComment(comment)
                 }
             }
-
         })
+
+        actionsViewModel.actionComment.observe(viewLifecycleOwner) { commentAction ->
+            val ca = commentAction ?: return@observe
+            when(ca.type) {
+                CommentActionType.Edit -> editComment(ca.comment)
+                else -> {
+
+                }
+            }
+        }
+
+
         actionsViewModel.actionDeleteParentReply.observe(viewLifecycleOwner, { comment ->
             if (::itemParentComment.isInitialized) {
                 /*val pos = adapter.getAdapterPosition(itemParentComment)
@@ -283,7 +290,8 @@ class FragmentCommentReplies : UserMentionFragment() {
             val bundle = bundleOf(
                 DialogCommentMoreActions.COMMENT_KEY to comment,
                 DialogCommentMoreActions.FROM to "reply",
-                DialogCommentMoreActions.ITEM to "parent"
+                DialogCommentMoreActions.ITEM to "parent",
+                DialogCommentMoreActions.KEY_CAN_EDIT_COMMENT to commentIsEditable(comment)
             )
 
             itemParentComment = item
@@ -303,7 +311,8 @@ class FragmentCommentReplies : UserMentionFragment() {
             val bundle = bundleOf(
                 DialogCommentMoreActions.COMMENT_KEY to comment,
                 DialogCommentMoreActions.FROM to "reply",
-                DialogCommentMoreActions.ITEM to "child"
+                DialogCommentMoreActions.ITEM to "child",
+                DialogCommentMoreActions.KEY_CAN_EDIT_COMMENT to commentIsEditable(comment)
             )
             itemChildComment = item
 
@@ -315,9 +324,6 @@ class FragmentCommentReplies : UserMentionFragment() {
         return cast.owner?.id == PrefsHandler.getCurrentUserId(requireContext())
     }
 
-    private fun isOwnerOf(comment: CommentUIModel): Boolean {
-        return comment.user?.id == PrefsHandler.getCurrentUserId(requireContext())
-    }
 
     override fun onDestroyView() {
         _binding = null

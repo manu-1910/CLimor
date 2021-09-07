@@ -1,0 +1,6 @@
+mutation UpdateCommentMutation($id: Int!, $content: String!) {
+    updateComment(commentId: $id, content: $content){
+        id
+        content
+    }
+}

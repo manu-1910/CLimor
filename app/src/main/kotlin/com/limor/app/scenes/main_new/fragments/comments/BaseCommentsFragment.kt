@@ -9,6 +9,7 @@ import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main_new.fragments.mentions.UserMentionPopup
 import com.limor.app.scenes.main_new.view_model.UserMentionViewModel
@@ -17,6 +18,7 @@ import com.limor.app.scenes.utils.SendData
 import com.limor.app.scenes.utils.TextAndVoiceInput
 import com.limor.app.service.VoiceUploadCompletion
 import com.limor.app.service.VoiceUploadProgress
+import com.limor.app.uimodels.CommentUIModel
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
@@ -46,6 +48,28 @@ abstract class UserMentionFragment : BaseFragment(), UserMentionPopup.UserMentio
     }
 
     abstract fun reload()
+
+    protected fun subscribeCommons() {
+        commentsViewModel.reload.observe(viewLifecycleOwner) {
+            reload()
+            textAndVoiceInput?.reset()
+        }
+    }
+
+    protected fun commentIsEditable(comment: CommentUIModel): Boolean {
+        return isOwnerOf(comment) && comment.type == "text"
+    }
+
+    protected fun isOwnerOf(comment: CommentUIModel): Boolean {
+        if (BuildConfig.DEBUG) {
+            Timber.d("${comment.user?.id}  -- ${PrefsHandler.getCurrentUserId(requireContext())}")
+        }
+        return comment.user?.id == PrefsHandler.getCurrentUserId(requireContext())
+    }
+
+    protected fun editComment(comment: CommentUIModel) {
+        textAndVoiceInput?.edit(comment)
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     open fun onMessageEvent(uploadProgress: VoiceUploadProgress) {

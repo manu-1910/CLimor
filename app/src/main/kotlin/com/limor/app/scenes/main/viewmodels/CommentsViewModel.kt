@@ -20,6 +20,7 @@ class CommentsViewModel @Inject constructor(
     private val getCommentByIdUseCase: GetCommentByIdUseCase,
     private val likeCommentUseCase: LikeCommentUseCase,
     private val deleteCommentUseCase: DeleteCommentUseCaseNew,
+    private val updateCommentUseCase: UpdateCommentUseCase,
     private val application: Application
 ) : ViewModel() {
 
@@ -31,6 +32,9 @@ class CommentsViewModel @Inject constructor(
 
     private val _comment = MutableLiveData<CommentUIModel?>()
     val comment: LiveData<CommentUIModel?> get() = _comment
+
+    private val _reload = MutableLiveData<Boolean>(false)
+    val reload get() = _reload
 
     fun uploadVoiceComment(inputStatus: SendData, podcastId: Int, ownerId: Int, ownerType: String) {
 
@@ -110,6 +114,17 @@ class CommentsViewModel @Inject constructor(
             }catch (ex:Exception){
                 Timber.e(ex, "Error while deleting comment with id = ${comment.id}")
             }
+        }
+    }
+
+    fun updateComment(id: Int, text: String) {
+        viewModelScope.launch {
+            try{
+                updateCommentUseCase.execute(id, text)
+            }catch (ex:Exception){
+                Timber.e(ex, "Error while updating comment with id = $id")
+            }
+            reload.postValue(true)
         }
     }
 }
