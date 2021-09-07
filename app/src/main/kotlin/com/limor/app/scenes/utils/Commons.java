@@ -1,5 +1,6 @@
 package com.limor.app.scenes.utils;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -152,6 +153,15 @@ public class Commons {
 
     public static int dpToPx(Context context, int dps) {
         return (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dps, context.getResources().getDisplayMetrics()));
+    }
+
+    @SuppressLint("DefaultLocale")
+    public static String getLengthFromEpochForHourPlayer(long millis) {
+        return String.format("%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(millis),
+                TimeUnit.MILLISECONDS.toMinutes(millis) % TimeUnit.HOURS.toMinutes(1),
+                TimeUnit.MILLISECONDS.toSeconds(millis) % TimeUnit.MINUTES.toSeconds(1)
+        );
     }
 
     public static String getLengthFromEpochForPlayer(long millis) {

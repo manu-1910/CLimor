@@ -352,7 +352,7 @@ class RecordFragment : BaseFragment() {
 
     private fun updatePlayBackLabel(playBack: Long) {
         playBackTime = playBack
-        textPlaybackTime.text = Commons.getLengthFromEpochForPlayer(playBackTime)
+        textPlaybackTime.text = Commons.getLengthFromEpochForHourPlayer(playBackTime)
     }
 
     private fun setPlayPauseButtonState(isPlaying: Boolean) {
@@ -999,6 +999,22 @@ class RecordFragment : BaseFragment() {
     }
 
     private fun initGui() {
+
+        val oneHour = 3600000L
+        c_meter.apply {
+            format = "00:00:00"
+            base = 0
+            stop()
+            setOnChronometerTickListener {  c ->
+                val elapsedMillis = SystemClock.elapsedRealtime() - c.base
+                if (elapsedMillis > oneHour) {
+                    c.format = "0%s"
+                } else {
+                    c.format = "00:%s"
+                }
+            }
+        }
+
         configureToolbar()
         // Disable next button
         nextButton.isEnabled = false
@@ -1017,17 +1033,6 @@ class RecordFragment : BaseFragment() {
                 runOnUiThread {
                     recordVisualizer?.addAmp(it, mRecorder!!.tickDuration)
                 }
-            } else if (BuildConfig.DEBUG){
-                // This is strictly for debugging should be removed in production, the whole
-                // else if part
-                // XXX
-                /*runOnUiThread {
-                    var reason = if (isRecording) "" else "not recording, "
-                    if (null == recordVisualizer) {
-                        reason += "no view ref"
-                    }
-                    nextButton.text = reason
-                }*/
             }
         }
 
