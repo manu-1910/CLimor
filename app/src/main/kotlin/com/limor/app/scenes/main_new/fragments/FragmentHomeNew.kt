@@ -106,6 +106,14 @@ class FragmentHomeNew : BaseFragment() {
     private fun onLoadCasts(casts: List<CastUIModel>) {
         if (castOffset == 0) {
             currentCasts.clear()
+            when {
+                casts.isEmpty() -> {
+                    binding.noFeedLayout.visibility = View.VISIBLE
+                }
+                else -> {
+                    binding.noFeedLayout.visibility = View.GONE
+                }
+            }
         }
 
         currentCasts.addAll(casts)

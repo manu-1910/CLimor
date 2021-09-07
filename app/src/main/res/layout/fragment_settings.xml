@@ -251,7 +251,7 @@
                     android:textColor="@color/black"
                     android:textSize="@dimen/textSize16"
                     android:fontFamily="@font/roboto_medium"
-                    android:text="@string/settings_report_a_problem"
+                    android:text="@string/contact_us"
                     android:layout_alignParentStart="true"
                     app:drawableEndCompat="@drawable/ic_rigth_arrow" />
 

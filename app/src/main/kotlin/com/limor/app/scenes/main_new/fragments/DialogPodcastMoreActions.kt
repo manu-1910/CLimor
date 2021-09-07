@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.limor.app.R
 import com.limor.app.apollo.CastsRepository
 import com.limor.app.apollo.UserRepository
 import com.limor.app.databinding.DialogPodcastMoreActionsBinding
@@ -25,6 +26,9 @@ import com.limor.app.scenes.profile.DialogUserReport
 import com.limor.app.uimodels.CastUIModel
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.coroutines.launch
+import org.jetbrains.anko.cancelButton
+import org.jetbrains.anko.okButton
+import org.jetbrains.anko.support.v4.alert
 import javax.inject.Inject
 
 class DialogPodcastMoreActions : DialogFragment() {
@@ -63,7 +67,6 @@ class DialogPodcastMoreActions : DialogFragment() {
     private fun setViewsVisibility() {
         lifecycleScope.launchWhenCreated {
             val currentUserId = JwtChecker.getUserIdFromJwt()
-
             binding.loadingBar.makeGone()
             binding.visibilityGroup.makeVisible()
             if(cast.recaster == null){
@@ -101,16 +104,28 @@ class DialogPodcastMoreActions : DialogFragment() {
             dismiss()
         }
         binding.btnDeleteCast.setOnClickListener {
-            podcastViewModel.deleteCastById(cast.id)
-            findNavController().previousBackStackEntry?.savedStateHandle?.set("reload_feed", true)
-            dismiss()
+            alert(getString(R.string.confirmation_delete_podcast)) {
+                okButton {
+                    podcastViewModel.deleteCastById(cast.id)
+                    findNavController().previousBackStackEntry?.savedStateHandle?.set("reload_feed", true)
+                    dismiss()
+                }
+                cancelButton {  }
+            }.show()
+
         }
 
         binding.btnBlockUser.setOnClickListener {
-            cast.owner?.id?.let {
-                podcastViewModel.blockUser(it)
-                findNavController().previousBackStackEntry?.savedStateHandle?.set("reload_feed", false)
-                dismiss()
+            cast.owner?.id?.let { id ->
+                alert(getString(R.string.confirmation_block_user)) {
+                    okButton {
+                        podcastViewModel.blockUser(id)
+                        findNavController().previousBackStackEntry?.savedStateHandle?.set("reload_feed", false)
+                        dismiss()
+                    }
+                    cancelButton {  }
+                }.show()
+
             }
 
         }

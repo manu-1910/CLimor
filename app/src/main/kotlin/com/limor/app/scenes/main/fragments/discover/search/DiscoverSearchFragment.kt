@@ -103,7 +103,7 @@ class DiscoverSearchFragment : BaseFragment() {
     private fun performSearch(query: String) {
         if (query.isBlank()) {
             resultAdapter.clear()
-        } else {
+        } else if(query.length>2){
             viewModel.search(query, selectedTab)
         }
     }

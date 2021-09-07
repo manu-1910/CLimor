@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main_new.fragments.comments.list.item
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.text.SpannableString
@@ -14,11 +15,14 @@ import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.ItemParentCommentBinding
 import com.limor.app.extensions.*
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.utils.DateUiUtil
 import com.limor.app.uimodels.CommentUIModel
 import com.xwray.groupie.viewbinding.BindableItem
+import timber.log.Timber
 
 class CommentParentItem(
+    val castOwnerId: Int,
     val comment: CommentUIModel,
     val onReplyClick: (parentComment: CommentUIModel) -> Unit,
     val onThreeDotsClick: (parentComment: CommentUIModel,item: CommentParentItem) -> Unit,
@@ -46,6 +50,8 @@ class CommentParentItem(
         comment.user?.imageLinks?.small?.let {
             viewBinding.ivCommentAvatar.loadCircleImage(it)
         }
+        viewBinding.tvCastCreator.text = if (isOwnerOf(castOwnerId,comment)) "• Cast Creator" else ""
+
         viewBinding.replyBtn.setOnClickListener {
             onReplyClick(comment)
         }
@@ -115,7 +121,7 @@ class CommentParentItem(
                 if (it > 0) {
                     likesCount.visibility = View.VISIBLE
                 } else {
-                    likesCount.visibility = View.INVISIBLE
+                    likesCount.visibility = View.GONE
                 }
             }
             likesCount.text = root.context.resources.getQuantityString(
@@ -138,7 +144,7 @@ class CommentParentItem(
                 if (newLikesCount > 0) {
                     likesCount.visibility = View.VISIBLE
                 } else {
-                    likesCount.visibility = View.INVISIBLE
+                    likesCount.visibility = View.GONE
                 }
 
                 likesCount.text = root.context.resources.getQuantityString(
@@ -154,4 +160,9 @@ class CommentParentItem(
 
     override fun getLayout() = R.layout.item_parent_comment
     override fun initializeViewBinding(view: View) = ItemParentCommentBinding.bind(view)
+
+    private fun isOwnerOf(id: Int, comment: CommentUIModel): Boolean {
+        Timber.d("Owner Comment $id-> ${comment.user?.id}")
+        return id == comment.user?.id
+    }
 }

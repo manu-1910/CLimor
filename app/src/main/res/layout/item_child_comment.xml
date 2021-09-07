@@ -36,16 +36,32 @@
 
     <TextView
         android:id="@+id/tvCommentDate"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginEnd="4dp"
         android:textColor="@color/subtitle_text_color"
         android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@id/tvCastCreator"
         app:layout_constraintBottom_toBottomOf="@id/ivCommentAvatar"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/ivCommentAvatar"
         app:layout_constraintTop_toBottomOf="@id/tvCommentName"
         tools:text="2 days ago" />
+
+    <TextView
+        android:visibility="visible"
+        android:id="@+id/tvCastCreator"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:textColor="@color/blue400"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/ivCommentAvatar"
+        app:layout_constraintEnd_toStartOf="@+id/btnCommentMore"
+        app:layout_constraintStart_toEndOf="@id/tvCommentDate"
+        app:layout_constraintTop_toBottomOf="@id/tvCommentName"
+        tools:text="" />
 
     <TextView
         android:id="@+id/tvCommentContent"
@@ -90,13 +106,27 @@
         android:id="@+id/likes_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
         android:fontFamily="@font/roboto_medium"
         android:textColor="@color/textSecondary"
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/audio_player"
         app:layout_constraintStart_toStartOf="@+id/tvCommentContent"
-        app:layout_constraintTop_toBottomOf="@+id/audio_player"
-        app:layout_goneMarginTop="12dp"
+        app:layout_goneMarginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="0dp"
         tools:text="1 Like" />
+
+    <TextView
+        android:id="@+id/reply_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_medium"
+        android:text="@string/reply"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintTop_toBottomOf="@id/audio_player"
+        app:layout_constraintStart_toEndOf="@id/likes_count"
+        app:layout_goneMarginTop="16dp" />
 
     <ImageButton
         android:id="@+id/btnCommentMore"
@@ -112,18 +142,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/reply_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="12dp"
-        android:fontFamily="@font/roboto_medium"
-        android:text="@string/reply"
-        android:textColor="@color/colorAccent"
-        android:textSize="14sp"
-        app:layout_constraintStart_toEndOf="@+id/likes_count"
-        app:layout_constraintTop_toBottomOf="@+id/audio_player"
-        app:layout_goneMarginTop="12dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

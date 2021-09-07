@@ -14,6 +14,7 @@ import com.limor.app.FollowersQuery
 import com.limor.app.R
 import com.limor.app.databinding.ItemUserFollowersBinding
 import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.utils.CommonsKt
 import kotlinx.coroutines.*
@@ -33,6 +34,10 @@ class UserFollowersViewHolder(
     fun bind(currentItem: FollowersQuery.GetFollower, position: Int) {
 
         Timber.d("Follower -> " + currentItem.followed)
+        btnFollow.visibility = if (signedInUserWith(currentItem.id,binding.root.context)) View.GONE else View.VISIBLE
+        btnFollow.onClick {
+            listener.onFollowClicked(currentItem, position)
+        }
         if (currentItem.followed!!) {
             CommonsKt.setButtonFollowerStylePressed(
                 btnFollow,
@@ -49,40 +54,11 @@ class UserFollowersViewHolder(
             )
         }
 
-        CoroutineScope(Dispatchers.Main).launch{
-            val userId = withContext(Dispatchers.IO){
-                JwtChecker.getUserIdFromJwt()
-            }
-            if(currentItem.id == userId){
-                btnFollow.visibility = View.GONE
-            }else{
-                btnFollow.visibility = View.VISIBLE
-            }
-        }
 
 
 
-        btnFollow.onClick {
 
-            /*if (currentItem.followed) {
-                CommonsKt.setButtonFollowerStylePressed(
-                    btnFollow,
-                    false,
-                    R.string.follow,
-                    R.string.following
-                )
-            } else {
-                CommonsKt.setButtonFollowerStylePressed(
-                    btnFollow,
-                    true,
-                    R.string.follow,
-                    R.string.following
-                )
 
-            }*/
-
-            listener.onFollowClicked(currentItem, position)
-        }
         val firstName = currentItem.first_name
         val lastName = currentItem.last_name
        val fullname = binding.root.context.getString(R.string.user_fullname, firstName, lastName)
@@ -107,6 +83,10 @@ class UserFollowersViewHolder(
             .into(binding.ivUser)
         ivUser.onClick { listener.onUserClicked(currentItem, position) }
 
+    }
+
+    private fun signedInUserWith(id: Int?, context: Context): Boolean {
+        return id == PrefsHandler.getCurrentUserId(context)
     }
 
 }

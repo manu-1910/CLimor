@@ -14,7 +14,8 @@ class HashtagSearchItem(
 ) : BindableItem<ItemDiscoverSearchHashtagBinding>() {
 
     override fun bind(viewBinding: ItemDiscoverSearchHashtagBinding, position: Int) {
-        viewBinding.hashtagName.text = hashtag.tag
+        val tagText = "#${hashtag.tag}"
+        viewBinding.hashtagName.text = tagText
         viewBinding.castCount.text = String.format("%d Casts", hashtag.count)
         viewBinding.root.setOnClickListener {
             it.findNavController()

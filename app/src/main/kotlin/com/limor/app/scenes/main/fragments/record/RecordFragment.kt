@@ -1020,15 +1020,14 @@ class RecordFragment : BaseFragment() {
             } else if (BuildConfig.DEBUG){
                 // This is strictly for debugging should be removed in production, the whole
                 // else if part
-                // TODO
                 // XXX
-                runOnUiThread {
+                /*runOnUiThread {
                     var reason = if (isRecording) "" else "not recording, "
                     if (null == recordVisualizer) {
                         reason += "no view ref"
                     }
                     nextButton.text = reason
-                }
+                }*/
             }
         }
 

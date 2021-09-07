@@ -58,6 +58,7 @@ class FragmentComments : UserMentionFragment() {
     private var _binding: FragmentCommentsBinding? = null
     private val binding get() = _binding!!
     private val adapter = GroupieAdapter()
+    private var castOwnerId = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,6 +67,9 @@ class FragmentComments : UserMentionFragment() {
     ): View {
         _binding = FragmentCommentsBinding.inflate(inflater, container, false)
         commentsViewModel.loadComments(cast.id)
+        cast.owner?.id?.let {
+            castOwnerId = it
+        }
         getCurrentUser()
         initViews()
         subscribeForComments()
@@ -131,6 +135,7 @@ class FragmentComments : UserMentionFragment() {
             adapter.update(
                 comments.map { it ->
                     ParentCommentSection(
+                        castOwnerId,
                         comment = it,
                         onReplyClick = { parentComment, replyToComment ->
                             goToReplies(parentComment, replyToComment)

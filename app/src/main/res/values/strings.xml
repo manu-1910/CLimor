@@ -356,9 +356,9 @@
     <string name="title_personal_information">PERSONAL INFORMATION</string>
     <string name="title_under_record">Record your voice bio. (Max 1 min)</string>
     <string name="hint_fullname">Full Name</string>
-    <string name="hint_firstname">First Name</string>
-    <string name="hint_lastname">Last Name</string>
-    <string name="hint_username">Username</string>
+    <string name="hint_firstname">First Name*</string>
+    <string name="hint_lastname">Last Name*</string>
+    <string name="hint_username">Username*</string>
     <string name="hint_website">Website</string>
     <string name="hint_bio">Bio</string>
     <string name="hint_email">Email</string>
@@ -653,6 +653,9 @@
     <string name="view_all_comments_label">View all comments</string>
     <string name="view_all_n_comments__with_format">View all %d comments</string>
 
+    <string name="contact_us">Contact Us</string>
+    <string name="required">*Required</string>
+    <string name="limor_no_feed_text">Please follow some of the fantastic casters on our platform or publish a cast  to populate this feed</string>
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
         <item quantity="other">%d Likes</item>

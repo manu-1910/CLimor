@@ -379,14 +379,17 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
 
         if(binding.etFirstNameInner.text.isNullOrEmpty()){
             binding.etFirstNameInner.error = "Required"
+            binding.etFirstNameInner.requestFocus()
             return
         }
         if(binding.etLastNameInner.text.isNullOrEmpty()){
             binding.etLastNameInner.error = "Required"
+            binding.etLastNameInner.requestFocus()
             return
         }
         if(binding.etUsernameInner.text.isNullOrEmpty()){
             binding.etUsernameInner.error = "Required"
+            binding.etUsernameInner.requestFocus()
             return
         }
         showLoading()

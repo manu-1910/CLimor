@@ -15,6 +15,7 @@ import com.limor.app.FriendsQuery
 import com.limor.app.R
 import com.limor.app.databinding.ItemUserFollowersBinding
 import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.utils.CommonsKt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,12 @@ class UserFollowingsViewHolder(
 
     fun bind(currentItem: FriendsQuery.GetFriend, position: Int) {
 
+        btnFollow.visibility = if (signedInUserWith(currentItem.id,binding.root.context)) View.GONE else View.VISIBLE
+
+        btnFollow.onClick {
+            listener.onFollowClicked(currentItem, position)
+        }
+
         if (currentItem.followed!!) {
             CommonsKt.setButtonFollowerStylePressed(
                 btnFollow,
@@ -51,10 +58,6 @@ class UserFollowingsViewHolder(
             )
         }
 
-        btnFollow.onClick {
-
-            listener.onFollowClicked(currentItem, position)
-        }
 
         val firstName = currentItem.first_name
         val lastName = currentItem.last_name
@@ -70,16 +73,7 @@ class UserFollowingsViewHolder(
             listener.onUserLongClicked(currentItem,position)
             return@onLongClick true
         }
-        CoroutineScope(Dispatchers.Main).launch{
-            val userId = withContext(Dispatchers.IO){
-                JwtChecker.getUserIdFromJwt()
-            }
-            if(currentItem.id == userId){
-                btnFollow.visibility = View.GONE
-            }else{
-                btnFollow.visibility = View.VISIBLE
-            }
-        }
+
 
         Glide.with(itemView.context)
             .load(currentItem.images?.small_url)
@@ -89,6 +83,11 @@ class UserFollowingsViewHolder(
             .into(binding.ivUser)
         ivUser.onClick { listener.onUserClicked(currentItem, position) }
 
+    }
+
+
+    private fun signedInUserWith(id: Int?, context: Context): Boolean {
+        return id == PrefsHandler.getCurrentUserId(context)
     }
 
 }

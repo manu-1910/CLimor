@@ -70,7 +70,7 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
             val query = CreateReportsMutation(s,"Podcast",id)
             val result = apollo.mutate(query)
             val reported = result?.data?.createReports?.reported
-            Timber.d("  -> $reported")
+            Timber.d("Report Podcast  -> $reported")
         }
 
     }

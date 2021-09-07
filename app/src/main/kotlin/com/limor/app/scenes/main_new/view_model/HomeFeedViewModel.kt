@@ -26,6 +26,7 @@ class HomeFeedViewModel @Inject constructor(
         viewModelScope.launch {
             getHomeFeedCastsUseCase.execute(limit = limit, offset = offset)
                 .onSuccess {
+                    Timber.d("${it.size} home feed items")
                     _homeFeedData.value = it
                 }
                 .onFailure {

@@ -21,6 +21,9 @@ import com.limor.app.scenes.main_new.fragments.DialogPodcastReportP2
 import com.limor.app.uimodels.UserUIModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.anko.cancelButton
+import org.jetbrains.anko.okButton
+import org.jetbrains.anko.support.v4.alert
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -69,15 +72,27 @@ class DialogUserProfileActions : DialogFragment() {
     private fun setOnClicks() {
         binding.btnCancel.setOnClickListener { this.dismiss() }
         binding.btnBlockUser.setOnClickListener {
-            model.blockUser(args.id)
-            findNavController().previousBackStackEntry?.savedStateHandle?.set("blocked", true)
-            findNavController().popBackStack()
+            alert(getString(R.string.confirmation_block_user)) {
+                okButton {
+                    model.blockUser(args.id)
+                    findNavController().previousBackStackEntry?.savedStateHandle?.set("blocked", true)
+                    findNavController().popBackStack()
+                }
+                cancelButton {  }
+            }.show()
+
 
         }
         binding.btnUnBlockUser.setOnClickListener {
-            model.unblockUser(args.id)
-            findNavController().previousBackStackEntry?.savedStateHandle?.set("blocked", false)
-            findNavController().popBackStack()
+            alert(getString(R.string.confirmation_unblock_user)) {
+                okButton {
+                    model.unblockUser(args.id)
+                    findNavController().previousBackStackEntry?.savedStateHandle?.set("blocked", false)
+                    findNavController().popBackStack()
+                }
+                cancelButton {  }
+            }.show()
+
         }
 
         binding.btnReportUser.setOnClickListener {

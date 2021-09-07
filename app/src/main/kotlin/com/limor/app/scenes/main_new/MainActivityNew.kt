@@ -8,6 +8,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
@@ -17,6 +18,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.limor.app.R
 import com.limor.app.databinding.ActivityMainNewBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
+import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
@@ -57,9 +59,18 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         setContentView(playerBinding.root)
         setupFabClickListener()
         setUpBottomNavigation()
+        setupDefaultValues()
 
         activityPlayerViewManager =
             ActivityPlayerViewManager(supportFragmentManager, playerBinding, playerBinder)
+    }
+
+    private fun setupDefaultValues() {
+        lifecycleScope.launchWhenCreated {
+            JwtChecker.getUserIdFromJwt(false)?.let {
+                PrefsHandler.saveCurrentUserId(this@MainActivityNew, it)
+            }
+        }
     }
 
     private fun setupFabClickListener() {

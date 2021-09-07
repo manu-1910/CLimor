@@ -12,14 +12,18 @@ import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.ItemChildCommentBinding
 import com.limor.app.extensions.*
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.utils.DateUiUtil
+import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
 import com.xwray.groupie.viewbinding.BindableItem
+import timber.log.Timber
 
 /**
  * @param isSimplified - should item be simplified (e.g. comment size limit)
  */
 class CommentChildItem(
+    val castOwnerId: Int,
     val parentComment: CommentUIModel,
     val comment: CommentUIModel,
     val isSimplified: Boolean,
@@ -40,6 +44,7 @@ class CommentChildItem(
         comment.user?.imageLinks?.small?.let {
             viewBinding.ivCommentAvatar.loadCircleImage(it)
         }
+        viewBinding.tvCastCreator.text = if (isOwnerOf(castOwnerId,comment)) "• Cast Creator" else ""
 
         val onUserClick: (view: View) -> Unit =  {
             onUserClick()
@@ -125,7 +130,7 @@ class CommentChildItem(
                 if (it > 0) {
                     likesCount.visibility = View.VISIBLE
                 } else {
-                    likesCount.visibility = View.INVISIBLE
+                    likesCount.visibility = View.GONE
                 }
             }
 
@@ -148,7 +153,7 @@ class CommentChildItem(
                 if (newLikesCount > 0) {
                     likesCount.visibility = View.VISIBLE
                 } else {
-                    likesCount.visibility = View.INVISIBLE
+                    likesCount.visibility = View.GONE
                 }
 
 
@@ -165,4 +170,8 @@ class CommentChildItem(
 
     override fun getLayout() = R.layout.item_child_comment
     override fun initializeViewBinding(view: View) = ItemChildCommentBinding.bind(view)
+    private fun isOwnerOf(id: Int, comment: CommentUIModel): Boolean {
+        Timber.d("Owner Comment $id-> ${comment.user?.id}")
+        return id == comment.user?.id
+    }
 }

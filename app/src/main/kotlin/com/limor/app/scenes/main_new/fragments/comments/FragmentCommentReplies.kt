@@ -76,6 +76,7 @@ class FragmentCommentReplies : UserMentionFragment() {
     lateinit var itemParentComment: CommentParentItem
     private val adapter = GroupieAdapter()
     private val cast: CastUIModel by lazy { requireArguments().getParcelable(CAST_KEY)!! }
+    private var castOwnerId = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,6 +87,9 @@ class FragmentCommentReplies : UserMentionFragment() {
 
         replyToCommentId = requireArguments().getInt(CHILD_REPLY_COMMENT_ID_KEY, -1)
             .takeIf { it != -1 }
+        cast.owner?.id?.let {
+            castOwnerId = it
+        }
         getCurrentUser()
         initViews()
         subscribeForComments()
@@ -155,6 +159,7 @@ class FragmentCommentReplies : UserMentionFragment() {
         adapter.clear()
         adapter.add(
             CommentParentItem(
+                castOwnerId,
                 parentComment,
                 onReplyClick = ::onReplyClick,
                 onLikeClick = { comment, liked ->
@@ -171,6 +176,7 @@ class FragmentCommentReplies : UserMentionFragment() {
         parentComment.innerComments.forEach { childComment ->
             adapter.add(
                 CommentChildItem(
+                    castOwnerId,
                     parentComment,
                     childComment,
                     onReplyClick = { _, replyChildComment -> onReplyClick(replyChildComment) },

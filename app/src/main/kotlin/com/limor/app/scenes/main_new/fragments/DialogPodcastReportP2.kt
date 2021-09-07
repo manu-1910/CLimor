@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -16,6 +17,7 @@ import com.limor.app.scenes.main.fragments.profile.UserProfileViewModel
 import com.limor.app.scenes.main.viewmodels.PodcastViewModel
 import com.limor.app.scenes.profile.DialogUserReport
 import dagger.android.support.AndroidSupportInjection
+import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
 
 class DialogPodcastReportP2 : DialogFragment() {
@@ -29,10 +31,12 @@ class DialogPodcastReportP2 : DialogFragment() {
             }
         }
     }
-    private var binding : DialogReportCastP2Binding? = null
+
+    private var binding: DialogReportCastP2Binding? = null
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val model: PodcastViewModel by viewModels{ viewModelFactory }
+    private val model: PodcastViewModel by viewModels { viewModelFactory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,7 +58,12 @@ class DialogPodcastReportP2 : DialogFragment() {
 
         binding?.btnAbusiveContent?.setOnClickListener {
             handleReport("Abusive content")
-            this.dismiss() }
+            this.dismiss()
+        }
+        binding?.btnSpamOrScam?.setOnClickListener {
+            handleReport("Spam")
+            this.dismiss()
+        }
 
     }
 
@@ -64,7 +73,8 @@ class DialogPodcastReportP2 : DialogFragment() {
     }
 
     private fun handleReport(s: String) {
-        model.reportCast(s,arguments?.getInt(CAST_ID_KEY))
+        model.reportCast(s, arguments?.getInt(CAST_ID_KEY))
+        toast("Reported Successfully")
     }
 
     override fun onDestroyView() {

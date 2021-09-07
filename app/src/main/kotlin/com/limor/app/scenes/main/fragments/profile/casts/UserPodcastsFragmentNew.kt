@@ -212,12 +212,10 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     private fun onLoadCasts(casts: List<CastUIModel>) {
         if (castOffset == 0) {
             currentCasts.clear()
-            Timber.d("mj 0")
             lifecycleScope.launch {
                 JwtChecker.getUserIdFromJwt(false)?.let {
                     if (userId == it) {
                         if (casts.isEmpty()) {
-                            Timber.d("mj emoty")
                             binding.noPodcastsLayout.visibility = View.VISIBLE
                         }
 

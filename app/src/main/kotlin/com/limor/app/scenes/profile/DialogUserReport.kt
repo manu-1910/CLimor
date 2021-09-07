@@ -15,6 +15,7 @@ import com.limor.app.databinding.DialogReportCastP2Binding
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileViewModel
 import dagger.android.support.AndroidSupportInjection
+import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
 
 class DialogUserReport : DialogFragment() {
@@ -66,6 +67,7 @@ class DialogUserReport : DialogFragment() {
 
     private fun handleReport(reason: String) {
         model.reportUser(reason,arguments?.getInt(CAST_ID_KEY))
+        toast("User Reported Successfully")
         dismiss()
     }
 

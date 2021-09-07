@@ -64,8 +64,8 @@ class DiscoverHashtagFragment: BaseFragment() {
         }
 
         binding.toolbar.btnNotification.visibility = if (showNotificationIcon) View.VISIBLE else View.GONE
-
-        binding.toolbar.title.text = hashtag.tag
+        val tagText = "#${hashtag.tag}"
+        binding.toolbar.title.text = tagText
         binding.toolbar.btnBack.setOnClickListener {
             it.findNavController().popBackStack()
         }

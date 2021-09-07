@@ -248,11 +248,10 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         val username = activity?.intent?.extras?.getString(USER_NAME_KEY)
 
         if (isSignedInUser) {
-            binding.toolbar.title.text = getString(R.string.profile_title)
             binding.toolbar.btnUserSettings.setImageResource(R.drawable.ic_setting)
 
         } else if (!username.isNullOrEmpty()) {
-            binding.toolbar.title.text = username
+            binding.toolbar.title.text = "@$username"
             binding.toolbar.btnUserSettings.setImageResource(R.drawable.ic_three_dots_black)
 
         }
@@ -275,7 +274,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     private fun setupConditionalViews(user: UserUIModel) {
 
         ensureToolbar()
-
+        binding.toolbar.title.text = "@${user.username}"
         binding.btnFollow.visibility = if (isSignedInUser) View.GONE else View.VISIBLE
         binding.profileMainContainer.visibility = View.VISIBLE
 
