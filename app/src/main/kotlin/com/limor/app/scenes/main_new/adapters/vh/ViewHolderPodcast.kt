@@ -1,6 +1,7 @@
 package com.limor.app.scenes.main_new.adapters.vh
 
 import android.content.Intent
+import android.view.View
 import android.widget.TextView
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.ContextCompat
@@ -56,6 +57,7 @@ class ViewHolderPodcast(
     private fun setPodcastOwnerInfo(item: CastUIModel) {
         binding.tvPodcastUserName.text = item.owner?.username
         binding.tvPodcastUserSubtitle.text = item.getCreationDateAndPlace(context, true)
+        binding.ivVerifiedAvatar.visibility = if(item.owner?.isVerified == true) View.VISIBLE else View.GONE
     }
 
     private fun setPodcastCounters(item: CastUIModel) {

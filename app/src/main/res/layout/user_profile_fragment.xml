@@ -57,14 +57,26 @@
 
                             <TextView
                                 android:id="@+id/profile_name"
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="15dp"
                                 android:layout_toEndOf="@+id/profile_dp"
                                 android:fontFamily="@font/roboto_bold"
                                 android:text=""
                                 android:textColor="@color/black"
-                                android:textSize="17sp" />
+                                android:textSize="17sp"
+                                tools:text="sdvbfhvbfjvbfj"/>
+
+                            <ImageView
+                                android:id="@+id/ivVerifiedAvatar"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_toEndOf="@id/profile_name"
+                                android:layout_marginStart="4dp"
+                                android:src="@drawable/verified"
+                                android:foregroundTint="@color/waveFormColor"
+                                android:visibility="visible"
+                                android:layout_marginTop="4dp"/>
 
                             <TextView
                                 android:id="@+id/profile_desc"
@@ -294,7 +306,7 @@
     <include
         layout="@layout/fragment_new_auth_loading_include"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

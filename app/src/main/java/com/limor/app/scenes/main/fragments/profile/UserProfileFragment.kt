@@ -321,6 +321,11 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     private fun setDataToProfileViews(it: UserUIModel) {
         user = it
         binding.profileName.text = it.username
+        if(it.isVerified == true){
+            binding.ivVerifiedAvatar.visibility = View.VISIBLE
+        } else{
+            binding.ivVerifiedAvatar.visibility = View.GONE
+        }
         binding.profileDesc.text = it.description
         binding.profileLink.text = it.website
         binding.profileFollowers.text = "${it.followersCount}"

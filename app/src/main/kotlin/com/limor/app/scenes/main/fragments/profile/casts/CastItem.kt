@@ -27,6 +27,7 @@ class CastItem(
         viewBinding.apply {
             tvPodcastUserName.text = cast.owner?.username
             tvPodcastUserSubtitle.text = cast.getCreationDateAndPlace(root.context, true)
+            ivVerifiedAvatar.visibility = if(cast.owner?.isVerified == true) View.VISIBLE else View.GONE
 
             tvPodcastLength.text = cast.audio?.duration?.let {
                 "${it.toMinutes()}m ${it.minusMinutes(it.toMinutes()).seconds}s"

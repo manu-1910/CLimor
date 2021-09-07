@@ -44,7 +44,7 @@
 
             <TextView
                 android:id="@+id/author_name"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="16dp"
@@ -53,12 +53,23 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/date_location"
-                app:layout_constraintEnd_toStartOf="@+id/more_btn"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/owner_icon"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="packed"
                 tools:text="Jonathan Doe" />
+
+            <ImageView
+                android:id="@+id/ivVerifiedAvatar"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                app:layout_constraintBottom_toTopOf="@id/date_location"
+                app:layout_constraintStart_toEndOf="@id/author_name"
+                android:layout_marginStart="4dp"
+                android:src="@drawable/verified"
+                android:layout_marginBottom="6dp"
+                android:foregroundTint="@color/waveFormColor"
+                android:visibility="gone"/>
 
             <ImageView
                 android:id="@+id/more_btn"

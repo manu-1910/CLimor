@@ -59,6 +59,7 @@ class ProfileFragment : FragmentWithLoading(), Injectable {
                     .error(R.mipmap.ic_launcher_round)
                     .apply(RequestOptions.circleCropTransform())
                     .into(binding.profileDp)
+                binding.ivVerifiedAvatar.visibility = if(it.isVerified == true) View.VISIBLE else View.GONE
                 setupViewPager(it)
             }
         })

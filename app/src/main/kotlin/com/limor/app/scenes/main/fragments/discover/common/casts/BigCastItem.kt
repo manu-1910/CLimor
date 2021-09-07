@@ -36,6 +36,7 @@ class BigCastItem(
             }
 
             authorName.text = cast.owner?.username
+            ivVerifiedAvatar.visibility = if(cast.owner?.isVerified == true) View.VISIBLE else View.GONE
             dateLocation.text = cast.getCreationDateAndPlace(root.context, true)
             castName.text = cast.title
             cast.audio?.duration?.let {

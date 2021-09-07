@@ -9,6 +9,8 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.DimenRes
+import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import com.limor.app.BuildConfig
 import com.limor.app.R
@@ -93,4 +95,13 @@ fun TextView.setTextWithTagging(
 
     this.text = spannable
     this.movementMethod = LinkMovementMethod.getInstance()
+}
+
+fun TextView.setRightDrawable(@DrawableRes id: Int = 0, @DimenRes sizeRes: Int) {
+    try{
+        val drawable = ContextCompat.getDrawable(context, id)
+        val size = resources.getDimensionPixelSize(sizeRes)
+        drawable?.setBounds(0, 0, size, size)
+        this.setCompoundDrawables(null, null, drawable, null)
+    } catch (e: Exception){}
 }

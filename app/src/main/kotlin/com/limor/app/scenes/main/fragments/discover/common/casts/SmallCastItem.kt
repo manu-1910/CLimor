@@ -30,6 +30,11 @@ class SmallCastItem(
         viewBinding.apply {
             authorName.text = cast.owner?.username
             castName.text = cast.title
+            if(cast.owner?.isVerified == true){
+                authorName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.verified, 0)
+            } else{
+                authorName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+            }
             cast.audio?.duration?.let {
                 castDuration.text = getCastDuration(cast.audio.duration)
             }

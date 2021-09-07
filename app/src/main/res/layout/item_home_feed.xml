@@ -58,6 +58,17 @@
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="You" />
 
+    <ImageView
+        android:id="@+id/ivVerifiedAvatar"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        app:layout_constraintBottom_toTopOf="@id/tvPodcastUserSubtitle"
+        app:layout_constraintStart_toEndOf="@id/tvPodcastUserName"
+        android:layout_marginStart="4dp"
+        android:src="@drawable/verified"
+        android:foregroundTint="@color/waveFormColor"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/tvPodcastUserSubtitle"
         android:layout_width="wrap_content"

@@ -5,6 +5,8 @@ import android.view.View
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverSearchAccountBinding
 import com.limor.app.extensions.loadCircleImage
+import com.limor.app.extensions.setRightDrawable
+import com.limor.app.scenes.main.adapters.VIEW_TYPE_HEADER
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.uimodels.UserUIModel
@@ -18,6 +20,11 @@ class AccountSearchItem(
     override fun bind(viewBinding: ItemDiscoverSearchAccountBinding, position: Int) {
         viewBinding.accountName.text = account.getFullName()
         viewBinding.accountNickname.text = account.username
+        if(account.isVerified == true){
+            viewBinding.accountName.setRightDrawable(R.drawable.verified, R.dimen.chip_close_icon_size)
+        } else{
+            viewBinding.accountName.setRightDrawable(0, R.dimen.chip_close_icon_size)
+        }
         account.imageLinks?.small?.let {
             viewBinding.accountImage.loadCircleImage(it)
         }

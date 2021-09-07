@@ -228,6 +228,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
     private fun setPodcastOwnerInfo(cast: CastUIModel) {
         binding.tvPodcastUserName.text = cast.owner?.username
         binding.tvPodcastUserSubtitle.text = cast.getCreationDateAndPlace(requireContext(), true)
+        binding.ivVerifiedAvatar.visibility = if(cast.owner?.isVerified == true) View.VISIBLE else View.GONE
     }
 
     private fun setPodcastCounters(cast: CastUIModel) {

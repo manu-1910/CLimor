@@ -42,6 +42,17 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="jonathan_doe" />
 
+    <ImageView
+        android:id="@+id/ivVerifiedAvatar"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        app:layout_constraintBottom_toTopOf="@id/tvRecastUserSubtitle"
+        app:layout_constraintStart_toEndOf="@id/tvRecastUserName"
+        android:layout_marginStart="4dp"
+        android:src="@drawable/verified"
+        android:foregroundTint="@color/waveFormColor"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/tvRecastUserSubtitle"
         android:layout_width="wrap_content"
@@ -207,6 +218,17 @@
                 app:layout_constraintTop_toTopOf="@id/shadowTop"
                 app:layout_constraintVertical_chainStyle="packed"
                 tools:text="You" />
+
+            <ImageView
+                android:id="@+id/ivPodcastUserVerifiedAvatar"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                app:layout_constraintBottom_toTopOf="@id/tvPodcastUserSubtitle"
+                app:layout_constraintStart_toEndOf="@id/tvPodcastUserName"
+                android:layout_marginStart="4dp"
+                android:src="@drawable/verified"
+                android:foregroundTint="@color/waveFormColor"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/tvPodcastUserSubtitle"

@@ -5,6 +5,7 @@ import android.view.View
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverSuggestedPersonBigBinding
 import com.limor.app.extensions.loadCircleImage
+import com.limor.app.extensions.setRightDrawable
 import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
@@ -18,6 +19,11 @@ class SuggestedPersonBigItem(
 
     override fun bind(viewBinding: ItemDiscoverSuggestedPersonBigBinding, position: Int) {
         viewBinding.fullName.text = person.getFullName()
+        if(person.isVerified == true){
+            viewBinding.fullName.setRightDrawable(R.drawable.verified, R.dimen.chip_close_icon_size)
+        } else{
+            viewBinding.fullName.setRightDrawable(0, R.dimen.chip_close_icon_size)
+        }
         person.imageLinks?.small?.let {
             viewBinding.personImage.loadCircleImage(it)
         }
