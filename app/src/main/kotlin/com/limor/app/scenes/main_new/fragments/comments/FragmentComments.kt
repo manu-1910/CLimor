@@ -60,6 +60,10 @@ class FragmentComments : UserMentionFragment() {
     private val adapter = GroupieAdapter()
     private var castOwnerId = 0
 
+    override fun reload() {
+        commentsViewModel.loadComments(cast.id)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -97,22 +101,25 @@ class FragmentComments : UserMentionFragment() {
             parentFragment?.dismissFragment()
         }
 
+        textAndVoiceInput = binding.taviVoice
         binding.taviVoice.initListenerStatus {
             when(it) {
                 is MissingPermissions -> requestRecordPermissions(requireActivity())
                 is SendData -> {
 
                     if (it.filePath != null) {
-                        uploadVoiceComment(it.filePath) { audioUrl ->
-                            commentsViewModel.addComment(
-                                cast.id,
-                                content = it.text,
-                                ownerId = cast.id,
-                                ownerType = CommentUIModel.OWNER_TYPE_PODCAST,
-                                audioURI = audioUrl,
-                                duration = it.duration
-                            )
-                        }
+                        uploadWithAudio(it, cast.id, cast.id, CommentUIModel.OWNER_TYPE_PODCAST)
+
+//                        uploadVoiceComment(it.filePath) { audioUrl ->
+//                            commentsViewModel.addComment(
+//                                cast.id,
+//                                content = it.text,
+//                                ownerId = cast.id,
+//                                ownerType = CommentUIModel.OWNER_TYPE_PODCAST,
+//                                audioURI = audioUrl,
+//                                duration = it.duration
+//                            )
+//                        }
 
                     } else {
                         commentsViewModel.addComment(
@@ -166,6 +173,7 @@ class FragmentComments : UserMentionFragment() {
             } else {
                 commentsViewModel.loadComments(cast.id)
             }
+            textAndVoiceInput?.reset()
         }
 
         actionsViewModel.actionDelete.observe(viewLifecycleOwner,{ comment ->

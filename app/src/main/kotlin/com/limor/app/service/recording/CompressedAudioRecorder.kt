@@ -9,6 +9,7 @@ import java.io.File
 import java.io.IOException
 import java.lang.IllegalStateException
 import java.lang.RuntimeException
+import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
 interface RecorderCallback {
@@ -182,4 +183,9 @@ object CompressedAudioRecorder : Recorder {
         updateTime = 0
     }
 
+    fun getNextAudioFilePath(context: Context): String {
+        val fileName = "${Date().time}.m4a"
+        val file = File(context.filesDir, fileName)
+        return file.absolutePath
+    }
 }

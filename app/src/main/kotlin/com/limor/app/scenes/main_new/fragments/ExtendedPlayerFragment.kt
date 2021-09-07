@@ -92,6 +92,10 @@ class ExtendedPlayerFragment : UserMentionFragment() {
     @Inject
     lateinit var playerBinder: PlayerBinder
 
+    override fun reload() {
+        loadFirstComment()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -179,6 +183,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
             } else {
                 loadFirstComment()
             }
+            binding.taviVoice.reset()
         }
     }
 

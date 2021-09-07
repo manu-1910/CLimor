@@ -245,6 +245,11 @@
             android:name=".service.recording.RecordService"
             android:exported="false" />
 
+        <service
+            android:name=".service.VoiceCommentUploadService"
+            android:exported="false" />
+
+
         <!--FCM-->
        <service
             android:name=".scenes.notifications.FirebaseMessenger"
@@ -334,6 +339,7 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/MaterialMainTheme.Podcast" />
+
     </application>
 
 </manifest>

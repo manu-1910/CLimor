@@ -8,28 +8,22 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.limor.app.R
-import com.limor.app.common.BaseFragment
-import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentCommentRepliesBinding
 import com.limor.app.extensions.dismissFragment
 import com.limor.app.extensions.highlight
 import com.limor.app.extensions.showKeyboard
-import com.limor.app.extensions.userMentionPattern
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main.viewmodels.HandleCommentActionsViewModel
-import com.limor.app.scenes.main_new.fragments.comments.list.ParentCommentSection
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentChildItem
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentParentItem
 import com.limor.app.scenes.main_new.fragments.mentions.UserMentionPopup
 import com.limor.app.scenes.profile.DialogCommentMoreActions
-import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.MissingPermissions
 import com.limor.app.scenes.utils.SendData
 import com.limor.app.uimodels.CastUIModel
@@ -78,6 +72,10 @@ class FragmentCommentReplies : UserMentionFragment() {
     private val cast: CastUIModel by lazy { requireArguments().getParcelable(CAST_KEY)!! }
     private var castOwnerId = 0
 
+    override fun reload() {
+        commentsViewModel.loadCommentById(parentCommentId)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -122,21 +120,23 @@ class FragmentCommentReplies : UserMentionFragment() {
         binding.tvCancel.setOnClickListener {
             dismissFragment()
         }
+        textAndVoiceInput = binding.taviVoice
         binding.taviVoice.initListenerStatus {
             when (it) {
                 is MissingPermissions -> requestRecordPermissions(requireActivity())
                 is SendData -> {
                     if (it.filePath != null) {
-                        uploadVoiceComment(it.filePath) { audioUrl ->
-                            commentsViewModel.addComment(
-                                castId,
-                                it.text,
-                                ownerId = parentCommentId,
-                                ownerType = CommentUIModel.OWNER_TYPE_COMMENT,
-                                audioURI = audioUrl,
-                                duration = it.duration
-                            )
-                        }
+                        uploadWithAudio(it, castId, parentCommentId, CommentUIModel.OWNER_TYPE_COMMENT)
+//                        uploadVoiceComment(it.filePath) { audioUrl ->
+//                            commentsViewModel.addComment(
+//                                castId,
+//                                it.text,
+//                                ownerId = parentCommentId,
+//                                ownerType = CommentUIModel.OWNER_TYPE_COMMENT,
+//                                audioURI = audioUrl,
+//                                duration = it.duration
+//                            )
+//                        }
                     } else {
                         commentsViewModel.addComment(
                             castId,
@@ -227,6 +227,7 @@ class FragmentCommentReplies : UserMentionFragment() {
             } else {
                 commentsViewModel.loadCommentById(parentCommentId)
             }
+            textAndVoiceInput?.reset()
         }
 
         actionsViewModel.actionDeleteChildReply.observe(viewLifecycleOwner, { comment ->

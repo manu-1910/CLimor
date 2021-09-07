@@ -652,6 +652,10 @@
     <string name="time_ago__seconds_ago">%d seconds ago</string>
     <string name="view_all_comments_label">View all comments</string>
     <string name="view_all_n_comments__with_format">View all %d comments</string>
+    <string name="uploading_your_voice_comment">Uploading your voice comment</string>
+
+    <string name="uploading_notification_title">Limor</string>
+    <string name="uploading_notification_text">Limor is uploading your comment</string>
 
     <string name="contact_us">Contact Us</string>
     <string name="required">*Required</string>

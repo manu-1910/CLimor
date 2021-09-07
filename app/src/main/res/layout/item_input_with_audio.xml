@@ -9,6 +9,13 @@
     android:gravity="center_horizontal"
     android:orientation="horizontal">
 
+    <ProgressBar
+        android:id="@+id/progressUpload"
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        android:layout_height="2dp" />
+
 
     <ImageButton
         android:id="@+id/btnPodcastStartVoiceComment"
@@ -23,7 +30,7 @@
         android:src="@drawable/selector_voice_record"
         android:tint="@color/black"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/progressUpload" />
 
     <ImageButton
         android:id="@+id/btnPodcastSendComment"
@@ -36,7 +43,7 @@
         android:scaleType="fitCenter"
         android:src="@drawable/selector_comment_send"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/progressUpload" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/filledTextField"
@@ -51,7 +58,7 @@
         app:endIconTint="@color/subtitle_text_color"
         app:layout_constraintEnd_toStartOf="@+id/btnPodcastSendComment"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/progressUpload">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/comment_text"

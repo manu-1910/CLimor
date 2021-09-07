@@ -1,14 +1,14 @@
 package com.limor.app.scenes.main.viewmodels
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.common.SingleLiveEvent
+import com.limor.app.scenes.utils.SendData
+import com.limor.app.service.VoiceCommentUploadService
 import com.limor.app.uimodels.CommentUIModel
-import com.limor.app.uimodels.UICommentRequest
-import com.limor.app.uimodels.UICreateCommentRequest
-import com.limor.app.uimodels.UIPublishRequest
 import com.limor.app.usecases.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -20,6 +20,7 @@ class CommentsViewModel @Inject constructor(
     private val getCommentByIdUseCase: GetCommentByIdUseCase,
     private val likeCommentUseCase: LikeCommentUseCase,
     private val deleteCommentUseCase: DeleteCommentUseCaseNew,
+    private val application: Application
 ) : ViewModel() {
 
     private val _comments = MutableLiveData<List<CommentUIModel>>()
@@ -30,6 +31,19 @@ class CommentsViewModel @Inject constructor(
 
     private val _comment = MutableLiveData<CommentUIModel?>()
     val comment: LiveData<CommentUIModel?> get() = _comment
+
+    fun uploadVoiceComment(inputStatus: SendData, podcastId: Int, ownerId: Int, ownerType: String) {
+
+        val inputData = VoiceCommentUploadService.fromData(
+            inputStatus,
+            podcastId = podcastId,
+            ownerId = ownerId,
+            ownerType = ownerType
+        )
+
+        println("Bundle is: $inputData")
+        VoiceCommentUploadService.upload(application, inputData)
+    }
 
     fun loadComments(podcastId: Int, limit: Int = Int.MAX_VALUE, offset: Int = 0) {
         viewModelScope.launch {

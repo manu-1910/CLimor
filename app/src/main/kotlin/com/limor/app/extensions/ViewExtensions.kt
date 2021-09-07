@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -160,5 +161,14 @@ private class ViewCoroutineScope : CoroutineScope, View.OnAttachStateChangeListe
     override fun onViewDetachedFromWindow(view: View) {
         coroutineContext.cancel()
         view.setTag(R.string.view_coroutine_scope, null)
+    }
+}
+
+fun ViewGroup.allChildren(onView: (View) -> Unit) {
+    this.children.forEach {
+        it.apply {
+            onView(it)
+            (this as? ViewGroup)?.apply { allChildren(onView) }
+        }
     }
 }

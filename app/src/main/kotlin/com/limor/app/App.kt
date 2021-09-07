@@ -9,6 +9,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.work.Configuration
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
 import com.limor.app.di.AppInjector
@@ -29,7 +30,7 @@ import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObserver{
+class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObserver, Configuration.Provider {
     @Inject
     lateinit var activityInjector: DispatchingAndroidInjector<Activity>
     @Inject
@@ -147,5 +148,17 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
         val realm = Realm.getDefaultInstance()
 
         return realm
+    }
+
+    override fun getWorkManagerConfiguration(): Configuration {
+        return if (BuildConfig.DEBUG) {
+            Configuration.Builder()
+                .setMinimumLoggingLevel(android.util.Log.DEBUG)
+                .build()
+        } else {
+            Configuration.Builder()
+                .setMinimumLoggingLevel(android.util.Log.ERROR)
+                .build()
+        }
     }
 }

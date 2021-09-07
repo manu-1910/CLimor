@@ -10,6 +10,7 @@ import android.os.CountDownTimer
 import android.os.Handler
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -19,6 +20,9 @@ import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.extensions.*
 import com.limor.app.scenes.utils.voicePlayer.LimorMediaPlayer
+import com.limor.app.scenes.utils.voicebio.VoiceBioPresenter
+import com.limor.app.service.recording.CompressedAudioRecorder
+import com.limor.app.service.recording.RecorderCallback
 import com.limor.app.util.hasRecordPermissions
 import kotlinx.android.synthetic.main.item_input_with_audio.view.*
 import kotlin.math.min
@@ -46,7 +50,20 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr), RecorderCallback {
+
+    var progress: Int = 0
+        set(value) {
+            field = value
+
+            // preparing for having a progress bar
+            // progressUpload.visibility = if (value == 0 || value == 100) View.INVISIBLE else View.VISIBLE
+            // progressUpload.progress = value
+
+            if (value == 100) {
+                reset()
+            }
+        }
 
     private var status: InputStatus = None
         set(value) {
@@ -55,6 +72,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     private var filePath: String? = null
     private var durationMillis: Int = 0
     private var mediaDuration: Long = 0
+    private var currentDuration = 0L
 
     lateinit var editText: EditText
 
@@ -69,33 +87,6 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     private val seekHandler: Handler by lazy {
         Handler()
     }
-
-    private var mRecorder: WaveRecorder? = null
-
-    private val timer = object : CountDownTimer(180000, 1000) {
-        @SuppressLint("SetTextI18n")
-        override fun onTick(millisUntilFinished: Long) {
-            // this is safe to call even though the timer supports Long milliseconds, the max Int
-            // value would be enough to store 24 days worth of milliseconds and also the timer is
-            // actually set to 3 minutes max
-            val millis = millisUntilFinished.toInt()
-
-            durationMillis = 180000 - millis
-            updatePosition(millis)
-        }
-
-        override fun onFinish() {
-            // Stop the recording, because the time limit was reached
-            setRecording(false)
-
-            // Just to be sure there aren't any rounding/calculation issues we set the label
-            // to 0:00
-            tvTime.text = "0:00"
-        }
-
-    }
-
-    private var isRecording = false
 
     private fun getSeconds(seconds: Int) = if (seconds < 10) "0$seconds" else "$seconds"
 
@@ -133,11 +124,38 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     }
 
     private fun updateSendButtonState() {
-        val isActivated = comment_text.text.toString().isNotEmpty() || !filePath.isNullOrEmpty()
+        val isActivated = !CompressedAudioRecorder.isRecording() &&
+                (comment_text.text.toString().isNotEmpty() || !filePath.isNullOrEmpty())
         btnPodcastSendComment.isActivated = isActivated
     }
 
+    private fun enableChildren(enable: Boolean) {
+        this.allChildren {
+            if (it is ViewGroup) {
+                return@allChildren
+            }
+            it.isEnabled = enable
+            it.alpha = if (enable) 1.0f else 0.2f
+        }
+    }
+
+    private fun sendComment() {
+        enableChildren(false)
+        status = SendData(comment_text.text.toString(), filePath, durationMillis)
+        pausePlayer()
+    }
+
+    fun reset() {
+        showRecordingControls(false)
+        comment_text.text = null
+        filePath = null
+        updateSendButtonState()
+        enableChildren(true)
+    }
+
     private fun initView() {
+        CompressedAudioRecorder.callback = this
+
         inflate(context, R.layout.item_input_with_audio, this)
         editText = comment_text
 
@@ -147,11 +165,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
         btnPodcastSendComment.setOnClickListener {
             if (btnPodcastSendComment.isActivated) {
-                status = SendData(comment_text.text.toString(), filePath, durationMillis)
-                showRecordingControls(false)
-                comment_text.text = null
-                filePath = null
-                updateSendButtonState()
+                sendComment()
             }
         }
 
@@ -159,6 +173,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
             if (hasRecordPermissions(context)) {
                 showRecordingControls(true)
                 setRecording(true)
+                updateSendButtonState()
             } else {
                 status = MissingPermissions
             }
@@ -254,23 +269,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         // If not pausing or resuming the play then this is the first time the audio is played
         btnStartPlay.isActivated = true
 
-        if (mediaDuration == 0L) {
-            val uri: Uri = Uri.parse(filePath)
-            uri.path?.let {
-                val f = File(it)
-                if (f.exists()) {
-                    val mmr = MediaMetadataRetriever()
-                    try {
-                        mmr.setDataSource(context, uri)
-                        val durationStr =
-                            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                        mediaDuration = durationStr!!.toLong()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-            }
-        }
+        mediaDuration = currentDuration
 
         positionIndicator.x = -positionIndicator.width.toFloat()
         positionIndicator.makeVisible()
@@ -317,43 +316,19 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         }
     }
 
-    private fun resetRecorderWithNewFile() {
+    private fun resetRecorderWithNewFile(): String {
         // delete any previously recorded file
         if (!filePath.isNullOrEmpty()) {
             deleteLastFile()
         }
 
         pausePlayer()
-
         resetPositionIndicator()
-
-        val recordingDirectory =
-            File(context?.getExternalFilesDir(null)?.absolutePath + "/limorv2/")
-        if (!recordingDirectory.exists()) {
-            recordingDirectory.mkdir()
-        }
-        val fileName = getCurrentTimeString() + CommonsKt.audioFileFormat
-        val file = File(recordingDirectory, fileName)
-        filePath = file.path
-
-        val recorder = WaveRecorder(file.path)
-        mRecorder = recorder
-
-        recorder.waveConfig.apply {
-            sampleRate = 44100
-            channels = AudioFormat.CHANNEL_IN_STEREO
-            audioEncoding = AudioFormat.ENCODING_PCM_16BIT
-        }
-
         visualizer.clear()
-        recorder.onAmplitudeListener = {
-            if (isRecording && it != 0) {
-                visualizer.post {
-                    visualizer.addAmp(it, mRecorder!!.tickDuration)
-                }
-            }
-        }
 
+        return CompressedAudioRecorder.getNextAudioFilePath(context).also {
+            filePath = it
+        }
     }
 
     private fun pauseAnyPlayingMedia() {
@@ -361,32 +336,29 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         pausePlayer()
     }
 
-    private fun startRecording() {
+    private fun onBeforeRecording() {
         pauseAnyPlayingMedia()
         horizontalLine.makeInVisible()
 
-        isRecording = true
-
-        resetRecorderWithNewFile()
-        mRecorder?.startRecording()
-
         status = StartRecord
-
         mediaDuration = 0
-
-        timer.start()
+        currentDuration = 0
         visualizer.makeVisible()
+    }
 
+    private fun startRecording() {
+        onBeforeRecording()
+
+        CompressedAudioRecorder.apply {
+            val path = resetRecorderWithNewFile()
+            startRecording(path, context)
+        }
     }
 
     private fun stopRecording() {
-        if (isRecording) {
-            mRecorder?.stopRecording()
-        }
+        CompressedAudioRecorder.stopRecording(context)
 
         status = FinishRecord
-
-        timer.cancel()
 
         btnStartPlay.makeVisible()
 
@@ -394,11 +366,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         horizontalLine.makeVisible()
 
         updateSendButtonState()
-    }
-
-    private fun getCurrentTimeString(): String {
-        val currentDate = Date()
-        return currentDate.time.toString()
+        resetPositionLabel()
     }
 
     fun initListenerStatus(data: (InputStatus) -> Unit) {
@@ -415,4 +383,58 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 //        setTextBtn(text)
     }
 
+    override fun onStartRecord() {
+
+    }
+
+    override fun onPauseRecord() {
+
+    }
+
+    override fun onResumeRecord() {
+
+    }
+
+    override fun onRecordProgress(millis: Long, amp: Int) {
+        // Long -> Int is safe because the tick time is very small, around 16 ms
+
+        val delta = millis - currentDuration
+        currentDuration = millis
+        durationMillis = currentDuration.toInt()
+        visualizer.addAmp(amp, delta.toInt())
+
+        val remainingMillis = maxOf(0,  maxVoiceCommentDurationMillis - millis)
+        if (remainingMillis == 0L) {
+            setRecording(false)
+            resetPositionLabel()
+        }
+
+        updatePosition(remainingMillis.toInt())
+    }
+
+    override fun onStopRecord() {
+
+    }
+
+    override fun onError(throwable: Throwable?) {
+
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun resetPositionLabel() {
+        tvTime.text = "0:00"
+    }
+
+    override fun onDetachedFromWindow() {
+        if (CompressedAudioRecorder.callback == this) {
+            CompressedAudioRecorder.callback = null
+        }
+        CompressedAudioRecorder.stopRecording(context)
+        pausePlayer()
+        super.onDetachedFromWindow()
+    }
+
+    companion object {
+        const val maxVoiceCommentDurationMillis = 3 * 60 * 1000
+    }
 }

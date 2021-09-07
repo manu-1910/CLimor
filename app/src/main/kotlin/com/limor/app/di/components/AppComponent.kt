@@ -2,12 +2,16 @@ package com.limor.app.di.components
 
 import android.app.Application
 import android.content.Context
+import androidx.work.ListenableWorker
+
 import com.limor.app.App
 import com.limor.app.di.modules.*
-import dagger.BindsInstance
-import dagger.Component
+import com.limor.app.service.VoiceCommentUploadService
+import dagger.*
 import dagger.android.AndroidInjectionModule
 import javax.inject.Singleton
+import kotlin.reflect.KClass
+import dagger.android.ContributesAndroidInjector
 
 @Singleton
 @Component(
@@ -19,7 +23,8 @@ import javax.inject.Singleton
         RemoteModule::class,
         StorageModule::class,
         ApolloModule::class,
-        MockModule::class
+        MockModule::class,
+        ServicesModule::class
     ]
 )
 interface AppComponent {
@@ -32,4 +37,15 @@ interface AppComponent {
 
     fun inject(app: App)
     fun context(): Context
+}
+
+@MapKey
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class WorkerKey(val value: KClass<out ListenableWorker>)
+
+@Module
+abstract class ServicesModule {
+    @ContributesAndroidInjector
+    abstract fun provideVoiceCommentUploadService(): VoiceCommentUploadService
 }
