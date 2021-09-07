@@ -16,6 +16,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.core.widget.addTextChangedListener
 import com.limor.app.App
+import com.limor.app.MediaPlayerHandler
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.extensions.*
@@ -53,7 +54,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), RecorderCallback {
+) : FrameLayout(context, attrs, defStyleAttr), RecorderCallback, MediaPlayerHandler {
 
     var progress: Int = 0
         set(value) {
@@ -83,6 +84,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
     private val mediaPlayer: LimorMediaPlayer by lazy {
         val mp = LimorMediaPlayer()
+
         mp.setOnCompletionListener { onReplayComplete() }
         mp.setOnErrorListener { _, _, _ -> true }
         mp
@@ -98,6 +100,8 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     private var statusListener: ((InputStatus) -> Unit)? = null
 
     init {
+        App.instance.registerMediaPlayerHandler(this)
+
         initView()
         readAttributes(attrs)
 
@@ -265,6 +269,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
         // Resume the play if was previously paused
         if (mediaPlayer.currentPosition > 0) {
+            App.instance.playerBinder.pauseCurrentTrack()
             mediaPlayer.start()
             btnStartPlay.isActivated = true
 
@@ -291,6 +296,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
         try {
             mediaPlayer.prepare()
+            App.instance.playerBinder.pauseCurrentTrack()
             mediaPlayer.start()
             seekHandler.post(seekUpdater)
 
@@ -357,6 +363,8 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         mediaDuration = 0
         currentDuration = 0
         visualizer.makeVisible()
+
+        btnStartPlay.makeGone()
     }
 
     private fun startRecording() {
@@ -443,6 +451,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
             CompressedAudioRecorder.callback = null
         }
         CompressedAudioRecorder.stopRecording(context)
+        App.instance.unregisterMediaPlayerHandler(this)
         pausePlayer()
         super.onDetachedFromWindow()
     }
@@ -473,5 +482,10 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     companion object {
         const val maxVoiceCommentDurationMillis = 3 * 60 * 1000
         const val disabledAlpha = 0.2f
+    }
+
+    override fun interruptPlaying() {
+        pausePlayer()
+        setRecording(false)
     }
 }

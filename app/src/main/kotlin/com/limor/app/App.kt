@@ -3,10 +3,10 @@ package com.limor.app
 import android.app.Activity
 import android.app.Application
 import android.app.Service
+import android.media.MediaPlayer
 import android.provider.Settings
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.Configuration
@@ -30,6 +30,10 @@ import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
 
+interface MediaPlayerHandler {
+    fun interruptPlaying()
+}
+
 class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObserver, Configuration.Provider {
     @Inject
     lateinit var activityInjector: DispatchingAndroidInjector<Activity>
@@ -45,6 +49,7 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
     override fun activityInjector(): DispatchingAndroidInjector<Activity> = activityInjector
     override fun serviceInjector(): AndroidInjector<Service> = serviceInjector
 
+    private val mediaPlayerHandlers = mutableListOf<MediaPlayerHandler>()
 
     var appComponent: AppComponent = AppInjector.init(this)
         @VisibleForTesting
@@ -62,6 +67,23 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
         instance = this
     }
 
+    fun registerMediaPlayerHandler(mph: MediaPlayerHandler) {
+        if (mediaPlayerHandlers.contains(mph)) {
+            return
+        }
+        mediaPlayerHandlers.add(mph)
+    }
+
+    fun unregisterMediaPlayerHandler(mph: MediaPlayerHandler) {
+        mediaPlayerHandlers.remove(mph)
+    }
+
+    fun interruptAllMediaPlayers() {
+        mediaPlayerHandlers.forEach {
+            println("interrupting $it")
+            it.interruptPlaying()
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -128,7 +150,7 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
     }
 
     private fun initSmartLook() {
-           Smartlook.setupAndStartRecording(BuildConfig.SMART_LOOK_API_KEY);
+        Smartlook.setupAndStartRecording(BuildConfig.SMART_LOOK_API_KEY);
     }
 
     private fun initLogging() {

@@ -22,9 +22,11 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import com.limor.app.App
 import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.scenes.main_new.MainActivityNew
+import com.limor.app.service.recording.CompressedAudioRecorder
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -126,6 +128,8 @@ class AudioService : Service() {
 
     @MainThread
     fun resume() {
+        CompressedAudioRecorder.stopRecording(this)
+        App.instance.interruptAllMediaPlayers()
         exoPlayer.playWhenReady = true
     }
 
