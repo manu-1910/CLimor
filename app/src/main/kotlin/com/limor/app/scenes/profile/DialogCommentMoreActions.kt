@@ -37,6 +37,7 @@ class DialogCommentMoreActions : DialogFragment() {
         const val COMMENT_KEY = "comment"
         const val FROM = "from"
         const val ITEM = "item"
+        const val KEY_CAN_EDIT_COMMENT = "KEY_CAN_EDIT_COMMENT"
     }
 
     @Inject
@@ -46,6 +47,9 @@ class DialogCommentMoreActions : DialogFragment() {
     lateinit var args: CommentUIModel
     lateinit var from: String
     lateinit var actionItem: String
+
+    private var canEdit = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -60,6 +64,11 @@ class DialogCommentMoreActions : DialogFragment() {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         getArgs()
         setOnClicks()
+        setViews()
+    }
+
+    private fun setViews() {
+        binding.btnEditComment.visibility = if (canEdit) View.VISIBLE else View.GONE
     }
 
     override fun onAttach(context: Context) {
@@ -71,6 +80,7 @@ class DialogCommentMoreActions : DialogFragment() {
             args = it.getParcelable(COMMENT_KEY)!!
             from = it.getString(FROM)!!
             actionItem = it.getString(ITEM)!!
+            canEdit = it.getBoolean(KEY_CAN_EDIT_COMMENT)
             Timber.d(args.toString())
         }
     }
@@ -78,6 +88,11 @@ class DialogCommentMoreActions : DialogFragment() {
 
     private fun setOnClicks() {
         binding.btnCancel.setOnClickListener { this.dismiss() }
+
+        binding.btnEditComment.setOnClickListener {
+            this.dismiss()
+        }
+
         binding.btnDeleteComment.setOnClickListener {
             when (from) {
                 "comment" -> {

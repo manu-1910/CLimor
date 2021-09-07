@@ -1,41 +1,32 @@
 package com.limor.app.scenes.main_new.fragments.comments
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.limor.app.R
-import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentCommentsBinding
 import com.limor.app.extensions.dismissFragment
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
-import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
-import com.limor.app.scenes.main.viewmodels.CommentsViewModel
+import com.limor.app.scenes.main.viewmodels.CommentActionType
 import com.limor.app.scenes.main.viewmodels.HandleCommentActionsViewModel
 import com.limor.app.scenes.main_new.fragments.comments.list.ParentCommentSection
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentChildItem
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentParentItem
 import com.limor.app.scenes.profile.DialogCommentMoreActions
-import com.limor.app.scenes.profile.DialogUserProfileActions
-import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.MissingPermissions
 import com.limor.app.scenes.utils.SendData
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.util.requestRecordPermissions
 import com.xwray.groupie.GroupieAdapter
-import com.xwray.groupie.viewbinding.BindableItem
 import timber.log.Timber
-import java.io.File
 
 class FragmentComments : UserMentionFragment() {
 
@@ -176,6 +167,12 @@ class FragmentComments : UserMentionFragment() {
             textAndVoiceInput?.reset()
         }
 
+        actionsViewModel.actionComment.observe(viewLifecycleOwner) { commentAction ->
+            when(commentAction.type) {
+                CommentActionType.Edit -> editComment(commentAction.comment)
+            }
+        }
+
         actionsViewModel.actionDelete.observe(viewLifecycleOwner,{ comment ->
             Timber.d("Remove parent comment $section")
             if(::itemParentComment.isInitialized){
@@ -196,6 +193,14 @@ class FragmentComments : UserMentionFragment() {
         })
     }
 
+    private fun editComment(comment: CommentUIModel) {
+        binding.taviVoice.edit(comment)
+    }
+
+    private fun commentIsEditable(comment: CommentUIModel): Boolean {
+        return isOwnerOf(comment) && comment.type == "text"
+    }
+
     private fun handleThreeDotsClick(comment: CommentUIModel, cast: CastUIModel,item: CommentParentItem,section: ParentCommentSection) {
         Timber.d("${isOwnerOf(comment)} comment owner and ${isOwnerOf(cast)} cast owner ")
         if(isOwnerOf(comment) || isOwnerOf(cast)){
@@ -207,7 +212,8 @@ class FragmentComments : UserMentionFragment() {
             val bundle = bundleOf(
                 DialogCommentMoreActions.COMMENT_KEY to comment,
                 DialogCommentMoreActions.FROM to "comment",
-                DialogCommentMoreActions.ITEM to "parent"
+                DialogCommentMoreActions.ITEM to "parent",
+                DialogCommentMoreActions.KEY_CAN_EDIT_COMMENT to commentIsEditable(comment)
             )
             findNavController().navigate(R.id.dialogCommentMoreActions, bundle)
         }

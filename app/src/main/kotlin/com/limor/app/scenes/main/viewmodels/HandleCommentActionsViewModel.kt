@@ -7,6 +7,15 @@ import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.usecases.*
 import javax.inject.Inject
 
+enum class CommentActionType {
+    Edit, Delete
+}
+
+data class CommentAction(
+    val comment: CommentUIModel,
+    val type: CommentActionType
+)
+
 class HandleCommentActionsViewModel @Inject constructor(
     private val deleteCommentUseCase: DeleteCommentUseCaseNew,
 ): ViewModel() {
@@ -23,6 +32,12 @@ class HandleCommentActionsViewModel @Inject constructor(
     private val _actionDeleteChildReply = MutableLiveData<CommentUIModel?>()
     val actionDeleteChildReply: LiveData<CommentUIModel?> get() = _actionDeleteChildReply
 
+    private val _commentAction = MutableLiveData<CommentAction?>()
+    val actionComment: LiveData<CommentAction?> get() = _commentAction
+
+    fun commentAction(comment: CommentUIModel, action: CommentActionType) {
+        _commentAction.value = CommentAction(comment, action)
+    }
 
     fun actionDeleteParentComment(args: CommentUIModel) {
         _actionDelete.value = args
