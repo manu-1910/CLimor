@@ -2,13 +2,17 @@ package com.limor.app.scenes.main.fragments.settings
 
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -23,12 +27,14 @@ import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.common.SessionManager
 import com.limor.app.databinding.FragmentEditProfileBinding
+import com.limor.app.scenes.main.fragments.record.RecordFragment
 import com.limor.app.scenes.main.viewmodels.UpdateUserViewModel
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.VoiceBioEvent
 import com.limor.app.uimodels.UIErrorResponse
 import com.limor.app.uimodels.UIUser
 import com.limor.app.uimodels.UserUIModel
+import com.limor.app.util.*
 import com.yalantis.ucrop.UCrop
 import io.reactivex.subjects.PublishSubject
 import org.jetbrains.anko.design.snackbar
@@ -39,6 +45,13 @@ import javax.inject.Inject
 
 
 class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
+
+    private val storagePermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            if (permissions.all { it.value }) {
+                loadImagePicker()
+            }
+        }
 
     private lateinit var currentUser: UIUserUpdateModel
 
@@ -199,6 +212,11 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
     }
 
     private fun loadImagePicker() {
+        if (!hasStoragePermissions(requireContext())) {
+            storagePermissionsLauncher.launch(STORAGE_PERMISSIONS)
+            return
+        }
+
         ImagePicker.create(this) // Activity or Fragment
             .showCamera(true) // show camera or not (true by default)
             .folderMode(true) // folder mode (false by default)
@@ -209,6 +227,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
             .limit(resources.getInteger(R.integer.MAX_PHOTOS)) // max images can be selected (99 by default)
             .theme(R.style.ImagePickerTheme) // must inherit ef_BaseTheme. please refer to sample
             .start()
+
     }
 
     private fun callToApiUpdateUser() {
@@ -226,14 +245,6 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         )
     }
 
-    private fun apiCallUpdateUser() {
-
-    }
-
-    private fun handleOnApiError(it: UIErrorResponse) {
-
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
@@ -248,7 +259,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
                     Constants.LOCAL_FOLDER_CROPPED_IMAGES
                 )
                 if (!croppedImagesDir.exists()) {
-                    val isDirectoryCreated = croppedImagesDir.mkdir()
+                    val isDirectoryCreated = croppedImagesDir.mkdirs()
                 }
                 val fileName =
                     Date().time.toString() + filesSelected[0].path.substringAfterLast("/")
@@ -265,7 +276,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
                 // There sometimes seems to be a delay until the image file is available to read
                 // so we try to mitigate this by delaying accessing it
                 binding.profileImage.postDelayed({
-                    onCropResult(data)
+                    onCropResult(it)
                 }, 500)
             }
 
@@ -293,7 +304,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         val path = resultUri.path.toString()
         if (!File(path).exists()) {
             reportError(R.string.image_processing_failed_generic_message)
-            Timber.d("Cropping failed, resulting file path does not exist.")
+            Timber.d("Cropping failed, resulting file path ($path) does not exist.")
             return
         }
 
@@ -305,6 +316,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
 
 
     private fun performCrop(sourcePath: String, destination: File) {
+        // (/storage/emulated/0/Android/data/com.limor.app.staging/files/limorv2/cropped-images/1631190554648im3age.png) does not exist.
         val sourceUri = Uri.fromFile(File(sourcePath))
         val destinationUri = Uri.fromFile(destination)
         context?.let {

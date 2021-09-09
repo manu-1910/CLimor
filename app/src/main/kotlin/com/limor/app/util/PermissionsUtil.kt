@@ -28,10 +28,32 @@ private val RECORD_PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_COARSE_LOCATION
 )
 
+val STORAGE_PERMISSIONS = arrayOf(
+    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    Manifest.permission.READ_EXTERNAL_STORAGE,
+)
+
 const val RECORD_PERMISSIONS_REQUEST_ID = 1001
+const val STORAGE_PERMISSIONS_REQUEST_ID = 2001
 
 fun hasRecordPermissions(context: Context): Boolean = RECORD_PERMISSIONS.all {
     ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+}
+
+fun hasStoragePermissions(context: Context): Boolean = STORAGE_PERMISSIONS.all {
+    ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+}
+
+fun requestStoragePermissions(activity: Activity) {
+    try {
+        ActivityCompat.requestPermissions(
+            activity,
+            STORAGE_PERMISSIONS,
+            STORAGE_PERMISSIONS_REQUEST_ID
+        )
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
 }
 
 fun requestRecordPermissions(activity: Activity) {
