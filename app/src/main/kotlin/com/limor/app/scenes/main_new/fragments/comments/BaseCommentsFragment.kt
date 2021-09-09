@@ -51,8 +51,10 @@ abstract class UserMentionFragment : BaseFragment(), UserMentionPopup.UserMentio
 
     protected fun subscribeCommons() {
         commentsViewModel.reload.observe(viewLifecycleOwner) {
-            reload()
-            textAndVoiceInput?.reset()
+            if (it) {
+                reload()
+                textAndVoiceInput?.reset()
+            }
         }
     }
 
