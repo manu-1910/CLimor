@@ -681,6 +681,8 @@ class RecordFragment : BaseFragment() {
                     //val durationFloatRoundedUp = kotlin.math.ceil(currentDurationInSecondsFloat)
                     // val durationMillisRoundedUp = (durationFloatRoundedUp * 1000).toInt()
                     c_meter.base = SystemClock.elapsedRealtime() - currentDurationInMillis
+                    nextButton.visibility = View.VISIBLE
+                    nextButton.isEnabled = false
                     timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -1016,8 +1018,10 @@ class RecordFragment : BaseFragment() {
         }
 
         configureToolbar()
+        // Hide Publish button
+        nextButton.visibility = View.GONE
         // Disable next button
-        nextButton.isEnabled = false
+        //nextButton.isEnabled = false
     }
 
 
@@ -1055,6 +1059,7 @@ class RecordFragment : BaseFragment() {
         handlerCountdown.removeCallbacksAndMessages(null)
         layCountdownAnimation.visibility = View.GONE
         isAnimatingCountdown = false
+        nextButton.visibility = View.VISIBLE
         startRecording()
     }
 
@@ -1083,6 +1088,8 @@ class RecordFragment : BaseFragment() {
                     tvCountdown.text = count.toString()
                 } else {
                     layCountdownAnimation.visibility = View.GONE
+                    nextButton.visibility = View.VISIBLE
+                    nextButton.isEnabled = false
                     isAnimatingCountdown = false
                     callback()
                 }
