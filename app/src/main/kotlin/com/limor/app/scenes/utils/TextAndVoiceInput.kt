@@ -236,6 +236,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
     private fun onReplayComplete() {
         btnStartPlay.isActivated = false
+        updatePosition(currentDuration.toInt())
         resetPositionIndicator()
     }
 
@@ -336,6 +337,8 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     }
 
     private fun resetRecorderWithNewFile(): String {
+        currentDuration = 0
+
         // delete any previously recorded file
         if (!filePath.isNullOrEmpty()) {
             deleteLastFile()
@@ -381,13 +384,17 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
 
         status = FinishRecord
 
-        btnStartPlay.makeVisible()
+        enableMediaPlay()
 
         visualizer.makeInVisible()
         horizontalLine.makeVisible()
 
         updateSendButtonState()
-        resetPositionLabel()
+    }
+
+    private fun enableMediaPlay() {
+        btnStartPlay.makeVisible()
+        updatePosition(currentDuration.toInt())
     }
 
     fun initListenerStatus(data: (InputStatus) -> Unit) {
