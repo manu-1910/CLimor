@@ -624,6 +624,9 @@ class RecordFragment : BaseFragment() {
         dialogBuilder.setCancelable(true)
         val dialog: AlertDialog = dialogBuilder.create()
 
+        dialogView.header_close.setOnClickListener {
+            dialog.dismiss()
+        }
         dialogView.noButton.setOnClickListener {
             deleteDraftInRealm(uiDraft!!)
             stopAudioRecorder()

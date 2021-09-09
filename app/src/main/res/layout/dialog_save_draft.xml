@@ -8,6 +8,7 @@
 
 
     <ImageView
+        android:id="@+id/header_close"
         android:layout_width="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/marginAlmostLarge"
