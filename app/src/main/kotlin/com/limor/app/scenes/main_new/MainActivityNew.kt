@@ -81,8 +81,21 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
 
     lateinit var navController: NavController
 
+    private fun ensureSelected( current: Int, destinationId: Int) {
+        if (current != destinationId) {
+            return
+        }
+        navigation.selectedItemId = destinationId
+    }
+
     private fun setUpBottomNavigation() {
         navController = Navigation.findNavController(this, R.id.nav_host_fragment)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            ensureSelected(destination.id, R.id.navigation_home)
+            ensureSelected(destination.id, R.id.navigation_discover)
+            ensureSelected(destination.id, R.id.navigation_profile)
+            ensureSelected(destination.id, R.id.navigation_direct_messenger)
+        }
 
         // This allows for more control on what happens when the bottom bar buttons are clicked.
         navigation.setOnItemSelectedListener(object: NavigationBarView.OnItemSelectedListener {
