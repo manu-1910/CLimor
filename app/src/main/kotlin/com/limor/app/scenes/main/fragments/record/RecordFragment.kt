@@ -927,7 +927,7 @@ class RecordFragment : BaseFragment() {
 
                 insertDraftInRealm(uiDraft!!)
 
-
+                fileRecording = finalAudio.absolutePath
 
                 uiThread {
                     //Go to Publish fragment
