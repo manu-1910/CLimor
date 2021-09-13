@@ -33,7 +33,7 @@ class CastItem(
                 "${it.toMinutes()}m ${it.minusMinutes(it.toMinutes()).seconds}s"
             }
 
-            cast.owner?.imageLinks?.small?.let {
+            cast.owner?.getAvatarUrl()?.let {
                 ivPodcastAvatar.loadCircleImage(it)
                 ivAvatarImageListening.loadCircleImage(it)
             }

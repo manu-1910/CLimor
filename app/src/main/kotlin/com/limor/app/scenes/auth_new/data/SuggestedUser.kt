@@ -16,7 +16,7 @@ data class SuggestedUser(
                 uiUser.id,
                 uiUser.username,
                 uiUser.username,
-                uiUser.imageLinks?.small,
+                uiUser.getAvatarUrl(),
                 false,
                 uiUser
             )

@@ -47,7 +47,7 @@ class CommentParentItem(
         viewBinding.ivCommentAvatar.throttledClick(onClick = onUserClick)
         viewBinding.tvCommentName.throttledClick(onClick = onUserClick)
 
-        comment.user?.imageLinks?.small?.let {
+        comment.user?.getAvatarUrl()?.let {
             viewBinding.ivCommentAvatar.loadCircleImage(it)
         }
         viewBinding.tvCastCreator.text = if (isOwnerOf(castOwnerId,comment)) "• Cast Creator" else ""

@@ -24,7 +24,7 @@ class SuggestedPersonBigItem(
         } else{
             viewBinding.fullName.setRightDrawable(0, R.dimen.chip_close_icon_size)
         }
-        person.imageLinks?.small?.let {
+        person.getAvatarUrl()?.let {
             viewBinding.personImage.loadCircleImage(it)
         }
 

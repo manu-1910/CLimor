@@ -57,11 +57,11 @@ class ViewHolderRecast(
             onHashTagClick
         )
 
-        item.owner?.imageLinks?.small?.let {
+        item.owner?.getAvatarUrl()?.let {
             binding.ivPodcastAvatar.loadCircleImage(it)
         }
 
-        item.recaster?.imageLinks?.small?.let {
+        item.recaster?.getAvatarUrl()?.let {
             binding.ivRecastAvatar.loadCircleImage(it)
         }
 

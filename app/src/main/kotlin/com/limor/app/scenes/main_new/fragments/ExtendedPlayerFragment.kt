@@ -162,7 +162,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
             val firstComment = comments.firstOrNull()
             if (firstComment != null) {
                 binding.tvFirstCollapsedComment.text = firstComment.content
-                firstComment.user?.imageLinks?.small?.let { imageUrl ->
+                firstComment.user?.getAvatarUrl()?.let { imageUrl ->
                     binding.ivAvatarFirstCollapsedComment.loadCircleImage(imageUrl)
                 }
                 binding.tvCommentName.text = firstComment.user?.username
@@ -337,7 +337,7 @@ class ExtendedPlayerFragment : UserMentionFragment() {
     }
 
     private fun loadImages(cast: CastUIModel) {
-        cast.owner?.imageLinks?.small?.let {
+        cast.owner?.getAvatarUrl()?.let {
             binding.ivPodcastAvatar.loadCircleImage(it)
         }
 

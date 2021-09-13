@@ -73,7 +73,7 @@ class ViewHolderPodcast(
     }
 
     private fun loadImages(item: CastUIModel) {
-        item.owner?.imageLinks?.small?.let {
+        item.owner?.getAvatarUrl()?.let {
             binding.ivPodcastAvatar.loadCircleImage(it)
             binding.ivAvatarImageListening.loadCircleImage(it)
         }

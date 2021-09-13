@@ -346,7 +346,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         }
 
         Glide.with(requireContext())
-            .load(it.imageLinks?.small)
+            .load(it.getAvatarUrl())
             .placeholder(R.mipmap.ic_launcher_round)
             .error(R.mipmap.ic_launcher_round)
             .apply(RequestOptions.circleCropTransform())

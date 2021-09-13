@@ -71,7 +71,7 @@ class SmallPlayerFragment : BaseFragment() {
     }
 
     private fun initPlayerViews(cast: CastUIModel) {
-        cast.imageLinks?.small?.let {
+        cast.imageLinks?.medium?.let {
             binding.ivAvatarMiniPlayer.loadCircleImage(it)
         }
         binding.tvMiniPlayerTitle.text = cast.title
