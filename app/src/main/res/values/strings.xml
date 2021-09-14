@@ -668,4 +668,9 @@
         <item quantity="other">%d Likes</item>
     </plurals>
 
+    <plurals name="listens_count">
+        <item quantity="one">%d Listen</item>
+        <item quantity="other">%d Listens</item>
+    </plurals>
+
 </resources>

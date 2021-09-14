@@ -21,6 +21,7 @@ class CommentsViewModel @Inject constructor(
     private val likeCommentUseCase: LikeCommentUseCase,
     private val deleteCommentUseCase: DeleteCommentUseCaseNew,
     private val updateCommentUseCase: UpdateCommentUseCase,
+    private val listenCommentUseCase: ListenCommentUseCase,
     private val application: Application
 ) : ViewModel() {
 
@@ -103,6 +104,16 @@ class CommentsViewModel @Inject constructor(
                 likeCommentUseCase.execute(comment.id, like)
             } catch (ex: Exception) {
                 Timber.e(ex, "Error while liking comment with id = ${comment.id}")
+            }
+        }
+    }
+
+    fun listenComment(commentId: Int) {
+        viewModelScope.launch {
+            try {
+                listenCommentUseCase.execute(commentId)
+            } catch (ex: Exception) {
+                Timber.e(ex, "Error while liking comment with id = $commentId")
             }
         }
     }

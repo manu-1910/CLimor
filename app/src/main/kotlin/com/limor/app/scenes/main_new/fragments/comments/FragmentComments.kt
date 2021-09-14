@@ -145,6 +145,9 @@ class FragmentComments : UserMentionFragment() {
                         },
                         onUserMentionClick = { username, userId ->
                             context?.let { context -> UserProfileActivity.show(context, username, userId) }
+                        },
+                        onCommentListen = { commentId ->
+                            commentsViewModel.listenComment(commentId)
                         }
                     )
                 }

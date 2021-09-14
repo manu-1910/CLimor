@@ -28,6 +28,7 @@ class CommentParentItem(
     val onThreeDotsClick: (parentComment: CommentUIModel,item: CommentParentItem) -> Unit,
     val onLikeClick: (parentComment: CommentUIModel, liked: Boolean) -> Unit,
     val onUserMentionClick: (username: String, userId: Int) -> Unit,
+    val onCommentListen: (commentId: Int) -> Unit,
 ) : BindableItem<ItemParentCommentBinding>() {
 
     override fun bind(viewBinding: ItemParentCommentBinding, position: Int) {
@@ -115,6 +116,8 @@ class CommentParentItem(
     }
 
     private fun initLikeState(binding: ItemParentCommentBinding) {
+        setupListens(binding)
+
         binding.apply {
             btnCommentLike.isLiked = comment.isLiked!!
             comment.likesCount?.let {
@@ -129,7 +132,6 @@ class CommentParentItem(
                 comment.likesCount ?: 0,
                 comment.likesCount ?: 0
             )
-
 
             btnCommentLike.setOnClickListener {
                 val isLiked = btnCommentLike.isLiked
@@ -155,6 +157,30 @@ class CommentParentItem(
 
                 onLikeClick(comment, isLiked)
             }
+        }
+    }
+
+    private fun setListensUI(binding: ItemParentCommentBinding, listensCountValue: Int) {
+
+        binding.listensCount.tag = listensCountValue
+        binding.listensCount.apply {
+            visibility = if (listensCountValue > 0) View.VISIBLE else View.GONE
+            text = binding.root.context.resources.getQuantityString(
+                R.plurals.listens_count,
+                listensCountValue,
+                listensCountValue
+            )
+        }
+    }
+
+    private fun setupListens(binding: ItemParentCommentBinding) {
+        setListensUI(binding, comment.listensCount ?: 0)
+
+        binding.audioPlayer.playListener = {
+            val newCount = binding.listensCount.tag as Int + 1
+            binding.listensCount.tag = newCount
+            setListensUI(binding, newCount)
+            onCommentListen.invoke(comment.id)
         }
     }
 

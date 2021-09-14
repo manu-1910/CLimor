@@ -102,31 +102,49 @@
         app:layout_constraintTop_toBottomOf="@+id/tvCommentContent"
         tools:visibility="visible" />
 
-    <TextView
-        android:id="@+id/likes_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_medium"
-        android:textColor="@color/textSecondary"
-        android:visibility="visible"
+    <LinearLayout
+        android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/audio_player"
         app:layout_constraintStart_toStartOf="@+id/tvCommentContent"
         app:layout_goneMarginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="0dp"
-        tools:text="1 Like" />
-
-    <TextView
-        android:id="@+id/reply_btn"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_medium"
-        android:text="@string/reply"
-        android:textColor="@color/colorAccent"
-        app:layout_constraintTop_toBottomOf="@id/audio_player"
-        app:layout_constraintStart_toEndOf="@id/likes_count"
-        app:layout_goneMarginTop="16dp" />
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/likes_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/textSecondary"
+            android:visibility="visible"
+            android:paddingEnd="16dp"
+            android:paddingStart="0dp"
+            tools:text="1 Like" />
+
+        <TextView
+            android:id="@+id/listens_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/textSecondary"
+            android:visibility="visible"
+            android:paddingEnd="16dp"
+            android:paddingStart="0dp"
+            tools:text="1 Listen" />
+
+        <TextView
+            android:id="@+id/reply_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
+            android:text="@string/reply"
+            android:textColor="@color/colorAccent"
+            />
+
+
+    </LinearLayout>
+
 
     <ImageButton
         android:id="@+id/btnCommentMore"

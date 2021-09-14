@@ -1,0 +1,8 @@
+mutation ListenCommentMutation($commentId: Int!){
+    listenComment(commentId: $commentId){
+        comment_id,
+        count,
+        listened,
+        created
+    }
+}
