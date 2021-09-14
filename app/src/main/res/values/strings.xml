@@ -84,6 +84,8 @@
     <string name="hint_caption">Caption here<font color='#FF0000'>*</font></string>
     <string name="hint_title">Title here<font color='#FF0000'>*</font></string>
 
+    <string name="text_seperator">C_TAG_SEP</string>
+
 
     <!-- Edit Screen -->
     <string name="yes">yes</string>

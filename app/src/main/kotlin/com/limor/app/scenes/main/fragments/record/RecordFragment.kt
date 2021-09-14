@@ -450,7 +450,7 @@ class RecordFragment : BaseFragment() {
                 if (!it.isNewRecording) {
                     uiDraft = it.copy()
                     uiDraft?.id = System.currentTimeMillis()
-                    uiDraft?.title = getString(R.string.autosave)
+                    uiDraft?.title = if(uiDraft?.title.isNullOrEmpty()) getString(R.string.autosave) else uiDraft?.title
                     if (it.filePath != null) {
                         val fileFromParent = File(it.filePath!!)
                         if (fileFromParent.exists()) {
