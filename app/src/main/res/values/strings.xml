@@ -616,6 +616,8 @@
     <string name="feed_is_empty_message">Home feed is empty</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="limor_patron_suggestion">Gain access and get all the latest features</string>
+    <string name="limor_patron_request">Request your invitation to be a Limor Patron</string>
+    <string name="limor_patron_requested">Request your invitation to be a Limor Patron</string>
     <string name="hastag_helper_text">Use \"#\" for hashtags</string>
     <string name="no_comments_message">There are no comments yet</string>
     <string name="bottom_menu_messenger">Messages</string>
@@ -662,6 +664,9 @@
     <string name="contact_us">Contact Us</string>
     <string name="required">*Required</string>
     <string name="limor_no_feed_text">Please follow some of the fantastic casters on our platform or publish a cast  to populate this feed</string>
+    <string name="request_invite">Request Invite</string>
+    <string name="requested">Requested</string>
+    <string name="dummy_plan_text">Choose the best plan that works for you</string>
 
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
