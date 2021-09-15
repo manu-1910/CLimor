@@ -453,6 +453,17 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         tvTime.text = "0:00"
     }
 
+    private fun syncUI() {
+
+    }
+
+    override fun onVisibilityChanged(changedView: View, visibility: Int) {
+        if (visibility != View.VISIBLE) {
+            setRecording(false)
+        }
+        super.onVisibilityChanged(changedView, visibility)
+    }
+
     override fun onDetachedFromWindow() {
         if (CompressedAudioRecorder.callback == this) {
             CompressedAudioRecorder.callback = null
