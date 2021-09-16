@@ -684,6 +684,7 @@ class RecordFragment : BaseFragment() {
                     //val durationFloatRoundedUp = kotlin.math.ceil(currentDurationInSecondsFloat)
                     // val durationMillisRoundedUp = (durationFloatRoundedUp * 1000).toInt()
                     c_meter.base = SystemClock.elapsedRealtime() - currentDurationInMillis
+                    Timber.d("Recorded Millis -> $currentDurationInMillis")
                     nextButton.visibility = View.VISIBLE
                     nextButton.isEnabled = false
                     timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
@@ -1129,8 +1130,11 @@ class RecordFragment : BaseFragment() {
         } else {
             recordButton.background =
                 ContextCompat.getDrawable(requireContext(), R.drawable.record_red_btn)
-            // Enable next button
-            nextButton.isEnabled = true
+            if(timeWhenStopped<-1000){
+                // Enable next button
+                nextButton.isEnabled = true
+            }
+
         }
     }
 
