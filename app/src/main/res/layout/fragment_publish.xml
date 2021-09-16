@@ -428,55 +428,58 @@
 
                             </RelativeLayout>
 
-                            <RelativeLayout
+                            <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="fill_parent"
-                                android:layout_height="62dip">
+                                android:layout_height="52dp">
 
                                 <ImageButton
                                     android:id="@+id/ibRew"
                                     style="@android:style/MediaButton"
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
-                                    android:layout_marginTop="6dp"
-                                    android:layout_marginEnd="@dimen/marginMedium"
-                                    android:layout_marginBottom="6dp"
+                                    android:layout_marginEnd="@dimen/marginLarge"
                                     android:layout_toStartOf="@id/ibPlayPause"
                                     android:contentDescription="@string/rewind"
                                     android:scaleType="fitCenter"
-                                    android:src="@drawable/rewind_5" />
+                                    android:src="@drawable/rewind_5"
+                                    app:layout_constraintBottom_toBottomOf="@+id/ibPlayPause"
+                                    app:layout_constraintEnd_toStartOf="@+id/ibPlayPause"
+                                    app:layout_constraintTop_toTopOf="@+id/ibPlayPause" />
 
                                 <ImageButton
                                     android:id="@+id/ibPlayPause"
                                     style="@android:style/MediaButton"
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
+                                    android:layout_width="52dp"
+                                    android:layout_height="52dp"
                                     android:layout_centerHorizontal="true"
                                     android:contentDescription="@string/play"
-                                    android:scaleType="fitCenter"
-                                    android:src="@drawable/ic_play" />
+                                    android:src="@drawable/play_button"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
 
                                 <ImageButton
                                     android:id="@+id/ibFfwd"
                                     style="@android:style/MediaButton"
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
-                                    android:layout_marginStart="@dimen/marginMedium"
-                                    android:layout_marginTop="6dp"
-                                    android:layout_marginBottom="6dp"
                                     android:layout_toEndOf="@id/ibPlayPause"
                                     android:contentDescription="@string/ffwd"
                                     android:scaleType="fitCenter"
-                                    android:src="@drawable/forward_5" />
+                                    android:src="@drawable/forward_5"
+                                    android:layout_marginStart="@dimen/marginLarge"
+                                    app:layout_constraintBottom_toBottomOf="@+id/ibPlayPause"
+                                    app:layout_constraintStart_toEndOf="@+id/ibPlayPause"
+                                    app:layout_constraintTop_toTopOf="@+id/ibPlayPause" />
 
-                            </RelativeLayout>
+                            </androidx.constraintlayout.widget.ConstraintLayout>
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/marginMedium"
-                            android:layout_marginEnd="@dimen/marginMedium"
-                            android:layout_marginBottom="@dimen/marginMedium"
+                            android:layout_margin="16dp"
                             android:orientation="horizontal"
                             android:weightSum="2">
 
@@ -512,6 +515,7 @@
                                 android:textSize="@dimen/textSize14" />
 
                         </LinearLayout>
+
                     </LinearLayout>
 
                 </LinearLayout>

@@ -633,7 +633,7 @@ class PublishFragment : BaseFragment() {
             btnPlayPause?.setImageDrawable(
                 ContextCompat.getDrawable(
                     requireContext(),
-                    R.drawable.ic_play
+                    R.drawable.ic_play_active
                 )
             )
         }
@@ -1079,7 +1079,7 @@ class PublishFragment : BaseFragment() {
                 btnPlayPause?.setImageDrawable(
                     ContextCompat.getDrawable(
                         requireContext(),
-                        R.drawable.ic_play
+                        R.drawable.ic_play_active
                     )
                 )
             }
@@ -1102,7 +1102,7 @@ class PublishFragment : BaseFragment() {
                         context?.let {
                             ContextCompat.getDrawable(
                                 it,
-                                R.drawable.ic_play
+                                R.drawable.ic_play_active
                             )
                         }
                     )
@@ -1122,7 +1122,7 @@ class PublishFragment : BaseFragment() {
                 btnPlayPause?.setImageDrawable(
                     ContextCompat.getDrawable(
                         requireContext(),
-                        R.drawable.ic_pause
+                        R.drawable.ic_pause_big
                     )
                 )
                 run = Runnable {
@@ -1145,7 +1145,7 @@ class PublishFragment : BaseFragment() {
                 btnPlayPause?.setImageDrawable(
                     ContextCompat.getDrawable(
                         requireContext(),
-                        R.drawable.ic_play
+                        R.drawable.ic_play_active
                     )
                 )
             }

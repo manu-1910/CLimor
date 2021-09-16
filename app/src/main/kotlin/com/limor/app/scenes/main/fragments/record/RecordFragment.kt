@@ -360,7 +360,7 @@ class RecordFragment : BaseFragment() {
             playButton.setImageDrawable(
                 ContextCompat.getDrawable(
                     requireContext(),
-                    R.drawable.ic_pause
+                    R.drawable.ic_pause_big
                 )
             )
         else
