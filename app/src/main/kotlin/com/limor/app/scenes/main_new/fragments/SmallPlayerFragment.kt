@@ -60,6 +60,7 @@ class SmallPlayerFragment : BaseFragment() {
         _binding = FragmentSmallPlayerBinding.inflate(inflater, container, false)
         podcastViewModel.loadCast(castId)
         subscribeToCastUpdates()
+        setClickListeners()
         return binding.root
     }
 
@@ -70,15 +71,18 @@ class SmallPlayerFragment : BaseFragment() {
         }
     }
 
+    private fun setClickListeners(){
+        binding.btnCloseMiniPlayer.setOnClickListener {
+            closePlayer()
+        }
+    }
+
     private fun initPlayerViews(cast: CastUIModel) {
         cast.imageLinks?.medium?.let {
             binding.ivAvatarMiniPlayer.loadCircleImage(it)
         }
         binding.tvMiniPlayerTitle.text = cast.title
 
-        binding.btnCloseMiniPlayer.setOnClickListener {
-            closePlayer()
-        }
         binding.btnMiniPlayerPlay.setOnClickListener {
             Timber.d("LOGGGG")
             cast.audio?.let { audio ->
