@@ -90,6 +90,19 @@ class SettingsFragment : BaseFragment() {
 //        swPushNotifications.isChecked = sessionManager.getStoredUser()!!.notifications_enabled
     }
 
+    private fun showWebPage(urlResId: Int, titleResId: Int) {
+        try {
+            findNavController().navigate(
+                R.id.action_settings_fragment_to_webview_fragment,
+                Bundle().apply {
+                    putString(getString(R.string.webViewKey), getString(urlResId))
+                    putString(WebViewFragment.KEY_TITLE, getString(titleResId))
+                }
+            )
+        } catch (e: IllegalArgumentException) {
+            Timber.e(getString(R.string.cant_open))
+        }
+    }
 
     private fun listeners(){
 
@@ -97,46 +110,18 @@ class SettingsFragment : BaseFragment() {
             findNavController().navigate(R.id.action_settings_fragment_to_edit_profile_fragment)
         }
 
-
-
-
         lytPrivacyPolicy.onClick {
-            try {
-                //mainViewModel.isFromPrivacyFlag = true
-                val bundle = Bundle()
-                bundle.putString(getString(R.string.webViewKey), getString(R.string.privacy_url))
-                findNavController().navigate(
-                    R.id.action_settings_fragment_to_webview_fragment,
-                    bundle
-                )
-            } catch (e: IllegalArgumentException) {
-                // User tried tapping!
-                Timber.e(getString(R.string.cant_open))
-            }
+            showWebPage(R.string.privacy_url, R.string.privacy_policy_title)
         }
-
 
         lytTermsAndConditions.onClick {
-            try {
-                //mainViewModel.isFromPrivacyFlag = true
-                val bundle = Bundle()
-                bundle.putString(getString(R.string.webViewKey), getString(R.string.terms_url))
-                findNavController().navigate(
-                    R.id.action_settings_fragment_to_webview_fragment,
-                    bundle
-                )
-            } catch (e: IllegalArgumentException) {
-                // User tried tapping!
-                Timber.e(getString(R.string.cant_open))
-            }
+            showWebPage(R.string.terms_url, R.string.tos_title)
         }
-
 
         swPushNotifications?.onClick {
             val currentStatus = swPushNotifications.isChecked
            // callToUpdateUser(userItem)
         }
-
 
         lytReportProblem.onClick {
             try {

@@ -348,7 +348,7 @@
 
     <string name="webViewKey">WEB_VIEW_KEY</string>
     <string name="privacy_url">https://www.limor.ie/privacy-policy</string>
-    <string name="terms_url">https://www.limor.ie/terms-and-conditions-of-use</string>
+    <string name="terms_url">https://limor.ie/terms-and-conditions</string>
     <string name="support_email">support@limor.ie</string>
     <string name="email_subject">Limor Support Request</string>
     <string name="request_from">Support request from</string>
@@ -664,6 +664,8 @@
     <string name="contact_us">Contact Us</string>
     <string name="required">*Required</string>
     <string name="limor_no_feed_text">Please follow some of the fantastic casters on our platform or publish a cast  to populate this feed</string>
+    <string name="tos_title">Terms &amp; Conditions</string>
+    <string name="privacy_policy_title">Privacy Policy</string>
 
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
