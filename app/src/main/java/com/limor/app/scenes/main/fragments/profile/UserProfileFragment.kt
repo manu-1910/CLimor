@@ -160,6 +160,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             setTabs(tabs.values.toList())
         }
 
+        binding.profileViewpager.isUserInputEnabled = false
         binding.profileViewpager.registerOnPageChangeCallback(object :
             ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {

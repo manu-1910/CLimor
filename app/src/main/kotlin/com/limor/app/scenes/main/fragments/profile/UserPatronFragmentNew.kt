@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.limor.app.FragmentShortItemSlider
 import com.limor.app.R
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
 import kotlinx.android.synthetic.main.fragment_waveform.view.*
@@ -26,20 +27,33 @@ class UserPatronFragmentNew(): Fragment() {
         return binding.root
     }
 
+    private fun setupViewPager() {
+        val items : ArrayList<FragmentShortItemSlider> = getAdapterItems()
+        binding.pager.adapter = ShortPagerAdapter(items,childFragmentManager,lifecycle)
+        binding.indicator.setViewPager(binding.pager)
+    }
+
+    private fun getAdapterItems(): ArrayList<FragmentShortItemSlider> {
+        val item1 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,R.drawable.ic_patron_welcome)
+        val item2 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,R.drawable.ic_patron_welcome)
+        val item3 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,R.drawable.ic_patron_welcome)
+        return arrayListOf(item1,item2,item3)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupViewPager()
         setOnClicks()
 
     }
 
     private fun setOnClicks() {
 
-        binding.inviteButton.setOnClickListener {
+        binding.patronButton.setOnClickListener {
             if(!requested){
-                binding.inviteButton.isEnabled = false
-                binding.inviteButton.text = getString(R.string.requested)
-                binding.patronStatusTv.text = getString(R.string.limor_patron_requested)
+                binding.patronButton.isEnabled = false
+                binding.patronButton.text = getString(R.string.requested)
                 binding.prProgress.progress = 0
             }
         }

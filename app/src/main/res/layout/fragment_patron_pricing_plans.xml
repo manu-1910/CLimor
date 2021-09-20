@@ -234,6 +234,29 @@
         <!--should remove above layouts-->
 
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <CheckBox
+                android:id="@+id/termsCheckBox"
+                android:layout_marginStart="@dimen/margin24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/termsTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/termsCheckBox"
+                android:fontFamily="@font/roboto"
+                android:gravity="start"
+                android:textColor="@color/grayWave"
+                android:textSize="18sp"/>
+            <!--Should set text from string plans_terms_text in respective class-->
+        </RelativeLayout>
+
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/continueButton"
             style="@android:style/Widget.Material.Button.Borderless.Colored"
