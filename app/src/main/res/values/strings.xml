@@ -664,6 +664,12 @@
     <string name="contact_us">Contact Us</string>
     <string name="required">*Required</string>
     <string name="limor_no_feed_text">Please follow some of the fantastic casters on our platform or publish a cast  to populate this feed</string>
+
+    <string name="select_image_option_title">Select Image Option:</string>
+    <string name="take_a_new_photo_option">Take A New Photo</string>
+    <string name="choose_from_gallery_option">Choose From Gallery</string>
+    <string name="crop_error_message__with_format">Could not crop image (%s).</string>
+
     <string name="tos_title">Terms &amp; Conditions</string>
     <string name="privacy_policy_title">Privacy Policy</string>
 
