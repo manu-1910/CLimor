@@ -191,6 +191,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         }
 
         btnPodcastStartVoiceComment.setOnClickListener {
+            btnPodcastStartVoiceComment.hideKeyboard()
             if (hasRecordPermissions(context)) {
                 showRecordingControls(true)
                 setRecording(true)
