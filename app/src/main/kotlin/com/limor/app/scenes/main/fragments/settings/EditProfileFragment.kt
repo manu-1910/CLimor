@@ -6,7 +6,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
@@ -42,7 +41,7 @@ import com.limor.app.scenes.main.fragments.record.RecordFragment
 import com.limor.app.scenes.main.viewmodels.UpdateUserViewModel
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.VoiceBioEvent
-import com.limor.app.uimodels.UIErrorResponse
+import com.limor.app.scenes.utils.VoiceBioInfo
 import com.limor.app.uimodels.UIUser
 import com.limor.app.uimodels.UserUIModel
 import com.limor.app.util.*
@@ -224,7 +223,9 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
             binding.etWebUrlInner.setText(it.website)
             binding.etBioInner.setText(it.bio)
 
-            binding.voiceBio.voiceBioAudioURL = it.voiceBioURL
+            it.voiceBioURL?.let { voiceBioUrl ->
+                binding.voiceBio.voiceBioInfo = VoiceBioInfo(voiceBioUrl, it.durationSeconds ?: 0.0)
+            }
 
             toggleVoiceLabel(it.voiceBioURL)
             listenForVoiceBioEvents()
