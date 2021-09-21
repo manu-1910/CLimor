@@ -117,8 +117,6 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector, PlayerVi
 
     override fun onDestroy() {
         super.onDestroy()
-        playerBinder.stop()
-        activityPlayerViewManager?.hidePlayer()
     }
 
 }
