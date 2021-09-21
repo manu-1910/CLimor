@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.limor.app.FragmentShortItemSlider
 import com.limor.app.R
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
+import com.limor.app.scenes.patron.FragmentShortItemSlider
 import kotlinx.android.synthetic.main.fragment_waveform.view.*
 
 class UserPatronFragmentNew(): Fragment() {
@@ -30,7 +30,7 @@ class UserPatronFragmentNew(): Fragment() {
     private fun setupViewPager() {
         val items : ArrayList<FragmentShortItemSlider> = getAdapterItems()
         binding.pager.adapter = ShortPagerAdapter(items,childFragmentManager,lifecycle)
-        binding.indicator.setViewPager(binding.pager)
+        binding.indicator.setViewPager2(binding.pager)
     }
 
     private fun getAdapterItems(): ArrayList<FragmentShortItemSlider> {

@@ -15,25 +15,28 @@
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/pager"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <me.relex.circleindicator.CircleIndicator3
+            <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
                 android:id="@+id/indicator"
-                android:layout_width="match_parent"
-                android:layout_height="34dp"
-                app:ci_width="10dp"
-                app:ci_height="5dp"
-                app:ci_margin="5dp"
-                app:ci_orientation="horizontal"
-                app:ci_drawable="@drawable/bg_round_yellow_ripple_new"
-                app:ci_drawable_unselected="@drawable/bg_round_grey_ripple_new"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:dotsColor="@color/dotsColor"
+                android:layout_marginTop="12dp"
+                app:dotsCornerRadius="8dp"
+                app:dotsSize="8dp"
+                app:dotsSpacing="5dp"
+                app:dotsWidthFactor="2.5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/pager"
-                app:ci_gravity="center"/>
+                app:progressMode="true"
+                app:selectedDotColor="@color/colorAccent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:visibility="visible"

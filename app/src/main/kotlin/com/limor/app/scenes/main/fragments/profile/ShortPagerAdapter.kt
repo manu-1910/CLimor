@@ -4,9 +4,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.limor.app.FragmentShortItemSlider
+import com.limor.app.scenes.patron.FragmentShortItemSlider
 
-class ShortPagerAdapter(val items:ArrayList<FragmentShortItemSlider>,val fm: FragmentManager, val lifecycle: Lifecycle) : FragmentStateAdapter(fm,lifecycle) {
+class ShortPagerAdapter(val items:ArrayList<FragmentShortItemSlider>, val fm: FragmentManager, val lifecycle: Lifecycle) : FragmentStateAdapter(fm,lifecycle) {
 
 
     override fun getItemCount(): Int {

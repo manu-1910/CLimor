@@ -1,11 +1,11 @@
-package com.limor.app
+package com.limor.app.scenes.patron
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.limor.app.databinding.FragmentShortItemSliderBinding
+import com.limor.app.R
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -14,36 +14,28 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [FragmentShortItemSlider.newInstance] factory method to
+ * Use the [FragmentPatronOnboarding.newInstance] factory method to
  * create an instance of this fragment.
  */
-class FragmentShortItemSlider : Fragment() {
+class FragmentPatronOnboarding : Fragment() {
     // TODO: Rename and change types of parameters
-    private var text: Int? = null
-    private var imageRes: Int? = null
+    private var param1: String? = null
+    private var param2: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            text = it.getInt(ARG_PARAM1)
-            imageRes = it.getInt(ARG_PARAM2)
+            param1 = it.getString(ARG_PARAM1)
+            param2 = it.getString(ARG_PARAM2)
         }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         // Inflate the layout for this fragment
-        val binding = FragmentShortItemSliderBinding.inflate(inflater,container,false)
-        imageRes?.let{
-            binding.patronStatusIv.setImageResource(it)
-        }
-        text?.let{
-            binding.patronStatusTv.text = getString(it)
-        }
-
-        return binding.root
+        return inflater.inflate(R.layout.fragment_patron_onboarding, container, false)
     }
 
     companion object {
@@ -53,15 +45,15 @@ class FragmentShortItemSlider : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment FragmentShortItemSlider.
+         * @return A new instance of fragment FragmentPatronOnboarding.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: Int, param2: Int) =
-            FragmentShortItemSlider().apply {
+        fun newInstance(param1: String, param2: String) =
+            FragmentPatronOnboarding().apply {
                 arguments = Bundle().apply {
-                    putInt(ARG_PARAM1, param1)
-                    putInt(ARG_PARAM2, param2)
+                    putString(ARG_PARAM1, param1)
+                    putString(ARG_PARAM2, param2)
                 }
             }
     }

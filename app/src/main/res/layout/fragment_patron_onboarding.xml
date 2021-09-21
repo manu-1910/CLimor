@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:tools="http://schemas.android.com/tools"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     tools:context=".FragmentPatronOnboarding">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/patronAudioProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:indicatorColor="@color/colorAccent"
+            app:indicatorDirectionCircular="clockwise"
+            app:indicatorSize="68dp"
+            android:layout_margin="@dimen/margin24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:trackColor="@color/dark_transparent"
+            app:trackCornerRadius="4dp"
+            tools:progress="45"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:text="15"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textAlignment="gravity"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/patronAudioProgressBar"
+            app:layout_constraintEnd_toEndOf="@+id/patronAudioProgressBar"
+            app:layout_constraintStart_toStartOf="@+id/patronAudioProgressBar"
+            app:layout_constraintTop_toTopOf="@+id/patronAudioProgressBar" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@drawable/ic_play_filled"
+            app:layout_constraintBottom_toBottomOf="@+id/patronAudioProgressBar"
+            app:layout_constraintEnd_toEndOf="@+id/patronAudioProgressBar"
+            app:layout_constraintStart_toStartOf="@+id/patronAudioProgressBar"
+            app:layout_constraintTop_toTopOf="@+id/patronAudioProgressBar" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@id/indicator"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginBottom="44dp"/>
+
+        <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
+            android:id="@+id/indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:dotsColor="@color/dotsColor"
+            app:dotsCornerRadius="8dp"
+            android:layout_marginBottom="54dp"
+            app:dotsSize="8dp"
+            app:dotsSpacing="5dp"
+            app:dotsWidthFactor="2.5"
+            app:layout_constraintBottom_toTopOf="@+id/btnContinue"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:progressMode="true"
+            app:selectedDotColor="@color/colorAccent" />
+
+        <Button
+            android:id="@+id/btnBack"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="@dimen/margin48"
+            android:text="@string/btn_skip"
+            android:textColor="@color/black"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnContinue"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btnContinue"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/continue_button"
+            app:layout_goneMarginBottom="@dimen/margin48"
+            android:background="@drawable/btn_primary_background"
+            app:icon="@drawable/baseline_arrow_forward_black_24dp"
+            app:iconGravity="textEnd"
+            app:iconSize="16dp"
+            app:iconTint="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/btnBack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btnBack" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+</FrameLayout>
