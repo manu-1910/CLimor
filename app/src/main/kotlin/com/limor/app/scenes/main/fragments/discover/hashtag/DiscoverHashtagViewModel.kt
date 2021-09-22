@@ -22,7 +22,7 @@ class DiscoverHashtagViewModel @Inject constructor(
 
     fun loadCasts(tagId: Int) {
         viewModelScope.launch {
-            getCastsByHashtagUseCase.execute(tagId, limit = 5)
+            getCastsByHashtagUseCase.execute(tagId)
                 .onSuccess {
                     _recentCasts.value = it.sortedBy { it.createdAt }
                 }
