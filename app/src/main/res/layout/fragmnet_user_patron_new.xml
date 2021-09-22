@@ -6,7 +6,8 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -46,6 +47,14 @@
                 android:layout_marginTop="24dp"
                 app:layout_constraintTop_toBottomOf="@id/indicator">
 
+                <View
+                    android:id="@+id/patronDivider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentTop="true"
+                    android:alpha="0.12"
+                    android:background="@color/notification_divider"
+                    app:layout_constraintTop_toBottomOf="@id/mangePatronTV" />
 
                 <View
                     android:id="@+id/upperDivider"
@@ -53,8 +62,9 @@
                     android:layout_height="1dp"
                     android:layout_alignParentTop="true"
                     android:alpha="0.12"
+                    android:layout_marginTop="24dp"
                     android:background="@color/notification_divider"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/managePatronDescriptionTV" />
 
                 <View
                     android:id="@+id/lowerDivider"
@@ -63,16 +73,27 @@
                     android:layout_alignParentTop="true"
                     android:alpha="0.12"
                     android:background="@color/notification_divider"
-                    app:layout_constraintTop_toBottomOf="@id/player_view" />
+                    app:layout_constraintTop_toBottomOf="@id/audio_player" />
+
+                <com.limor.app.components.CommentAudioPlayerView
+                    android:id="@+id/audio_player"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:padding="12dp"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/upperDivider" />
 
                 <RelativeLayout
+                    android:visibility="gone"
                     android:id="@+id/player_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toBottomOf="@id/upperDivider">
 
 
                     <de.hdodenhof.circleimageview.CircleImageView
@@ -146,11 +167,51 @@
                     android:paddingTop="14dp"
                     android:paddingBottom="14dp"
                     android:text="@string/request_invite"
+                    android:textStyle="bold"
                     android:textAllCaps="false"
                     android:textColor="@color/text_btn_primary_color"
                     android:textSize="@dimen/textSize14"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/lowerDivider" />
+
+
+
+                <TextView
+                    android:id="@+id/mangePatronTV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@drawable/ic_rigth_arrow"
+                    android:fontFamily="@font/roboto_medium"
+                    android:gravity="start"
+                    android:padding="20dp"
+                    android:text="@string/limor_patron_manage"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/managePatronDescriptionTV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:fontFamily="@font/roboto_medium"
+                    android:gravity="center"
+                    android:text="@string/limor_patron_manage_description"
+                    android:textColor="@color/grayWave"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mangePatronTV"/>
+
+                <androidx.constraintlayout.widget.Group
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="mangePatronTV,managePatronDescriptionTV,patronDivider"
+                    android:id="@+id/managePatronStateLayout"
+                    android:visibility="gone"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -212,6 +273,8 @@
                 app:constraint_referenced_ids="emptyStateIv,emptyStateTv"
                 android:id="@+id/emptyStateLayout"
                 android:visibility="gone"/>
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

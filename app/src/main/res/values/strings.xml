@@ -667,9 +667,13 @@
     <string name="request_invite">Request Invite</string>
     <string name="requested">Requested</string>
     <string name="dummy_plan_text">Choose the best plan that works for you</string>
-    <string name="limor_patron_empty_state">No Cast Available</string>
+    <string name="limor_patron_empty_state">Record your first Limor Patron cast and start earning money from your voice</string>
     <string name="plans_terms_text"><![CDATA[<html> After free trial it will cost 12.99 / Month. <br/> Please visit our <a href="http://google.com">Terms and Conditions</a> </html]]></string>
     <string name="limor_patron_complete">Your Limor Patron onboarding is complete</string>
+    <string name="limor_patron_manage_description">In order to begin receiving payment via your Limor Patron account please set up your digital wallet</string>
+    <string name="limor_patron_manage">Manage Limor Patron</string>
+    <string name="patron_empty_state_other">This user has no cast available</string>
+    <string name="limorPatronSetup">Setup My Limor Patron</string>
 
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>

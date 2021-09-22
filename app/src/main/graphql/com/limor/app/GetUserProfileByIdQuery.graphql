@@ -28,5 +28,7 @@ query GetUserProfileByIdQuery($id: Int!){
         sharing_url
         voice_bio_url
         duration
+        isPatron
+        patronInvitationStatus
     }
 }

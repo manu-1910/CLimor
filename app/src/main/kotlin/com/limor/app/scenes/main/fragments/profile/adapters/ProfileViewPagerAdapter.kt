@@ -7,9 +7,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.limor.app.scenes.main.fragments.profile.UserPatronFragmentNew
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsFragmentNew
+import com.limor.app.uimodels.UserUIModel
 
 class ProfileViewPagerAdapter(
-    private val userId: Int,
+    private val user: UserUIModel,
     @NonNull fragmentManager: FragmentManager,
     lifecycleOwner: Lifecycle
 ) :
@@ -21,8 +22,8 @@ class ProfileViewPagerAdapter(
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> UserPodcastsFragmentNew.newInstance(userId)
-            else -> UserPatronFragmentNew()
+            0 -> UserPodcastsFragmentNew.newInstance(user)
+            else -> UserPatronFragmentNew(user)
         }
     }
 }

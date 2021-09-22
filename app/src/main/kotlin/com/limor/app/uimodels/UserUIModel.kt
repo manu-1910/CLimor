@@ -30,7 +30,9 @@ data class UserUIModel(
     val isAutoplayEnabled: Boolean?,
     val sharingUrl: String?,
     var voiceBioURL: String?,
-    var durationSeconds: Double?
+    var durationSeconds: Double?,
+    val isPatron: Boolean? = false,
+    var patronInvitationStatus: String? = null
 ) : Parcelable {
 
     fun getFullName() = if(firstName == null && lastName == null) username else String.format("%s %s", firstName, lastName)
@@ -133,7 +135,7 @@ fun GetUserProfileQuery.GetUser.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration, patronInvitationStatus = patronInvitationStatus,isPatron = isPatron
     )
 
 
@@ -149,7 +151,7 @@ fun GetUserProfileByIdQuery.GetUserById.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration, patronInvitationStatus = patronInvitationStatus,isPatron = isPatron
     )
 
 fun GetUserPodcastsQuery.Owner.mapToUIModel(): UserUIModel =

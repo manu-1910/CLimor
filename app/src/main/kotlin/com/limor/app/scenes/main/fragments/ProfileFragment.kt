@@ -103,7 +103,7 @@ class ProfileFragment : FragmentWithLoading(), Injectable {
         get() = model.profileErrorLiveData
 
     private fun setupViewPager(user: UserUIModel) {
-        val adapter = ProfileViewPagerAdapter(user.id, childFragmentManager, lifecycle)
+        val adapter = ProfileViewPagerAdapter(user, childFragmentManager, lifecycle)
         binding.profileViewpager.adapter = adapter
     }
 

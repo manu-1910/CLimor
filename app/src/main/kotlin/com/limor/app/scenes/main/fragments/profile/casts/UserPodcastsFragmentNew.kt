@@ -38,6 +38,7 @@ import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.UserUIModel
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 import kotlinx.coroutines.launch
@@ -48,8 +49,8 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
 
     companion object {
         private const val USER_ID_KEY = "USER_ID_KEY"
-        fun newInstance(userId: Int) = UserPodcastsFragmentNew().apply {
-            arguments = bundleOf(USER_ID_KEY to userId)
+        fun newInstance(user: UserUIModel) = UserPodcastsFragmentNew().apply {
+            arguments = bundleOf(USER_ID_KEY to user)
         }
     }
 
@@ -63,7 +64,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
     private val podcastInteractionViewModel: PodcastInteractionViewModel by activityViewModels { viewModelFactory }
 
-    private val userId: Int by lazy { requireArguments().getInt(USER_ID_KEY) }
+    private val user: UserUIModel by lazy { requireArguments().getParcelable(USER_ID_KEY)!! }
 
     private var castOffset = 0
     private var sharedPodcastId = -1
@@ -159,7 +160,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     private fun reloadCurrentCasts() {
         val loadedCount = currentCasts.size
         castOffset = 0
-        viewModel.loadCasts(userId, loadedCount, castOffset)
+        viewModel.loadCasts(user.id, loadedCount, castOffset)
     }
 
     private fun subscribeForEvents() {
@@ -214,7 +215,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
             currentCasts.clear()
             lifecycleScope.launch {
                 JwtChecker.getUserIdFromJwt(false)?.let {
-                    if (userId == it) {
+                    if (user.id == it) {
                         if (casts.isEmpty()) {
                             binding.noPodcastsLayout.visibility = View.VISIBLE
                         }
@@ -259,8 +260,8 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     }
 
     private fun loadCasts() {
-        Timber.d("Profile Casts Loading for ${userId}")
-        viewModel.loadCasts(userId, Constants.CAST_BATCH_SIZE, castOffset)
+        Timber.d("Profile Casts Loading for ${user.id}")
+        viewModel.loadCasts(user.id, Constants.CAST_BATCH_SIZE, castOffset)
     }
 
     private fun onCastClick(cast: CastUIModel) {

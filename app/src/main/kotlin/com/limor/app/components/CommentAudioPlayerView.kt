@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.Duration
 
-class CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
+class  CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
 
     private val binding = ViewCommentAudioPlayerBinding
         .inflate(LayoutInflater.from(context), this, true)

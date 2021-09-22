@@ -6,6 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.limor.app.R
+import com.limor.app.databinding.FragmentPatronOnboardingBinding
+import com.limor.app.databinding.FragmnetUserPatronNewBinding
+import com.limor.app.scenes.main.fragments.profile.ShortPagerAdapter
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,7 +24,7 @@ class FragmentPatronOnboarding : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
+    lateinit var binding:FragmentPatronOnboardingBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -33,9 +36,14 @@ class FragmentPatronOnboarding : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_patron_onboarding, container, false)
+    ): View {
+        binding =  FragmentPatronOnboardingBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupViewPager()
     }
 
     companion object {
@@ -56,5 +64,18 @@ class FragmentPatronOnboarding : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    private fun setupViewPager() {
+        val items : ArrayList<FragmentShortItemSlider> = getAdapterItems()
+        binding.pager.adapter = ShortPagerAdapter(items,childFragmentManager,lifecycle)
+        binding.indicator.setViewPager2(binding.pager)
+    }
+
+    private fun getAdapterItems(): ArrayList<FragmentShortItemSlider> {
+        val item1 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,R.drawable.ic_patron_welcome)
+        val item2 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,R.drawable.ic_patron_welcome)
+        val item3 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,R.drawable.ic_patron_welcome)
+        return arrayListOf(item1,item2,item3)
     }
 }
