@@ -45,29 +45,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressUpload" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/filledTextField"
-        style="@style/TextInputLayoutComment"
+    <EditText
+        android:id="@+id/comment_text"
+        android:background="@drawable/rounded_edittext"
         android:layout_width="0dp"
         android:layout_height="@dimen/commentFooterHeight"
         android:layout_marginStart="72dp"
         android:layout_marginEnd="8dp"
         android:layout_weight="1"
+        android:maxLength="300"
+        android:maxLines="3"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:textSize="16sp"
         android:hint="@string/hint_write_a_comment"
-        app:endIconMode="custom"
-        app:endIconTint="@color/subtitle_text_color"
+        android:textColorHint="@color/subtitle_text_color"
         app:layout_constraintEnd_toStartOf="@+id/btnPodcastSendComment"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressUpload">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/comment_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLength="300"
-            android:maxLines="3" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintTop_toBottomOf="@+id/progressUpload"/>
 
     <LinearLayout
         android:id="@+id/layoutRecordingControls"
@@ -82,7 +77,7 @@
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filledTextField">
+        app:layout_constraintTop_toBottomOf="@+id/comment_text">
 
         <ImageButton
             android:id="@+id/btnPodcastStartStopVoice"
