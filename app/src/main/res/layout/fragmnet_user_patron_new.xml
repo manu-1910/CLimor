@@ -36,7 +36,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/pager"
-                app:progressMode="true"
+                app:progressMode="false"
                 app:selectedDotColor="@color/colorAccent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
