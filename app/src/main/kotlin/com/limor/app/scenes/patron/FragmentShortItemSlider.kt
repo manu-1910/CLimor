@@ -6,6 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.limor.app.databinding.FragmentShortItemSliderBinding
+import android.text.style.ForegroundColorSpan
+import android.text.SpannableString
+import android.text.Spanned
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,17 +34,40 @@ class FragmentShortItemSlider : Fragment() {
         }
     }
 
+    private fun fixSpanColor(text: CharSequence): CharSequence {
+        return if (text is Spanned) {
+            val s = SpannableString(text)
+            val spans = s.getSpans(
+                0, s.length,
+                ForegroundColorSpan::class.java
+            )
+            for (oldSpan in spans) {
+                val newSpan = ForegroundColorSpan(oldSpan.foregroundColor or -0x1000000)
+                s.setSpan(
+                    newSpan,
+                    s.getSpanStart(oldSpan),
+                    s.getSpanEnd(oldSpan),
+                    s.getSpanFlags(oldSpan)
+                )
+                s.removeSpan(oldSpan)
+            }
+            s
+        } else {
+            text
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        val binding = FragmentShortItemSliderBinding.inflate(inflater,container,false)
-        imageRes?.let{
+        val binding = FragmentShortItemSliderBinding.inflate(inflater, container, false)
+        imageRes?.let {
             binding.patronStatusIv.setImageResource(it)
         }
-        text?.let{
-            binding.patronStatusTv.text = getString(it)
+        text?.let {
+            binding.patronStatusTv.text = fixSpanColor(getText(it))
         }
 
         return binding.root
