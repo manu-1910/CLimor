@@ -28,7 +28,9 @@ query GetUserProfile{
         sharing_url
         voice_bio_url
         duration
-        isPatron
         patronInvitationStatus
+        isPatron
+        patronAudioURL
+        patronAudioDuration
     }
 }
