@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.limor.app.R
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
 import com.limor.app.scenes.auth_new.util.PrefsHandler
@@ -13,8 +15,13 @@ import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.UserUIModel
 import kotlinx.android.synthetic.main.fragment_waveform.view.*
 import java.time.Duration
+import javax.inject.Inject
 
 class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val model: UserProfileViewModel by viewModels { viewModelFactory }
 
     lateinit var binding:FragmnetUserPatronNewBinding
     var requested = false
@@ -145,6 +152,10 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
         }
     }
 
+    private fun requestInvitation() {
+        model.requestPatronInvitation(user.id)
+    }
+
     private fun setOnClicks() {
 
         binding.patronButton.setOnClickListener {
@@ -155,8 +166,7 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
                     binding.patronButton.text = getString(R.string.requested)
                     binding.prProgress.progress = 0
 
-                    user.patronInvitationStatus = "APPROVED"
-                    handleUIStates(true)
+                    requestInvitation()
                 }
                 "APPROVED" -> {
                     //Should setup Limor patron
