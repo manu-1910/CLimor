@@ -115,22 +115,32 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:textColor="@color/subtitle_text_color"
-        app:layout_constraintEnd_toStartOf="@id/btnCommentLike"
+        app:layout_constraintEnd_toStartOf="@id/likeCommentLayout"
         app:layout_constraintStart_toStartOf="@id/tvCommentName"
         app:layout_constraintTop_toBottomOf="@id/ivCommentAvatar"
         tools:text="@string/lorem" />
 
-    <com.limor.app.components.LikeButton
-        android:id="@+id/btnCommentLike"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+    <FrameLayout
+        android:id="@+id/likeCommentLayout"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:background="@color/transparent"
-        android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivCommentAvatar"
-        app:unliked_color="@color/textPrimary" />
+        android:foreground="?android:attr/selectableItemBackground">
+
+        <com.limor.app.components.LikeButton
+            android:id="@+id/btnCommentLike"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@color/transparent"
+            android:padding="8dp"
+            android:layout_gravity="center"
+            app:unliked_color="@color/textPrimary" />
+
+
+    </FrameLayout>
 
     <com.limor.app.components.CommentAudioPlayerView
         android:id="@+id/audio_player"
@@ -140,7 +150,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:visibility="gone"
-        app:layout_constraintEnd_toStartOf="@+id/btnCommentLike"
+        app:layout_constraintEnd_toStartOf="@+id/likeCommentLayout"
         app:layout_constraintStart_toEndOf="@+id/ivCommentAvatar"
         app:layout_constraintTop_toBottomOf="@+id/tvCommentContent"
         tools:visibility="visible" />

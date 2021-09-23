@@ -143,7 +143,8 @@ class CommentChildItem(
                 comment.likesCount ?: 0
             )
 
-            btnCommentLike.setOnClickListener {
+            likeCommentLayout.setOnClickListener {
+                btnCommentLike.isLiked = !btnCommentLike.isLiked
                 val isLiked = btnCommentLike.isLiked
                 val textLikesCount =
                     likesCount.text.toString().takeWhile { it.isDigit() || it == '-' }.toInt()
