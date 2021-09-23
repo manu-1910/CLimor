@@ -77,8 +77,12 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
                 binding.baseImageTextLayout.visibility = View.GONE
                 binding.managePatronStateLayout.visibility = View.GONE
                 binding.requestStateLayout.visibility = View.GONE
-            }
-            else{
+
+            } else {
+
+                // audio should be present for all patron invitation statuses
+                setupAudioPlayer(user.patronAudioURL, user.patronAudioDurationSeconds)
+
                 when (user.patronInvitationStatus) {
                     null -> {
                         //Show empty state here
@@ -90,7 +94,6 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
                     "NOT_REQUESTED" -> {
                         //Show Request Invite state
                         setupViewPager(getNormalStateItems())
-                        setupAudioPlayer(user.voiceBioURL,9.00)
                         binding.patronButton.text = getString(R.string.request_invite)
                         binding.emptyStateLayout.visibility = View.GONE
                         binding.baseImageTextLayout.visibility = View.VISIBLE
@@ -127,7 +130,7 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
 
     }
 
-    private fun setupAudioPlayer(url:String?,durationSeconds:Double?){
+    private fun setupAudioPlayer(url:String?, durationSeconds:Double?) {
         if (url.isNullOrEmpty()) {
             binding.audioPlayer.visibility = View.GONE
         } else {
