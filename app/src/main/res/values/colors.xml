@@ -142,7 +142,7 @@
         @color/textSecondary
     </color>
     <color name="grayWave">#91A2B2</color>
-    <color name="dotsColor">#3391A2B2</color>
+    <color name="dotsColor">#4891A2B2</color>
     <color name="orangeColor">#FF9800</color>
 
     <color name="subtitle_text_color">#91A2B2</color>
