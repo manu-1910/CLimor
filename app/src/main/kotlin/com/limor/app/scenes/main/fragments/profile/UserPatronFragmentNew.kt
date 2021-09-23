@@ -37,9 +37,9 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
     }
 
     private fun getNormalStateItems(): ArrayList<FragmentShortItemSlider> {
-        val item1 = FragmentShortItemSlider.newInstance(R.string.patron_carousel_slide_1_title, R.drawable.ic_patron_welcome)
-        val item2 = FragmentShortItemSlider.newInstance(R.string.patron_carousel_slide_2_title, R.drawable.ic_patron_welcome)
-        val item3 = FragmentShortItemSlider.newInstance(R.string.patron_carousel_slide_3_title, R.drawable.ic_patron_welcome)
+        val item1 = FragmentShortItemSlider.newInstance(R.string.patron_carousel_slide_1_title, R.drawable.patron_carousel_slide_1_image)
+        val item2 = FragmentShortItemSlider.newInstance(R.string.patron_carousel_slide_2_title, R.drawable.patron_carousel_slide_2_image)
+        val item3 = FragmentShortItemSlider.newInstance(R.string.patron_carousel_slide_3_title, R.drawable.patron_carousel_slide_3_image)
         return arrayListOf(item1,item2,item3)
     }
 
