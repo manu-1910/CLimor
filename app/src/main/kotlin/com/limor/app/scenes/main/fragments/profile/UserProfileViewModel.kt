@@ -103,5 +103,11 @@ class UserProfileViewModel @Inject constructor(
         _userProfileData.value = null
     }
 
+    fun requestPatronInvitation(userId: Int) {
+        viewModelScope.launch {
+            userInfoProvider.userRepository.requestPatronInvitation(userId)
+        }
+    }
+
 
 }
