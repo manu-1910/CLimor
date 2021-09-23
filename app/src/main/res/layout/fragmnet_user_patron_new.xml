@@ -78,7 +78,7 @@
                 <com.limor.app.components.CommentAudioPlayerView
                     android:id="@+id/audio_player"
                     android:layout_width="match_parent"
-                    android:layout_height="64dp"
+                    android:layout_height="wrap_content"
                     android:padding="12dp"
                     android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
