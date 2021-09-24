@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.limor.app.R
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
+import com.limor.app.extensions.isOnline
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.patron.FragmentShortItemSlider
 import com.limor.app.scenes.utils.Commons
@@ -177,7 +178,11 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
     }
 
     private fun requestInvitation() {
-        model.requestPatronInvitation(user.id)
+        if(requireContext().isOnline()){
+            model.requestPatronInvitation(user.id)
+        }else{
+            binding.root.snackbar("Not Network")
+        }
     }
 
     private fun setOnClicks() {
