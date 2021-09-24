@@ -158,6 +158,8 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
                 handleUIStates()
             }else{
                 binding.root.snackbar("Patron Invitation wasn't requested")
+                user.patronInvitationStatus = "NOT_REQUESTED"
+                handleUIStates()
             }
         })
     }
@@ -191,10 +193,8 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
             when (user.patronInvitationStatus) {
                 "NOT_REQUESTED" -> {
                     //Should request patron invitation
-                    /*binding.patronButton.isEnabled = false
-                    binding.patronButton.text = getString(R.string.requested)
-                    binding.prProgress.progress = 0*/
-
+                    binding.patronButton.isEnabled = false
+                    binding.patronButton.text = getString(R.string.requesting)
                     requestInvitation()
                 }
                 "APPROVED" -> {

@@ -683,5 +683,6 @@
     <string name="patron_carousel_slide_1_title">Create AMA <font fgcolor='#F9BB4B'>DM’s</font> and more with your fans</string>
     <string name="patron_carousel_slide_2_title">Create premium <font fgcolor='#F9BB4B'>casts</font> for your community</string>
     <string name="patron_carousel_slide_3_title">Freedom to <font fgcolor='#F9BB4B'>monetize</font> your content</string>
+    <string name="requesting">Requesting...</string>
 
 </resources>
