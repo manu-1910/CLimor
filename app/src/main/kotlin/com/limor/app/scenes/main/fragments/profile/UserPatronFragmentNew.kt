@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main.fragments.profile
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +14,9 @@ import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.patron.FragmentShortItemSlider
 import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.UserUIModel
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_waveform.view.*
+import org.jetbrains.anko.design.snackbar
 import java.time.Duration
 import javax.inject.Inject
 
@@ -28,7 +31,10 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
     companion object {
         fun newInstance(user: UserUIModel) = UserPatronFragmentNew(user)
     }
-
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        AndroidSupportInjection.inject(this)
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -58,25 +64,29 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        when (user.id) {
-            PrefsHandler.getCurrentUserId(requireContext()) -> {
-                //Current user
-                handleUIStates(true)
-            }
-            else -> {
-                //Other user
-                handleUIStates(false)
-            }
-        }
+        handleUIStates()
         setOnClicks()
 
 
     }
 
-    private fun handleUIStates(currentUser: Boolean){
-        binding.emptyStateTv.text =  if (currentUser) {getString(R.string.limor_patron_empty_state)} else getString(R.string.patron_empty_state_other)
+    private fun currentUser(): Boolean {
+        return when (user.id) {
+            PrefsHandler.getCurrentUserId(requireContext()) -> {
+                //Current user
+                true
+            }
+            else -> {
+                //Other user
+                false
+            }
+        }
+    }
+
+    private fun handleUIStates(){
+        binding.emptyStateTv.text =  if (currentUser()) {getString(R.string.limor_patron_empty_state)} else getString(R.string.patron_empty_state_other)
         binding.patronButton.isEnabled = true
-        if(currentUser){
+        if(currentUser()){
             if(user.isPatron == true){
                 //is already a patron
                 //load patron feed
@@ -106,12 +116,13 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
                         binding.baseImageTextLayout.visibility = View.VISIBLE
                         binding.managePatronStateLayout.visibility = View.GONE
                         binding.requestStateLayout.visibility = View.VISIBLE
+
+                        subscribeToInvite()
                     }
                     "REQUESTED" -> {
                         setupViewPager(getNormalStateItems())
                         binding.patronButton.isEnabled = false
                         binding.patronButton.text = getString(R.string.requested)
-                        binding.prProgress.progress = 0
                     }
                     "APPROVED" -> {
                         //Approved but note yet setup
@@ -135,6 +146,18 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
             binding.requestStateLayout.visibility = View.GONE
         }
 
+    }
+
+    private fun subscribeToInvite() {
+        model.patronInviteStatus.observe(viewLifecycleOwner,{
+            inviteStatus ->
+            if(inviteStatus == "Success"){
+                user.patronInvitationStatus = "REQUESTED"
+                handleUIStates()
+            }else{
+                binding.root.snackbar("Patron Invitation wasn't requested")
+            }
+        })
     }
 
     private fun setupAudioPlayer(url:String?, durationSeconds:Double?) {

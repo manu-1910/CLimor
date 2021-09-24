@@ -23,6 +23,9 @@ abstract class UserProfileActivityFragmentsBuildersModule {
     abstract fun contributeUserProfileFragmentInjector(): UserProfileFragment
 
     @ContributesAndroidInjector
+    abstract fun contributeUserPatronFragmentInjector(): UserPatronFragmentNew
+
+    @ContributesAndroidInjector
     abstract fun contributeProfileFragmentInjector(): ProfileFragment
 
     @ContributesAndroidInjector

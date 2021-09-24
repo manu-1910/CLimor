@@ -31,6 +31,11 @@ class UserProfileViewModel @Inject constructor(
     val userProfileData: LiveData<UserUIModel?>
         get() = _userProfileData
 
+    private var _patronInviteStatus =
+        MutableLiveData<String?>()
+    val patronInviteStatus: LiveData<String?>
+        get() = _patronInviteStatus
+
     fun getUserProfile(){
         viewModelScope.launch {
             try {
@@ -105,7 +110,7 @@ class UserProfileViewModel @Inject constructor(
 
     fun requestPatronInvitation(userId: Int) {
         viewModelScope.launch {
-            userInfoProvider.userRepository.requestPatronInvitation(userId)
+            _patronInviteStatus.value =  userInfoProvider.userRepository.requestPatronInvitation(userId)
         }
     }
 

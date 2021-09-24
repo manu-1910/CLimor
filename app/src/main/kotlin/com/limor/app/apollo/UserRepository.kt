@@ -153,11 +153,11 @@ class UserRepository @Inject constructor(val apollo: Apollo){
             Timber.d("createUserDevice -> $id")
     }
 
-    suspend fun requestPatronInvitation(userId: Int): String {
+    suspend fun requestPatronInvitation(userId: Int): String? {
         val query = CreatePatronInvitationRequestMutation(userId)
         val result = apollo.mutate(query)
-        val status = result?.data?.createPatronInvitationRequest?.status ?: ""
-        Timber.d("sendUserOnboardingStatus -> $status")
+        val status: String? = result?.data?.createPatronInvitationRequest?.status
+        Timber.d("patronInvitationRequestStatus -> $status")
         return status
     }
 
