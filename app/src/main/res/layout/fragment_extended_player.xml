@@ -98,6 +98,7 @@
         android:scaleType="fitCenter"
         android:visibility="invisible"
         android:src="@drawable/ic_3_dots_horizontal"
+        android:tint="@color/white"
         app:layout_constraintBottom_toBottomOf="@id/shadowTop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/ivPodcastBackground" />
