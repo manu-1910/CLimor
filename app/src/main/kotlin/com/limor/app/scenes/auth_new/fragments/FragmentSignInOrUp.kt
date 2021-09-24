@@ -2,14 +2,19 @@ package com.limor.app.scenes.auth_new.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import com.google.firebase.FirebaseApp
 import com.limor.app.BuildConfig
 import com.limor.app.R
+import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.*
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in_or_up.*
 import timber.log.Timber
 
@@ -24,10 +29,19 @@ class FragmentSignInOrUp : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val description = resources.getString(R.string.sign_in_sign_up_enter_before_2021)
+        val content = SpannableString(description)
+        content.setSpan(ForegroundColorSpan(resources.getColor(R.color.colorAccent)), description.lastIndexOf('S'), description.length, 0)
+        content.setSpan(UnderlineSpan(), description.lastIndexOf('S'), description.length, 0)
+        enteredBeforeTV.setText(content, TextView.BufferType.SPANNABLE)
+
         btnSignInNew.setOnClickListener {
+            val args = Bundle()
+            args.putBoolean(FragmentSignIn.IS_MIGRATION_FLOW, false)
             Timber.d("SignIn Clicked")
             view.findNavController()
-                .navigate(R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_in)
+                .navigate(R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_in, args)
         }
 
         btnSignUpNew.setOnClickListener {
@@ -41,7 +55,14 @@ class FragmentSignInOrUp : Fragment() {
                 .navigate(destinationId)
         }
 
-        addVersionInfo()
+        enteredBeforeTV.setOnClickListener {
+            val args = Bundle()
+            args.putBoolean(FragmentSignIn.IS_MIGRATION_FLOW, true)
+            view.findNavController()
+                .navigate(R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_in, args)
+        }
+
+        //addVersionInfo()
     }
 
     @SuppressLint("SetTextI18n")
@@ -54,4 +75,5 @@ class FragmentSignInOrUp : Fragment() {
             textView7.text = "${textView7.text}\n\n$info\n\n$fbInfo"
         }
     }
+
 }

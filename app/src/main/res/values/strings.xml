@@ -24,8 +24,9 @@
     <string name="error_empty_field_template">%1$s must not be empty</string>
     <string name="reset_password">Reset password</string>
     <string name="you_have_no_permissions_facebook">You have not granted the required permissions to login with Facebook. We need your email address.</string>
-    <string name="existing_user_email_signin_description">Are you an existing Limor User? Please Sign In with your email here to access your Account.</string>
-    <string name="sign_in_here"><u>sign in here</u></string>
+    <string name="existing_user_email_signin_description"><font color='#FF5A4E'>Have you registered to Limor before 2021? To access your account</font>,<b> </b></string>
+    <string name="email_login_only_for_users"><font color='#FF5A4E'>Email login is only for users who have registered accounts before 2021</font></string>
+    <string name="sign_in_here"><font color='#F9BB4B'><u>Sign in here</u></font></string>
     <string name="choose_country">Choose your country</string>
 
 
@@ -517,6 +518,7 @@
     <string name="welcome_to_limor_description">It’s the simplest and safest way to podcast and build your career</string>
     <string name="sign_up">Sign up</string>
     <string name="register">Register</string>
+    <string name="sign_in_sign_up_enter_before_2021">Have you registered before 2021? Sign in here</string>
     <string name="continue_with_prefered_method">Continue with your preferred method</string>
     <string name="sign_up_use_phone">Use your phone number</string>
     <string name="sig_up_continue_with_google">Continue with Google</string>
@@ -578,6 +580,8 @@
     <string name="check_your_email_subtitle">We’ve sent you the login link to your email address. Please check your email to login</string>
     <string name="check_your_email">Check Your Email</string>
     <string name="take_me_to_email">Take Me To Email</string>
+    <string name="access_your_old_account">Access Your Old Account</string>
+    <string name="where_voices_meet">Where voices meet</string>
 
     <string name="draft_sheet_rename_cast">Rename\nCast</string>
     <string name="draft_sheet_duplicate_cast">Duplicate\nCast</string>
