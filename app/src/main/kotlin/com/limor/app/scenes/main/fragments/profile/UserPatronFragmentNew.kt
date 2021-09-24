@@ -181,7 +181,7 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
         if(requireContext().isOnline()){
             model.requestPatronInvitation(user.id)
         }else{
-            binding.root.snackbar("Not Network")
+            binding.root.snackbar(getString(R.string.default_no_internet))
         }
     }
 
