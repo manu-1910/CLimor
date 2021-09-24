@@ -191,9 +191,9 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
             when (user.patronInvitationStatus) {
                 "NOT_REQUESTED" -> {
                     //Should request patron invitation
-                    binding.patronButton.isEnabled = false
+                    /*binding.patronButton.isEnabled = false
                     binding.patronButton.text = getString(R.string.requested)
-                    binding.prProgress.progress = 0
+                    binding.prProgress.progress = 0*/
 
                     requestInvitation()
                 }
