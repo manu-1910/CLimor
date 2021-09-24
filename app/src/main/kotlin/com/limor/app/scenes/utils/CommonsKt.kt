@@ -2,6 +2,8 @@ package com.limor.app.scenes.utils
 
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.text.Editable
 import android.text.format.DateFormat
@@ -15,6 +17,7 @@ import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.uimodels.UIErrorResponse
+import org.jetbrains.anko.connectivityManager
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.toast
@@ -337,6 +340,20 @@ class CommonsKt {
             val calendarBirth = Calendar.getInstance()
             calendarBirth.timeInMillis = timestampBirth
             return getYearsBetweenTwoCalendars(calendarBirth, Calendar.getInstance())
+        }
+
+        fun isOnline(context: Context):Boolean{
+            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val capability = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if(capability!=null){
+                when{
+                    capability.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> return true
+                    capability.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> return true
+                    capability.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> return true
+                }
+            }
+
+            return false
         }
 
     }
