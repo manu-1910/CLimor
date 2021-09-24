@@ -62,7 +62,7 @@ class AuthViewModelNew @Inject constructor(
         phoneAuthHandler.sendCodeToPhone(formattedPhone, isSignInCase = signInCase)
     }
 
-    private val _resendButtonEnableLiveData = MutableLiveData<Boolean>().apply { value = true }
+    private val _resendButtonEnableLiveData = MutableLiveData<Boolean>().apply { value = false }
     private val _resendButtonCountDownLiveData = MutableLiveData<Int?>().apply { value = null }
 
     val resendButtonEnableLiveData: LiveData<Boolean>
