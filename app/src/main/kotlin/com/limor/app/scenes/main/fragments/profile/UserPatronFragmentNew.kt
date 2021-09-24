@@ -12,6 +12,7 @@ import com.limor.app.R
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.patron.FragmentShortItemSlider
+import com.limor.app.scenes.utils.Commons
 import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.UserUIModel
 import dagger.android.support.AndroidSupportInjection

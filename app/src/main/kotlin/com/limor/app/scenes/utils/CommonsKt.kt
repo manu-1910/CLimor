@@ -342,19 +342,7 @@ class CommonsKt {
             return getYearsBetweenTwoCalendars(calendarBirth, Calendar.getInstance())
         }
 
-        fun isOnline(context: Context):Boolean{
-            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val capability = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-            if(capability!=null){
-                when{
-                    capability.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> return true
-                    capability.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> return true
-                    capability.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> return true
-                }
-            }
 
-            return false
-        }
 
     }
 }
