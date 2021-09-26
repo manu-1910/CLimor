@@ -86,6 +86,8 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
     var profileImageUrlFinal = ""
     var tempPhotoPath = ""
     var user: UIUser? = null
+
+    var hasChangedVoiceBio = false;
     var newBioPath: String? = null
     var newBioDurationSeconds: Double? = null
 
@@ -108,7 +110,6 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         app = context?.applicationContext as App
         return binding.root
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -186,6 +187,8 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         binding.voiceBio.onVoiceBioEvents() {
             when (it) {
                 is VoiceBioEvent.NewVoiceBio -> {
+                    hasChangedVoiceBio = true
+
                     newBioPath = it.path
                     newBioDurationSeconds = it.durationSeconds
 
@@ -201,7 +204,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
     }
 
     private fun ensureNullableVoiceBio() {
-        if (newBioPath == null) {
+        if (newBioPath == null && hasChangedVoiceBio) {
             currentUser.voiceBioURL = null
             currentUser.durationSeconds = null
         }
