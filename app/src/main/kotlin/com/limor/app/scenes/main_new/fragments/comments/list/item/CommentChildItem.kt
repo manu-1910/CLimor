@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.ItemChildCommentBinding
+import com.limor.app.databinding.ItemParentCommentBinding
 import com.limor.app.extensions.*
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.utils.DateUiUtil
@@ -31,6 +32,7 @@ class CommentChildItem(
     val onLikeClick: (comment: CommentUIModel, liked: Boolean) -> Unit,
     val onThreeDotsClick: (parentComment: CommentUIModel, item: CommentChildItem, position: Int) -> Unit,
     val onUserMentionClick: (username: String, userId: Int) -> Unit,
+    val onCommentListen: (commentId: Int) -> Unit,
 ) : BindableItem<ItemChildCommentBinding>() {
 
     override fun bind(viewBinding: ItemChildCommentBinding, position: Int) {
@@ -41,7 +43,7 @@ class CommentChildItem(
                 viewBinding.root.context
             )
         }
-        comment.user?.imageLinks?.small?.let {
+        comment.user?.getAvatarUrl()?.let {
             viewBinding.ivCommentAvatar.loadCircleImage(it)
         }
         viewBinding.tvCastCreator.text = if (isOwnerOf(castOwnerId,comment)) "• Cast Creator" else ""
@@ -67,6 +69,7 @@ class CommentChildItem(
             viewBinding.tvCommentContent.maxLines = Int.MAX_VALUE
         }
         initLikeState(viewBinding)
+        setupListens(viewBinding)
         initAudioPlayer(viewBinding)
     }
 
@@ -140,7 +143,8 @@ class CommentChildItem(
                 comment.likesCount ?: 0
             )
 
-            btnCommentLike.setOnClickListener {
+            likeCommentLayout.setOnClickListener {
+                btnCommentLike.isLiked = !btnCommentLike.isLiked
                 val isLiked = btnCommentLike.isLiked
                 val textLikesCount =
                     likesCount.text.toString().takeWhile { it.isDigit() || it == '-' }.toInt()
@@ -165,6 +169,30 @@ class CommentChildItem(
 
                 onLikeClick(comment, isLiked)
             }
+        }
+    }
+
+    private fun setListensUI(binding: ItemChildCommentBinding, listensCountValue: Int) {
+
+        binding.listensCount.tag = listensCountValue
+        binding.listensCount.apply {
+            visibility = if (listensCountValue > 0) View.VISIBLE else View.GONE
+            text = binding.root.context.resources.getQuantityString(
+                R.plurals.listens_count,
+                listensCountValue,
+                listensCountValue
+            )
+        }
+    }
+
+    private fun setupListens(binding: ItemChildCommentBinding) {
+        setListensUI(binding, comment.listensCount ?: 0)
+
+        binding.audioPlayer.playListener = {
+            val newCount = binding.listensCount.tag as Int + 1
+            binding.listensCount.tag = newCount
+            setListensUI(binding, newCount)
+            onCommentListen.invoke(comment.id)
         }
     }
 

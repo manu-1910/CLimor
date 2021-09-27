@@ -6,6 +6,7 @@ import androidx.databinding.BindingAdapter
 import androidx.databinding.ObservableField
 import com.limor.app.App
 import com.limor.app.BuildConfig
+import com.limor.app.scenes.utils.VoiceBioInfo
 import com.limor.app.scenes.utils.voicePlayer.LimorMediaPlayer
 import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerStatus
@@ -53,10 +54,11 @@ class VoiceBioPresenter(val viewModel: VoiceBioContract.ViewModel) : VoiceBioCon
     init {
         CompressedAudioRecorder.callback = this
 
-        viewModel.getAudioURL()?.let {
+        viewModel.getAudioInfo()?.let {
             uiState.set(VoiceBioUiState.CanRecordAndPlay)
             playerState.set(VoiceBioPlayerState.Idle)
-            playWithSource(it)
+            currentDuration = (it.durationSeconds * 1000).toLong()
+            playWithSource(it.url)
         }
     }
 
@@ -72,8 +74,7 @@ class VoiceBioPresenter(val viewModel: VoiceBioContract.ViewModel) : VoiceBioCon
     }
 
     private fun onPlayComplete() {
-        println("On play complete...")
-        audioReadablePosition.set(zeroPosition)
+        setPositionLabel(currentDuration)
         playerState.set(VoiceBioPlayerState.Idle)
         audioPositionPercentage.set(0f)
     }
@@ -106,6 +107,7 @@ class VoiceBioPresenter(val viewModel: VoiceBioContract.ViewModel) : VoiceBioCon
             App.instance.playerBinder.pauseIfPlaying(it)
         }
         audioTrack = null
+        currentDuration = 0
 
         binderJob?.cancel()
         binderJob = null
@@ -118,7 +120,7 @@ class VoiceBioPresenter(val viewModel: VoiceBioContract.ViewModel) : VoiceBioCon
     }
 
     override fun stopRecording() {
-        audioReadablePosition.set(zeroPosition)
+        setPositionLabel(currentDuration)
 
         uiState.set(VoiceBioUiState.CanRecordAndPlay)
         playerState.set(VoiceBioPlayerState.Idle)
@@ -139,23 +141,26 @@ class VoiceBioPresenter(val viewModel: VoiceBioContract.ViewModel) : VoiceBioCon
         uiState.set(VoiceBioUiState.CanRecord)
         audioReadablePosition.set(zeroPosition)
         viewModel.setAudioInfo()
+        currentDuration = 0
     }
 
-    override fun setAudioURL(url: String?) {
-        if (url.isNullOrEmpty()) {
+    override fun setAudioInfo(info: VoiceBioInfo?) {
+        if (null == info) {
             disableRemoteTrack()
             return
         }
-        val voiceBioUrl = url ?: return
+
+        currentDuration = info.getDurationMillis()
         val at = AudioService.AudioTrack(
-            url = voiceBioUrl,
-            duration = Duration.ZERO,
+            url = info.url,
+            duration = Duration.ofMillis(currentDuration),
             title = null
         )
         audioTrack = at
 
         playerState.set(VoiceBioPlayerState.Idle)
         uiState.set(VoiceBioUiState.CanRecordAndPlay)
+        setPositionLabel(at.duration.toMillis())
 
         listenToBinderEvents(at)
     }
@@ -196,7 +201,6 @@ class VoiceBioPresenter(val viewModel: VoiceBioContract.ViewModel) : VoiceBioCon
 
             playerBinder.getCurrentPlayingPosition(audioTrack)
                 .onEach { duration ->
-                    println("Duration -> ${duration.toMillis()} of ${playerBinder.getCurrentTrackDurationInMillis()}")
                     val pos = duration.toMillis()
                     setPositionLabel(pos)
                     audioPositionPercentage.set(pos.toFloat() / playerBinder.getCurrentTrackDurationInMillis().toFloat())
@@ -254,8 +258,7 @@ class VoiceBioPresenter(val viewModel: VoiceBioContract.ViewModel) : VoiceBioCon
             view.x = (audioPositionPercentage - 1) * view.width
         }
 
-        // 60 fps = 16.667 ms per frame, but 15 fps is good enough for this
-        private const val updateInterval = (16.667 * 4).toLong()
+        private const val updateInterval = 32L
         private const val zeroPosition = "0:00"
         private const val maxBioDurationMillis = 90 * 1000
     }

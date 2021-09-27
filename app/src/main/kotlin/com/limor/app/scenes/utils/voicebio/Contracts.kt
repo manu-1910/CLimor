@@ -1,12 +1,13 @@
 package com.limor.app.scenes.utils.voicebio
 
 import android.content.Context
+import com.limor.app.scenes.utils.VoiceBioInfo
 import kotlinx.coroutines.CoroutineScope
 
 interface VoiceBioContract {
     interface ViewModel {
         fun getNextAudioFilePath(): String
-        fun getAudioURL(): String?
+        fun getAudioInfo(): VoiceBioInfo?
         fun setAudioInfo(path: String? = null, durationSeconds: Double? = null)
         fun addAmp(amp: Int, tickDuration: Int)
         fun resetVisualization()
@@ -22,6 +23,6 @@ interface VoiceBioContract {
         fun playStopRecord()
         fun deleteRecord()
 
-        fun setAudioURL(url: String?)
+        fun setAudioInfo(info: VoiceBioInfo?)
     }
 }

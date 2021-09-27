@@ -1,18 +1,25 @@
 package com.limor.app.scenes.main.fragments.settings
 
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -20,18 +27,22 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.bumptech.glide.signature.ObjectKey
 import com.esafirm.imagepicker.features.ImagePicker
+import com.esafirm.imagepicker.features.cameraonly.CameraOnlyConfig
 import com.esafirm.imagepicker.model.Image
 import com.limor.app.App
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.common.SessionManager
 import com.limor.app.databinding.FragmentEditProfileBinding
+import com.limor.app.extensions.drawSimpleSelectorDialog
+import com.limor.app.scenes.main.fragments.record.PublishFragment
 import com.limor.app.scenes.main.fragments.record.RecordFragment
 import com.limor.app.scenes.main.viewmodels.UpdateUserViewModel
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.VoiceBioEvent
-import com.limor.app.uimodels.UIErrorResponse
+import com.limor.app.scenes.utils.VoiceBioInfo
 import com.limor.app.uimodels.UIUser
 import com.limor.app.uimodels.UserUIModel
 import com.limor.app.util.*
@@ -59,6 +70,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: SettingsViewModel by viewModels({ activity as SettingsActivity }) { viewModelFactory }
 
+    private var mCaptureFromCamera = false;
 
     @Inject
     lateinit var sessionManager: SessionManager
@@ -74,15 +86,20 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
     var profileImageUrlFinal = ""
     var tempPhotoPath = ""
     var user: UIUser? = null
+
+    var hasChangedVoiceBio = false;
     var newBioPath: String? = null
     var newBioDurationSeconds: Double? = null
 
     companion object {
         val TAG: String = EditProfileFragment::class.java.simpleName
+        const val CAMERA_REQUEST = 512
+        const val CAMERA_PERMISSION_REQUEST = 700
         fun newInstance() = EditProfileFragment()
         const val TIMBER_TAG = "BIRTHDATE_ISSUE"
     }
 
+    private var selectedPhotoFile: File? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -93,7 +110,6 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         app = context?.applicationContext as App
         return binding.root
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -147,8 +163,19 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         }
 
         binding.btnChoosePhoto.setOnClickListener {
-            loadImagePicker()
+            showImageOptions()
+        }
+    }
 
+    private fun showImageOptions() {
+        drawSimpleSelectorDialog(
+            getString(R.string.select_image_option_title),
+            listOf(getString(R.string.take_a_new_photo_option), getString(R.string.choose_from_gallery_option))
+        )
+        { dialog: DialogInterface, i: Int ->
+            mCaptureFromCamera = i == 0
+            loadImagePicker()
+            dialog.dismiss()
         }
     }
 
@@ -160,6 +187,8 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         binding.voiceBio.onVoiceBioEvents() {
             when (it) {
                 is VoiceBioEvent.NewVoiceBio -> {
+                    hasChangedVoiceBio = true
+
                     newBioPath = it.path
                     newBioDurationSeconds = it.durationSeconds
 
@@ -175,7 +204,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
     }
 
     private fun ensureNullableVoiceBio() {
-        if (newBioPath == null) {
+        if (newBioPath == null && hasChangedVoiceBio) {
             currentUser.voiceBioURL = null
             currentUser.durationSeconds = null
         }
@@ -198,7 +227,9 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
             binding.etWebUrlInner.setText(it.website)
             binding.etBioInner.setText(it.bio)
 
-            binding.voiceBio.voiceBioAudioURL = it.voiceBioURL
+            it.voiceBioURL?.let { voiceBioUrl ->
+                binding.voiceBio.voiceBioInfo = VoiceBioInfo(voiceBioUrl, it.durationSeconds ?: 0.0)
+            }
 
             toggleVoiceLabel(it.voiceBioURL)
             listenForVoiceBioEvents()
@@ -211,10 +242,47 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         }
     }
 
+    private fun checkPermissionForCamera(): Boolean {
+        val result = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+        return result == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestPermissionForCamera() {
+        requestPermissions(arrayOf(Manifest.permission.CAMERA),
+            CAMERA_PERMISSION_REQUEST
+        )
+    }
+
+    private fun captureImage() {
+        if (!checkPermissionForCamera()) {
+            requestPermissionForCamera()
+            return
+        }
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        selectedPhotoFile = File(
+            requireActivity().externalCacheDir,
+            System.currentTimeMillis().toString() + ".jpg"
+        )
+        intent.putExtra(
+            MediaStore.EXTRA_OUTPUT,
+            FileProvider.getUriForFile(
+                requireContext(),
+                BuildConfig.APPLICATION_ID + ".provider",
+                selectedPhotoFile!!
+            )
+        )
+        startActivityForResult(intent, CAMERA_REQUEST)
+    }
+
     private fun loadImagePicker() {
         if (!hasStoragePermissions(requireContext())) {
             storagePermissionsLauncher.launch(STORAGE_PERMISSIONS)
             return
+        }
+
+        if (mCaptureFromCamera) {
+            captureImage();
+            return;
         }
 
         ImagePicker.create(this) // Activity or Fragment
@@ -226,8 +294,8 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
             .includeVideo(false) // Show video on image picker
             .limit(resources.getInteger(R.integer.MAX_PHOTOS)) // max images can be selected (99 by default)
             .theme(R.style.ImagePickerTheme) // must inherit ef_BaseTheme. please refer to sample
+            .single()
             .start()
-
     }
 
     private fun callToApiUpdateUser() {
@@ -245,9 +313,30 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         )
     }
 
+    private fun prepareToCrop(sourcePath: String) {
+        val croppedImagesDir = File(
+            context?.getExternalFilesDir(null)?.absolutePath,
+            Constants.LOCAL_FOLDER_CROPPED_IMAGES
+        )
+        if (!croppedImagesDir.exists()) {
+            val isDirectoryCreated = croppedImagesDir.mkdirs()
+        }
+        val fileName =
+            Date().time.toString() + sourcePath.substringAfterLast("/")
+        val outputFile = File(croppedImagesDir, fileName)
+
+        // and then, we'll perform the crop itself
+        performCrop(sourcePath, outputFile)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
-        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+        if (resultCode == Activity.RESULT_OK && requestCode == CAMERA_REQUEST) {
+            selectedPhotoFile?.let {
+                prepareToCrop(it.path)
+            }
+            // this will run when coming from the cropActivity and everything is ok
+        } else if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
 
             // Get a list of picked files
             val filesSelected = ImagePicker.getImages(data) as ArrayList<Image>
@@ -283,6 +372,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         } else if (resultCode == UCrop.RESULT_ERROR) {
             val cropError = UCrop.getError(data!!)
             Timber.d(cropError)
+            reportError(getString(R.string.crop_error_message__with_format, cropError));
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -385,6 +475,10 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
 
     private fun reportError(strResId: Int) {
         binding.root.snackbar(strResId)
+    }
+
+    private fun reportError(text: String) {
+        binding.root.snackbar(text)
     }
 
     private fun readyToUpdate() {

@@ -360,7 +360,7 @@ class RecordFragment : BaseFragment() {
             playButton.setImageDrawable(
                 ContextCompat.getDrawable(
                     requireContext(),
-                    R.drawable.ic_pause
+                    R.drawable.ic_pause_big
                 )
             )
         else
@@ -450,7 +450,7 @@ class RecordFragment : BaseFragment() {
                 if (!it.isNewRecording) {
                     uiDraft = it.copy()
                     uiDraft?.id = System.currentTimeMillis()
-                    uiDraft?.title = getString(R.string.autosave)
+                    uiDraft?.title = if(uiDraft?.title.isNullOrEmpty()) getString(R.string.autosave) else uiDraft?.title
                     if (it.filePath != null) {
                         val fileFromParent = File(it.filePath!!)
                         if (fileFromParent.exists()) {
@@ -684,6 +684,7 @@ class RecordFragment : BaseFragment() {
                     //val durationFloatRoundedUp = kotlin.math.ceil(currentDurationInSecondsFloat)
                     // val durationMillisRoundedUp = (durationFloatRoundedUp * 1000).toInt()
                     c_meter.base = SystemClock.elapsedRealtime() - currentDurationInMillis
+                    Timber.d("Recorded Millis -> $currentDurationInMillis")
                     nextButton.visibility = View.VISIBLE
                     nextButton.isEnabled = false
                     timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
@@ -927,7 +928,7 @@ class RecordFragment : BaseFragment() {
 
                 insertDraftInRealm(uiDraft!!)
 
-
+                fileRecording = finalAudio.absolutePath
 
                 uiThread {
                     //Go to Publish fragment
@@ -1129,8 +1130,11 @@ class RecordFragment : BaseFragment() {
         } else {
             recordButton.background =
                 ContextCompat.getDrawable(requireContext(), R.drawable.record_red_btn)
-            // Enable next button
-            nextButton.isEnabled = true
+            if(timeWhenStopped<-1000){
+                // Enable next button
+                nextButton.isEnabled = true
+            }
+
         }
     }
 

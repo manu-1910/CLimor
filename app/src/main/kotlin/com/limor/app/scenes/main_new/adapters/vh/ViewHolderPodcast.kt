@@ -73,7 +73,7 @@ class ViewHolderPodcast(
     }
 
     private fun loadImages(item: CastUIModel) {
-        item.owner?.imageLinks?.small?.let {
+        item.owner?.getAvatarUrl()?.let {
             binding.ivPodcastAvatar.loadCircleImage(it)
             binding.ivAvatarImageListening.loadCircleImage(it)
         }
@@ -116,7 +116,11 @@ class ViewHolderPodcast(
             onCommentsClick(item)
         }
 
-        binding.btnPodcastReply.setOnClickListener {
+        binding.tvPodcastComments.throttledClick {
+            onCommentsClick(item)
+        }
+
+        binding.sharesLayout.setOnClickListener {
             onShareClick(item)
         }
     }
@@ -142,7 +146,8 @@ class ViewHolderPodcast(
             applyLikeStyle(item.isLiked!!)
             btnPodcastLikes.isLiked = item.isLiked
 
-            btnPodcastLikes.setOnClickListener {
+            likeLayout.setOnClickListener {
+                btnPodcastLikes.isLiked = !btnPodcastLikes.isLiked
                 val isLiked = btnPodcastLikes.isLiked
                 val likesCount = binding.tvPodcastLikes.text.toString().toInt()
 
@@ -168,7 +173,7 @@ class ViewHolderPodcast(
             applyRecastState(item.isRecasted!!)
             btnPodcastRecast.recasted = item.isRecasted
 
-            btnPodcastRecast.setOnClickListener {
+            recastLayout.setOnClickListener {
                 val isRecasted = !btnPodcastRecast.recasted
                 val recastCount = binding.tvPodcastRecast.text.toString().toInt()
 

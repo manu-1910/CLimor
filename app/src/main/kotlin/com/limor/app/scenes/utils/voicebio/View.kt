@@ -24,16 +24,22 @@ sealed class VoiceBioEvent {
     data class NewVoiceBio(val path: String?, val durationSeconds: Double?): VoiceBioEvent()
 }
 
+class VoiceBioInfo(val url: String, val durationSeconds: Double) {
+    fun getDurationMillis(): Long {
+        return (durationSeconds * 1000).toLong()
+    }
+}
+
 class VoiceBio @kotlin.jvm.JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr), VoiceBioContract.ViewModel {
 
-    var voiceBioAudioURL: String? = null
+    var voiceBioInfo: VoiceBioInfo? = null
         set(value) {
             field = value
-            presenter.setAudioURL(value)
+            presenter.setAudioInfo(value)
         }
 
     var voiceBioFilePath: String? = null
@@ -72,7 +78,7 @@ class VoiceBio @kotlin.jvm.JvmOverloads constructor(
         return file.absolutePath
     }
 
-    override fun getAudioURL() = voiceBioAudioURL
+    override fun getAudioInfo() = voiceBioInfo
 
     override fun setAudioInfo(path: String?, durationSeconds: Double?) {
         voiceBioFilePath = path

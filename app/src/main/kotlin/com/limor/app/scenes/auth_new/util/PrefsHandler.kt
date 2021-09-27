@@ -1,8 +1,15 @@
 package com.limor.app.scenes.auth_new.util
 
 import android.content.Context
+import android.preference.PreferenceManager
 import androidx.core.content.edit
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.limor.app.uimodels.UILocations
+import com.limor.app.uimodels.UILocationsList
 import com.limor.app.util.AppState
+import java.lang.reflect.Type
+
 
 object PrefsHandler {
 
@@ -16,6 +23,7 @@ object PrefsHandler {
     private const val LABEL_APP_LAST_STATE = "app_last_state"
     private const val KEY_PHONE_VERIFICATION_ID = "phone_verification_id"
     private const val LABEL_LAST_PLAYED_CAST_ID = "last_played_cast_id"
+    private const val LABEL_RECENT_LOCATION = "recent_locations"
 
     private fun sp(context: Context) = sharedPreferences(context)
 
@@ -96,6 +104,21 @@ object PrefsHandler {
         } else {
             putString(KEY_PHONE_VERIFICATION_ID, id)
         }
+    }
+
+    fun saveRecentLocations(context: Context, list: ArrayList<UILocations?>?) {
+        val gson = Gson()
+        val json: String = gson.toJson(list)
+        sharedPreferences(context).edit(true) {
+            putString(LABEL_RECENT_LOCATION, json)
+        }
+    }
+
+    fun getRecentLocations(context: Context): ArrayList<UILocations> {
+        val gson = Gson()
+        val json = sharedPreferences(context).getString(LABEL_RECENT_LOCATION, null)
+        val type: Type = object : TypeToken<ArrayList<UILocations>>() {}.getType()
+        return gson.fromJson(json, type) ?: ArrayList()
     }
 
 }

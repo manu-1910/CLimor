@@ -10,7 +10,7 @@ class Constants{
         const val CAST_BATCH_SIZE = 10
         const val HOME_FEED_ITEM_BATCH_SIZE = 20
 
-        val TERMS_URL = "https://www.limor.ie/terms-and-conditions-of-use"
+        val TERMS_URL = "https://www.limor.ie/terms-and-conditions"
         val PRIVACY_URL = "https://www.limor.ie/privacy-policy"
         val SUPPORT_EMAIL = "support@limor.ie"
         val NOTIFICATION_CHANNEL_NAME = "General Notifications"

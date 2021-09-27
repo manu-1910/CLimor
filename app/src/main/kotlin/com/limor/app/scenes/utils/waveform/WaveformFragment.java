@@ -23,6 +23,7 @@ import android.widget.TextView;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.limor.app.R;
 import com.limor.app.common.BaseFragment;
@@ -1013,9 +1014,9 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     private void updateButtonsPreview() {
         if (playerPreview != null && playerPreview.isPlaying()) {
-            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
+            ivPlayPreview.setImageResource(R.drawable.ic_pause_big);
         } else if (playerPreview != null) {
-            ivPlayPreview.setImageDrawable(getResources().getDrawable(R.drawable.ic_play));
+            ivPlayPreview.setImageResource(R.drawable.play_button);
         }
     }
 
@@ -1154,7 +1155,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     protected void enableDisableButtons() {
         if (isPlaying) {
-            playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause));
+            playButton.setImageResource(R.drawable.ic_pause_big);
             tvDelete.setAlpha(0.6f);
             tvDelete.setEnabled(false);
             tvCopy.setAlpha(0.6f);
@@ -1162,7 +1163,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             tvPaste.setAlpha(0.6f);
             tvPaste.setEnabled(false);
         } else {
-            playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_play));
+            playButton.setImageResource(R.drawable.play_button);
             tvDelete.setAlpha(1f);
             tvDelete.setEnabled(true);
             tvCopy.setAlpha(1f);

@@ -32,8 +32,10 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.limor.app.App
 import com.limor.app.BuildConfig
 import com.limor.app.R
+import com.limor.app.audio.wav.waverecorder.bitPerSample
 import com.limor.app.common.BaseFragment
 import com.limor.app.extensions.hideKeyboard
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.record.adapters.LocationsAdapter
 import com.limor.app.scenes.main.viewmodels.LocationsViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
@@ -42,6 +44,7 @@ import com.limor.app.scenes.utils.location.MyLocation
 import com.limor.app.uimodels.UILocations
 import com.limor.app.uimodels.UILocationsList
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_locations.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.btnClose
 import kotlinx.android.synthetic.main.toolbar_with_searchview.btnDone
@@ -108,6 +111,7 @@ class LocationsFragment : BaseFragment() {
         configureToolbar()
         apiCallSearchLocations()
         setupRecycler(listLocations)
+        setUpRecents()
 
         if (::locationsViewModel.isInitialized && locationsViewModel.uiLocationsRequest.term.isNotEmpty()) {
             locationsTrigger.onNext(Unit)
@@ -152,9 +156,6 @@ class LocationsFragment : BaseFragment() {
             }
 
             override fun onTextChanged(newText: CharSequence, p1: Int, p2: Int, p3: Int) {
-                if (newText.isNotEmpty() && newText.length > 3) {
-                    // searchLocations(newText.toString())
-                }
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -168,6 +169,12 @@ class LocationsFragment : BaseFragment() {
             R.layout.locations_item,
             mPlacesClient
         ) { location ->
+            val recents = PrefsHandler.getRecentLocations(context = App.instance)
+            if(recents.contains(location)){
+                recents.remove(location)
+            }
+            recents.add(0,location)
+            PrefsHandler.saveRecentLocations(context = App.instance, ArrayList(recents.take(10)))
             locationViewModel.setLocation(location)
             view?.hideKeyboard()
             findNavController().popBackStack()
@@ -276,6 +283,34 @@ class LocationsFragment : BaseFragment() {
          })*/
     }
 
+    private fun setUpRecents(){
+        context?.let {
+            val recents = PrefsHandler.getRecentLocations(it)
+            if(recents.size > 0){
+                recentsRV?.visibility = View.VISIBLE
+                recentTV.visibility = View.VISIBLE
+                rvLocations?.visibility = View.GONE
+                recentsRV?.layoutManager = LinearLayoutManager(context)
+                recentsRV?.adapter = RecentsAdapter(
+                    requireContext(),
+                    recents,
+                    { location ->
+                        locationViewModel.setLocation(location)
+                        view?.hideKeyboard()
+                        findNavController().popBackStack()
+                    },
+                    {
+                        recentsRV.visibility = View.GONE
+                        recentTV.visibility = View.GONE
+                    }
+                )
+            } else{
+                recentsRV.visibility = View.GONE
+                recentTV.visibility = View.GONE
+                rvLocations?.visibility = View.VISIBLE
+            }
+        }
+    }
 
     private fun setupRecycler(tagList: ArrayList<UILocationsList>) {
         rvLocations?.layoutManager = LinearLayoutManager(context)
@@ -420,6 +455,73 @@ class PlaceArrayAdapter(
                 }
             }
         }
+    }
+
+}
+
+class RecentsAdapter(
+    private val context: Context,
+    private val locationList: ArrayList<UILocations>,
+    private val onPlace: (UILocations) -> Unit,
+    private val hide: () -> Unit
+): RecyclerView.Adapter<RecentsAdapter.LocationViewHolder>() {
+
+    class LocationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val tvLocations: TextView = itemView.findViewById(R.id.tvLocation)
+        val ivRemove: ImageView = itemView.findViewById(R.id.ivRemove)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, p1: Int): LocationViewHolder {
+        return LocationViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.recent_location_item,
+                parent,
+                false
+            )
+        )
+    }
+
+    override fun getItemCount(): Int {
+        return locationList.size
+    }
+
+    override fun onBindViewHolder(holder: LocationViewHolder, position: Int) {
+        holder.tvLocations.text = locationList[position].address
+        holder.tvLocations.setOnClickListener {
+            removeFromRecents(locationList[position])
+            addToRecents(locationList[position])
+            onPlace(locationList[position])
+        }
+        holder.ivRemove.setOnClickListener {
+            removeFromRecents(locationList[position])
+            locationList.remove(locationList[position])
+            if(locationList.isEmpty()){
+                hide()
+            } else{
+                notifyDataSetChanged()
+            }
+        }
+    }
+
+    fun removeFromRecents(location: UILocations){
+        val recents = PrefsHandler.getRecentLocations(context = context)
+        if(recents.contains(location)){
+            recents.remove(location)
+        }
+        PrefsHandler.saveRecentLocations(context = context, ArrayList(recents.take(10)))
+    }
+
+    fun addToRecents(location: UILocations){
+        val recents = PrefsHandler.getRecentLocations(context = context)
+        if(recents.contains(location)){
+            recents.remove(location)
+        }
+        recents.add(0,location)
+        PrefsHandler.saveRecentLocations(context = context, ArrayList(recents.take(10)))
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(item: UILocations)
     }
 
 }

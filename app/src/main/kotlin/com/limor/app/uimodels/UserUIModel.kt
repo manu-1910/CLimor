@@ -40,6 +40,16 @@ data class UserUIModel(
 ) : Parcelable {
 
     fun getFullName() = if(firstName == null && lastName == null) username else String.format("%s %s", firstName, lastName)
+
+    /**
+     * This function returns the best suited image url to be used as the avatar picture everywhere
+     * in the app. The function tries to deliver the medium version first and if it's not available
+     * tries the following in the order listed:
+     * - large
+     * - original
+     * - small
+     */
+    fun getAvatarUrl(): String? = imageLinks?.medium ?: imageLinks?.large ?: imageLinks?.original ?: imageLinks?.small
 }
 
 fun GetFeaturedCastsQuery.Owner.mapToUIModel(): UserUIModel =

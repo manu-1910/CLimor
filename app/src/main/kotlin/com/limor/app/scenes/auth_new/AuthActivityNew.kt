@@ -104,7 +104,7 @@ class AuthActivityNew : AppCompatActivity() {
 
     companion object {
         const val GOOGLE_SIGN_REQUEST_CODE = 10001
-        private const val TERMS_URL = "https://www.limor.ie/terms-and-conditions-of-use";
+        private const val TERMS_URL = "https://www.limor.ie/terms-and-conditions";
         fun onFocusChangeListener(): View.OnFocusChangeListener {
             return View.OnFocusChangeListener { v, hasFocus ->
                 if (hasFocus)

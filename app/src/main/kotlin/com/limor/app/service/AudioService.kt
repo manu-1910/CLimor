@@ -37,7 +37,7 @@ import java.util.*
 private const val PLAYBACK_CHANNEL_ID = "com.limor.app.playback_channel"
 private const val MEDIA_SESSION_TAG = "com.limor.app.audio"
 private const val PLAYBACK_NOTIFICATION_ID = 1
-private const val PLAYBACK_TIMER_DELAY = 500L
+private const val PLAYBACK_TIMER_DELAY = 64L
 private const val PLAYBACK_SKIP_INCREMENTS = 30000L
 
 class AudioService : Service() {

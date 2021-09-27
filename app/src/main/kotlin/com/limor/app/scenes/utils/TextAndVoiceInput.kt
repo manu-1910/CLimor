@@ -2,6 +2,7 @@ package com.limor.app.scenes.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Outline
 import android.media.AudioFormat
 import android.media.MediaMetadataRetriever
@@ -12,6 +13,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.core.widget.addTextChangedListener
@@ -29,6 +32,7 @@ import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.util.hasRecordPermissions
 import kotlinx.android.synthetic.main.item_input_with_audio.view.*
 import org.jetbrains.anko.appcompat.v7.tintedImageView
+import org.jetbrains.anko.textColor
 import kotlin.math.min
 import java.io.File
 import java.util.*
@@ -187,6 +191,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         }
 
         btnPodcastStartVoiceComment.setOnClickListener {
+            btnPodcastStartVoiceComment.hideKeyboard()
             if (hasRecordPermissions(context)) {
                 showRecordingControls(true)
                 setRecording(true)
@@ -319,6 +324,7 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
             return
         }
 
+        resetFlashAnimation()
         btnPodcastStartStopVoice.isActivated = shouldRecord
 
         if (shouldRecord) {
@@ -432,12 +438,36 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
         visualizer.addAmp(amp, delta.toInt())
 
         val remainingMillis = maxOf(0,  maxVoiceCommentDurationMillis - millis)
+        updatePosition(remainingMillis.toInt())
+
         if (remainingMillis == 0L) {
             setRecording(false)
-            resetPositionLabel()
+        } else if (remainingMillis < warningThresholdMillis) {
+            animateFlashPosition()
         }
+    }
 
-        updatePosition(remainingMillis.toInt())
+    private fun animateFlashPosition() {
+        if (tvTime.animation != null) {
+            return
+        }
+        val flashAnimation = AlphaAnimation(1.0f, 0.2f).apply {
+            duration = 750
+            repeatMode = Animation.REVERSE
+            repeatCount = Animation.INFINITE
+        }
+        tvTime.apply {
+            clearAnimation()
+            startAnimation(flashAnimation)
+            textColor = Color.RED
+        }
+    }
+
+    private fun resetFlashAnimation() {
+        tvTime.apply {
+            clearAnimation()
+            textColor = Color.BLACK
+        }
     }
 
     override fun onStopRecord() {
@@ -451,6 +481,13 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     @SuppressLint("SetTextI18n")
     private fun resetPositionLabel() {
         tvTime.text = "0:00"
+    }
+
+    override fun onVisibilityChanged(changedView: View, visibility: Int) {
+        if (visibility != View.VISIBLE) {
+            setRecording(false)
+        }
+        super.onVisibilityChanged(changedView, visibility)
     }
 
     override fun onDetachedFromWindow() {
@@ -487,7 +524,11 @@ class TextAndVoiceInput @kotlin.jvm.JvmOverloads constructor(
     }
 
     companion object {
-        const val maxVoiceCommentDurationMillis = 3 * 60 * 1000
+        // we use 11 seconds because when the current position is say at 10.5 seconds the label
+        // would display 10:00, so we need to start flashing the position indicator for any
+        // position below 11 seconds
+        const val warningThresholdMillis = 11 * 1000 // 11 seconds
+        const val maxVoiceCommentDurationMillis = 3 * 60 * 1000 // 3 minutes
         const val disabledAlpha = 0.2f
     }
 

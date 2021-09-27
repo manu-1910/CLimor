@@ -76,6 +76,12 @@ class SettingsActivity : AppCompatActivity(), HasSupportFragmentInjector {
         navHostFragment = supportFragmentManager.findFragmentById(R.id.navigation_host_fragment_settings) as NavHostFragment
         navController = navHostFragment.navController
 
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id != R.id.webview_fragment) {
+                binding.toolbar.tvToolbarTitle.text = getString(R.string.settings)
+            }
+        }
+
         binding.toolbar.btnClose.setOnClickListener {
             onBackPressed()
         }

@@ -27,7 +27,7 @@ class AccountSearchItem(
         } else{
             viewBinding.accountName.setRightDrawable(0, R.dimen.chip_close_icon_size)
         }
-        account.imageLinks?.small?.let {
+        account.getAvatarUrl()?.let {
             viewBinding.accountImage.loadCircleImage(it)
         }
         viewBinding.accountContainer.setOnClickListener {

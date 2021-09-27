@@ -12,6 +12,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.TextView
 import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
@@ -23,6 +24,9 @@ class WebViewFragment : BaseFragment() {
 
     companion object {
         val TAG: String = WebViewFragment::class.java.simpleName
+
+        val KEY_TITLE = "KEY_TITLE.com.limor.app.scenes.main.fragments.settings"
+
         fun newInstance() = WebViewFragment()
     }
 
@@ -30,7 +34,14 @@ class WebViewFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_webview, container, false)
+    ): View? {
+        arguments?.getString(KEY_TITLE)?.let {
+            activity?.findViewById<TextView>(R.id.tvToolbarTitle)?.apply {
+                text = it
+            }
+        }
+        return inflater.inflate(R.layout.fragment_webview, container, false)
+    }
 
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -106,6 +117,7 @@ class WebViewFragment : BaseFragment() {
             }
 
             override fun onPageFinished(view: WebView, url: String) {
+                loader.visibility = View.GONE
             }
         }
 
@@ -122,9 +134,9 @@ class WebViewFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         view?.let {
-            view!!.isFocusableInTouchMode = true
-            view!!.requestFocus()
-            view!!.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
+            it.isFocusableInTouchMode = true
+            it.requestFocus()
+            it.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
                 if (event.action == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
                     if (wvMore.canGoBack()) {
                         // If web view have back history, then go to the web view back history

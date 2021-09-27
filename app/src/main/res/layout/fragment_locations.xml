@@ -22,10 +22,32 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             android:clipToPadding="false"
-            android:visibility="visible"
+            android:visibility="gone"
             android:paddingTop="@dimen/marginSmall"
             android:paddingBottom="@dimen/marginSmall"
             tools:listitem="@layout/locations_item"/>
+
+        <TextView
+            android:id="@+id/recentTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/recent"
+            android:layout_marginStart="@dimen/marginTwenty"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/subtitle_text_color"
+            android:textSize="@dimen/textSize16"
+            android:visibility="gone"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recentsRV"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:clipToPadding="false"
+            android:visibility="gone"
+            android:paddingTop="@dimen/marginSmall"
+            android:paddingBottom="@dimen/marginSmall"
+            tools:listitem="@layout/recent_location_item"/>
 
     </LinearLayout>
 

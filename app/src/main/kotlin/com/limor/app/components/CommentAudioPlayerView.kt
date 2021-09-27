@@ -29,6 +29,10 @@ class  CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayo
     private var playerBinder: PlayerBinder = App.instance.playerBinder
     private var commentAudioTrack: AudioService.AudioTrack? = null
 
+    var playListener: (() -> Unit)? = null
+
+    private var currentPosition: Duration = Duration.ZERO;
+
     init {
         binding.progressSeekbar.apply {
             setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -48,6 +52,9 @@ class  CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayo
             })
         }
         binding.playButton.setOnClickListener {
+            if (currentPosition.toMillis() == 0L) {
+                playListener?.invoke()
+            }
             playerBinder.playPause(
                 commentAudioTrack!!,
                 showNotification = false
@@ -77,6 +84,7 @@ class  CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayo
 
             playerBinder.getCurrentPlayingPosition(commentAudioTrack!!)
                 .onEach { duration ->
+                    currentPosition = duration
                     binding.progressSeekbar.progress = duration.seconds.toInt()
                     binding.currentTime.text = duration.toReadableStringFormat(
                         DURATION_READABLE_FORMAT_3
@@ -87,6 +95,7 @@ class  CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayo
     }
 
     private fun setInitialState(duration: Duration) {
+        currentPosition = Duration.ZERO
         binding.progressSeekbar.progress = 0
         binding.progressSeekbar.max = duration.seconds.toInt()
         enableSeekbar(false)

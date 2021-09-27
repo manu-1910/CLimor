@@ -166,6 +166,9 @@ class FragmentCommentReplies : UserMentionFragment() {
                 },
                 onUserMentionClick = { username, userId ->
                     context?.let { context -> UserProfileActivity.show(context, username, userId) }
+                },
+                onCommentListen = { commentId ->
+                    viewModel.listenComment(commentId)
                 }
             )
         )
@@ -191,8 +194,11 @@ class FragmentCommentReplies : UserMentionFragment() {
                                 userId
                             )
                         }
+                    },
+                    onCommentListen = { commentId ->
+                        viewModel.listenComment(commentId)
                     }
-                )
+            )
             )
         }
     }

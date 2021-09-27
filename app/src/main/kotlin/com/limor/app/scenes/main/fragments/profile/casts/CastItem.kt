@@ -33,7 +33,7 @@ class CastItem(
                 "${it.toMinutes()}m ${it.minusMinutes(it.toMinutes()).seconds}s"
             }
 
-            cast.owner?.imageLinks?.small?.let {
+            cast.owner?.getAvatarUrl()?.let {
                 ivPodcastAvatar.loadCircleImage(it)
                 ivAvatarImageListening.loadCircleImage(it)
             }
@@ -88,7 +88,11 @@ class CastItem(
                 onCommentsClick(cast)
             }
 
-            btnPodcastReply.setOnClickListener {
+            tvPodcastComments.throttledClick {
+                onCommentsClick(cast)
+            }
+
+            sharesLayout.setOnClickListener {
                 onShareClick(cast)
             }
         }
@@ -108,7 +112,7 @@ class CastItem(
             applyRecastState(item.isRecasted!!)
             btnPodcastRecast.recasted = item.isRecasted!!
 
-            btnPodcastRecast.setOnClickListener {
+            recastLayout.setOnClickListener {
                 val isRecasted = !btnPodcastRecast.recasted
                 val recastCount = binding.tvPodcastRecast.text.toString().toInt()
 
@@ -148,7 +152,8 @@ class CastItem(
             applyLikeStyle(cast.isLiked!!)
             btnPodcastLikes.isLiked = cast.isLiked
 
-            btnPodcastLikes.setOnClickListener {
+            likeLayout.setOnClickListener {
+                btnPodcastLikes.isLiked = !btnPodcastLikes.isLiked
                 val isLiked = btnPodcastLikes.isLiked
                 val likesCount = binding.tvPodcastLikes.text.toString().toInt()
 

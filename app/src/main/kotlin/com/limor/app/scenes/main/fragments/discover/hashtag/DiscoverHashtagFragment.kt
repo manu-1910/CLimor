@@ -45,7 +45,9 @@ class DiscoverHashtagFragment: BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentDiscoverHashtagBinding.inflate(inflater)
+        _binding = FragmentDiscoverHashtagBinding.inflate(inflater).also {
+            it.toolbar.btnNotification.visibility = View.GONE
+        }
 
         viewModel.loadCasts(hashtag.id)
 
@@ -63,7 +65,6 @@ class DiscoverHashtagFragment: BaseFragment() {
             }
         }
 
-        binding.toolbar.btnNotification.visibility = if (showNotificationIcon) View.VISIBLE else View.GONE
         val tagText = "#${hashtag.tag}"
         binding.toolbar.title.text = tagText
         binding.toolbar.btnBack.setOnClickListener {

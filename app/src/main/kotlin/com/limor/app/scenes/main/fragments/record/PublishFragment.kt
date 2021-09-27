@@ -633,7 +633,7 @@ class PublishFragment : BaseFragment() {
             btnPlayPause?.setImageDrawable(
                 ContextCompat.getDrawable(
                     requireContext(),
-                    R.drawable.ic_play
+                    R.drawable.ic_play_active
                 )
             )
         }
@@ -968,7 +968,17 @@ class PublishFragment : BaseFragment() {
             }
         }
         if (!uiDraft.caption.toString().trim().isNullOrEmpty()) {
-            etDraftCaption?.text = uiDraft.caption?.toEditable()
+            var captionAndTags = uiDraft.caption?.split(resources.getString(R.string.text_seperator))
+            var caption = ""
+            var tags = ""
+            if(captionAndTags != null && captionAndTags.size == 2){
+                caption = captionAndTags[0]
+                tags = captionAndTags[1]
+                etDraftCaption?.text = caption.toEditable()
+                etDraftTags?.text = tags.toEditable()
+            } else{
+                etDraftCaption?.text = uiDraft.caption?.toEditable()
+            }
         }
         if (!uiDraft.tempPhotoPath.toString().trim().isNullOrEmpty()) {
             //Glide.with(context!!).load(draftViewModel.uiDraft.tempPhotoPath).into(draftImage!!)
@@ -1032,8 +1042,12 @@ class PublishFragment : BaseFragment() {
         } else {
             uiDraft.title = getString(R.string.autosave)
         }
+        uiDraft.languageCode = publishViewModel.languageCode
+        uiDraft.language = publishViewModel.languageSelected
 
-        uiDraft.caption = etDraftCaption?.text.toString()
+        val tags = etDraftTags?.text.toString()
+
+        uiDraft.caption = etDraftCaption?.text.toString() + resources.getString(R.string.text_seperator) + tags
 
         //Update Realm
         callToUpdateDraft()
@@ -1065,7 +1079,7 @@ class PublishFragment : BaseFragment() {
                 btnPlayPause?.setImageDrawable(
                     ContextCompat.getDrawable(
                         requireContext(),
-                        R.drawable.ic_play
+                        R.drawable.ic_play_active
                     )
                 )
             }
@@ -1088,7 +1102,7 @@ class PublishFragment : BaseFragment() {
                         context?.let {
                             ContextCompat.getDrawable(
                                 it,
-                                R.drawable.ic_play
+                                R.drawable.ic_play_active
                             )
                         }
                     )
@@ -1108,7 +1122,7 @@ class PublishFragment : BaseFragment() {
                 btnPlayPause?.setImageDrawable(
                     ContextCompat.getDrawable(
                         requireContext(),
-                        R.drawable.ic_pause
+                        R.drawable.ic_pause_big
                     )
                 )
                 run = Runnable {
@@ -1131,7 +1145,7 @@ class PublishFragment : BaseFragment() {
                 btnPlayPause?.setImageDrawable(
                     ContextCompat.getDrawable(
                         requireContext(),
-                        R.drawable.ic_play
+                        R.drawable.ic_play_active
                     )
                 )
             }

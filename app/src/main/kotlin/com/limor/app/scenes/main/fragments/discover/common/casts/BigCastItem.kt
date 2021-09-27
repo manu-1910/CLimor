@@ -48,7 +48,7 @@ class BigCastItem(
                 .into(castImage)
 
             Glide.with(root)
-                .load(cast.owner?.imageLinks?.small)
+                .load(cast.owner?.getAvatarUrl())
                 .circleCrop()
                 .into(ownerIcon)
 

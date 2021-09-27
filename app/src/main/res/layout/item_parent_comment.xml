@@ -115,22 +115,32 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:textColor="@color/subtitle_text_color"
-        app:layout_constraintEnd_toStartOf="@id/btnCommentLike"
+        app:layout_constraintEnd_toStartOf="@id/likeCommentLayout"
         app:layout_constraintStart_toStartOf="@id/tvCommentName"
         app:layout_constraintTop_toBottomOf="@id/ivCommentAvatar"
         tools:text="@string/lorem" />
 
-    <com.limor.app.components.LikeButton
-        android:id="@+id/btnCommentLike"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+    <FrameLayout
+        android:id="@+id/likeCommentLayout"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:background="@color/transparent"
-        android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivCommentAvatar"
-        app:unliked_color="@color/textPrimary" />
+        android:foreground="?android:attr/selectableItemBackground">
+
+        <com.limor.app.components.LikeButton
+            android:id="@+id/btnCommentLike"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@color/transparent"
+            android:padding="8dp"
+            android:layout_gravity="center"
+            app:unliked_color="@color/textPrimary" />
+
+
+    </FrameLayout>
 
     <com.limor.app.components.CommentAudioPlayerView
         android:id="@+id/audio_player"
@@ -140,35 +150,54 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:visibility="gone"
-        app:layout_constraintEnd_toStartOf="@+id/btnCommentLike"
+        app:layout_constraintEnd_toStartOf="@+id/likeCommentLayout"
         app:layout_constraintStart_toEndOf="@+id/ivCommentAvatar"
         app:layout_constraintTop_toBottomOf="@+id/tvCommentContent"
         tools:visibility="visible" />
 
-    <TextView
-        android:id="@+id/likes_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_medium"
-        android:textColor="@color/textSecondary"
-        android:visibility="visible"
+    <LinearLayout
+        android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/audio_player"
         app:layout_constraintStart_toStartOf="@+id/tvCommentContent"
         app:layout_goneMarginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="0dp"
-        tools:text="1 Like" />
-
-    <TextView
-        android:id="@+id/reply_btn"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_medium"
-        android:text="@string/reply"
-        android:textColor="@color/colorAccent"
-        app:layout_constraintTop_toBottomOf="@id/audio_player"
-        app:layout_constraintStart_toEndOf="@id/likes_count"
-        app:layout_goneMarginTop="16dp" />
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/likes_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/textSecondary"
+            android:visibility="visible"
+            android:paddingEnd="16dp"
+            android:paddingStart="0dp"
+            tools:text="1 Like" />
+
+        <TextView
+            android:id="@+id/listens_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/textSecondary"
+            android:visibility="visible"
+            android:paddingEnd="16dp"
+            android:paddingStart="0dp"
+            tools:text="1 Listen" />
+
+        <TextView
+            android:id="@+id/reply_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
+            android:text="@string/reply"
+            android:textColor="@color/colorAccent" />
+
+    </LinearLayout>
+
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -32,7 +32,7 @@ class SuggestedPersonItem(val suggestedPerson: UserUIModel) :
         }
 
         Glide.with(viewBinding.personImage)
-            .load(suggestedPerson.imageLinks?.small)
+            .load(suggestedPerson.getAvatarUrl())
             .circleCrop()
             .into(viewBinding.personImage)
     }
