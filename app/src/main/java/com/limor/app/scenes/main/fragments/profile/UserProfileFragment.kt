@@ -351,7 +351,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             .load(avatarUrl)
             .signature(ObjectKey(avatarUrl ?: ""))
             .placeholder(R.mipmap.ic_launcher_round)
-            .error(R.mipmap.ic_launcher_round)
+            .error(R.drawable.ic_podcast_listening)
             .apply(RequestOptions.circleCropTransform())
             .into(binding.profileDp)
 
