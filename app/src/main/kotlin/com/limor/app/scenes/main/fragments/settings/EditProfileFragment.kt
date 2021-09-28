@@ -536,7 +536,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
                         user.lastName,
                         user.description,
                         user.website,
-                        user.imageLinks?.large,
+                        user.imageLinks?.original,
                         user.voiceBioURL,
                         user.durationSeconds
                     )
