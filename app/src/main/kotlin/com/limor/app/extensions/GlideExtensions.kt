@@ -8,6 +8,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.signature.ObjectKey
 
 /**
  * @see [RequestListener]
@@ -92,6 +93,7 @@ fun <T> RequestBuilder<T>.listener(
 fun <T: ImageView> T.loadCircleImage(url: String) {
     Glide.with(this)
         .load(url)
+        .signature(ObjectKey(url))
         .circleCrop()
         .into(this)
 }
@@ -99,5 +101,6 @@ fun <T: ImageView> T.loadCircleImage(url: String) {
 fun ImageView.loadImage(url: String) {
     Glide.with(this)
         .load(url)
+        .signature(ObjectKey(url))
         .into(this)
 }
