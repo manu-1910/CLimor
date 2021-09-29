@@ -334,6 +334,12 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/MaterialMainTheme.Podcast" />
+        <receiver
+            android:name=".receivers.PhoneCallReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

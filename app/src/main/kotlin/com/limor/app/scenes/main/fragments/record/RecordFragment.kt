@@ -21,9 +21,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,22 +41,21 @@ import androidx.core.widget.doOnTextChanged
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.facebook.FacebookSdk.getApplicationContext
 import com.google.android.material.textfield.TextInputEditText
 import com.limor.app.App
-import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
 import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.audio.wav.waverecorder.calculateAmplitude
 import com.limor.app.common.BaseFragment
+import com.limor.app.events.PhoneCallEvent
 import com.limor.app.extensions.throttledClick
 import com.limor.app.scenes.main.viewmodels.DraftViewModel
 import com.limor.app.scenes.main.viewmodels.LocationsViewModel
 import com.limor.app.scenes.utils.Commons
-import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.CommonsKt.Companion.audioFileFormat
 import com.limor.app.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import com.limor.app.scenes.utils.SpecialCharactersInputFilter
@@ -62,6 +63,7 @@ import com.limor.app.scenes.utils.location.MyLocation
 import com.limor.app.scenes.utils.visualizer.RecordVisualizer
 import com.limor.app.uimodels.UIDraft
 import io.reactivex.subjects.PublishSubject
+import io.square1.limor.remote.services.user.LOG_OUT_PATH
 import kotlinx.android.synthetic.main.dialog_cancel_draft.view.*
 import kotlinx.android.synthetic.main.dialog_cancel_draft.view.saveButton
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
@@ -73,6 +75,9 @@ import kotlinx.android.synthetic.main.toolbar_default.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -130,7 +135,8 @@ class RecordFragment : BaseFragment() {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.READ_PHONE_STATE
         )
     }
 
@@ -660,6 +666,7 @@ class RecordFragment : BaseFragment() {
 
     override fun onStart() {
         super.onStart()
+        EventBus.getDefault().register(this)
         requireActivity()
             .onBackPressedDispatcher
             .addCallback(this, object : OnBackPressedCallback(true) {
@@ -667,6 +674,11 @@ class RecordFragment : BaseFragment() {
                     onBackPressed()
                 }
             })
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
     }
 
     private fun updateChronoTimerFromDraft() {
@@ -1494,6 +1506,11 @@ class RecordFragment : BaseFragment() {
                 }
             }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onPhoneCallEvent(event: PhoneCallEvent){
+        pauseRecording()
     }
 
 
