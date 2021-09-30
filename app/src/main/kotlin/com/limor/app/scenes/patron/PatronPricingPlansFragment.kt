@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.design.snackbar
+import timber.log.Timber
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -97,6 +98,7 @@ class PatronPricingPlansFragment() : Fragment() {
     private fun startConnectingToClient() {
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
+                Timber.d("Billing Result -> ${billingResult.responseCode}")
                 if (billingResult.responseCode ==  BillingClient.BillingResponseCode.OK) {
                     // The BillingClient is ready. You can query purchases here.
                     lifecycleScope.launch {
@@ -123,16 +125,16 @@ class PatronPricingPlansFragment() : Fragment() {
 
     suspend fun querySkuDetails() {
         val skuList = ArrayList<String>()
-        skuList.add("premium_upgrade")
-        skuList.add("gas")
+        skuList.add("monthly_plan_199")
         val params = SkuDetailsParams.newBuilder()
-        params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
+        params.setSkusList(skuList).setType(BillingClient.SkuType.SUBS)
 
         // leverage querySkuDetails Kotlin extension function
         val skuDetailsResult = withContext(Dispatchers.IO) {
             billingClient.querySkuDetails(params.build())
         }
 
+        Timber.d("Billing SKUs-> ${skuDetailsResult.skuDetailsList}")
 
         skuDetailsResult.skuDetailsList?.let{
             if(it.isNotEmpty()){
@@ -140,6 +142,7 @@ class PatronPricingPlansFragment() : Fragment() {
                 val flowParams = BillingFlowParams.newBuilder()
                     .setSkuDetails(it[0])
                     .build()
+                Timber.d("In App Purchases Details ->  $it")
                 val responseCode = billingClient.launchBillingFlow(requireActivity(), flowParams).responseCode
 
 
@@ -161,7 +164,7 @@ class PatronPricingPlansFragment() : Fragment() {
         return arrayListOf(item1,item2,item3)
     }
 
-    companion object {
+    companion  object {
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
