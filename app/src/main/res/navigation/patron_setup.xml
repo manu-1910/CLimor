@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/patron_setup.xml"
+    app:startDestination="@id/patronPricingPlansFragment">
+
+    <fragment
+        android:id="@+id/patronPricingPlansFragment"
+        android:name="com.limor.app.scenes.patron.PatronPricingPlansFragment"
+        android:label="PatronPricingPlansFragment" />
+</navigation>

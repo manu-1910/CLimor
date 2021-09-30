@@ -5,9 +5,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
+import com.android.billingclient.api.*
 import com.limor.app.R
 import com.limor.app.databinding.FragmentPatronPricingPlansBinding
 import com.limor.app.scenes.main.fragments.profile.ShortPagerAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.jetbrains.anko.design.snackbar
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -19,12 +25,49 @@ private const val ARG_PARAM2 = "param2"
  * Use the [PatronPricingPlansFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class PatronPricingPlansFragment : Fragment() {
+class PatronPricingPlansFragment() : Fragment() {
+    private lateinit var billingClient: BillingClient
     private lateinit var binding: FragmentPatronPricingPlansBinding
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    val purchasesUpdatedListener by lazy {
+        PurchasesUpdatedListener { billingResult, purchases ->
+            //This is called once there is some update about purchase after launching the billing flow
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
+                for (purchase in purchases) {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        handlePurchase(purchase!!)
+                    }
+                }
+            } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
+                // Handle an error caused by a user cancelling the purchase flow.
+                snackbar(binding.root, "Cancelled")
+            } else {
+                // Handle any other error codes.
+            }
+        }
+
+    }
+
+    private suspend fun handlePurchase(purchase: Purchase) {
+        //TODO Update the purchased details to the backend
+
+        // Verify the purchase.
+        // Ensure entitlement was not already granted for this purchaseToken.
+        // Grant entitlement to the user.
+
+        val consumeParams =
+            ConsumeParams.newBuilder()
+                .setPurchaseToken(purchase.purchaseToken)
+                .build()
+        val consumeResult = withContext(Dispatchers.IO) {
+
+        }
+
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,8 +90,64 @@ class PatronPricingPlansFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupViewPager()
+        setBillingClient()
+        startConnectingToClient()
     }
 
+    private fun startConnectingToClient() {
+        billingClient.startConnection(object : BillingClientStateListener {
+            override fun onBillingSetupFinished(billingResult: BillingResult) {
+                if (billingResult.responseCode ==  BillingClient.BillingResponseCode.OK) {
+                    // The BillingClient is ready. You can query purchases here.
+                    lifecycleScope.launch {
+                        querySkuDetails()
+                    }
+                }
+            }
+            override fun onBillingServiceDisconnected() {
+                // Try to restart the connection on the next request to
+                // Google Play by calling the startConnection() method.
+
+
+
+            }
+        })
+    }
+
+    private fun setBillingClient() {
+        billingClient = BillingClient.newBuilder(requireActivity())
+            .setListener(purchasesUpdatedListener)
+            .enablePendingPurchases()
+            .build()
+    }
+
+    suspend fun querySkuDetails() {
+        val skuList = ArrayList<String>()
+        skuList.add("premium_upgrade")
+        skuList.add("gas")
+        val params = SkuDetailsParams.newBuilder()
+        params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
+
+        // leverage querySkuDetails Kotlin extension function
+        val skuDetailsResult = withContext(Dispatchers.IO) {
+            billingClient.querySkuDetails(params.build())
+        }
+
+
+        skuDetailsResult.skuDetailsList?.let{
+            if(it.isNotEmpty()){
+                //TODO setup recyclerview here
+                val flowParams = BillingFlowParams.newBuilder()
+                    .setSkuDetails(it[0])
+                    .build()
+                val responseCode = billingClient.launchBillingFlow(requireActivity(), flowParams).responseCode
+
+
+            }
+        }
+
+        // Process the result.
+    }
     private fun setupViewPager() {
         val items : ArrayList<FragmentShortItemSlider> = getAdapterItems()
         binding.pager.adapter = ShortPagerAdapter(items,childFragmentManager,lifecycle)

@@ -1,6 +1,7 @@
 package com.limor.app.scenes.main.fragments.profile
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,58 +9,76 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
 import com.limor.app.extensions.isOnline
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.patron.FragmentShortItemSlider
+import com.limor.app.scenes.patron.setup.PatronSetupActivity
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.UserUIModel
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_waveform.view.*
 import org.jetbrains.anko.design.snackbar
+import org.jetbrains.anko.support.v4.startActivityForResult
 import java.time.Duration
 import javax.inject.Inject
 
-class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
+class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: UserProfileViewModel by viewModels { viewModelFactory }
 
-    lateinit var binding:FragmnetUserPatronNewBinding
+    lateinit var binding: FragmnetUserPatronNewBinding
     var requested = false
+
     companion object {
         fun newInstance(user: UserUIModel) = UserPatronFragmentNew(user)
     }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         AndroidSupportInjection.inject(this)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding =  FragmnetUserPatronNewBinding.inflate(inflater, container, false)
+        binding = FragmnetUserPatronNewBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     private fun setupViewPager(items: ArrayList<FragmentShortItemSlider>) {
-        binding.pager.adapter = ShortPagerAdapter(items,childFragmentManager,lifecycle)
+        binding.pager.adapter = ShortPagerAdapter(items, childFragmentManager, lifecycle)
         binding.indicator.setViewPager2(binding.pager)
     }
 
     private fun getNormalStateItems(): ArrayList<FragmentShortItemSlider> {
-        val item1 = FragmentShortItemSlider.newInstance(R.string.patron_carousel_slide_1_title, R.drawable.patron_carousel_slide_1_image)
-        val item2 = FragmentShortItemSlider.newInstance(R.string.patron_carousel_slide_2_title, R.drawable.patron_carousel_slide_2_image)
-        val item3 = FragmentShortItemSlider.newInstance(R.string.patron_carousel_slide_3_title, R.drawable.patron_carousel_slide_3_image)
-        return arrayListOf(item1,item2,item3)
+        val item1 = FragmentShortItemSlider.newInstance(
+            R.string.patron_carousel_slide_1_title,
+            R.drawable.patron_carousel_slide_1_image
+        )
+        val item2 = FragmentShortItemSlider.newInstance(
+            R.string.patron_carousel_slide_2_title,
+            R.drawable.patron_carousel_slide_2_image
+        )
+        val item3 = FragmentShortItemSlider.newInstance(
+            R.string.patron_carousel_slide_3_title,
+            R.drawable.patron_carousel_slide_3_image
+        )
+        return arrayListOf(item1, item2, item3)
     }
 
     private fun getApprovedStateItems(): ArrayList<FragmentShortItemSlider> {
-        val item1 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request, R.drawable.ic_patron_invite_accepted)
+        val item1 = FragmentShortItemSlider.newInstance(
+            R.string.limor_patron_request,
+            R.drawable.ic_patron_invite_accepted
+        )
         return arrayListOf(item1)
     }
 
@@ -85,11 +104,13 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
         }
     }
 
-    private fun handleUIStates(){
-        binding.emptyStateTv.text =  if (currentUser()) {getString(R.string.limor_patron_empty_state)} else getString(R.string.patron_empty_state_other)
+    private fun handleUIStates() {
+        binding.emptyStateTv.text = if (currentUser()) {
+            getString(R.string.limor_patron_empty_state)
+        } else getString(R.string.patron_empty_state_other)
         binding.patronButton.isEnabled = true
-        if(currentUser()){
-            if(user.isPatron == true){
+        if (currentUser()) {
+            if (user.isPatron == true) {
                 //is already a patron
                 //load patron feed
                 binding.emptyStateLayout.visibility = View.VISIBLE
@@ -141,7 +162,7 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
                     }
                 }
             }
-        }else{
+        } else {
             binding.emptyStateLayout.visibility = View.VISIBLE
             binding.baseImageTextLayout.visibility = View.GONE
             binding.managePatronStateLayout.visibility = View.GONE
@@ -151,12 +172,11 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
     }
 
     private fun subscribeToInvite() {
-        model.patronInviteStatus.observe(viewLifecycleOwner,{
-            inviteStatus ->
-            if(inviteStatus == "Success"){
+        model.patronInviteStatus.observe(viewLifecycleOwner, { inviteStatus ->
+            if (inviteStatus == "Success") {
                 user.patronInvitationStatus = "REQUESTED"
                 handleUIStates()
-            }else{
+            } else {
                 binding.root.snackbar("Patron Invitation wasn't requested")
                 user.patronInvitationStatus = "NOT_REQUESTED"
                 handleUIStates()
@@ -164,7 +184,7 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
         })
     }
 
-    private fun setupAudioPlayer(url:String?, durationSeconds:Double?) {
+    private fun setupAudioPlayer(url: String?, durationSeconds: Double?) {
         if (url.isNullOrEmpty()) {
             binding.audioPlayer.visibility = View.GONE
         } else {
@@ -180,9 +200,9 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
     }
 
     private fun requestInvitation() {
-        if(requireContext().isOnline()){
+        if (requireContext().isOnline()) {
             model.requestPatronInvitation(user.id)
-        }else{
+        } else {
             binding.root.snackbar(getString(R.string.default_no_internet))
         }
     }
@@ -200,6 +220,11 @@ class UserPatronFragmentNew(val user: UserUIModel): Fragment() {
                 "APPROVED" -> {
                     //Should setup Limor patron
 
+                    val intent = Intent(requireContext(), PatronSetupActivity::class.java)
+                    intent.extras.apply {
+                        "user" to user
+                    }
+                    startActivity(intent)
 
                 }
                 "REJECTED" -> {

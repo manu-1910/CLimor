@@ -60,7 +60,7 @@
             app:dotsWidthFactor="2.5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:progressMode="true"
+            app:progressMode="false"
             app:selectedDotColor="@color/colorAccent" />
 
         <androidx.recyclerview.widget.RecyclerView
