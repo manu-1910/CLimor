@@ -36,7 +36,7 @@ class SearchBar(context: Context, attrs: AttributeSet) : FrameLayout(context, at
     private val searchIcon = findViewById<ImageView>(R.id.search_icon)
 
     private val closeIcon = findViewById<ImageView>(R.id.close_icon)
-    private var debounceTime = 500L
+    private var debounceTime = 150L
     private var onQueryTextChange: ((newText: String) -> Unit)? = null
     private var onQueryTextSubmit: ((query: String) -> Unit)? = null
     private var onQueryTextBlank: (() -> Unit)? = null
