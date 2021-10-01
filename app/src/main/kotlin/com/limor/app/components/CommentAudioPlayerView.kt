@@ -70,7 +70,7 @@ class CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayou
             playerBinder.getPlayerStatus(commentAudioTrack!!)
                 .onEach { status ->
                     when (status) {
-                        is PlayerStatus.Cancelled -> setInitialState(Duration.ZERO)
+                        is PlayerStatus.Cancelled -> setInitialState(audio.duration)
                         is PlayerStatus.Ended -> setPausedState()
                         is PlayerStatus.Error -> setErrorState()
                         is PlayerStatus.Buffering -> setLoadingState()
