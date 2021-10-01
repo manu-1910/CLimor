@@ -49,6 +49,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/ivPodcastBackground" />
 
+    <View
+        android:id="@+id/ivProxyAvatar"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="24dp"
+        app:layout_constraintBottom_toBottomOf="@id/shadowTop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/ivPodcastBackground" />
+
     <TextView
         android:id="@+id/tvPodcastUserName"
         android:layout_width="wrap_content"

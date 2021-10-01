@@ -396,13 +396,6 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
             updatePodcasts = true
             sharePodcast(cast)
         }
-        binding.tvPodcastUserName.setOnClickListener {
-            openUserProfile(cast)
-        }
-
-        binding.ivPodcastAvatar.setOnClickListener {
-            openUserProfile(cast)
-        }
 
         // This is copy pasted from FragmentComments, will need to be refactored later...
         binding.taviVoice.initListenerStatus {
@@ -435,6 +428,24 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
                 }
             }
         }
+        binding.tvPodcastUserName.setOnClickListener {
+            openUserProfile(cast)
+        }
+
+        binding.ivPodcastAvatar.setOnClickListener {
+            openUserProfile(cast)
+        }
+
+        binding.ivProxyAvatar.setOnClickListener {
+            openUserProfile(cast)
+        }
+    }
+
+    private fun openUserProfile(item: CastUIModel) {
+        val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+        userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, item.owner?.username)
+        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, item.owner?.id)
+        startActivity(userProfileIntent)
     }
 
     var launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -483,23 +494,6 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
         }.addOnFailureListener {
             Timber.d("Failed in creating short dynamic link")
         }
-
-        binding.tvPodcastUserName.setOnClickListener {
-            openUserProfile(cast)
-        }
-
-        binding.ivPodcastAvatar.setOnClickListener {
-            openUserProfile(cast)
-        }
-    }
-
-
-
-    private fun openUserProfile(item: CastUIModel) {
-        val userProfileIntent = Intent(context, UserProfileActivity::class.java)
-        userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, item.owner?.username)
-        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, item.owner?.id)
-        startActivity(userProfileIntent)
     }
 
     private fun initRecastState(item: CastUIModel){
