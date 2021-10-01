@@ -78,8 +78,8 @@ class BlockedUserViewHolder(
 
         Glide.with(itemView.context)
             .load(currentItem.images?.small_url)
-            .placeholder(R.mipmap.ic_launcher_round)
-            .error(R.mipmap.ic_launcher_round)
+            .placeholder(R.drawable.ic_podcast_listening)
+            .error(R.drawable.ic_podcast_listening)
             .apply(RequestOptions.circleCropTransform())
             .into(binding.ivUser)
         ivUser.onClick { listener.onUserClicked(currentItem, position) }

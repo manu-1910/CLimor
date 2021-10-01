@@ -91,12 +91,21 @@ fun <T> RequestBuilder<T>.listener(
     }
 )
 
-fun <T: ImageView> T.loadCircleImage(url: String) {
-    Glide.with(this)
+fun <T : ImageView> T.loadCircleImage(url: String) {
+    loadCircleImage(url, true);
+}
+
+fun <T : ImageView> T.loadCircleImage(url: String, usePlaceholder: Boolean) {
+    var options = Glide.with(this)
         .load(url)
         .signature(ObjectKey(url))
-        .error(R.drawable.ic_podcast_listening)
-        .circleCrop()
+
+    if (usePlaceholder) {
+        options = options.error(R.drawable.ic_podcast_listening)
+            .placeholder(R.drawable.ic_podcast_listening)
+    }
+
+    options.circleCrop()
         .into(this)
 }
 

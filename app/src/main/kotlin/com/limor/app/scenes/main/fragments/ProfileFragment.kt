@@ -58,7 +58,7 @@ class ProfileFragment : FragmentWithLoading(), Injectable {
                 Glide.with(requireContext())
                     .load(it.getAvatarUrl())
                     .signature(ObjectKey(it.getAvatarUrl() ?: ""))
-                    .placeholder(R.mipmap.ic_launcher_round)
+                    .placeholder(R.drawable.ic_podcast_listening)
                     .error(R.drawable.ic_podcast_listening)
                     .apply(RequestOptions.circleCropTransform())
                     .into(binding.profileDp)

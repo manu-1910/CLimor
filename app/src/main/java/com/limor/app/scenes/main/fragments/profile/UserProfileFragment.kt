@@ -350,7 +350,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         Glide.with(requireContext())
             .load(avatarUrl)
             .signature(ObjectKey(avatarUrl ?: ""))
-            .placeholder(R.mipmap.ic_launcher_round)
+            .placeholder(R.drawable.ic_podcast_listening)
             .error(R.drawable.ic_podcast_listening)
             .apply(RequestOptions.circleCropTransform())
             .into(binding.profileDp)
