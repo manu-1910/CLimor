@@ -76,7 +76,7 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
 
     private fun getApprovedStateItems(): ArrayList<FragmentShortItemSlider> {
         val item1 = FragmentShortItemSlider.newInstance(
-            R.string.limor_patron_request,
+            R.string.patron_carousel_slide_approved_title,
             R.drawable.ic_patron_invite_accepted
         )
         return arrayListOf(item1)
