@@ -57,7 +57,7 @@ import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
-class ExtendedPlayerFragment : UserMentionFragment() {
+class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.UpdatePodcastListener {
 
     companion object {
         private const val CAST_ID_KEY = "CAST_ID_KEY"
@@ -353,8 +353,9 @@ class ExtendedPlayerFragment : UserMentionFragment() {
     private fun setOnClicks(cast: CastUIModel) {
         binding.btnPodcastMore.setOnClickListener {
             it.findViewTreeLifecycleOwner()?.let {
-                DialogPodcastMoreActions.newInstance(cast)
-                    .show(parentFragmentManager, DialogPodcastMoreActions.TAG)
+                val dialog = DialogPodcastMoreActions.newInstance(cast)
+                dialog.setUpdatePodcastListener(this@ExtendedPlayerFragment)
+                dialog.show(parentFragmentManager, DialogPodcastMoreActions.TAG)
             }
         }
 
@@ -580,5 +581,11 @@ class ExtendedPlayerFragment : UserMentionFragment() {
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
+    }
+
+    override fun update() {
+        requireArguments().putBoolean(RESTARTED, false)
+        requireArguments().putBoolean(AUTO_PLAY_KEY, false)
+        podcastViewModel.loadCast(castId)
     }
 }

@@ -1,19 +1,25 @@
 package com.limor.app.scenes.main_new.fragments
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.limor.app.EditCastActivity
 import com.limor.app.R
+import com.limor.app.UpdatePodcastMutation
 import com.limor.app.apollo.CastsRepository
 import com.limor.app.apollo.UserRepository
 import com.limor.app.databinding.DialogPodcastMoreActionsBinding
@@ -24,11 +30,13 @@ import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.main.viewmodels.PodcastViewModel
 import com.limor.app.scenes.profile.DialogUserReport
 import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.mapToUIModel
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.support.v4.startActivityForResult
 import javax.inject.Inject
 
 class DialogPodcastMoreActions : DialogFragment() {
@@ -50,8 +58,16 @@ class DialogPodcastMoreActions : DialogFragment() {
 
     private var _binding: DialogPodcastMoreActionsBinding? = null
     private val binding get() = _binding!!
+    private lateinit var updatePodcastListener : UpdatePodcastListener
 
     private val cast: CastUIModel by lazy { requireArguments().getParcelable(CAST_KEY)!! }
+
+    var launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            updatePodcastListener.update()
+        }
+        dismiss()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,6 +78,10 @@ class DialogPodcastMoreActions : DialogFragment() {
         binding.visibilityGroup.makeInVisible()
         setViewsVisibility()
         return binding.root
+    }
+
+    fun setUpdatePodcastListener(listener: UpdatePodcastListener){
+        updatePodcastListener = listener
     }
 
     private fun setViewsVisibility() {
@@ -78,6 +98,7 @@ class DialogPodcastMoreActions : DialogFragment() {
                     binding.btnReportCast.makeGone()
                     binding.btnBlockUser.makeGone()
                     binding.btnReportUser.makeGone()
+                    binding.btnEditCast.makeVisible()
                 }
             } else{
                 binding.btnDeleteCast.makeGone()
@@ -138,10 +159,25 @@ class DialogPodcastMoreActions : DialogFragment() {
             }
 
         }
+
+        binding.btnEditCast.setOnClickListener {
+            activity?.let {
+                val intent = Intent(it, EditCastActivity::class.java)
+                intent.putExtra(EditCastActivity.TITLE, cast.title)
+                intent.putExtra(EditCastActivity.CAPTION_TAGS, cast.caption)
+                intent.putExtra(EditCastActivity.ID, cast.id)
+                launcher.launch(intent)
+            }
+        }
     }
 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
     }
+
+    interface UpdatePodcastListener{
+        fun update()
+    }
+
 }

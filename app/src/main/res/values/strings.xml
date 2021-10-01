@@ -86,7 +86,7 @@
     <string name="hint_title">Title here<font color='#FF0000'>*</font></string>
 
     <string name="text_seperator">C_TAG_SEP</string>
-
+    <string name="new_line_seperator">\n\n</string>
 
     <!-- Edit Screen -->
     <string name="yes">yes</string>
@@ -436,6 +436,7 @@
     <string name="recording_starts_in">Recording\nstarts in</string>
     <string name="do_you_want_to_save_changes">Do you want to save the current changes?</string>
     <string name="save">Save</string>
+    <string name="save_now">Save Now</string>
     <string name="save_as_new_draft">Save as New Draft</string>
     <string name="overwrite">Overwrite Draft</string>
     <string name="error_copying_file">There was an error trying to copy this file</string>

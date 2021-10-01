@@ -40,7 +40,9 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning,AllowBackup">
 
-
+        <activity android:name=".EditCastActivity"
+            android:theme="@style/MaterialMainTheme.FullScreen">
+        </activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBckUZU2E7j0ybySIxZvxL_zIzjlf2lRQY" />
