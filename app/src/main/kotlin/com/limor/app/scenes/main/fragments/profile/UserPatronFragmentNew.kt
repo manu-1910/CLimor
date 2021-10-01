@@ -23,6 +23,7 @@ import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_waveform.view.*
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.support.v4.startActivityForResult
+import timber.log.Timber
 import java.time.Duration
 import javax.inject.Inject
 
@@ -92,6 +93,8 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
     }
 
     private fun currentUser(): Boolean {
+
+        Timber.d("Current User Check -> ${user.isPatron} --- ${PrefsHandler.getCurrentUserId(requireContext())}")
         return when (user.id) {
             PrefsHandler.getCurrentUserId(requireContext()) -> {
                 //Current user
@@ -118,6 +121,14 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
                 binding.managePatronStateLayout.visibility = View.GONE
                 binding.requestStateLayout.visibility = View.GONE
 
+                binding.emptyStateLayout.setOnClickListener{
+                    val intent = Intent(requireContext(), PatronSetupActivity::class.java)
+                    intent.extras.apply {
+                        "user" to user
+                    }
+                    startActivity(intent)
+                }
+
             } else {
 
                 // audio should be present for all patron invitation statuses
@@ -125,11 +136,14 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
 
                 when (user.patronInvitationStatus) {
                     null -> {
-                        //Show empty state here
-                        binding.emptyStateLayout.visibility = View.VISIBLE
-                        binding.baseImageTextLayout.visibility = View.GONE
+                        //Considering this as NOT_REQUESTED STATE
+                        setupViewPager(getNormalStateItems())
+                        binding.patronButton.text = getString(R.string.request_invite)
+                        binding.emptyStateLayout.visibility = View.GONE
+                        binding.baseImageTextLayout.visibility = View.VISIBLE
                         binding.managePatronStateLayout.visibility = View.GONE
-                        binding.requestStateLayout.visibility = View.GONE
+                        binding.requestStateLayout.visibility = View.VISIBLE
+                        subscribeToInvite()
                     }
                     "NOT_REQUESTED" -> {
                         //Show Request Invite state
@@ -211,6 +225,12 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
 
         binding.patronButton.setOnClickListener {
             when (user.patronInvitationStatus) {
+                null -> {
+                    //Should request patron invitation
+                    binding.patronButton.isEnabled = false
+                    binding.patronButton.text = getString(R.string.requesting)
+                    requestInvitation()
+                }
                 "NOT_REQUESTED" -> {
                     //Should request patron invitation
                     binding.patronButton.isEnabled = false
