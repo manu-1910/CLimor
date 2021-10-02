@@ -1510,7 +1510,7 @@ class RecordFragment : BaseFragment() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onPhoneCallEvent(event: PhoneCallEvent){
-        pauseRecording()
+        // pauseRecording()
     }
 
 
