@@ -313,4 +313,13 @@ class UserInfoProvider @Inject constructor(
             null
         }
     }
+
+    suspend fun setNotificationsEnabled(enabled: Boolean) {
+        try {
+            userRepository.updateUserNotificationStatus(enabled);
+        } catch (e: Exception) {
+            Timber.e(e)
+            null
+        }
+    }
 }

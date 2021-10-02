@@ -320,7 +320,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
     private fun setDataToProfileViews(it: UserUIModel) {
         user = it
-        binding.profileName.text = it.username
+        binding.profileName.text = it.getFullName()
         if(it.isVerified == true){
             binding.ivVerifiedAvatar.visibility = View.VISIBLE
         } else{
