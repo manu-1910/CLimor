@@ -44,6 +44,8 @@ data class UserUIModel(
      * - small
      */
     fun getAvatarUrl(): String? = imageLinks?.medium ?: imageLinks?.large ?: imageLinks?.original ?: imageLinks?.small
+
+    fun hasNotificationsEnabled(): Boolean = areNotificationsEnabled ?: false
 }
 
 fun GetFeaturedCastsQuery.Owner.mapToUIModel(): UserUIModel =

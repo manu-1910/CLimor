@@ -1,0 +1,8 @@
+mutation UpdateUserNotificationStatusMutation($enableNotifications: Boolean){
+    updateUser(user:{
+        enableNotifications: $enableNotifications,
+    }){
+        status,
+        message
+    }
+}
