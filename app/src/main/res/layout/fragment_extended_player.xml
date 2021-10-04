@@ -124,21 +124,36 @@
 
     <!--  PLAYER CONTROLS-->
 
-
-    <com.google.android.material.progressindicator.LinearProgressIndicator
+    <SeekBar
         android:id="@+id/lpiPodcastProgress"
         android:layout_width="0dp"
-        android:layout_height="4dp"
+        android:layout_height="wrap_content"
+        android:maxHeight="4dp"
+        android:minHeight="4dp"
+        android:paddingTop="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
-        app:indicatorColor="@color/colorAccent"
+        android:progressDrawable="@drawable/custom_seekbar_progress"
+        android:thumb="@drawable/seekbar_thumb"
         app:layout_constraintBottom_toTopOf="@id/tvRecastPlayCurrentPosition"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:trackColor="#F0F3F8"
-        app:trackCornerRadius="4dp"
-        tools:progress="25" />
+        app:layout_constraintStart_toStartOf="parent" />
+
+<!--    <com.google.android.material.progressindicator.LinearProgressIndicator-->
+<!--        android:id="@+id/lpiPodcastProgress"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="4dp"-->
+<!--        android:layout_marginStart="16dp"-->
+<!--        android:layout_marginEnd="16dp"-->
+<!--        android:layout_marginBottom="8dp"-->
+<!--        app:indicatorColor="@color/colorAccent"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/tvRecastPlayCurrentPosition"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:trackColor="#F0F3F8"-->
+<!--        app:trackCornerRadius="4dp"-->
+<!--        tools:progress="25" />-->
 
     <TextView
         android:id="@+id/tvRecastPlayCurrentPosition"

@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -55,17 +56,28 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 import java.io.File
+import java.lang.Math.round
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
-class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.UpdatePodcastListener {
+class ExtendedPlayerFragment : UserMentionFragment(),
+    DialogPodcastMoreActions.UpdatePodcastListener {
 
     companion object {
         private const val CAST_ID_KEY = "CAST_ID_KEY"
         private const val AUTO_PLAY_KEY = "AUTO_PLAY_KEY"
         private const val RESTARTED = "RESTARTED"
-        fun newInstance(castId: Int, autoPlay: Boolean = false, restarted: Boolean = false): ExtendedPlayerFragment {
+        fun newInstance(
+            castId: Int,
+            autoPlay: Boolean = false,
+            restarted: Boolean = false
+        ): ExtendedPlayerFragment {
             return ExtendedPlayerFragment().apply {
-                arguments = bundleOf(CAST_ID_KEY to castId, AUTO_PLAY_KEY to autoPlay, RESTARTED to restarted)
+                arguments = bundleOf(
+                    CAST_ID_KEY to castId,
+                    AUTO_PLAY_KEY to autoPlay,
+                    RESTARTED to restarted
+                )
             }
         }
     }
@@ -125,6 +137,25 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
         return binding.root
     }
 
+    private fun setSeekbar() {
+        binding.lpiPodcastProgress.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(
+                seekBar: SeekBar?,
+                progress: Int,
+                fromUser: Boolean
+            ) {
+                if (fromUser) {
+                    val progressMs = progress * 1000
+                    playerBinder.seekTo(progressMs)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -150,8 +181,8 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
             val audioTrack = cast.audio!!.mapToAudioTrack()
             if (autoPlay && playerBinder.audioTrackIsNotPlaying(audioTrack)) {
                 playerBinder.playPause(audioTrack, true)
-             }
-            if(autoPlay || restarted){
+            }
+            if (autoPlay || restarted) {
                 listenPodcastViewModel.listenPodcast(castId)
             }
         }
@@ -193,6 +224,7 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
         setPodcastOwnerInfo(cast)
         setPodcastCounters(cast)
         setAudioInfo(cast)
+        setSeekbar()
         loadImages(cast)
         setViewsVisibility()
         setOnClicks(cast)
@@ -211,8 +243,8 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
 
     }
 
-    private fun subscribeToShareUpdate(){
-        sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner){
+    private fun subscribeToShareUpdate() {
+        sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner) {
             binding.btnPodcastReply.shared = it?.shared == true
         }
     }
@@ -226,14 +258,15 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
             { username, userId ->
                 context?.let { context -> UserProfileActivity.show(context, username, userId) }
             },
-            { hashTag ->  onHashTagClick(hashTag) }
+            { hashTag -> onHashTagClick(hashTag) }
         )
     }
 
     private fun setPodcastOwnerInfo(cast: CastUIModel) {
         binding.tvPodcastUserName.text = cast.owner?.username
         binding.tvPodcastUserSubtitle.text = cast.getCreationDateAndPlace(requireContext(), true)
-        binding.ivVerifiedAvatar.visibility = if(cast.owner?.isVerified == true) View.VISIBLE else View.GONE
+        binding.ivVerifiedAvatar.visibility =
+            if (cast.owner?.isVerified == true) View.VISIBLE else View.GONE
     }
 
     private fun setPodcastCounters(cast: CastUIModel) {
@@ -251,29 +284,42 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
         binding.btnPodcastReply.shared = cast.isShared == true
     }
 
-    private fun updateListenCount(){
+    private fun updateListenCount() {
         binding.tvPodcastNumberOfListeners.setTextColor(
             ContextCompat.getColor(
                 binding.root.context,
                 R.color.textAccent
             )
         )
-        binding.ivPodcastListening.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(binding.root.context, R.color.textAccent))
-        binding.tvPodcastNumberOfListeners.text = (binding.tvPodcastNumberOfListeners.tag.toString().toLong() + 1).formatHumanReadable
-        binding.tvPodcastNumberOfListeners.tag = (binding.tvPodcastNumberOfListeners.tag.toString().toLong() + 1).toString()
+        binding.ivPodcastListening.imageTintList =
+            ColorStateList.valueOf(ContextCompat.getColor(binding.root.context, R.color.textAccent))
+        binding.tvPodcastNumberOfListeners.text =
+            (binding.tvPodcastNumberOfListeners.tag.toString().toLong() + 1).formatHumanReadable
+        binding.tvPodcastNumberOfListeners.tag =
+            (binding.tvPodcastNumberOfListeners.tag.toString().toLong() + 1).toString()
     }
 
-    private fun initListenState(cast: CastUIModel){
+    private fun initListenState(cast: CastUIModel) {
         binding.tvPodcastNumberOfListeners.setTextColor(
             ContextCompat.getColor(
                 binding.root.context,
-                if(cast.isListened == true) R.color.textAccent else R.color.subtitle_text_color
+                if (cast.isListened == true) R.color.textAccent else R.color.subtitle_text_color
             )
         )
         if (cast.isListened == true) {
-            binding.ivPodcastListening.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(binding.root.context, R.color.textAccent))
+            binding.ivPodcastListening.imageTintList = ColorStateList.valueOf(
+                ContextCompat.getColor(
+                    binding.root.context,
+                    R.color.textAccent
+                )
+            )
         } else {
-            binding.ivPodcastListening.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(binding.root.context, R.color.subtitle_text_color))
+            binding.ivPodcastListening.imageTintList = ColorStateList.valueOf(
+                ContextCompat.getColor(
+                    binding.root.context,
+                    R.color.subtitle_text_color
+                )
+            )
         }
     }
 
@@ -281,6 +327,7 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
         binding.tvRecastPlayMaxPosition.text = cast.audio?.duration?.toReadableStringFormat(
             DURATION_READABLE_FORMAT_1
         )
+        cast.audio?.duration?.seconds?.also { binding.lpiPodcastProgress.max = it.toInt() }
     }
 
     private fun subscribeToPlayerUpdates(cast: CastUIModel) {
@@ -289,9 +336,9 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
             val audioModel = cast.audio!!.mapToAudioTrack()
             playerBinder.getCurrentPlayingPosition(audioModel)
                 .onEach { duration ->
-                    if(audioModel.duration.seconds>0){
-                        binding.lpiPodcastProgress.progress =
-                            ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
+                    if (audioModel.duration.seconds > 0) {
+                        binding.lpiPodcastProgress.progress = duration.seconds.toInt()
+                            // ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
                         binding.tvRecastPlayCurrentPosition.text =
                             duration.toReadableStringFormat(DURATION_READABLE_FORMAT_3)
                     }
@@ -311,7 +358,7 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
                                 false
                             )
 
-                            if(isStartedPlayingInThisObject || autoPlay || restarted){
+                            if (isStartedPlayingInThisObject || autoPlay || restarted) {
                                 updateListenCount()
                                 restarted = false
                             }
@@ -346,7 +393,7 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
         }
     }
 
-    private fun setViewsVisibility(){
+    private fun setViewsVisibility() {
         binding.btnPodcastMore.makeVisible()
     }
 
@@ -361,7 +408,7 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
 
         binding.btnPodcastPlayExtended.setOnClickListener {
             cast.audio?.let { audio ->
-                if(playerBinder.audioTrackIsInInitState(cast.audio.mapToAudioTrack())){
+                if (playerBinder.audioTrackIsInInitState(cast.audio.mapToAudioTrack())) {
                     listenPodcastViewModel.listenPodcast(castId)
                     isStartedPlayingInThisObject = true
                 }
@@ -381,7 +428,7 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
             recastPodcastViewModel.reCast(castId = cast.id)
         }
 
-        val openCommentsClickListener: (view: View) -> Unit =  {
+        val openCommentsClickListener: (view: View) -> Unit = {
             RootCommentsFragment.newInstance(cast).also { fragment ->
                 fragment.show(parentFragmentManager, fragment.requireTag())
             }
@@ -399,7 +446,7 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
 
         // This is copy pasted from FragmentComments, will need to be refactored later...
         binding.taviVoice.initListenerStatus {
-            when(it) {
+            when (it) {
                 is MissingPermissions -> requestRecordPermissions(requireActivity())
                 is SendData -> {
 
@@ -448,14 +495,15 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
         startActivity(userProfileIntent)
     }
 
-    var launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (sharedPodcastId != -1) {
-            sharePodcastViewModel.share(sharedPodcastId)
-            sharedPodcastId = -1
+    var launcher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (sharedPodcastId != -1) {
+                sharePodcastViewModel.share(sharedPodcastId)
+                sharedPodcastId = -1
+            }
         }
-    }
 
-    val sharePodcast : (CastUIModel) -> Unit =  { cast ->
+    val sharePodcast: (CastUIModel) -> Unit = { cast ->
 
         val podcastLink = Constants.PODCAST_URL.format(cast.id)
 
@@ -479,7 +527,7 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
         Firebase.dynamicLinks.shortLinkAsync {
             longLink = dynamicLink.uri
         }.addOnSuccessListener { (shortLink, flowChartLink) ->
-            try{
+            try {
                 val sendIntent: Intent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_SUBJECT, cast.title)
@@ -489,19 +537,20 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
                 sharedPodcastId = cast.id
                 val shareIntent = Intent.createChooser(sendIntent, null)
                 launcher.launch(shareIntent)
-            } catch (e: ActivityNotFoundException){}
+            } catch (e: ActivityNotFoundException) {
+            }
 
         }.addOnFailureListener {
             Timber.d("Failed in creating short dynamic link")
         }
     }
 
-    private fun initRecastState(item: CastUIModel){
-        fun applyRecastState(isRecasted: Boolean){
+    private fun initRecastState(item: CastUIModel) {
+        fun applyRecastState(isRecasted: Boolean) {
             binding.tvPodcastRecast.setTextColor(
                 ContextCompat.getColor(
                     binding.root.context,
-                    if(isRecasted) R.color.textAccent else R.color.subtitle_text_color
+                    if (isRecasted) R.color.textAccent else R.color.subtitle_text_color
                 )
             )
         }
@@ -514,14 +563,15 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
                 val recastCount = binding.tvPodcastRecast.text.toString().toInt()
 
                 applyRecastState(isRecasted)
-                binding.tvPodcastRecast.text = (if (isRecasted) recastCount + 1 else recastCount - 1).toString()
+                binding.tvPodcastRecast.text =
+                    (if (isRecasted) recastCount + 1 else recastCount - 1).toString()
                 binding.btnPodcastRecast.recasted = isRecasted
 
                 updatePodcasts = true
 
-                if(isRecasted){
+                if (isRecasted) {
                     recastPodcastViewModel.reCast(castId = item.id)
-                } else{
+                } else {
                     recastPodcastViewModel.deleteRecast(castId = item.id)
                 }
 
@@ -533,10 +583,12 @@ class ExtendedPlayerFragment : UserMentionFragment(), DialogPodcastMoreActions.U
         val activity = activity as? PlayerViewManager ?: return
 
         // 1. minimize the extended player
-        activity.showPlayer(PlayerViewManager.PlayerArgs(
-            PlayerViewManager.PlayerType.SMALL,
-            castId
-        )) {
+        activity.showPlayer(
+            PlayerViewManager.PlayerArgs(
+                PlayerViewManager.PlayerType.SMALL,
+                castId
+            )
+        ) {
             // 2. navigate to hash tag fragment
             activity.navigateToHashTag(hashtag)
         }
