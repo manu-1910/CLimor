@@ -27,7 +27,7 @@ class SuggestedPersonItem(val suggestedPerson: UserUIModel) :
             String.format("%s %s", suggestedPerson.firstName, suggestedPerson.lastName)
         viewBinding.personNickname.text = suggestedPerson.username
         if(suggestedPerson.isVerified == true){
-            viewBinding.personName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.verified, 0)
+            viewBinding.personName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_verified_badge, 0)
         } else{
             viewBinding.personName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
         }

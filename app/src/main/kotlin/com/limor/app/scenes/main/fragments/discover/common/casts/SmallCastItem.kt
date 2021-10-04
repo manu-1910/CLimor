@@ -32,7 +32,7 @@ class SmallCastItem(
             authorName.text = cast.owner?.username
             castName.text = cast.title
             if(cast.owner?.isVerified == true){
-                authorName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.verified, 0)
+                authorName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_verified_badge, 0)
             } else{
                 authorName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
             }

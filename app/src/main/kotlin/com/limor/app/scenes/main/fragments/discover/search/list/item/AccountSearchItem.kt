@@ -23,9 +23,9 @@ class AccountSearchItem(
         viewBinding.accountName.text = account.getFullName()
         viewBinding.accountNickname.text = account.username
         if(account.isVerified == true){
-            viewBinding.accountName.setRightDrawable(R.drawable.verified, R.dimen.chip_close_icon_size)
+            viewBinding.accountName.setRightDrawable(R.drawable.ic_verified_badge, R.dimen.marginMedium)
         } else{
-            viewBinding.accountName.setRightDrawable(0, R.dimen.chip_close_icon_size)
+            viewBinding.accountName.setRightDrawable(0, R.dimen.marginMedium)
         }
         account.getAvatarUrl()?.let {
             viewBinding.accountImage.loadCircleImage(it)

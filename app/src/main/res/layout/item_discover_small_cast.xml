@@ -59,7 +59,7 @@
                 app:layout_constraintStart_toEndOf="@+id/owner_icon"
                 app:layout_constraintTop_toTopOf="@+id/owner_icon"
                 app:layout_constraintVertical_chainStyle="packed"
-                android:drawableRight="@drawable/verified"
+                android:drawableRight="@drawable/ic_verified_badge"
                 android:drawablePadding="2dp"
                 tools:text="Jonathan Doe" />
 
