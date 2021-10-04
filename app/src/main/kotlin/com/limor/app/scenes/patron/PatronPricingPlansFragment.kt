@@ -1,5 +1,6 @@
 package com.limor.app.scenes.patron
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -44,7 +45,7 @@ class PatronPricingPlansFragment() : Fragment() {
                 }
             } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
                 // Handle an error caused by a user cancelling the purchase flow.
-                snackbar(binding.root, "Cancelled")
+                binding.root.snackbar("Cancelled")
             } else {
                 // Handle any other error codes.
             }
@@ -143,8 +144,9 @@ class PatronPricingPlansFragment() : Fragment() {
                     .setSkuDetails(it[0])
                     .build()
                 Timber.d("In App Purchases Details ->  $it")
-                val responseCode = billingClient.launchBillingFlow(requireActivity(), flowParams).responseCode
+                val responseCode = billingClient.launchBillingFlow(requireContext() as Activity, flowParams).responseCode
 
+                Timber.d("In App Purchases Details ->  $responseCode")
 
             }
         }

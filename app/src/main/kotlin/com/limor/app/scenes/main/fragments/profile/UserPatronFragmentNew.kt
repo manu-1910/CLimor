@@ -227,9 +227,11 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
             when (user.patronInvitationStatus) {
                 null -> {
                     //Should request patron invitation
-                    binding.patronButton.isEnabled = false
-                    binding.patronButton.text = getString(R.string.requesting)
-                    requestInvitation()
+                    val intent = Intent(requireContext(), PatronSetupActivity::class.java)
+                    intent.extras.apply {
+                        "user" to user
+                    }
+                    startActivity(intent)
                 }
                 "NOT_REQUESTED" -> {
                     //Should request patron invitation
