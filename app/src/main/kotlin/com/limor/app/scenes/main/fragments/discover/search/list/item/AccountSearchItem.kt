@@ -21,7 +21,7 @@ class AccountSearchItem(
 
     override fun bind(viewBinding: ItemDiscoverSearchAccountBinding, position: Int) {
         viewBinding.accountName.text = account.getFullName()
-        viewBinding.accountNickname.text = account.username
+        viewBinding.accountNickname.text = "@${account.username}";
         if(account.isVerified == true){
             viewBinding.accountName.setRightDrawable(R.drawable.ic_verified_badge, R.dimen.marginMedium)
         } else{
