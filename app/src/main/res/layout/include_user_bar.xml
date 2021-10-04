@@ -22,7 +22,7 @@
         android:layout_alignEnd="@id/ivUserPicture"
         android:layout_alignBottom="@id/ivUserPicture"
         android:contentDescription="@string/verified"
-        android:src="@drawable/verified"
+        android:src="@drawable/ic_verified_badge"
         android:visibility="gone" />
 
     <TextView
