@@ -64,6 +64,7 @@ class DiscoverFeaturedCastsFragment : BaseFragment() {
 
     private fun subscribeForEvents() {
         viewModel.featuredCasts.observe(viewLifecycleOwner) {
+            binding.loaderPB.visibility = View.GONE
             discoverFeaturedCastsAdapter.updateFeaturedCasts(it)
         }
     }

@@ -55,7 +55,7 @@ class DiscoverViewModel @Inject constructor(
 
     private fun loadFeaturedCasts() {
         viewModelScope.launch {
-            getFeaturedCastsUseCase.execute(limit = 5)
+            getFeaturedCastsUseCase.execute(limit = 12)
                 .onSuccess {
                     _featuredCasts.value = it
                 }
