@@ -474,4 +474,14 @@ dependencies {
 
     //StickyList Headers
     implementation 'com.github.luizgrp:SectionedRecyclerViewAdapter:v3.2.0'
+
+    // =============================================================================================
+    // ROOM
+    // =============================================================================================
+    def room_version = "2.3.0"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
 }
