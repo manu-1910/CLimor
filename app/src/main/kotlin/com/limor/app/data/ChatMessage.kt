@@ -14,7 +14,7 @@ import java.util.*
     ],
 )
 data class ChatMessage(
-    @PrimaryKey(autoGenerate = true) val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "chat_session_id") val chatSessionId: Int,
     @ColumnInfo(name = "chat_user_id") val chatUserId: Int?,
     @ColumnInfo(name = "message_content") val messageContent: String,
