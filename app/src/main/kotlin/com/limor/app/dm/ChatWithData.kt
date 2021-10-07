@@ -1,4 +1,4 @@
-package com.limor.app.data
+package com.limor.app.dm
 
 import androidx.room.Embedded
 import androidx.room.Relation

@@ -1,4 +1,4 @@
-package com.limor.app.data
+package com.limor.app.dm
 
 import android.content.Context
 import androidx.room.Database
