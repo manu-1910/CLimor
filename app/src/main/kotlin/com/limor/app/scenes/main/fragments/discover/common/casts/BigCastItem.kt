@@ -4,6 +4,7 @@ import android.content.Intent
 import android.view.View
 import androidx.core.view.updateLayoutParams
 import com.bumptech.glide.Glide
+import com.bumptech.glide.signature.ObjectKey
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverBigCastBinding
 import com.limor.app.extensions.getActivity
@@ -49,6 +50,7 @@ class BigCastItem(
 
             Glide.with(root)
                 .load(cast.owner?.getAvatarUrl())
+                .signature(ObjectKey(cast.owner?.getAvatarUrl() ?: ""))
                 .circleCrop()
                 .into(ownerIcon)
 

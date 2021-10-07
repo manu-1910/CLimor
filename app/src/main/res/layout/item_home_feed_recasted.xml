@@ -44,12 +44,12 @@
 
     <ImageView
         android:id="@+id/ivVerifiedAvatar"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         app:layout_constraintBottom_toTopOf="@id/tvRecastUserSubtitle"
         app:layout_constraintStart_toEndOf="@id/tvRecastUserName"
         android:layout_marginStart="4dp"
-        android:src="@drawable/verified"
+        android:src="@drawable/ic_verified_badge"
         android:foregroundTint="@color/waveFormColor"
         android:visibility="gone"/>
 
@@ -222,12 +222,12 @@
 
             <ImageView
                 android:id="@+id/ivPodcastUserVerifiedAvatar"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
                 app:layout_constraintBottom_toTopOf="@id/tvPodcastUserSubtitle"
                 app:layout_constraintStart_toEndOf="@id/tvPodcastUserName"
                 android:layout_marginStart="4dp"
-                android:src="@drawable/verified"
+                android:src="@drawable/ic_verified_badge"
                 android:foregroundTint="@color/waveFormColor"
                 android:visibility="gone"/>
 

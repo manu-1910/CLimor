@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.signature.ObjectKey
 import com.limor.app.R
 import com.limor.app.databinding.FragmentProfileBinding
 import com.limor.app.di.Injectable
@@ -54,9 +55,11 @@ class ProfileFragment : FragmentWithLoading(), Injectable {
                 binding.profileLink.text = it.website
                 binding.profileFollowers.text = "${it.followersCount}"
                 binding.profileFollowing.text = "${it.followingCount}"
-                Glide.with(requireContext()).load(it.getAvatarUrl())
-                    .placeholder(R.mipmap.ic_launcher_round)
-                    .error(R.mipmap.ic_launcher_round)
+                Glide.with(requireContext())
+                    .load(it.getAvatarUrl())
+                    .signature(ObjectKey(it.getAvatarUrl() ?: ""))
+                    .placeholder(R.drawable.ic_podcast_listening)
+                    .error(R.drawable.ic_podcast_listening)
                     .apply(RequestOptions.circleCropTransform())
                     .into(binding.profileDp)
                 binding.ivVerifiedAvatar.visibility = if(it.isVerified == true) View.VISIBLE else View.GONE

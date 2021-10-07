@@ -40,8 +40,6 @@ class FragmentComments : UserMentionFragment() {
         }
     }
 
-    private val actionsViewModel: HandleCommentActionsViewModel by activityViewModels { viewModelFactory }
-
     private val cast: CastUIModel by lazy { requireArguments().getParcelable(CAST_KEY)!! }
     lateinit var itemChildComment: CommentChildItem
     lateinit var itemParentComment: CommentParentItem

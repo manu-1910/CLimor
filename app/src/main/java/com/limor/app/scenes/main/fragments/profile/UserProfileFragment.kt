@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.signature.ObjectKey
 import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.components.tabselector.TabSelectorView
@@ -320,7 +321,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
     private fun setDataToProfileViews(it: UserUIModel) {
         user = it
-        binding.profileName.text = it.username
+        binding.profileName.text = it.getFullName()
         if(it.isVerified == true){
             binding.ivVerifiedAvatar.visibility = View.VISIBLE
         } else{
@@ -346,10 +347,12 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             binding.audioPlayer.visibility = View.VISIBLE
         }
 
+        val avatarUrl = it.getAvatarUrl();
         Glide.with(requireContext())
-            .load(it.getAvatarUrl())
-            .placeholder(R.mipmap.ic_launcher_round)
-            .error(R.mipmap.ic_launcher_round)
+            .load(avatarUrl)
+            .signature(ObjectKey(avatarUrl ?: ""))
+            .placeholder(R.drawable.ic_podcast_listening)
+            .error(R.drawable.ic_podcast_listening)
             .apply(RequestOptions.circleCropTransform())
             .into(binding.profileDp)
 

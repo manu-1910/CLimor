@@ -237,7 +237,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
             Glide.with(requireContext())
                 .load(it.imageURL)
                 .signature(ObjectKey("${it.imageURL}"))
-                .error(R.drawable.limor_orange_primary)
+                .error(R.drawable.ic_podcast_listening)
                 .into(binding.profileImage)
         }
     }
@@ -536,7 +536,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
                         user.lastName,
                         user.description,
                         user.website,
-                        user.imageLinks?.large,
+                        user.imageLinks?.original,
                         user.voiceBioURL,
                         user.durationSeconds
                     )

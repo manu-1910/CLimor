@@ -20,7 +20,7 @@ class SuggestedPersonBigItem(
     override fun bind(viewBinding: ItemDiscoverSuggestedPersonBigBinding, position: Int) {
         viewBinding.fullName.text = person.getFullName()
         if(person.isVerified == true){
-            viewBinding.fullName.setRightDrawable(R.drawable.verified, R.dimen.chip_close_icon_size)
+            viewBinding.fullName.setRightDrawable(R.drawable.ic_verified_badge, R.dimen.chip_close_icon_size)
         } else{
             viewBinding.fullName.setRightDrawable(0, R.dimen.chip_close_icon_size)
         }

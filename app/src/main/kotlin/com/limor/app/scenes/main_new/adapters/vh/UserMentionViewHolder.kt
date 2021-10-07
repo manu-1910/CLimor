@@ -23,12 +23,12 @@ class UserMentionViewHolder(
         binding.root.setOnClickListener { listener.onUserClicked(user) }
 
         if (user.imageLinks == null) {
-            binding.ivUser.setImageResource(R.mipmap.ic_launcher_round)
+            binding.ivUser.setImageResource(R.drawable.ic_podcast_listening)
         } else {
             Glide.with(itemView.context)
                 .load(user.imageLinks.small)
-                .placeholder(R.mipmap.ic_launcher_round)
-                .error(R.mipmap.ic_launcher_round)
+                .placeholder(R.drawable.ic_podcast_listening)
+                .error(R.drawable.ic_podcast_listening)
                 .apply(RequestOptions.circleCropTransform())
                 .into(binding.ivUser)
         }

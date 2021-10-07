@@ -59,7 +59,6 @@ class FragmentCommentReplies : UserMentionFragment() {
     }
 
     private val viewModel: CommentsViewModel by viewModels { viewModelFactory }
-    private val actionsViewModel: HandleCommentActionsViewModel by activityViewModels { viewModelFactory }
 
     private val castId: Int by lazy { requireArguments().getInt(CAST_ID_KEY) }
     private val parentCommentId: Int by lazy { requireArguments().getInt(PARENT_COMMENT_ID_KEY) }
@@ -254,7 +253,6 @@ class FragmentCommentReplies : UserMentionFragment() {
                 }
             }
         }
-
 
         actionsViewModel.actionDeleteParentReply.observe(viewLifecycleOwner, { comment ->
             if (::itemParentComment.isInitialized) {

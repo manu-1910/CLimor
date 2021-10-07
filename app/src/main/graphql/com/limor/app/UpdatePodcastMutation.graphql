@@ -1,0 +1,5 @@
+mutation UpdatePodcastMutation($podcastId: Int!, $title: String, $caption: String){
+    updatePodcast(podcastId: $podcastId, title: $title, caption: $caption){
+        message, status
+    }
+}

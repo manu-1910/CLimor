@@ -1,5 +1,6 @@
 package com.limor.app.di.modules
 
+import com.limor.app.EditCastActivity
 import com.limor.app.di.modules.fragments.*
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.authentication.SignActivity
@@ -94,4 +95,11 @@ abstract class ActivitiesModule {
 
     @ContributesAndroidInjector
     abstract fun contributeAuthActivityNewInjector(): AuthActivityNew
+
+    @ContributesAndroidInjector(
+        modules = [
+            ViewModelsModule::class
+        ]
+    )
+    abstract fun contributeEditCastActivityInjector(): EditCastActivity
 }

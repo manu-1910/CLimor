@@ -35,7 +35,7 @@ abstract class SuggestedPeopleAdapter(private val dataSet: List<SuggestedUser>) 
         viewHolder.avatar
         viewHolder.name.text = item.name
         if(item.uiUser?.isVerified == true){
-            viewHolder.name.setRightDrawable(R.drawable.verified, R.dimen.chip_close_icon_size)
+            viewHolder.name.setRightDrawable(R.drawable.ic_verified_badge, R.dimen.chip_close_icon_size)
         } else{
             viewHolder.name.setRightDrawable(0, R.dimen.chip_close_icon_size)
         }

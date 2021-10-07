@@ -4,10 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.limor.app.FollowersQuery
-import com.limor.app.FriendsQuery
-import com.limor.app.GetBlockedUsersQuery
-import com.limor.app.GetUserProfileQuery
+import com.limor.app.*
 import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.scenes.auth_new.model.UserInfoProvider
 import com.limor.app.uimodels.UserUIModel
@@ -142,8 +139,11 @@ class SettingsViewModel @Inject constructor(
         voiceBioURL: String?,
         durationSeconds: Double?
     ) {
-        println("UPdating user image to $imageURL")
-        println("Updating user voice bio with duration of $durationSeconds at $voiceBioURL")
+        if (BuildConfig.DEBUG) {
+            println("Updating user -> image to $imageURL")
+            println("Updating user -> voice bio with duration of $durationSeconds at $voiceBioURL")
+        }
+
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 val response = withContext(Dispatchers.IO) {
@@ -194,6 +194,12 @@ class SettingsViewModel @Inject constructor(
             userInfoProvider.unblockUser(id)
         }
 
+    }
+
+    fun setNotificationsEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            userInfoProvider.setNotificationsEnabled(enabled)
+        }
     }
 
     companion object {

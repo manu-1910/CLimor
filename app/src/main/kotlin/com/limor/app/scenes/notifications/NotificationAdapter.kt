@@ -44,7 +44,7 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
             val noti = notificationsList[position]
 
             noti.let { notification ->
-                Glide.with(context).load(notification.initiator?.imageUrl).into(holder.profilePic)
+                Glide.with(context).load(notification.initiator?.imageUrl).error(R.drawable.ic_podcast_listening).into(holder.profilePic)
                 when (notification.notificationType) {
                     "newFollower" -> holder.profileIcon.setImageResource(imageicon[0])
                     "podcastComment" -> holder.profileIcon.setImageResource(imageicon[1])

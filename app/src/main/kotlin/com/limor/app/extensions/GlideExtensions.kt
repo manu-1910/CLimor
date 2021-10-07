@@ -8,6 +8,8 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.signature.ObjectKey
+import com.limor.app.R
 
 /**
  * @see [RequestListener]
@@ -89,15 +91,27 @@ fun <T> RequestBuilder<T>.listener(
     }
 )
 
-fun <T: ImageView> T.loadCircleImage(url: String) {
-    Glide.with(this)
+fun <T : ImageView> T.loadCircleImage(url: String) {
+    loadCircleImage(url, true);
+}
+
+fun <T : ImageView> T.loadCircleImage(url: String, usePlaceholder: Boolean) {
+    var options = Glide.with(this)
         .load(url)
-        .circleCrop()
+        .signature(ObjectKey(url))
+
+    if (usePlaceholder) {
+        options = options.error(R.drawable.ic_podcast_listening)
+            .placeholder(R.drawable.ic_podcast_listening)
+    }
+
+    options.circleCrop()
         .into(this)
 }
 
 fun ImageView.loadImage(url: String) {
     Glide.with(this)
         .load(url)
+        .signature(ObjectKey(url))
         .into(this)
 }

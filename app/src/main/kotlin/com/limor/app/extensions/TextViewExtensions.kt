@@ -1,6 +1,7 @@
 package com.limor.app.extensions
 
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.text.SpannableString
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
@@ -99,9 +100,14 @@ fun TextView.setTextWithTagging(
 
 fun TextView.setRightDrawable(@DrawableRes id: Int = 0, @DimenRes sizeRes: Int) {
     try{
-        val drawable = ContextCompat.getDrawable(context, id)
-        val size = resources.getDimensionPixelSize(sizeRes)
-        drawable?.setBounds(0, 0, size, size)
+        var drawable: Drawable? = null
+        if (id != 0) {
+            drawable = ContextCompat.getDrawable(context, id)
+            val size = resources.getDimensionPixelSize(sizeRes)
+            drawable?.setBounds(0, 0, size, size)
+        }
         this.setCompoundDrawables(null, null, drawable, null)
-    } catch (e: Exception){}
+    } catch (e: Exception){
+        e.printStackTrace()
+    }
 }

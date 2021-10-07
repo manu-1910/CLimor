@@ -3,6 +3,7 @@ package com.limor.app.scenes.main.fragments.discover.discover.list.suggestedpeop
 import android.content.Intent
 import android.view.View
 import com.bumptech.glide.Glide
+import com.bumptech.glide.signature.ObjectKey
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverSuggestedPersonBinding
 import com.limor.app.scenes.auth_new.util.ToastMaker
@@ -26,13 +27,14 @@ class SuggestedPersonItem(val suggestedPerson: UserUIModel) :
             String.format("%s %s", suggestedPerson.firstName, suggestedPerson.lastName)
         viewBinding.personNickname.text = suggestedPerson.username
         if(suggestedPerson.isVerified == true){
-            viewBinding.personName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.verified, 0)
+            viewBinding.personName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_verified_badge, 0)
         } else{
             viewBinding.personName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
         }
 
         Glide.with(viewBinding.personImage)
             .load(suggestedPerson.getAvatarUrl())
+            .signature(ObjectKey(suggestedPerson.getAvatarUrl() ?: ""))
             .circleCrop()
             .into(viewBinding.personImage)
     }

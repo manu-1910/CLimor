@@ -100,4 +100,16 @@ private val publishRepository: PublishRepository
 
         }
     }
+
+    suspend fun updatePodcast(podcastId: Int, title: String, caption: String): String?{
+        return withContext(Dispatchers.IO){
+            try{
+                val response = publishRepository.updatePodcast(podcastId, title, caption)
+                response
+            } catch (e: Exception){
+                null
+            }
+        }
+    }
+
 }

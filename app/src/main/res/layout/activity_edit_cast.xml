@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/lytPublishForm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <include
+                        android:id="@+id/toolbar"
+                        layout="@layout/toolbar_with_back_arrow_icon_light" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:background="@color/lightBlueColor" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/inputCastTitle"
+                        style="@style/TextInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/marginTwenty"
+                        android:layout_marginTop="@dimen/marginAlmostLarge"
+                        android:layout_marginEnd="@dimen/marginTwenty"
+                        app:boxStrokeColor="@color/colorAccent"
+                        app:boxStrokeWidth="2dp"
+                        app:hintTextAppearance="@style/TextHintStyle"
+                        app:hintTextColor="@color/colorAccent"
+                        app:counterEnabled="true"
+                        app:counterMaxLength="80"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textUploadPhotoTitle">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_medium"
+                            android:hint="@string/hint_title"
+                            android:textColor="@color/textPrimary"
+                            android:maxLength="80"
+                            android:textSize="@dimen/textSizeNormal" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/inputCaption"
+                            style="@style/TextInputLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeWidth="2dp"
+                            app:counterEnabled="true"
+                            app:counterMaxLength="1000"
+                            app:counterTextColor="@color/textSecondary"
+                            app:hintTextAppearance="@style/TextHintStyle"
+                            app:hintTextColor="@color/colorAccent">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etCaption"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="top"
+                                android:fontFamily="@font/roboto_medium"
+                                android:foregroundGravity="top"
+                                android:gravity="top"
+                                android:hint="@string/hint_caption"
+                                android:lines="3"
+                                android:maxLength="1000"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSizeNormal" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/inputHashtags"
+                            style="@style/TextInputLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeWidth="2dp"
+                            android:visibility="visible"
+                            app:helperText="@string/hastag_helper_text"
+                            app:hintTextAppearance="@style/TextHintStyle"
+                            app:hintTextColor="@color/colorAccent">
+
+                            <com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
+                                android:id="@+id/etHashtags"
+                                style="@style/Widget.AppCompat.EditText"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/roboto_medium"
+                                android:hint="@string/hint_tags"
+                                android:inputType="textNoSuggestions"
+                                android:lines="1"
+                                android:paddingStart="@dimen/marginMediumSmall"
+                                android:paddingTop="@dimen/marginMedium"
+                                android:paddingEnd="@dimen/marginMediumSmall"
+                                android:paddingBottom="@dimen/marginMedium"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSizeNormal"
+                                app:hyperlinkColor="@color/textPrimary"
+                                app:socialFlags="hashtag" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <TextView
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            android:fontFamily="@font/roboto"
+                            android:text="@string/hashtag_subtitle"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="@dimen/textSizeTiny" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvHashtags"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginMediumSmall"
+                            android:layout_marginEnd="@dimen/marginMediumSmall"
+                            android:visibility="gone"
+                            android:orientation="horizontal"
+                            android:clipToPadding="false"
+                            tools:listitem="@layout/tag_item"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnSave"
+                    style="@android:style/Widget.Material.Button.Borderless.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="@dimen/marginTwenty"
+                    android:layout_marginTop="@dimen/marginAlmostLarge"
+                    android:layout_marginEnd="@dimen/marginTwenty"
+                    android:background="@drawable/btn_primary_background"
+                    android:fontFamily="@font/roboto_medium"
+                    android:text="@string/save_now"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/textSize14"/>
+
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/pbPublish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:theme="@style/ProgressBarTheme"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+<!--
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/lytPublishForm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <include
+                        android:id="@+id/toolbar"
+                        layout="@layout/toolbar_with_back_arrow_icon_light" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:background="@color/lightBlueColor" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/lytImageAndTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="visible"
+                        android:layout_marginTop="26dp">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/inputCastTitle"
+                            style="@style/TextInputLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginAlmostLarge"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeWidth="2dp"
+                            app:hintTextAppearance="@style/TextHintStyle"
+                            app:hintTextColor="@color/colorAccent"
+                            app:counterEnabled="true"
+                            app:counterMaxLength="80"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/layoutCastImage">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etTitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/roboto_medium"
+                                android:hint="@string/hint_title"
+                                android:textColor="@color/textPrimary"
+                                android:maxLength="80"
+                                android:textSize="@dimen/textSizeNormal" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/inputCaption"
+                            style="@style/TextInputLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeWidth="2dp"
+                            app:counterEnabled="true"
+                            app:counterMaxLength="1000"
+                            app:counterTextColor="@color/textSecondary"
+                            app:hintTextAppearance="@style/TextHintStyle"
+                            app:hintTextColor="@color/colorAccent">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etCaption"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="top"
+                                android:fontFamily="@font/roboto_medium"
+                                android:foregroundGravity="top"
+                                android:gravity="top"
+                                android:hint="@string/hint_caption"
+                                android:lines="3"
+                                android:maxLength="1000"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSizeNormal" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/inputHashtags"
+                            style="@style/TextInputLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeWidth="2dp"
+                            android:visibility="visible"
+                            app:helperText="@string/hastag_helper_text"
+                            app:hintTextAppearance="@style/TextHintStyle"
+                            app:hintTextColor="@color/colorAccent">
+
+                            <com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
+                                android:id="@+id/etHashtags"
+                                style="@style/Widget.AppCompat.EditText"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/roboto_medium"
+                                android:hint="@string/hint_tags"
+                                android:inputType="textNoSuggestions"
+                                android:lines="1"
+                                android:paddingStart="@dimen/marginMediumSmall"
+                                android:paddingTop="@dimen/marginMedium"
+                                android:paddingEnd="@dimen/marginMediumSmall"
+                                android:paddingBottom="@dimen/marginMedium"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSizeNormal"
+                                app:hyperlinkColor="@color/textPrimary"
+                                app:socialFlags="hashtag" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
+                        <TextView
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            android:fontFamily="@font/roboto"
+                            android:text="@string/hashtag_subtitle"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="@dimen/textSizeTiny" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvHashtags"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginMediumSmall"
+                            android:layout_marginEnd="@dimen/marginMediumSmall"
+                            android:visibility="gone"
+                            android:paddingBottom="@dimen/margin64"
+                            android:clipToPadding="false"
+                            tools:listitem="@layout/tag_item" />
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/lytWithoutTagsRecycler"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="visible">
+
+                        <Button
+                            android:id="@+id/btnSave"
+                            style="@android:style/Widget.Material.Button.Borderless.Colored"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginAlmostLarge"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            android:background="@drawable/btn_primary_background"
+                            android:fontFamily="@font/roboto_medium"
+                            android:text="@string/save_now"
+                            android:textAllCaps="false"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/textSize14"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>-->

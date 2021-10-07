@@ -69,12 +69,11 @@
 
                             <ImageView
                                 android:id="@+id/ivVerifiedAvatar"
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
+                                android:layout_width="@dimen/marginMedium"
+                                android:layout_height="@dimen/marginMedium"
                                 android:layout_toEndOf="@id/profile_name"
                                 android:layout_marginStart="4dp"
-                                android:src="@drawable/verified"
-                                android:foregroundTint="@color/waveFormColor"
+                                android:src="@drawable/ic_verified_badge"
                                 android:visibility="visible"
                                 android:layout_marginTop="4dp"/>
 

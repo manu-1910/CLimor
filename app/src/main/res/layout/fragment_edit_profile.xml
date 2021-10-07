@@ -30,7 +30,7 @@
                     android:layout_height="118dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="@dimen/marginMedium"
-                    android:src="@drawable/limor_orange_primary" />
+                    android:src="@drawable/ic_podcast_listening" />
 
                 <Button
                     android:id="@+id/btnChoosePhoto"

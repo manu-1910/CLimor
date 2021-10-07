@@ -3,6 +3,7 @@ package com.limor.app.scenes.main.fragments.discover.common.casts
 import android.content.Intent
 import android.view.View
 import com.bumptech.glide.Glide
+import com.bumptech.glide.signature.ObjectKey
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverSmallCastBinding
 import com.limor.app.extensions.getActivity
@@ -31,7 +32,7 @@ class SmallCastItem(
             authorName.text = cast.owner?.username
             castName.text = cast.title
             if(cast.owner?.isVerified == true){
-                authorName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.verified, 0)
+                authorName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_verified_badge, 0)
             } else{
                 authorName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
             }
@@ -45,6 +46,7 @@ class SmallCastItem(
 
             Glide.with(root)
                 .load(cast.owner?.getAvatarUrl())
+                .signature(ObjectKey(cast.owner?.getAvatarUrl() ?: ""))
                 .circleCrop()
                 .into(ownerIcon)
 

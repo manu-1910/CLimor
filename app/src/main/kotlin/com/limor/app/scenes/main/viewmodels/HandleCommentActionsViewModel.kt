@@ -54,4 +54,8 @@ class HandleCommentActionsViewModel @Inject constructor(
     fun actionDeleteParentReply(args: CommentUIModel) {
         _actionDeleteParentReply.value = args
     }
+
+    fun resetCommentAction() {
+        _commentAction.value = null;
+    }
 }

@@ -70,7 +70,7 @@ data class CastUIModel(
                     )
                 }
             }
-        } ${if(location.isNullOrEmpty()) "" else " - $location"}"
+        } ${if(!activePodcast || location.isNullOrEmpty()) "" else " - $location"}"
     }
 
     private fun getLocation(context: Context): String{
