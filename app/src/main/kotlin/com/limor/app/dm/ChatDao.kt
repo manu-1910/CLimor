@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
@@ -14,7 +15,7 @@ interface ChatDao {
         "SELECT * FROM chat_session " +
                 "INNER JOIN user ON user.id = chat_session.chat_user_id"
     )
-    fun getSessions(): List<ChatSessionWithUser>
+    fun getSessions(): Flow<List<ChatSessionWithUser>>
 
     @Transaction
     @Query(
