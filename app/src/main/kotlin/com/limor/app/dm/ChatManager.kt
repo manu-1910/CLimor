@@ -11,9 +11,7 @@ import java.lang.RuntimeException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class ChatManager(private val context: Context, private val chatRepository: ChatRepository) :
-    RtmClientListener {
-
+class ChatManager(private val context: Context, private val chatRepository: ChatRepository) : RtmClientListener {
 
     private var mRtmClient: RtmClient? = null
     private var mSendMsgOptions: SendMessageOptions = SendMessageOptions().apply {
@@ -85,10 +83,7 @@ class ChatManager(private val context: Context, private val chatRepository: Chat
         val rtmMessage = client.createMessage()
         rtmMessage.text = message
 
-        client.sendMessageToPeer(
-            peerId,
-            rtmMessage,
-            mSendMsgOptions,
+        client.sendMessageToPeer(peerId, rtmMessage, mSendMsgOptions,
             object : ResultCallback<Void?> {
                 override fun onSuccess(aVoid: Void?) {
                     cont.resume(RtmStatusCode.PeerMessageError.PEER_MESSAGE_ERR_OK)
@@ -110,7 +105,17 @@ class ChatManager(private val context: Context, private val chatRepository: Chat
     }
 
     override fun onMessageReceived(rtmMessage: RtmMessage, peerId: String) {
-        // TODO - insert into DB
+        var session = chatRepository.getSessionByUserChatId(peerId)
+        if (session == null) {
+            // someone just messages me, so need to create a session
+            //
+            session = ChatSession(
+                id = 0,
+                chatUserId = 0
+            )
+            chatRepository.insertSession(session)
+        }
+        chatRepository.addOtherMessage(rtmMessage.text, session);
     }
 
     override fun onTokenExpired() {
