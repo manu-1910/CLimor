@@ -23,7 +23,7 @@ interface ChatDao {
                 "INNER JOIN user ON user.id = chat_session.chat_user_id " +
                 "WHERE chat_session.id LIKE :sessionId LIMIT 1"
     )
-    fun getChat(sessionId: Int): ChatWithData
+    fun getChat(sessionId: Int): Flow<ChatWithData>
 
     @Insert
     fun insertMessage(chatMessage: ChatMessage)
