@@ -76,6 +76,30 @@ class ChatManager(private val context: Context, private val chatRepository: Chat
         })
     }
 
+    suspend fun sendPeerMessage(peerId: String, message: String): Int = suspendCoroutine { cont ->
+        val client = mRtmClient
+        if (client == null) {
+            cont.resume(-1)
+            return@suspendCoroutine
+        }
+        val rtmMessage = client.createMessage()
+        rtmMessage.text = message
+
+        client.sendMessageToPeer(
+            peerId,
+            rtmMessage,
+            mSendMsgOptions,
+            object : ResultCallback<Void?> {
+                override fun onSuccess(aVoid: Void?) {
+                    cont.resume(RtmStatusCode.PeerMessageError.PEER_MESSAGE_ERR_OK)
+                }
+
+                override fun onFailure(errorInfo: ErrorInfo) {
+                    cont.resume(errorInfo.errorCode)
+                }
+            })
+    }
+
     fun logout() {
         mRtmClient?.logout(null);
         // TODO remove chats from DB
