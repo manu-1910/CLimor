@@ -12,10 +12,6 @@ class ChatRepository @Inject constructor(private val chatDao: ChatDao) {
 
     private fun addMessage(chatMessage: ChatMessage) = chatDao.insertMessage(chatMessage)
 
-    fun addOtherMessage(content: String, otherChatId: String) {
-        addOtherMessage(content, chatDao.getSessionByUserChatId(otherChatId))
-    }
-
     fun addOtherMessage(content: String, session: ChatSession) {
         ChatMessage(
             0,
@@ -37,4 +33,7 @@ class ChatRepository @Inject constructor(private val chatDao: ChatDao) {
             addMessage(it)
         }
     }
+
+    fun getSessionByUserChatId(peerId: String): ChatSession? = chatDao.getSessionByUserChatId(peerId)
+    fun insertSession(session: ChatSession) = chatDao.insertSession(session)
 }

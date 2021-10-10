@@ -30,8 +30,11 @@ interface ChatDao {
                 "INNER JOIN user ON user.id = chat_session.chat_user_id " +
                 "WHERE user.chat_id = :chatId LIMIT 1"
     )
-    fun getSessionByUserChatId(chatId: String): ChatSession
+    fun getSessionByUserChatId(chatId: String): ChatSession?
 
     @Insert
     fun insertMessage(chatMessage: ChatMessage)
+
+    @Insert
+    fun insertSession(chatSession: ChatSession)
 }
