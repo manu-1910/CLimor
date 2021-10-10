@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import javax.inject.Inject
 
-class ChatSessionViewModel @Inject constructor(
+class SessionsViewModel @Inject constructor(
     chatRepository: ChatRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
