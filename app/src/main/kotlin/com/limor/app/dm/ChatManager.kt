@@ -1,7 +1,6 @@
 package com.limor.app.dm
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import com.limor.app.BuildConfig
 import com.limor.app.R
@@ -9,14 +8,12 @@ import io.agora.rtm.*
 import timber.log.Timber
 import java.lang.Exception
 import java.lang.RuntimeException
-import java.util.ArrayList
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class ChatManager(private val context: Context, private val chatRepository: ChatRepository) :
     RtmClientListener {
 
-    private val TAG = ChatManager::class.java.simpleName
 
     private var mRtmClient: RtmClient? = null
     private var mSendMsgOptions: SendMessageOptions = SendMessageOptions().apply {
@@ -93,7 +90,8 @@ class ChatManager(private val context: Context, private val chatRepository: Chat
     }
 
     override fun onTokenExpired() {
-        // TODO get new token
+        // When the token has expired we need to re-login and cannot just refresh it
+        // TODO login
     }
 
     override fun onImageMessageReceivedFromPeer(p0: RtmImageMessage?, p1: String?) {
