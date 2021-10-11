@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:maxWidth="100dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/imageAppIcon"
+        android:layout_width="44dp"
+        android:layout_height="44dp" />
+
+    <TextView
+        android:id="@+id/textAppTitle"
+        android:layout_gravity="center_horizontal"
+        android:maxWidth="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/roboto"
+        android:maxLines="1"
+        android:textAlignment="center"
+        android:textColor="@color/textPrimary"
+        android:textSize="16sp"
+        tools:text="Messenger" />
+
+
+</LinearLayout>
