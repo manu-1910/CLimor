@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "chat_users")
 data class ChatUser(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "user_id")  val id: Int = 0,
     @ColumnInfo(name = "limor_user_id") val limorUserId: Int,
     @ColumnInfo(name = "limor_profile_url") val limorProfileUrl: String?,
     @ColumnInfo(name = "limor_user_name") val limorUserName: String?,

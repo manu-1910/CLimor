@@ -7,7 +7,7 @@ data class ChatWithData(
     @Embedded val sessionWithUser: ChatSessionWithUser,
 
     @Relation(
-        parentColumn = "id",
+        parentColumn = "session_id",
         entityColumn = "chat_session_id"
     )
     val messages: List<ChatMessage>
