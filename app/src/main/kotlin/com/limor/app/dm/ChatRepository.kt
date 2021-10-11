@@ -34,6 +34,15 @@ class ChatRepository @Inject constructor(private val chatDao: ChatDao) {
         }
     }
 
-    fun getSessionByUserChatId(peerId: String): ChatSession? = chatDao.getSessionByUserChatId(peerId)
+    fun getSessionByUserChatId(peerId: String): ChatSession? {
+        if (peerId.isEmpty() || !peerId.contains('_')) {
+            return null
+        }
+        val limorUserId = peerId.split('_').last().toInt()
+        return chatDao.getSessionByLimorUserId(limorUserId)
+    }
+
     fun insertSession(session: ChatSession) = chatDao.insertSession(session)
+    fun insertChatUser(chatUser: ChatUser) = chatDao.insertChatUser(chatUser)
+    fun getChatUserByLimorId(userId: Int) = chatDao.getChatUserByLimorId(userId)
 }
