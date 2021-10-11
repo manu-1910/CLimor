@@ -28,13 +28,19 @@ interface ChatDao {
     @Query(
         "SELECT * from chat_session " +
                 "INNER JOIN user ON user.id = chat_session.chat_user_id " +
-                "WHERE user.chat_id = :chatId LIMIT 1"
+                "WHERE user.limor_user_id = :limorUserId LIMIT 1"
     )
-    fun getSessionByUserChatId(chatId: String): ChatSession?
+    fun getSessionByLimorUserId(limorUserId: Int): ChatSession?
+
+    @Query("SELECT * from chat_users where chat_users.limor_user_id = :limorUserId LIMIT 1")
+    fun getChatUserByLimorId(limorUserId: Int): ChatUser?
 
     @Insert
-    fun insertMessage(chatMessage: ChatMessage)
+    fun insertMessage(chatMessage: ChatMessage): Long
 
     @Insert
-    fun insertSession(chatSession: ChatSession)
+    fun insertSession(chatSession: ChatSession): Long
+
+    @Insert
+    fun insertChatUser(chatUser: ChatUser): Long
 }
