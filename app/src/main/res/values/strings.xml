@@ -678,6 +678,10 @@
 
     <string name="tos_title">Terms &amp; Conditions</string>
     <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="share_dialog_title">Share</string>
+    <string name="share_copy_link_button">Copy Link</string>
+    <string name="share_via_label">Share via</string>
+    <string name="share_message__with_format">Hey, check out this podcast: %s</string>
 
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
