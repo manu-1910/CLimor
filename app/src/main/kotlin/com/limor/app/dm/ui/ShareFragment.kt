@@ -15,10 +15,12 @@ import com.limor.app.R
 import com.limor.app.databinding.FragmentShareDialogBinding
 import com.limor.app.uimodels.CastUIModel
 import android.net.Uri
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
 import com.limor.app.common.Constants
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ShareFragment : Fragment() {
@@ -37,7 +39,11 @@ class ShareFragment : Fragment() {
     ): View {
         _binding = FragmentShareDialogBinding.inflate(inflater, container, false)
         setViews()
-        generateLink()
+
+        lifecycleScope.launch {
+            generateLink()
+        }
+
         return binding.root
     }
 
@@ -93,8 +99,12 @@ class ShareFragment : Fragment() {
 
     private fun setShortLink(shortLink: String) {
         binding.shareLink.text = shortLink
-        setExternalShare(shortLink)
 
+        lifecycleScope.launch {
+            setExternalShare(shortLink)
+        }
+
+        binding.buttonCopyLink.isEnabled = true
         binding.buttonCopyLink.setOnClickListener {
             val cm = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             ClipData.newPlainText("Limor", shortLink).also {

@@ -8,7 +8,6 @@ import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.limor.app.R
 import com.limor.app.databinding.BottomDialogWrapperBinding
-import com.limor.app.service.VoiceUploadProgress
 import com.limor.app.uimodels.CastUIModel
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
