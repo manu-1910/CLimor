@@ -4,24 +4,38 @@ import android.content.Context
 import android.util.Log
 import com.limor.app.BuildConfig
 import com.limor.app.R
+import com.limor.app.apollo.GeneralInfoRepository
 import io.agora.rtm.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.Exception
 import java.lang.RuntimeException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class ChatManager(private val context: Context, private val chatRepository: ChatRepository) : RtmClientListener {
+class ChatManager(
+    private val context: Context,
+    private val chatRepository: ChatRepository,
+    private val generalInfoRepository: GeneralInfoRepository
+) : RtmClientListener {
 
-    private var mRtmClient: RtmClient? = null
-    private var mSendMsgOptions: SendMessageOptions = SendMessageOptions().apply {
+    private val chatJob = SupervisorJob()
+    private val chatScope = CoroutineScope(Dispatchers.IO + chatJob)
+
+    private val cachedLeanUsers = mutableMapOf<String, LeanUser>();
+
+    private var rtmClient: RtmClient? = null
+    private var sendMsgOptions: SendMessageOptions = SendMessageOptions().apply {
         enableOfflineMessaging = true
     }
 
     init {
         val appID = context.getString(R.string.agora_app_id)
         try {
-            mRtmClient = RtmClient.createInstance(context, appID, this).also {
+            rtmClient = RtmClient.createInstance(context, appID, this).also {
                 if (BuildConfig.DEBUG) {
                     it.setParameters("{\"rtm.log_filter\": 65535}")
                 }
@@ -39,7 +53,7 @@ class ChatManager(private val context: Context, private val chatRepository: Chat
     }
 
     suspend fun login(token: String, userId: String): Int = suspendCoroutine { cont ->
-        val client = mRtmClient
+        val client = rtmClient
         if (client == null) {
             cont.resume(-1)
             return@suspendCoroutine
@@ -57,7 +71,7 @@ class ChatManager(private val context: Context, private val chatRepository: Chat
     }
 
     suspend fun refresh(token: String): Int = suspendCoroutine { cont ->
-        val client = mRtmClient
+        val client = rtmClient
         if (client == null) {
             cont.resume(-1)
             return@suspendCoroutine
@@ -75,7 +89,7 @@ class ChatManager(private val context: Context, private val chatRepository: Chat
     }
 
     suspend fun sendPeerMessage(peerId: String, message: String): Int = suspendCoroutine { cont ->
-        val client = mRtmClient
+        val client = rtmClient
         if (client == null) {
             cont.resume(-1)
             return@suspendCoroutine
@@ -83,7 +97,7 @@ class ChatManager(private val context: Context, private val chatRepository: Chat
         val rtmMessage = client.createMessage()
         rtmMessage.text = message
 
-        client.sendMessageToPeer(peerId, rtmMessage, mSendMsgOptions,
+        client.sendMessageToPeer(peerId, rtmMessage, sendMsgOptions,
             object : ResultCallback<Void?> {
                 override fun onSuccess(aVoid: Void?) {
                     cont.resume(RtmStatusCode.PeerMessageError.PEER_MESSAGE_ERR_OK)
@@ -96,7 +110,7 @@ class ChatManager(private val context: Context, private val chatRepository: Chat
     }
 
     fun logout() {
-        mRtmClient?.logout(null);
+        rtmClient?.logout(null);
         // TODO remove chats from DB
     }
 
@@ -104,18 +118,58 @@ class ChatManager(private val context: Context, private val chatRepository: Chat
         // TODO
     }
 
-    override fun onMessageReceived(rtmMessage: RtmMessage, peerId: String) {
+    private suspend fun getLeanUser(peerId: String): LeanUser? {
+        cachedLeanUsers[peerId]?.let {
+            return it
+        } ?: run {
+            val id = peerId.split('_').last().toInt()
+            val user = generalInfoRepository.getUserProfileById(id)
+            if (user == null) {
+                return null;
+            } else {
+                chatRepository.insertChatUser(ChatUser(
+                    id = 0,
+                    limorUserId = user.id,
+                    limorUserName = user.username,
+                    limorDisplayName = user.getFullName(),
+                    limorProfileUrl = user.getAvatarUrl()
+                ))
+                val leanUser = LeanUser(
+                    limorUserId = id,
+                    userName = user.username,
+                    displayName = user.getFullName(),
+                    profileUrl = user.getAvatarUrl()
+                )
+                cachedLeanUsers[peerId] = leanUser
+                return leanUser
+            }
+        }
+    }
+
+    private suspend fun addMessage(text: String, peerId: String) {
         var session = chatRepository.getSessionByUserChatId(peerId)
+
         if (session == null) {
-            // someone just messages me, so need to create a session
-            //
+            // someone just messages me, so need to create a session, but first need to get their
+            // profile.
+            val leanUser = getLeanUser(peerId) ?: return
+            val chatUser = chatRepository.getChatUserByLimorId(leanUser.limorUserId) ?: return
+
             session = ChatSession(
                 id = 0,
-                chatUserId = 0
+                chatUserId = chatUser.id
             )
-            chatRepository.insertSession(session)
+            val id = chatRepository.insertSession(session)
+            session.id = id.toInt()
         }
-        chatRepository.addOtherMessage(rtmMessage.text, session);
+
+        chatRepository.addOtherMessage(text, session);
+    }
+
+    override fun onMessageReceived(rtmMessage: RtmMessage, peerId: String) {
+        chatScope.launch {
+            addMessage(rtmMessage.text, peerId)
+        }
     }
 
     override fun onTokenExpired() {
