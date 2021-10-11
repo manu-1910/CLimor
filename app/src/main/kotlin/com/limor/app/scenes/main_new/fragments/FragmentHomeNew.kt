@@ -23,6 +23,7 @@ import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentHomeNewBinding
+import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.requireTag
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
@@ -188,7 +189,10 @@ class FragmentHomeNew : BaseFragment() {
                 }
             },
             onShareClick = { cast ->
-                sharePodcast(cast)
+                // sharePodcast(cast)
+                ShareDialog.newInstance(cast).also { fragment ->
+                    fragment.show(parentFragmentManager, fragment.requireTag())
+                }
             },
             onReloadData = { _, _ ->
                 reloadCurrentCasts()
