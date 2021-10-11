@@ -45,8 +45,10 @@ class ShareDialog : BottomSheetDialogFragment() {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    open fun onDismissEvent(event: DismissEvent) {
-        dismiss()
+    fun onDismissEvent(event: DismissEvent) {
+        _binding?.root?.post {
+            dismiss()
+        }
     }
 
     override fun onCreateView(
