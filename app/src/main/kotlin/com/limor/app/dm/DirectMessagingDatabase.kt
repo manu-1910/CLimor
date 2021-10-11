@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.limor.app.common.Constants
 
 @Database(entities = [ChatUser::class, ChatMessage::class, ChatSession::class], version = 1)
+@TypeConverters(Converters::class)
 abstract class DirectMessagingDatabase : RoomDatabase() {
 
     abstract fun chatDao(): ChatDao
