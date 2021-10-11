@@ -29,7 +29,7 @@ android {
 
         applicationId globalConfiguration.androidApplicationId
         versionCode 5
-        versionName "0.0.4"
+        versionName "0.0.5"
 
         testInstrumentationRunner globalConfiguration.testInstrumentationRunner
         testApplicationId globalConfiguration.testApplicationId
@@ -457,7 +457,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
     // The core runtime dependencies
-    implementation("com.apollographql.apollo:apollo-runtime:2.5.6")
+    implementation("com.apollographql.apollo:apollo-runtime:2.5.9")
     //decoding firebase JWT
     implementation 'com.auth0.android:jwtdecode:2.0.0'
 

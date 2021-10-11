@@ -60,10 +60,14 @@ class PatronPricingPlansFragment() : Fragment() {
         // Ensure entitlement was not already granted for this purchaseToken.
         // Grant entitlement to the user.
 
+        Timber.d("PURCHASE ${purchase.purchaseToken.toString()}")
+        Timber.d("PURCHASE ${purchase.packageName}")
+
         val consumeParams =
             ConsumeParams.newBuilder()
                 .setPurchaseToken(purchase.purchaseToken)
                 .build()
+
         val consumeResult = withContext(Dispatchers.IO) {
 
         }
