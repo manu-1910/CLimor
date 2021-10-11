@@ -13,7 +13,7 @@ import java.util.*
     ],
 )
 data class ChatSession(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) var id: Int = 0,
     @ColumnInfo(name = "chat_user_id") val chatUserId: Int,
     @ColumnInfo(name = "last_message_timestamp")
     val lastMessageDate: Calendar = Calendar.getInstance()
