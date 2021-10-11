@@ -13,22 +13,22 @@ interface ChatDao {
 
     @Query(
         "SELECT * FROM chat_session " +
-                "INNER JOIN user ON user.id = chat_session.chat_user_id"
+                "INNER JOIN chat_users ON chat_users.user_id = chat_session.chat_user_id"
     )
     fun getSessions(): Flow<List<ChatSessionWithUser>>
 
     @Transaction
     @Query(
         "SELECT * FROM chat_session " +
-                "INNER JOIN user ON user.id = chat_session.chat_user_id " +
-                "WHERE chat_session.id = :sessionId LIMIT 1"
+                "INNER JOIN chat_users ON chat_users.user_id = chat_session.chat_user_id " +
+                "WHERE chat_session.session_id = :sessionId LIMIT 1"
     )
     fun getChat(sessionId: Int): Flow<ChatWithData>
 
     @Query(
         "SELECT * from chat_session " +
-                "INNER JOIN user ON user.id = chat_session.chat_user_id " +
-                "WHERE user.limor_user_id = :limorUserId LIMIT 1"
+                "INNER JOIN chat_users ON chat_users.user_id = chat_session.chat_user_id " +
+                "WHERE chat_users.limor_user_id = :limorUserId LIMIT 1"
     )
     fun getSessionByLimorUserId(limorUserId: Int): ChatSession?
 
