@@ -8,9 +8,19 @@ import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.limor.app.R
 import com.limor.app.databinding.BottomDialogWrapperBinding
+import com.limor.app.service.VoiceUploadProgress
 import com.limor.app.uimodels.CastUIModel
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 class ShareDialog : BottomSheetDialogFragment() {
+
+    class DismissEvent {
+        companion object {
+            fun dismiss() = EventBus.getDefault().post(DismissEvent())
+        }
+    }
 
     private var _binding: BottomDialogWrapperBinding? = null
     private val binding get() = _binding!!
@@ -22,6 +32,21 @@ class ShareDialog : BottomSheetDialogFragment() {
         super.onCreate(savedInstanceState)
 
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheet)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    open fun onDismissEvent(event: DismissEvent) {
+        dismiss()
     }
 
     override fun onCreateView(
