@@ -99,6 +99,7 @@ class ShareFragment : Fragment() {
             val cm = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             ClipData.newPlainText("Limor", shortLink).also {
                 cm.setPrimaryClip(it)
+                ShareDialog.DismissEvent.dismiss()
             }
         }
     }
@@ -115,7 +116,12 @@ class ShareFragment : Fragment() {
         val apps = pm.queryIntentActivities(sendIntent, 0).sortedBy {
             it.activityInfo.name
         }
-        binding.recyclerExternal.adapter = AppsAdapter(requireContext(), apps)
+        binding.recyclerExternal.adapter = AppsAdapter(
+            requireContext(),
+            apps,
+            cast,
+            shortLink
+        )
     }
 
     companion object {
