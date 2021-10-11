@@ -1,10 +1,8 @@
 package com.limor.app.dm.ui
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
+import android.content.*
 import android.os.Bundle
 import android.text.Spannable
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ImageSpan
 import android.view.LayoutInflater
@@ -13,20 +11,15 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.limor.app.R
 import com.limor.app.databinding.FragmentShareDialogBinding
-import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.uimodels.CastUIModel
-import android.content.pm.ResolveInfo
 import android.net.Uri
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
 import com.limor.app.common.Constants
 import timber.log.Timber
-import java.util.*
-
 
 class ShareFragment : Fragment() {
 
@@ -101,6 +94,13 @@ class ShareFragment : Fragment() {
     private fun setShortLink(shortLink: String) {
         binding.shareLink.text = shortLink
         setExternalShare(shortLink)
+
+        binding.buttonCopyLink.setOnClickListener {
+            val cm = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            ClipData.newPlainText("Limor", shortLink).also {
+                cm.setPrimaryClip(it)
+            }
+        }
     }
 
     private fun setExternalShare(shortLink: String) {
@@ -115,7 +115,7 @@ class ShareFragment : Fragment() {
         val apps = pm.queryIntentActivities(sendIntent, 0).sortedBy {
             it.activityInfo.name
         }
-        binding.recyclerExternal.adapter = AppsAdapter(apps)
+        binding.recyclerExternal.adapter = AppsAdapter(requireContext(), apps)
     }
 
     companion object {
