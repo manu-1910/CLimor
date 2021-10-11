@@ -13,10 +13,13 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.Exception
 import java.lang.RuntimeException
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class ChatManager(
+@Singleton
+class ChatManager @Inject constructor(
     private val context: Context,
     private val chatRepository: ChatRepository,
     private val generalInfoRepository: GeneralInfoRepository
