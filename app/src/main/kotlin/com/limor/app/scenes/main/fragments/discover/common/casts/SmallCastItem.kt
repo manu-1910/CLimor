@@ -47,6 +47,8 @@ class SmallCastItem(
             Glide.with(root)
                 .load(cast.owner?.getAvatarUrl())
                 .signature(ObjectKey(cast.owner?.getAvatarUrl() ?: ""))
+                .error(R.drawable.ic_default_avatar)
+                .placeholder(R.drawable.ic_default_avatar)
                 .circleCrop()
                 .into(ownerIcon)
 
