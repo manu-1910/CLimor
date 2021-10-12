@@ -12,8 +12,7 @@ import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentChatSessionsBinding
 import com.limor.app.dm.ChatTarget
 import com.limor.app.dm.SessionsViewModel
-import com.limor.app.scenes.auth_new.util.AfterTextWatcher
-import com.limor.app.scenes.main.fragments.profile.UserProfileViewModel
+import com.limor.app.extensions.hideKeyboard
 import org.jetbrains.anko.sdk23.listeners.onFocusChange
 import javax.inject.Inject
 
@@ -58,8 +57,10 @@ class ChatSessionsFragment : BaseFragment() {
         binding.editSearch.onFocusChange { v, hasFocus ->
             if (hasFocus) {
                 isSearching = true
+                ensureStateVisibility()
             }
         }
+
         binding.editSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
             }
@@ -71,24 +72,41 @@ class ChatSessionsFragment : BaseFragment() {
                 sessions.searchFollowers(s.toString())
             }
         })
+
         binding.recyclerTargets.adapter = targetsAdapter
+
+        binding.searchClear.setOnClickListener {
+            isSearching = false
+            ensureStateVisibility()
+
+            binding.editSearch.apply {
+                setText("")
+                clearFocus()
+                hideKeyboard()
+            }
+        }
     }
 
-    private fun ensureRecyclerVisibility() {
-        val targetVisibility = if (isSearching) View.VISIBLE else View.GONE
-        val sessionVisibility = if (isSearching) View.GONE else View.VISIBLE
-
-        if (binding.recyclerTargets.visibility != targetVisibility) {
-            binding.recyclerTargets.visibility = targetVisibility
+    private fun ensureVisibility(view: View, targetVisibility: Int) {
+        if (view.visibility != targetVisibility) {
+            view.visibility = targetVisibility
         }
+    }
 
-        if (binding.recyclerSessions.visibility != sessionVisibility) {
-            binding.recyclerSessions.visibility = sessionVisibility
-        }
+    private fun ensureStateVisibility() {
+        val visibleWhenSearching = if (isSearching) View.VISIBLE else View.GONE
+        val goneWhenSearching = if (isSearching) View.GONE else View.VISIBLE
+
+        ensureVisibility(binding.recyclerTargets, visibleWhenSearching)
+        ensureVisibility(binding.recyclerSessions, goneWhenSearching)
+
+        ensureVisibility(binding.searchIcon, goneWhenSearching)
+        ensureVisibility(binding.searchClear, visibleWhenSearching)
+
     }
 
     private fun setTargets(targets: List<ChatTarget>) {
-        ensureRecyclerVisibility()
+        ensureStateVisibility()
         targetsAdapter.apply {
             setChatTargets(targets)
             notifyDataSetChanged()
