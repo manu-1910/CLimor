@@ -35,6 +35,15 @@ interface ChatDao {
     @Query("SELECT * from chat_users where chat_users.limor_user_id = :limorUserId LIMIT 1")
     fun getChatUserByLimorId(limorUserId: Int): ChatUser?
 
+    @Query("""
+        SELECT * FROM chat_session 
+            INNER JOIN chat_users ON chat_users.user_id = chat_session.chat_user_id 
+            WHERE
+                LOWER(chat_users.limor_user_name)  LIKE '%' || :term || '%' OR
+                LOWER(chat_users.limor_display_name)  LIKE '%' || :term || '%'
+        """)
+    suspend fun searchSession(term: String): List<ChatSessionWithUser>
+
     @Insert
     fun insertMessage(chatMessage: ChatMessage): Long
 
@@ -43,4 +52,5 @@ interface ChatDao {
 
     @Insert
     fun insertChatUser(chatUser: ChatUser): Long
+
 }
