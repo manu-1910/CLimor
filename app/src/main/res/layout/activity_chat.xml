@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/layoutHeaderBack"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/buttonBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:srcCompat="@drawable/arrow_left" />
+
+        <ImageView
+            android:id="@+id/profile"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginRight="8dp" />
+
+        <TextView
+            android:id="@+id/textTitle"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
+            tools:text="Marie Sanchez"
+            android:textColor="@color/textPrimary"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/delimiterTop"
+        android:layout_below="@+id/layoutHeaderBack"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F0F3F8" />
+
+    <LinearLayout
+        android:id="@+id/bottomTextEntry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:padding="20dp">
+
+        <EditText
+            android:id="@+id/editMessageText"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/commentFooterHeight"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_edittext"
+            android:hint="@string/hint_write_a_comment"
+            android:maxLength="300"
+            android:maxLines="3"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:textColorHint="@color/subtitle_text_color"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@+id/btnPodcastSendComment"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progressUpload" />
+
+        <ImageButton
+            android:id="@+id/buttonSendMessage"
+            android:layout_width="@dimen/commentFooterHeight"
+            android:layout_height="@dimen/commentFooterHeight"
+            android:background="@drawable/selector_player_footer_bottom_shape"
+            android:padding="14dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/selector_comment_send" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/delimiterBottom"
+        android:layout_above="@+id/bottomTextEntry"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F0F3F8" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_below="@+id/delimiterTop"
+        android:layout_above="@id/delimiterBottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>
