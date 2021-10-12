@@ -16,6 +16,8 @@ import com.limor.app.databinding.FragmentShareDialogBinding
 import com.limor.app.uimodels.CastUIModel
 import android.net.Uri
 import androidx.core.view.updateLayoutParams
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -24,10 +26,19 @@ import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
 import com.limor.app.common.Constants
+import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
+import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
+import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
+import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 class ShareFragment : Fragment() {
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
 
     private val cast: CastUIModel by lazy {
         requireArguments().getParcelable(KEY_PODCAST)!!
@@ -49,6 +60,11 @@ class ShareFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        subscribeToViewModels()
     }
 
     private fun generateLink() {
@@ -145,8 +161,18 @@ class ShareFragment : Fragment() {
             val cm = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             ClipData.newPlainText("Limor", shortLink).also {
                 cm.setPrimaryClip(it)
-                ShareDialog.DismissEvent.dismiss()
+                markAsShared()
             }
+        }
+    }
+
+    private fun markAsShared() {
+        sharePodcastViewModel.share(castId = cast.id)
+    }
+
+    private fun subscribeToViewModels() {
+        sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner){
+            ShareDialog.DismissEvent.dismiss()
         }
     }
 
