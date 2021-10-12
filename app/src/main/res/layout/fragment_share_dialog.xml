@@ -53,6 +53,52 @@
         android:layout_height="2dp"
         android:background="#F0F3F8" />
 
+    <LinearLayout
+        android:id="@+id/layoutShareWithUsers"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/textFakeSearch"
+            android:text="@string/share_search_placeholder"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:background="@drawable/bg_round_grey_ripple_new"
+            android:drawablePadding="16dp"
+            android:paddingRight="16dp"
+            android:textColor="#91A2B2"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="32dp"
+            app:drawableRightCompat="@drawable/ic_search_icon_share_screen" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerQuickUsers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="5"
+            tools:listitem="@layout/item_grid_dm_share_user" />
+
+        <Button
+            android:id="@+id/buttonShareWithMessage"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/btn_primary_background"
+            android:enabled="false"
+            android:fontFamily="@font/roboto_bold"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:text="@string/share_now_label"
+            tools:text="Share now" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/shareViaLabel"
