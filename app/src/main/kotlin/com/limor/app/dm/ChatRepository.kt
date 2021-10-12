@@ -45,4 +45,5 @@ class ChatRepository @Inject constructor(private val chatDao: ChatDao) {
     fun insertSession(session: ChatSession) = chatDao.insertSession(session)
     fun insertChatUser(chatUser: ChatUser) = chatDao.insertChatUser(chatUser)
     fun getChatUserByLimorId(userId: Int) = chatDao.getChatUserByLimorId(userId)
+    suspend fun searchSession(term: String) = chatDao.searchSession(term)
 }
