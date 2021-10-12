@@ -33,17 +33,27 @@
             android:gravity="center_vertical"
             android:hint="@string/share_search_placeholder"
             android:paddingLeft="16dp"
-            android:paddingRight="32dp"
+            android:paddingRight="48dp"
             android:textColor="#91A2B2" />
 
         <ImageView
             android:id="@+id/searchIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="16dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="16dp"
             android:src="@drawable/ic_search_icon_share_screen" />
+
+        <ImageView
+            android:id="@+id/searchClear"
+            android:visibility="gone"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_edit_clear_search" />
 
     </RelativeLayout>
 
