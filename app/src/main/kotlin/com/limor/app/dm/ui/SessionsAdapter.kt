@@ -61,6 +61,10 @@ class SessionsAdapter(
         sessions = chatSessions
     }
 
+    fun hasData(): Boolean {
+        return sessions.isNotEmpty()
+    }
+
     companion object {
         private val hourFormat = SimpleDateFormat("HH:mm")
         private val dateFormat = SimpleDateFormat("MMM dd")
