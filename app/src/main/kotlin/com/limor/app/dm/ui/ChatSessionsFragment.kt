@@ -124,6 +124,7 @@ class ChatSessionsFragment : BaseFragment() {
         ensureVisibility(binding.searchIcon, goneWhenSearching)
         ensureVisibility(binding.searchClear, visibleWhenSearching)
 
+        binding.layoutPlaceholder.visibility = if (isSearching || sessionsAdapter.hasData()) View.GONE else View.VISIBLE
     }
 
     private fun setTargets(targets: List<ChatTarget>) {
@@ -135,12 +136,11 @@ class ChatSessionsFragment : BaseFragment() {
     }
 
     private fun setSessions(sessions: List<ChatSessionWithUser>) {
-        ensureStateVisibility()
         sessionsAdapter.apply {
             setSessions(sessions)
             notifyDataSetChanged()
         }
-        binding.layoutPlaceholder.visibility = if (isSearching || sessions.isNotEmpty()) View.GONE else View.VISIBLE
+        ensureStateVisibility()
     }
 
     private fun subscribeToViewModels() {
