@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentChatSessionsBinding
+import com.limor.app.dm.ChatSessionWithUser
 import com.limor.app.dm.ChatTarget
 import com.limor.app.dm.SessionsViewModel
 import com.limor.app.extensions.hideKeyboard
@@ -20,13 +21,14 @@ class ChatSessionsFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val sessions: SessionsViewModel by viewModels { viewModelFactory }
+    private val chat: SessionsViewModel by viewModels { viewModelFactory }
 
     private var _binding: FragmentChatSessionsBinding? = null
     private val binding get() = _binding!!
     private var isSearching = false
 
     private lateinit var targetsAdapter: TargetsAdapter
+    private lateinit var sessionsAdapter: SessionsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,11 +36,8 @@ class ChatSessionsFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentChatSessionsBinding.inflate(inflater, container, false)
-        targetsAdapter = TargetsAdapter(
-            context = requireContext(),
-            targets = listOf(),
-            onTap = { target -> onTargetTap(target) }
-        )
+
+        createAdapters()
         setViews()
         return binding.root
     }
@@ -48,9 +47,27 @@ class ChatSessionsFragment : BaseFragment() {
         subscribeToViewModels()
     }
 
+    private fun createAdapters() {
+        targetsAdapter = TargetsAdapter(
+            context = requireContext(),
+            targets = listOf(),
+            onTap = { target -> onTargetTap(target) }
+        )
+
+        sessionsAdapter = SessionsAdapter(
+            context = requireContext(),
+            sessions = listOf(),
+            onTap = { session -> onSessionTap(session) }
+        )
+    }
+
     private fun onTargetTap(target: ChatTarget) {
         // start chat with user
 
+    }
+
+    private fun onSessionTap(session: ChatSessionWithUser) {
+        //
     }
 
     private fun setViews() {
@@ -69,7 +86,7 @@ class ChatSessionsFragment : BaseFragment() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 val term = s.toString()
                 targetsAdapter.setTerm(term)
-                sessions.searchFollowers(s.toString())
+                chat.searchFollowers(s.toString())
             }
         })
 
@@ -80,6 +97,7 @@ class ChatSessionsFragment : BaseFragment() {
             ensureStateVisibility()
 
             binding.editSearch.apply {
+                setTargets(listOf())
                 setText("")
                 clearFocus()
                 hideKeyboard()
@@ -113,11 +131,24 @@ class ChatSessionsFragment : BaseFragment() {
         }
     }
 
+    private fun setSessions(sessions: List<ChatSessionWithUser>) {
+        ensureStateVisibility()
+        sessionsAdapter.apply {
+            setSessions(sessions)
+            notifyDataSetChanged()
+        }
+        binding.layoutPlaceholder.visibility = if (isSearching || sessions.isNotEmpty()) View.GONE else View.VISIBLE
+    }
+
     private fun subscribeToViewModels() {
-        sessions.chatTargets.observe(viewLifecycleOwner) {
+        chat.chatTargets.observe(viewLifecycleOwner) {
             if (isSearching) {
                 setTargets(it)
             }
+        }
+
+        chat.sessions.observe(viewLifecycleOwner) {
+            setSessions(it)
         }
     }
 }
