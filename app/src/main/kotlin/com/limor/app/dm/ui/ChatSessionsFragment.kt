@@ -51,7 +51,7 @@ class ChatSessionsFragment : BaseFragment() {
 
     private fun onTargetTap(target: ChatTarget) {
         // start chat with user
-        
+
     }
 
     private fun setViews() {
