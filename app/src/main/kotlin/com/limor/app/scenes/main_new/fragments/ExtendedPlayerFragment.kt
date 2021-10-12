@@ -211,6 +211,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
                 binding.tvCommentName.text = firstComment.user?.username
                 binding.firstCollapsedCommentVisibilityGroup.makeVisible()
                 binding.noCommentsMessage.makeGone()
+                binding.llExtendCommentsHeader.isEnabled = true
                 binding.llExtendCommentsHeader.makeVisible()
             } else {
                 binding.firstCollapsedCommentVisibilityGroup.makeGone()
