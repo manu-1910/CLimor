@@ -142,4 +142,11 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         val result = apollo.mutate(query)
         return result?.data?.updateNotification?.status ?: return "error"
     }
+
+    suspend fun searchFollowers(term: String, limit: Int, offset: Int): List<SearchFollowersQuery.SearchFollower?> {
+        val query = SearchFollowersQuery(term, limit, offset)
+        val result = apollo.launchQuery(query)
+        Timber.d("Search Followers -> ${result?.data?.searchFollowers?.size}")
+        return result?.data?.searchFollowers ?: return emptyList()
+    }
 }
