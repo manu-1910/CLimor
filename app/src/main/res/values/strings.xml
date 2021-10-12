@@ -685,6 +685,7 @@
     <string name="share_search_placeholder">Search...</string>
     <string name="share_now_label">Share Now</string>
     <string name="share_with_label">Share with</string>
+    <string name="messages_title">Messages</string>
 
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
