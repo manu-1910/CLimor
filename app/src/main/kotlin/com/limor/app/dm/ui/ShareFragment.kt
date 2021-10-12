@@ -1,6 +1,7 @@
 package com.limor.app.dm.ui
 
 import android.content.*
+import android.content.pm.ResolveInfo
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -25,6 +26,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
+import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
@@ -34,7 +36,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-class ShareFragment : Fragment() {
+class ShareFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -46,6 +48,7 @@ class ShareFragment : Fragment() {
 
     private var _binding: FragmentShareDialogBinding? = null
     private val binding get() = _binding!!
+    private var mShortLink: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -150,6 +153,7 @@ class ShareFragment : Fragment() {
     }
 
     private fun setShortLink(shortLink: String) {
+        mShortLink = shortLink
         binding.shareLink.text = shortLink
 
         lifecycleScope.launch {
@@ -191,9 +195,29 @@ class ShareFragment : Fragment() {
         binding.recyclerExternal.adapter = AppsAdapter(
             requireContext(),
             apps,
-            cast,
-            shortLink
+            onTap = {  ri ->
+                openShareIntent(ri)
+            }
         )
+    }
+
+    private fun openShareIntent(ri: ResolveInfo) {
+        val shortLink = mShortLink ?: return
+
+        val ai = ri.activityInfo
+        val name = ComponentName(ai.applicationInfo.packageName, ai.name)
+
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "text/plain"
+            component = name
+
+            putExtra(Intent.EXTRA_SUBJECT, cast.title)
+            putExtra(Intent.EXTRA_TEXT, context?.getString(R.string.share_message__with_format, shortLink))
+        }
+
+        context?.startActivity(sendIntent)
+        markAsShared()
     }
 
     companion object {
