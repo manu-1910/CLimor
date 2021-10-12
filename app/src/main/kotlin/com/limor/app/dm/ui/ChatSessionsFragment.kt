@@ -62,12 +62,15 @@ class ChatSessionsFragment : BaseFragment() {
     }
 
     private fun onTargetTap(target: ChatTarget) {
-        // start chat with user
-
+        startChat(target.limorUserId)
     }
 
     private fun onSessionTap(session: ChatSessionWithUser) {
-        //
+        startChat(session.user.limorUserId)
+    }
+
+    private fun startChat(limorUserId: Int) {
+        ChatActivity.start(requireContext(), limorUserId)
     }
 
     private fun setViews() {
