@@ -6,20 +6,27 @@
     android:orientation="vertical"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
-    android:maxWidth="100dp"
+    android:maxWidth="64dp"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/imageAppIcon"
+    <RelativeLayout
         android:layout_width="44dp"
-        android:layout_height="44dp" />
+        android:layout_height="44dp">
+
+        <ImageView
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/imageAppIcon"
+            android:layout_width="44dp"
+            android:layout_height="44dp" />
+
+
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/textAppTitle"
         android:layout_gravity="center_horizontal"
-        android:maxWidth="100dp"
+        android:maxWidth="64dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -29,7 +36,7 @@
         android:textAlignment="center"
         android:textColor="@color/textPrimary"
         android:textSize="16sp"
-        tools:text="Messenger" />
+        tools:text="Janelia Evans" />
 
 
 </LinearLayout>
