@@ -1,5 +1,6 @@
 package com.limor.app.di.modules.fragments
 
+import com.limor.app.dm.ui.ShareFragment
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategoriesFragment
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverCategoryFragment
 import com.limor.app.scenes.main.fragments.discover.discover.DiscoverFragment
@@ -77,6 +78,10 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeCommentActionsActionsFragmentInjector(): DialogCommentMoreActions
+
+    @ContributesAndroidInjector
+    abstract fun contributeShareFragmentInjector(): ShareFragment
+
 
 }
 
