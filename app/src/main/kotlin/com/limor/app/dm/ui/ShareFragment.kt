@@ -15,7 +15,11 @@ import com.limor.app.R
 import com.limor.app.databinding.FragmentShareDialogBinding
 import com.limor.app.uimodels.CastUIModel
 import android.net.Uri
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
@@ -95,6 +99,38 @@ class ShareFragment : Fragment() {
                 binding.buttonCopyLink.text = it
             }
         }
+
+        binding.textFakeSearch.setOnClickListener {
+            showFullView(true)
+        }
+
+        binding.buttonBack.setOnClickListener {
+            showFullView(false)
+        }
+    }
+
+    private fun showFullView(show: Boolean) {
+        binding.let {
+            arrayOf(
+                it.shareTitle,
+                it.shareLink,
+                it.buttonCopyLink,
+                it.delimiter,
+                it.layoutShareWithUsers,
+                it.shareViaLabel,
+                it.recyclerExternal
+            ).forEach { view ->
+                view.visibility = if (show) View.GONE else View.VISIBLE
+            }
+
+            it.layoutShareWithUsersFull.visibility = if (show) View.VISIBLE else View.GONE
+
+            it.root.updateLayoutParams {
+                height = if (show) ViewGroup.LayoutParams.MATCH_PARENT else ViewGroup.LayoutParams.WRAP_CONTENT
+            }
+        }
+
+        (parentFragment as? ShareDialog)?.adjustHeight(show)
     }
 
     private fun setShortLink(shortLink: String) {
