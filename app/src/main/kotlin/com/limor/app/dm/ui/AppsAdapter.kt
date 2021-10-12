@@ -22,8 +22,7 @@ import org.greenrobot.eventbus.EventBus
 class AppsAdapter(
     private val context: Context,
     private val apps: List<ResolveInfo>,
-    private val podcast: CastUIModel,
-    private val shortLink: String
+    private val onTap: (ri: ResolveInfo) -> Unit
 ) :
     RecyclerView.Adapter<AppsAdapter.ViewHolder>() {
 
@@ -48,25 +47,8 @@ class AppsAdapter(
             holder.image.image = ri.loadIcon(pm)
         }
         holder.itemView.setOnClickListener {
-            openShareIntent(ri)
+            onTap(ri)
         }
-    }
-
-    private fun openShareIntent(ri: ResolveInfo) {
-        val ai = ri.activityInfo
-        val name = ComponentName(ai.applicationInfo.packageName, ai.name)
-
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            type = "text/plain"
-            component = name
-
-            putExtra(Intent.EXTRA_SUBJECT, podcast.title)
-            putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_message__with_format, shortLink))
-        }
-
-        context.startActivity(sendIntent)
-        ShareDialog.DismissEvent.dismiss()
     }
 
     override fun getItemCount() = apps.size
