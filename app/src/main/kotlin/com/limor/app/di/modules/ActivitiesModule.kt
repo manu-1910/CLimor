@@ -2,6 +2,7 @@ package com.limor.app.di.modules
 
 import com.limor.app.EditCastActivity
 import com.limor.app.di.modules.fragments.*
+import com.limor.app.dm.ui.ChatActivity
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.fragments.onboarding.OnBoardingActivity
@@ -102,4 +103,12 @@ abstract class ActivitiesModule {
         ]
     )
     abstract fun contributeEditCastActivityInjector(): EditCastActivity
+
+
+    @ContributesAndroidInjector(
+        modules = [
+            ViewModelsModule::class
+        ]
+    )
+    abstract fun contributeChatActivityInjector(): ChatActivity
 }
