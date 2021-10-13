@@ -90,6 +90,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun onChatData(chatData: ChatWithData) {
         println("ZZZZ Got chat data with ${chatData.messages.size} messages")
+        chatSession = chatData.sessionWithUser
 
         if (null == chatAdapter) {
             chatAdapter = ChatAdapter(
@@ -139,6 +140,7 @@ class ChatActivity : AppCompatActivity() {
 
         binding.buttonSendMessage.setOnClickListener {
             val session = chatSession ?: return@setOnClickListener
+            binding.editMessageText.setText("")
             chat.addMyMessage(session, binding.editMessageText.text.toString())
         }
     }
