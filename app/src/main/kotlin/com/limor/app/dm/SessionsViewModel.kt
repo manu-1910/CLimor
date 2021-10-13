@@ -3,9 +3,11 @@ package com.limor.app.dm
 import androidx.lifecycle.*
 import com.limor.app.BuildConfig
 import com.limor.app.apollo.GeneralInfoRepository
+import com.limor.app.common.dispatchers.DispatcherProvider
 import com.limor.app.uimodels.UserUIModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.coroutines.suspendCoroutine
 
@@ -13,6 +15,7 @@ class SessionsViewModel @Inject constructor(
     private val chatRepository: ChatRepository,
     private val chatManager: ChatManager,
     private val generalInfoRepository: GeneralInfoRepository,
+    private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
 
     val sessions: LiveData<List<ChatSessionWithUser>> = chatRepository.getSessions().asLiveData()
@@ -108,11 +111,14 @@ class SessionsViewModel @Inject constructor(
     }
 
     fun addMyMessage(session: ChatSessionWithUser, content: String) {
+        println("Adding my message ($content) in $session")
         viewModelScope.launch {
-            chatRepository.addMyMessage(content, session)
+            withContext(dispatcherProvider.io) {
+                chatRepository.addMyMessage(content, session)
 
-            val peerId = "${BuildConfig.CHAT_USER_ID_PREFIX}_${session.user.limorUserId}"
-            chatManager.sendPeerMessage(peerId, content)
+                val peerId = "${BuildConfig.CHAT_USER_ID_PREFIX}_${session.user.limorUserId}"
+                chatManager.sendPeerMessage(peerId, content)
+            }
         }
     }
 }
