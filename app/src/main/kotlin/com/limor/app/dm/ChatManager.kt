@@ -5,6 +5,7 @@ import android.util.Log
 import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.apollo.GeneralInfoRepository
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import io.agora.rtm.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,9 @@ class ChatManager @Inject constructor(
 
     private val cachedLeanUsers = mutableMapOf<String, LeanUser>();
 
+    private var mToken: String? = null
+    private var mLastTokenFetchTime = 0L
+
     private var rtmClient: RtmClient? = null
     private var sendMsgOptions: SendMessageOptions = SendMessageOptions().apply {
         enableOfflineMessaging = true
@@ -39,9 +43,9 @@ class ChatManager @Inject constructor(
         val appID = context.getString(R.string.agora_app_id)
         try {
             rtmClient = RtmClient.createInstance(context, appID, this).also {
-                if (BuildConfig.DEBUG) {
-                    it.setParameters("{\"rtm.log_filter\": 65535}")
-                }
+                // if (BuildConfig.DEBUG) {
+                    // it.setParameters("{\"rtm.log_filter\": 65535}")
+                // }
             }
 
         } catch (e: Exception) {
@@ -53,6 +57,35 @@ class ChatManager @Inject constructor(
                 """.trimIndent()
             )
         }
+    }
+
+    fun loginCurrentUser() {
+        val limorUserId = PrefsHandler.getCurrentUserId(context)
+        val peerId = "${BuildConfig.CHAT_USER_ID_PREFIX}_$limorUserId"
+        println("Logging in current user $limorUserId as $peerId")
+        chatScope.launch {
+            ensureToken()?.let {
+                println("Got new token $it, now logging in.")
+                login(it, peerId)
+            }
+        }
+    }
+
+    private suspend fun ensureToken(): String? {
+        if (null == mToken) {
+            mLastTokenFetchTime = System.currentTimeMillis()
+            return generalInfoRepository.getMessagingToken()
+        }
+
+        mToken?.let {
+            if (mLastTokenFetchTime > 1 * 60 * 60 * 1000) {
+                // more than 1 hour since the last refresh, so refresh the token
+                refresh(it)
+            }
+            return it
+        }
+
+        return null
     }
 
     suspend fun login(token: String, userId: String): Int = suspendCoroutine { cont ->
@@ -107,6 +140,7 @@ class ChatManager @Inject constructor(
                 }
 
                 override fun onFailure(errorInfo: ErrorInfo) {
+                    println("Error Sending Message -> ${errorInfo}")
                     cont.resume(errorInfo.errorCode)
                 }
             })
@@ -114,7 +148,6 @@ class ChatManager @Inject constructor(
 
     fun logout() {
         rtmClient?.logout(null);
-        // TODO remove chats from DB
     }
 
     override fun onConnectionStateChanged(state: Int, reason: Int) {
@@ -170,6 +203,7 @@ class ChatManager @Inject constructor(
     }
 
     override fun onMessageReceived(rtmMessage: RtmMessage, peerId: String) {
+        println("ZZZZ Received Chat Message from $peerId -> ${rtmMessage.text}")
         chatScope.launch {
             addMessage(rtmMessage.text, peerId)
         }
