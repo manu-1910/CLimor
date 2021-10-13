@@ -16,22 +16,20 @@ import com.limor.app.R
 import com.limor.app.databinding.FragmentShareDialogBinding
 import com.limor.app.uimodels.CastUIModel
 import android.net.Uri
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
-import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
-import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
+import com.limor.app.dm.LeanUser
+import com.limor.app.dm.SessionsViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
-import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -41,6 +39,7 @@ class ShareFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
+    private val chat: SessionsViewModel by viewModels { viewModelFactory }
 
     private val cast: CastUIModel by lazy {
         requireArguments().getParcelable(KEY_PODCAST)!!
@@ -49,6 +48,10 @@ class ShareFragment : BaseFragment() {
     private var _binding: FragmentShareDialogBinding? = null
     private val binding get() = _binding!!
     private var mShortLink: String? = null
+    private var shareableUsers = listOf<LeanUser>()
+
+    private lateinit var quickShareAdapter: QuickShareAdapter
+    private lateinit var fullShareAdapter: FullShareAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,6 +59,8 @@ class ShareFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentShareDialogBinding.inflate(inflater, container, false)
+
+        createAdapters()
         setViews()
 
         lifecycleScope.launch {
@@ -68,6 +73,30 @@ class ShareFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         subscribeToViewModels()
+    }
+
+    private fun createAdapters() {
+        quickShareAdapter = QuickShareAdapter(
+            context = requireContext(),
+            leanUsers = listOf(),
+            onTap = { onUserTapped() }
+        )
+        fullShareAdapter = FullShareAdapter(
+            context = requireContext(),
+            allUsers = mutableListOf(),
+            onTap = { onUserTapped() }
+        )
+    }
+
+    private fun onUserTapped() {
+        val canShare =  shareableUsers.isNotEmpty() && shareableUsers.any {
+            it.selected
+        }
+        binding.buttonShareWithMessage.isEnabled = canShare
+        binding.buttonShareSeparately.isEnabled = canShare
+
+        quickShareAdapter.notifyDataSetChanged()
+        fullShareAdapter.notifyDataSetChanged()
     }
 
     private fun generateLink() {
@@ -126,6 +155,37 @@ class ShareFragment : BaseFragment() {
         binding.buttonBack.setOnClickListener {
             showFullView(false)
         }
+
+        binding.recyclerQuickUsers.adapter = quickShareAdapter
+        binding.recyclerFullUsers.adapter = fullShareAdapter
+
+        binding.editSearch.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {
+            }
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+            }
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                fullShareAdapter.filter(s.toString())
+            }
+        })
+
+        binding.buttonShareWithMessage.setOnClickListener {
+            shareSelected()
+        }
+        binding.buttonShareSeparately.setOnClickListener {
+            shareSelected()
+        }
+    }
+
+    private fun shareSelected() {
+        val selected = shareableUsers.filter { it.selected }
+        lifecycleScope.launch {
+            val start = System.currentTimeMillis()
+            val shared = chat.shareAsDirectMessage(selected, mShortLink)
+            val end = System.currentTimeMillis()
+            println("Shared successfully -> $shared for ${end - start}ms")
+            ShareDialog.DismissEvent.dismiss()
+        }
     }
 
     private fun showFullView(show: Boolean) {
@@ -178,6 +238,16 @@ class ShareFragment : BaseFragment() {
         sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner){
             ShareDialog.DismissEvent.dismiss()
         }
+        chat.sessions.observe(viewLifecycleOwner) {
+            println("Got sessions -> $it")
+            setUsers(it.map(LeanUser::fromSession))
+        }
+    }
+
+    private fun setUsers(leanUsers: List<LeanUser>) {
+        shareableUsers = leanUsers
+        quickShareAdapter.setLeanUsers(leanUsers)
+        fullShareAdapter.setAllLeanUsers(leanUsers)
     }
 
     private fun setExternalShare(shortLink: String) {
