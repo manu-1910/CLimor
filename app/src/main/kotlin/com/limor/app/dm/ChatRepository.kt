@@ -1,6 +1,7 @@
 package com.limor.app.dm
 
 import com.limor.app.BuildConfig
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,7 +14,12 @@ class ChatRepository @Inject constructor(
 
     fun getChat(sessionId: Int) = chatDao.getChat(sessionId)
 
-    private fun addMessage(chatMessage: ChatMessage) = chatDao.insertMessage(chatMessage)
+    private fun addMessage(chatMessage: ChatMessage, session: ChatSession) {
+        chatDao.insertMessage(chatMessage)
+
+        session.lastMessageDate = Calendar.getInstance()
+        chatDao.updateSession(session)
+    }
 
     fun addOtherMessage(content: String, session: ChatSession) {
         ChatMessage(
@@ -22,7 +28,7 @@ class ChatRepository @Inject constructor(
             session.chatUserId,
             content
         ).also {
-            addMessage(it)
+            addMessage(it, session)
         }
     }
 
@@ -33,11 +39,12 @@ class ChatRepository @Inject constructor(
             null,
             content
         ).also {
-            addMessage(it)
+            addMessage(it, session.session)
         }
     }
 
     fun getSessionByLimorUserId(limorUserId: Int) = chatDao.getSessionByLimorUserId(limorUserId)
+    fun getSessionWithUserId(sessionId: Int) = chatDao.getSessionWithUserId(sessionId)
 
     fun getSessionByUserChatId(peerId: String): ChatSession? {
         if (peerId.isEmpty() || !peerId.contains('_')) {
