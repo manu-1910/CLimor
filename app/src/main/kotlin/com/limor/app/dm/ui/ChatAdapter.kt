@@ -1,6 +1,7 @@
 package com.limor.app.dm.ui
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.R
 import android.content.Context
+import android.content.Intent
+import android.content.Intent.ACTION_VIEW
+import android.net.Uri
+import android.webkit.URLUtil
 import com.limor.app.dm.ChatSessionWithUser
 import com.limor.app.dm.ChatTarget
 import com.limor.app.dm.ChatWithData
@@ -62,6 +67,23 @@ class ChatAdapter(
             val holder = viewHolder as ViewHolderOther
             holder.message.text = message.messageContent
             holder.profile.loadCircleImage(chatData.sessionWithUser.user.limorProfileUrl)
+        }
+        viewHolder.itemView.setOnClickListener {
+            if (URLUtil.isValidUrl(message.messageContent)) {
+                openUrl(message.messageContent)
+            }
+        }
+    }
+
+    private fun openUrl(url: String) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                addCategory(Intent.CATEGORY_BROWSABLE)
+            }
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            e.printStackTrace()
+            // ignored for now
         }
     }
 
