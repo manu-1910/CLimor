@@ -29,6 +29,7 @@ import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentExtendedPlayerBinding
+import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.*
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
@@ -441,7 +442,10 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         binding.btnPodcastReply.setOnClickListener {
             //btnPodcastReply.shared = true
             updatePodcasts = true
-            sharePodcast(cast)
+            ShareDialog.newInstance(cast).also { fragment ->
+                fragment.show(parentFragmentManager, fragment.requireTag())
+            }
+            // sharePodcast(cast)
         }
 
         // This is copy pasted from FragmentComments, will need to be refactored later...
