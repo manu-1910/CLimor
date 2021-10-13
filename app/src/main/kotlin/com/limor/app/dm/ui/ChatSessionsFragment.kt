@@ -94,6 +94,7 @@ class ChatSessionsFragment : BaseFragment() {
         })
 
         binding.recyclerTargets.adapter = targetsAdapter
+        binding.recyclerSessions.adapter = sessionsAdapter
 
         binding.searchClear.setOnClickListener {
             isSearching = false
@@ -115,14 +116,14 @@ class ChatSessionsFragment : BaseFragment() {
     }
 
     private fun ensureStateVisibility() {
-        val visibleWhenSearching = if (isSearching) View.VISIBLE else View.GONE
-        val goneWhenSearching = if (isSearching) View.GONE else View.VISIBLE
+        val showsSearch = if (isSearching) View.VISIBLE else View.GONE
+        val showsSessions = if (isSearching) View.GONE else View.VISIBLE
 
-        ensureVisibility(binding.recyclerTargets, visibleWhenSearching)
-        ensureVisibility(binding.recyclerSessions, goneWhenSearching)
+        ensureVisibility(binding.recyclerTargets, showsSearch)
+        ensureVisibility(binding.recyclerSessions, showsSessions)
 
-        ensureVisibility(binding.searchIcon, goneWhenSearching)
-        ensureVisibility(binding.searchClear, visibleWhenSearching)
+        ensureVisibility(binding.searchIcon, showsSessions)
+        ensureVisibility(binding.searchClear, showsSearch)
 
         binding.layoutPlaceholder.visibility = if (isSearching || sessionsAdapter.hasData()) View.GONE else View.VISIBLE
     }
@@ -136,6 +137,7 @@ class ChatSessionsFragment : BaseFragment() {
     }
 
     private fun setSessions(sessions: List<ChatSessionWithUser>) {
+        println("Setting sessions $sessions")
         sessionsAdapter.apply {
             setSessions(sessions)
             notifyDataSetChanged()
