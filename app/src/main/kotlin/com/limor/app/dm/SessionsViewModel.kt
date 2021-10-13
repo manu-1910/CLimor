@@ -111,6 +111,9 @@ class SessionsViewModel @Inject constructor(
     }
 
     fun addMyMessage(session: ChatSessionWithUser, content: String) {
+        if (content.isEmpty()) {
+            return
+        }
         println("Adding my message ($content) in $session")
         viewModelScope.launch {
             withContext(dispatcherProvider.io) {
