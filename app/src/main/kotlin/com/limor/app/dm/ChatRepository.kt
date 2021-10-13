@@ -1,10 +1,13 @@
 package com.limor.app.dm
 
+import com.limor.app.BuildConfig
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ChatRepository @Inject constructor(private val chatDao: ChatDao) {
+class ChatRepository @Inject constructor(
+    private val chatDao: ChatDao,
+) {
 
     fun getSessions() = chatDao.getSessions()
 
@@ -23,10 +26,10 @@ class ChatRepository @Inject constructor(private val chatDao: ChatDao) {
         }
     }
 
-    fun addMyMessage(content: String, session: ChatSession) {
+    suspend fun addMyMessage(content: String, session: ChatSessionWithUser) {
         ChatMessage(
             0,
-            session.id,
+            session.session.id,
             null,
             content
         ).also {
