@@ -97,6 +97,7 @@
         android:layout_height="wrap_content"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
+        app:stackFromEnd="true"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:layout_above="@id/delimiterBottom"
         android:layout_below="@+id/delimiterTop" />
