@@ -1,15 +1,17 @@
 package com.limor.app.dm
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
 
 @Dao
 // for now only use one DAO for all DB access as the 3 models are tightly interrelated
 interface ChatDao {
+
+    @Query(
+        "SELECT * FROM chat_session INNER JOIN chat_users ON chat_users.user_id = chat_session.chat_user_id where chat_session.session_id = :sessionId"
+    )
+    fun getSessionWithUserId(sessionId: Int): ChatSessionWithUser
 
     @Query(
         "SELECT * FROM chat_session " +
@@ -52,5 +54,8 @@ interface ChatDao {
 
     @Insert
     fun insertChatUser(chatUser: ChatUser): Long
+
+    @Update
+    fun updateSession(session: ChatSession)
 
 }
