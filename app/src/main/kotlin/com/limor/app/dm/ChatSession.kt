@@ -16,5 +16,5 @@ data class ChatSession(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "session_id")  var id: Int = 0,
     @ColumnInfo(name = "chat_user_id", index = true) val chatUserId: Int,
     @ColumnInfo(name = "last_message_timestamp")
-    val lastMessageDate: Calendar = Calendar.getInstance()
+    var lastMessageDate: Calendar = Calendar.getInstance()
 )
