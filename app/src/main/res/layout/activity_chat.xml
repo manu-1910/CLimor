@@ -92,9 +92,11 @@
         android:background="#F0F3F8" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_below="@+id/delimiterTop"
-        android:layout_above="@id/delimiterBottom"
+        android:id="@+id/recyclerChat"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_above="@id/delimiterBottom"
+        android:layout_below="@+id/delimiterTop" />
 
 </RelativeLayout>
