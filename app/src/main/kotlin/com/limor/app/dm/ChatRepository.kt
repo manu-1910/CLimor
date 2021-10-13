@@ -34,6 +34,8 @@ class ChatRepository @Inject constructor(private val chatDao: ChatDao) {
         }
     }
 
+    fun getSessionByLimorUserId(limorUserId: Int) = chatDao.getSessionByLimorUserId(limorUserId)
+
     fun getSessionByUserChatId(peerId: String): ChatSession? {
         if (peerId.isEmpty() || !peerId.contains('_')) {
             return null
