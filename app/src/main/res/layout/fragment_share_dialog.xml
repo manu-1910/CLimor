@@ -123,7 +123,7 @@
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="5"
-            tools:listitem="@layout/item_grid_dm_share_user" />
+            tools:listitem="@layout/item_list_dm_share_user" />
 
         <Button
             android:id="@+id/buttonShareSeparately"
@@ -166,6 +166,7 @@
             android:id="@+id/recyclerQuickUsers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:minHeight="73dp"
             android:layout_marginTop="16dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -203,6 +204,7 @@
         android:id="@+id/recyclerExternal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="73dp"
         android:layout_marginTop="16dp"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
