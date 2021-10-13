@@ -123,6 +123,8 @@ android {
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://devlimorapp.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
 
+            buildConfigField "String", "CHAT_USER_ID_PREFIX", '"development"'
+
             minifyEnabled false
             debuggable true
             zipAlignEnabled true
@@ -154,6 +156,8 @@ android {
 
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://devlimorapp.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
+
+            buildConfigField "String", "CHAT_USER_ID_PREFIX", '"staging"'
 
             minifyEnabled false
             debuggable true
@@ -188,6 +192,8 @@ android {
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://staginglimorapp.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-staging.web.app"'
 
+            buildConfigField "String", "CHAT_USER_ID_PREFIX", '"staging"'
+
             minifyEnabled false
             debuggable true
             zipAlignEnabled true
@@ -219,6 +225,8 @@ android {
 
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://castpreview.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://castpreview.limor.ie"'
+
+            buildConfigField "String", "CHAT_USER_ID_PREFIX", '"prod"'
 
             minifyEnabled false
             debuggable true
