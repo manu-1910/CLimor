@@ -140,8 +140,10 @@ class ChatActivity : AppCompatActivity() {
 
         binding.buttonSendMessage.setOnClickListener {
             val session = chatSession ?: return@setOnClickListener
+
+            val messageText = binding.editMessageText.text.toString()
             binding.editMessageText.setText("")
-            chat.addMyMessage(session, binding.editMessageText.text.toString())
+            chat.addMyMessage(session, messageText)
         }
     }
 
