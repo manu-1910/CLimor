@@ -149,4 +149,10 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         Timber.d("Search Followers -> ${result?.data?.searchFollowers?.size}")
         return result?.data?.searchFollowers ?: return emptyList()
     }
+
+    suspend fun getMessagingToken(): String? {
+        val result = apollo.launchQuery(GetMessagingTokenQuery())
+        Timber.d("Messaging Token Result -> ${result?.data?.getMessagingToken}")
+        return result?.data?.getMessagingToken?.token
+    }
 }
