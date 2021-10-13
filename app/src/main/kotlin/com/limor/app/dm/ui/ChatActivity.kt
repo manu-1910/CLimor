@@ -88,6 +88,16 @@ class ChatActivity : AppCompatActivity() {
         Toast.makeText(this, "Could not start chat. Please try later.", Toast.LENGTH_LONG).show()
     }
 
+    private fun scrollChatToBottom() {
+        val ca = chatAdapter ?: return
+        if (ca.itemCount == 0) {
+            return
+        }
+        binding.recyclerChat.post {
+            binding.recyclerChat.scrollToPosition(ca.itemCount - 1);
+        }
+    }
+
     private fun onChatData(chatData: ChatWithData) {
         println("ZZZZ Got chat data with ${chatData.messages.size} messages")
         chatSession = chatData.sessionWithUser
@@ -98,10 +108,12 @@ class ChatActivity : AppCompatActivity() {
                 chatData
             )
             binding.recyclerChat.adapter = chatAdapter
+            scrollChatToBottom()
         } else {
             chatAdapter?.apply {
                 setChatData(chatData)
                 notifyDataSetChanged()
+                scrollChatToBottom()
             }
         }
 
@@ -122,7 +134,6 @@ class ChatActivity : AppCompatActivity() {
         binding.buttonBack.setOnClickListener {
             finish()
         }
-        (binding.recyclerChat.layoutManager as? LinearLayoutManager)?.reverseLayout = true
 
         binding.editMessageText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
