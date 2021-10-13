@@ -4,11 +4,10 @@ import androidx.lifecycle.*
 import com.limor.app.BuildConfig
 import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.common.dispatchers.DispatcherProvider
-import com.limor.app.uimodels.UserUIModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class SessionsViewModel @Inject constructor(
@@ -121,6 +120,35 @@ class SessionsViewModel @Inject constructor(
 
                 val peerId = "${BuildConfig.CHAT_USER_ID_PREFIX}_${session.user.limorUserId}"
                 chatManager.sendPeerMessage(peerId, content)
+            }
+        }
+    }
+
+    private suspend fun share(user: LeanUser, url: String) {
+        var session = chatRepository.getSessionByLimorUserId(user.limorUserId)
+        if (session == null) {
+            session = createSession(user.limorUserId)
+        }
+        if (session == null) {
+            return
+        }
+        val sessionWithUser = chatRepository.getSessionWithUserId(session.id)
+        println("Will share with session ${sessionWithUser.session.id}")
+        addMyMessage(sessionWithUser, url)
+    }
+
+    suspend fun shareAsDirectMessage(selected: List<LeanUser>, url: String?): Boolean = suspendCoroutine { cont ->
+        println("Sharing as direct -> ${selected.size} -> $url")
+        if (url.isNullOrEmpty()) {
+            cont.resume(false)
+            return@suspendCoroutine
+        }
+        viewModelScope.launch {
+            withContext(dispatcherProvider.io) {
+                selected.forEach {
+                    share(it, url)
+                }
+                cont.resume(true)
             }
         }
     }
