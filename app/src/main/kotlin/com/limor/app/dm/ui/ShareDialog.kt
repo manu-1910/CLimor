@@ -1,5 +1,6 @@
 package com.limor.app.dm.ui
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -62,7 +63,7 @@ class ShareDialog : BottomSheetDialogFragment() {
 
         childFragmentManager.beginTransaction()
             .replace(R.id.content_container, ShareFragment.newInstance(cast))
-            .commit()
+            .commitNow()
 
         return binding.root
     }
@@ -73,13 +74,22 @@ class ShareDialog : BottomSheetDialogFragment() {
     }
 
     fun adjustHeight(full: Boolean) {
-        val behavior = (dialog as? BottomSheetDialog)?.behavior
-        behavior?.state =
-            if (full) BottomSheetBehavior.STATE_EXPANDED else BottomSheetBehavior.STATE_COLLAPSED
-
         dialog?.findViewById<View>(R.id.design_bottom_sheet)?.updateLayoutParams {
             height = if (full) ViewGroup.LayoutParams.MATCH_PARENT else ViewGroup.LayoutParams.WRAP_CONTENT
         }
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+
+        dialog.setOnShowListener {
+            if (dialog is BottomSheetDialog) {
+                val behavior: BottomSheetBehavior<*> = dialog.behavior
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
+
+        return dialog
     }
 
     companion object {
