@@ -255,6 +255,30 @@
         </RelativeLayout>
 
 
+        <RelativeLayout
+            android:layout_marginTop="12dp"
+            android:id="@+id/checkLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/lowerDivider">
+            <CheckBox
+                android:id="@+id/accCheckBox"
+                android:layout_marginStart="@dimen/margin24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/accCheckBox"
+                android:fontFamily="@font/roboto"
+                android:gravity="start"
+                android:textColor="@color/grayWave"
+                android:text="By Checking this box you confirm that you have a Bank account in UK"
+                android:textSize="14sp"/>
+            <!--Should set text from string plans_terms_text in respective class-->
+        </RelativeLayout>
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/continueButton"
             style="@android:style/Widget.Material.Button.Borderless.Colored"

@@ -227,11 +227,9 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
             when (user.patronInvitationStatus) {
                 null -> {
                     //Should request patron invitation
-                    val intent = Intent(requireContext(), PatronSetupActivity::class.java)
-                    intent.extras.apply {
-                        "user" to user
-                    }
-                    startActivity(intent)
+                    binding.patronButton.isEnabled = false
+                    binding.patronButton.text = getString(R.string.requesting)
+                    requestInvitation()
                 }
                 "NOT_REQUESTED" -> {
                     //Should request patron invitation
@@ -242,11 +240,14 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
                 "APPROVED" -> {
                     //Should setup Limor patron
 
-                    val intent = Intent(requireContext(), PatronSetupActivity::class.java)
+                    /*val intent = Intent(requireContext(), PatronSetupActivity::class.java)
                     intent.extras.apply {
                         "user" to user
                     }
-                    startActivity(intent)
+                    startActivity(intent)*/
+
+                    binding.root.snackbar("Plans Will be available soon")
+
 
                 }
                 "REJECTED" -> {
