@@ -55,8 +55,6 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        chatManager.loginCurrentUser()
-
         // Attach main activity binding into player container
         playerBinding = ContainerWithSwipeablePlayerBinding.inflate(layoutInflater)
         binding =
@@ -75,6 +73,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         lifecycleScope.launchWhenCreated {
             JwtChecker.getUserIdFromJwt(false)?.let {
                 PrefsHandler.saveCurrentUserId(this@MainActivityNew, it)
+                chatManager.loginCurrentUser()
             }
         }
     }
