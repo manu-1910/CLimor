@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:windowSoftInputMode="adjustResize"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -98,7 +99,6 @@
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         app:stackFromEnd="true"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:layout_above="@id/delimiterBottom"
         android:layout_below="@+id/delimiterTop" />
 
