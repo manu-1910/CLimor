@@ -23,7 +23,7 @@ class SessionsViewModel @Inject constructor(
         var session = chatRepository.getSessionByLimorUserId(limorUserId)
         if (session == null) {
             println("ZZZZ Session was null")
-            session = createSession(limorUserId)
+            session = createSession(limorUserId, "")
         }
         if (session == null) {
             println("ZZZZ Could not create session")
@@ -32,7 +32,7 @@ class SessionsViewModel @Inject constructor(
         return chatRepository.getChat(sessionId = session.id).asLiveData()
     }
 
-    private suspend fun createSession(limorUserId: Int): ChatSession? {
+    private suspend fun createSession(limorUserId: Int, message: String): ChatSession? {
         val user = generalInfoRepository.getUserProfileById(limorUserId)
         if (user == null) {
             println("ZZZZ User is null.")
@@ -49,7 +49,8 @@ class SessionsViewModel @Inject constructor(
 
             val session = ChatSession(
                 id = 0,
-                chatUserId = chatUser.id
+                chatUserId = chatUser.id,
+                lastMessageContent = message
             )
             val id = chatRepository.insertSession(session)
             session.id = id.toInt()
@@ -89,7 +90,7 @@ class SessionsViewModel @Inject constructor(
                     offset = 0
                 )
 
-                print("Search followers -> $followers")
+                println("Search followers -> $followers")
 
                 followers.filterNotNull()
                     .map(ChatTarget::fromSearch)
@@ -127,7 +128,7 @@ class SessionsViewModel @Inject constructor(
     private suspend fun share(user: LeanUser, url: String) {
         var session = chatRepository.getSessionByLimorUserId(user.limorUserId)
         if (session == null) {
-            session = createSession(user.limorUserId)
+            session = createSession(user.limorUserId, url)
         }
         if (session == null) {
             return
