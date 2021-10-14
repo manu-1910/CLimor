@@ -42,7 +42,7 @@ class SessionsAdapter(
         val session = sessions[position]
 
         holder.name.text = session.user.limorDisplayName
-        holder.userName.text = "@${session.user.limorUserName}"
+        holder.userName.text = session.session.lastMessageContent
         holder.image.loadCircleImage(session.user.limorProfileUrl)
 
         session.session.lastMessageDate.let {
