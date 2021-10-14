@@ -12,6 +12,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.databinding.ActivityChatBinding
 import com.limor.app.dm.ChatSessionWithUser
 import com.limor.app.dm.ChatWithData
@@ -38,6 +39,8 @@ class ChatActivity : AppCompatActivity() {
 
     private var chatAdapter: ChatAdapter? = null
     private var chatSession: ChatSessionWithUser? = null
+
+    private var shouldScrollToBottom = true;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,12 +111,10 @@ class ChatActivity : AppCompatActivity() {
                 chatData
             )
             binding.recyclerChat.adapter = chatAdapter
-            scrollChatToBottom()
         } else {
             chatAdapter?.apply {
                 setChatData(chatData)
                 notifyDataSetChanged()
-                scrollChatToBottom()
             }
         }
 
@@ -131,10 +132,28 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun setViews() {
+        val linearLayoutManager = object : LinearLayoutManager(baseContext, VERTICAL, false) {
+            override fun onLayoutCompleted(state: RecyclerView.State?) {
+                super.onLayoutCompleted(state)
+                if (shouldScrollToBottom) {
+                    scrollChatToBottom()
+                    println("scrolling in onLayoutComplete")
+                }
+                shouldScrollToBottom = false
+            }
+        }
+        binding.recyclerChat.layoutManager = linearLayoutManager
+
         binding.buttonBack.setOnClickListener {
             finish()
         }
 
+        binding.editMessageText.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                shouldScrollToBottom = true
+                scrollChatToBottom()
+            }
+        }
         binding.editMessageText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
             }
