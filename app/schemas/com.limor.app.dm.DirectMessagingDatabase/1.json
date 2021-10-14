@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "eac17366b2081f6fb80952c17316c87d",
+    "identityHash": "47238e21ccce98480689a9579f03b836",
     "entities": [
       {
         "tableName": "chat_users",
@@ -134,7 +134,7 @@
       },
       {
         "tableName": "chat_session",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`session_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `chat_user_id` INTEGER NOT NULL, `last_message_timestamp` INTEGER NOT NULL, FOREIGN KEY(`chat_user_id`) REFERENCES `chat_users`(`user_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`session_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `chat_user_id` INTEGER NOT NULL, `last_message_timestamp` INTEGER NOT NULL, `last_message_content` TEXT NOT NULL, FOREIGN KEY(`chat_user_id`) REFERENCES `chat_users`(`user_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
@@ -152,6 +152,12 @@
             "fieldPath": "lastMessageDate",
             "columnName": "last_message_timestamp",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastMessageContent",
+            "columnName": "last_message_content",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -189,7 +195,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'eac17366b2081f6fb80952c17316c87d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '47238e21ccce98480689a9579f03b836')"
     ]
   }
 }
