@@ -1,6 +1,7 @@
 package com.limor.app.dm
 
 import android.content.Context
+import android.os.Looper
 import android.util.Log
 import com.limor.app.BuildConfig
 import com.limor.app.R
@@ -39,8 +40,11 @@ class ChatManager @Inject constructor(
         enableOfflineMessaging = true
     }
 
+    private val messageQueue = mutableListOf<AddMessageJob>()
+
     init {
         val appID = context.getString(R.string.agora_app_id)
+        println("Will start agora client with app id - $appID")
         try {
             rtmClient = RtmClient.createInstance(context, appID, this).also {
                 // if (BuildConfig.DEBUG) {
@@ -62,10 +66,10 @@ class ChatManager @Inject constructor(
     fun loginCurrentUser() {
         val limorUserId = PrefsHandler.getCurrentUserId(context)
         val peerId = "${BuildConfig.CHAT_USER_ID_PREFIX}_$limorUserId"
-        println("Logging in current user $limorUserId as $peerId")
+        println("Agora1: Logging in current user $limorUserId as $peerId")
         chatScope.launch {
             ensureToken()?.let {
-                println("Got new token $it, now logging in.")
+                println("Agora1: Got new token $it, now logging in.")
                 login(it, peerId)
             }
         }
@@ -94,13 +98,14 @@ class ChatManager @Inject constructor(
             cont.resume(-1)
             return@suspendCoroutine
         }
-        client.login(token, userId, object : ResultCallback<Void?> {
+        client.login(null, userId, object : ResultCallback<Void?> {
             override fun onSuccess(responseInfo: Void?) {
                 cont.resume(RtmStatusCode.LoginError.LOGIN_ERR_OK)
             }
 
             override fun onFailure(errorInfo: ErrorInfo) {
                 Timber.i("Agora login failed: %s", errorInfo.errorCode)
+                RtmStatusCode.LoginError.LOGIN_ERR_INVALID_TOKEN
                 cont.resume(errorInfo.errorCode)
             }
         })
@@ -140,14 +145,15 @@ class ChatManager @Inject constructor(
                 }
 
                 override fun onFailure(errorInfo: ErrorInfo) {
-                    println("Error Sending Message -> ${errorInfo}")
+                    println("Agora1: Error Sending Message -> ${errorInfo}")
                     cont.resume(errorInfo.errorCode)
                 }
             })
     }
 
-    fun logout() {
-        rtmClient?.logout(null);
+    suspend fun logout() {
+        chatRepository.clearAllData(context)
+        rtmClient?.logout(null)
     }
 
     override fun onConnectionStateChanged(state: Int, reason: Int) {
@@ -182,7 +188,7 @@ class ChatManager @Inject constructor(
         }
     }
 
-    private suspend fun addMessage(text: String, peerId: String) {
+    @Synchronized private suspend fun addMessage(text: String, peerId: String) {
         var session = chatRepository.getSessionByUserChatId(peerId)
 
         if (session == null) {
@@ -193,7 +199,8 @@ class ChatManager @Inject constructor(
 
             session = ChatSession(
                 id = 0,
-                chatUserId = chatUser.id
+                chatUserId = chatUser.id,
+                lastMessageContent = text
             )
             val id = chatRepository.insertSession(session)
             session.id = id.toInt()
@@ -202,10 +209,23 @@ class ChatManager @Inject constructor(
         chatRepository.addOtherMessage(text, session);
     }
 
+    private fun processQueue() {
+        synchronized(this) {
+            val first = messageQueue.firstOrNull() ?: return
+            chatScope.launch {
+                addMessage(first.text, first.peerId)
+                messageQueue.removeAt(0)
+                processQueue()
+            }
+        }
+    }
+
     override fun onMessageReceived(rtmMessage: RtmMessage, peerId: String) {
-        println("ZZZZ Received Chat Message from $peerId -> ${rtmMessage.text}")
-        chatScope.launch {
-            addMessage(rtmMessage.text, peerId)
+        println("Agora1: Received Chat Message from $peerId -> ${rtmMessage.text}. Is on main -> ${Looper.getMainLooper().isCurrentThread}")
+
+        synchronized(this) {
+            messageQueue.add(AddMessageJob(text = rtmMessage.text, peerId = peerId))
+            processQueue()
         }
     }
 
