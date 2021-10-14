@@ -78,8 +78,9 @@ class ShareFragment : BaseFragment() {
     private fun createAdapters() {
         quickShareAdapter = QuickShareAdapter(
             context = requireContext(),
-            leanUsers = listOf(),
-            onTap = { onUserTapped() }
+            allUsers = listOf(),
+            onTap = { onUserTapped() },
+            onMore = { showFullView(true) }
         )
         fullShareAdapter = FullShareAdapter(
             context = requireContext(),
@@ -166,8 +167,16 @@ class ShareFragment : BaseFragment() {
             }
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 fullShareAdapter.filter(s.toString())
+                val canClear = s.isNotEmpty()
+                binding.searchIcon.visibility = if (canClear) View.GONE else View.VISIBLE
+                binding.searchClear.visibility = if (canClear) View.VISIBLE else View.GONE
             }
         })
+
+        binding.searchClear.setOnClickListener {
+            binding.editSearch.setText("")
+            fullShareAdapter.filter("")
+        }
 
         binding.buttonShareWithMessage.setOnClickListener {
             shareSelected()
@@ -246,7 +255,8 @@ class ShareFragment : BaseFragment() {
 
     private fun setUsers(leanUsers: List<LeanUser>) {
         shareableUsers = leanUsers
-        quickShareAdapter.setLeanUsers(leanUsers)
+
+        quickShareAdapter.setAllLeanUsers(leanUsers)
         fullShareAdapter.setAllLeanUsers(leanUsers)
     }
 
