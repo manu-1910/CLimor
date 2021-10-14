@@ -10,5 +10,5 @@ data class ChatWithData(
         parentColumn = "session_id",
         entityColumn = "chat_session_id"
     )
-    val messages: List<ChatMessage>
+    val messages: MutableList<ChatMessage>
 )
