@@ -104,13 +104,33 @@
                 android:id="@+id/editSearch"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="@drawable/bg_round_grey_ripple_new"
+                android:background="@drawable/bg_round_grey"
                 android:drawablePadding="16dp"
                 android:gravity="center_vertical"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:hint="@string/share_search_placeholder"
-                android:textColor="#91A2B2" />
+                android:textColorHint="#91A2B2"
+                android:textColor="#262735" />
+
+            <ImageView
+                android:id="@+id/searchIcon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="16dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_search_icon_share_screen" />
+
+            <ImageView
+                android:id="@+id/searchClear"
+                android:visibility="gone"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="12dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_edit_clear_search" />
 
         </RelativeLayout>
 
@@ -160,6 +180,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginTop="32dp"
+            android:textSize="18sp"
             app:drawableRightCompat="@drawable/ic_search_icon_share_screen" />
 
         <androidx.recyclerview.widget.RecyclerView
