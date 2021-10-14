@@ -1,5 +1,6 @@
 package com.limor.app.dm
 
+import android.content.Context
 import com.limor.app.BuildConfig
 import java.util.*
 import javax.inject.Inject
@@ -18,6 +19,8 @@ class ChatRepository @Inject constructor(
         chatDao.insertMessage(chatMessage)
 
         session.lastMessageDate = Calendar.getInstance()
+        session.lastMessageContent = chatMessage.messageContent
+
         chatDao.updateSession(session)
     }
 
@@ -58,4 +61,8 @@ class ChatRepository @Inject constructor(
     fun insertChatUser(chatUser: ChatUser) = chatDao.insertChatUser(chatUser)
     fun getChatUserByLimorId(userId: Int) = chatDao.getChatUserByLimorId(userId)
     suspend fun searchSession(term: String) = chatDao.searchSession(term)
+
+    suspend fun clearAllData(context: Context) {
+        DirectMessagingDatabase.getInstance(context).clearAllTables()
+    }
 }
