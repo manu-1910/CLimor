@@ -12,6 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.limor.app.R
 import com.limor.app.databinding.BottomDialogWrapperBinding
+import com.limor.app.dm.ShareResult
 import com.limor.app.uimodels.CastUIModel
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -24,6 +25,8 @@ class ShareDialog : BottomSheetDialogFragment() {
             fun dismiss() = EventBus.getDefault().post(DismissEvent())
         }
     }
+
+    private var onShared: ((shareResult: ShareResult) -> Unit)? = null
 
     private var _binding: BottomDialogWrapperBinding? = null
     private val binding get() = _binding!!
@@ -47,6 +50,10 @@ class ShareDialog : BottomSheetDialogFragment() {
         EventBus.getDefault().unregister(this)
     }
 
+    fun setOnSharedListener(onSharedListener: ((shareResult: ShareResult) -> Unit)?) {
+        onShared = onSharedListener
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onDismissEvent(event: DismissEvent) {
         _binding?.root?.post {
@@ -62,7 +69,9 @@ class ShareDialog : BottomSheetDialogFragment() {
         _binding = BottomDialogWrapperBinding.inflate(inflater, container, false)
 
         childFragmentManager.beginTransaction()
-            .replace(R.id.content_container, ShareFragment.newInstance(cast))
+            .replace(R.id.content_container, ShareFragment.newInstance(cast).also {
+                it.setOnSharedListener(onShared)
+            })
             .commitNow()
 
         return binding.root
