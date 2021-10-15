@@ -10,6 +10,7 @@ import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
+import com.limor.app.dm.ShareResult
 import com.limor.app.extensions.*
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
@@ -23,7 +24,7 @@ class ViewHolderPodcast(
     private val onCastClick: (cast: CastUIModel) -> Unit,
     private val onRecastClick: (castId: Int, isRecasted: Boolean) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
-    private val onShareClick: (CastUIModel) -> Unit,
+    private val onShareClick: (CastUIModel, onShared: ((shareResult: ShareResult) -> Unit)?) -> Unit,
     private val onReloadData: (castId: Int, reload: Boolean) -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val onUserMentionClick: (username: String, userId: Int) -> Unit,
@@ -98,7 +99,6 @@ class ViewHolderPodcast(
 
             }
 
-
         }
 
         binding.clItemPodcastFeed.setOnClickListener {
@@ -121,7 +121,10 @@ class ViewHolderPodcast(
         }
 
         binding.sharesLayout.setOnClickListener {
-            onShareClick(item)
+            onShareClick(item) { shareResult ->
+                item.updateShares(shareResult)
+                initShareState(item)
+            }
         }
     }
 
