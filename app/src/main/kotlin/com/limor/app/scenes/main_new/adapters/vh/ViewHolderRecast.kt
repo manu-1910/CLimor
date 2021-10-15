@@ -10,6 +10,7 @@ import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedRecastedBinding
+import com.limor.app.dm.ShareResult
 import com.limor.app.extensions.*
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
@@ -24,7 +25,7 @@ class ViewHolderRecast(
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
     private val onRecastClick: (castId: Int, isRecasted: Boolean) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
-    private val onShareClick: (CastUIModel) -> Unit,
+    private val onShareClick: (CastUIModel, onShared: ((shareResult: ShareResult) -> Unit)?) -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val onUserMentionClick: (username: String, userId: Int) -> Unit,
 ) : ViewHolderBindable<CastUIModel>(binding) {
@@ -111,7 +112,10 @@ class ViewHolderRecast(
         }
 
         binding.btnPodcastReply.setOnClickListener {
-            onShareClick(item)
+            onShareClick(item) { shareResult ->
+                item.updateShares(shareResult)
+                binding.btnPodcastReply.shared = item.isShared ?: false
+            }
         }
     }
 
