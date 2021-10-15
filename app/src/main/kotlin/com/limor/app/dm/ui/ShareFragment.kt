@@ -29,6 +29,7 @@ import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.dm.LeanUser
 import com.limor.app.dm.SessionsViewModel
+import com.limor.app.dm.ShareResult
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -40,6 +41,8 @@ class ShareFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
     private val chat: SessionsViewModel by viewModels { viewModelFactory }
+
+    private var onShared: ((shareResult: ShareResult) -> Unit)? = null
 
     private val cast: CastUIModel by lazy {
         requireArguments().getParcelable(KEY_PODCAST)!!
@@ -75,6 +78,10 @@ class ShareFragment : BaseFragment() {
         subscribeToViewModels()
     }
 
+    fun setOnSharedListener(onSharedListener: ((shareResult: ShareResult) -> Unit)?) {
+        onShared = onSharedListener
+    }
+
     private fun createAdapters() {
         quickShareAdapter = QuickShareAdapter(
             context = requireContext(),
@@ -90,7 +97,7 @@ class ShareFragment : BaseFragment() {
     }
 
     private fun onUserTapped() {
-        val canShare =  shareableUsers.isNotEmpty() && shareableUsers.any {
+        val canShare = shareableUsers.isNotEmpty() && shareableUsers.any {
             it.selected
         }
         binding.buttonShareWithMessage.isEnabled = canShare
@@ -143,7 +150,12 @@ class ShareFragment : BaseFragment() {
 
             SpannableStringBuilder(binding.buttonCopyLink.text).apply {
                 insert(0, "- ")
-                setSpan(ImageSpan(it, ImageSpan.ALIGN_BOTTOM), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                setSpan(
+                    ImageSpan(it, ImageSpan.ALIGN_BOTTOM),
+                    0,
+                    1,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
             }.also {
                 binding.buttonCopyLink.text = it
             }
@@ -163,8 +175,10 @@ class ShareFragment : BaseFragment() {
         binding.editSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
             }
+
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
+
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 fullShareAdapter.filter(s.toString())
                 val canClear = s.isNotEmpty()
@@ -193,7 +207,7 @@ class ShareFragment : BaseFragment() {
             val shared = chat.shareAsDirectMessage(selected, mShortLink)
             val end = System.currentTimeMillis()
             println("Shared successfully -> $shared for ${end - start}ms")
-            ShareDialog.DismissEvent.dismiss()
+            markAsShared(selected.size)
         }
     }
 
@@ -214,7 +228,8 @@ class ShareFragment : BaseFragment() {
             it.layoutShareWithUsersFull.visibility = if (show) View.VISIBLE else View.GONE
 
             it.root.updateLayoutParams {
-                height = if (show) ViewGroup.LayoutParams.MATCH_PARENT else ViewGroup.LayoutParams.WRAP_CONTENT
+                height =
+                    if (show) ViewGroup.LayoutParams.MATCH_PARENT else ViewGroup.LayoutParams.WRAP_CONTENT
             }
         }
 
@@ -231,20 +246,29 @@ class ShareFragment : BaseFragment() {
 
         binding.buttonCopyLink.isEnabled = true
         binding.buttonCopyLink.setOnClickListener {
-            val cm = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val cm =
+                requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             ClipData.newPlainText("Limor", shortLink).also {
                 cm.setPrimaryClip(it)
-                markAsShared()
+                markAsShared(1)
             }
         }
     }
 
-    private fun markAsShared() {
+    private fun markAsShared(newSharesCount: Int) {
+        onShared?.invoke(
+            ShareResult(
+                hasShared = true,
+                newSharesCount = newSharesCount,
+                shareUrl = mShortLink
+            )
+        )
         sharePodcastViewModel.share(castId = cast.id)
     }
 
     private fun subscribeToViewModels() {
-        sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner){
+        sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner) {
+            println("Agora Shared response -> $it")
             ShareDialog.DismissEvent.dismiss()
         }
         chat.sessions.observe(viewLifecycleOwner) {
@@ -275,7 +299,7 @@ class ShareFragment : BaseFragment() {
         binding.recyclerExternal.adapter = AppsAdapter(
             requireContext(),
             apps,
-            onTap = {  ri ->
+            onTap = { ri ->
                 openShareIntent(ri)
             }
         )
@@ -293,11 +317,14 @@ class ShareFragment : BaseFragment() {
             component = name
 
             putExtra(Intent.EXTRA_SUBJECT, cast.title)
-            putExtra(Intent.EXTRA_TEXT, context?.getString(R.string.share_message__with_format, shortLink))
+            putExtra(
+                Intent.EXTRA_TEXT,
+                context?.getString(R.string.share_message__with_format, shortLink)
+            )
         }
 
         context?.startActivity(sendIntent)
-        markAsShared()
+        markAsShared(1)
     }
 
     companion object {
