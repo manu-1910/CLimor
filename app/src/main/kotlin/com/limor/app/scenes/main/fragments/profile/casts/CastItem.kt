@@ -4,6 +4,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import com.limor.app.R
 import com.limor.app.databinding.ItemUserCastBinding
+import com.limor.app.dm.ShareResult
 import com.limor.app.extensions.*
 import com.limor.app.scenes.utils.recycler.HorizontalSpacingItemDecoration
 import com.limor.app.uimodels.CastUIModel
@@ -19,7 +20,7 @@ class CastItem(
     private val onMoreDialogClick: (CastUIModel) -> Unit,
     private val onRecastClick: (CastUIModel, isRecasted: Boolean) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
-    private val onShareClick: (CastUIModel) -> Unit,
+    private val onShareClick: (CastUIModel, onShared: ((shareResult: ShareResult) -> Unit)?) -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit
 ) : BindableItem<ItemUserCastBinding>() {
 
@@ -93,7 +94,11 @@ class CastItem(
             }
 
             sharesLayout.setOnClickListener {
-                onShareClick(cast)
+                onShareClick(cast) { shareResult ->
+                    cast.updateShares(shareResult)
+                    btnPodcastReply.shared = cast.isShared == true
+                    applyShareStyle(viewBinding, cast.isShared == true)
+                }
             }
         }
 
