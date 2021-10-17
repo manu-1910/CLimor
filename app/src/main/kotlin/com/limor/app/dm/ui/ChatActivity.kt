@@ -113,10 +113,8 @@ class ChatActivity : AppCompatActivity() {
             )
             binding.recyclerChat.adapter = chatAdapter
         } else {
-            chatAdapter?.apply {
-                setChatData(chatData)
-                notifyDataSetChanged()
-            }
+            shouldScrollToBottom = true
+            chatAdapter?.setChatData(chatData)
         }
 
         if (!hasSetHeader) {
@@ -174,6 +172,8 @@ class ChatActivity : AppCompatActivity() {
 
             val messageText = binding.editMessageText.text.toString()
             binding.editMessageText.setText("")
+
+            shouldScrollToBottom = true
             chat.addMyMessage(session, messageText)
         }
     }

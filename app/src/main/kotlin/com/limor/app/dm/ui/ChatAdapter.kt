@@ -89,6 +89,7 @@ class ChatAdapter(
 
     fun setChatData(data: ChatWithData) {
         chatData = data
+        notifyDataSetChanged()
     }
 
     companion object {
