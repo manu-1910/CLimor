@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.limor.app.R
 import com.limor.app.databinding.ActivityChatBinding
 import com.limor.app.dm.ChatSessionWithUser
 import com.limor.app.dm.ChatWithData
@@ -88,7 +89,7 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun reportGenericError() {
-        Toast.makeText(this, "Could not start chat. Please try later.", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, getString(R.string.generic_chat_error_message), Toast.LENGTH_LONG).show()
     }
 
     private fun scrollChatToBottom() {

@@ -689,6 +689,7 @@
     <string name="no_messages">No messages</string>
     <string name="no_messages_description">You currently have no direct messages. Try searching for followers to start messaging.</string>
     <string name="more_label">More</string>
+    <string name="generic_chat_error_message">Could not start chat. Please try later.</string>
 
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
