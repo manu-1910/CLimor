@@ -14,6 +14,9 @@ import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.net.Uri
 import android.webkit.URLUtil
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+import com.limor.app.dm.ChatMessage
 import com.limor.app.dm.ChatSessionWithUser
 import com.limor.app.dm.ChatTarget
 import com.limor.app.dm.ChatWithData
@@ -24,8 +27,20 @@ import java.text.SimpleDateFormat
 class ChatAdapter(
     private val context: Context,
     private var chatData: ChatWithData
-) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallback()) {
+
+    init {
+        submitList(chatData.messages)
+    }
+
+    private class DiffCallback : DiffUtil.ItemCallback<ChatMessage>() {
+
+        override fun areItemsTheSame(oldItem: ChatMessage, newItem: ChatMessage) =
+            oldItem.id == newItem.id
+
+        override fun areContentsTheSame(oldItem: ChatMessage, newItem: ChatMessage) =
+            oldItem == newItem
+    }
 
     inner class ViewHolderMe(view: View) : RecyclerView.ViewHolder(view) {
         val message = view.findViewById(R.id.message) as TextView
@@ -36,19 +51,19 @@ class ChatAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val layout = LayoutInflater
+            .from(parent.context)
+            .inflate(
+                if (viewType == TYPE_ME) R.layout.item_chat_me else R.layout.item_chat_other,
+                parent,
+                false
+            )
+
         if (viewType == TYPE_ME) {
-            return ViewHolderMe(
-                LayoutInflater
-                    .from(parent.context)
-                    .inflate(R.layout.item_chat_me, parent, false)
-            )
-        } else {
-            return ViewHolderOther(
-                LayoutInflater
-                    .from(parent.context)
-                    .inflate(R.layout.item_chat_other, parent, false)
-            )
+            return ViewHolderMe(layout)
         }
+
+        return ViewHolderOther(layout)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -85,11 +100,11 @@ class ChatAdapter(
         }
     }
 
-    override fun getItemCount() = chatData.messages.size
+    override fun getItemCount() = currentList.size
 
     fun setChatData(data: ChatWithData) {
         chatData = data
-        notifyDataSetChanged()
+        submitList(data.messages)
     }
 
     companion object {
