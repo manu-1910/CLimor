@@ -33,7 +33,6 @@ class ChatAdapter(
 
     inner class ViewHolderOther(view: View) : RecyclerView.ViewHolder(view) {
         val message = view.findViewById(R.id.message) as TextView
-        val profile = view.findViewById(R.id.profile) as ImageView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -66,7 +65,6 @@ class ChatAdapter(
         } else {
             val holder = viewHolder as ViewHolderOther
             holder.message.text = message.messageContent
-            holder.profile.loadCircleImage(chatData.sessionWithUser.user.limorProfileUrl)
         }
         viewHolder.itemView.setOnClickListener {
             if (URLUtil.isValidUrl(message.messageContent)) {
