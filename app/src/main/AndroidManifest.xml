@@ -45,6 +45,7 @@
         </activity>
 
         <activity android:name=".dm.ui.ChatActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             android:theme="@style/MaterialMainTheme.FullScreen" />
 
         <meta-data
