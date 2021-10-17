@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:windowSoftInputMode="adjustResize"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -43,7 +43,21 @@
 
     <View
         android:id="@+id/delimiterTop"
-        android:layout_below="@+id/layoutHeaderBack"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F0F3F8" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerChat"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        app:stackFromEnd="true" />
+
+    <View
+        android:id="@+id/delimiterBottom"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#F0F3F8" />
@@ -52,7 +66,6 @@
         android:id="@+id/bottomTextEntry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:padding="20dp">
 
@@ -85,21 +98,5 @@
 
     </LinearLayout>
 
-    <View
-        android:id="@+id/delimiterBottom"
-        android:layout_above="@+id/bottomTextEntry"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#F0F3F8" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerChat"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        app:stackFromEnd="true"
-        android:layout_above="@id/delimiterBottom"
-        android:layout_below="@+id/delimiterTop" />
-
-</RelativeLayout>
+</LinearLayout>
