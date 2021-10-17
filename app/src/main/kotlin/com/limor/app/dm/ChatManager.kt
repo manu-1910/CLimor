@@ -65,6 +65,9 @@ class ChatManager @Inject constructor(
 
     fun loginCurrentUser() {
         val limorUserId = PrefsHandler.getCurrentUserId(context)
+        if (limorUserId == 0) {
+            return
+        }
         val peerId = "${BuildConfig.CHAT_USER_ID_PREFIX}_$limorUserId"
         println("Agora1: Logging in current user $limorUserId as $peerId")
         chatScope.launch {
@@ -231,7 +234,7 @@ class ChatManager @Inject constructor(
 
     override fun onTokenExpired() {
         // When the token has expired we need to re-login and cannot just refresh it
-        // TODO login
+        loginCurrentUser()
     }
 
     override fun onImageMessageReceivedFromPeer(p0: RtmImageMessage?, p1: String?) {
