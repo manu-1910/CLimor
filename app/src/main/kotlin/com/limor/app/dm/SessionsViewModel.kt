@@ -120,7 +120,8 @@ class SessionsViewModel @Inject constructor(
                 chatRepository.addMyMessage(content, session)
 
                 val peerId = "${BuildConfig.CHAT_USER_ID_PREFIX}_${session.user.limorUserId}"
-                chatManager.sendPeerMessage(peerId, content)
+                val result = chatManager.sendPeerMessage(peerId, content)
+                println("Result from sending message: $result")
             }
         }
     }
