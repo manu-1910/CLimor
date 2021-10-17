@@ -46,11 +46,7 @@ class ChatManager @Inject constructor(
         val appID = context.getString(R.string.agora_app_id)
         println("Will start agora client with app id - $appID")
         try {
-            rtmClient = RtmClient.createInstance(context, appID, this).also {
-                // if (BuildConfig.DEBUG) {
-                    // it.setParameters("{\"rtm.log_filter\": 65535}")
-                // }
-            }
+            rtmClient = RtmClient.createInstance(context, appID, this)
 
         } catch (e: Exception) {
             Timber.e(Log.getStackTraceString(e))
@@ -71,31 +67,30 @@ class ChatManager @Inject constructor(
         val peerId = "${BuildConfig.CHAT_USER_ID_PREFIX}_$limorUserId"
         println("Agora1: Logging in current user $limorUserId as $peerId")
         chatScope.launch {
-            ensureToken()?.let {
+            getNewToken()?.let {
                 println("Agora1: Got new token $it, now logging in.")
+                mToken = it
                 login(it, peerId)
             }
         }
     }
 
-    private suspend fun ensureToken(): String? {
-        if (null == mToken) {
-            mLastTokenFetchTime = System.currentTimeMillis()
-            return generalInfoRepository.getMessagingToken()
+    private suspend fun refreshCurrentToken() {
+        val token = mToken ?: return
+        val oneHour = 1 * 60 * 60 * 1000
+        val delta = System.currentTimeMillis() - mLastTokenFetchTime
+        if (delta > oneHour) {
+            // more than 1 hour since the last refresh, so refresh the token
+            refresh(token)
         }
-
-        mToken?.let {
-            if (mLastTokenFetchTime > 1 * 60 * 60 * 1000) {
-                // more than 1 hour since the last refresh, so refresh the token
-                refresh(it)
-            }
-            return it
-        }
-
-        return null
     }
 
-    suspend fun login(token: String, userId: String): Int = suspendCoroutine { cont ->
+    private suspend fun getNewToken(): String? {
+        mLastTokenFetchTime = System.currentTimeMillis()
+        return generalInfoRepository.getMessagingToken()
+    }
+
+    private suspend fun login(token: String, userId: String): Int = suspendCoroutine { cont ->
         val client = rtmClient
         if (client == null) {
             cont.resume(-1)
@@ -114,7 +109,7 @@ class ChatManager @Inject constructor(
         })
     }
 
-    suspend fun refresh(token: String): Int = suspendCoroutine { cont ->
+    private suspend fun refresh(token: String): Int = suspendCoroutine { cont ->
         val client = rtmClient
         if (client == null) {
             cont.resume(-1)
@@ -122,17 +117,24 @@ class ChatManager @Inject constructor(
         }
         client.renewToken(token, object : ResultCallback<Void?> {
             override fun onSuccess(responseInfo: Void?) {
+                mLastTokenFetchTime = System.currentTimeMillis()
+                println("Agora refresh success")
                 cont.resume(0)
             }
 
             override fun onFailure(errorInfo: ErrorInfo) {
-                Timber.i("Agora login failed: %s", errorInfo.errorCode)
+                Timber.i("Agora renewToken failed: %s", errorInfo.errorCode)
                 cont.resume(errorInfo.errorCode)
             }
         })
     }
 
-    suspend fun sendPeerMessage(peerId: String, message: String): Int = suspendCoroutine { cont ->
+    suspend fun sendPeerMessage(peerId: String, message: String): Int {
+        refreshCurrentToken()
+        return sendMessage(peerId, message)
+    }
+
+    private suspend fun sendMessage(peerId: String, message: String): Int = suspendCoroutine { cont ->
         val client = rtmClient
         if (client == null) {
             cont.resume(-1)
@@ -140,7 +142,6 @@ class ChatManager @Inject constructor(
         }
         val rtmMessage = client.createMessage()
         rtmMessage.text = message
-
         client.sendMessageToPeer(peerId, rtmMessage, sendMsgOptions,
             object : ResultCallback<Void?> {
                 override fun onSuccess(aVoid: Void?) {
@@ -148,7 +149,7 @@ class ChatManager @Inject constructor(
                 }
 
                 override fun onFailure(errorInfo: ErrorInfo) {
-                    println("Agora1: Error Sending Message -> ${errorInfo}")
+                    println("Agora1: Error Sending Message -> $errorInfo")
                     cont.resume(errorInfo.errorCode)
                 }
             })
