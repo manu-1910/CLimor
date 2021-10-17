@@ -41,7 +41,7 @@ class ChatActivity : AppCompatActivity() {
     private var chatAdapter: ChatAdapter? = null
     private var chatSession: ChatSessionWithUser? = null
 
-    private var shouldScrollToBottom = true;
+    private var shouldScrollToBottom = false;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,24 +97,31 @@ class ChatActivity : AppCompatActivity() {
         if (ca.itemCount == 0) {
             return
         }
-        binding.recyclerChat.post {
-            binding.recyclerChat.scrollToPosition(ca.itemCount - 1);
-        }
+        binding.recyclerChat.smoothScrollToPosition(ca.itemCount - 1)
     }
 
+    private fun registerAdapterObserver() {
+        chatAdapter?.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                binding.recyclerChat.scrollToPosition(positionStart)
+            }
+        })
+    }
     private fun onChatData(chatData: ChatWithData) {
         println("ZZZZ Got chat data with ${chatData.messages.size} messages")
         chatSession = chatData.sessionWithUser
 
         if (null == chatAdapter) {
-            chatAdapter = ChatAdapter(
-                this,
-                chatData
-            )
+            chatAdapter = ChatAdapter(this, chatData)
+            registerAdapterObserver()
+
             binding.recyclerChat.adapter = chatAdapter
+            scrollChatToBottom()
+
         } else {
-            shouldScrollToBottom = true
             chatAdapter?.setChatData(chatData)
+            binding.root.requestLayout()
         }
 
         if (!hasSetHeader) {
@@ -134,25 +141,23 @@ class ChatActivity : AppCompatActivity() {
         val linearLayoutManager = object : LinearLayoutManager(baseContext, VERTICAL, false) {
             override fun onLayoutCompleted(state: RecyclerView.State?) {
                 super.onLayoutCompleted(state)
-                if (shouldScrollToBottom) {
-                    scrollChatToBottom()
-                    println("scrolling in onLayoutComplete")
-                }
-                shouldScrollToBottom = false
+
             }
         }
-        binding.recyclerChat.layoutManager = linearLayoutManager
+        binding.recyclerChat.apply {
+            setHasFixedSize(true)
+            layoutManager = linearLayoutManager
+            addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
+                if (bottom < oldBottom) {
+                    scrollChatToBottom()
+                }
+            }
+        }
 
         binding.buttonBack.setOnClickListener {
             finish()
         }
 
-        binding.editMessageText.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                shouldScrollToBottom = true
-                scrollChatToBottom()
-            }
-        }
         binding.editMessageText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
             }
@@ -173,7 +178,6 @@ class ChatActivity : AppCompatActivity() {
             val messageText = binding.editMessageText.text.toString()
             binding.editMessageText.setText("")
 
-            shouldScrollToBottom = true
             chat.addMyMessage(session, messageText)
         }
     }
