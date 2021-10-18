@@ -92,12 +92,15 @@ class ChatActivity : AppCompatActivity() {
         Toast.makeText(this, getString(R.string.generic_chat_error_message), Toast.LENGTH_LONG).show()
     }
 
-    private fun scrollChatToBottom() {
+    private fun scrollChatToBottom(smooth: Boolean = true) {
         val ca = chatAdapter ?: return
         if (ca.itemCount == 0) {
             return
         }
-        binding.recyclerChat.smoothScrollToPosition(ca.itemCount - 1)
+        binding.recyclerChat.apply {
+            val position = ca.itemCount - 1
+            if (smooth) smoothScrollToPosition(position) else scrollToPosition(position)
+        }
     }
 
     private fun registerAdapterObserver() {
@@ -114,14 +117,13 @@ class ChatActivity : AppCompatActivity() {
 
         if (null == chatAdapter) {
             chatAdapter = ChatAdapter(this, chatData)
-            registerAdapterObserver()
 
             binding.recyclerChat.adapter = chatAdapter
-            scrollChatToBottom()
+            scrollChatToBottom(false)
+            registerAdapterObserver()
 
         } else {
             chatAdapter?.setChatData(chatData)
-            binding.root.requestLayout()
         }
 
         if (!hasSetHeader) {
