@@ -20,5 +20,8 @@ data class ChatSession(
     var lastMessageDate: Calendar = Calendar.getInstance(),
 
     @ColumnInfo(name = "last_message_content")
-    var lastMessageContent: String
+    var lastMessageContent: String,
+
+    @ColumnInfo(name = "draft_content")
+    var draftContent: String = ""
 )
