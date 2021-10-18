@@ -706,5 +706,7 @@
     <string name="patron_carousel_slide_3_title">Freedom to <font fgcolor='#F9BB4B'>monetize</font> your content</string>
     <string name="patron_carousel_slide_approved_title">Congratulations! Your request has been approved.</string>
     <string name="requesting">Requesting...</string>
+    <string name="patron_categories">Patron Categories</string>
+    <string name="patron_languages">Patron Languages</string>
 
 </resources>

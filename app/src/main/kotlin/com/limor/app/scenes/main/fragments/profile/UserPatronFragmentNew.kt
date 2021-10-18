@@ -240,13 +240,13 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
                 "APPROVED" -> {
                     //Should setup Limor patron
 
-                    /*val intent = Intent(requireContext(), PatronSetupActivity::class.java)
+                    val intent = Intent(requireContext(), PatronSetupActivity::class.java)
                     intent.extras.apply {
                         "user" to user
                     }
-                    startActivity(intent)*/
+                    startActivity(intent)
 
-                    binding.root.snackbar("Plans Will be available soon")
+                   // binding.root.snackbar("Plans Will be available soon")
 
 
                 }

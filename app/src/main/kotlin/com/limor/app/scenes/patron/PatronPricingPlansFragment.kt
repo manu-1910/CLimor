@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.android.billingclient.api.*
 import com.limor.app.R
 import com.limor.app.databinding.FragmentPatronPricingPlansBinding
@@ -98,6 +99,10 @@ class PatronPricingPlansFragment() : Fragment() {
         setupViewPager()
         setBillingClient()
         startConnectingToClient()
+
+        binding.continueButton.setOnClickListener {
+            findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
+        }
     }
 
     private fun startConnectingToClient() {
