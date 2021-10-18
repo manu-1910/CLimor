@@ -125,7 +125,11 @@ class ChatActivity : AppCompatActivity() {
             scrollChatToBottom(false)
             registerAdapterObserver()
 
-            binding.editMessageText.setText(chatData.sessionWithUser.session.draftContent)
+            binding.editMessageText.apply {
+                val text = chatData.sessionWithUser.session.draftContent
+                setText(text)
+                setSelection(text.length)
+            }
 
         } else {
             chatAdapter?.setChatData(chatData)
