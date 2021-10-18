@@ -3,8 +3,6 @@ package com.limor.app.dm.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -20,12 +18,15 @@ import com.limor.app.dm.ChatWithData
 import com.limor.app.dm.SessionsViewModel
 import com.limor.app.extensions.loadCircleImage
 import dagger.android.AndroidInjection
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import reactivecircus.flowbinding.android.widget.TextChangeEvent
+import reactivecircus.flowbinding.android.widget.textChangeEvents
 import javax.inject.Inject
 
+@FlowPreview
 class ChatActivity : AppCompatActivity() {
 
     private var coroutineJob: Job = Job()
@@ -89,7 +90,8 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun reportGenericError() {
-        Toast.makeText(this, getString(R.string.generic_chat_error_message), Toast.LENGTH_LONG).show()
+        Toast.makeText(this, getString(R.string.generic_chat_error_message), Toast.LENGTH_LONG)
+            .show()
     }
 
     private fun scrollChatToBottom(smooth: Boolean = true) {
@@ -111,6 +113,7 @@ class ChatActivity : AppCompatActivity() {
             }
         })
     }
+
     private fun onChatData(chatData: ChatWithData) {
         println("ZZZZ Got chat data with ${chatData.messages.size} messages")
         chatSession = chatData.sessionWithUser
@@ -121,6 +124,8 @@ class ChatActivity : AppCompatActivity() {
             binding.recyclerChat.adapter = chatAdapter
             scrollChatToBottom(false)
             registerAdapterObserver()
+
+            binding.editMessageText.setText(chatData.sessionWithUser.session.draftContent)
 
         } else {
             chatAdapter?.setChatData(chatData)
@@ -137,6 +142,29 @@ class ChatActivity : AppCompatActivity() {
             binding.textTitle.text = it.limorDisplayName
             binding.profile.loadCircleImage(it.limorProfileUrl)
         }
+    }
+
+    private fun enableSendButton(text: String) {
+        val enable = text.isNotEmpty()
+        binding.buttonSendMessage.apply {
+            isEnabled = enable
+            isActivated = enable
+        }
+    }
+
+    private fun saveDraft(text: String) {
+        val session = chatSession?.session ?: return
+        println("Will set draft to $text")
+        chat.setDraft(session, text)
+    }
+
+    private fun listenToEditTextChanges() {
+        binding.editMessageText
+            .textChangeEvents()
+            .onEach { event -> enableSendButton(event.text.toString()) }
+            .debounce(draftDebounceTimeMillis)
+            .onEach { event -> saveDraft(event.text.toString()) }
+            .launchIn(lifecycleScope)
     }
 
     private fun setViews() {
@@ -161,19 +189,7 @@ class ChatActivity : AppCompatActivity() {
             finish()
         }
 
-        binding.editMessageText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-            }
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-            }
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                val enable = s.isNotEmpty()
-                binding.buttonSendMessage.apply {
-                    isEnabled = enable
-                    isActivated = enable
-                }
-            }
-        })
+        listenToEditTextChanges()
 
         binding.buttonSendMessage.setOnClickListener {
             val session = chatSession ?: return@setOnClickListener
@@ -192,6 +208,8 @@ class ChatActivity : AppCompatActivity() {
 
     companion object {
         const val KEY_LIMOR_USER_ID = "KEY_LIMOR_USER_ID"
+
+        const val draftDebounceTimeMillis = 500L
 
         fun start(context: Context, limorUserId: Int) {
             Intent(context, ChatActivity::class.java).apply {
