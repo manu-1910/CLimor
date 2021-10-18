@@ -154,6 +154,9 @@ class ChatActivity : AppCompatActivity() {
 
     private fun saveDraft(text: String) {
         val session = chatSession?.session ?: return
+        if (session.draftContent.equals(text)) {
+            return
+        }
         println("Will set draft to $text")
         chat.setDraft(session, text)
     }
