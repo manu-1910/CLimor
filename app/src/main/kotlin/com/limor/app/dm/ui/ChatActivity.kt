@@ -146,6 +146,7 @@ class ChatActivity : AppCompatActivity() {
 
             }
         }
+        linearLayoutManager.stackFromEnd = true
         binding.recyclerChat.apply {
             setHasFixedSize(true)
             layoutManager = linearLayoutManager
