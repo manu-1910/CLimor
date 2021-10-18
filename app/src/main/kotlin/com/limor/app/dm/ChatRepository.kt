@@ -20,7 +20,13 @@ class ChatRepository @Inject constructor(
 
         session.lastMessageDate = Calendar.getInstance()
         session.lastMessageContent = chatMessage.messageContent
+        session.draftContent = ""
 
+        chatDao.updateSession(session)
+    }
+
+    fun setDraft(session: ChatSession, content: String) {
+        session.draftContent = content
         chatDao.updateSession(session)
     }
 
