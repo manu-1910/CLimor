@@ -40,7 +40,7 @@ class TargetsAdapter(
         val target = targets[position]
 
         holder.name.text = target.limorDisplayName
-        holder.userName.text = "@${target.limorUserName}"
+        holder.userName.text = target.getInfo()
         holder.image.loadCircleImage(target.limorProfileUrl)
 
         holder.itemView.setOnClickListener {
