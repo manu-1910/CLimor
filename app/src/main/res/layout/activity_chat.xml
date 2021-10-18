@@ -53,8 +53,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        app:stackFromEnd="true" />
+        android:paddingRight="20dp" />
 
     <View
         android:id="@+id/delimiterBottom"
