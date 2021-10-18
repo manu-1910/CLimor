@@ -50,7 +50,7 @@ class SessionsViewModel @Inject constructor(
             val session = ChatSession(
                 id = 0,
                 chatUserId = chatUser.id,
-                lastMessageContent = message
+                lastMessageContent = message,
             )
             val id = chatRepository.insertSession(session)
             session.id = id.toInt()
@@ -151,6 +151,14 @@ class SessionsViewModel @Inject constructor(
                     share(it, url)
                 }
                 cont.resume(true)
+            }
+        }
+    }
+
+    fun setDraft(session: ChatSession, text: String) {
+        viewModelScope.launch {
+            withContext(dispatcherProvider.io) {
+                chatRepository.setDraft(session, text)
             }
         }
     }
