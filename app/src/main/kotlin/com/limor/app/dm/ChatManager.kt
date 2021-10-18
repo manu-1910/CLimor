@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.Exception
 import java.lang.RuntimeException
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
@@ -41,6 +42,7 @@ class ChatManager @Inject constructor(
     }
 
     private val messageQueue = mutableListOf<AddMessageJob>()
+    private val processing = AtomicBoolean(false)
 
     init {
         val appID = context.getString(R.string.agora_app_id)
@@ -134,26 +136,27 @@ class ChatManager @Inject constructor(
         return sendMessage(peerId, message)
     }
 
-    private suspend fun sendMessage(peerId: String, message: String): Int = suspendCoroutine { cont ->
-        val client = rtmClient
-        if (client == null) {
-            cont.resume(-1)
-            return@suspendCoroutine
-        }
-        val rtmMessage = client.createMessage()
-        rtmMessage.text = message
-        client.sendMessageToPeer(peerId, rtmMessage, sendMsgOptions,
-            object : ResultCallback<Void?> {
-                override fun onSuccess(aVoid: Void?) {
-                    cont.resume(RtmStatusCode.PeerMessageError.PEER_MESSAGE_ERR_OK)
-                }
+    private suspend fun sendMessage(peerId: String, message: String): Int =
+        suspendCoroutine { cont ->
+            val client = rtmClient
+            if (client == null) {
+                cont.resume(-1)
+                return@suspendCoroutine
+            }
+            val rtmMessage = client.createMessage()
+            rtmMessage.text = message
+            client.sendMessageToPeer(peerId, rtmMessage, sendMsgOptions,
+                object : ResultCallback<Void?> {
+                    override fun onSuccess(aVoid: Void?) {
+                        cont.resume(RtmStatusCode.PeerMessageError.PEER_MESSAGE_ERR_OK)
+                    }
 
-                override fun onFailure(errorInfo: ErrorInfo) {
-                    println("Agora1: Error Sending Message -> $errorInfo")
-                    cont.resume(errorInfo.errorCode)
-                }
-            })
-    }
+                    override fun onFailure(errorInfo: ErrorInfo) {
+                        println("Agora1: Error Sending Message -> $errorInfo")
+                        cont.resume(errorInfo.errorCode)
+                    }
+                })
+        }
 
     suspend fun logout() {
         chatRepository.clearAllData(context)
@@ -173,13 +176,15 @@ class ChatManager @Inject constructor(
             if (user == null) {
                 return null;
             } else {
-                chatRepository.insertChatUser(ChatUser(
-                    id = 0,
-                    limorUserId = user.id,
-                    limorUserName = user.username,
-                    limorDisplayName = user.getFullName(),
-                    limorProfileUrl = user.getAvatarUrl()
-                ))
+                chatRepository.insertChatUser(
+                    ChatUser(
+                        id = 0,
+                        limorUserId = user.id,
+                        limorUserName = user.username,
+                        limorDisplayName = user.getFullName(),
+                        limorProfileUrl = user.getAvatarUrl()
+                    )
+                )
                 val leanUser = LeanUser(
                     limorUserId = id,
                     userName = user.username,
@@ -192,7 +197,8 @@ class ChatManager @Inject constructor(
         }
     }
 
-    @Synchronized private suspend fun addMessage(text: String, peerId: String) {
+    @Synchronized
+    private suspend fun addMessage(text: String, peerId: String) {
         var session = chatRepository.getSessionByUserChatId(peerId)
 
         if (session == null) {
@@ -214,12 +220,22 @@ class ChatManager @Inject constructor(
     }
 
     private fun processQueue() {
+        if (processing.get()) {
+            println("Not processing because already processing.")
+            return
+        }
+        processing.set(true)
         synchronized(this) {
-            val first = messageQueue.firstOrNull() ?: return
             chatScope.launch {
-                addMessage(first.text, first.peerId)
-                messageQueue.removeAt(0)
-                processQueue()
+                while (true) {
+                    val first = messageQueue.firstOrNull()
+                    if (first == null) {
+                        processing.set(false)
+                        return@launch
+                    }
+                    addMessage(first.text, first.peerId)
+                    messageQueue.removeAt(0)
+                }
             }
         }
     }
