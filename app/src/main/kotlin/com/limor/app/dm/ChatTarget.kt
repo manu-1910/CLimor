@@ -7,6 +7,7 @@ data class ChatTarget(
     val limorProfileUrl: String?,
     val limorUserName: String?,
     val limorDisplayName: String?,
+    val lastMessage: String = ""
 ) {
     companion object {
         fun fromSearch(follower: SearchFollowersQuery.SearchFollower) = ChatTarget(
@@ -20,7 +21,10 @@ data class ChatTarget(
             limorUserId = sessionWithUser.user.limorUserId,
             limorUserName = sessionWithUser.user.limorUserName,
             limorDisplayName = sessionWithUser.user.limorDisplayName,
-            limorProfileUrl = sessionWithUser.user.limorProfileUrl
+            limorProfileUrl = sessionWithUser.user.limorProfileUrl,
+            lastMessage = sessionWithUser.session.lastMessageContent
         )
     }
+
+    fun getInfo() = if (lastMessage.isBlank()) "@${limorUserName}" else lastMessage
 }
