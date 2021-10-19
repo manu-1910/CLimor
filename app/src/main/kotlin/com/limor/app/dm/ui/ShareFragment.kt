@@ -129,11 +129,14 @@ class ShareFragment : BaseFragment() {
 
         Firebase.dynamicLinks.shortLinkAsync {
             longLink = dynamicLink.uri
-        }.addOnSuccessListener { (shortLink, flowChartLink) ->
+        }.addOnSuccessListener { (shortLink, _) ->
             setShortLink(shortLink.toString())
 
         }.addOnFailureListener {
             Timber.d("Failed in creating short dynamic link")
+            binding.root.postDelayed({
+                generateLink()
+            }, linkGenerationRetryIntervalMillis)
         }
     }
 
@@ -259,7 +262,7 @@ class ShareFragment : BaseFragment() {
         onShared?.invoke(
             ShareResult(
                 hasShared = true,
-                newSharesCount = newSharesCount,
+                newSharesCount = 1,
                 shareUrl = mShortLink
             )
         )
@@ -330,6 +333,8 @@ class ShareFragment : BaseFragment() {
     companion object {
         val TAG = ShareFragment::class.qualifiedName
         private const val KEY_PODCAST = "KEY_PODCAST"
+        private const val linkGenerationRetryIntervalMillis = 500L
+
         fun newInstance(cast: CastUIModel): ShareFragment {
             return ShareFragment().apply {
                 arguments = bundleOf(KEY_PODCAST to cast)
