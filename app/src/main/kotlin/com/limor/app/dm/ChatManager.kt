@@ -48,7 +48,9 @@ class ChatManager @Inject constructor(
         val appID = context.getString(R.string.agora_app_id)
         println("Will start agora client with app id - $appID")
         try {
-            rtmClient = RtmClient.createInstance(context, appID, this)
+            rtmClient = RtmClient.createInstance(context, appID, this).also {
+                it.setLogFilter(RtmClient.LOG_FILTER_OFF)
+            }
 
         } catch (e: Exception) {
             Timber.e(Log.getStackTraceString(e))
