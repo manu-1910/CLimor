@@ -12,12 +12,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:elevation="0dp"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
+            android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/sign_in_new_background"
@@ -33,7 +35,18 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
+
+
         </com.google.android.material.appbar.MaterialToolbar>
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_user_settings"
+            style="@style/Widget.AppCompat.Toolbar.Button.Navigation"
+            android:layout_width="@dimen/toolbar_button_size"
+            android:layout_height="@dimen/toolbar_button_size"
+            android:layout_gravity="right"
+            android:tint="@color/grayWave"
+            app:srcCompat="@drawable/icon_info" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

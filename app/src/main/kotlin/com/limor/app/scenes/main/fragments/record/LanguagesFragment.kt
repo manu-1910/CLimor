@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
@@ -23,6 +24,12 @@ import com.limor.app.scenes.main.viewmodels.LanguagesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.MAIN
 import kotlinx.android.synthetic.main.fragment_languages.*
+import kotlinx.android.synthetic.main.fragment_languages.btnContinue
+import kotlinx.android.synthetic.main.fragment_languages.cgLanguages
+import kotlinx.android.synthetic.main.fragment_languages.clMain
+import kotlinx.android.synthetic.main.fragment_languages.etSearchLanguage
+import kotlinx.android.synthetic.main.fragment_languages.topAppBar
+import kotlinx.android.synthetic.main.fragment_patron_languages.*
 import timber.log.Timber
 import javax.inject.Inject
 
