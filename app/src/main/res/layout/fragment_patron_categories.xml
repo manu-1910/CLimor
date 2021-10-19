@@ -11,17 +11,17 @@
         android:id="@+id/appBarLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:elevation="0dp"
         android:orientation="horizontal"
+        app:elevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
-            android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="?attr/actionBarSize"
+            android:layout_weight="1"
             android:background="@color/sign_in_new_background"
             app:navigationIcon="@drawable/ic_navigate_before_black">
 
@@ -35,6 +35,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </com.google.android.material.appbar.MaterialToolbar>
+
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btn_user_settings"
             style="@style/Widget.AppCompat.Toolbar.Button.Navigation"
@@ -63,9 +64,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:chipSpacingHorizontal="16dp"
+            app:selectionRequired="true"
             app:singleLine="false"
-            app:singleSelection="true"
-            app:selectionRequired="true" />
+            app:singleSelection="true" />
     </ScrollView>
 
     <Button
@@ -75,11 +76,11 @@
         android:layout_marginStart="@dimen/marginTwenty"
         android:layout_marginEnd="@dimen/marginTwenty"
         android:layout_marginBottom="@dimen/margin48"
-        android:enabled="false"
-        android:textAllCaps="false"
-        android:fontFamily="@font/roboto_bold"
         android:background="@drawable/btn_primary_background"
+        android:enabled="false"
+        android:fontFamily="@font/roboto_bold"
         android:text="@string/continue_button"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

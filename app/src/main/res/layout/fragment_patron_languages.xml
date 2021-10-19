@@ -11,17 +11,17 @@
         android:id="@+id/appBarLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:elevation="0dp"
         android:orientation="horizontal"
+        app:elevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
-            android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:layout_weight="1"
             android:background="@color/sign_in_new_background"
             app:navigationIcon="@drawable/ic_navigate_before_black">
 
@@ -34,7 +34,6 @@
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
-
 
 
         </com.google.android.material.appbar.MaterialToolbar>
@@ -94,9 +93,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:chipSpacingHorizontal="16dp"
+            app:selectionRequired="true"
             app:singleLine="false"
-            app:singleSelection="true"
-            app:selectionRequired="true" />
+            app:singleSelection="true" />
     </ScrollView>
 
 
