@@ -75,10 +75,8 @@ class ChatSessionsFragment : BaseFragment() {
 
     private fun setViews() {
         binding.editSearch.onFocusChange { v, hasFocus ->
-            if (hasFocus) {
-                isSearching = true
-                ensureStateVisibility()
-            }
+            isSearching = hasFocus
+            ensureStateVisibility()
         }
 
         binding.editSearch.addTextChangedListener(object : TextWatcher {
