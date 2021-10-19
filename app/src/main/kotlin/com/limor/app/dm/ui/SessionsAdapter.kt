@@ -66,8 +66,14 @@ class SessionsAdapter(
     }
 
     companion object {
+        // It is OK to suppress the SimpleDateFormat linter because we don't need any month names or
+        // week names, but only numbers in both formats
+
+        @SuppressLint("SimpleDateFormat")
         private val hourFormat = SimpleDateFormat("HH:mm")
-        private val dateFormat = SimpleDateFormat("MMM dd")
+
+        @SuppressLint("SimpleDateFormat")
+        private val dateFormat = SimpleDateFormat("dd/MM/yy")
     }
 
 }
