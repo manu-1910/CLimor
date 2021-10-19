@@ -22,7 +22,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import reactivecircus.flowbinding.android.widget.TextChangeEvent
 import reactivecircus.flowbinding.android.widget.textChangeEvents
 import javax.inject.Inject
 
