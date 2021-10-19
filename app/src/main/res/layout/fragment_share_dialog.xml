@@ -157,7 +157,7 @@
             android:textAllCaps="false"
             android:textColor="@color/black"
             android:textSize="14sp"
-            android:text="@string/share_now_label"
+            android:text="@string/share_separately_label"
             tools:text="Share now" />
 
     </LinearLayout>

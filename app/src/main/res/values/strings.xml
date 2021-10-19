@@ -684,6 +684,7 @@
     <string name="share_message__with_format">Hey, check out this podcast: %s</string>
     <string name="share_search_placeholder">Search…</string>
     <string name="share_now_label">Share Now</string>
+    <string name="share_separately_label">Share Separately</string>
     <string name="share_with_label">Share with</string>
     <string name="messages_title">Messages</string>
     <string name="no_messages">No messages</string>
