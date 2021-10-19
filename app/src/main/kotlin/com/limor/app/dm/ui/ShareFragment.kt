@@ -107,7 +107,13 @@ class ShareFragment : BaseFragment() {
         fullShareAdapter.notifyDataSetChanged()
     }
 
-    private fun generateLink() {
+    private fun generateLink(retryCount: Int = 1) {
+        if (retryCount > 5) {
+            // TODO?
+            ShareDialog.DismissEvent.dismiss()
+            return
+        }
+
         val podcastLink = Constants.PODCAST_URL.format(cast.id)
 
         val dynamicLink = Firebase.dynamicLinks.dynamicLink {
@@ -135,7 +141,7 @@ class ShareFragment : BaseFragment() {
         }.addOnFailureListener {
             Timber.d("Failed in creating short dynamic link")
             binding.root.postDelayed({
-                generateLink()
+                generateLink(retryCount + 1)
             }, linkGenerationRetryIntervalMillis)
         }
     }
