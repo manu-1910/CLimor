@@ -678,6 +678,7 @@
 
     <string name="tos_title">Terms &amp; Conditions</string>
     <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="something_wrong">Something went wrong</string>
 
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
