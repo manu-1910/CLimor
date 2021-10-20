@@ -17,6 +17,7 @@ import android.text.style.BackgroundColorSpan
 
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import androidx.core.content.ContextCompat
 import com.limor.app.extensions.setHighlighted
 
 
@@ -28,7 +29,7 @@ class TargetsAdapter(
     RecyclerView.Adapter<TargetsAdapter.ViewHolder>() {
 
     private var term: String = ""
-    private val highlightColor = context.resources.getColor(R.color.textSecondary)
+    private val highlightColor = ContextCompat.getColor(context, R.color.textSecondary)
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val image = view.findViewById(R.id.person_image) as ImageView
