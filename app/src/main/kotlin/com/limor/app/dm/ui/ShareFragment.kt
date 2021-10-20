@@ -30,7 +30,9 @@ import com.limor.app.common.Constants
 import com.limor.app.dm.LeanUser
 import com.limor.app.dm.SessionsViewModel
 import com.limor.app.dm.ShareResult
+import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
+import kotlinx.android.synthetic.main.fragment_share_dialog.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -175,6 +177,7 @@ class ShareFragment : BaseFragment() {
         }
 
         binding.buttonBack.setOnClickListener {
+            binding.editSearch.hideKeyboard()
             showFullView(false)
         }
 
