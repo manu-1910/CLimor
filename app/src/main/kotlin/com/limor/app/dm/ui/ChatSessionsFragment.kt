@@ -30,6 +30,8 @@ class ChatSessionsFragment : BaseFragment() {
     private lateinit var targetsAdapter: TargetsAdapter
     private lateinit var sessionsAdapter: SessionsAdapter
 
+    private var searchText = ""
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -85,9 +87,8 @@ class ChatSessionsFragment : BaseFragment() {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                val term = s.toString()
-                targetsAdapter.setTerm(term)
-                chat.searchFollowers(s.toString())
+                searchText = s.toString()
+                chat.searchFollowers(searchText)
             }
         })
 
@@ -129,7 +130,7 @@ class ChatSessionsFragment : BaseFragment() {
     private fun setTargets(targets: List<ChatTarget>) {
         ensureStateVisibility()
         targetsAdapter.apply {
-            setChatTargets(targets)
+            setChatTargets(targets, searchText)
             notifyDataSetChanged()
         }
     }

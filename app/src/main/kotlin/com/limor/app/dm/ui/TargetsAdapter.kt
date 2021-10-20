@@ -11,6 +11,14 @@ import com.limor.app.R
 import android.content.Context
 import com.limor.app.dm.ChatTarget
 import com.limor.app.extensions.loadCircleImage
+import android.text.Spannable
+
+import android.text.style.BackgroundColorSpan
+
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import com.limor.app.extensions.setHighlighted
+
 
 class TargetsAdapter(
     private val context: Context,
@@ -20,6 +28,7 @@ class TargetsAdapter(
     RecyclerView.Adapter<TargetsAdapter.ViewHolder>() {
 
     private var term: String = ""
+    private val highlightColor = context.resources.getColor(R.color.textSecondary)
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val image = view.findViewById(R.id.person_image) as ImageView
@@ -39,7 +48,7 @@ class TargetsAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val target = targets[position]
 
-        holder.name.text = target.limorDisplayName
+        holder.name.setHighlighted(target.limorDisplayName ?: "", term, highlightColor)
         holder.userName.text = target.getInfo()
         holder.image.loadCircleImage(target.limorProfileUrl)
 
@@ -50,8 +59,9 @@ class TargetsAdapter(
 
     override fun getItemCount() = targets.size
 
-    fun setChatTargets(chatTargets: List<ChatTarget>) {
+    fun setChatTargets(chatTargets: List<ChatTarget>, searchText: String) {
         // TODO diff util
+        term = searchText
         targets = chatTargets
     }
 
