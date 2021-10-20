@@ -36,7 +36,8 @@
             android:hint="@string/share_search_placeholder"
             android:paddingLeft="16dp"
             android:paddingRight="48dp"
-            android:textColor="#91A2B2" />
+            android:textColorHint="@color/textSecondary"
+            android:textColor="@color/textPrimary" />
 
         <ImageView
             android:id="@+id/searchIcon"
