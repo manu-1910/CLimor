@@ -67,6 +67,7 @@
             android:id="@+id/patronPlansRV"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clipToPadding="false"
             tools:itemCount="3"
             tools:listitem="@layout/item_patron_plan"/>
 
@@ -254,6 +255,8 @@
                 android:gravity="start"
                 android:text="@string/plans_terms_text"
                 android:textColor="@color/grayWave"
+                android:autoLink="web"
+                android:linksClickable="true"
                 android:textSize="18sp"/>
             <!--Should set text from string plans_terms_text in respective class-->
         </RelativeLayout>
@@ -273,11 +276,14 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:id="@+id/ukAccountText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/accCheckBox"
                 android:fontFamily="@font/roboto"
                 android:gravity="start"
+                android:autoLink="web"
+                android:linksClickable="true"
                 android:textColor="@color/grayWave"
                 android:text="By Checking this box you confirm that you have a Bank account in UK"
                 android:textSize="14sp"/>

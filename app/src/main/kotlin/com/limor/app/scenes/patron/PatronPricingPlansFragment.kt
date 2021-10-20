@@ -2,6 +2,7 @@ package com.limor.app.scenes.patron
 
 import android.app.Activity
 import android.os.Bundle
+import android.text.Html
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -229,6 +230,13 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
 
     override fun onSelectedSkuChange(item: SkuDetails) {
         selectedSku = item
+        if(item.freeTrialPeriod.isNotEmpty()){
+            val termsEnd = getString(R.string.plans_terms_start)+getString(R.string.plans_terms_text)
+            val termsT = "After free trial end ${item.priceCurrencyCode} ${item.originalPrice}" + Html.fromHtml(termsEnd, Html.FROM_HTML_MODE_COMPACT)
+            binding.termsTV.text = termsT
+            binding.ukAccountText.text = getString(R.string.plans_terms_text)
+        }
+
     }
 
 

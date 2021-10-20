@@ -25,6 +25,11 @@ import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.MAIN
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_languages.*
+import kotlinx.android.synthetic.main.fragment_languages.btnContinue
+import kotlinx.android.synthetic.main.fragment_languages.clMain
+import kotlinx.android.synthetic.main.fragment_languages.topAppBar
+import kotlinx.android.synthetic.main.fragment_publish_categories.*
+import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -40,6 +45,7 @@ class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
     private val model: LanguagesViewModel by activityViewModels { viewModelFactory }
     private val publishViewModel: PublishViewModel by activityViewModels { viewModelFactory }
 
+    var lastCheckedIds = hashSetOf<Int>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -135,19 +141,33 @@ class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
         chip.apply {
             text = language.name
             MAIN {
-                isChecked = (lastCheckedId == chip.id)
+                isChecked =  lastCheckedIds.contains(chip.id)
             }
             setOnCheckedChangeListener { buttonView, isChecked ->
-                language.isSelected = isChecked
-                lastCheckedId = chip.id
+                val ids: List<Int> = cgCategories.checkedChipIds
+                Timber.d("$isChecked")
                 if (isChecked) {
-                    publishViewModel.languageSelected = text.toString()
-                    publishViewModel.languageCode = language.code
+                    language.isSelected = isChecked
+                    //Get all checked chips in the group
+                    if (ids.size > 5) {
+                        chip.isChecked = false //force to unchecked the chip
+                        chip.snackbar("You can only select 5 categories")
+                    }else{
+                       // lastCheckedIds.add(chip.id)
+                        language.language.code?.let {
+                            //publishViewModel.categorySelectedId = it
+                            publishViewModel.languageSelectedCodesList.add(it)
+                        }
+                    }
                 } else {
-                    lastCheckedId = View.NO_ID
+                    //lastCheckedId = View.NO_ID
+                    lastCheckedIds.remove(chip.id)
+                    chip.isChecked = false
+                    publishViewModel.languageSelectedCodesList.remove(language.code)
+                    // category.isSelected = false
+                    //model.updateCategoriesSelection()
                 }
-                Timber.d("Chip -> ${language.code} -- ${language.name}")
-                model.updateLanguagesSelection()
+                btnContinue.isEnabled = ids.size>=5
             }
         }
         return chip

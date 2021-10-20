@@ -144,8 +144,8 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
             //update categories
-
             Timber.d("Chip ${publishViewModel.categorySelectedIdsList}")
+            findNavController().navigate(R.id.action_fragmentPatronCategories_to_fragmentPatronLanguages)
 
         }
 
