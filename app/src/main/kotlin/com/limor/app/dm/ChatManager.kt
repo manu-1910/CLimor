@@ -227,16 +227,15 @@ class ChatManager @Inject constructor(
             return
         }
         processing.set(true)
-        synchronized(this) {
+        synchronized(messageQueue) {
             chatScope.launch {
                 while (true) {
-                    val first = messageQueue.firstOrNull()
+                    val first = messageQueue.removeFirstOrNull()
                     if (first == null) {
                         processing.set(false)
                         return@launch
                     }
                     addMessage(first.text, first.peerId)
-                    messageQueue.removeAt(0)
                 }
             }
         }
