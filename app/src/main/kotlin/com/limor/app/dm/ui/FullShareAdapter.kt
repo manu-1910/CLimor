@@ -10,8 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.R
 
 import android.content.Context
+import androidx.core.content.ContextCompat
 import com.limor.app.dm.LeanUser
 import com.limor.app.extensions.loadCircleImage
+import com.limor.app.extensions.setHighlighted
 import org.jetbrains.anko.backgroundResource
 
 
@@ -22,8 +24,9 @@ class FullShareAdapter(
 ) :
     RecyclerView.Adapter<FullShareAdapter.ViewHolder>() {
 
-    var leanUsers = mutableListOf<LeanUser>()
+    private var leanUsers = mutableListOf<LeanUser>()
     private var mFilter = ""
+    private val highlightColor = ContextCompat.getColor(context, R.color.textSecondary)
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val image = view.findViewById(R.id.imageUser) as ImageView
@@ -43,7 +46,12 @@ class FullShareAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val user = leanUsers[position]
 
-        holder.name.text = user.displayName
+        if (mFilter.isEmpty()) {
+            holder.name.text = user.displayName
+        } else {
+            holder.name.setHighlighted(user.displayName ?: "", mFilter, highlightColor)
+        }
+
         holder.userName.text = "@${user.userName}"
         holder.image.loadCircleImage(user.profileUrl)
 
