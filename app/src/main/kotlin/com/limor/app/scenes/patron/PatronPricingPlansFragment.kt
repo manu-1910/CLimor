@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.billingclient.api.*
 import com.limor.app.R
 import com.limor.app.databinding.FragmentPatronPricingPlansBinding
@@ -28,7 +29,9 @@ private const val ARG_PARAM2 = "param2"
  * Use the [PatronPricingPlansFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class PatronPricingPlansFragment() : Fragment() {
+class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickListener {
+    private lateinit var adapter: PricingPlansAdapter
+    private var selectedSku: SkuDetails? = null
     private lateinit var billingClient: BillingClient
     private lateinit var binding: FragmentPatronPricingPlansBinding
 
@@ -61,7 +64,7 @@ class PatronPricingPlansFragment() : Fragment() {
         // Ensure entitlement was not already granted for this purchaseToken.
         // Grant entitlement to the user.
 
-        Timber.d("PURCHASE ${purchase.purchaseToken.toString()}")
+        Timber.d("PURCHASE ${purchase.purchaseToken}")
         Timber.d("PURCHASE ${purchase.packageName}")
 
         val consumeParams =
@@ -86,10 +89,10 @@ class PatronPricingPlansFragment() : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentPatronPricingPlansBinding.inflate(inflater,container,false)
+        binding = FragmentPatronPricingPlansBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -101,7 +104,26 @@ class PatronPricingPlansFragment() : Fragment() {
         startConnectingToClient()
 
         binding.continueButton.setOnClickListener {
-            findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
+           // findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
+
+            selectedSku?.let {
+                val flowParams = BillingFlowParams.newBuilder()
+                    .setSkuDetails(it)
+                    .build()
+                Timber.d("In App Purchases Details ->  $it")
+                val responseCode = billingClient.launchBillingFlow(requireContext() as Activity,
+                    flowParams).responseCode
+
+                Timber.d("In App Purchases Details ->  $responseCode")
+            }
+
+        }
+
+        binding.accCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            binding.continueButton.isEnabled = isChecked && binding.termsCheckBox.isChecked
+        }
+        binding.termsCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            binding.continueButton.isEnabled = isChecked && binding.accCheckBox.isChecked
         }
     }
 
@@ -109,17 +131,17 @@ class PatronPricingPlansFragment() : Fragment() {
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
                 Timber.d("Billing Result -> ${billingResult.responseCode}")
-                if (billingResult.responseCode ==  BillingClient.BillingResponseCode.OK) {
+                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     // The BillingClient is ready. You can query purchases here.
                     lifecycleScope.launch {
                         querySkuDetails()
                     }
                 }
             }
+
             override fun onBillingServiceDisconnected() {
                 // Try to restart the connection on the next request to
                 // Google Play by calling the startConnection() method.
-
 
 
             }
@@ -135,7 +157,11 @@ class PatronPricingPlansFragment() : Fragment() {
 
     suspend fun querySkuDetails() {
         val skuList = ArrayList<String>()
+        skuList.add("com.limor.annual_plan")
         skuList.add("monthly_plan_199")
+        skuList.add("com.limor.quarterly_plan")
+
+
         val params = SkuDetailsParams.newBuilder()
         params.setSkusList(skuList).setType(BillingClient.SkuType.SUBS)
 
@@ -146,36 +172,32 @@ class PatronPricingPlansFragment() : Fragment() {
 
         Timber.d("Billing SKUs-> ${skuDetailsResult.skuDetailsList}")
 
-        skuDetailsResult.skuDetailsList?.let{
-            if(it.isNotEmpty()){
-                //TODO setup recyclerview here
-                val flowParams = BillingFlowParams.newBuilder()
-                    .setSkuDetails(it[0])
-                    .build()
-                Timber.d("In App Purchases Details ->  $it")
-                val responseCode = billingClient.launchBillingFlow(requireContext() as Activity, flowParams).responseCode
-
-                Timber.d("In App Purchases Details ->  $responseCode")
-
+        skuDetailsResult.skuDetailsList?.let {
+            if (it.isNotEmpty()) {
+                binding.patronPlansRV.layoutManager = LinearLayoutManager(requireContext())
+                adapter = PricingPlansAdapter(it, this)
+                binding.patronPlansRV.adapter = adapter
             }
         }
-
-        // Process the result.
     }
+
     private fun setupViewPager() {
-        val items : ArrayList<FragmentShortItemSlider> = getAdapterItems()
-        binding.pager.adapter = ShortPagerAdapter(items,childFragmentManager,lifecycle)
+        val items: ArrayList<FragmentShortItemSlider> = getAdapterItems()
+        binding.pager.adapter = ShortPagerAdapter(items, childFragmentManager, lifecycle)
         binding.indicator.setViewPager2(binding.pager)
     }
 
     private fun getAdapterItems(): ArrayList<FragmentShortItemSlider> {
-        val item1 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,R.drawable.ic_patron_welcome)
-        val item2 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,R.drawable.ic_patron_welcome)
-        val item3 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,R.drawable.ic_patron_welcome)
-        return arrayListOf(item1,item2,item3)
+        val item1 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,
+            R.drawable.ic_patron_welcome)
+        val item2 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,
+            R.drawable.ic_patron_welcome)
+        val item3 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,
+            R.drawable.ic_patron_welcome)
+        return arrayListOf(item1, item2, item3)
     }
 
-    companion  object {
+    companion object {
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
@@ -194,4 +216,20 @@ class PatronPricingPlansFragment() : Fragment() {
                 }
             }
     }
+
+    override fun onUserClicked(item: SkuDetails, position: Int) {
+
+        if(item.freeTrialPeriod.isNotEmpty()){
+            selectedSku = item
+            adapter.selectedSku = item.sku
+            adapter.notifyDataSetChanged()
+        }
+
+    }
+
+    override fun onSelectedSkuChange(item: SkuDetails) {
+        selectedSku = item
+    }
+
+
 }

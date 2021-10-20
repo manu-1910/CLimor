@@ -1,10 +1,11 @@
 package com.limor.app.scenes.patron.setup
 
+import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -19,7 +20,9 @@ import com.limor.app.scenes.main.viewmodels.PublishCategoriesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.BACKGROUND
 import com.limor.app.scenes.utils.MAIN
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_publish_categories.*
+import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -40,14 +43,9 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
     private val model: PublishCategoriesViewModel by activityViewModels { viewModelFactory }
     private val publishViewModel: PublishViewModel by activityViewModels { viewModelFactory }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_patron_categories, container, false)
@@ -63,9 +61,15 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
         setOnClickListeners()
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        AndroidSupportInjection.inject(this)
+    }
+
     override fun load() = model.downloadCategories()
 
     var lastCheckedId = View.NO_ID
+    var lastCheckedIds = hashSetOf<Int>()
 
     override val errorLiveData: LiveData<String>
         get() = model.categoryLiveDataError
@@ -85,16 +89,19 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
     }
 
     private fun createCategoriesArray(categories: List<CategoryWrapper>) {
-        cgCategories.isSingleSelection = true
+        cgCategories.isSingleSelection = false
         if (categories.isNotEmpty()) cgCategories.removeAllViews()
         BACKGROUND({
             val categoriesChips =
                 categories.map { category ->
                     getVariantChip(category)
                 }
-            MAIN { categoriesChips.forEach {
-                it.id = View.generateViewId()
-                cgCategories.addView(it) } }
+            MAIN {
+                categoriesChips.forEach {
+                    it.id = View.generateViewId()
+                    cgCategories.addView(it)
+                }
+            }
         })
     }
 
@@ -102,31 +109,44 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
         val chip = layoutInflater.inflate(R.layout.item_chip_category, null) as Chip
         chip.text = category.name
         MAIN {
-            chip.isChecked = (lastCheckedId == chip.id)
+            chip.isChecked = lastCheckedIds.contains(chip.id)
         }
         Timber.d("Chip -> ${category.categoryId} -- ${category.name}")
         chip.setOnCheckedChangeListener { buttonView, isChecked ->
-
+            val ids: List<Int> = cgCategories.checkedChipIds
+            Timber.d("$isChecked")
             if (isChecked) {
                 category.isSelected = isChecked
-                lastCheckedId = chip.id
-                publishViewModel.categorySelected = chip.text.toString()
-                category.categoryId?.let {
-                    publishViewModel.categorySelectedId = it
+                //Get all checked chips in the group
+                if (ids.size > 5) {
+                    chip.isChecked = false //force to unchecked the chip
+                    chip.snackbar("You can only select 5 categories")
+                }else{
+                    lastCheckedIds.add(chip.id)
+                    category.categoryId?.let {
+                        //publishViewModel.categorySelectedId = it
+                        publishViewModel.categorySelectedIdsList.add(it)
+                    }
                 }
-                model.updateCategoriesSelection()
-
-            }else{
+            } else {
                 lastCheckedId = View.NO_ID
-                model.updateCategoriesSelection()
+                lastCheckedIds.remove(chip.id)
+                chip.isChecked = false
+                publishViewModel.categorySelectedIdsList.remove(category.categoryId)
+                category.isSelected = false
+                //model.updateCategoriesSelection()
             }
+            btnContinue.isEnabled = ids.size>=5
         }
         return chip
     }
 
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
-            findNavController().popBackStack()
+            //update categories
+
+            Timber.d("Chip ${publishViewModel.categorySelectedIdsList}")
+
         }
 
         topAppBar.setNavigationOnClickListener {

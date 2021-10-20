@@ -1,5 +1,6 @@
 package com.limor.app.scenes.patron.setup
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -22,6 +23,7 @@ import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.main.viewmodels.LanguagesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.MAIN
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_languages.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -35,17 +37,13 @@ class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val model: LanguagesViewModel by activityViewModels {viewModelFactory}
+    private val model: LanguagesViewModel by activityViewModels { viewModelFactory }
     private val publishViewModel: PublishViewModel by activityViewModels { viewModelFactory }
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_patron_languages, container, false)
@@ -125,9 +123,13 @@ class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
         }
         chipsList.forEach {
             it.id = View.generateViewId()
-            cgLanguages.addView(it) }
+            cgLanguages.addView(it)
+        }
     }
-
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        AndroidSupportInjection.inject(this)
+    }
     private fun getVariantChip(language: LanguageWrapper): Chip {
         val chip = layoutInflater.inflate(R.layout.item_chip_category, null) as Chip
         chip.apply {
@@ -141,7 +143,7 @@ class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
                 if (isChecked) {
                     publishViewModel.languageSelected = text.toString()
                     publishViewModel.languageCode = language.code
-                }else{
+                } else {
                     lastCheckedId = View.NO_ID
                 }
                 Timber.d("Chip -> ${language.code} -- ${language.name}")

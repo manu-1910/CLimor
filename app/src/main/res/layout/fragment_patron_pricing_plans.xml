@@ -75,6 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
+            android:visibility="gone"
             android:background="@drawable/bg_round_plan_normal">
 
 
@@ -128,6 +129,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
+            android:visibility="gone"
             android:background="@drawable/bg_round_plan_normal">
 
 
@@ -181,6 +183,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
+            android:visibility="gone"
             android:background="@drawable/bg_round_plan_selected">
 
 
@@ -249,6 +252,7 @@
                 android:layout_toEndOf="@+id/termsCheckBox"
                 android:fontFamily="@font/roboto"
                 android:gravity="start"
+                android:text="@string/plans_terms_text"
                 android:textColor="@color/grayWave"
                 android:textSize="18sp"/>
             <!--Should set text from string plans_terms_text in respective class-->
@@ -294,6 +298,7 @@
             android:layout_marginBottom="36dp"
             android:text="@string/continue_button"
             android:textAllCaps="false"
+            android:enabled="false"
             android:textColor="@color/text_btn_primary_color"
             android:textSize="@dimen/textSize14" />
     </LinearLayout>

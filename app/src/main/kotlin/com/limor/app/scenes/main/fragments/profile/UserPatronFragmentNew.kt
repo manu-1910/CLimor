@@ -258,6 +258,10 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
                 }
             }
         }
+
+        binding.termsCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            binding.patronButton.isEnabled = isChecked
+        }
     }
 
 

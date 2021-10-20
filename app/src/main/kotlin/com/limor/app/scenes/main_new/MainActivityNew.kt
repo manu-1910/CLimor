@@ -81,7 +81,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
 
     lateinit var navController: NavController
 
-    private fun ensureSelected( current: Int, destinationId: Int) {
+    private fun ensureSelected(current: Int, destinationId: Int) {
         if (current != destinationId) {
             return
         }
@@ -98,7 +98,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         }
 
         // This allows for more control on what happens when the bottom bar buttons are clicked.
-        navigation.setOnItemSelectedListener(object: NavigationBarView.OnItemSelectedListener {
+        navigation.setOnItemSelectedListener(object : NavigationBarView.OnItemSelectedListener {
             override fun onNavigationItemSelected(item: MenuItem): Boolean {
                 if (item.itemId == navController.currentDestination?.id) {
                     return true

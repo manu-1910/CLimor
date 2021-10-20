@@ -35,6 +35,8 @@ private val publishRepository: PublishRepository
     get() = _publishResponseData
     var categorySelected: String = ""
     var categorySelectedId: Int = -1
+    var categorySelectedIdsList: ArrayList<Int> = arrayListOf()
+    var languageSelectedIdsList: ArrayList<Int> = arrayListOf()
     var languageSelected: String = ""
     var languageCode: String = ""
     var languageSelectedId: Int = 0

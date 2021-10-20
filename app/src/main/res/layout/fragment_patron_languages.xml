@@ -35,17 +35,15 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
-
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_user_settings"
+                style="@style/Widget.AppCompat.Toolbar.Button.Navigation"
+                android:layout_width="@dimen/toolbar_button_size"
+                android:layout_height="@dimen/toolbar_button_size"
+                android:layout_gravity="right"
+                android:tint="@color/grayWave"
+                app:srcCompat="@drawable/icon_info" />
         </com.google.android.material.appbar.MaterialToolbar>
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/btn_user_settings"
-            style="@style/Widget.AppCompat.Toolbar.Button.Navigation"
-            android:layout_width="@dimen/toolbar_button_size"
-            android:layout_height="@dimen/toolbar_button_size"
-            android:layout_gravity="right"
-            android:tint="@color/grayWave"
-            app:srcCompat="@drawable/icon_info" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
