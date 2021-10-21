@@ -18,8 +18,8 @@
             android:id="@+id/close_btn"
             android:layout_width="43dp"
             android:layout_height="43dp"
-            android:padding="12dp"
             android:layout_marginEnd="20dp"
+            android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_close_with_round_corners" />
@@ -51,16 +51,64 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/comments_list"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        app:layout_constraintBottom_toTopOf="@+id/entry_container"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4"
-        android:orientation="vertical"
-        android:background="@drawable/comments_background"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        android:background="@drawable/comments_background">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/noCommentsPlaceholder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="103dp"
+                android:layout_height="101dp"
+                android:src="@drawable/no_comments_placeholder" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:fontFamily="@font/roboto_bold"
+                android:minHeight="28dp"
+                android:text="@string/no_comments_title"
+                android:textAlignment="center"
+                android:textColor="@color/textPrimary"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/no_comments_hint"
+                android:textAlignment="center"
+                android:textColor="@color/textSecondary" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/comments_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    </RelativeLayout>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/entry_container"
@@ -72,17 +120,17 @@
 
         <View
             android:id="@+id/deli"
-            android:background="#f0f3f8"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
-            android:layout_height="1dp"/>
+            android:layout_height="1dp"
+            android:layout_marginBottom="16dp"
+            android:background="#f0f3f8"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.limor.app.scenes.utils.TextAndVoiceInput
             android:id="@+id/taviVoice"
-            android:layout_marginTop="13dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"
             app:layout_constraintTop_toBottomOf="@+id/deli" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

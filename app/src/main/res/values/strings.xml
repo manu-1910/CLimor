@@ -679,6 +679,8 @@
     <string name="tos_title">Terms &amp; Conditions</string>
     <string name="privacy_policy_title">Privacy Policy</string>
     <string name="something_wrong">Something went wrong</string>
+    <string name="no_comments_title">No Comments</string>
+    <string name="no_comments_hint">Be the first one to start conversation</string>
 
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
