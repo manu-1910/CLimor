@@ -24,6 +24,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.channels.FileChannel
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -137,7 +138,7 @@ class CommonsKt {
             return TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 dp,
-                context.resources.getDisplayMetrics()
+                context.resources.displayMetrics
             ).toInt()
         }
 
@@ -205,9 +206,15 @@ class CommonsKt {
         ) {
             if (primaryStatus) {
                 button.background = ContextCompat.getDrawable(
-                    button.context, R.drawable.bg_round_yellow_ripple)
-                    button.setTextColor(ContextCompat.getColor(button.context, R.color.brandSecondary500))
-                    button.text = button.context.getString(textPrimary)
+                    button.context, R.drawable.bg_round_yellow_ripple
+                )
+                button.setTextColor(
+                    ContextCompat.getColor(
+                        button.context,
+                        R.color.brandSecondary500
+                    )
+                )
+                button.text = button.context.getString(textPrimary)
             } else {
                 button.text = button.context.getString(textSecondary)
                 button.background = ContextCompat.getDrawable(
@@ -226,7 +233,8 @@ class CommonsKt {
         ) {
             if (primaryStatus) {
                 button.background = ContextCompat.getDrawable(
-                    button.context, R.drawable.bg_round_yellow_ripple)
+                    button.context, R.drawable.bg_round_yellow_ripple
+                )
                 button.setTextColor(ContextCompat.getColor(button.context, R.color.black))
                 button.text = button.context.getString(textPrimary)
             } else {
@@ -247,7 +255,8 @@ class CommonsKt {
         ) {
             if (primaryStatus) {
                 button.background = ContextCompat.getDrawable(
-                    button.context, R.drawable.bg_round_yellow_ripple)
+                    button.context, R.drawable.bg_round_yellow_ripple
+                )
                 button.setTextColor(ContextCompat.getColor(button.context, R.color.black))
                 button.text = button.context.getString(textPrimary)
             } else {
@@ -256,7 +265,12 @@ class CommonsKt {
                     button.context,
                     R.drawable.bg_round_bluish_ripple
                 )
-                button.setTextColor(ContextCompat.getColor(button.context, R.color.notification_divider))
+                button.setTextColor(
+                    ContextCompat.getColor(
+                        button.context,
+                        R.color.notification_divider
+                    )
+                )
             }
         }
 
@@ -319,7 +333,7 @@ class CommonsKt {
 
         }
 
-        fun getYearsBetweenTwoCalendars(a : Calendar, b : Calendar) : Int {
+        fun getYearsBetweenTwoCalendars(a: Calendar, b: Calendar): Int {
             var diff = b[Calendar.YEAR] - a[Calendar.YEAR]
             if (a[Calendar.MONTH] > b[Calendar.MONTH] ||
                 a[Calendar.MONTH] == b[Calendar.MONTH] && a[Calendar.DATE] > b[Calendar.DATE]
@@ -329,15 +343,24 @@ class CommonsKt {
             return diff
         }
 
-        fun calculateAge(birth : Calendar) : Int {
+        fun calculateAge(birth: Calendar): Int {
             return getYearsBetweenTwoCalendars(birth, Calendar.getInstance())
         }
 
-        fun calculateAge(timestampBirth : Long) : Int {
+        fun calculateAge(timestampBirth: Long): Int {
             val calendarBirth = Calendar.getInstance()
             calendarBirth.timeInMillis = timestampBirth
             return getYearsBetweenTwoCalendars(calendarBirth, Calendar.getInstance())
         }
+
+        fun getFeedDuration(duration: Duration): String {
+            return if (duration.toMinutes() > 0) {
+                "${duration.toMinutes()}m ${duration.minusMinutes(duration.toMinutes()).seconds}s"
+            } else {
+                "${duration.minusMinutes(duration.toMinutes()).seconds}s"
+            }
+        }
+
 
     }
 }

@@ -13,6 +13,7 @@ import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDec
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration.Companion.GRID_CAST_ITEM_TYPE_KEY
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
@@ -41,7 +42,7 @@ class BigCastItem(
             dateLocation.text = cast.getCreationDateAndPlace(root.context, true)
             castName.text = cast.title
             cast.audio?.duration?.let {
-                castDuration.text = getCastDuration(cast.audio.duration)
+                castDuration.text = CommonsKt.getFeedDuration(cast.audio.duration)
             }
 
             Glide.with(root)

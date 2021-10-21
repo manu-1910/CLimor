@@ -5,6 +5,7 @@ import androidx.core.content.ContextCompat
 import com.limor.app.R
 import com.limor.app.databinding.ItemUserCastBinding
 import com.limor.app.extensions.*
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.recycler.HorizontalSpacingItemDecoration
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
@@ -27,11 +28,10 @@ class CastItem(
         viewBinding.apply {
             tvPodcastUserName.text = cast.owner?.username
             tvPodcastUserSubtitle.text = cast.getCreationDateAndPlace(root.context, true)
-            ivVerifiedAvatar.visibility = if(cast.owner?.isVerified == true) View.VISIBLE else View.GONE
+            ivVerifiedAvatar.visibility =
+                if (cast.owner?.isVerified == true) View.VISIBLE else View.GONE
 
-            tvPodcastLength.text = cast.audio?.duration?.let {
-                "${it.toMinutes()}m ${it.minusMinutes(it.toMinutes()).seconds}s"
-            }
+            tvPodcastLength.text = cast.audio?.duration?.let { CommonsKt.getFeedDuration(it) }
 
             cast.owner?.getAvatarUrl()?.let {
                 ivPodcastAvatar.loadCircleImage(it)
@@ -46,7 +46,8 @@ class CastItem(
             tvPodcastRecast.text = cast.recastsCount.toString()
             tvPodcastComments.text = cast.commentsCount.toString()
             tvPodcastReply.text = cast.sharesCount.toString()
-            tvPodcastNumberOfListeners.text = if(cast.listensCount == 0) "0" else cast.listensCount?.toLong()?.formatHumanReadable
+            tvPodcastNumberOfListeners.text =
+                if (cast.listensCount == 0) "0" else cast.listensCount?.toLong()?.formatHumanReadable
 
             initRecastState(viewBinding, cast)
 
@@ -99,25 +100,26 @@ class CastItem(
 
     }
 
-    private fun initRecastState(binding: ItemUserCastBinding, item: CastUIModel){
-        fun applyRecastState(isRecasted: Boolean){
+    private fun initRecastState(binding: ItemUserCastBinding, item: CastUIModel) {
+        fun applyRecastState(isRecasted: Boolean) {
             binding.tvPodcastRecast.setTextColor(
                 ContextCompat.getColor(
                     binding.root.context,
-                    if(isRecasted) R.color.textAccent else R.color.white
+                    if (isRecasted) R.color.textAccent else R.color.white
                 )
             )
         }
         binding.apply {
             applyRecastState(item.isRecasted!!)
-            btnPodcastRecast.recasted = item.isRecasted!!
+            btnPodcastRecast.recasted = item.isRecasted
 
             recastLayout.setOnClickListener {
                 val isRecasted = !btnPodcastRecast.recasted
                 val recastCount = binding.tvPodcastRecast.text.toString().toInt()
 
                 applyRecastState(isRecasted)
-                binding.tvPodcastRecast.text = (if (isRecasted) recastCount + 1 else recastCount - 1).toString()
+                binding.tvPodcastRecast.text =
+                    (if (isRecasted) recastCount + 1 else recastCount - 1).toString()
                 binding.btnPodcastRecast.recasted = isRecasted
 
                 onRecastClick(item, isRecasted)
@@ -125,9 +127,9 @@ class CastItem(
         }
     }
 
-    private fun applyShareStyle(binding: ItemUserCastBinding, isShared : Boolean){
+    private fun applyShareStyle(binding: ItemUserCastBinding, isShared: Boolean) {
         binding.tvPodcastReply.setTextColor(
-            if(isShared) ContextCompat.getColor(
+            if (isShared) ContextCompat.getColor(
                 binding.tvPodcastReply.context,
                 R.color.textAccent
             ) else
@@ -158,7 +160,8 @@ class CastItem(
                 val likesCount = binding.tvPodcastLikes.text.toString().toInt()
 
                 applyLikeStyle(isLiked)
-                binding.tvPodcastLikes.text = (if (isLiked) likesCount + 1 else likesCount - 1).toString()
+                binding.tvPodcastLikes.text =
+                    (if (isLiked) likesCount + 1 else likesCount - 1).toString()
 
                 onLikeClick(cast, isLiked)
             }

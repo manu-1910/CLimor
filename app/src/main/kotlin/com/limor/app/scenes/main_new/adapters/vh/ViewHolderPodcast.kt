@@ -14,6 +14,7 @@ import com.limor.app.extensions.*
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
 
@@ -41,9 +42,7 @@ class ViewHolderPodcast(
     }
 
     private fun setPodcastGeneralInfo(item: CastUIModel) {
-        binding.tvPodcastLength.text = item.audio?.duration?.let {
-            "${it.toMinutes()}m ${it.minusMinutes(it.toMinutes()).seconds}s"
-        }
+        binding.tvPodcastLength.text = item.audio?.duration?.let { CommonsKt.getFeedDuration(it) }
         binding.tvPodcastTitle.text = item.title
         binding.tvPodcastSubtitle.setTextWithTagging(
             item.caption,
@@ -57,7 +56,8 @@ class ViewHolderPodcast(
     private fun setPodcastOwnerInfo(item: CastUIModel) {
         binding.tvPodcastUserName.text = item.owner?.username
         binding.tvPodcastUserSubtitle.text = item.getCreationDateAndPlace(context, true)
-        binding.ivVerifiedAvatar.visibility = if(item.owner?.isVerified == true) View.VISIBLE else View.GONE
+        binding.ivVerifiedAvatar.visibility =
+            if (item.owner?.isVerified == true) View.VISIBLE else View.GONE
     }
 
     private fun setPodcastCounters(item: CastUIModel) {
@@ -65,7 +65,8 @@ class ViewHolderPodcast(
         binding.tvPodcastRecast.text = item.recastsCount?.toString()
         binding.tvPodcastComments.text = item.commentsCount?.toString()
         binding.tvPodcastReply.text = item.sharesCount?.toString()
-        binding.tvPodcastNumberOfListeners.text = if(item.listensCount == 0) "0" else item.listensCount?.toLong()?.formatHumanReadable
+        binding.tvPodcastNumberOfListeners.text =
+            if (item.listensCount == 0) "0" else item.listensCount?.toLong()?.formatHumanReadable
     }
 
     private fun setAudioInfo(item: CastUIModel) {
@@ -87,13 +88,13 @@ class ViewHolderPodcast(
         binding.btnPodcastMore.setOnClickListener {
             val bundle = bundleOf(DialogPodcastMoreActions.CAST_KEY to item)
             val navController = it.findNavController()
-            it.findViewTreeLifecycleOwner()?.let{
-                ownerLife ->
-                navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("reload_feed")?.observe(
-                    ownerLife
-                ){
-                    onReloadData.invoke(item.id,true)
-                }
+            it.findViewTreeLifecycleOwner()?.let { ownerLife ->
+                navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("reload_feed")
+                    ?.observe(
+                        ownerLife
+                    ) {
+                        onReloadData.invoke(item.id, true)
+                    }
                 navController.navigate(R.id.action_navigation_home_to_dialog_report_podcast, bundle)
 
             }
