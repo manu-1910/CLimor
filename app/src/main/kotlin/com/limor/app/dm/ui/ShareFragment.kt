@@ -1,6 +1,7 @@
 package com.limor.app.dm.ui
 
 import android.content.*
+import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.os.Bundle
 import android.text.Spannable
@@ -315,7 +316,7 @@ class ShareFragment : BaseFragment() {
         }
 
         val pm = requireContext().packageManager
-        val apps = pm.queryIntentActivities(sendIntent, 0).sortedBy {
+        val apps = pm.queryIntentActivities(sendIntent, PackageManager.MATCH_ALL).sortedBy {
             it.activityInfo.name
         }
         binding.recyclerExternal.adapter = AppsAdapter(
