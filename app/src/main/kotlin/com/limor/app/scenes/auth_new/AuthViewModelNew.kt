@@ -84,12 +84,14 @@ class AuthViewModelNew @Inject constructor(
             override fun onTick(millisUntilFinished: Long) {
                 _resendButtonCountDownLiveData.postValue((millisUntilFinished / 1000).toInt())
             }
+
             override fun onFinish() {
                 _resendButtonEnableLiveData.postValue(true)
                 _resendButtonCountDownLiveData.postValue(null)
             }
         }.start()
     }
+
     private val _countries = MutableLiveData<List<Country>>().apply { value = emptyList() }
 
     val countriesLiveData: LiveData<List<Country>>
@@ -99,6 +101,13 @@ class AuthViewModelNew @Inject constructor(
 
     val phoneIsValidLiveData: LiveData<Boolean>
         get() = _validatePhoneLiveData
+
+    val phoneNumberExistsLiveData: LiveData<Boolean?>
+        get() = userInfoProvider.userExists
+
+    fun checkPhoneNumberExistence() {
+        userInfoProvider.checkIfUserExistsWithThisPhoneNumber(viewModelScope, formattedPhone)
+    }
 
     private var currentCountry: Country = Country()
     private var currentPhone: String = ""

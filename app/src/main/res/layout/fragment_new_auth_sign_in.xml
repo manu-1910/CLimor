@@ -28,21 +28,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/limor_top_item" />
 
-    <TextView
-        android:id="@+id/tvExistingUserEmailSignInDesc"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="34dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:text="@string/existing_user_email_signin_description"
-        android:textColor="@color/error_stroke_color"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:lineSpacingMultiplier="1.4"
-        app:layout_constraintTop_toBottomOf="@+id/imageView6"/>
-
     <!--<TextView
         android:id="@+id/tvSignInHere"
         android:layout_width="wrap_content"
@@ -60,14 +45,14 @@
         android:id="@+id/textView9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="58dp"
         android:text="@string/sign_in"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvExistingUserEmailSignInDesc" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView6" />
 
     <TextView
         android:id="@+id/textView8"
@@ -214,6 +199,22 @@
             android:maxLines="1" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/tvExistingUserEmailSignInDesc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/email_sign_in_message"
+        android:textColor="@color/error_stroke_color"
+        android:textAlignment="textStart"
+        android:lineSpacingMultiplier="1.4"
+        android:textSize="12dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/etPhoneCode"
+        app:layout_constraintTop_toBottomOf="@+id/etEnterPhone"/>
 
     <Button
         android:id="@+id/btnContinue"

@@ -59,6 +59,10 @@ class UserInfoProvider @Inject constructor(
     val userInfoProviderErrorLiveData: LiveData<Any?>
         get() = _userInfoProviderErrorLiveData
 
+    private val _userExistsLiveData = MutableLiveData<Boolean?>().apply { value = null }
+    val userExists: LiveData<Boolean?>
+        get() = _userExistsLiveData
+
     @ExperimentalCoroutinesApi
     fun getUserOnboardingStatus(scope: CoroutineScope) {
         scope.launch(Dispatchers.Default) {
@@ -122,7 +126,7 @@ class UserInfoProvider @Inject constructor(
                 val formattedDate = parseForUserCreation(dob)
                 Timber.d("Formatted DOB $formattedDate")
                 val response = userRepository.createUser(formattedDate) ?: ""
-                if(response == "Success"){
+                if (response == "Success") {
                     createDeviceToken().collect {
                         userRepository.createUserDevice(it)
                     }
@@ -140,10 +144,30 @@ class UserInfoProvider @Inject constructor(
         }
     }
 
+    fun checkIfUserExistsWithThisPhoneNumber(scope: CoroutineScope, phoneNumber: String) {
+        scope.launch {
+            if (phoneNumber.isEmpty()) {
+                _userExistsLiveData.postValue(false)
+                delay(500)
+                _userExistsLiveData.postValue(null)
+            }
+            try {
+                val response = userRepository.getUserByPhoneNumber(phoneNumber)
+                _userExistsLiveData.postValue(response)
+                delay(500)
+                _userExistsLiveData.postValue(null)
+            } catch (exception: Exception) {
+                _userExistsLiveData.postValue(false)
+                delay(500)
+                _userExistsLiveData.postValue(null)
+            }
+
+        }
+    }
+
     @ExperimentalCoroutinesApi
-    suspend fun createDeviceToken() =  callbackFlow<String>{
-        FirebaseMessaging.getInstance().token.addOnSuccessListener {
-            token ->
+    suspend fun createDeviceToken() = callbackFlow<String> {
+        FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
             trySend(token)
             close()
         }
@@ -257,17 +281,17 @@ class UserInfoProvider @Inject constructor(
         imageURL: String?,
         voiceBioURL: String?,
         durationSeconds: Double?
-    ) :String? {
-       return userRepository.updateUserProfile(
-           userName,
-           firstName,
-           lastName,
-           bio,
-           website,
-           imageURL,
-           voiceBioURL,
-           durationSeconds
-       )
+    ): String? {
+        return userRepository.updateUserProfile(
+            userName,
+            firstName,
+            lastName,
+            bio,
+            website,
+            imageURL,
+            voiceBioURL,
+            durationSeconds
+        )
     }
 
     suspend fun startFollowingUser(id: Int) {
@@ -296,6 +320,7 @@ class UserInfoProvider @Inject constructor(
             null
         }
     }
+
     suspend fun unblockUser(id: Int) {
         try {
             userRepository.unblockUser(id)
@@ -305,9 +330,9 @@ class UserInfoProvider @Inject constructor(
         }
     }
 
-    suspend fun reportUser(id: Int,reason:String) {
+    suspend fun reportUser(id: Int, reason: String) {
         try {
-            userRepository.reportUser(id,reason)
+            userRepository.reportUser(id, reason)
         } catch (e: Exception) {
             Timber.e(e)
             null

@@ -6,7 +6,7 @@ import com.limor.app.scenes.auth_new.util.PrefsHandler
 import timber.log.Timber
 import javax.inject.Inject
 
-class UserRepository @Inject constructor(val apollo: Apollo){
+class UserRepository @Inject constructor(val apollo: Apollo) {
 
     suspend fun createUser(dob: String): String? {
         val query = CreateUserMutation(dob)
@@ -34,6 +34,12 @@ class UserRepository @Inject constructor(val apollo: Apollo){
         return updateUserDOBResult
     }
 
+    suspend fun getUserByPhoneNumber(phoneNumber: String): Boolean {
+        val query = GetUserByPhoneNumberQuery(phoneNumber)
+        val queryResult = apollo.launchQuery(query)
+        return queryResult?.data?.getUserByPhoneNumber?.isFound ?: false
+    }
+
     suspend fun updateUserProfile(
         userName: String,
         firstName: String,
@@ -44,9 +50,9 @@ class UserRepository @Inject constructor(val apollo: Apollo){
         voiceBioURL: String?,
         duration: Double?
     ): String? {
-        var imageUrl: Input<String> = if(imageURL == null){
+        var imageUrl: Input<String> = if (imageURL == null) {
             Input.absent()
-        }else Input.fromNullable(imageURL)
+        } else Input.fromNullable(imageURL)
         val query = UpdateUserProfileMutation(
             userName,
             firstName,
@@ -143,18 +149,18 @@ class UserRepository @Inject constructor(val apollo: Apollo){
         return status
     }
 
-    suspend fun createUserDevice(token:String) {
-            val query = CreateUserDevicesMutation(App.getDeviceId(),token)
-            val result = apollo.mutate(query)
-            val id = result?.data?.createUserDevices?.id
-            id?.let{
-                PrefsHandler.saveUserDeviceToken(App.instance,token)
-            }
-            Timber.d("createUserDevice -> $id")
+    suspend fun createUserDevice(token: String) {
+        val query = CreateUserDevicesMutation(App.getDeviceId(), token)
+        val result = apollo.mutate(query)
+        val id = result?.data?.createUserDevices?.id
+        id?.let {
+            PrefsHandler.saveUserDeviceToken(App.instance, token)
+        }
+        Timber.d("createUserDevice -> $id")
     }
 
     suspend fun reportUser(id: Int, reason: String) {
-        val query = CreateReportsMutation(reason,"User",id)
+        val query = CreateReportsMutation(reason, "User", id)
         val result = apollo.mutate(query)
         val reported = result?.data?.createReports?.reported
         Timber.d("  -> $reported")

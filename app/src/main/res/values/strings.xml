@@ -30,6 +30,8 @@
     <string name="email_login_only_for_users"><font color='#FF5A4E'>Email login is only for users who have registered accounts before 2021</font></string>
     <string name="sign_in_here"><font color='#F9BB4B'><u>Sign in here</u></font></string>
     <string name="choose_country">Choose your country</string>
+    <string name="email_sign_in_message">This number is not registered yet. Try signing in with email instead.</string>
+    <string name="phone_number_already_exists">This phone number already exists</string>
 
 
     <!-- Bottom Menu Navigation Strings -->
