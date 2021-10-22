@@ -4,6 +4,8 @@
     <string name="exception_message_generic">There was an error</string>
     <string name="image_content_description_default">image description</string>
     <string name="default_no_internet">Check your internet connection and try again.</string>
+    <string name="no_connection_title">No Connection!</string>
+    <string name="no_connection_description">Unfortunately, your internet connection has been lost. Please try again</string>
 
 
     <!-- Signin and Signup strings -->
