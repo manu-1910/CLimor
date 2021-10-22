@@ -31,6 +31,7 @@ import com.limor.app.dm.LeanUser
 import com.limor.app.dm.SessionsViewModel
 import com.limor.app.dm.ShareResult
 import com.limor.app.extensions.hideKeyboard
+import com.limor.app.extensions.showKeyboard
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import kotlinx.android.synthetic.main.fragment_share_dialog.*
 import kotlinx.coroutines.launch
@@ -174,10 +175,19 @@ class ShareFragment : BaseFragment() {
 
         binding.textFakeSearch.setOnClickListener {
             showFullView(true)
+            binding.layoutShareWithUsersFull.post {
+                binding.editSearch.apply {
+                    requestFocus()
+                    showKeyboard()
+                }
+            }
         }
 
         binding.buttonBack.setOnClickListener {
-            binding.editSearch.hideKeyboard()
+            binding.editSearch.apply {
+                clearFocus()
+                hideKeyboard()
+            }
             showFullView(false)
         }
 
