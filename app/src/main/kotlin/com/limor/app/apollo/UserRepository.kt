@@ -26,6 +26,13 @@ class UserRepository @Inject constructor(val apollo: Apollo) {
         return updateUserNameResult
     }
 
+    suspend fun updateFirstNameAndLastName(firstName: String, lastName: String): String?{
+        val query = UpdateFirstNameAndLastNameMutation(firstName, lastName)
+        val queryResult = apollo.mutate(query)
+        val updateResult = queryResult?.data?.updateUser?.status
+        return updateResult
+    }
+
     suspend fun updateUserDOB(dob: String): String? {
         val query = UpdateUserDOBMutation(dob)
         val queryResult = apollo.mutate(query)

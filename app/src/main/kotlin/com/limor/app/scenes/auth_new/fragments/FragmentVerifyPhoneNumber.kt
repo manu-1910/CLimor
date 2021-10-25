@@ -165,11 +165,11 @@ class FragmentVerifyPhoneNumber : Fragment() {
             if (it == null) return@Observer
             model.saveNavigationBreakPoint(
                 requireContext(),
-                NavigationBreakpoints.ACCOUNT_CREATION.destination
+                NavigationBreakpoints.NAME_COLLECTION.destination
             )
             navigateToFragmentByNavigationBreakpoints(
                 requireActivity(),
-                NavigationBreakpoints.ACCOUNT_CREATION.destination
+                NavigationBreakpoints.NAME_COLLECTION.destination
             )
         })
 

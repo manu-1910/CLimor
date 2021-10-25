@@ -63,6 +63,10 @@ class UserInfoProvider @Inject constructor(
     val userExists: LiveData<Boolean?>
         get() = _userExistsLiveData
 
+    private val _updateUserFirstNameAndLastNameLiveData = MutableLiveData<String?>().apply { value = null }
+    val updateUserFirstNameAndLastNameLiveData: LiveData<String?>
+        get() = _updateUserFirstNameAndLastNameLiveData
+
     @ExperimentalCoroutinesApi
     fun getUserOnboardingStatus(scope: CoroutineScope) {
         scope.launch(Dispatchers.Default) {
@@ -181,6 +185,21 @@ class UserInfoProvider @Inject constructor(
                 _updateUserNameLiveData.postValue(response)
                 delay(500)
                 _updateUserNameLiveData.postValue(null)
+            } catch (e: Exception) {
+                _userInfoProviderErrorLiveData.postValue(e.message)
+                delay(500)
+                _userInfoProviderErrorLiveData.postValue(null)
+            }
+        }
+    }
+
+    fun updateUserFirstNameAndLastName(scope: CoroutineScope, firstName: String, lastName: String) {
+        scope.launch(Dispatchers.Default) {
+            try {
+                val response = userRepository.updateFirstNameAndLastName(firstName, lastName)
+                _updateUserFirstNameAndLastNameLiveData.postValue(response)
+                delay(500)
+                _updateUserFirstNameAndLastNameLiveData.postValue(null)
             } catch (e: Exception) {
                 _userInfoProviderErrorLiveData.postValue(e.message)
                 delay(500)
