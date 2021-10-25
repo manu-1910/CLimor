@@ -5,6 +5,8 @@ import androidx.core.content.ContextCompat
 import com.limor.app.R
 import com.limor.app.databinding.ItemUserCastBinding
 import com.limor.app.extensions.*
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.utils.CommonsKt.Companion.toEditable
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.recycler.HorizontalSpacingItemDecoration
 import com.limor.app.uimodels.CastUIModel
@@ -12,6 +14,7 @@ import com.limor.app.uimodels.TagUIModel
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
+import kotlinx.android.synthetic.main.activity_edit_cast.*
 
 class CastItem(
     val cast: CastUIModel,
@@ -53,25 +56,23 @@ class CastItem(
 
             cpiPodcastListeningProgress.progress = 50 // TODO change to the real value
 
-            cast.tags?.let { tagsList ->
-                if (tagsHorizontalList.itemDecorationCount == 0) {
-                    tagsHorizontalList.addItemDecoration(
-                        HorizontalSpacingItemDecoration(
-                            spacing = 12.px,
-                            includeFirstItem = false,
-                            includeLastItem = false
-                        )
-                    )
-                }
-                tagsHorizontalList.adapter = GroupieAdapter().apply {
-                    addAll(
-                        tagsList.map { TagItem(it, onHashTagClick) }
-                    )
-                }
-            }
-
             tvPodcastTitle.text = cast.title
-            tvPodcastSubtitle.text = cast.caption
+
+            tvPodcastSubtitle.setTextWithTagging(
+                cast.caption,
+                cast.mentions,
+                cast.tags,
+                { username, userId ->
+                    root.context?.let { context ->
+                        UserProfileActivity.show(
+                            context,
+                            username,
+                            userId
+                        )
+                    }
+                },
+                onHashTagClick
+            )
 
             initLikeState(viewBinding, cast)
 
