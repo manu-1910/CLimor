@@ -34,6 +34,7 @@ data class UserUIModel(
 
     // Patron stuff
     var patronInvitationStatus: String? = null,
+    var patronOnBoardingStatus: String? = null,
     val isPatron: Boolean? = false,
     val patronAudioURL: String? = null,
     val patronAudioDurationSeconds: Double?
@@ -179,7 +180,8 @@ fun GetUserProfileQuery.GetUser.mapToUIModel(): UserUIModel =
         patronInvitationStatus = patronInvitationStatus,
         isPatron = isPatron,
         patronAudioURL = patronAudioURL,
-        patronAudioDurationSeconds = patronAudioDuration
+        patronAudioDurationSeconds = patronAudioDuration,
+        patronOnBoardingStatus = patronOnboardingStatus
     )
 
 

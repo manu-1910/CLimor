@@ -163,8 +163,30 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
                     }
                     "APPROVED" -> {
                         //Approved but note yet setup
-                        setupViewPager(getApprovedStateItems())
-                        binding.patronButton.text = getString(R.string.limorPatronSetup)
+                        if(user.isPatron == false){
+                            when(user.patronOnBoardingStatus){
+                                null -> {
+                                    setupViewPager(getApprovedStateItems())
+                                    binding.patronButton.text = getString(R.string.limorPatronSetup)
+                                }
+                                "NOT_INITIATED" -> {
+                                    setupViewPager(getApprovedStateItems())
+                                    binding.patronButton.text = getString(R.string.limorPatronSetup)
+                                }
+                                "COMPLETED" -> {
+                                    //Show Limor Patron
+                                    //setupViewPager(getNormalStateItems())
+                                    binding.patronButton.text = getString(R.string.limorPatronSetupWallet)
+                                    binding.managePatronStateLayout.visibility = View.VISIBLE
+                                }
+                                else -> {
+                                    setupViewPager(getApprovedStateItems())
+                                    binding.patronButton.text = getString(R.string.limorPatronSetup)
+                                }
+
+                            }
+                        }
+
                     }
                     "REJECTED" -> {
                         setupViewPager(getNormalStateItems())
@@ -237,19 +259,7 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
                     binding.patronButton.text = getString(R.string.requesting)
                     requestInvitation()
                 }
-                "APPROVED" -> {
-                    //Should setup Limor patron
-
-                    val intent = Intent(requireContext(), PatronSetupActivity::class.java)
-                    intent.extras.apply {
-                        "user" to user
-                    }
-                    startActivity(intent)
-
-                   // binding.root.snackbar("Plans Will be available soon")
-
-
-                }
+                "APPROVED" -> checkPatronState()
                 "REJECTED" -> {
 
                 }
@@ -257,11 +267,37 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
 
                 }
             }
+            //Should setup Limor patron
         }
 
         binding.termsCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
             binding.patronButton.isEnabled = isChecked
         }
+    }
+
+    private fun checkPatronState() {
+        when(user.patronOnBoardingStatus){
+            "NOT_INITIATED" -> {
+                val intent = Intent(requireContext(), PatronSetupActivity::class.java)
+                intent.extras.apply {
+                    "user" to user
+                }
+                startActivity(intent)
+            }
+            "MEMBERSHIP_PURCHASED" -> {
+                //Go to Categories
+
+            }
+            "CATEGORIES_COLLECTED" -> {
+                //Go to Languages
+
+            }
+            "COMPLETED" -> {
+                //Show Coming soon
+            }
+
+        }
+
     }
 
 

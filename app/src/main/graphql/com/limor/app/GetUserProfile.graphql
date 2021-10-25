@@ -32,5 +32,6 @@ query GetUserProfile{
         isPatron
         patronAudioURL
         patronAudioDuration
+        patronOnboardingStatus
     }
 }
