@@ -63,7 +63,8 @@ class UserInfoProvider @Inject constructor(
     val userExists: LiveData<Boolean?>
         get() = _userExistsLiveData
 
-    private val _updateUserFirstNameAndLastNameLiveData = MutableLiveData<String?>().apply { value = null }
+    private val _updateUserFirstNameAndLastNameLiveData =
+        MutableLiveData<String?>().apply { value = null }
     val updateUserFirstNameAndLastNameLiveData: LiveData<String?>
         get() = _updateUserFirstNameAndLastNameLiveData
 
@@ -93,7 +94,7 @@ class UserInfoProvider @Inject constructor(
         //check if user has an email on it's JWT
         val jwt = AuthInterceptor.getToken()
         val hasEmail = JwtChecker.isJwtContainsEmail(jwt)
-        return if (hasEmail) response else NavigationBreakpoints.ACCOUNT_CREATION.destination
+        return if (hasEmail) response else NavigationBreakpoints.NAME_COLLECTION.destination
 
     }
 
@@ -137,6 +138,7 @@ class UserInfoProvider @Inject constructor(
                 }
 
                 _createUserLiveData.postValue(response)
+                getUserOnboardingStatus(this)
                 delay(500)
                 _createUserLiveData.postValue(null)
             } catch (e: Exception) {
