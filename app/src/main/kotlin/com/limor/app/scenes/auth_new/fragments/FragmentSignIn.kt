@@ -162,6 +162,7 @@ class FragmentSignIn : Fragment() {
         etEnterPhoneInner.addTextChangedListener(object : AfterTextWatcher() {
             override fun afterTextChanged(s: Editable?) {
                 model.setPhoneChanged(s?.toString() ?: "")
+                etEnterPhone.error = null
             }
         })
     }

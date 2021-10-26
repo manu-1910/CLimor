@@ -25,10 +25,12 @@ import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthActivityNew.Companion.onFocusChangeListener
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.Country
+import com.limor.app.scenes.auth_new.data.SignInMethod
 import com.limor.app.scenes.auth_new.util.AfterTextWatcher
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.*
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.btnContinue
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.clMain
+import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.etEnterPhone
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.etEnterPhoneInner
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.etPhoneCode
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.*
@@ -60,6 +62,12 @@ class FragmentSignEnterPhone : Fragment() {
         etEnterPhoneInner.addTextChangedListener(object : AfterTextWatcher() {
             override fun afterTextChanged(s: Editable?) {
                 model.setPhoneChanged(s?.toString() ?: "")
+                etEnterPhone.error = null
+
+                // the if avoid redraws
+                if (tvSignInHereMsg.visibility == View.VISIBLE) {
+                    tvSignInHereMsg.visibility = View.GONE
+                }
             }
         })
     }
@@ -89,7 +97,6 @@ class FragmentSignEnterPhone : Fragment() {
     private fun setFocusChanges() {
         clMain.onFocusChangeListener = onFocusChangeListener()
         etPhoneCode.editText?.onFocusChangeListener = onFocusChangeListener()
-
     }
 
     private fun subscribeToViewModel() {
@@ -106,7 +113,20 @@ class FragmentSignEnterPhone : Fragment() {
         model.phoneNumberExistsLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
             if (it == true) {
-                etEnterPhoneInner.setError(resources.getString(R.string.phone_number_already_exists))
+                val description = resources.getString(R.string.sign_in_with_phone_number)
+                val content = SpannableString(description)
+                content.setSpan(ForegroundColorSpan(resources.getColor(R.color.colorAccent)), 23, description.length, 0)
+                content.setSpan(UnderlineSpan(), 23, description.length, 0)
+                tvSignInHereMsg.setText(content, TextView.BufferType.SPANNABLE)
+                tvSignInHereMsg.setOnClickListener {
+                    model.setCurrentSignInMethod(SignInMethod.PHONE)
+                    val args = Bundle()
+                    args.putBoolean(FragmentSignIn.IS_MIGRATION_FLOW, false)
+                    findNavController()
+                        .navigate(R.id.action_fragment_new_auth_sign_in_to_fragment_sign_in, args)
+                }
+                etEnterPhone.setError(description)
+                tvSignInHereMsg.visibility = View.VISIBLE
             } else {
                 model.submitPhoneNumber()
                 findNavController()

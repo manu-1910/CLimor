@@ -32,6 +32,7 @@
     <string name="choose_country">Choose your country</string>
     <string name="email_sign_in_message">This number is not registered yet. Try signing in with email instead.</string>
     <string name="phone_number_already_exists">This phone number already exists</string>
+    <string name="sign_in_with_phone_number">Already in use. Please Sign in.</string>
 
 
     <!-- Bottom Menu Navigation Strings -->
