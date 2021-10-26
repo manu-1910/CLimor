@@ -116,7 +116,7 @@
         android:id="@+id/etEnterEmail"
         style="@style/TextInputLayoutOutlineWithError"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="24dp"
@@ -215,6 +215,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/etPhoneCode"
         app:layout_constraintTop_toBottomOf="@+id/etEnterPhone"/>
+
+    <TextView
+        android:id="@+id/tvNoEmailExistErrorDesc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/no_account_fount_with_email"
+        android:textColor="@color/error_stroke_color"
+        android:textAlignment="textStart"
+        android:textSize="12dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etEnterEmail"/>
 
     <Button
         android:id="@+id/btnContinue"

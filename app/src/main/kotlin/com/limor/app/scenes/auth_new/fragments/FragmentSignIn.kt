@@ -106,6 +106,10 @@ class FragmentSignIn : Fragment() {
         backIV.setOnClickListener {
             performBack()
         }
+        tvNoEmailExistErrorDesc.setOnClickListener {
+            it.findNavController()
+                .navigate(R.id.action_fragment_new_auth_sign_in_to_fragment_new_auth_dob_picker)
+        }
     }
 
     private fun performBack() {
@@ -163,6 +167,14 @@ class FragmentSignIn : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 model.setPhoneChanged(s?.toString() ?: "")
                 etEnterPhone.error = null
+            }
+        })
+        etDobPickerInner.addTextChangedListener(object : AfterTextWatcher(){
+            override fun afterTextChanged(s: Editable?) {
+                etEnterEmail.error = null
+                if(tvNoEmailExistErrorDesc.visibility == View.VISIBLE){
+                    tvNoEmailExistErrorDesc.visibility = View.GONE
+                }
             }
         })
     }
@@ -246,6 +258,7 @@ class FragmentSignIn : Fragment() {
                 content.setSpan(UnderlineSpan(), 55, 60, 0)
                 tvExistingUserEmailSignInDesc.setText(content, TextView.BufferType.SPANNABLE)
                 tvExistingUserEmailSignInDesc.visibility = View.VISIBLE
+                tvNoEmailExistErrorDesc.visibility = View.GONE
                 etEnterPhone.setError(description)
             }
         })
@@ -258,11 +271,19 @@ class FragmentSignIn : Fragment() {
                 return@Observer
             }
             Timber.d("currentEmailIsInUseLiveData -> $it")
-            Toast.makeText(
-                requireContext(),
-                R.string.no_email_found_offer_to_sign_up,
-                Toast.LENGTH_LONG
-            ).show()
+            val description = resources.getString(R.string.no_account_fount_with_email)
+            val content = SpannableString(description)
+            content.setSpan(
+                ForegroundColorSpan(resources.getColor(R.color.colorAccent)),
+                40,
+                description.length,
+                0
+            )
+            content.setSpan(UnderlineSpan(), 40, description.length, 0)
+            tvNoEmailExistErrorDesc.setText(content, TextView.BufferType.SPANNABLE)
+            tvNoEmailExistErrorDesc.visibility = View.VISIBLE
+            tvExistingUserEmailSignInDesc.visibility = View.GONE
+            etEnterEmail.error = description
         })
     }
 }

@@ -34,6 +34,7 @@
     <string name="phone_number_already_exists">This phone number already exists</string>
     <string name="sign_in_with_phone_number">Already in use. Please Sign in.</string>
 
+    <string name="no_account_fount_with_email">No Limor Account found with this email. Please Register.</string>
 
     <!-- Bottom Menu Navigation Strings -->
     <string name="bottom_menu_home">Home</string>
