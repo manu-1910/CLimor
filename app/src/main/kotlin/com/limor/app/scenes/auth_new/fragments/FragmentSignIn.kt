@@ -107,6 +107,7 @@ class FragmentSignIn : Fragment() {
             performBack()
         }
         tvNoEmailExistErrorDesc.setOnClickListener {
+            model.setCurrentSignInMethod(SignInMethod.NONE)
             it.findNavController()
                 .navigate(R.id.action_fragment_new_auth_sign_in_to_fragment_new_auth_dob_picker)
         }
