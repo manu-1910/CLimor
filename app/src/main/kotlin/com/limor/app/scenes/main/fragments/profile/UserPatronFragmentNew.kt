@@ -121,13 +121,6 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
                 binding.managePatronStateLayout.visibility = View.GONE
                 binding.requestStateLayout.visibility = View.GONE
 
-                binding.emptyStateLayout.setOnClickListener{
-                    val intent = Intent(requireContext(), PatronSetupActivity::class.java)
-                    intent.extras.apply {
-                        "user" to user
-                    }
-                    startActivity(intent)
-                }
 
             } else {
 
@@ -281,19 +274,32 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
                 val intent = Intent(requireContext(), PatronSetupActivity::class.java)
                 intent.extras.apply {
                     "user" to user
+                    "page" to "pay"
                 }
                 startActivity(intent)
             }
             "MEMBERSHIP_PURCHASED" -> {
                 //Go to Categories
+                val intent = Intent(requireContext(), PatronSetupActivity::class.java)
+                intent.extras.apply {
+                    "user" to user
+                    "page" to "categories"
+                }
+                startActivity(intent)
 
             }
             "CATEGORIES_COLLECTED" -> {
                 //Go to Languages
-
+                val intent = Intent(requireContext(), PatronSetupActivity::class.java)
+                intent.extras.apply {
+                    "user" to user
+                    "page" to "languages"
+                }
+                startActivity(intent)
             }
             "COMPLETED" -> {
                 //Show Coming soon
+                binding.root.snackbar("Your spot has been reserved")
             }
 
         }
