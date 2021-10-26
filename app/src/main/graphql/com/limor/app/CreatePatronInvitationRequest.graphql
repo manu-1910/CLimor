@@ -1,0 +1,7 @@
+mutation CreatePatronInvitationRequest($userId: Int!) {
+    createPatronInvitationRequest(requestedForUser: $userId){
+        message
+        status
+        requestId
+    }
+}
