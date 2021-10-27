@@ -94,7 +94,7 @@ class UserInfoProvider @Inject constructor(
         //check if user has an email on it's JWT
         val jwt = AuthInterceptor.getToken()
         val hasEmail = JwtChecker.isJwtContainsEmail(jwt)
-        return if (hasEmail) response else NavigationBreakpoints.NAME_COLLECTION.destination
+        return response
 
     }
 
