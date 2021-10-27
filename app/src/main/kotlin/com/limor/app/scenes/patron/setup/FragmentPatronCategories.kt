@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.limor.app.R
@@ -22,6 +23,8 @@ import com.limor.app.scenes.utils.BACKGROUND
 import com.limor.app.scenes.utils.MAIN
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_publish_categories.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import javax.inject.Inject
@@ -136,7 +139,7 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
                 category.isSelected = false
                 //model.updateCategoriesSelection()
             }
-            btnContinue.isEnabled = ids.size>=5
+            btnContinue.isEnabled = ids.isNotEmpty()
         }
         return chip
     }
@@ -144,13 +147,17 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
             //update categories
-            Timber.d("Chip ${publishViewModel.categorySelectedIdsList}")
-            findNavController().navigate(R.id.action_fragmentPatronCategories_to_fragmentPatronLanguages)
+            lifecycleScope.launch {
+                switchCommonVisibility(true)
+                publishViewModel.addPatronCategories().collect {
+                    findNavController().navigate(R.id.action_fragmentPatronCategories_to_fragmentPatronLanguages)
+                }
+            }
 
         }
 
         topAppBar.setNavigationOnClickListener {
-            findNavController().popBackStack()
+            activity?.finish()
         }
     }
 

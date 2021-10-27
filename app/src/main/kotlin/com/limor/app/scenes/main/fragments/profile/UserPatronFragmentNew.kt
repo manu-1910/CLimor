@@ -48,7 +48,7 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = FragmnetUserPatronNewBinding.inflate(inflater, container, false)
         return binding.root
@@ -94,7 +94,9 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
 
     private fun currentUser(): Boolean {
 
-        Timber.d("Current User Check -> ${user.isPatron} --- ${PrefsHandler.getCurrentUserId(requireContext())}")
+        Timber.d("Current User Check -> ${user.isPatron} --- ${
+            PrefsHandler.getCurrentUserId(requireContext())
+        }")
         return when (user.id) {
             PrefsHandler.getCurrentUserId(requireContext()) -> {
                 //Current user
@@ -156,8 +158,8 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
                     }
                     "APPROVED" -> {
                         //Approved but note yet setup
-                        if(user.isPatron == false){
-                            when(user.patronOnBoardingStatus){
+                        if (user.isPatron == false) {
+                            when (user.patronOnBoardingStatus) {
                                 null -> {
                                     setupViewPager(getApprovedStateItems())
                                     binding.patronButton.text = getString(R.string.limorPatronSetup)
@@ -169,7 +171,8 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
                                 "COMPLETED" -> {
                                     //Show Limor Patron
                                     //setupViewPager(getNormalStateItems())
-                                    binding.patronButton.text = getString(R.string.limorPatronSetupWallet)
+                                    binding.patronButton.text =
+                                        getString(R.string.limorPatronSetupWallet)
                                     binding.managePatronStateLayout.visibility = View.VISIBLE
                                 }
                                 else -> {
@@ -269,32 +272,25 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
     }
 
     private fun checkPatronState() {
-        when(user.patronOnBoardingStatus){
+        when (user.patronOnBoardingStatus) {
             "NOT_INITIATED" -> {
                 val intent = Intent(requireContext(), PatronSetupActivity::class.java)
-                intent.extras.apply {
-                    "user" to user
-                    "page" to "pay"
-                }
+                intent.putExtra("user",user)
                 startActivity(intent)
             }
             "MEMBERSHIP_PURCHASED" -> {
                 //Go to Categories
                 val intent = Intent(requireContext(), PatronSetupActivity::class.java)
-                intent.extras.apply {
-                    "user" to user
-                    "page" to "categories"
-                }
+                intent.putExtra("user",user)
+                intent.putExtra("page","categories")
                 startActivity(intent)
 
             }
             "CATEGORIES_COLLECTED" -> {
                 //Go to Languages
                 val intent = Intent(requireContext(), PatronSetupActivity::class.java)
-                intent.extras.apply {
-                    "user" to user
-                    "page" to "languages"
-                }
+                intent.putExtra("user",user)
+                intent.putExtra("page","languages")
                 startActivity(intent)
             }
             "COMPLETED" -> {

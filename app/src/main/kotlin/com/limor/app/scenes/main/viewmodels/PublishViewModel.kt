@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.billingclient.api.Purchase
 import com.limor.app.FeedItemsQuery
 import com.limor.app.apollo.PublishRepository
 import com.limor.app.common.SingleLiveEvent
@@ -16,6 +17,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.square1.limor.remote.extensions.parseSuccessResponse
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -112,6 +115,21 @@ private val publishRepository: PublishRepository
                 null
             }
         }
+    }
+
+    suspend fun consumePurchasedSub(purchase: Purchase) = callbackFlow<String?>{
+        send(publishRepository.updateSubscriptionDetails(purchase))
+        awaitClose()
+    }
+
+    suspend fun addPatronCategories() = callbackFlow<String?> {
+        send(withContext(Dispatchers.IO){publishRepository.addPatronCategories(categorySelectedIdsList)})
+        awaitClose()
+    }
+
+    suspend fun addPatronLanguages() = callbackFlow<String?> {
+        send(withContext(Dispatchers.IO){publishRepository.addPatronLanguages(languageSelectedCodesList)})
+        awaitClose()
     }
 
 }

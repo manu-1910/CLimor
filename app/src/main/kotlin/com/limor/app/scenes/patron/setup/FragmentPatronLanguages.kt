@@ -73,14 +73,20 @@ class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
         get() = model.languagesLiveDataError
 
     private fun setOnClickListeners() {
+
         btnContinue.setOnClickListener {
-            if (publishViewModel.languageSelected.isNotEmpty()) {
+            if (publishViewModel.languageSelectedCodesList.isNotEmpty()) {
                 findNavController().navigate(R.id.action_fragmentPatronLanguages_to_fragmentPatronOnboardingSuccess)
             }
         }
 
         topAppBar.setNavigationOnClickListener {
-            it.findNavController().popBackStack()
+            if(activity?.intent?.getStringExtra("page") != null){
+                activity?.finish()
+            }else{
+                it.findNavController().popBackStack()
+            }
+
         }
 
         clMain.setOnClickListener {
@@ -138,13 +144,14 @@ class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
     }
     private fun getVariantChip(language: LanguageWrapper): Chip {
         val chip = layoutInflater.inflate(R.layout.item_chip_category, null) as Chip
+        cgLanguages.isSingleSelection = false
         chip.apply {
             text = language.name
             MAIN {
                 isChecked =  lastCheckedIds.contains(chip.id)
             }
             setOnCheckedChangeListener { buttonView, isChecked ->
-                val ids: List<Int> = cgCategories.checkedChipIds
+                val ids: List<Int> = cgLanguages.checkedChipIds
                 Timber.d("$isChecked")
                 if (isChecked) {
                     language.isSelected = isChecked
@@ -167,7 +174,7 @@ class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
                     // category.isSelected = false
                     //model.updateCategoriesSelection()
                 }
-                btnContinue.isEnabled = ids.size>=5
+                btnContinue.isEnabled = ids.isNotEmpty()
             }
         }
         return chip

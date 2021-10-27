@@ -710,5 +710,7 @@
     <string name="patron_languages">Patron Languages</string>
     <string name="plans_terms_start">\"I confirm that I have read and agree to all of the \"</string>
     <string name="limorPatronSetupWallet">Setup My Digital Wallet</string>
+    <string name="text_uk_account">\"I have an active UK Based account. \"</string>
+    <string name="patron_uk_account_learn_more"><![CDATA[<a href=\'https://google.com\'><strong>Learn More<strong/></a>]]></string>
 
 </resources>

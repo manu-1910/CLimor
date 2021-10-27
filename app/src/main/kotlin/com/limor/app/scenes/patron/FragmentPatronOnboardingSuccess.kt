@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.limor.app.R
+import com.limor.app.databinding.FragmentPatronOnboardingSuccessBinding
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -18,6 +19,8 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class FragmentPatronOnboardingSuccess : Fragment() {
+    private lateinit var binding: FragmentPatronOnboardingSuccessBinding
+
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -35,7 +38,19 @@ class FragmentPatronOnboardingSuccess : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_patron_onboarding_success, container, false)
+        binding =  FragmentPatronOnboardingSuccessBinding.inflate(inflater,container,false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setOnclicks()
+    }
+
+    private fun setOnclicks() {
+        binding.continueButton.setOnClickListener {
+            activity?.finish()
+        }
     }
 
     companion object {

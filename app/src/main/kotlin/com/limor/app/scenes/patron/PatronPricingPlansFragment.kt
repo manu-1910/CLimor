@@ -1,12 +1,15 @@
 package com.limor.app.scenes.patron
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.text.Html
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,11 +17,16 @@ import com.android.billingclient.api.*
 import com.limor.app.R
 import com.limor.app.databinding.FragmentPatronPricingPlansBinding
 import com.limor.app.scenes.main.fragments.profile.ShortPagerAdapter
+import com.limor.app.scenes.main.viewmodels.PublishCategoriesViewModel
+import com.limor.app.scenes.main.viewmodels.PublishViewModel
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
+import javax.inject.Inject
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -35,6 +43,10 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
     private var selectedSku: SkuDetails? = null
     private lateinit var billingClient: BillingClient
     private lateinit var binding: FragmentPatronPricingPlansBinding
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val model: PublishViewModel by activityViewModels { viewModelFactory }
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -68,17 +80,18 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         Timber.d("PURCHASE ${purchase.purchaseToken}")
         Timber.d("PURCHASE ${purchase.packageName}")
 
-        val consumeParams =
-            ConsumeParams.newBuilder()
-                .setPurchaseToken(purchase.purchaseToken)
-                .build()
-
-        val consumeResult = withContext(Dispatchers.IO) {
-
+        model.consumePurchasedSub(purchase).collect {
+            // if(it == "Success"){
+            findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
+            // }
         }
 
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        AndroidSupportInjection.inject(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,7 +118,7 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         startConnectingToClient()
 
         binding.continueButton.setOnClickListener {
-           // findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
+            // findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
 
             selectedSku?.let {
                 val flowParams = BillingFlowParams.newBuilder()
@@ -199,15 +212,6 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment PatronPricingPlansFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             PatronPricingPlansFragment().apply {
@@ -220,7 +224,7 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
 
     override fun onUserClicked(item: SkuDetails, position: Int) {
 
-        if(item.freeTrialPeriod.isNotEmpty()){
+        if (item.freeTrialPeriod.isNotEmpty()) {
             selectedSku = item
             adapter.selectedSku = item.sku
             adapter.notifyDataSetChanged()
@@ -230,11 +234,19 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
 
     override fun onSelectedSkuChange(item: SkuDetails) {
         selectedSku = item
-        if(item.freeTrialPeriod.isNotEmpty()){
-            val termsEnd = getString(R.string.plans_terms_start)+getString(R.string.plans_terms_text)
-            val termsT = "After free trial end ${item.priceCurrencyCode} ${item.originalPrice}" + Html.fromHtml(termsEnd, Html.FROM_HTML_MODE_COMPACT)
+        if (item.freeTrialPeriod.isNotEmpty()) {
+            val termsEnd =
+                getString(R.string.plans_terms_start) + getString(R.string.plans_terms_text)
+            val termsT =
+                "After free trial end ${item.originalPrice}" + Html.fromHtml(
+                    termsEnd,
+                    Html.FROM_HTML_MODE_COMPACT)
             binding.termsTV.text = termsT
-            binding.ukAccountText.text = getString(R.string.plans_terms_text)
+
+            val bankText = getString(R.string.text_uk_account) +
+                    Html.fromHtml(getString(R.string.patron_uk_account_learn_more),
+                        Html.FROM_HTML_MODE_COMPACT)
+            binding.ukAccountText.text = bankText
         }
 
     }

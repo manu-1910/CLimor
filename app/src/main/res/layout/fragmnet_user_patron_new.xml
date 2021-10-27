@@ -151,31 +151,41 @@
                         android:visibility="visible" />
 
                 </RelativeLayout>
-                <RelativeLayout
-                    android:layout_marginTop="12dp"
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/checkLayout"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
                     android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/lowerDivider">
+
                     <CheckBox
                         android:id="@+id/termsCheckBox"
-                        android:layout_marginStart="@dimen/margin24"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin24"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/termsTV"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentTop="true"
                         android:layout_toEndOf="@+id/termsCheckBox"
                         android:fontFamily="@font/roboto"
-                        android:gravity="start"
+                        android:gravity="center|start"
+                        android:text="I have an active UK-based Bank account. "
                         android:textColor="@color/grayWave"
-                        android:text="By Checking this box you confirm that you have a Bank account in UK"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/termsCheckBox"
+                        app:layout_constraintTop_toTopOf="@+id/termsCheckBox" />
                     <!--Should set text from string plans_terms_text in respective class-->
-                </RelativeLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/patronButton"
                     style="@android:style/Widget.Material.Button.Borderless.Colored"
@@ -311,7 +321,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/title" />
+                android:visibility="gone"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
