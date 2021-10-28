@@ -131,16 +131,12 @@ class CastItem(
     }
 
     private fun applyShareStyle(binding: ItemUserCastBinding, isShared : Boolean){
-        binding.tvPodcastReply.setTextColor(
-            if(isShared) ContextCompat.getColor(
-                binding.tvPodcastReply.context,
-                R.color.textAccent
-            ) else
-                ContextCompat.getColor(
-                    binding.tvPodcastReply.context,
-                    R.color.white
-                )
-        )
+        // new requirement as of October 28th, 2021
+        // - the share button shouldn't have state
+        binding.tvPodcastReply.setTextColor(ContextCompat.getColor(
+            binding.tvPodcastReply.context,
+            R.color.white
+        ))
     }
 
     private fun initLikeState(binding: ItemUserCastBinding, cast: CastUIModel) {

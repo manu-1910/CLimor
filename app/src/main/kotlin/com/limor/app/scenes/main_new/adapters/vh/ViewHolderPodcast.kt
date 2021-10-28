@@ -210,12 +210,10 @@ class ViewHolderPodcast(
     }
 
     private fun applySharedState(isShared: Boolean) {
+        // new requirement as of October 28th, 2021
+        // - the share button shouldn't have state
         binding.tvPodcastReply.setTextColor(
-            if (isShared) {
-                ContextCompat.getColor(binding.root.context, R.color.textAccent)
-            } else {
-                ContextCompat.getColor(binding.root.context, R.color.white)
-            }
+            ContextCompat.getColor(binding.root.context, R.color.white)
         )
     }
 
