@@ -120,7 +120,7 @@ class ViewHolderPodcast(
             onCommentsClick(item)
         }
 
-        binding.sharesLayout.setOnClickListener {
+        binding.sharesLayout.throttledClick {
             onShareClick(item) { shareResult ->
                 item.updateShares(shareResult)
                 initShareState(item)

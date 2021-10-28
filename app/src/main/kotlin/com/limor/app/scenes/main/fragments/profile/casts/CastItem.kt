@@ -93,7 +93,7 @@ class CastItem(
                 onCommentsClick(cast)
             }
 
-            sharesLayout.setOnClickListener {
+            sharesLayout.throttledClick {
                 onShareClick(cast) { shareResult ->
                     cast.updateShares(shareResult)
                     tvPodcastReply.text = cast.sharesCount.toString()

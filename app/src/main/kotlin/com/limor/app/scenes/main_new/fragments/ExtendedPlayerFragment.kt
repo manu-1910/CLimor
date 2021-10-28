@@ -439,7 +439,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         binding.btnPodcastComments.throttledClick(onClick = openCommentsClickListener)
         binding.tvPodcastComments.throttledClick(onClick = openCommentsClickListener)
 
-        binding.btnPodcastReply.setOnClickListener {
+        binding.btnPodcastReply.throttledClick {
             ShareDialog.newInstance(cast).also { fragment ->
                 fragment.setOnSharedListener {
                     binding.btnPodcastReply.shared = (cast.isShared ?: false) || it.hasShared

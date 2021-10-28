@@ -111,7 +111,7 @@ class ViewHolderRecast(
             onCommentsClick(item)
         }
 
-        binding.btnPodcastReply.setOnClickListener {
+        binding.btnPodcastReply.throttledClick {
             onShareClick(item) { shareResult ->
                 item.updateShares(shareResult)
                 binding.btnPodcastReply.shared = item.isShared ?: false
