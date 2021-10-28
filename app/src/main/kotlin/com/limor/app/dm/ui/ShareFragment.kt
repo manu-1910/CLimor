@@ -282,11 +282,11 @@ class ShareFragment : BaseFragment() {
         onShared?.invoke(
             ShareResult(
                 hasShared = true,
-                newSharesCount = 1,
+                newSharesCount = newSharesCount,
                 shareUrl = mShortLink
             )
         )
-        sharePodcastViewModel.share(castId = cast.id)
+        sharePodcastViewModel.share(castId = cast.id, shareCount = newSharesCount)
     }
 
     private fun subscribeToViewModels() {
