@@ -11,7 +11,7 @@ class SharePodcastUseCase @Inject constructor(
     private val repository: PodcastInteractionsRepository,
     private val dispatcherProvider: DispatcherProvider
 ) {
-    suspend fun execute(castId: Int) : ShareCastUIModel?{
+    suspend fun execute(castId: Int, shareCount: Int = 1) : ShareCastUIModel?{
         return withContext(dispatcherProvider.io) {
             repository.sharePodcast(castId)?.mapToUIModel()
         }
