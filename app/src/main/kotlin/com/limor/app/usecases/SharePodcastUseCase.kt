@@ -13,7 +13,7 @@ class SharePodcastUseCase @Inject constructor(
 ) {
     suspend fun execute(castId: Int, shareCount: Int = 1) : ShareCastUIModel?{
         return withContext(dispatcherProvider.io) {
-            repository.sharePodcast(castId)?.mapToUIModel()
+            repository.sharePodcast(castId, shareCount)?.mapToUIModel()
         }
     }
 }
