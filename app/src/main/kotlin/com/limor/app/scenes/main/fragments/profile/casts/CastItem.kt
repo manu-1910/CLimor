@@ -96,6 +96,7 @@ class CastItem(
             sharesLayout.setOnClickListener {
                 onShareClick(cast) { shareResult ->
                     cast.updateShares(shareResult)
+                    tvPodcastReply.text = cast.sharesCount.toString()
                     btnPodcastReply.shared = cast.isShared == true
                     applyShareStyle(viewBinding, cast.isShared == true)
                 }
