@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.text.Html
+import android.text.method.LinkMovementMethod
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -81,9 +82,9 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         Timber.d("PURCHASE ${purchase.packageName}")
 
         model.consumePurchasedSub(purchase).collect {
-            // if(it == "Success"){
-            findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
-            // }
+            if (it == "Success") {
+                findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
+            }
         }
 
     }
@@ -236,17 +237,19 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         selectedSku = item
         if (item.freeTrialPeriod.isNotEmpty()) {
             val termsEnd =
-                getString(R.string.plans_terms_start) + getString(R.string.plans_terms_text)
+                 getString(R.string.plans_terms_start) + getString(R.string.plans_terms_text)
             val termsT =
-                "After free trial end ${item.originalPrice}" + Html.fromHtml(
+                "After free trial ends, ${item.originalPrice} \n" + Html.fromHtml(
                     termsEnd,
                     Html.FROM_HTML_MODE_COMPACT)
             binding.termsTV.text = termsT
+            binding.termsTV.movementMethod = LinkMovementMethod()
 
             val bankText = getString(R.string.text_uk_account) +
                     Html.fromHtml(getString(R.string.patron_uk_account_learn_more),
                         Html.FROM_HTML_MODE_COMPACT)
             binding.ukAccountText.text = bankText
+            binding.ukAccountText.movementMethod = LinkMovementMethod()
         }
 
     }

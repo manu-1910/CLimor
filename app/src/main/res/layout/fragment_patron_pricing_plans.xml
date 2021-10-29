@@ -8,8 +8,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="#FBFCFF">
+        android:background="#FBFCFF"
+        android:orientation="vertical">
 
 
         <RelativeLayout
@@ -19,21 +19,21 @@
             android:orientation="vertical">
 
             <ImageView
-                android:padding="12dp"
-                android:src="@drawable/arrow_left"
                 android:layout_width="54dp"
-                android:layout_height="54dp"/>
+                android:layout_height="54dp"
+                android:padding="12dp"
+                android:src="@drawable/arrow_left" />
 
             <TextView
                 android:id="@+id/textView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:padding="16dp"
                 android:text="Limor Patron"
                 android:textColor="@color/black"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:padding="16dp"
-                android:layout_centerHorizontal="true"/>
+                android:textStyle="bold" />
 
         </RelativeLayout>
 
@@ -44,16 +44,16 @@
             android:layout_marginTop="24dp"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"  />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
             android:id="@+id/indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            app:dotsColor="@color/dotsColor"
             android:layout_marginTop="@dimen/margin24"
             android:layout_marginBottom="@dimen/margin24"
+            app:dotsColor="@color/dotsColor"
             app:dotsCornerRadius="8dp"
             app:dotsSize="8dp"
             app:dotsSpacing="5dp"
@@ -69,15 +69,15 @@
             android:layout_height="wrap_content"
             android:clipToPadding="false"
             tools:itemCount="3"
-            tools:listitem="@layout/item_patron_plan"/>
+            tools:listitem="@layout/item_patron_plan" />
 
         <!--following layouts for draft purpose-->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
-            android:visibility="gone"
-            android:background="@drawable/bg_round_plan_normal">
+            android:background="@drawable/bg_round_plan_normal"
+            android:visibility="gone">
 
 
             <ImageView
@@ -95,12 +95,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:fontFamily="@font/roboto_medium"
                 android:text="$12.99 / Month"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"
                 app:layout_constraintBottom_toTopOf="@+id/guideline4"
                 app:layout_constraintStart_toEndOf="@+id/imageView10"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -130,8 +130,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
-            android:visibility="gone"
-            android:background="@drawable/bg_round_plan_normal">
+            android:background="@drawable/bg_round_plan_normal"
+            android:visibility="gone">
 
 
             <ImageView
@@ -149,12 +149,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:fontFamily="@font/roboto_medium"
                 android:text="$116.99 / Year"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"
                 app:layout_constraintBottom_toTopOf="@+id/guideline5"
                 app:layout_constraintStart_toEndOf="@+id/imageView11"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -184,8 +184,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
-            android:visibility="gone"
-            android:background="@drawable/bg_round_plan_selected">
+            android:background="@drawable/bg_round_plan_selected"
+            android:visibility="gone">
 
 
             <ImageView
@@ -203,12 +203,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:fontFamily="@font/roboto_medium"
                 android:text="Free Trail"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"
                 app:layout_constraintBottom_toTopOf="@+id/guideline6"
                 app:layout_constraintStart_toEndOf="@+id/imageView13"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -240,41 +240,41 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
             <CheckBox
                 android:id="@+id/termsCheckBox"
-                android:layout_marginStart="@dimen/margin24"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin24" />
 
             <TextView
                 android:id="@+id/termsTV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/termsCheckBox"
                 android:fontFamily="@font/roboto"
                 android:gravity="start"
                 android:text="@string/plans_terms_text"
                 android:textColor="@color/grayWave"
-                android:autoLink="web"
-                android:layout_centerVertical="true"
-                android:linksClickable="true"
-                android:textSize="14sp"/>
+                android:textSize="14sp" />
             <!--Should set text from string plans_terms_text in respective class-->
         </RelativeLayout>
 
 
         <RelativeLayout
-            android:layout_marginTop="12dp"
             android:id="@+id/checkLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@id/lowerDivider">
+
             <CheckBox
                 android:id="@+id/accCheckBox"
-                android:layout_marginStart="@dimen/margin24"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin24" />
 
             <TextView
                 android:id="@+id/ukAccountText"
@@ -291,26 +291,26 @@
                 android:textSize="14sp" />
             <!--Should set text from string plans_terms_text in respective class-->
         </RelativeLayout>
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/continueButton"
             style="@android:style/Widget.Material.Button.Borderless.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin24"
+            android:layout_marginTop="36dp"
+            android:layout_marginEnd="@dimen/margin24"
+            android:layout_marginBottom="36dp"
             android:background="@drawable/btn_primary_background"
+            android:enabled="false"
             android:fontFamily="@font/roboto_medium"
             android:paddingTop="14dp"
             android:paddingBottom="14dp"
-            android:layout_marginStart="@dimen/margin24"
-            android:layout_marginEnd="@dimen/margin24"
-            android:layout_marginTop="36dp"
-            android:layout_marginBottom="36dp"
             android:text="@string/continue_button"
             android:textAllCaps="false"
-            android:enabled="false"
             android:textColor="@color/text_btn_primary_color"
             android:textSize="@dimen/textSize14" />
     </LinearLayout>
-
 
 
 </androidx.core.widget.NestedScrollView>

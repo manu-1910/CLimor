@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -27,8 +27,8 @@
                 android:id="@+id/indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:dotsColor="@color/dotsColor"
                 android:layout_marginTop="28dp"
+                app:dotsColor="@color/dotsColor"
                 app:dotsCornerRadius="8dp"
                 app:dotsSize="8dp"
                 app:dotsSpacing="5dp"
@@ -40,11 +40,11 @@
                 app:selectedDotColor="@color/colorAccent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:visibility="visible"
                 android:id="@+id/requestStateLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
+                android:visibility="visible"
                 app:layout_constraintTop_toBottomOf="@id/indicator">
 
                 <View
@@ -85,11 +85,11 @@
                     app:layout_constraintTop_toBottomOf="@+id/upperDivider" />
 
                 <RelativeLayout
-                    android:visibility="gone"
                     android:id="@+id/player_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="12dp"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/upperDivider">
@@ -187,6 +187,7 @@
                         app:layout_constraintTop_toTopOf="@+id/termsCheckBox" />
                     <!--Should set text from string plans_terms_text in respective class-->
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/patronButton"
                     style="@android:style/Widget.Material.Button.Borderless.Colored"
@@ -197,18 +198,17 @@
                     android:layout_marginEnd="@dimen/margin24"
                     android:layout_marginBottom="36dp"
                     android:background="@drawable/btn_primary_background"
+                    android:enabled="false"
                     android:fontFamily="@font/roboto_medium"
                     android:paddingTop="14dp"
                     android:paddingBottom="14dp"
                     android:text="@string/request_invite"
-                    android:textStyle="bold"
                     android:textAllCaps="false"
                     android:textColor="@color/text_btn_primary_color"
                     android:textSize="@dimen/textSize14"
-                    android:enabled="false"
+                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/checkLayout" />
-
 
 
                 <TextView
@@ -239,46 +239,46 @@
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mangePatronTV"/>
+                    app:layout_constraintTop_toBottomOf="@id/mangePatronTV" />
 
                 <androidx.constraintlayout.widget.Group
+                    android:id="@+id/managePatronStateLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:constraint_referenced_ids="mangePatronTV,managePatronDescriptionTV,patronDivider"
-                    android:id="@+id/managePatronStateLayout"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="mangePatronTV,managePatronDescriptionTV,patronDivider" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-           <!-- <ImageView
-                android:id="@+id/patronStatusIv"
-                android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:layout_marginTop="54dp"
-                android:src="@drawable/ic_patron_welcome"
-                app:layout_constraintTop_toTopOf="parent" />
+            <!-- <ImageView
+                 android:id="@+id/patronStatusIv"
+                 android:layout_width="match_parent"
+                 android:layout_height="180dp"
+                 android:layout_marginTop="54dp"
+                 android:src="@drawable/ic_patron_welcome"
+                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/patronStatusTv"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:fontFamily="@font/roboto_medium"
-                android:gravity="center"
-                android:text="@string/limor_patron_request"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/patronStatusIv" />
--->
+             <TextView
+                 android:id="@+id/patronStatusTv"
+                 android:layout_width="200dp"
+                 android:layout_height="wrap_content"
+                 android:layout_marginTop="24dp"
+                 android:fontFamily="@font/roboto_medium"
+                 android:gravity="center"
+                 android:text="@string/limor_patron_request"
+                 android:textColor="@color/black"
+                 android:textSize="16sp"
+                 android:textStyle="bold"
+                 app:layout_constraintEnd_toEndOf="parent"
+                 app:layout_constraintStart_toStartOf="parent"
+                 app:layout_constraintTop_toBottomOf="@+id/patronStatusIv" />
+ -->
             <androidx.constraintlayout.widget.Group
+                android:id="@+id/baseImageTextLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:constraint_referenced_ids="pager,indicator"
-                android:id="@+id/baseImageTextLayout"
-                android:visibility="visible"/>
+                android:visibility="visible"
+                app:constraint_referenced_ids="pager,indicator" />
 
             <ImageView
                 android:id="@+id/emptyStateIv"
@@ -303,12 +303,11 @@
                 app:layout_constraintTop_toBottomOf="@+id/emptyStateIv" />
 
             <androidx.constraintlayout.widget.Group
+                android:id="@+id/emptyStateLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:constraint_referenced_ids="emptyStateIv,emptyStateTv"
-                android:id="@+id/emptyStateLayout"
-                android:visibility="gone"/>
-
+                android:visibility="gone"
+                app:constraint_referenced_ids="emptyStateIv,emptyStateTv" />
 
 
             <TextView
@@ -321,9 +320,9 @@
                 android:textColor="@color/subtitle_text_color"
                 android:textSize="12sp"
                 android:textStyle="bold"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                android:visibility="gone"/>
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

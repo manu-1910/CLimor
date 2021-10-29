@@ -277,22 +277,22 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
         when (user.patronOnBoardingStatus) {
             "NOT_INITIATED" -> {
                 val intent = Intent(requireContext(), PatronSetupActivity::class.java)
-                intent.putExtra("user",user)
+                intent.putExtra("user", user)
                 startActivity(intent)
             }
             "MEMBERSHIP_PURCHASED" -> {
                 //Go to Categories
                 val intent = Intent(requireContext(), PatronSetupActivity::class.java)
-                intent.putExtra("user",user)
-                intent.putExtra("page","categories")
+                intent.putExtra("user", user)
+                intent.putExtra("page", "categories")
                 startActivity(intent)
 
             }
             "CATEGORIES_COLLECTED" -> {
                 //Go to Languages
                 val intent = Intent(requireContext(), PatronSetupActivity::class.java)
-                intent.putExtra("user",user)
-                intent.putExtra("page","languages")
+                intent.putExtra("user", user)
+                intent.putExtra("page", "languages")
                 startActivity(intent)
             }
             "COMPLETED" -> {
