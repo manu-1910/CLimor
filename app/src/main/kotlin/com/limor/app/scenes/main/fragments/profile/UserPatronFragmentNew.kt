@@ -113,7 +113,6 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
         binding.emptyStateTv.text = if (currentUser()) {
             getString(R.string.limor_patron_empty_state)
         } else getString(R.string.patron_empty_state_other)
-        binding.patronButton.isEnabled = true
         if (currentUser()) {
             if (user.isPatron == true) {
                 //is already a patron
