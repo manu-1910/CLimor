@@ -2,6 +2,7 @@ package com.limor.app.scenes.utils
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
@@ -17,6 +18,10 @@ import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.uimodels.UIErrorResponse
+import com.skydoves.balloon.ArrowOrientation
+import com.skydoves.balloon.Balloon
+import com.skydoves.balloon.BalloonAnimation
+import com.skydoves.balloon.createBalloon
 import org.jetbrains.anko.connectivityManager
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
@@ -342,6 +347,29 @@ class CommonsKt {
             return getYearsBetweenTwoCalendars(calendarBirth, Calendar.getInstance())
         }
 
+        fun createPopupBalloon(context: Context,s: String): Balloon {
+            return Balloon.Builder(context).apply{
+                setArrowSize(16)
+                setWidth(200)
+                setHeight(120)
+                setArrowPosition(0.9f)
+                setArrowOrientation(ArrowOrientation.TOP)
+                setCornerRadius(4f)
+                setAlpha(1.0f)
+                setPadding(16)
+                setMarginRight(4)
+                setText(s)
+                setTextTypeface(Typeface.DEFAULT_BOLD)
+                setElevation(8)
+                setTextColorResource(R.color.black)
+                setBackgroundColorResource(R.color.white)
+                setBalloonAnimation(BalloonAnimation.FADE)
+                setLifecycleOwner(lifecycleOwner)
+                setOverlayColorResource(R.color.black60)
+                isVisibleOverlay = true
+                setDismissWhenOverlayClicked(true)
+            }.build()
+        }
 
 
     }

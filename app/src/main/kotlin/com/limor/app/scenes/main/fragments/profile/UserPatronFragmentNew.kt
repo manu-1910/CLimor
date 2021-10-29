@@ -148,12 +148,14 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
                         binding.baseImageTextLayout.visibility = View.VISIBLE
                         binding.managePatronStateLayout.visibility = View.GONE
                         binding.requestStateLayout.visibility = View.VISIBLE
-
+                        binding.checkLayout.visibility = View.VISIBLE
+                        binding.patronButton.isEnabled = false
                         subscribeToInvite()
                     }
                     "REQUESTED" -> {
                         setupViewPager(getNormalStateItems())
                         binding.patronButton.isEnabled = false
+                        binding.checkLayout.visibility = View.GONE
                         binding.patronButton.text = getString(R.string.requested)
                     }
                     "APPROVED" -> {
@@ -166,6 +168,7 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
                                 }
                                 "NOT_INITIATED" -> {
                                     setupViewPager(getApprovedStateItems())
+                                    binding.checkLayout.visibility = View.VISIBLE
                                     binding.patronButton.text = getString(R.string.limorPatronSetup)
                                 }
                                 "COMPLETED" -> {

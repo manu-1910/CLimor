@@ -1,6 +1,7 @@
 package com.limor.app.scenes.patron.setup
 
 import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,9 +21,15 @@ import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.main.viewmodels.PublishCategoriesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.BACKGROUND
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.MAIN
+import com.skydoves.balloon.*
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.fragment_patron_categories.*
 import kotlinx.android.synthetic.main.fragment_publish_categories.*
+import kotlinx.android.synthetic.main.fragment_publish_categories.btnContinue
+import kotlinx.android.synthetic.main.fragment_publish_categories.cgCategories
+import kotlinx.android.synthetic.main.fragment_publish_categories.topAppBar
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.design.snackbar
@@ -154,6 +161,15 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
                 }
             }
 
+        }
+        val balloon =  CommonsKt.createPopupBalloon(requireContext(),"You can only select 5 categories. if you talk about sport, Select `Sport`")
+        btnCategoriesInfo.setOnClickListener {
+            balloon.showAlignBottom(it)
+            if(!balloon.isShowing){
+                it.showAlignBottom(balloon,0,0)
+            }else{
+                balloon.dismiss()
+            }
         }
 
         topAppBar.setNavigationOnClickListener {

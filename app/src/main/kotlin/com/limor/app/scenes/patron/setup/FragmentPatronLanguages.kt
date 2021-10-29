@@ -1,6 +1,7 @@
 package com.limor.app.scenes.patron.setup
 
 import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
@@ -22,13 +24,24 @@ import com.limor.app.scenes.auth_new.data.LanguageWrapper
 import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.main.viewmodels.LanguagesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.MAIN
+import com.skydoves.balloon.ArrowOrientation
+import com.skydoves.balloon.BalloonAnimation
+import com.skydoves.balloon.createBalloon
+import com.skydoves.balloon.showAlignBottom
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_languages.*
 import kotlinx.android.synthetic.main.fragment_languages.btnContinue
+import kotlinx.android.synthetic.main.fragment_languages.cgLanguages
 import kotlinx.android.synthetic.main.fragment_languages.clMain
+import kotlinx.android.synthetic.main.fragment_languages.etSearchLanguage
 import kotlinx.android.synthetic.main.fragment_languages.topAppBar
+import kotlinx.android.synthetic.main.fragment_patron_categories.*
+import kotlinx.android.synthetic.main.fragment_patron_languages.*
 import kotlinx.android.synthetic.main.fragment_publish_categories.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import javax.inject.Inject
@@ -76,10 +89,22 @@ class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
 
         btnContinue.setOnClickListener {
             if (publishViewModel.languageSelectedCodesList.isNotEmpty()) {
-                findNavController().navigate(R.id.action_fragmentPatronLanguages_to_fragmentPatronOnboardingSuccess)
+                lifecycleScope.launch {
+                    publishViewModel.addPatronCategories().collect {
+                        switchCommonVisibility(true)
+                        findNavController().navigate(R.id.action_fragmentPatronLanguages_to_fragmentPatronOnboardingSuccess)
+                    }
+                }
             }
         }
-
+        val balloon = CommonsKt.createPopupBalloon(requireContext(),"You can only select 5 languages. if you speak english, Select `English`")
+        btnLanguagesInfo.setOnClickListener {
+            if(!balloon.isShowing){
+                it.showAlignBottom(balloon,0,0)
+            }else{
+                balloon.dismiss()
+            }
+        }
         topAppBar.setNavigationOnClickListener {
             if(activity?.intent?.getStringExtra("page") != null){
                 activity?.finish()

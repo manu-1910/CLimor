@@ -35,7 +35,7 @@
                 android:textStyle="bold" />
 
             <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/btn_user_settings"
+                android:id="@+id/btnLanguagesInfo"
                 style="@style/Widget.AppCompat.Toolbar.Button.Navigation"
                 android:layout_width="@dimen/toolbar_button_size"
                 android:layout_height="@dimen/toolbar_button_size"
