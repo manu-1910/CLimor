@@ -27,7 +27,7 @@
                 android:id="@+id/managePatron"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@id/indicator">
 
                 <TextView
                     android:id="@+id/mangePatronTV"
@@ -89,7 +89,7 @@
                 app:dotsWidthFactor="2.5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/managePatron"
+                app:layout_constraintTop_toBottomOf="@id/pager"
                 app:progressMode="false"
                 app:selectedDotColor="@color/colorAccent" />
 
@@ -100,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:visibility="visible"
-                app:layout_constraintTop_toBottomOf="@id/indicator">
+                app:layout_constraintTop_toBottomOf="@id/managePatron">
 
                 <View
                     android:id="@+id/upperDivider"
@@ -108,8 +108,8 @@
                     android:layout_height="1dp"
                     android:layout_alignParentTop="true"
                     android:alpha="0.12"
-                    android:background="@color/notification_divider"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:background="@color/notification_divider" />
 
 
                 <View
@@ -144,7 +144,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:orientation="horizontal"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/lowerDivider">
@@ -160,7 +160,7 @@
                     <TextView
                         android:id="@+id/termsTV"
                         android:layout_width="0dp"
-                        android:layout_height="24dp"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_toEndOf="@+id/termsCheckBox"
                         android:fontFamily="@font/roboto"
@@ -171,7 +171,9 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/termsCheckBox"
                         app:layout_constraintTop_toTopOf="@+id/termsCheckBox" />
+
                     <!--Should set text from string plans_terms_text in respective class-->
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.appcompat.widget.AppCompatButton

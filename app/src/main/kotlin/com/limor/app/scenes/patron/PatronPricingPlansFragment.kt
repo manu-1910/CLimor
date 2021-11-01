@@ -4,11 +4,12 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.text.Html
+import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -66,7 +67,9 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
 
         model.consumePurchasedSub(purchase).collect {
             if (it == "Success") {
-                findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
+                lifecycleScope.launch(Dispatchers.Main){
+                    findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
+                }
             }
         }
 
@@ -211,18 +214,15 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         if (item.freeTrialPeriod.isNotEmpty()) {
             val termsEnd =
                 getString(R.string.plans_terms_start) + getString(R.string.plans_terms_text)
-            val termsT =
-                "After free trial ends, ${item.originalPrice} \n" + Html.fromHtml(
-                    termsEnd,
-                    Html.FROM_HTML_MODE_COMPACT)
+            val termsT: Spanned = HtmlCompat.fromHtml(
+                "After free trial ends ${item.originalPrice}. \n" +termsEnd,
+                    HtmlCompat.FROM_HTML_MODE_LEGACY)
             binding.termsTV.text = termsT
-            binding.termsTV.movementMethod = LinkMovementMethod()
-
-            val bankText = getString(R.string.text_uk_account) +
-                    Html.fromHtml(getString(R.string.patron_uk_account_learn_more),
-                        Html.FROM_HTML_MODE_COMPACT)
+            binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
+            val bankText: Spanned = HtmlCompat.fromHtml(getString(R.string.patron_uk_account_learn_more),
+                HtmlCompat.FROM_HTML_MODE_LEGACY)
             binding.ukAccountText.text = bankText
-            binding.ukAccountText.movementMethod = LinkMovementMethod()
+            binding.ukAccountText.movementMethod = LinkMovementMethod.getInstance()
         }
 
     }

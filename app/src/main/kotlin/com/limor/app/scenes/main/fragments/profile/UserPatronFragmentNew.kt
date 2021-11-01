@@ -4,9 +4,11 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +30,10 @@ import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import java.time.Duration
 import javax.inject.Inject
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
+import androidx.core.text.HtmlCompat
+
 
 class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
 
@@ -88,14 +94,14 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        subscriobeToViewModel()
+        subscribeToViewModel()
         setOnClicks()
-        handleUIStates()
+       // handleUIStates()
 
 
     }
 
-    private fun subscriobeToViewModel() {
+    private fun subscribeToViewModel() {
         model.userProfileData.observe(viewLifecycleOwner, Observer {
             it?.let {
                 user = it
@@ -130,6 +136,10 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
         binding.emptyStateTv.text = if (currentUser()) {
             getString(R.string.limor_patron_empty_state)
         } else getString(R.string.patron_empty_state_other)
+        val result: Spanned = HtmlCompat.fromHtml(getString(R.string.patron_uk_account_learn_more), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        binding.termsTV.text = result
+        binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
+
         if (currentUser()) {
             if (user.isPatron == true) {
                 //is already a patron
@@ -181,6 +191,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                                     binding.patronButton.isEnabled = true
                                     binding.pager.visibility = View.GONE
                                     binding.indicator.visibility = View.GONE
+                                    binding.checkLayout.visibility = View.GONE
                                     binding.managePatronStateLayout.visibility = View.VISIBLE
                                 }
                                 else -> {
@@ -304,7 +315,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                 //Go to Categories
                 val intent = Intent(requireContext(), PatronSetupActivity::class.java)
                 intent.putExtra("user", user)
-                intent.putExtra("page", "categories")
+                //intent.putExtra("page", "categories")
                 startActivity(intent)
 
             }
