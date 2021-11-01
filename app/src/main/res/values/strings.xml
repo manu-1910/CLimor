@@ -712,5 +712,7 @@
     <string name="limorPatronSetupWallet">Setup My Digital Wallet</string>
     <string name="text_uk_account">I have an active UK based Bank account</string>
     <string name="patron_uk_account_learn_more"><![CDATA[</br><a href=\'https://google.com\'><strong>Learn More<strong/></a>]]></string>
+    <string name="spot_secured_title">Spot Secured</string>
+    <string name="sport_secured_description">You have secured your spot. You\'re going to have your digital wallet soon</string>
 
 </resources>

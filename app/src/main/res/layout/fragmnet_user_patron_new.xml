@@ -23,6 +23,60 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/managePatron"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/mangePatronTV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@drawable/ic_rigth_arrow"
+                    android:fontFamily="@font/roboto_medium"
+                    android:gravity="start"
+                    android:padding="20dp"
+                    android:text="@string/limor_patron_manage"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/managePatronDescriptionTV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:fontFamily="@font/roboto_medium"
+                    android:gravity="center"
+                    android:text="@string/limor_patron_manage_description"
+                    android:textColor="@color/grayWave"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mangePatronTV" />
+
+                <View
+                    android:id="@+id/patronDivider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentTop="true"
+                    android:alpha="0.12"
+                    android:background="@color/notification_divider"
+                    app:layout_constraintTop_toBottomOf="@id/mangePatronTV" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/managePatronStateLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="mangePatronTV,managePatronDescriptionTV,patronDivider" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
                 android:id="@+id/indicator"
                 android:layout_width="wrap_content"
@@ -35,9 +89,10 @@
                 app:dotsWidthFactor="2.5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/pager"
+                app:layout_constraintTop_toBottomOf="@id/managePatron"
                 app:progressMode="false"
                 app:selectedDotColor="@color/colorAccent" />
+
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/requestStateLayout"
@@ -48,22 +103,14 @@
                 app:layout_constraintTop_toBottomOf="@id/indicator">
 
                 <View
-                    android:id="@+id/patronDivider"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentTop="true"
-                    android:alpha="0.12"
-                    android:background="@color/notification_divider"
-                    app:layout_constraintTop_toBottomOf="@id/mangePatronTV" />
-
-                <View
                     android:id="@+id/upperDivider"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_alignParentTop="true"
                     android:alpha="0.12"
                     android:background="@color/notification_divider"
-                    app:layout_constraintTop_toBottomOf="@id/managePatronDescriptionTV" />
+                    app:layout_constraintTop_toTopOf="parent" />
+
 
                 <View
                     android:id="@+id/lowerDivider"
@@ -84,73 +131,12 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/upperDivider" />
 
-                <RelativeLayout
-                    android:id="@+id/player_view"
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/audio_player_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="12dp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/upperDivider">
-
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/play"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginTop="10dp"
-                        android:contentDescription="@string/play"
-                        android:src="@drawable/ic_play"
-                        android:visibility="visible" />
-
-                    <SeekBar
-                        android:id="@+id/pr_progress"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignTop="@+id/play"
-                        android:layout_alignBottom="@+id/play"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="6dp"
-                        android:layout_toEndOf="@id/play"
-                        android:maxHeight="4dp"
-                        android:minHeight="4dp"
-                        android:progress="50"
-                        android:progressDrawable="@drawable/custom_seekbar_progress"
-                        android:thumb="@drawable/seekbar_thumb"
-                        android:visibility="visible" />
-
-                    <TextView
-                        android:id="@+id/time_start"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/pr_progress"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginTop="@dimen/marginTiny"
-                        android:layout_toEndOf="@id/play"
-                        android:fontFamily="@font/roboto"
-                        android:gravity="start"
-                        android:text="00:00"
-                        android:textColor="@color/textSecondary"
-                        android:textSize="@dimen/textSizeTiny"
-                        android:visibility="visible" />
-
-                    <TextView
-                        android:id="@+id/time_duration"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/pr_progress"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginTop="@dimen/marginTiny"
-                        android:layout_marginEnd="15dp"
-                        android:fontFamily="@font/roboto_medium"
-                        android:gravity="end"
-                        android:text="00:00"
-                        android:textColor="@color/textSecondary"
-                        android:textSize="@dimen/textSizeTiny"
-                        android:visibility="visible" />
-
-                </RelativeLayout>
+                    android:visibility="visible"
+                    app:constraint_referenced_ids="audio_player,lowerDivider,upperDivider" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/checkLayout"
@@ -211,68 +197,8 @@
                     app:layout_constraintTop_toBottomOf="@id/checkLayout" />
 
 
-                <TextView
-                    android:id="@+id/mangePatronTV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableEnd="@drawable/ic_rigth_arrow"
-                    android:fontFamily="@font/roboto_medium"
-                    android:gravity="start"
-                    android:padding="20dp"
-                    android:text="@string/limor_patron_manage"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/managePatronDescriptionTV"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="20dp"
-                    android:fontFamily="@font/roboto_medium"
-                    android:gravity="center"
-                    android:text="@string/limor_patron_manage_description"
-                    android:textColor="@color/grayWave"
-                    android:textSize="18sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mangePatronTV" />
-
-                <androidx.constraintlayout.widget.Group
-                    android:id="@+id/managePatronStateLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:constraint_referenced_ids="mangePatronTV,managePatronDescriptionTV,patronDivider" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- <ImageView
-                 android:id="@+id/patronStatusIv"
-                 android:layout_width="match_parent"
-                 android:layout_height="180dp"
-                 android:layout_marginTop="54dp"
-                 android:src="@drawable/ic_patron_welcome"
-                 app:layout_constraintTop_toTopOf="parent" />
-
-             <TextView
-                 android:id="@+id/patronStatusTv"
-                 android:layout_width="200dp"
-                 android:layout_height="wrap_content"
-                 android:layout_marginTop="24dp"
-                 android:fontFamily="@font/roboto_medium"
-                 android:gravity="center"
-                 android:text="@string/limor_patron_request"
-                 android:textColor="@color/black"
-                 android:textSize="16sp"
-                 android:textStyle="bold"
-                 app:layout_constraintEnd_toEndOf="parent"
-                 app:layout_constraintStart_toStartOf="parent"
-                 app:layout_constraintTop_toBottomOf="@+id/patronStatusIv" />
- -->
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/baseImageTextLayout"
                 android:layout_width="wrap_content"

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.Purchase
 import com.limor.app.FeedItemsQuery
+import com.limor.app.GetPlansQuery
 import com.limor.app.apollo.PublishRepository
 import com.limor.app.common.SingleLiveEvent
 import com.limor.app.type.CreatePodcastInput
@@ -26,16 +27,17 @@ import timber.log.Timber
 import javax.inject.Inject
 
 
-class PublishViewModel @Inject constructor(private val publishUseCase: PublishUseCase,
-private val publishRepository: PublishRepository
+class PublishViewModel @Inject constructor(
+    private val publishUseCase: PublishUseCase,
+    private val publishRepository: PublishRepository,
 ) : ViewModel() {
 
     var uiPublishRequest = UIPublishRequest(
         podcast = null
-    );
+    )
     private val _publishResponseData = MutableLiveData<String?>()
     val publishResponseData: LiveData<String?>
-    get() = _publishResponseData
+        get() = _publishResponseData
     var categorySelected: String = ""
     var categorySelectedId: Int = -1
     var categorySelectedIdsList: ArrayList<Int> = arrayListOf()
@@ -48,13 +50,13 @@ private val publishRepository: PublishRepository
     private val compositeDispose = CompositeDisposable()
 
     data class Input(
-        val publishTrigger: Observable<Unit>
+        val publishTrigger: Observable<Unit>,
     )
 
     data class Output(
         val response: LiveData<UIPublishResponse>,
         val backgroundWorkingProgress: LiveData<Boolean>,
-        val errorMessage: SingleLiveEvent<UIErrorResponse>
+        val errorMessage: SingleLiveEvent<UIErrorResponse>,
     )
 
     fun transform(input: Input): Output {
@@ -90,45 +92,57 @@ private val publishRepository: PublishRepository
         super.onCleared()
     }
 
-    suspend fun createPodcast(podcast: CreatePodcastInput):String? {
+    suspend fun createPodcast(podcast: CreatePodcastInput): String? {
 
         return withContext(Dispatchers.IO) {
             try {
                 val response = publishRepository.createPodcast(podcast)
-               // _publishResponseData.value = response
+                // _publishResponseData.value = response
                 response
             } catch (e: Exception) {
                 Timber.e(e)
-               // _publishResponseData.value = null
+                // _publishResponseData.value = null
                 null
             }
 
         }
     }
 
-    suspend fun updatePodcast(podcastId: Int, title: String, caption: String): String?{
-        return withContext(Dispatchers.IO){
-            try{
+    suspend fun updatePodcast(podcastId: Int, title: String, caption: String): String? {
+        return withContext(Dispatchers.IO) {
+            try {
                 val response = publishRepository.updatePodcast(podcastId, title, caption)
                 response
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 null
             }
         }
     }
 
-    suspend fun consumePurchasedSub(purchase: Purchase) = callbackFlow<String?>{
+    suspend fun consumePurchasedSub(purchase: Purchase) = callbackFlow<String?> {
         send(publishRepository.updateSubscriptionDetails(purchase))
         awaitClose()
     }
 
     suspend fun addPatronCategories() = callbackFlow<String?> {
-        send(withContext(Dispatchers.IO){publishRepository.addPatronCategories(categorySelectedIdsList)})
+        send(withContext(Dispatchers.IO) {
+            publishRepository.addPatronCategories(categorySelectedIdsList)
+        })
         awaitClose()
     }
 
     suspend fun addPatronLanguages() = callbackFlow<String?> {
-        send(withContext(Dispatchers.IO){publishRepository.addPatronLanguages(languageSelectedCodesList)})
+        send(withContext(Dispatchers.IO) {
+            publishRepository.addPatronLanguages(languageSelectedCodesList)
+        })
+        awaitClose()
+    }
+
+
+    suspend fun getPlans() = callbackFlow<List<GetPlansQuery.Plan?>?> {
+        send(withContext(Dispatchers.IO) {
+            publishRepository.getPlans()
+        })
         awaitClose()
     }
 

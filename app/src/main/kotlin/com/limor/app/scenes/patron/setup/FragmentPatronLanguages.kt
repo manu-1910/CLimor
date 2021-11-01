@@ -1,9 +1,7 @@
 package com.limor.app.scenes.patron.setup
 
 import android.content.Context
-import android.graphics.Typeface
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,30 +24,19 @@ import com.limor.app.scenes.main.viewmodels.LanguagesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.MAIN
-import com.skydoves.balloon.ArrowOrientation
-import com.skydoves.balloon.BalloonAnimation
-import com.skydoves.balloon.createBalloon
 import com.skydoves.balloon.showAlignBottom
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_languages.*
 import kotlinx.android.synthetic.main.fragment_languages.btnContinue
 import kotlinx.android.synthetic.main.fragment_languages.cgLanguages
 import kotlinx.android.synthetic.main.fragment_languages.clMain
 import kotlinx.android.synthetic.main.fragment_languages.etSearchLanguage
 import kotlinx.android.synthetic.main.fragment_languages.topAppBar
-import kotlinx.android.synthetic.main.fragment_patron_categories.*
 import kotlinx.android.synthetic.main.fragment_patron_languages.*
-import kotlinx.android.synthetic.main.fragment_publish_categories.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import javax.inject.Inject
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
 
@@ -90,25 +77,30 @@ class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
         btnContinue.setOnClickListener {
             if (publishViewModel.languageSelectedCodesList.isNotEmpty()) {
                 lifecycleScope.launch {
-                    publishViewModel.addPatronCategories().collect {
-                        switchCommonVisibility(true)
-                        findNavController().navigate(R.id.action_fragmentPatronLanguages_to_fragmentPatronOnboardingSuccess)
+                    switchCommonVisibility(true)
+                    publishViewModel.addPatronLanguages().collect {
+                        if (it == "Success") {
+                            findNavController().navigate(R.id.action_fragmentPatronLanguages_to_fragmentPatronOnboardingSuccess)
+                        } else {
+                            btnContinue.snackbar(it!!)
+                        }
                     }
                 }
             }
         }
-        val balloon = CommonsKt.createPopupBalloon(requireContext(),"You can only select 5 languages. if you speak english, Select `English`")
+        val balloon = CommonsKt.createPopupBalloon(requireContext(),
+            "You can only select 5 languages. if you speak english, Select `English`")
         btnLanguagesInfo.setOnClickListener {
-            if(!balloon.isShowing){
-                it.showAlignBottom(balloon,0,0)
-            }else{
+            if (!balloon.isShowing) {
+                it.showAlignBottom(balloon, 0, 0)
+            } else {
                 balloon.dismiss()
             }
         }
         topAppBar.setNavigationOnClickListener {
-            if(activity?.intent?.getStringExtra("page") != null){
+            if (activity?.intent?.getStringExtra("page") != null) {
                 activity?.finish()
-            }else{
+            } else {
                 it.findNavController().popBackStack()
             }
 
@@ -163,17 +155,19 @@ class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
             cgLanguages.addView(it)
         }
     }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         AndroidSupportInjection.inject(this)
     }
+
     private fun getVariantChip(language: LanguageWrapper): Chip {
         val chip = layoutInflater.inflate(R.layout.item_chip_category, null) as Chip
         cgLanguages.isSingleSelection = false
         chip.apply {
             text = language.name
             MAIN {
-                isChecked =  lastCheckedIds.contains(chip.id)
+                isChecked = lastCheckedIds.contains(chip.id)
             }
             setOnCheckedChangeListener { buttonView, isChecked ->
                 val ids: List<Int> = cgLanguages.checkedChipIds
@@ -184,8 +178,8 @@ class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
                     if (ids.size > 5) {
                         chip.isChecked = false //force to unchecked the chip
                         chip.snackbar("You can only select 5 categories")
-                    }else{
-                       // lastCheckedIds.add(chip.id)
+                    } else {
+                        // lastCheckedIds.add(chip.id)
                         language.language.code?.let {
                             //publishViewModel.categorySelectedId = it
                             publishViewModel.languageSelectedCodesList.add(it)

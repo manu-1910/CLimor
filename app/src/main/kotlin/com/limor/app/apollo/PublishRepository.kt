@@ -66,4 +66,13 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
         }
     }
 
+    suspend fun getPlans(): List<GetPlansQuery.Plan?>? {
+        val query = GetPlansQuery()
+        val queryResult = apollo.launchQuery(query)
+        val createPodcastResult: GetPlansQuery.GetPlans? =
+            queryResult?.data?.getPlans
+        Timber.d("GetPlans Query -> ${createPodcastResult?.status}")
+        return createPodcastResult?.plans
+    }
+
 }

@@ -1,12 +1,10 @@
 package com.limor.app.scenes.patron.setup
 
 import android.content.Context
-import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -36,16 +34,6 @@ import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import javax.inject.Inject
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [FragmentPatronCategories.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FragmentPatronCategories : FragmentWithLoading(), Injectable {
 
     @Inject
@@ -59,11 +47,6 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_patron_categories, container, false)
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) = FragmentPatronCategories()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -131,7 +114,7 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
                 if (ids.size > 5) {
                     chip.isChecked = false //force to unchecked the chip
                     chip.snackbar("You can only select 5 categories")
-                }else{
+                } else {
                     lastCheckedIds.add(chip.id)
                     category.categoryId?.let {
                         //publishViewModel.categorySelectedId = it
@@ -162,12 +145,13 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
             }
 
         }
-        val balloon =  CommonsKt.createPopupBalloon(requireContext(),"You can only select 5 categories. if you talk about sport, Select `Sport`")
+        val balloon = CommonsKt.createPopupBalloon(requireContext(),
+            "You can only select 5 categories. if you talk about sport, Select `Sport`")
         btnCategoriesInfo.setOnClickListener {
             balloon.showAlignBottom(it)
-            if(!balloon.isShowing){
-                it.showAlignBottom(balloon,0,0)
-            }else{
+            if (!balloon.isShowing) {
+                it.showAlignBottom(balloon, 0, 0)
+            } else {
                 balloon.dismiss()
             }
         }

@@ -1,33 +1,35 @@
 package com.limor.app.scenes.main.fragments.profile
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
 import com.limor.app.extensions.isOnline
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.patron.FragmentShortItemSlider
 import com.limor.app.scenes.patron.setup.PatronSetupActivity
-import com.limor.app.scenes.utils.Commons
 import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.UserUIModel
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_waveform.view.*
+import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
 import org.jetbrains.anko.design.snackbar
-import org.jetbrains.anko.support.v4.startActivityForResult
 import timber.log.Timber
 import java.time.Duration
 import javax.inject.Inject
 
-class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
+class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -86,10 +88,25 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        handleUIStates()
+        subscriobeToViewModel()
         setOnClicks()
+        handleUIStates()
 
 
+    }
+
+    private fun subscriobeToViewModel() {
+        model.userProfileData.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                user = it
+                handleUIStates()
+            }
+        })
+    }
+
+    override fun onStart() {
+        super.onStart()
+        model.getUserProfile()
     }
 
     private fun currentUser(): Boolean {
@@ -131,30 +148,16 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
                 when (user.patronInvitationStatus) {
                     null -> {
                         //Considering this as NOT_REQUESTED STATE
-                        setupViewPager(getNormalStateItems())
-                        binding.patronButton.text = getString(R.string.request_invite)
-                        binding.emptyStateLayout.visibility = View.GONE
-                        binding.baseImageTextLayout.visibility = View.VISIBLE
-                        binding.managePatronStateLayout.visibility = View.GONE
-                        binding.requestStateLayout.visibility = View.VISIBLE
-                        subscribeToInvite()
+                        setNotInitaiatedState()
                     }
                     "NOT_REQUESTED" -> {
                         //Show Request Invite state
-                        setupViewPager(getNormalStateItems())
-                        binding.patronButton.text = getString(R.string.request_invite)
-                        binding.emptyStateLayout.visibility = View.GONE
-                        binding.baseImageTextLayout.visibility = View.VISIBLE
-                        binding.managePatronStateLayout.visibility = View.GONE
-                        binding.requestStateLayout.visibility = View.VISIBLE
-                        binding.checkLayout.visibility = View.VISIBLE
-                        binding.patronButton.isEnabled = false
-                        subscribeToInvite()
+                        setNotInitaiatedState()
                     }
                     "REQUESTED" -> {
                         setupViewPager(getNormalStateItems())
-                        binding.patronButton.isEnabled = false
                         binding.checkLayout.visibility = View.GONE
+                        binding.patronButton.isEnabled = false
                         binding.patronButton.text = getString(R.string.requested)
                     }
                     "APPROVED" -> {
@@ -175,11 +178,15 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
                                     //setupViewPager(getNormalStateItems())
                                     binding.patronButton.text =
                                         getString(R.string.limorPatronSetupWallet)
+                                    binding.patronButton.isEnabled = true
+                                    binding.pager.visibility = View.GONE
+                                    binding.indicator.visibility = View.GONE
                                     binding.managePatronStateLayout.visibility = View.VISIBLE
                                 }
                                 else -> {
                                     setupViewPager(getApprovedStateItems())
                                     binding.patronButton.text = getString(R.string.limorPatronSetup)
+                                    binding.patronButton.isEnabled = true
                                 }
 
                             }
@@ -205,6 +212,18 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
 
     }
 
+    private fun setNotInitaiatedState() {
+        setupViewPager(getNormalStateItems())
+        binding.patronButton.text = getString(R.string.request_invite)
+        binding.emptyStateLayout.visibility = View.GONE
+        binding.baseImageTextLayout.visibility = View.VISIBLE
+        binding.managePatronStateLayout.visibility = View.GONE
+        binding.requestStateLayout.visibility = View.VISIBLE
+        binding.checkLayout.visibility = View.VISIBLE
+        binding.patronButton.isEnabled = false
+        subscribeToInvite()
+    }
+
     private fun subscribeToInvite() {
         model.patronInviteStatus.observe(viewLifecycleOwner, { inviteStatus ->
             if (inviteStatus == "Success") {
@@ -219,8 +238,9 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
     }
 
     private fun setupAudioPlayer(url: String?, durationSeconds: Double?) {
+        Timber.d("$url ---- AUDIO")
         if (url.isNullOrEmpty()) {
-            binding.audioPlayer.visibility = View.GONE
+            binding.audioPlayerView.visibility = View.GONE
         } else {
             val durationMillis = ((durationSeconds ?: 0.0) * 1000.0).toLong()
             binding.audioPlayer.initialize(
@@ -229,7 +249,7 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
                     duration = Duration.ofMillis(durationMillis)
                 )
             )
-            binding.audioPlayer.visibility = View.VISIBLE
+            binding.audioPlayerView.visibility = View.VISIBLE
         }
     }
 
@@ -297,11 +317,31 @@ class UserPatronFragmentNew(val user: UserUIModel) : Fragment() {
             }
             "COMPLETED" -> {
                 //Show Coming soon
-                binding.root.snackbar("Your spot has been reserved")
+                showSpotSecuredDialog()
             }
 
         }
 
+    }
+
+    private fun showSpotSecuredDialog() {
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_spot_secured, null)
+
+        dialogBuilder.setView(dialogView)
+        dialogBuilder.setCancelable(true)
+        val dialog: AlertDialog = dialogBuilder.create()
+        dialogView.okButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset)
+            show()
+        }
     }
 
 
