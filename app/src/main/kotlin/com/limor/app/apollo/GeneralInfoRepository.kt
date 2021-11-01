@@ -75,7 +75,7 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
 
     suspend fun getUserProfileById(id: Int): UserUIModel? {
         val query = GetUserProfileByIdQuery(id)
-        val queryResult = withContext(Dispatchers.IO){
+        val queryResult = withContext(Dispatchers.IO) {
             apollo.launchQuery(query)
         }
         val createUserResult: GetUserProfileByIdQuery.GetUserById =
@@ -84,8 +84,11 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         return createUserResult.mapToUIModel()
     }
 
-    suspend fun getBlockedUsers(limit:Int,offset:Int): List<GetBlockedUsersQuery.GetBlockedUser?>? {
-        val query = GetBlockedUsersQuery(limit,offset)
+    suspend fun getBlockedUsers(
+        limit: Int,
+        offset: Int
+    ): List<GetBlockedUsersQuery.GetBlockedUser?>? {
+        val query = GetBlockedUsersQuery(limit, offset)
         val queryResult = withContext(Dispatchers.IO) {
             apollo.launchQuery(query)
         }
@@ -95,10 +98,14 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         return createUserResult
     }
 
-    suspend fun getFollowers(userId:Int?,limit:Int,offset:Int): List<FollowersQuery.GetFollower?>? {
+    suspend fun getFollowers(
+        userId: Int?,
+        limit: Int,
+        offset: Int
+    ): List<FollowersQuery.GetFollower?>? {
         val id = Input.fromNullable(userId)
-        val query = FollowersQuery(id,limit,offset)
-        val queryResult = withContext(Dispatchers.IO){
+        val query = FollowersQuery(id, limit, offset)
+        val queryResult = withContext(Dispatchers.IO) {
             apollo.launchQuery(query)
         }
         val createUserResult: List<FollowersQuery.GetFollower?> =
@@ -106,14 +113,19 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         Timber.d("Got Followers -> ${createUserResult.size}")
         return createUserResult
     }
-    suspend fun getFollowings(userId:Int?,limit:Int,offset:Int): List<FriendsQuery.GetFriend?>? {
+
+    suspend fun getFollowings(
+        userId: Int?,
+        limit: Int,
+        offset: Int
+    ): List<FriendsQuery.GetFriend?>? {
         val id = Input.fromNullable(userId)
-        val query = FriendsQuery(id,limit,offset)
-        val queryResult = withContext(Dispatchers.IO){
+        val query = FriendsQuery(id, limit, offset)
+        val queryResult = withContext(Dispatchers.IO) {
             apollo.launchQuery(query)
         }
         val createUserResult: List<FriendsQuery.GetFriend?> =
-            queryResult?.data?.getFriends?: return null
+            queryResult?.data?.getFriends ?: return null
         Timber.d("Got Friends -> ${createUserResult.size}")
         return createUserResult
     }
@@ -142,4 +154,27 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         val result = apollo.mutate(query)
         return result?.data?.updateNotification?.status ?: return "error"
     }
+
+    suspend fun searchFollowers(
+        term: String,
+        limit: Int,
+        offset: Int
+    ): List<SearchFollowersQuery.SearchFollower?> {
+        val query = SearchFollowersQuery(term, limit, offset)
+        val result = apollo.launchQuery(query)
+        Timber.d("Search Followers -> ${result?.data?.searchFollowers?.size}")
+        return result?.data?.searchFollowers ?: return emptyList()
+    }
+
+    suspend fun searchFollowing(
+        term: String,
+        limit: Int,
+        offset: Int
+    ): List<SearchFollowingQuery.SearchFollowing?> {
+        val query = SearchFollowingQuery(term, limit, offset)
+        val result = apollo.launchQuery(query)
+        Timber.d("Search Followers -> ${result?.data?.searchFollowing?.size}")
+        return result?.data?.searchFollowing ?: return emptyList()
+    }
+
 }
