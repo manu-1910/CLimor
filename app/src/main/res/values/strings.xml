@@ -715,4 +715,14 @@
     <string name="spot_secured_title">Spot Secured</string>
     <string name="sport_secured_description">You have secured your spot. You\'re going to have your digital wallet soon</string>
 
+    <string name="manage_limor_patron_title">Manage Limor Patron</string>
+    <string name="limor_patron_settings">Limor Patron Settings</string>
+    <string name="invitations">Invitations</string>
+    <string name="invitations_description">Invite your friends or random people to become a Limor Patron user</string>
+    <string name="my_earnings">My Earnings</string>
+    <string name="patron_catagories_description">Choose a category that best describes your content.</string>
+    <string name="edit_patron_catagories">Edit Patron Categories</string>
+    <string name="manage_patron_membership">Manage Patron Membership</string>
+    <string name="change_cast_prices">Change all cast prices</string>
+
 </resources>
