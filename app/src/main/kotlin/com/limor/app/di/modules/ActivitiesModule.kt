@@ -13,6 +13,7 @@ import com.limor.app.scenes.main.fragments.record.RecordActivity
 import com.limor.app.scenes.main.fragments.settings.SettingsActivity
 import com.limor.app.scenes.main.fragments.setup_patron.SetupPatronActivity
 import com.limor.app.scenes.main_new.MainActivityNew
+import com.limor.app.scenes.patron.manage.ManagePatronActivity
 import com.limor.app.scenes.patron.setup.PatronSetupActivity
 import com.limor.app.scenes.splash.SplashActivity
 import dagger.Module
@@ -110,4 +111,11 @@ abstract class ActivitiesModule {
         ]
     )
     abstract fun contributeSetupPatronInjectorInjector(): PatronSetupActivity
+
+    @ContributesAndroidInjector(
+        modules = [
+            (ManagePatronActivityFragmentBuilderModule::class)
+        ]
+    )
+    abstract fun contributeManagePatronActivityInjector(): ManagePatronActivity
 }
