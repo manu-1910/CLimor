@@ -8,6 +8,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.limor.app.scenes.main.fragments.profile.UserPatronFragmentNew
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsFragmentNew
 import com.limor.app.uimodels.UserUIModel
+import timber.log.Timber
 
 class ProfileViewPagerAdapter(
     private val user: UserUIModel,
@@ -21,9 +22,10 @@ class ProfileViewPagerAdapter(
     }
 
     override fun createFragment(position: Int): Fragment {
+        Timber.d("Current User $user")
         return when (position) {
             0 -> UserPodcastsFragmentNew.newInstance(user)
-            else -> UserPatronFragmentNew(user)
+            else -> UserPatronFragmentNew.newInstance(user)
         }
     }
 }

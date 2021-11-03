@@ -4,14 +4,15 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
-import android.text.Html
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -30,9 +31,6 @@ import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import java.time.Duration
 import javax.inject.Inject
-import android.text.Spanned
-import android.text.method.LinkMovementMethod
-import androidx.core.text.HtmlCompat
 
 
 class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
@@ -93,11 +91,9 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         subscribeToViewModel()
         setOnClicks()
-       // handleUIStates()
-
+        handleUIStates()
 
     }
 
@@ -112,12 +108,14 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        model.getUserProfile()
+        if(currentUser()){
+            model.getUserProfile()
+        }
     }
 
     private fun currentUser(): Boolean {
 
-        Timber.d("Current User Check -> ${user.isPatron} --- ${
+        Timber.d("Current User Check -> ${user.id} --- ${
             PrefsHandler.getCurrentUserId(requireContext())
         }")
         return when (user.id) {
@@ -136,9 +134,11 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
         binding.emptyStateTv.text = if (currentUser()) {
             getString(R.string.limor_patron_empty_state)
         } else getString(R.string.patron_empty_state_other)
-        val result: Spanned = HtmlCompat.fromHtml(getString(R.string.patron_uk_account_learn_more), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        val result: Spanned = HtmlCompat.fromHtml(getString(R.string.patron_uk_account_learn_more),
+            HtmlCompat.FROM_HTML_MODE_LEGACY)
         binding.termsTV.text = result
         binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
+        Timber.d("Current User state -> ${user.patronInvitationStatus} ---")
 
         if (currentUser()) {
             if (user.isPatron == true) {
@@ -158,11 +158,11 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                 when (user.patronInvitationStatus) {
                     null -> {
                         //Considering this as NOT_REQUESTED STATE
-                        setNotInitaiatedState()
+                        setNotInitiatedState()
                     }
                     "NOT_REQUESTED" -> {
                         //Show Request Invite state
-                        setNotInitaiatedState()
+                        setNotInitiatedState()
                     }
                     "REQUESTED" -> {
                         setupViewPager(getNormalStateItems())
@@ -173,6 +173,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                     "APPROVED" -> {
                         //Approved but note yet setup
                         if (user.isPatron == false) {
+                            user.patronOnBoardingStatus = "NOT_INITIATED"
                             when (user.patronOnBoardingStatus) {
                                 null -> {
                                     setupViewPager(getApprovedStateItems())
@@ -223,7 +224,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
 
     }
 
-    private fun setNotInitaiatedState() {
+    private fun setNotInitiatedState() {
         setupViewPager(getNormalStateItems())
         binding.patronButton.text = getString(R.string.request_invite)
         binding.emptyStateLayout.visibility = View.GONE

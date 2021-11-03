@@ -177,7 +177,7 @@ class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
                     //Get all checked chips in the group
                     if (ids.size > 5) {
                         chip.isChecked = false //force to unchecked the chip
-                        chip.snackbar("You can only select 5 categories")
+                        chip.snackbar("You can only select 5 languages")
                     } else {
                         // lastCheckedIds.add(chip.id)
                         language.language.code?.let {

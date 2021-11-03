@@ -64,7 +64,6 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         // Verify the purchase.
         Timber.d("PURCHASE ${purchase.purchaseToken}")
         Timber.d("PURCHASE ${purchase.packageName}")
-
         model.consumePurchasedSub(purchase).collect {
             if (it == "Success") {
                 lifecycleScope.launch(Dispatchers.Main){
@@ -72,6 +71,26 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
                 }
             }
         }
+        /*val consumeParams =
+            ConsumeParams.newBuilder()
+                .setPurchaseToken(purchase.purchaseToken)
+                .build()
+        val consumeResult = withContext(Dispatchers.IO) {
+            billingClient.consumePurchase(consumeParams)
+        }
+
+        if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+            if (!purchase.isAcknowledged) {
+                val acknowledgePurchaseParams = AcknowledgePurchaseParams.newBuilder()
+                    .setPurchaseToken(purchase.purchaseToken)
+                val ackPurchaseResult = withContext(Dispatchers.IO) {
+                    billingClient.acknowledgePurchase(acknowledgePurchaseParams.build())
+                }
+            }
+
+        }*/
+
+
 
     }
 
