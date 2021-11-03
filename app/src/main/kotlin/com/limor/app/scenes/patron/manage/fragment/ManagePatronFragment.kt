@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentManagePatronBinding
@@ -43,6 +44,12 @@ class ManagePatronFragment : BaseFragment() {
     private fun setListeners() {
         binding.toolbar.btnBack.setOnClickListener {
             requireActivity().finish()
+        }
+        binding.changeCastPricesLayout.setOnClickListener {
+            findNavController().navigate(R.id.action_manage_patron_fragment_to_dialog_change_price)
+        }
+        binding.patronMembershipLayout.setOnClickListener {
+            findNavController().navigate(R.id.action_manage_patron_fragment_to_dialog_cancel_patron_membership)
         }
     }
 

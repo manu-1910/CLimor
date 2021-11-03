@@ -724,5 +724,12 @@
     <string name="edit_patron_catagories">Edit Patron Categories</string>
     <string name="manage_patron_membership">Manage Patron Membership</string>
     <string name="change_cast_prices">Change all cast prices</string>
+    <string name="change_price">Change Price</string>
+    <string name="change_price_description">Changing the price will change all your cast prices</string>
+    <string name="change_price_confirmation_text">Are you sure, you want to change all cast prices?</string>
+    <string name="cancel_patron_membership">Cancel Patron Membership</string>
+    <string name="cancel_patron_membership_description">Do you really want to cancel your Limor Patron  membership?</string>
+    <string name="cancel_patron_membership_success_title">Patron Membership Cancelled</string>
+    <string name="cancel_patron_membership_success_description">Your payment have successfully cancelled your patron membership</string>
 
 </resources>
