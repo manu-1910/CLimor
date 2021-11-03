@@ -71,7 +71,7 @@
                     android:id="@+id/managePatronStateLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:constraint_referenced_ids="mangePatronTV,managePatronDescriptionTV,patronDivider" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
