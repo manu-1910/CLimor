@@ -12,6 +12,7 @@ import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentManagePatronBinding
 import com.limor.app.scenes.patron.manage.viewmodels.ManagePatronViewModel
+import com.limor.app.scenes.patron.setup.FragmentPatronCategories
 import javax.inject.Inject
 
 class ManagePatronFragment : BaseFragment() {
@@ -50,6 +51,11 @@ class ManagePatronFragment : BaseFragment() {
         }
         binding.patronMembershipLayout.setOnClickListener {
             findNavController().navigate(R.id.action_manage_patron_fragment_to_dialog_cancel_patron_membership)
+        }
+        binding.catagoriesLayout.setOnClickListener {
+            val args = Bundle()
+            args.putBoolean(FragmentPatronCategories.EDIT_FLOW, true)
+            findNavController().navigate(R.id.action_manage_patron_fragment_to_fragment_patron_categories, args)
         }
     }
 

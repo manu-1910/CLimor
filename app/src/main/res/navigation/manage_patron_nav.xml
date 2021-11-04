@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_manage_patron_fragment_to_dialog_cancel_patron_membership"
             app:destination="@id/dialog_cancel_patron_membership" />
+        <action
+            android:id="@+id/action_manage_patron_fragment_to_fragment_patron_categories"
+            app:destination="@id/fragment_patron_categories" />
     </fragment>
 
     <dialog
@@ -58,6 +61,13 @@
         android:name="com.limor.app.scenes.patron.manage.fragment.CancelPatronMembershipFragment"
         android:label="CancelPatronMembershipFragment"
         tools:layout="@layout/view_cast_published">
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_patron_categories"
+        android:name="com.limor.app.scenes.patron.setup.FragmentPatronCategories"
+        android:label="FragmentPatronCategories"
+        tools:layout="@layout/fragment_patron_categories">
     </fragment>
 
 </navigation>
