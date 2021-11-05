@@ -162,6 +162,8 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             setTabs(tabs.values.toList())
         }
 
+        setupDefaultTab()
+
         binding.profileViewpager.isUserInputEnabled = false
         binding.profileViewpager.registerOnPageChangeCallback(object :
             ViewPager2.OnPageChangeCallback() {
@@ -211,6 +213,11 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         }
     }
 
+    private fun setupDefaultTab() {
+        val tabPos = activity?.intent?.extras?.getInt(TAB_POS)?:0
+        binding.tabSelectorView.selectTabAt(tabPos)
+    }
+
     private fun handleOptionsClick() {
         if (isSignedInUser) {
             openSettings.launch(null)
@@ -241,8 +248,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
          }*/
 
         // ensureToolbar()
-        val tabPos = activity?.intent?.extras?.getInt(TAB_POS)?:0
-        binding.tabSelectorView.selectTabAt(tabPos)
     }
 
     private fun ensureToolbar() {
