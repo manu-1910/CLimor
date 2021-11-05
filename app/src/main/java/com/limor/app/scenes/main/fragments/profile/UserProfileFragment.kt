@@ -41,6 +41,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     companion object {
         const val USER_ID_KEY = "user_id"
         const val USER_NAME_KEY = "username"
+        const val TAB_POS = "tab_pos"
     }
 
     private lateinit var user: UserUIModel
@@ -240,6 +241,8 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
          }*/
 
         // ensureToolbar()
+        val tabPos = activity?.intent?.extras?.getInt(TAB_POS)?:0
+        binding.tabSelectorView.selectTabAt(tabPos)
     }
 
     private fun ensureToolbar() {

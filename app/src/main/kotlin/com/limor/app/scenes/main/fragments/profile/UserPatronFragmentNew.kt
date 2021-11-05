@@ -303,6 +303,8 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
         binding.termsCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
             binding.patronButton.isEnabled = isChecked
         }
+
+        binding.termsTV.setOnClickListener { binding.termsCheckBox.performClick() }
     }
 
     private fun checkPatronState() {

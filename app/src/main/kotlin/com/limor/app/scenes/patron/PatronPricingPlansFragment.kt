@@ -137,6 +137,9 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         binding.termsCheckBox.setOnCheckedChangeListener { _, isChecked ->
             binding.continueButton.isEnabled = isChecked && binding.accCheckBox.isChecked
         }
+
+        binding.termsTV.setOnClickListener { binding.termsCheckBox.performClick() }
+        binding.ukAccountText.setOnClickListener { binding.accCheckBox.performClick() }
     }
 
     private fun startConnectingToClient() {
@@ -230,6 +233,7 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
 
     override fun onSelectedSkuChange(item: SkuDetails) {
         selectedSku = item
+        //TODO How to check if only free trial is selectable
         if (item.freeTrialPeriod.isNotEmpty()) {
             val termsEnd =
                 getString(R.string.plans_terms_start) + getString(R.string.plans_terms_text)

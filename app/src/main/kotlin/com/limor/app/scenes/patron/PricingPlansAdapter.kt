@@ -23,6 +23,7 @@ class PricingPlansAdapter(var list: List<SkuDetails>, val listener: OnPlanClickL
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        //if(selectedSku==null && list[position].freeTrialPeriod.isNotEmpty()){
         if(selectedSku==null){
             selectedSku = list[position].sku
             listener.onSelectedSkuChange(list[position])

@@ -16,6 +16,7 @@ object AppNavigationManager {
         val userProfileIntent = Intent(context, UserProfileActivity::class.java)
         userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY,data.getString("initiatorUsername"))
         userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY,data.getString("initiatorId"))
+        userProfileIntent.putExtra(UserProfileFragment.TAB_POS,1)
         return userProfileIntent
     }
 
