@@ -173,7 +173,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                     "APPROVED" -> {
                         //Approved but note yet setup
                         if (user.isPatron == false) {
-                            user.patronOnBoardingStatus = "NOT_INITIATED"
+                            //user.patronOnBoardingStatus = "NOT_INITIATED"
                             when (user.patronOnBoardingStatus) {
                                 null -> {
                                     setupViewPager(getApprovedStateItems())
