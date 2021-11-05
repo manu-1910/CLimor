@@ -154,7 +154,6 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
 
                 // audio should be present for all patron invitation statuses
                 setupAudioPlayer(user.patronAudioURL, user.patronAudioDurationSeconds)
-
                 when (user.patronInvitationStatus) {
                     null -> {
                         //Considering this as NOT_REQUESTED STATE
@@ -172,6 +171,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                     }
                     "APPROVED" -> {
                         //Approved but note yet setup
+                        binding.indicator.visibility = View.GONE
                         if (user.isPatron == false) {
                             //user.patronOnBoardingStatus = "NOT_INITIATED"
                             when (user.patronOnBoardingStatus) {
@@ -193,6 +193,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                                     binding.pager.visibility = View.GONE
                                     binding.indicator.visibility = View.GONE
                                     binding.checkLayout.visibility = View.GONE
+                                    binding.audioPlayerView.visibility = View.GONE
                                     binding.managePatronStateLayout.visibility = View.VISIBLE
                                 }
                                 else -> {

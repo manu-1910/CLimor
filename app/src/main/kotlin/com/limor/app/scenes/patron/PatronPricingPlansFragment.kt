@@ -173,6 +173,7 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
     suspend fun querySkuDetails() {
 
         val skuList = ArrayList<String>()
+        binding.progressBar.visibility = View.VISIBLE
         model.getPlans().collect {
 
             it?.forEach { sku ->
@@ -200,6 +201,8 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
                     binding.root.snackbar("No Plans Found")
                 }
             }
+            binding.checkLayout.visibility = View.VISIBLE
+            binding.progressBar.visibility = View.GONE
         }
 
     }
@@ -223,18 +226,19 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
     @SuppressLint("NotifyDataSetChanged")
     override fun onUserClicked(item: SkuDetails, position: Int) {
 
-        if (item.freeTrialPeriod.isNotEmpty()) {
+     //   if (item.freeTrialPeriod.isNotEmpty()) {
             selectedSku = item
             adapter.selectedSku = item.sku
             adapter.notifyDataSetChanged()
-        }
+            onSelectedSkuChange(item)
+      //  }
 
     }
 
     override fun onSelectedSkuChange(item: SkuDetails) {
         selectedSku = item
         //TODO How to check if only free trial is selectable
-        if (item.freeTrialPeriod.isNotEmpty()) {
+        //if (item.freeTrialPeriod.isNotEmpty()) {
             val termsEnd =
                 getString(R.string.plans_terms_start) + getString(R.string.plans_terms_text)
             val termsT: Spanned = HtmlCompat.fromHtml(
@@ -246,7 +250,7 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
                 HtmlCompat.FROM_HTML_MODE_LEGACY)
             binding.ukAccountText.text = bankText
             binding.ukAccountText.movementMethod = LinkMovementMethod.getInstance()
-        }
+       // }
 
     }
 
