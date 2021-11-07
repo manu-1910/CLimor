@@ -3,6 +3,7 @@ package com.limor.app.dm.ui
 import android.content.*
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.graphics.Rect
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -19,7 +20,10 @@ import com.limor.app.uimodels.CastUIModel
 import android.net.Uri
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.LinearLayout
+import androidx.core.view.marginTop
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -65,7 +69,10 @@ class ShareFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentShareDialogBinding.inflate(inflater, container, false)
+        val binding = FragmentShareDialogBinding.inflate(inflater, container, false);
+        _binding = binding
+
+        adjustUI()
 
         createAdapters()
         setViews()
@@ -75,6 +82,43 @@ class ShareFragment : BaseFragment() {
         }
 
         return binding.root
+    }
+
+    private fun adjustUI() {
+        activity?.let {
+            val rect = Rect()
+            it.window.decorView.getWindowVisibleDisplayFrame(rect)
+
+            binding.root.measure(
+                View.MeasureSpec.makeMeasureSpec(rect.width(), View.MeasureSpec.AT_MOST),
+                View.MeasureSpec.UNSPECIFIED
+            )
+
+            if (binding.root.measuredHeight > rect.height() * 0.96) {
+                // the UI height is bigger than what can be presented on the screen, will decrease
+                // the UI paddings and/or margins
+
+                binding.root.updatePadding(
+                    top = (binding.root.paddingTop * 0.5).toInt()
+                )
+
+                listOf(
+                    binding.textFakeSearch,
+                    binding.delimiter,
+                    binding.buttonCopyLink,
+                    binding.buttonShareWithMessage,
+                    binding.shareViaLabel
+                ).map { adjustTopMargin(it, 0.5) }
+            } else {
+                println("Will not adjust.")
+            }
+        }
+    }
+
+    private fun adjustTopMargin(view: View, ratio: Double) {
+        view.updateLayoutParams<LinearLayout.LayoutParams> {
+            topMargin = (topMargin * ratio).toInt()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -377,4 +421,5 @@ class ShareFragment : BaseFragment() {
             }
         }
     }
+
 }
