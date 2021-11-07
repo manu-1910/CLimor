@@ -688,9 +688,25 @@
 
     <string name="tos_title">Terms &amp; Conditions</string>
     <string name="privacy_policy_title">Privacy Policy</string>
+
+    <string name="share_dialog_title">Share</string>
+    <string name="share_copy_link_button">Copy Link</string>
+    <string name="share_via_label">Share via</string>
+    <string name="share_message__with_format">Hey, check out this podcast: %s</string>
+    <string name="share_search_placeholder">Search…</string>
+    <string name="share_now_label">Share Now</string>
+    <string name="share_separately_label">Share Separately</string>
+    <string name="share_with_label">Share with</string>
+    <string name="messages_title">Messages</string>
+    <string name="no_messages">No messages</string>
+    <string name="no_messages_description">You currently have no direct messages. Try searching for followers to start messaging.</string>
+    <string name="more_label">More</string>
+    <string name="generic_chat_error_message">Could not start chat. Please try later.</string>
+
     <string name="something_wrong">Something went wrong</string>
     <string name="no_comments_title">No Comments</string>
     <string name="no_comments_hint">Be the first one to start conversation</string>
+
 
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>

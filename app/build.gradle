@@ -33,6 +33,18 @@ android {
 
         testInstrumentationRunner globalConfiguration.testInstrumentationRunner
         testApplicationId globalConfiguration.testApplicationId
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
 
     compileOptions {
@@ -111,6 +123,8 @@ android {
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://devlimorapp.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
 
+            buildConfigField "String", "CHAT_USER_ID_PREFIX", '"development"'
+
             minifyEnabled false
             debuggable true
             zipAlignEnabled true
@@ -142,6 +156,8 @@ android {
 
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://devlimorapp.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
+
+            buildConfigField "String", "CHAT_USER_ID_PREFIX", '"staging"'
 
             minifyEnabled false
             debuggable true
@@ -176,6 +192,8 @@ android {
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://staginglimorapp.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-staging.web.app"'
 
+            buildConfigField "String", "CHAT_USER_ID_PREFIX", '"staging"'
+
             minifyEnabled false
             debuggable true
             zipAlignEnabled true
@@ -208,6 +226,8 @@ android {
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://castpreview.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://castpreview.limor.ie"'
 
+            buildConfigField "String", "CHAT_USER_ID_PREFIX", '"prod"'
+
             minifyEnabled false
             debuggable true
             zipAlignEnabled true
@@ -218,6 +238,7 @@ android {
     }
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        main.jniLibs.srcDirs = ['src/main/jniLibs']
         test.java.srcDirs += 'src/test/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
     }
@@ -474,4 +495,14 @@ dependencies {
 
     //StickyList Headers
     implementation 'com.github.luizgrp:SectionedRecyclerViewAdapter:v3.2.0'
+
+    // =============================================================================================
+    // ROOM
+    // =============================================================================================
+    def room_version = "2.3.0"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
 }

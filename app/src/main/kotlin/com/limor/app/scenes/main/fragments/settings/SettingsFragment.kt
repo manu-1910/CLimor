@@ -27,6 +27,7 @@ import com.limor.app.common.BaseFragment
 import com.limor.app.common.SessionManager
 import com.limor.app.databinding.FragmentEditProfileBinding
 import com.limor.app.databinding.FragmentSettingsBinding
+import com.limor.app.dm.ChatManager
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.firebase.FirebaseSessionHandler
 import com.limor.app.scenes.main.fragments.settings.EditProfileFragment.Companion.TIMBER_TAG
@@ -40,8 +41,7 @@ import com.limor.app.uimodels.UserUIModel
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import timber.log.Timber
 import javax.inject.Inject
@@ -53,9 +53,15 @@ class SettingsFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val  model: SettingsViewModel by viewModels({activity as SettingsActivity}) { viewModelFactory }
 
+    @Inject
+    lateinit var chatManager: ChatManager
+
     private var rootView: View? = null
     private var currentUser: UserUIModel? = null
     private lateinit var binding: FragmentSettingsBinding
+
+    private var coroutineJob: Job = Job()
+    private val scope = CoroutineScope(Dispatchers.IO + coroutineJob)
 
     companion object {
         val TAG: String = SettingsFragment::class.java.simpleName
@@ -167,6 +173,9 @@ class SettingsFragment : BaseFragment() {
 
         lytLogout.onClick {
             lifecycleScope.launch {
+                scope.launch {
+                    App.instance.chatManager.logout()
+                }
                 try {
                     FirebaseSessionHandler.logout(requireContext())
                     Toast.makeText(requireContext(), "Done!", Toast.LENGTH_LONG).show()

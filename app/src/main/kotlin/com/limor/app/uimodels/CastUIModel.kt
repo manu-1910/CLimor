@@ -5,6 +5,7 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Parcelable
 import com.limor.app.*
+import com.limor.app.dm.ShareResult
 import com.limor.app.extensions.toLocalDateTime
 import com.limor.app.scenes.utils.DateUiUtil
 import kotlinx.android.parcel.Parcelize
@@ -29,13 +30,13 @@ data class CastUIModel(
     val isReported: Boolean?,
     val isRecasted: Boolean?,
     val isListened: Boolean?,
-    val isShared: Boolean?,
+    var isShared: Boolean?,
     val isBookmarked: Boolean?,
     val listensCount: Int?,
     val likesCount: Int?,
     val recastsCount: Int?,
     val commentsCount: Int?,
-    val sharesCount: Int?,
+    var sharesCount: Int?,
     val audio: AudioUIModel?,
     val isActive: Boolean?,
     val sharingUrl: String?,
@@ -94,6 +95,10 @@ data class CastUIModel(
         return ""
     }
 
+    fun updateShares(shareResult: ShareResult) {
+        isShared = (isShared ?: false) || shareResult.hasShared
+        sharesCount = (sharesCount ?: 0) + shareResult.newSharesCount
+    }
 }
 
 fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =

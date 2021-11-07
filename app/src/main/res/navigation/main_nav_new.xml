@@ -115,7 +115,7 @@
 
     <fragment
         android:id="@+id/navigation_direct_messenger"
-        android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
+        android:name="com.limor.app.dm.ui.ChatSessionsFragment"
         android:label="Messenger"
         tools:layout="@layout/fragment_dummy"/>
 

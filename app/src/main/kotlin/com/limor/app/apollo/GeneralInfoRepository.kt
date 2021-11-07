@@ -166,6 +166,13 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         return result?.data?.searchFollowers ?: return emptyList()
     }
 
+
+    suspend fun getMessagingToken(): String? {
+        val result = apollo.launchQuery(GetMessagingTokenQuery())
+        Timber.d("Messaging Token Result -> ${result?.data?.getMessagingToken}")
+        return result?.data?.getMessagingToken?.token
+    }
+
     suspend fun searchFollowing(
         term: String,
         limit: Int,

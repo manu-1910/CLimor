@@ -29,6 +29,7 @@ import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentExtendedPlayerBinding
+import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.*
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
@@ -451,10 +452,13 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         binding.btnPodcastComments.throttledClick(onClick = openCommentsClickListener)
         binding.tvPodcastComments.throttledClick(onClick = openCommentsClickListener)
 
-        binding.btnPodcastReply.setOnClickListener {
-            //btnPodcastReply.shared = true
-            updatePodcasts = true
-            sharePodcast(cast)
+        binding.btnPodcastReply.throttledClick {
+            ShareDialog.newInstance(cast).also { fragment ->
+                fragment.setOnSharedListener {
+                    binding.btnPodcastReply.shared = (cast.isShared ?: false) || it.hasShared
+                }
+                fragment.show(parentFragmentManager, fragment.requireTag())
+            }
         }
 
         // This is copy pasted from FragmentComments, will need to be refactored later...
@@ -515,48 +519,6 @@ class ExtendedPlayerFragment : UserMentionFragment(),
                 sharedPodcastId = -1
             }
         }
-
-    val sharePodcast: (CastUIModel) -> Unit = { cast ->
-
-        val podcastLink = Constants.PODCAST_URL.format(cast.id)
-
-        val dynamicLink = Firebase.dynamicLinks.dynamicLink {
-            link = Uri.parse(podcastLink)
-            domainUriPrefix = Constants.LIMOR_DOMAIN_URL
-            androidParameters(BuildConfig.APPLICATION_ID) {
-                fallbackUrl = Uri.parse(podcastLink)
-            }
-            iosParameters(BuildConfig.IOS_BUNDLE_ID) {
-            }
-            socialMetaTagParameters {
-                title = cast.title.toString()
-                description = cast.caption.toString()
-                cast.imageLinks?.large?.let {
-                    imageUrl = Uri.parse(cast.imageLinks.large)
-                }
-            }
-        }
-
-        Firebase.dynamicLinks.shortLinkAsync {
-            longLink = dynamicLink.uri
-        }.addOnSuccessListener { (shortLink, flowChartLink) ->
-            try {
-                val sendIntent: Intent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_SUBJECT, cast.title)
-                    putExtra(Intent.EXTRA_TEXT, "Hey, check out this podcast: $shortLink")
-                    type = "text/plain"
-                }
-                sharedPodcastId = cast.id
-                val shareIntent = Intent.createChooser(sendIntent, null)
-                launcher.launch(shareIntent)
-            } catch (e: ActivityNotFoundException) {
-            }
-
-        }.addOnFailureListener {
-            Timber.d("Failed in creating short dynamic link")
-        }
-    }
 
     private fun initRecastState(item: CastUIModel) {
         fun applyRecastState(isRecasted: Boolean) {
