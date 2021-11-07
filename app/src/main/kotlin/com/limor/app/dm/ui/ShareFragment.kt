@@ -331,12 +331,10 @@ class ShareFragment : BaseFragment() {
     private fun setExternalShare(shortLink: String) {
         val a = getActivities(getShareIntent(shortLink, true), true)
         val b = getActivities(getShareIntent(shortLink, true), false)
-        val c = getActivities(getShareIntent(shortLink, false), true)
-        val d = getActivities(getShareIntent(shortLink, false), false)
 
-        val apps = listOf(a, b, c, d).first { a.isNotEmpty() }
+        val apps = listOf(a, b,).first { a.isNotEmpty() }
 
-        binding.shareViaLabel.text = "a ${a.size}, b ${b.size}, c ${c.size}, d ${d.size}"
+        // binding.shareViaLabel.text = "a ${a.size}, b ${b.size}, c ${c.size}, d ${d.size}"
         binding.recyclerExternal.adapter = AppsAdapter(
             requireContext(),
             apps,
