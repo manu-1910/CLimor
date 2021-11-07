@@ -8,9 +8,7 @@
     android:orientation="vertical"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
-    android:paddingTop="24dp"
-    android:paddingBottom="36dp"
-    >
+    android:paddingTop="24dp">
 
     <TextView
         android:id="@+id/shareTitle"
@@ -227,6 +225,7 @@
         android:layout_height="wrap_content"
         android:minHeight="73dp"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="36dp"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="5"
