@@ -59,7 +59,7 @@ abstract class RemoteService<T> constructor(c: Class<T>, private val config: Rem
     private fun getRequestInterceptor(): Interceptor = Interceptor { chain ->
         chain.proceed(
             chain.request().newBuilder()
-                .url(addBaseParameters(chain.request().url()))
+                .url(addBaseParameters(chain.request().url))
                 .header("Authorization", "Bearer " + config.token)
                 .header("Accept-Language", "en")
                 .header("Accept", "application/json")
