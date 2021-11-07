@@ -8,7 +8,7 @@ ext.addRepos = this.&addRepos
 
 def build_versions = [:]
 build_versions.min_sdk = 24
-build_versions.target_sdk = 29
+build_versions.target_sdk = 30
 build_versions.build_tools = "29.0.0"
 ext.build_versions = build_versions
 
@@ -66,7 +66,7 @@ versions.rx_android = "2.1.0"
 versions.rx_location = "1.0.5"
 versions.rx_binding = "3.1.0"
 versions.retrofit = "2.5.0"
-versions.ok_http = "3.12.0"
+versions.ok_http = "4.9.2"
 versions.mockwebserver = versions.ok_http
 versions.realm = "5.9.0"
 versions.job_queue = "2.0.1"
