@@ -4,6 +4,8 @@
     <string name="exception_message_generic">There was an error</string>
     <string name="image_content_description_default">image description</string>
     <string name="default_no_internet">Check your internet connection and try again.</string>
+    <string name="no_connection_title">No Connection!</string>
+    <string name="no_connection_description">Unfortunately, your internet connection has been lost. Please try again</string>
 
 
     <!-- Signin and Signup strings -->
@@ -28,7 +30,11 @@
     <string name="email_login_only_for_users"><font color='#FF5A4E'>Email login is only for users who have registered accounts before 2021</font></string>
     <string name="sign_in_here"><font color='#F9BB4B'><u>Sign in here</u></font></string>
     <string name="choose_country">Choose your country</string>
+    <string name="email_sign_in_message">This number is not registered yet. Try signing in with email instead.</string>
+    <string name="phone_number_already_exists">This phone number already exists</string>
+    <string name="sign_in_with_phone_number">Already in use. Please Sign in.</string>
 
+    <string name="no_account_fount_with_email">No Limor Account found with this email. Please Register.</string>
 
     <!-- Bottom Menu Navigation Strings -->
     <string name="bottom_menu_home">Home</string>
@@ -557,6 +563,10 @@
     <string name="sex_male">Male</string>
     <string name="sex_female">Female</string>
     <string name="sex_other">Other</string>
+    <string name="first_name_last_name">First name &amp; Last name</string>
+    <string name="name_description">Enter your first name and last name that people can find you easily</string>
+    <string name="enter_first_name">First name</string>
+    <string name="enter_last_name">Last name</string>
     <string name="categories">Categories</string>
     <string name="languages">Languages</string>
     <string name="search_hint">Search…</string>
@@ -678,6 +688,7 @@
 
     <string name="tos_title">Terms &amp; Conditions</string>
     <string name="privacy_policy_title">Privacy Policy</string>
+
     <string name="share_dialog_title">Share</string>
     <string name="share_copy_link_button">Copy Link</string>
     <string name="share_via_label">Share via</string>
@@ -691,6 +702,11 @@
     <string name="no_messages_description">You currently have no direct messages. Try searching for followers to start messaging.</string>
     <string name="more_label">More</string>
     <string name="generic_chat_error_message">Could not start chat. Please try later.</string>
+
+    <string name="something_wrong">Something went wrong</string>
+    <string name="no_comments_title">No Comments</string>
+    <string name="no_comments_hint">Be the first one to start conversation</string>
+
 
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>

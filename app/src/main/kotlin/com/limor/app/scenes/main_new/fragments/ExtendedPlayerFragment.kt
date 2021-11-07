@@ -189,17 +189,30 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         }
     }
 
+    private fun setFirstCommentContent(comment: CommentUIModel) {
+        binding.tvFirstCollapsedComment.setTextWithTagging(
+            comment.content,
+            comment.mentions,
+            comment.tags,
+            { username, userId ->
+                context?.let { context -> UserProfileActivity.show(context, username, userId) }
+            },
+            { hashTag -> onHashTagClick(hashTag) }
+        )
+    }
+
     private fun subscribeToCommentUpdates() {
         commentsViewModel.comments.observe(viewLifecycleOwner) { comments ->
             val firstComment = comments.firstOrNull()
             if (firstComment != null) {
-                binding.tvFirstCollapsedComment.text = firstComment.content
+                setFirstCommentContent(firstComment)
                 firstComment.user?.getAvatarUrl()?.let { imageUrl ->
                     binding.ivAvatarFirstCollapsedComment.loadCircleImage(imageUrl)
                 }
                 binding.tvCommentName.text = firstComment.user?.username
                 binding.firstCollapsedCommentVisibilityGroup.makeVisible()
                 binding.noCommentsMessage.makeGone()
+                binding.llExtendCommentsHeader.isEnabled = true
                 binding.llExtendCommentsHeader.makeVisible()
             } else {
                 binding.firstCollapsedCommentVisibilityGroup.makeGone()

@@ -72,8 +72,8 @@ class FragmentComments : UserMentionFragment() {
 
     private fun getCurrentUser() {
         lifecycleScope.launchWhenCreated {
-            JwtChecker.getUserIdFromJwt(false)?.let{
-                PrefsHandler.saveCurrentUserId(requireContext(),it)
+            JwtChecker.getUserIdFromJwt(false)?.let {
+                PrefsHandler.saveCurrentUserId(requireContext(), it)
             }
         }
 
@@ -93,7 +93,7 @@ class FragmentComments : UserMentionFragment() {
 
         textAndVoiceInput = binding.taviVoice
         binding.taviVoice.initListenerStatus {
-            when(it) {
+            when (it) {
                 is MissingPermissions -> requestRecordPermissions(requireActivity())
                 is SendData -> {
 
@@ -119,8 +119,17 @@ class FragmentComments : UserMentionFragment() {
         }
     }
 
+    private fun setInfoControls(hasComments: Boolean) {
+        binding.apply {
+            progressBar.visibility = View.GONE
+            noCommentsPlaceholder.visibility = if (hasComments) View.GONE else View.VISIBLE
+        }
+    }
+
     private fun subscribeForComments() {
         commentsViewModel.comments.observe(viewLifecycleOwner) { comments ->
+            setInfoControls(comments.isNotEmpty())
+
             adapter.update(
                 comments.map { it ->
                     ParentCommentSection(
@@ -135,14 +144,20 @@ class FragmentComments : UserMentionFragment() {
                         onLikeClick = { comment, liked ->
                             commentsViewModel.likeComment(comment, liked)
                         },
-                        onThreeDotsClick = { comment, item,section ->
-                            handleThreeDotsClick(comment,cast,item,section)
+                        onThreeDotsClick = { comment, item, section ->
+                            handleThreeDotsClick(comment, cast, item, section)
                         },
-                        onChildThreeDotsClick = { comment, item, section->
-                            handleThreeDotsClick(comment,cast,item,section)
+                        onChildThreeDotsClick = { comment, item, section ->
+                            handleThreeDotsClick(comment, cast, item, section)
                         },
                         onUserMentionClick = { username, userId ->
-                            context?.let { context -> UserProfileActivity.show(context, username, userId) }
+                            context?.let { context ->
+                                UserProfileActivity.show(
+                                    context,
+                                    username,
+                                    userId
+                                )
+                            }
                         },
                         onCommentListen = { commentId ->
                             commentsViewModel.listenComment(commentId)
@@ -163,7 +178,7 @@ class FragmentComments : UserMentionFragment() {
 
         actionsViewModel.actionComment.observe(viewLifecycleOwner) { commentAction ->
             val ca = commentAction ?: return@observe
-            when(ca.type) {
+            when (ca.type) {
                 CommentActionType.Edit -> editComment(ca.comment)
                 else -> {
 
@@ -171,19 +186,19 @@ class FragmentComments : UserMentionFragment() {
             }
         }
 
-        actionsViewModel.actionDelete.observe(viewLifecycleOwner,{ comment ->
+        actionsViewModel.actionDelete.observe(viewLifecycleOwner, { comment ->
             Timber.d("Remove parent comment $section")
-            if(::itemParentComment.isInitialized){
+            if (::itemParentComment.isInitialized) {
                 section?.remove(itemParentComment)
-                comment?.let{
+                comment?.let {
                     commentsViewModel.deleteComment(comment)
                 }
             }
         })
-        actionsViewModel.actionDeleteChild.observe(viewLifecycleOwner,{ comment ->
-            if(::itemChildComment.isInitialized){
+        actionsViewModel.actionDeleteChild.observe(viewLifecycleOwner, { comment ->
+            if (::itemChildComment.isInitialized) {
                 section?.remove(itemChildComment)
-                comment?.let{
+                comment?.let {
                     commentsViewModel.deleteComment(comment)
                 }
             }
@@ -191,9 +206,14 @@ class FragmentComments : UserMentionFragment() {
         })
     }
 
-    private fun handleThreeDotsClick(comment: CommentUIModel, cast: CastUIModel,item: CommentParentItem,section: ParentCommentSection) {
+    private fun handleThreeDotsClick(
+        comment: CommentUIModel,
+        cast: CastUIModel,
+        item: CommentParentItem,
+        section: ParentCommentSection
+    ) {
         Timber.d("${isOwnerOf(comment)} comment owner and ${isOwnerOf(cast)} cast owner ")
-        if(isOwnerOf(comment) || isOwnerOf(cast)){
+        if (isOwnerOf(comment) || isOwnerOf(cast)) {
             //If current user is owner of the comment or the cast he can delete the comment
 
             itemParentComment = item
@@ -209,9 +229,14 @@ class FragmentComments : UserMentionFragment() {
         }
     }
 
-    private fun handleThreeDotsClick(comment: CommentUIModel, cast: CastUIModel,item: CommentChildItem,section: ParentCommentSection) {
+    private fun handleThreeDotsClick(
+        comment: CommentUIModel,
+        cast: CastUIModel,
+        item: CommentChildItem,
+        section: ParentCommentSection
+    ) {
         Timber.d("${isOwnerOf(comment)} comment owner and ${isOwnerOf(cast)} cast owner ")
-        if(isOwnerOf(comment) || isOwnerOf(cast)){
+        if (isOwnerOf(comment) || isOwnerOf(cast)) {
             //If current user is owner of the comment or the cast he can delete the comment
             itemChildComment = item
             this.section = section

@@ -10,6 +10,7 @@ import com.limor.app.extensions.getActivity
 import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
@@ -37,7 +38,7 @@ class SmallCastItem(
                 authorName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
             }
             cast.audio?.duration?.let {
-                castDuration.text = getCastDuration(cast.audio.duration)
+                castDuration.text = CommonsKt.getFeedDuration(cast.audio.duration)
             }
 
             Glide.with(root)
@@ -47,6 +48,8 @@ class SmallCastItem(
             Glide.with(root)
                 .load(cast.owner?.getAvatarUrl())
                 .signature(ObjectKey(cast.owner?.getAvatarUrl() ?: ""))
+                .error(R.drawable.ic_default_avatar)
+                .placeholder(R.drawable.ic_default_avatar)
                 .circleCrop()
                 .into(ownerIcon)
 

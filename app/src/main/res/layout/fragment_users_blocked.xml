@@ -34,8 +34,27 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSearchResults"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        tools:itemCount="15"
+        tools:listitem="@layout/item_user_followers" />
 
-
-
+    <TextView
+        android:id="@+id/tv_no_followers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_centerInParent="true"
+        android:text="@string/discover_no_users"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:visibility="gone" />
 
 </RelativeLayout>

@@ -27,14 +27,22 @@ import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.Country
 import com.limor.app.scenes.auth_new.data.SignInMethod
 import com.limor.app.scenes.auth_new.util.AfterTextWatcher
+import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.*
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.*
+import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.btnContinue
+import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.clMain
+import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.etEnterPhone
+import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.etEnterPhoneInner
+import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.etPhoneCode
+import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.textView9
+import kotlinx.android.synthetic.main.fragment_new_auth_sign_in_or_up.*
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
 
 class FragmentSignIn : Fragment() {
 
-    companion object{
+    companion object {
         const val IS_MIGRATION_FLOW = "IS_MIGRATION_FLOW"
     }
 
@@ -81,16 +89,15 @@ class FragmentSignIn : Fragment() {
         val content = SpannableString(description)
         content.setSpan(UnderlineSpan(), 0, description.length, 0)
         tvSignUpNewSignUp.setText(content, TextView.BufferType.SPANNABLE)
-
+        tvExistingUserEmailSignInDesc.setOnClickListener {
+            model.setCurrentSignInMethod(SignInMethod.EMAIL)
+        }
         clMain.setOnClickListener {
             clMain.requestFocus()
         }
         tvSignUpNewSignUp.setOnClickListener {
             it.findNavController()
                 .navigate(R.id.action_fragment_new_auth_sign_in_to_fragment_new_auth_dob_picker)
-        }
-        tvExistingUserEmailSignInDesc.setOnClickListener {
-            model.setCurrentSignInMethod(SignInMethod.EMAIL)
         }
         countryCodeTV.setOnClickListener {
             it.findNavController()
@@ -99,13 +106,19 @@ class FragmentSignIn : Fragment() {
         backIV.setOnClickListener {
             performBack()
         }
+        tvNoEmailExistErrorDesc.setOnClickListener {
+            model.setCurrentSignInMethod(SignInMethod.NONE)
+            it.findNavController()
+                .navigate(R.id.action_fragment_new_auth_sign_in_to_fragment_new_auth_dob_picker)
+        }
     }
 
-    private fun performBack(){
-        val isMigration = (model.signInMethodLiveData.value == SignInMethod.EMAIL) && isMigrationFlow
-        if(isMigration){
+    private fun performBack() {
+        val isMigration =
+            (model.signInMethodLiveData.value == SignInMethod.EMAIL) && isMigrationFlow
+        if (isMigration) {
             this@FragmentSignIn.findNavController().navigateUp()
-        } else{
+        } else {
             when (model.signInMethodLiveData.value) {
                 SignInMethod.PHONE -> this@FragmentSignIn.findNavController().navigateUp()
                 SignInMethod.EMAIL -> model.setCurrentSignInMethod(SignInMethod.PHONE)
@@ -114,9 +127,9 @@ class FragmentSignIn : Fragment() {
     }
 
     private fun setUpInitialSignUpState() {
-        if(isMigrationFlow){
+        if (isMigrationFlow) {
             model.setCurrentSignInMethod(SignInMethod.EMAIL)
-        } else{
+        } else {
             model.setCurrentSignInMethod(SignInMethod.PHONE)
         }
     }
@@ -127,28 +140,18 @@ class FragmentSignIn : Fragment() {
                 etPhoneCode.visibility = View.VISIBLE
                 etEnterPhone.visibility = View.VISIBLE
                 etEnterEmail.visibility = View.GONE
-                //tvExistingUserEmailSignInDesc.visibility = View.VISIBLE
-                //tvSignInHere.visibility = View.VISIBLE
+                etEnterPhone.error = ""
                 btnContinue.setText(R.string.get_otp)
-                textView9.setText(R.string.sign_in)
-                val description = resources.getString(R.string.existing_user_email_signin_description) + resources.getString(R.string.sign_in_here)
-                val content = SpannableString(description)
-                content.setSpan(ForegroundColorSpan(resources.getColor(R.color.colorAccent)), description.lastIndexOf('S'), description.length, 0)
-                content.setSpan(UnderlineSpan(), description.lastIndexOf('S'), description.length, 0)
-                tvExistingUserEmailSignInDesc.setText(content, TextView.BufferType.SPANNABLE)
+                tvExistingUserEmailSignInDesc.visibility = View.GONE
                 btnContinue.setOnClickListener {
-                    model.submitPhoneNumber()
-                    it.findNavController()
-                        .navigate(R.id.action_fragment_new_auth_sign_in_to_fragment_new_auth_phone_code)
+                    model.checkPhoneNumberExistence()
                 }
             }
             SignInMethod.EMAIL -> {
                 etPhoneCode.visibility = View.GONE
                 etEnterPhone.visibility = View.GONE
                 etEnterEmail.visibility = View.VISIBLE
-                //tvExistingUserEmailSignInDesc.visibility = View.GONE
-                //tvSignInHere.visibility = View.GONE
-                tvExistingUserEmailSignInDesc.setText(R.string.email_login_only_for_users)
+                tvExistingUserEmailSignInDesc.visibility = View.GONE
                 textView9.setText(R.string.access_your_old_account)
                 btnContinue.setText(R.string.send_login_link)
                 btnContinue.setOnClickListener {
@@ -164,6 +167,15 @@ class FragmentSignIn : Fragment() {
         etEnterPhoneInner.addTextChangedListener(object : AfterTextWatcher() {
             override fun afterTextChanged(s: Editable?) {
                 model.setPhoneChanged(s?.toString() ?: "")
+                etEnterPhone.error = null
+            }
+        })
+        etDobPickerInner.addTextChangedListener(object : AfterTextWatcher(){
+            override fun afterTextChanged(s: Editable?) {
+                etEnterEmail.error = null
+                if(tvNoEmailExistErrorDesc.visibility == View.VISIBLE){
+                    tvNoEmailExistErrorDesc.visibility = View.GONE
+                }
             }
         })
     }
@@ -172,10 +184,10 @@ class FragmentSignIn : Fragment() {
         val editText = etPhoneCode.editText as AutoCompleteTextView
         val tM = requireContext().getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         val countryCodeValue = tM.networkCountryIso
-        val country: Country? = countries.find { it.codeLetters.lowercase() == countryCodeValue}
+        val country: Country? = countries.find { it.codeLetters.lowercase() == countryCodeValue }
         Timber.d("${country?.codeLetters}  $countryCodeValue")
-        if(model.countrySelected == null){
-            country?.let{
+        if (model.countrySelected == null) {
+            country?.let {
                 model.setCountrySelected(country)
             }
         }
@@ -229,6 +241,29 @@ class FragmentSignIn : Fragment() {
             ).show()
         })
 
+        model.phoneNumberExistsLiveData.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            if (it) {
+                model.submitPhoneNumber()
+                findNavController()
+                    .navigate(R.id.action_fragment_new_auth_sign_in_to_fragment_new_auth_phone_code)
+            } else {
+                val description = resources.getString(R.string.email_sign_in_message)
+                val content = SpannableString(description)
+                content.setSpan(
+                    ForegroundColorSpan(resources.getColor(R.color.colorAccent)),
+                    55,
+                    60,
+                    0
+                )
+                content.setSpan(UnderlineSpan(), 55, 60, 0)
+                tvExistingUserEmailSignInDesc.setText(content, TextView.BufferType.SPANNABLE)
+                tvExistingUserEmailSignInDesc.visibility = View.VISIBLE
+                tvNoEmailExistErrorDesc.visibility = View.GONE
+                etEnterPhone.setError(description)
+            }
+        })
+
         model.currentEmailIsInUseLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
             if (it) {
@@ -237,11 +272,19 @@ class FragmentSignIn : Fragment() {
                 return@Observer
             }
             Timber.d("currentEmailIsInUseLiveData -> $it")
-            Toast.makeText(
-                requireContext(),
-                R.string.no_email_found_offer_to_sign_up,
-                Toast.LENGTH_LONG
-            ).show()
+            val description = resources.getString(R.string.no_account_fount_with_email)
+            val content = SpannableString(description)
+            content.setSpan(
+                ForegroundColorSpan(resources.getColor(R.color.colorAccent)),
+                40,
+                description.length,
+                0
+            )
+            content.setSpan(UnderlineSpan(), 40, description.length, 0)
+            tvNoEmailExistErrorDesc.setText(content, TextView.BufferType.SPANNABLE)
+            tvNoEmailExistErrorDesc.visibility = View.VISIBLE
+            tvExistingUserEmailSignInDesc.visibility = View.GONE
+            etEnterEmail.error = description
         })
     }
 }

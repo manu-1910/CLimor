@@ -10,27 +10,36 @@ import com.limor.app.GetBlockedUsersQuery
 import com.limor.app.databinding.ItemUserFollowersBinding
 import com.limor.app.scenes.main.fragments.settings.adapters.ViewHolderBlockedUser
 import com.limor.app.uimodels.UIUser
+import com.limor.app.uimodels.UserUIModel
 import org.jetbrains.anko.layoutInflater
 import timber.log.Timber
 
 
-class UserFollowersAdapter(var list: ArrayList<FollowersQuery.GetFollower?>, val listener: OnFollowerClickListener)
-    : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class UserFollowersAdapter(
+    var list: ArrayList<UserUIModel?>,
+    val listener: OnFollowerClickListener
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface OnFollowerClickListener {
-        fun onUserClicked(item:  FollowersQuery.GetFollower, position: Int)
-        fun onUserLongClicked(item:  FollowersQuery.GetFollower, position: Int)
-        fun onFollowClicked(item:  FollowersQuery.GetFollower, position: Int)
+        fun onUserClicked(item: UserUIModel, position: Int)
+        fun onUserLongClicked(item: UserUIModel, position: Int)
+        fun onFollowClicked(item: UserUIModel, position: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return UserFollowersViewHolder(ItemUserFollowersBinding.inflate(parent.context.layoutInflater,parent,false), listener)
+        return UserFollowersViewHolder(
+            ItemUserFollowersBinding.inflate(
+                parent.context.layoutInflater,
+                parent,
+                false
+            ), listener
+        )
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        list[position]?.let{
-            ( holder as UserFollowersViewHolder)
-                .bind(it,position)
+        list[position]?.let {
+            (holder as UserFollowersViewHolder)
+                .bind(it, position)
         }
 
     }
@@ -39,18 +48,20 @@ class UserFollowersAdapter(var list: ArrayList<FollowersQuery.GetFollower?>, val
         return list.size
     }
 
-    fun refreshItems(list:List<FollowersQuery.GetFollower>){
+    fun refreshItems(list: List<UserUIModel>) {
         this.list.clear()
         this.list.addAll(list)
         notifyDataSetChanged()
     }
-    fun addItems(list:List<FollowersQuery.GetFollower?>){
+
+    fun addItems(list: List<UserUIModel?>) {
         this.list.addAll(list)
-        notifyItemRangeChanged(this.list.size,list.size)
+        notifyItemRangeChanged(this.list.size, list.size)
     }
-    fun updateItem(item: FollowersQuery.GetFollower, position: Int) {
-        val follow = !list[position]?.followed!!
-        val i = item.copy(followed = follow)
+
+    fun updateItem(item: UserUIModel, position: Int) {
+        val follow = !list[position]?.isFollowed!!
+        val i = item.copy(isFollowed = follow)
         list[position] = i
         notifyItemChanged(position)
     }
