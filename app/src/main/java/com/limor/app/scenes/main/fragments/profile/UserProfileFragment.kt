@@ -162,16 +162,15 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             setTabs(tabs.values.toList())
         }
 
-        setupDefaultTab()
 
         binding.profileViewpager.isUserInputEnabled = false
-        binding.profileViewpager.registerOnPageChangeCallback(object :
+        /*binding.profileViewpager.registerOnPageChangeCallback(object :
             ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 binding.tabSelectorView.selectTabAt(position)
             }
-        })
+        })*/
 
         binding.followers.setOnClickListener {
             startActivity(
@@ -215,7 +214,9 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
     private fun setupDefaultTab() {
         val tabPos = activity?.intent?.extras?.getInt(TAB_POS)?:0
-        binding.tabSelectorView.selectTabAt(tabPos)
+        binding.profileViewpager.post {
+            binding.tabSelectorView.selectTabAt(tabPos)
+        }
     }
 
     private fun handleOptionsClick() {
@@ -273,6 +274,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
                 setDataToProfileViews(it)
                 setupConditionalViews(it)
                 setupViewPager(it)
+                setupDefaultTab()
             }
         })
 

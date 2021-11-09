@@ -66,11 +66,8 @@ class Notification : Fragment() {
             }
         }
         notificationAdapter.addUserTypeCallback{
-            userId, username ->
-            val userProfileIntent = Intent(requireContext(), UserProfileActivity::class.java)
-            userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, username)
-            userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, userId)
-            startActivity(userProfileIntent)
+            userId, username, tab ->
+            UserProfileActivity.show(requireContext(),username!!,userId!!,tab)
         }
         notificationAdapter.addNotificationReadListener { nId, read ->
             nId?.let{

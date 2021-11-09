@@ -44,6 +44,7 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         PurchasesUpdatedListener { billingResult, purchases ->
             //This is called once there is some update about purchase after launching the billing flow
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
+                showProgressBar()
                 for (purchase in purchases) {
                     lifecycleScope.launch(Dispatchers.IO) {
                         handlePurchase(purchase!!)
@@ -60,6 +61,20 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
 
     }
 
+    private fun showProgressBar() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.checkLayout.visibility = View.GONE
+        binding.continueButton.visibility = View.GONE
+        binding.patronPlansRV.visibility = View.GONE
+    }
+
+    private fun hideProgressBar() {
+        binding.progressBar.visibility = View.GONE
+        binding.checkLayout.visibility = View.VISIBLE
+        binding.continueButton.visibility = View.VISIBLE
+        binding.patronPlansRV.visibility = View.VISIBLE
+    }
+
     private suspend fun handlePurchase(purchase: Purchase) {
         // Verify the purchase.
         Timber.d("PURCHASE ${purchase.purchaseToken}")
@@ -67,8 +82,11 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         model.consumePurchasedSub(purchase).collect {
             if (it == "Success") {
                 lifecycleScope.launch(Dispatchers.Main){
+                    binding.progressBar.visibility = View.GONE
                     findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
                 }
+            }else{
+                hideProgressBar()
             }
         }
         /*val consumeParams =

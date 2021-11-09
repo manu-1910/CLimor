@@ -24,10 +24,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_alignParentTop="true"
-                    android:alpha="0.12"
                     android:layout_marginTop="12dp"
+                    android:alpha="0.12"
                     android:background="@color/notification_divider"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
 
                 <View
@@ -44,25 +44,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="12dp"
-                    android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/upperDivider"/>
+                    app:layout_constraintTop_toBottomOf="@id/upperDivider" />
 
                 <androidx.constraintlayout.widget.Group
                     android:id="@+id/audio_player_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:constraint_referenced_ids="audio_player,lowerDivider,upperDivider" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/checkLayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:visibility="visible"
                     android:layout_marginTop="12dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/lowerDivider"
@@ -124,6 +123,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/managePatron" />
@@ -198,7 +198,6 @@
                     app:constraint_referenced_ids="mangePatronTV,managePatronDescriptionTV,patronDivider" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 
             <androidx.constraintlayout.widget.Group

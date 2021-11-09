@@ -53,10 +53,11 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector, PlayerVi
         val TAG: String = UserProfileActivity::class.java.simpleName
         fun newInstance() = UserProfileActivity()
 
-        fun show(context: Context, username: String, userId: Int) {
+        fun show(context: Context, username: String, userId: Int, tab: Int = 0) {
             val userProfileIntent = Intent(context, UserProfileActivity::class.java)
             userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, username)
             userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, userId)
+            userProfileIntent.putExtra(UserProfileFragment.TAB_POS, tab)
             context.startActivity(userProfileIntent)
         }
     }

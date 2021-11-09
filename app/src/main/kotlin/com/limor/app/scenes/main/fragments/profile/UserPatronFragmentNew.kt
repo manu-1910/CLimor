@@ -62,7 +62,16 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
 
     private fun setupViewPager(items: ArrayList<FragmentShortItemSlider>) {
         binding.pager.adapter = ShortPagerAdapter(items, childFragmentManager, lifecycle)
-        binding.indicator.setViewPager2(binding.pager)
+        if (items.size > 1) {
+            binding.indicator.setViewPager2(binding.pager)
+            binding.indicator.visibility = View.VISIBLE
+        } else {
+            binding.indicator.visibility = View.GONE
+        }
+
+        binding.pager.visibility = if (items.isEmpty()) View.GONE else View.VISIBLE
+
+
     }
 
     private fun getNormalStateItems(): ArrayList<FragmentShortItemSlider> {
@@ -106,9 +115,9 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
         })
     }
 
-    override fun onStart() {
-        super.onStart()
-        if(currentUser()){
+    override fun onResume() {
+        super.onResume()
+        if (currentUser()) {
             model.getUserProfile()
         }
     }
@@ -139,7 +148,6 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
         binding.termsTV.text = result
         binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
         Timber.d("Current User state -> ${user.patronInvitationStatus} ---")
-
         if (currentUser()) {
             if (user.isPatron == true) {
                 //is already a patron
@@ -177,6 +185,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                             when (user.patronOnBoardingStatus) {
                                 null -> {
                                     setupViewPager(getApprovedStateItems())
+                                    binding.checkLayout.visibility = View.VISIBLE
                                     binding.patronButton.text = getString(R.string.limorPatronSetup)
                                 }
                                 "NOT_INITIATED" -> {
@@ -186,15 +195,16 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                                 }
                                 "COMPLETED" -> {
                                     //Show Limor Patron
-                                    //setupViewPager(getNormalStateItems())
+                                    setupViewPager(ArrayList())
+                                    binding.audioPlayerView.visibility = View.GONE
+                                    binding.termsCheckBox.isChecked = false
                                     binding.patronButton.text =
                                         getString(R.string.limorPatronSetupWallet)
                                     binding.patronButton.isEnabled = true
-                                    binding.pager.visibility = View.GONE
-                                    binding.indicator.visibility = View.GONE
-                                    binding.checkLayout.visibility = View.GONE
-                                    binding.audioPlayerView.visibility = View.GONE
                                     binding.managePatronStateLayout.visibility = View.VISIBLE
+                                    binding.pager.visibility = View.GONE
+                                    binding.indicator.visibility = View.INVISIBLE
+                                    binding.checkLayout.visibility = View.INVISIBLE
                                 }
                                 else -> {
                                     setupViewPager(getApprovedStateItems())

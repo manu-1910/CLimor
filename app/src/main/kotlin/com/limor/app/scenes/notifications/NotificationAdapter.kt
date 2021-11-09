@@ -23,7 +23,7 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
     RecyclerView.Adapter<NotificationAdapter.ViewHolder>() {
 
     private lateinit var castCallback: (castId: Int?) -> Unit
-    private lateinit var userCallback: (userId: Int?, username: String?) -> Unit
+    private lateinit var userCallback: (userId: Int?, username: String?, tab:Int) -> Unit
     private lateinit var notiReadCallback: (nId: Int?, read: Boolean) -> Unit
     private val imageicon = arrayOf(
         R.drawable.ic_icon_follower,
@@ -108,13 +108,20 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
                 }
                 when (noti.redirectTarget?.type) {
                     "podcast" -> notificationAdapter.castCallback.invoke(noti.redirectTarget.id)
-                    "user" -> notificationAdapter.userCallback.invoke(
-                        noti.redirectTarget.id,
-                        noti.initiator?.username
-                    )
+                    "user" -> {
+                        var tab  = 0
+                        if(noti.notificationType == "patronRequest"){
+                            tab = 1
+                        }
+                        notificationAdapter.userCallback.invoke(
+                            noti.redirectTarget.id,
+                            noti.initiator?.username,
+                            tab
+                        )
+                    }
                     "comment" -> notificationAdapter.userCallback.invoke(
                         noti.redirectTarget.id,
-                        noti.initiator?.username
+                        noti.initiator?.username,0
                     )
                     else -> Timber.d("Unable to handle this type")
                 }
@@ -126,7 +133,7 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
                 //User Profile Activity
                 notificationAdapter.userCallback.invoke(
                     noti.initiator?.userId,
-                    noti.initiator?.username
+                    noti.initiator?.username,0
                 )
             }
         }
@@ -149,6 +156,7 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
     fun addItems(it: List<NotiUIMode>) {
         notificationsList.clear()
         notificationsList.addAll(it)
+        Timber.d("Notification List $it")
         notifyDataSetChanged()
     }
 
@@ -156,7 +164,7 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
         this.castCallback = callback
     }
 
-    fun addUserTypeCallback(callback: (userId: Int?, username: String?) -> Unit) {
+    fun addUserTypeCallback(callback: (userId: Int?, username: String?, tab: Int) -> Unit) {
         this.userCallback = callback
     }
 
