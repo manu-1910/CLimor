@@ -106,9 +106,7 @@ import kotlin.collections.ArrayList
 import android.widget.AutoCompleteTextView
 
 import android.widget.ArrayAdapter
-
-
-
+import androidx.core.os.bundleOf
 
 
 class PublishFragment : BaseFragment() {
@@ -542,7 +540,7 @@ class PublishFragment : BaseFragment() {
         }
 
         layoutCastCategory?.onClick {
-            findNavController().navigate(R.id.action_record_publish_to_record_categories)
+            findNavController().navigate(R.id.action_record_publish_to_record_categories, bundleOf("isPatron" to  isPatronUser()))
         }
 
         layoutCastLocation?.onClick {
@@ -1600,6 +1598,11 @@ class PublishFragment : BaseFragment() {
                 }
             }
         }
+    }
+
+    private fun isPatronUser(): Boolean{
+        //TODO Should Get User Details here From SharedPref
+        return false
     }
 
 
