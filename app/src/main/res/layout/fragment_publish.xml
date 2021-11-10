@@ -182,6 +182,36 @@
                                 android:textSize="@dimen/textSizeNormal" />
                         </com.google.android.material.textfield.TextInputLayout>
 
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/menu"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeWidth="2dp"
+                            app:counterTextColor="@color/textSecondary"
+                            app:hintTextAppearance="@style/TextHintStyle"
+                            app:hintTextColor="@color/colorAccent"
+                            app:endIconTint="@color/colorAccent"
+                            >
+                            <AutoCompleteTextView
+                                android:id="@+id/cast_prices"
+                                android:layout_width="match_parent"
+                                android:layout_height="54dp"
+                                android:hint="@string/cast_price"
+                                android:labelFor="@+id/menu"
+                                android:fontFamily="@font/roboto_medium"
+                                android:foregroundGravity="top"
+                                android:gravity="top"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSizeNormal"
+                                android:inputType="none"
+                                />
+
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/inputHashtags"
@@ -371,6 +401,45 @@
 
                         </RelativeLayout>
 
+                        <RelativeLayout
+                            android:id="@+id/lytMatureContent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="16dp"
+                            android:paddingStart="20dp"
+                            android:paddingEnd="@dimen/marginMedium"
+                            android:clickable="true"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:focusable="true"
+                            android:visibility="visible">
+
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/sw18Content"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentEnd="true"
+                                android:checked="false"
+                                android:fontFamily="@font/roboto_medium"
+                                android:switchMinWidth="56dp"
+                                android:text="@string/mature_content"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSize16" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/sw18Content"
+                                android:layout_alignParentStart="true"
+                                android:layout_marginTop="@dimen/marginTiny"
+                                android:fontFamily="@font/roboto"
+                                android:gravity="start"
+                                android:text="@string/mature_content_description"
+                                android:textColor="@color/textSecondary"
+                                android:textSize="@dimen/textSizeTiny" />
+
+                        </RelativeLayout>
 
                         <LinearLayout
                             android:id="@+id/lytPlayer"

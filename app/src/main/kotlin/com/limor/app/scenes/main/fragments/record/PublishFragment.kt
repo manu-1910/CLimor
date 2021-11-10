@@ -103,6 +103,12 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlin.collections.ArrayList
+import android.widget.AutoCompleteTextView
+
+import android.widget.ArrayAdapter
+
+
+
 
 
 class PublishFragment : BaseFragment() {
@@ -188,7 +194,7 @@ class PublishFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_publish, container, false)
@@ -221,11 +227,19 @@ class PublishFragment : BaseFragment() {
             //getCityOfDevice()
             loadDrafts()
 
+            loadDefaults()
+
             deleteDraft()
             apiCallHashTags()
         }
         app = context?.applicationContext as App
         return rootView
+    }
+
+    private fun loadDefaults() {
+        val items = listOf("Free (Will appear in Cast Tab)","0.99", "4.99", "9.99", "12.99")
+        val adapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, items)
+        (rootView?.findViewById<AutoCompleteTextView>(R.id.cast_prices))?.setAdapter(adapter)
     }
 
 
@@ -853,7 +867,7 @@ class PublishFragment : BaseFragment() {
                     override fun onProgressChanged(
                         id: Int,
                         bytesCurrent: Long,
-                        bytesTotal: Long
+                        bytesTotal: Long,
                     ) {
                         //  dialog.updateProgress(bytesCurrent.toInt(), bytesTotal.toInt())
                     }
@@ -1236,7 +1250,7 @@ class PublishFragment : BaseFragment() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CAMERA_PERMISSION_REQUEST) {
@@ -1307,7 +1321,7 @@ class PublishFragment : BaseFragment() {
         okText: String,
         okAction: () -> Unit,
         negativeText: String = getString(R.string.cancel),
-        negativeAction: (() -> Unit)? = null
+        negativeAction: (() -> Unit)? = null,
     ) {
         val dialogBuilder = AlertDialog.Builder(context)
         val inflater = layoutInflater
@@ -1508,7 +1522,7 @@ class PublishFragment : BaseFragment() {
 
     fun TextView.applyWithDisabledTextWatcher(
         textWatcher: TextWatcher,
-        codeBlock: TextView.() -> Unit
+        codeBlock: TextView.() -> Unit,
     ) {
         this.removeTextChangedListener(textWatcher)
         codeBlock()
@@ -1573,7 +1587,7 @@ class PublishFragment : BaseFragment() {
 
     open class KeyboardToggleListener(
         private val root: View?,
-        private val onKeyboardToggleAction: (shown: Boolean) -> Unit
+        private val onKeyboardToggleAction: (shown: Boolean) -> Unit,
     ) : ViewTreeObserver.OnGlobalLayoutListener {
         private var shown = false
         override fun onGlobalLayout() {

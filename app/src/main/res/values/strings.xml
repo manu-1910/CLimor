@@ -82,7 +82,7 @@
 
     <string name="cast_published_ok_title">Cast Published</string>
     <string name="cast_published_ok_description">Your cast has been published successfully</string>
-    <string name="hint_caption">Caption here<font color='#FF0000'>*</font></string>
+    <string name="hint_caption">Caption &amp; Tags here<font color='#FF0000'>*</font></string>
     <string name="hint_title">Title here<font color='#FF0000'>*</font></string>
 
     <string name="text_seperator">C_TAG_SEP</string>
@@ -714,5 +714,9 @@
     <string name="patron_uk_account_learn_more"><![CDATA[I have an active UK based Bank account \n <br><a href=\'https://google.com\'><b>Learn More</b></a>]]></string>
     <string name="spot_secured_title">Spot Secured</string>
     <string name="sport_secured_description">You have secured your spot. You\'re going to have your digital wallet soon</string>
+    <string name="mature_content">Mature Content (18+)</string>
+    <string name="mature_content_description">Does your cast contain profanity, swearing, sexual, gambling references.</string>
+    <string name="edit_price">Edit Price - 6.99</string>
+    <string name="add_preview">Add Preview</string>
 
 </resources>

@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clItemPodcastFeed"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <ImageView
+        android:id="@+id/ivPodcastBackground"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@+id/guide_like"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/limor_logo" />
+
+    <View
+        android:id="@+id/shadowTop"
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        android:background="@drawable/item_home_podcast_gradient_angle_90"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/shadowRight"
+        android:layout_width="100dp"
+        android:layout_height="0dp"
+        android:background="@drawable/item_home_podcast_gradient_angle_0"
+        app:layout_constraintBottom_toBottomOf="@id/ivPodcastBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ivPodcastAvatar"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="24dp"
+        android:src="@color/white"
+        app:layout_constraintBottom_toBottomOf="@id/shadowTop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvPodcastUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:lines="1"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/tvPodcastUserSubtitle"
+        app:layout_constraintStart_toEndOf="@+id/ivPodcastAvatar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="You" />
+
+    <ImageView
+        android:id="@+id/ivVerifiedAvatar"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="4dp"
+        android:foregroundTint="@color/waveFormColor"
+        android:src="@drawable/ic_verified_badge"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/tvPodcastUserSubtitle"
+        app:layout_constraintStart_toEndOf="@id/tvPodcastUserName" />
+
+    <TextView
+        android:id="@+id/tvPodcastUserSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:lines="1"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/shadowTop"
+        app:layout_constraintStart_toEndOf="@+id/ivPodcastAvatar"
+        app:layout_constraintTop_toBottomOf="@+id/tvPodcastUserName"
+        tools:text="2 days ago - Ireland" />
+
+    <ImageButton
+        android:id="@+id/btnPodcastMore"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/transparent"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_3_dots_horizontal"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/shadowTop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/likeLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="12dp"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shadowTop">
+
+        <com.limor.app.components.LikeButton
+            android:id="@+id/btnPodcastLikes"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/tvPodcastLikes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/white"
+            tools:text="100" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/recastLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="12dp"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/likeLayout">
+
+        <com.limor.app.components.RecastButton
+            android:id="@+id/btnPodcastRecast"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@color/transparent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_podcast_recast"
+            android:tint="@color/white"
+            app:not_recasted_color="@color/white"
+            app:recast_color="@color/textAccent" />
+
+        <TextView
+            android:id="@+id/tvPodcastRecast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/white"
+            tools:text="100" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/commentsLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="12dp"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recastLayout">
+
+        <ImageButton
+            android:id="@+id/btnPodcastComments"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@color/transparent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_podcast_comment"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/tvPodcastComments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/white"
+            tools:text="100" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sharesLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="12dp"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/commentsLayout">
+
+        <com.limor.app.components.ShareButton
+            android:id="@+id/btnPodcastReply"
+            android:layout_width="30dp"
+            android:layout_height="24dp"
+            android:background="@color/transparent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_podcast_reply"
+            android:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/tvPodcastReply"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/white"
+            tools:text="100" />
+
+    </LinearLayout>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/cpiPodcastListeningProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        app:indicatorColor="@color/colorAccent"
+        app:indicatorDirectionCircular="clockwise"
+        app:indicatorSize="68dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sharesLayout"
+        app:trackColor="@color/dark_transparent"
+        app:trackCornerRadius="4dp"
+        tools:progress="25" />
+
+    <View
+        android:id="@+id/guide_like"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/feed_item_image_bottom"
+        app:layout_constraintTop_toBottomOf="@+id/cpiPodcastListeningProgress" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ivAvatarImageListening"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:scaleType="centerCrop"
+        android:src="@color/green400"
+        app:layout_constraintBottom_toBottomOf="@+id/cpiPodcastListeningProgress"
+        app:layout_constraintEnd_toEndOf="@+id/cpiPodcastListeningProgress"
+        app:layout_constraintStart_toStartOf="@+id/cpiPodcastListeningProgress"
+        app:layout_constraintTop_toTopOf="@+id/cpiPodcastListeningProgress" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="52dp"
+        android:layout_height="84dp"
+        android:src="@color/dark_transparent"
+        app:layout_constraintBottom_toBottomOf="@+id/cpiPodcastListeningProgress"
+        app:layout_constraintEnd_toEndOf="@+id/cpiPodcastListeningProgress"
+        app:layout_constraintStart_toStartOf="@+id/cpiPodcastListeningProgress"
+        app:layout_constraintTop_toTopOf="@+id/cpiPodcastListeningProgress" />
+
+    <ImageView
+        android:id="@+id/ivPodcastListening"
+        android:layout_width="wrap_content"
+        android:layout_height="22dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/ic_podcast_listening"
+        app:layout_constraintEnd_toEndOf="@id/cpiPodcastListeningProgress"
+        app:layout_constraintStart_toStartOf="@id/cpiPodcastListeningProgress"
+        app:layout_constraintTop_toTopOf="@id/cpiPodcastListeningProgress"
+        app:tint="@color/white" />
+
+    <TextView
+        android:id="@+id/tvPodcastNumberOfListeners"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_medium"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@id/cpiPodcastListeningProgress"
+        app:layout_constraintStart_toStartOf="@id/cpiPodcastListeningProgress"
+        app:layout_constraintTop_toBottomOf="@id/ivPodcastListening"
+        tools:text="1.4k" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/shape_semi_transparent_rounded"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/ivPodcastBackground"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:src="@drawable/ic_podcast_duration" />
+
+        <TextView
+            android:id="@+id/tvPodcastLength"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            tools:text="3h 5m 30s" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/sound_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:src="@drawable/ic_sound"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/ivPodcastBackground"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvPodcastTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:textColor="#262735"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivPodcastBackground"
+        tools:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry" />
+
+    <TextView
+        android:id="@+id/tvPodcastSubtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:textColor="@color/subtitle_text_color"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPodcastTitle"
+        tools:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tags_horizontal_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPodcastSubtitle" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnAddPreview"
+        android:layout_width="0dp"
+        style="@style/ButtonTextStyle"
+        android:layout_margin="@dimen/margin28"
+        android:layout_height="43dp"
+        android:background="@color/transparent"
+        android:fontFamily="@font/roboto_bold"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
+        android:text="@string/add_preview"
+        android:textAllCaps="false"
+        android:textColor="@color/text_btn_primary_color"
+        android:textSize="@dimen/textSize14"
+        app:layout_constraintEnd_toStartOf="@+id/btnEditPrice"
+        app:layout_constraintStart_toStartOf="@+id/tags_horizontal_list"
+        app:layout_constraintTop_toBottomOf="@id/tags_horizontal_list" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnEditPrice"
+        style="@android:style/Widget.Material.Button.Borderless.Colored"
+        android:layout_width="0dp"
+        android:layout_height="43dp"
+        android:layout_marginEnd="@dimen/margin24"
+        android:background="@drawable/btn_primary_background"
+        android:fontFamily="@font/roboto_bold"
+        android:padding="14dp"
+        android:text="@string/edit_price"
+        android:textAllCaps="false"
+        android:textAlignment="viewStart"
+        android:drawablePadding="12dp"
+        android:textColor="@color/text_btn_primary_color"
+        android:textSize="@dimen/textSize14"
+        android:drawableStart="@drawable/ic_edit_small"
+        app:layout_constraintBottom_toBottomOf="@+id/btnAddPreview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toTopOf="@+id/btnAddPreview" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="205dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
