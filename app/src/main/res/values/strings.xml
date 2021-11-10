@@ -718,5 +718,8 @@
     <string name="mature_content_description">Does your cast contain profanity, swearing, sexual, gambling references.</string>
     <string name="edit_price">Edit Price - 6.99</string>
     <string name="add_preview">Add Preview</string>
+    <string name="buy_cast">Buy $ 1.99</string>
+    <string name="preview">Preview</string>
+    <string name="cast_purchased">Purchased at $19.99</string>
 
 </resources>

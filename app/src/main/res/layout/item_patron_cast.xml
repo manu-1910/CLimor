@@ -383,10 +383,10 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnAddPreview"
-        android:layout_width="0dp"
         style="@style/ButtonTextStyle"
-        android:layout_margin="@dimen/margin28"
+        android:layout_width="0dp"
         android:layout_height="43dp"
+        android:layout_margin="@dimen/margin28"
         android:background="@color/transparent"
         android:fontFamily="@font/roboto_bold"
         android:paddingTop="14dp"
@@ -406,15 +406,15 @@
         android:layout_height="43dp"
         android:layout_marginEnd="@dimen/margin24"
         android:background="@drawable/btn_primary_background"
+        android:drawableStart="@drawable/ic_edit_small"
+        android:drawablePadding="12dp"
         android:fontFamily="@font/roboto_bold"
         android:padding="14dp"
         android:text="@string/edit_price"
-        android:textAllCaps="false"
         android:textAlignment="viewStart"
-        android:drawablePadding="12dp"
+        android:textAllCaps="false"
         android:textColor="@color/text_btn_primary_color"
         android:textSize="@dimen/textSize14"
-        android:drawableStart="@drawable/ic_edit_small"
         app:layout_constraintBottom_toBottomOf="@+id/btnAddPreview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
@@ -425,6 +425,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="205dp" />
+        app:layout_constraintGuide_percent="0.5" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
