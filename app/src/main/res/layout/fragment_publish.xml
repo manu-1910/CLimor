@@ -159,6 +159,7 @@
                             android:layout_marginStart="@dimen/marginTwenty"
                             android:layout_marginTop="@dimen/marginTwenty"
                             android:layout_marginEnd="@dimen/marginTwenty"
+                            android:visibility="gone"
                             app:boxStrokeColor="@color/colorAccent"
                             app:boxStrokeWidth="2dp"
                             app:counterEnabled="true"
@@ -183,36 +184,6 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/menu"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/marginTwenty"
-                            android:layout_marginTop="@dimen/marginTwenty"
-                            android:layout_marginEnd="@dimen/marginTwenty"
-                            app:boxStrokeColor="@color/colorAccent"
-                            app:boxStrokeWidth="2dp"
-                            app:counterTextColor="@color/textSecondary"
-                            app:endIconTint="@color/colorAccent"
-                            app:hintTextAppearance="@style/TextHintStyle"
-                            app:hintTextColor="@color/colorAccent">
-
-                            <AutoCompleteTextView
-                                android:id="@+id/cast_prices"
-                                android:layout_width="match_parent"
-                                android:layout_height="54dp"
-                                android:fontFamily="@font/roboto_medium"
-                                android:foregroundGravity="top"
-                                android:gravity="top"
-                                android:hint="@string/cast_price"
-                                android:inputType="none"
-                                android:labelFor="@+id/menu"
-                                android:textColor="@color/textPrimary"
-                                android:textSize="@dimen/textSizeNormal" />
-
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/inputHashtags"
                             style="@style/TextInputLayout"
                             android:layout_width="match_parent"
@@ -221,8 +192,13 @@
                             android:layout_marginTop="@dimen/marginTwenty"
                             android:layout_marginEnd="@dimen/marginTwenty"
                             android:visibility="visible"
+                            android:foregroundGravity="top"
+                            android:gravity="top"
                             app:boxStrokeColor="@color/colorAccent"
                             app:boxStrokeWidth="2dp"
+                            app:counterEnabled="true"
+                            app:counterMaxLength="1000"
+                            app:counterTextColor="@color/textSecondary"
                             app:helperText="@string/hastag_helper_text"
                             app:hintTextAppearance="@style/TextHintStyle"
                             app:hintTextColor="@color/colorAccent">
@@ -233,17 +209,23 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/roboto_medium"
-                                android:hint="@string/hint_tags"
-                                android:inputType="textNoSuggestions"
-                                android:lines="1"
+                                android:hint="@string/hint_caption"
+                                android:inputType="textMultiLine"
+                                android:singleLine="false"
+                                android:lines="4"
+                                android:imeOptions="actionNext"
                                 android:paddingStart="@dimen/marginMediumSmall"
                                 android:paddingTop="@dimen/marginMedium"
                                 android:paddingEnd="@dimen/marginMediumSmall"
                                 android:paddingBottom="@dimen/marginMedium"
                                 android:textColor="@color/textPrimary"
                                 android:textSize="@dimen/textSizeNormal"
+                                android:textAlignment="gravity"
+                                android:gravity="top|start"
                                 app:hyperlinkColor="@color/textPrimary"
                                 app:socialFlags="hashtag" />
+
+
                         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -269,6 +251,45 @@
                             android:visibility="gone"
                             tools:listitem="@layout/tag_item" />
 
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/menu"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeWidth="2dp"
+                            app:counterTextColor="@color/textSecondary"
+                            app:endIconTint="@color/colorAccent"
+                            app:hintTextAppearance="@style/TextHintStyle"
+                            app:hintTextColor="@color/colorAccent">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/cast_prices"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/roboto_medium"
+                                android:foregroundGravity="top"
+                                android:gravity="top"
+                                android:focusable="false"
+                                android:hint="@string/cast_price"
+                                android:inputType="none"
+                                android:labelFor="@+id/menu"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSizeNormal" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <TextView
+                            android:id="@+id/payment_terms"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/payment_terms"
+                            android:fontFamily="@font/roboto_bold"
+                            android:textColor="@color/primaryYellowColor"
+                            android:layout_marginStart="@dimen/marginTwenty"/>
 
                     </LinearLayout>
 

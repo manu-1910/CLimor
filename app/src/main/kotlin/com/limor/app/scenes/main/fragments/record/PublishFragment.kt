@@ -107,6 +107,14 @@ import android.widget.AutoCompleteTextView
 
 import android.widget.ArrayAdapter
 import androidx.core.os.bundleOf
+import org.jetbrains.anko.lines
+import org.jetbrains.anko.sdk23.listeners.onFocusChange
+import android.text.style.UnderlineSpan
+
+import android.text.SpannableString
+
+
+
 
 
 class PublishFragment : BaseFragment() {
@@ -279,6 +287,7 @@ class PublishFragment : BaseFragment() {
 
         uiDraft = requireArguments()["recordingItem"] as UIDraft
 
+        updateUIState()
         configureToolbar()
         listeners()
         loadExistingData()
@@ -289,6 +298,14 @@ class PublishFragment : BaseFragment() {
         updatePublishBtnState()
 
         subscribeToViewModel()
+    }
+
+    private fun updateUIState() {
+        if(isPatronUser()){
+            val content = SpannableString(getString(R.string.payment_terms))
+            content.setSpan(UnderlineSpan(), 0, content.length, 0)
+            payment_terms.text = content
+        }
     }
 
     private fun loadDrafts() {
@@ -592,6 +609,12 @@ class PublishFragment : BaseFragment() {
                 }
             }
         }
+        etHashtags.onFocusChange { v, hasFocus ->
+            if(!hasFocus){
+                rvTags?.visibility = View.GONE
+                lytWithoutTagsRecycler?.visibility = View.VISIBLE
+            }
+        }
         etHashtags.addTextChangedListener(twHastags)
 
 
@@ -625,13 +648,14 @@ class PublishFragment : BaseFragment() {
         KeyboardUtils.addKeyboardToggleListener(activity) { isVisible ->
             //println("keyboard visible: $isVisible")
             if (isShowingTagsRecycler) {
-                if (isVisible) {
+                if(isVisible && etDraftTags?.hasFocus()==true){
                     rvTags?.visibility = View.VISIBLE
                     lytWithoutTagsRecycler?.visibility = View.GONE
-                } else {
+                }else {
                     rvTags?.visibility = View.GONE
                     lytWithoutTagsRecycler?.visibility = View.VISIBLE
                 }
+
             }
         }
 
@@ -1429,7 +1453,9 @@ class PublishFragment : BaseFragment() {
                     for (item in listTags) {
                         listTagsString?.add(Hashtag(item.tag))
                     }
-                    rvTags?.adapter?.notifyDataSetChanged()
+                    Timber.d("TAGS $it")
+                    //rvTags?.adapter?.notifyDataSetChanged()
+                    setupRecyclerTags()
                 }
             }
         })
@@ -1439,6 +1465,7 @@ class PublishFragment : BaseFragment() {
 
     private fun multiCompleteText() {
         etDraftTags?.isMentionEnabled = false
+        etDraftTags?.lines = 3
         etDraftTags?.hashtagColor =
             ContextCompat.getColor(requireContext(), R.color.textPrimary)
         etDraftTags?.hashtagAdapter = listTagsString
@@ -1602,7 +1629,7 @@ class PublishFragment : BaseFragment() {
 
     private fun isPatronUser(): Boolean{
         //TODO Should Get User Details here From SharedPref
-        return false
+        return true
     }
 
 
