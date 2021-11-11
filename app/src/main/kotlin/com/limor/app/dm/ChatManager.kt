@@ -100,6 +100,9 @@ class ChatManager @Inject constructor(
             cont.resume(-1)
             return@suspendCoroutine
         }
+        if (BuildConfig.DEBUG) {
+            Timber.d("Will login user ID $userId with token = $token.")
+        }
         client.login(token, userId, object : ResultCallback<Void?> {
             override fun onSuccess(responseInfo: Void?) {
                 cont.resume(RtmStatusCode.LoginError.LOGIN_ERR_OK)
