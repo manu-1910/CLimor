@@ -54,6 +54,9 @@ class ManagePatronFragment : BaseFragment() {
             args.putBoolean(FragmentPatronCategories.EDIT_FLOW, true)
             findNavController().navigate(R.id.action_manage_patron_fragment_to_fragment_patron_categories, args)
         }
+        binding.earningsLayout.setOnClickListener {
+            findNavController().navigate(R.id.action_manage_patron_fragment_to_fragment_my_earnings)
+        }
     }
 
 }
