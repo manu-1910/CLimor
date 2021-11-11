@@ -124,6 +124,7 @@ android {
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
 
             buildConfigField "String", "CHAT_USER_ID_PREFIX", '"development"'
+            buildConfigField "String", "AGORA_APP_ID", '"09955231503f4b18a6ad0a2f243711e3"'
 
             minifyEnabled false
             debuggable true
@@ -158,6 +159,7 @@ android {
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
 
             buildConfigField "String", "CHAT_USER_ID_PREFIX", '"staging"'
+            buildConfigField "String", "AGORA_APP_ID", '"09955231503f4b18a6ad0a2f243711e3"'
 
             minifyEnabled false
             debuggable true
@@ -193,6 +195,7 @@ android {
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-staging.web.app"'
 
             buildConfigField "String", "CHAT_USER_ID_PREFIX", '"staging"'
+            buildConfigField "String", "AGORA_APP_ID", '"09955231503f4b18a6ad0a2f243711e3"'
 
             minifyEnabled false
             debuggable true
@@ -226,7 +229,8 @@ android {
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://castpreview.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://castpreview.limor.ie"'
 
-            buildConfigField "String", "CHAT_USER_ID_PREFIX", '"prod"'
+            buildConfigField "String", "CHAT_USER_ID_PREFIX", '"production"'
+            buildConfigField "String", "AGORA_APP_ID", '"7a35ed47a3794d1894081e959b24da1b"'
 
             minifyEnabled false
             debuggable true
