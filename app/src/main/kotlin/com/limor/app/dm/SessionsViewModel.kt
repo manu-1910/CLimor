@@ -22,11 +22,9 @@ class SessionsViewModel @Inject constructor(
     suspend fun getChat(limorUserId: Int): LiveData<ChatWithData>? {
         var session = chatRepository.getSessionByLimorUserId(limorUserId)
         if (session == null) {
-            println("ZZZZ Session was null")
             session = createSession(limorUserId, "")
         }
         if (session == null) {
-            println("ZZZZ Could not create session")
             return null
         }
         return chatRepository.getChat(sessionId = session.id).asLiveData()
@@ -35,7 +33,6 @@ class SessionsViewModel @Inject constructor(
     private suspend fun createSession(limorUserId: Int, message: String): ChatSession? {
         val user = generalInfoRepository.getUserProfileById(limorUserId)
         if (user == null) {
-            println("ZZZZ User is null.")
             return null;
         } else {
             chatRepository.insertChatUser(ChatUser(
@@ -54,7 +51,9 @@ class SessionsViewModel @Inject constructor(
             )
             val id = chatRepository.insertSession(session)
             session.id = id.toInt()
-            println("ZZZZ Created session with ID $id")
+            if (BuildConfig.DEBUG) {
+                println("ZZZZ Created session with ID $id")
+            }
             return session
         }
     }
@@ -64,7 +63,9 @@ class SessionsViewModel @Inject constructor(
         get() = _chatTargets
 
     fun searchFollowers(searchTerm: String) {
-        println("Will search for $searchTerm")
+        if (BuildConfig.DEBUG) {
+            println("Will search for $searchTerm")
+        }
 
         if (searchTerm.isEmpty()) {
             _chatTargets.postValue(emptyList())
@@ -82,7 +83,9 @@ class SessionsViewModel @Inject constructor(
                     addAll(sessions)
                 }
 
-                println("Sessions -> $sessions")
+                if (BuildConfig.DEBUG) {
+                    println("Sessions -> $sessions")
+                }
 
                 val followers = generalInfoRepository.searchFollowers(
                     term = searchTerm,
@@ -90,7 +93,9 @@ class SessionsViewModel @Inject constructor(
                     offset = 0
                 )
 
-                println("Search followers -> $followers")
+                if (BuildConfig.DEBUG) {
+                    println("Search followers -> $followers")
+                }
 
                 followers.filterNotNull()
                     .map(ChatTarget::fromSearch)
@@ -114,14 +119,18 @@ class SessionsViewModel @Inject constructor(
         if (content.isEmpty()) {
             return
         }
-        println("Adding my message ($content) in $session")
+        if (BuildConfig.DEBUG) {
+            println("Adding my message ($content) in $session")
+        }
         viewModelScope.launch {
             withContext(dispatcherProvider.io) {
                 chatRepository.addMyMessage(content, session)
 
                 val peerId = "${BuildConfig.CHAT_USER_ID_PREFIX}_${session.user.limorUserId}"
                 val result = chatManager.sendPeerMessage(peerId, content)
-                println("Result from sending message: $result")
+                if (BuildConfig.DEBUG) {
+                    println("Result from sending message: $result")
+                }
             }
         }
     }
@@ -135,12 +144,16 @@ class SessionsViewModel @Inject constructor(
             return
         }
         val sessionWithUser = chatRepository.getSessionWithUserId(session.id)
-        println("Will share with session ${sessionWithUser.session.id}")
+        if (BuildConfig.DEBUG) {
+            println("Will share with session ${sessionWithUser.session.id}")
+        }
         addMyMessage(sessionWithUser, url)
     }
 
     suspend fun shareAsDirectMessage(selected: List<LeanUser>, url: String?): Boolean = suspendCoroutine { cont ->
-        println("Sharing as direct -> ${selected.size} -> $url")
+        if (BuildConfig.DEBUG) {
+            println("Sharing as direct -> ${selected.size} -> $url")
+        }
         if (url.isNullOrEmpty()) {
             cont.resume(false)
             return@suspendCoroutine

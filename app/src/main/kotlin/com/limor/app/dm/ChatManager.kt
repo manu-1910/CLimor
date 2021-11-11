@@ -240,7 +240,9 @@ class ChatManager @Inject constructor(
 
     private fun processQueue() {
         if (processing.get()) {
-            println("Not processing because already processing.")
+            if (BuildConfig.DEBUG) {
+                println("Not processing because already processing.")
+            }
             return
         }
         processing.set(true)
