@@ -49,9 +49,6 @@ class ManagePatronFragment : BaseFragment() {
         binding.changeCastPricesLayout.setOnClickListener {
             findNavController().navigate(R.id.action_manage_patron_fragment_to_dialog_change_price)
         }
-        binding.patronMembershipLayout.setOnClickListener {
-            findNavController().navigate(R.id.action_manage_patron_fragment_to_dialog_cancel_patron_membership)
-        }
         binding.catagoriesLayout.setOnClickListener {
             val args = Bundle()
             args.putBoolean(FragmentPatronCategories.EDIT_FLOW, true)

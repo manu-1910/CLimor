@@ -179,43 +179,6 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/patronMembershipLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin28">
-
-                <TextView
-                    android:id="@+id/membershipTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/manage_patron_membership"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentStart="true"
-                    android:textColor="@color/toolbar_text_dark"
-                    android:textSize="@dimen/textSize16"
-                    android:fontFamily="@font/roboto_bold"/>
-
-                <TextView
-                    android:id="@+id/membershipCountTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textSecondary"
-                    android:textSize="@dimen/textSize16"
-                    android:layout_alignParentEnd="true"
-                    android:drawableEnd="@drawable/ic_rigth_arrow"
-                    tools:text="5 Left"/>
-
-                <View
-                    android:id="@+id/membershipSeperatorView"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_below="@id/membershipCountTextView"
-                    android:background="@color/lightBlueColor"
-                    android:layout_marginTop="@dimen/margin18"/>
-
-            </RelativeLayout>
-
-            <RelativeLayout
                 android:id="@+id/changeCastPricesLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

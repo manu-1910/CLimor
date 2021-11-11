@@ -23,6 +23,7 @@ import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
 import com.limor.app.scenes.main_new.view_model.UserMentionViewModel
 import com.limor.app.scenes.notifications.NotificationViewModel
 import com.limor.app.scenes.notifications.PushNotificationsViewModel
+import com.limor.app.scenes.patron.manage.viewmodels.ManagePatronViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -367,4 +368,10 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(UserMentionViewModel::class)
     abstract fun bindUserMentionViewModel(viewModel: UserMentionViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ManagePatronViewModel::class)
+    abstract fun bindManagePatronViewModel(viewModel: ManagePatronViewModel): ViewModel
+
 }

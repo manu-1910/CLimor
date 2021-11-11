@@ -731,5 +731,14 @@
     <string name="cancel_patron_membership_description">Do you really want to cancel your Limor Patron  membership?</string>
     <string name="cancel_patron_membership_success_title">Patron Membership Cancelled</string>
     <string name="cancel_patron_membership_success_description">Your payment have successfully cancelled your patron membership</string>
+    <string name="total_withdrawn">Total Withdrawn</string>
+    <string name="cast_earnings">Cast Earnings</string>
+    <string name="price">Price</string>
+    <string name="edit_price">Edit Price</string>
+    <string name="submit">Submit</string>
+    <string name="view_more">View more</string>
+    <string name="total_earnings">Total Earnings</string>
+    <string name="transaction_fee">Transaction Fee</string>
+    <string name="bought_by">Bought By</string>
 
 </resources>

@@ -71,9 +71,6 @@ class FragmentShortItemSlider : Fragment() {
         text?.let {
             binding.patronStatusTv.text = fixSpanColor(getText(it))
         }
-        binding.root.setOnClickListener {
-            startActivity(Intent(requireContext(),ManagePatronActivity::class.java))
-        }
         return binding.root
     }
 
