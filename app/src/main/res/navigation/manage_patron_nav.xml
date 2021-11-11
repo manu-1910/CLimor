@@ -21,19 +21,18 @@
             app:destination="@id/fragment_patron_categories" />
     </fragment>
 
-    <dialog
+    <fragment
         android:id="@+id/dialog_change_price"
-        android:name="com.limor.app.scenes.patron.manage.fragment.DialogChangePrice"
+        android:name="com.limor.app.scenes.patron.manage.fragment.FragmentChangePrice"
         android:label="Dialog Change Price"
-        tools:layout="@layout/dialog_change_price">
+        tools:layout="@layout/fragment_change_price">
         <action
             android:id="@+id/action_dialog_change_price_to_dialog_change_price_confirmation"
-            app:destination="@id/dialog_change_price_confirmation"
-            app:popUpTo="@id/manage_patron_fragment" />
+            app:destination="@id/dialog_change_price_confirmation" />
         <argument
             android:name="DialogChangePriceArgs"
             app:argType="string" />
-    </dialog>
+    </fragment>
 
     <dialog
         android:id="@+id/dialog_change_price_confirmation"

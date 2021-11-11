@@ -2,6 +2,7 @@ package com.limor.app.scenes.patron.manage.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,11 +12,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.DialogErrorPublishCastBinding
+import com.limor.app.di.Injectable
 import com.limor.app.scenes.patron.manage.viewmodels.ManagePatronViewModel
-import kotlinx.android.synthetic.main.dialog_change_price.*
+import kotlinx.android.synthetic.main.fragment_change_price.*
 import javax.inject.Inject
 
-class DialogConfirmationChangePrice: DialogFragment() {
+class DialogConfirmationChangePrice: DialogFragment(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -65,6 +67,7 @@ class DialogConfirmationChangePrice: DialogFragment() {
             this.dismiss()
         }
         binding.okButton.setOnClickListener {
+            model.updateCastPrice()
             this.dismiss()
         }
     }

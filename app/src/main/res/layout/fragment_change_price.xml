@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@color/transparent">
+
+<include
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    layout="@layout/toolbar_discover"
+    android:visibility="visible"
+    android:layout_alignParentTop="true" />
+
+<com.google.android.material.textfield.TextInputLayout
+    android:id="@+id/priceTIL"
+    style="@style/TextInputLayoutOutlineDropdownWithError"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:hint="@string/price"
+    android:layout_marginTop="@dimen/marginTwenty"
+    android:layout_below="@id/toolbar"
+    android:layout_marginEnd="@dimen/marginTwenty"
+    android:layout_marginStart="@dimen/marginTwenty">
+
+    <AutoCompleteTextView
+        android:id="@+id/tvPrices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="-24dp"
+        android:editable="false"
+        android:inputType="none"
+        android:paddingStart="8dp"
+        android:paddingEnd="0dp"
+        android:textColor="@color/black"
+        android:textSize="14sp" />
+
+</com.google.android.material.textfield.TextInputLayout>
+
+<Button
+    android:id="@+id/yesButton"
+    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:fontFamily="@font/roboto_medium"
+    android:background="@drawable/bg_round_yellow_ripple_new"
+    android:text="@string/submit"
+    android:textAllCaps="false"
+    android:textColor="@color/textPrimary"
+    android:textSize="@dimen/textSize14"
+    android:layout_marginEnd="@dimen/marginTwenty"
+    android:layout_marginStart="@dimen/marginTwenty"
+    android:layout_marginBottom="@dimen/margin40"
+    android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>
