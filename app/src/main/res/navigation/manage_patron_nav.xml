@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_manage_patron_fragment_to_fragment_patron_categories"
             app:destination="@id/fragment_patron_categories" />
+        <action
+            android:id="@+id/action_manage_patron_fragment_to_fragment_my_earnings"
+            app:destination="@id/fragment_my_earnings" />
     </fragment>
 
     <fragment
@@ -67,6 +70,23 @@
         android:name="com.limor.app.scenes.patron.setup.FragmentPatronCategories"
         android:label="FragmentPatronCategories"
         tools:layout="@layout/fragment_patron_categories">
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_my_earnings"
+        android:name="com.limor.app.scenes.patron.manage.fragment.FragmentMyEarnings"
+        android:label="FragmentMyEarnings"
+        tools:layout="@layout/fragment_my_earnings">
+        <action
+            android:id="@+id/action_my_earnings_fragment_to_fragment_cast_earnings"
+            app:destination="@id/fragment_cast_earnings" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_cast_earnings"
+        android:name="com.limor.app.scenes.patron.manage.fragment.FragmentCastEarnings"
+        android:label="FragmentCastEarnings"
+        tools:layout="@layout/fragment_cast_earnings">
     </fragment>
 
 </navigation>

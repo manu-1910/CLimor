@@ -5,11 +5,14 @@
 
     <TextView
         android:id="@+id/load_more"
-        android:text="@string/load_more_label"
+        android:text="@string/view_more"
         android:padding="30dp"
         android:textAlignment="center"
         android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:textColor="@color/textAccent"
+        android:fontFamily="@font/roboto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"/>
 
 </FrameLayout>

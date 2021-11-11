@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/sign_in_new_background"
+    tools:context=".scenes.patron.manage.fragment.FragmentMyEarnings">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_discover"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"/>
+
+    <RelativeLayout
+        android:id="@+id/earnings_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        android:layout_marginTop="@dimen/marginMedium"
+        android:layout_marginStart="@dimen/marginTwenty"
+        android:layout_marginEnd="@dimen/marginTwenty">
+
+        <include
+            android:id="@+id/total_earnings_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            layout="@layout/layout_earnings_breakup"
+            android:layout_alignParentStart="true"
+            android:layout_marginEnd="@dimen/margin10"/>
+
+        <include
+            android:id="@+id/transaction_fee_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            layout="@layout/layout_earnings_breakup"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="@dimen/margin10"/>
+
+        <include
+            android:id="@+id/current_balance_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            layout="@layout/layout_earnings_breakup"
+            android:layout_alignParentEnd="true"/>
+
+    </RelativeLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/summary_layout"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/earnings_layout"
+        android:layout_marginTop="@dimen/marginMedium"
+        android:layout_marginStart="@dimen/marginTwenty"
+        android:layout_marginEnd="@dimen/marginTwenty"
+        android:padding="@dimen/margin10">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/credit_card_image_view"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_verified_badge"
+                android:layout_marginStart="@dimen/marginMediumSmall"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/total_withdrawn"
+                android:textSize="@dimen/textSize14"
+                android:textColor="@color/grayWave"
+                android:fontFamily="@font/roboto"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/marginSmall"
+                android:layout_toEndOf="@id/credit_card_image_view"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$350"
+                android:textSize="@dimen/textSize20"
+                android:textColor="@color/black"
+                android:fontFamily="@font/roboto"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/marginMedium"
+                android:layout_alignParentEnd="true"/>
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/cast_earnings_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cast_earnings"
+        android:textSize="@dimen/textSize14"
+        android:fontFamily="@font/roboto_bold"
+        app:layout_constraintTop_toBottomOf="@id/summary_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="@dimen/marginTwenty"
+        android:layout_marginTop="@dimen/margin26"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/etFilter"
+        style="@style/TextInputLayoutOutlineDropdownWithError"
+        android:layout_width="140dp"
+        android:layout_height="@dimen/margin48"
+        android:layout_marginStart="24dp"
+        android:visibility="visible"
+        android:layout_marginEnd="@dimen/marginTwenty"
+        android:background="@color/lightBlueColor"
+        app:boxStrokeColor="@color/lightBlueColor"
+        app:layout_constraintTop_toBottomOf="@id/summary_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cast_earnings_recycler_view"
+        app:layout_constraintStart_toEndOf="@id/cast_earnings_text_view"
+        app:layout_constraintHorizontal_bias="1.0">
+
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:editable="false"
+            android:inputType="none"
+            android:layout_gravity="center"
+            android:padding="0dp"
+            android:textColor="@color/black"
+            android:background="@android:color/transparent"
+            android:textSize="12sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/cast_earnings_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_marginStart="@dimen/marginTwenty"
+        android:layout_marginEnd="@dimen/marginMediumSmall"
+        android:layout_marginTop="@dimen/margin22"
+        android:paddingBottom="@dimen/margin22"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/cast_earnings_text_view"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:itemCount="15"
+        tools:listitem="@layout/item_cast_earnings" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
