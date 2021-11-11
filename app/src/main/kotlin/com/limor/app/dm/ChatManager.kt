@@ -45,8 +45,10 @@ class ChatManager @Inject constructor(
     private val processing = AtomicBoolean(false)
 
     init {
-        val appID = context.getString(R.string.agora_app_id)
-        println("Will start agora client with app id - $appID")
+        val appID = BuildConfig.AGORA_APP_ID
+        if (BuildConfig.DEBUG) {
+            println("Will start agora client with app id - $appID")
+        }
         try {
             rtmClient = RtmClient.createInstance(context, appID, this).also {
                 it.setLogFilter(RtmClient.LOG_FILTER_OFF)
@@ -69,10 +71,14 @@ class ChatManager @Inject constructor(
             return
         }
         val peerId = "${BuildConfig.CHAT_USER_ID_PREFIX}_$limorUserId"
-        println("Agora1: Logging in current user $limorUserId as $peerId")
+        if (BuildConfig.DEBUG) {
+            println("Agora1: Logging in current user $limorUserId as $peerId")
+        }
         chatScope.launch {
             getNewToken()?.let {
-                println("Agora1: Got new token $it, now logging in.")
+                if (BuildConfig.DEBUG) {
+                    println("Agora1: Got new token $it, now logging in.")
+                }
                 mToken = it
                 login(it, peerId)
             }
@@ -109,7 +115,9 @@ class ChatManager @Inject constructor(
             }
 
             override fun onFailure(errorInfo: ErrorInfo) {
-                Timber.i("Agora login failed: %s", errorInfo.errorCode)
+                if (BuildConfig.DEBUG) {
+                    Timber.i("Agora login failed: %s", errorInfo.errorCode)
+                }
                 RtmStatusCode.LoginError.LOGIN_ERR_INVALID_TOKEN
                 cont.resume(errorInfo.errorCode)
             }
@@ -125,12 +133,16 @@ class ChatManager @Inject constructor(
         client.renewToken(token, object : ResultCallback<Void?> {
             override fun onSuccess(responseInfo: Void?) {
                 mLastTokenFetchTime = System.currentTimeMillis()
-                println("Agora refresh success")
+                if (BuildConfig.DEBUG) {
+                    println("Agora refresh success")
+                }
                 cont.resume(0)
             }
 
             override fun onFailure(errorInfo: ErrorInfo) {
-                Timber.i("Agora renewToken failed: %s", errorInfo.errorCode)
+                if (BuildConfig.DEBUG) {
+                    Timber.i("Agora renewToken failed: %s", errorInfo.errorCode)
+                }
                 cont.resume(errorInfo.errorCode)
             }
         })
@@ -157,7 +169,9 @@ class ChatManager @Inject constructor(
                     }
 
                     override fun onFailure(errorInfo: ErrorInfo) {
-                        println("Agora1: Error Sending Message -> $errorInfo")
+                        if (BuildConfig.DEBUG) {
+                            println("Agora1: Error Sending Message -> $errorInfo")
+                        }
                         cont.resume(errorInfo.errorCode)
                     }
                 })
@@ -245,7 +259,9 @@ class ChatManager @Inject constructor(
     }
 
     override fun onMessageReceived(rtmMessage: RtmMessage, peerId: String) {
-        println("Agora1: Received Chat Message from $peerId -> ${rtmMessage.text}. Is on main -> ${Looper.getMainLooper().isCurrentThread}")
+        if (BuildConfig.DEBUG) {
+            println("Agora1: Received Chat Message from $peerId -> ${rtmMessage.text}. Is on main -> ${Looper.getMainLooper().isCurrentThread}")
+        }
 
         synchronized(this) {
             messageQueue.add(AddMessageJob(text = rtmMessage.text, peerId = peerId))
