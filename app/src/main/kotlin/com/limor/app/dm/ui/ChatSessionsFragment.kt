@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import com.limor.app.BuildConfig
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentChatSessionsBinding
 import com.limor.app.dm.ChatSessionWithUser
@@ -136,7 +137,9 @@ class ChatSessionsFragment : BaseFragment() {
     }
 
     private fun setSessions(sessions: List<ChatSessionWithUser>) {
-        println("Setting sessions $sessions")
+        if (BuildConfig.DEBUG) {
+            println("Setting sessions $sessions")
+        }
         sessionsAdapter.apply {
             setSessions(sessions)
             notifyDataSetChanged()

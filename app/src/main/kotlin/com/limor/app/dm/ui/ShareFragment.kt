@@ -109,8 +109,6 @@ class ShareFragment : BaseFragment() {
                     binding.buttonShareWithMessage,
                     binding.shareViaLabel
                 ).map { adjustTopMargin(it, 0.5) }
-            } else {
-                println("Will not adjust.")
             }
         }
     }
@@ -163,7 +161,9 @@ class ShareFragment : BaseFragment() {
         }
 
         val podcastLink = Constants.PODCAST_URL.format(cast.id)
-        println("Getting dynamic link...")
+        if (BuildConfig.DEBUG) {
+            println("Getting dynamic link...")
+        }
         val dynamicLink = Firebase.dynamicLinks.dynamicLink {
             link = Uri.parse(podcastLink)
             domainUriPrefix = Constants.LIMOR_DOMAIN_URL
@@ -181,18 +181,26 @@ class ShareFragment : BaseFragment() {
             }
         }
 
-        println("Got dynamic link to $dynamicLink")
+        if (BuildConfig.DEBUG) {
+            println("Got dynamic link to $dynamicLink")
+        }
 
         Firebase.dynamicLinks.shortLinkAsync {
             longLink = dynamicLink.uri
         }.addOnSuccessListener { (shortLink, _) ->
-            print("converted dynamic link to short -> $shortLink")
+            if (BuildConfig.DEBUG) {
+                print("converted dynamic link to short -> $shortLink")
+            }
             setShortLink(shortLink.toString())
 
         }.addOnFailureListener {
-            Timber.d("Failed in creating short dynamic link")
+            if (BuildConfig.DEBUG) {
+                Timber.d("Failed in creating short dynamic link")
+            }
             binding.root.postDelayed({
-                println("Retrying dynamic link...")
+                if (BuildConfig.DEBUG) {
+                    println("Retrying dynamic link...")
+                }
                 generateLink(retryCount + 1)
             }, linkGenerationRetryIntervalMillis)
         }
@@ -277,7 +285,9 @@ class ShareFragment : BaseFragment() {
             val start = System.currentTimeMillis()
             val shared = chat.shareAsDirectMessage(selected, mShortLink)
             val end = System.currentTimeMillis()
-            println("Shared successfully -> $shared for ${end - start}ms")
+            if (BuildConfig.DEBUG) {
+                println("Shared successfully -> $shared for ${end - start}ms")
+            }
             markAsShared(selected.size)
         }
     }
@@ -339,11 +349,15 @@ class ShareFragment : BaseFragment() {
 
     private fun subscribeToViewModels() {
         sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner) {
-            println("Agora Shared response -> $it")
+            if (BuildConfig.DEBUG) {
+                println("Agora Shared response -> $it")
+            }
             ShareDialog.DismissEvent.dismiss()
         }
         chat.sessions.observe(viewLifecycleOwner) {
-            println("Got sessions -> $it")
+            if (BuildConfig.DEBUG) {
+                println("Got sessions -> $it")
+            }
             setUsers(it.map(LeanUser::fromSession))
         }
     }
