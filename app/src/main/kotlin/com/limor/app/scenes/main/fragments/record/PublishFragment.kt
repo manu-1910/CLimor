@@ -22,10 +22,13 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.Spannable
+import android.text.SpannableString
 import android.text.TextWatcher
+import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,13 +38,13 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -60,11 +63,17 @@ import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
+import com.limor.app.databinding.DialogPublishPatronFreeCastBinding
+import com.limor.app.databinding.FragmentPublishBinding
 import com.limor.app.extensions.drawSimpleSelectorDialog
 import com.limor.app.extensions.hideKeyboard
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.MainActivity
 import com.limor.app.scenes.main.fragments.record.adapters.HashtagAdapter
-import com.limor.app.scenes.main.viewmodels.*
+import com.limor.app.scenes.main.viewmodels.DraftViewModel
+import com.limor.app.scenes.main.viewmodels.LocationsViewModel
+import com.limor.app.scenes.main.viewmodels.PublishViewModel
+import com.limor.app.scenes.main.viewmodels.TagsViewModel
 import com.limor.app.scenes.main_new.view_model.LocationViewModel
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.CommonsKt
@@ -76,11 +85,15 @@ import com.limor.app.scenes.utils.waveform.KeyboardUtils
 import com.limor.app.type.CreatePodcastInput
 import com.limor.app.type.PodcastAudio
 import com.limor.app.type.PodcastMetadata
-import com.limor.app.uimodels.*
+import com.limor.app.uimodels.TagUIModel
+import com.limor.app.uimodels.UIDraft
+import com.limor.app.uimodels.UILocations
 import com.yalantis.ucrop.UCrop
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
-import kotlinx.android.synthetic.main.dialog_with_edittext.*
+import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.cancelButton
+import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.okButton
+import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.textDescription
+import kotlinx.android.synthetic.main.dialog_publish_patron_free_cast.view.*
 import kotlinx.android.synthetic.main.fragment_publish.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
@@ -89,8 +102,10 @@ import kotlinx.android.synthetic.main.view_cast_published.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jetbrains.anko.lines
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.sdk23.listeners.onFocusChange
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.toast
 import timber.log.Timber
@@ -103,21 +118,15 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlin.collections.ArrayList
-import android.widget.AutoCompleteTextView
-
-import android.widget.ArrayAdapter
-import androidx.core.os.bundleOf
-import org.jetbrains.anko.lines
-import org.jetbrains.anko.sdk23.listeners.onFocusChange
-import android.text.style.UnderlineSpan
-
-import android.text.SpannableString
-
-
-
+import kotlin.random.Random
 
 
 class PublishFragment : BaseFragment() {
+
+    private lateinit var binding: FragmentPublishBinding
+    private val isPatron: Boolean by lazy {
+        Random.nextBoolean()
+    }
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -130,14 +139,12 @@ class PublishFragment : BaseFragment() {
 
     lateinit var uiDraft: UIDraft
     private lateinit var mediaPlayer: MediaPlayer
-    private var seekHandler = Handler()
+    private var seekHandler = Handler(Looper.myLooper()!!)
     private var run: Runnable? = null
     private var rootView: View? = null
     var app: App? = null
 
     private val updateDraftTrigger = PublishSubject.create<Unit>()
-    private val publishPodcastTrigger = PublishSubject.create<Unit>()
-    private val getTagsTrigger = PublishSubject.create<Unit>()
     private val deleteDraftsTrigger = PublishSubject.create<Unit>()
 
     //Player vars
@@ -203,8 +210,8 @@ class PublishFragment : BaseFragment() {
         savedInstanceState: Bundle?,
     ): View? {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_publish, container, false)
-
+            binding = FragmentPublishBinding.inflate(inflater, container, false)
+            rootView = binding.root
             audioSeekbar = rootView?.findViewById(R.id.sbProgress)
             timePass = rootView?.findViewById(R.id.tvTimePass)
             timeDuration = rootView?.findViewById(R.id.tvDuration)
@@ -243,9 +250,11 @@ class PublishFragment : BaseFragment() {
     }
 
     private fun loadDefaults() {
-        val items = listOf("Free (Will appear in Cast Tab)","0.99", "4.99", "9.99", "12.99")
-        val adapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, items)
-        (rootView?.findViewById<AutoCompleteTextView>(R.id.cast_prices))?.setAdapter(adapter)
+        val items = listOf(getString(R.string.free_cast_selection), "0.99", "4.99", "9.99", "12.99")
+        val adapter =
+            ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, items)
+        binding.castPrices.setText(items[0])
+        binding.castPrices.setAdapter(adapter)
     }
 
 
@@ -274,7 +283,7 @@ class PublishFragment : BaseFragment() {
 
         draftViewModel.uiDraft = uiDraft
         draftViewModel.filesArray.clear()
-        draftViewModel.filesArray.add(File(uiDraft.filePath))
+        draftViewModel.filesArray.add(File(uiDraft.filePath!!))
 
         findNavController().popBackStack()
     }
@@ -301,16 +310,22 @@ class PublishFragment : BaseFragment() {
     }
 
     private fun updateUIState() {
-        if(isPatronUser()){
+        if (isPatronUser()) {
+            binding.menu.visibility = View.VISIBLE
+            binding.paymentTerms.visibility = View.VISIBLE
             val content = SpannableString(getString(R.string.payment_terms))
             content.setSpan(UnderlineSpan(), 0, content.length, 0)
-            payment_terms.text = content
+            binding.paymentTerms.text = content
+
+        } else {
+            binding.menu.visibility = View.GONE
+            binding.paymentTerms.visibility = View.GONE
         }
     }
 
     private fun loadDrafts() {
-        draftViewModel.loadDraftRealm()?.observe(viewLifecycleOwner, Observer<List<UIDraft>> {
-            existingDraftsTitles = it.mapNotNull { it.title?.lowercase() }
+        draftViewModel.loadDraftRealm()?.observe(viewLifecycleOwner, { drafts ->
+            existingDraftsTitles = drafts.mapNotNull { it.title?.lowercase() }
         })
     }
 
@@ -361,35 +376,41 @@ class PublishFragment : BaseFragment() {
 
     private fun updatePublishBtnState() {
         val isTitleValid = etDraftTitle?.text?.trim()?.isNotEmpty() ?: false
-        val isCaptionValid = etDraftCaption?.text?.trim()?.isNotEmpty() ?: false
+        val isCaptionValid = etDraftTags?.text?.trim()?.isNotEmpty() ?: false
         val isAllRequiredFieldsFilled = isCategorySelected
-                && isImageChosen
                 && isLanguageSelected
                 && isCaptionValid
-                && isTitleValid
-                && isTagsSelected
+                && isTitleValid && ifPatronUserConditions()
+
         Timber.d(
             "category -> $isCategorySelected " +
                     "imageChosen -> $isImageChosen " +
                     "language -> $isLanguageSelected " +
                     "caption valid -> $isCaptionValid " +
-                    "tags-> $isTagsSelected" +
                     "title-> $isTitleValid"
         )
         btnPublishDraft?.isEnabled = isAllRequiredFieldsFilled
     }
 
-    private fun apiCallPublishPodcast() {
-       /* val output = publishViewModel.transform(
-            PublishViewModel.Input(
-                publishPodcastTrigger
-            )
-        )*/
+    private fun ifPatronUserConditions(): Boolean {
+        return if (isPatronUser()) {
+            binding.castPrices.text.toString().trim().isNotEmpty()
+        } else {
+            true
+        }
+    }
 
-        publishViewModel.publishResponseData.observe(viewLifecycleOwner,Observer{
+    private fun apiCallPublishPodcast() {
+        /* val output = publishViewModel.transform(
+             PublishViewModel.Input(
+                 publishPodcastTrigger
+             )
+         )*/
+
+        publishViewModel.publishResponseData.observe(viewLifecycleOwner, Observer {
             toggleProgressVisibility(View.GONE)
             view?.hideKeyboard()
-            it?.let{
+            it?.let {
                 //Publish Ok
                 Timber.d("Cast Publish Success -> ")
                 convertedFile?.delete()
@@ -401,7 +422,7 @@ class PublishFragment : BaseFragment() {
                     startActivity(mainIntent)
                     activity?.finish()
                 }
-            }?:run{
+            } ?: run {
                 //Publish Not Ok
                 val message: StringBuilder = StringBuilder()
                 message.append(getString(R.string.publish_cast_error_message))
@@ -418,75 +439,73 @@ class PublishFragment : BaseFragment() {
         })
 
 
+        /* output.response.observe(viewLifecycleOwner, Observer {
+             progressPb.visibility = View.GONE
+             view?.hideKeyboard()
+
+             if (it.code == 0) { //Publish Ok
+                 convertedFile?.delete()
+                 callToDeleteDraft()
+                 isPublished = true
+                 viewCastPublished.visibility = View.VISIBLE
+                 btnDone.onClick {
+                     val mainIntent = Intent(context, MainActivity::class.java)
+                     startActivity(mainIntent)
+                     activity?.finish()
+                 }
+             }
+         })
+
+         output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
+             trackBackgroudProgress(it)
+         })
+
+         output.errorMessage.observe(this, Observer {
+             progressPb.visibility = View.GONE
+
+             view?.hideKeyboard()
+             if (app!!.merlinsBeard!!.isConnected) {
+
+                 val message: StringBuilder = StringBuilder()
+                 if (it.errorMessage!!.isNotEmpty()) {
+                     message.append(it.errorMessage)
+                 } else {
+                     message.append(getString(R.string.publish_cast_error_message))
+                 }
 
 
-       /* output.response.observe(viewLifecycleOwner, Observer {
-            progressPb.visibility = View.GONE
-            view?.hideKeyboard()
+                 if (it.code == 10) {  //Session expired
+                     showUnableToPublishCastDialog(
+                         getString(R.string.session_expired_error_message),
+                         getString(R.string.ok), {
+                             val intent = Intent(context, SignActivity::class.java)
+                             //intent.putExtra(getString(R.string.otherActivityKey), true)
+                             startActivityForResult(
+                                 intent,
+                                 resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
+                             )
+                         })
+                 } else {
+                     showUnableToPublishCastDialog(
+                         description = message.toString(),
+                         okText = getString(R.string.try_again),
+                         okAction = {
+                             btnPublishDraft?.callOnClick()
+                         },
+                         negativeText = getString(R.string.description_back),
+                         negativeAction = {
+                         })
+                 }
 
-            if (it.code == 0) { //Publish Ok
-                convertedFile?.delete()
-                callToDeleteDraft()
-                isPublished = true
-                viewCastPublished.visibility = View.VISIBLE
-                btnDone.onClick {
-                    val mainIntent = Intent(context, MainActivity::class.java)
-                    startActivity(mainIntent)
-                    activity?.finish()
-                }
-            }
-        })
+             } else {
+                 showUnableToPublishCastDialog(
+                     description = getString(R.string.default_no_internet),
+                     okText = getString(R.string.ok),
+                     okAction = {
+                     })
 
-        output.backgroundWorkingProgress.observe(viewLifecycleOwner, Observer {
-            trackBackgroudProgress(it)
-        })
-
-        output.errorMessage.observe(this, Observer {
-            progressPb.visibility = View.GONE
-
-            view?.hideKeyboard()
-            if (app!!.merlinsBeard!!.isConnected) {
-
-                val message: StringBuilder = StringBuilder()
-                if (it.errorMessage!!.isNotEmpty()) {
-                    message.append(it.errorMessage)
-                } else {
-                    message.append(getString(R.string.publish_cast_error_message))
-                }
-
-
-                if (it.code == 10) {  //Session expired
-                    showUnableToPublishCastDialog(
-                        getString(R.string.session_expired_error_message),
-                        getString(R.string.ok), {
-                            val intent = Intent(context, SignActivity::class.java)
-                            //intent.putExtra(getString(R.string.otherActivityKey), true)
-                            startActivityForResult(
-                                intent,
-                                resources.getInteger(R.integer.REQUEST_CODE_LOGIN_FROM_PUBLISH)
-                            )
-                        })
-                } else {
-                    showUnableToPublishCastDialog(
-                        description = message.toString(),
-                        okText = getString(R.string.try_again),
-                        okAction = {
-                            btnPublishDraft?.callOnClick()
-                        },
-                        negativeText = getString(R.string.description_back),
-                        negativeAction = {
-                        })
-                }
-
-            } else {
-                showUnableToPublishCastDialog(
-                    description = getString(R.string.default_no_internet),
-                    okText = getString(R.string.ok),
-                    okAction = {
-                    })
-
-            }
-        })*/
+             }
+         })*/
     }
 
 
@@ -552,12 +571,12 @@ class PublishFragment : BaseFragment() {
         }
 
         btnPublishDraft?.onClick {
-            ensurePreviewIsPaused()
-            startPublishing()
+            handlePublishButtonClick()
         }
 
         layoutCastCategory?.onClick {
-            findNavController().navigate(R.id.action_record_publish_to_record_categories, bundleOf("isPatron" to  isPatronUser()))
+            findNavController().navigate(R.id.action_record_publish_to_record_categories,
+                bundleOf("isPatron" to isPatronUser()))
         }
 
         layoutCastLocation?.onClick {
@@ -572,7 +591,7 @@ class PublishFragment : BaseFragment() {
         twHastags = object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun afterTextChanged(editable: Editable) {
-                etDraftTags?.hashtags?.let{
+                etDraftTags?.hashtags?.let {
                     isTagsSelected = it.size > 0
                     publishViewModel.tags.clear()
                     publishViewModel.tags.addAll(it.map { "#$it" })
@@ -610,7 +629,7 @@ class PublishFragment : BaseFragment() {
             }
         }
         etHashtags.onFocusChange { v, hasFocus ->
-            if(!hasFocus){
+            if (!hasFocus) {
                 rvTags?.visibility = View.GONE
                 lytWithoutTagsRecycler?.visibility = View.VISIBLE
             }
@@ -648,10 +667,10 @@ class PublishFragment : BaseFragment() {
         KeyboardUtils.addKeyboardToggleListener(activity) { isVisible ->
             //println("keyboard visible: $isVisible")
             if (isShowingTagsRecycler) {
-                if(isVisible && etDraftTags?.hasFocus()==true){
+                if (isVisible && etDraftTags?.hasFocus() == true) {
                     rvTags?.visibility = View.VISIBLE
                     lytWithoutTagsRecycler?.visibility = View.GONE
-                }else {
+                } else {
                     rvTags?.visibility = View.GONE
                     lytWithoutTagsRecycler?.visibility = View.VISIBLE
                 }
@@ -660,11 +679,54 @@ class PublishFragment : BaseFragment() {
         }
 
 
-
     }
 
-    private fun ensurePreviewIsPaused(){
-        if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying){
+    private fun handlePublishButtonClick() {
+        if (isPatronUser() && isPriceNotSelected() && PrefsHandler.getBoolean(requireContext(),
+                "publishPatronDialogShown") == false
+        ) {
+            showPublishPatronCastDialog()
+        } else {
+            publishCast()
+        }
+    }
+
+    private fun isPriceNotSelected(): Boolean {
+        return binding.castPrices.text.toString() == getString(R.string.free_cast_selection)
+    }
+
+    private fun publishCast() {
+        /*ensurePreviewIsPaused()
+        startPublishing()*/
+        alert("Temporarily blocked publishing until api is fixed").show()
+    }
+
+    private fun showPublishPatronCastDialog() {
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogBinding = DialogPublishPatronFreeCastBinding.inflate(inflater, null, false)
+        val dialogView = dialogBinding.root
+        dialogBuilder.setView(dialogView)
+        dialogBuilder.setCancelable(true)
+        val dialog: AlertDialog = dialogBuilder.create()
+        dialogBinding.okButton.setOnClickListener {
+            dialog.dismiss()
+            PrefsHandler.saveBoolean(requireContext(),
+                "publishPatronDialogShown",
+                dialogView.checkNotShowAgain.isChecked)
+            publishCast()
+        }
+        dialogBinding.btnCLose.setOnClickListener { dialog.dismiss() }
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset)
+            show()
+        }
+    }
+
+    private fun ensurePreviewIsPaused() {
+        if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
             mediaPlayer.pause()
             btnPlayPause?.setImageDrawable(
                 ContextCompat.getDrawable(
@@ -675,8 +737,8 @@ class PublishFragment : BaseFragment() {
         }
     }
 
-    private fun stopPlayer(){
-        if (::mediaPlayer.isInitialized){
+    private fun stopPlayer() {
+        if (::mediaPlayer.isInitialized) {
             mediaPlayer.stop()
         }
     }
@@ -703,10 +765,10 @@ class PublishFragment : BaseFragment() {
         val dialog: AlertDialog = dialogBuilder.create()
 
         positiveButton.onClick {
-            val exists = checkIfDraftAlreadyExistsWithThisName(editText.text.toString() ?: "")
-            if(exists){
+            val exists = checkIfDraftAlreadyExistsWithThisName(editText.text.toString())
+            if (exists) {
                 errorTextView.visibility = View.VISIBLE
-            } else{
+            } else {
                 errorTextView.visibility = View.GONE
                 uiDraft.title = editText.text.toString()
                 uiDraft.caption = etDraftCaption?.text.toString()
@@ -741,12 +803,12 @@ class PublishFragment : BaseFragment() {
         val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
 
         dialog.apply {
-            window?.setBackgroundDrawable(inset);
+            window?.setBackgroundDrawable(inset)
             show()
         }
     }
 
-    private fun checkIfDraftAlreadyExistsWithThisName(draftName: String): Boolean{
+    private fun checkIfDraftAlreadyExistsWithThisName(draftName: String): Boolean {
         return existingDraftsTitles.contains(draftName.lowercase())
     }
 
@@ -933,37 +995,37 @@ class PublishFragment : BaseFragment() {
     private fun apiCallPublish() {
         toggleProgressVisibility(View.VISIBLE)
 
-        val caption = etDraftCaption?.text.toString() ?: ""
-        val tags = etDraftTags?.text.toString() ?: ""
+        val caption = etDraftCaption?.text.toString()
+        val tags = etDraftTags?.text.toString()
         val fullCaption = "$caption${if (caption.isEmpty()) "" else "\n\n"}$tags"
 
         val podcast = CreatePodcastInput(
-                audio = PodcastAudio(
-                    audio_url = audioUrlFinal.toString(),
-                    original_audio_url = audioUrlFinal.toString(),
-                    duration = mediaPlayer.duration,
-                    total_samples = 0,
-                    total_length = mediaPlayer.duration,
-                    sample_rate = 44100.0
-                ),
-                meta_data = PodcastMetadata(
-                    title = etDraftTitle?.text.toString(),
-                    caption = fullCaption,
-                    latitude = Input.fromNullable(latitude),
-                    longitude = Input.fromNullable(longitude),
-                    image_url = Input.fromNullable(imageUrlFinal),
-                    category_id = publishViewModel.categorySelectedId,
-                    language_code = publishViewModel.languageCode,
-                )
+            audio = PodcastAudio(
+                audio_url = audioUrlFinal.toString(),
+                original_audio_url = audioUrlFinal.toString(),
+                duration = mediaPlayer.duration,
+                total_samples = 0,
+                total_length = mediaPlayer.duration,
+                sample_rate = 44100.0
+            ),
+            meta_data = PodcastMetadata(
+                title = etDraftTitle?.text.toString(),
+                caption = fullCaption,
+                latitude = Input.fromNullable(latitude),
+                longitude = Input.fromNullable(longitude),
+                image_url = Input.fromNullable(imageUrlFinal),
+                category_id = publishViewModel.categorySelectedId,
+                language_code = publishViewModel.languageCode,
+            )
         )
         Timber.d("$podcast")
         lifecycleScope.launch {
-           val response =  withContext(Dispatchers.IO){
-               publishViewModel.createPodcast(podcast)
-           }
+            val response = withContext(Dispatchers.IO) {
+                publishViewModel.createPodcast(podcast)
+            }
             toggleProgressVisibility(View.GONE)
-            response?.let{
-            Timber.d("Cast Publish Success -> ")
+            response?.let {
+                Timber.d("Cast Publish Success -> ")
                 convertedFile?.delete()
                 callToDeleteDraft()
                 isPublished = true
@@ -974,7 +1036,7 @@ class PublishFragment : BaseFragment() {
                     stopPlayer()
                     activity?.finish()
                 }
-            }?:run{
+            } ?: run {
                 //Publish Not Ok
                 val message: StringBuilder = StringBuilder()
                 message.append(getString(R.string.publish_cast_error_message))
@@ -989,8 +1051,8 @@ class PublishFragment : BaseFragment() {
                     })
             }
         }
-      //  publishViewModel.uiPublishRequest = uiPublishRequest
-       // publishPodcastTrigger.onNext(Unit)
+        //  publishViewModel.uiPublishRequest = uiPublishRequest
+        // publishPodcastTrigger.onNext(Unit)
     }
 
 
@@ -1004,15 +1066,16 @@ class PublishFragment : BaseFragment() {
             }
         }
         if (!uiDraft.caption.toString().trim().isNullOrEmpty()) {
-            var captionAndTags = uiDraft.caption?.split(resources.getString(R.string.text_seperator))
+            var captionAndTags =
+                uiDraft.caption?.split(resources.getString(R.string.text_seperator))
             var caption = ""
             var tags = ""
-            if(captionAndTags != null && captionAndTags.size == 2){
+            if (captionAndTags != null && captionAndTags.size == 2) {
                 caption = captionAndTags[0]
                 tags = captionAndTags[1]
                 etDraftCaption?.text = caption.toEditable()
                 etDraftTags?.text = tags.toEditable()
-            } else{
+            } else {
                 etDraftCaption?.text = uiDraft.caption?.toEditable()
             }
         }
@@ -1055,16 +1118,16 @@ class PublishFragment : BaseFragment() {
             etHashtags.setText(publishViewModel.tags.joinToString(" "))
             this.isTagsSelected = true
         }
-        uiDraft.categoryId?.let{
+        uiDraft.categoryId?.let {
             publishViewModel.categorySelectedId = it
         }
-        uiDraft.languageCode?.let{
-            if(it.isNotEmpty())
-            publishViewModel.languageCode = it
+        uiDraft.languageCode?.let {
+            if (it.isNotEmpty())
+                publishViewModel.languageCode = it
         }
-        uiDraft.language?.let{
-            if(it.isNotEmpty())
-            publishViewModel.languageSelected = it
+        uiDraft.language?.let {
+            if (it.isNotEmpty())
+                publishViewModel.languageSelected = it
         }
         Timber.d("Existing Data: -> $uiDraft")
         updatePublishBtnState()
@@ -1083,7 +1146,8 @@ class PublishFragment : BaseFragment() {
 
         val tags = etDraftTags?.text.toString()
 
-        uiDraft.caption = etDraftCaption?.text.toString() + resources.getString(R.string.text_seperator) + tags
+        uiDraft.caption =
+            etDraftCaption?.text.toString() + resources.getString(R.string.text_seperator) + tags
 
         //Update Realm
         callToUpdateDraft()
@@ -1444,9 +1508,9 @@ class PublishFragment : BaseFragment() {
 
 
     private fun apiCallHashTags() {
-        tagsViewModel.searchResult.observe(viewLifecycleOwner,Observer{
-            it?.let{
-                if(it.isNotEmpty()){
+        tagsViewModel.searchResult.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                if (it.isNotEmpty()) {
                     listTagsString?.clear()
                     listTags.clear()
                     listTags.addAll(it)
@@ -1627,9 +1691,9 @@ class PublishFragment : BaseFragment() {
         }
     }
 
-    private fun isPatronUser(): Boolean{
+    private fun isPatronUser(): Boolean {
         //TODO Should Get User Details here From SharedPref
-        return true
+        return isPatron
     }
 
 

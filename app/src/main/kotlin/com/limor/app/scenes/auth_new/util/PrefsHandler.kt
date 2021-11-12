@@ -121,4 +121,12 @@ object PrefsHandler {
         return gson.fromJson(json, type) ?: ArrayList()
     }
 
+    fun saveBoolean(context: Context,s: String, value: Boolean) {
+        sharedPreferences(context).edit().putBoolean(s,value).apply()
+    }
+
+    fun getBoolean(context: Context, s: String): Any {
+        return sharedPreferences(context).getBoolean(s,false)
+    }
+
 }

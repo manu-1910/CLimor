@@ -7,6 +7,7 @@
 
 
     <ImageView
+        android:id="@+id/btnCLose"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="end"
@@ -66,7 +67,7 @@
             android:text="@string/donot_shoe_again"
             android:textColor="@color/textPrimary"
             android:textAlignment="gravity"
-            android:textSize="@dimen/textSizeNormal" />
+            android:textSize="@dimen/textSizeSmall" />
 
 
         <LinearLayout

@@ -727,5 +727,6 @@
     <string name="setup_receving_desc">It seems like you have not setup your payment receiving account. To continue you need to setup your receiving account</string>
     <string name="setup">Setup</string>
     <string name="payment_terms"><font fgcolor='#F9BB4B'><u>Payment Terms</u></font></string>
+    <string name="free_cast_selection">Free (Will appear in Cast Tab)</string>
 
 </resources>
