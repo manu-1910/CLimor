@@ -27,16 +27,21 @@
 
     <TextView
         android:id="@+id/cast_name_textview"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/person_image"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintEnd_toStartOf="@id/cast_play_button"
         android:textSize="@dimen/textSize16"
-        android:fontFamily="@font/roboto_medium"
+        android:fontFamily="@font/roboto"
+        android:textFontWeight="500"
         android:textColor="@color/black"
+        android:ellipsize="marquee"
+        android:maxLines="1"
         android:layout_marginTop="@dimen/margin24"
         android:layout_marginStart="@dimen/marginMediumSmall"
-        tools:text="Formula 1 Racing ha..."/>
+        android:layout_marginEnd="@dimen/margin32"
+        tools:text="Formula 1 Racing happy Formula 1 Racing happy"/>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cast_play_button"
@@ -56,7 +61,7 @@
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:padding="8dp"
-            android:rotation="270"
+            android:rotation="180"
             android:src="@drawable/arrow_left" />
 
     </androidx.cardview.widget.CardView>
@@ -69,6 +74,7 @@
         app:layout_constraintTop_toBottomOf="@id/cast_name_textview"
         android:layout_marginStart="@dimen/marginMediumSmall"
         android:textSize="@dimen/textSize16"
+        android:textFontWeight="400"
         android:textColor="@color/subtitle_text_color"
         android:fontFamily="@font/roboto"
         tools:text="5m 30s"/>
@@ -77,7 +83,8 @@
         android:id="@+id/brought_by_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_bold"
+        android:fontFamily="@font/roboto"
+        android:textFontWeight="700"
         android:textSize="@dimen/textSize14"
         android:text="@string/bought_by"
         android:textColor="@color/subtitle_text_color"
@@ -95,7 +102,6 @@
         android:layout_marginStart="@dimen/marginTwenty"
         android:layout_marginEnd="@dimen/marginTwenty"
         android:layout_marginTop="@dimen/marginMedium"
-        android:paddingBottom="@dimen/margin22"
         app:layout_constraintTop_toBottomOf="@id/brought_by_text_view"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:itemCount="15"

@@ -33,6 +33,7 @@ import javax.inject.Inject
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import androidx.core.text.HtmlCompat
+import com.limor.app.scenes.patron.manage.ManagePatronActivity
 
 
 class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
@@ -193,6 +194,9 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                                     binding.indicator.visibility = View.GONE
                                     binding.checkLayout.visibility = View.GONE
                                     binding.managePatronStateLayout.visibility = View.VISIBLE
+                                    binding.managePatron.setOnClickListener {
+                                        startActivity(Intent(requireActivity(), ManagePatronActivity::class.java))
+                                    }
                                 }
                                 else -> {
                                     setupViewPager(getApprovedStateItems())

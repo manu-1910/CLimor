@@ -176,4 +176,7 @@
     <color name="transaction_fee_background">#FBECEE</color>
     <color name="total_balance_background">#E7FCF5</color>
 
+    <color name="credit_card_color">#623CEA</color>
+    <color name="credit_card_background_color">#F0ECFD</color>
+
 </resources>

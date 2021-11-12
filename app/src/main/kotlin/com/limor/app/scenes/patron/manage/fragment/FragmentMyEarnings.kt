@@ -116,7 +116,7 @@ class FragmentMyEarnings : Fragment(), Injectable {
         editText.setAdapter(adapter)
         editText.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, id ->
-                editText.setText(adapter.getItem(position), false)
+                binding.selectedFilterTextView.setText(adapter.getItem(position))
             }
     }
 
