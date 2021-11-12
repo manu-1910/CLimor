@@ -247,7 +247,6 @@
                             android:layout_marginStart="@dimen/marginMediumSmall"
                             android:layout_marginEnd="@dimen/marginMediumSmall"
                             android:clipToPadding="false"
-                            android:paddingBottom="@dimen/margin64"
                             android:visibility="gone"
                             tools:listitem="@layout/tag_item" />
 
@@ -257,7 +256,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/marginTwenty"
-                            android:layout_marginTop="@dimen/marginTwenty"
                             android:layout_marginEnd="@dimen/marginTwenty"
                             app:boxStrokeColor="@color/colorAccent"
                             app:boxStrokeWidth="2dp"
@@ -289,7 +287,8 @@
                             android:text="@string/payment_terms"
                             android:fontFamily="@font/roboto_bold"
                             android:textColor="@color/primaryYellowColor"
-                            android:layout_marginStart="@dimen/marginTwenty"/>
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="-12dp"/>
 
                     </LinearLayout>
 

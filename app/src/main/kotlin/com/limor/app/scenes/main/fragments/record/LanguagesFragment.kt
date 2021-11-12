@@ -79,6 +79,11 @@ class LanguagesFragment : FragmentWithLoading(), Injectable {
         //cgLanguages.onFocusChangeListener = AuthActivityNew.onFocusChangeListener()
     }
 
+    override fun onResume() {
+        super.onResume()
+        model.onLanguageInputChanged(null)
+    }
+
     private fun setUpSearchEditText() {
         etSearchLanguage.editText?.doAfterTextChanged {
             model.onLanguageInputChanged(it?.toString())
