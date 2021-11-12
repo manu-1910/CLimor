@@ -93,7 +93,7 @@ class CastBuyersAdapter(
 
 class BuyerViewHolder(
     val binding: ItemBuyersListBinding
-): ViewHolderBindable<String>(binding){
+) : ViewHolderBindable<String>(binding) {
     override fun bind(name: String) {
         binding.castName.text = name
     }

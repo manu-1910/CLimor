@@ -11,7 +11,7 @@ import com.limor.app.databinding.FragmentInviteFriendsBinding
 
 class FragmentInviteFriends : Fragment() {
 
-    private lateinit var binding : FragmentInviteFriendsBinding
+    private lateinit var binding: FragmentInviteFriendsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,12 +31,12 @@ class FragmentInviteFriends : Fragment() {
         setClickListeners()
     }
 
-    private fun initialiseViews(){
+    private fun initialiseViews() {
         binding.toolbar.title.text = getString(R.string.invite_friends)
         binding.toolbar.btnNotification.setImageDrawable(resources.getDrawable(R.drawable.ic_phone_book))
     }
 
-    private fun setClickListeners(){
+    private fun setClickListeners() {
         binding.toolbar.btnBack.setOnClickListener {
             findNavController().navigateUp()
         }

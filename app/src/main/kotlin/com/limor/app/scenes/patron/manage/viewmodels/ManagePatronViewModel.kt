@@ -17,9 +17,43 @@ class ManagePatronViewModel @Inject constructor(
     val userInfoProvider: UserInfoProvider
 ) : ViewModel() {
 
-    private val buyers = mutableListOf<String>("In", "computer", "programming", "a", "string", "is", "traditionally", "a", "sequence", "of",
-            "characters", "either", "as", "a", "literal", "constant", "or", "as", "some", "kind",
-        "of", "variable", "The", "latter", "may", "allow", "its", "elements", "to", "be", "mutated", "and", "the", "length", "changed")
+    private val buyers = mutableListOf<String>(
+        "In",
+        "computer",
+        "programming",
+        "a",
+        "string",
+        "is",
+        "traditionally",
+        "a",
+        "sequence",
+        "of",
+        "characters",
+        "either",
+        "as",
+        "a",
+        "literal",
+        "constant",
+        "or",
+        "as",
+        "some",
+        "kind",
+        "of",
+        "variable",
+        "The",
+        "latter",
+        "may",
+        "allow",
+        "its",
+        "elements",
+        "to",
+        "be",
+        "mutated",
+        "and",
+        "the",
+        "length",
+        "changed"
+    )
 
     private val _buyersData = MutableLiveData<List<String>>()
     val buyersData: LiveData<List<String>> get() = _buyersData
@@ -30,19 +64,29 @@ class ManagePatronViewModel @Inject constructor(
     private val _priceChangeResult = MutableLiveData<Boolean>()
     val priceChangeResult: LiveData<Boolean> get() = _priceChangeResult
 
-    fun loadCastBuyers(offset: Int = 0, limit: Int = 10){
-        if(offset < buyers.size){
-            _buyersData.postValue(buyers.subList(offset, if(offset + limit < buyers.size) offset + limit else buyers.size).toList())
+    fun loadCastBuyers(offset: Int = 0, limit: Int = 10) {
+        if (offset < buyers.size) {
+            _buyersData.postValue(
+                buyers.subList(
+                    offset,
+                    if (offset + limit < buyers.size) offset + limit else buyers.size
+                ).toList()
+            )
         }
     }
 
-    fun loadCastEarnings(offset: Int = 0, limit: Int = 10){
-        if(offset < buyers.size){
-            _earningsData.postValue(buyers.subList(offset, if(offset + limit < buyers.size) offset + limit else buyers.size).toList())
+    fun loadCastEarnings(offset: Int = 0, limit: Int = 10) {
+        if (offset < buyers.size) {
+            _earningsData.postValue(
+                buyers.subList(
+                    offset,
+                    if (offset + limit < buyers.size) offset + limit else buyers.size
+                ).toList()
+            )
         }
     }
 
-    fun updateCastPrice(){
+    fun updateCastPrice() {
         viewModelScope.launch {
             _priceChangeResult.postValue(true)
             delay(1000)

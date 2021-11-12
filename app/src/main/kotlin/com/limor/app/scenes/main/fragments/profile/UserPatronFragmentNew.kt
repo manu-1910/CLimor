@@ -97,7 +97,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
 
         subscribeToViewModel()
         setOnClicks()
-       // handleUIStates()
+        // handleUIStates()
 
 
     }
@@ -118,9 +118,11 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
 
     private fun currentUser(): Boolean {
 
-        Timber.d("Current User Check -> ${user.isPatron} --- ${
-            PrefsHandler.getCurrentUserId(requireContext())
-        }")
+        Timber.d(
+            "Current User Check -> ${user.isPatron} --- ${
+                PrefsHandler.getCurrentUserId(requireContext())
+            }"
+        )
         return when (user.id) {
             PrefsHandler.getCurrentUserId(requireContext()) -> {
                 //Current user
@@ -137,7 +139,10 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
         binding.emptyStateTv.text = if (currentUser()) {
             getString(R.string.limor_patron_empty_state)
         } else getString(R.string.patron_empty_state_other)
-        val result: Spanned = HtmlCompat.fromHtml(getString(R.string.patron_uk_account_learn_more), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        val result: Spanned = HtmlCompat.fromHtml(
+            getString(R.string.patron_uk_account_learn_more),
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
         binding.termsTV.text = result
         binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
 
@@ -195,7 +200,12 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                                     binding.checkLayout.visibility = View.GONE
                                     binding.managePatronStateLayout.visibility = View.VISIBLE
                                     binding.managePatron.setOnClickListener {
-                                        startActivity(Intent(requireActivity(), ManagePatronActivity::class.java))
+                                        startActivity(
+                                            Intent(
+                                                requireActivity(),
+                                                ManagePatronActivity::class.java
+                                            )
+                                        )
                                     }
                                 }
                                 else -> {

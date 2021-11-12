@@ -16,10 +16,10 @@ abstract class ManagePatronActivityFragmentBuilderModule {
     abstract fun contributeFragmentPatronCategories(): FragmentPatronCategories
 
     @ContributesAndroidInjector
-    abstract fun contributeFragmentCastEarnings() : FragmentCastEarnings
+    abstract fun contributeFragmentCastEarnings(): FragmentCastEarnings
 
     @ContributesAndroidInjector
-    abstract fun contributeFragmentFragmentMyEarnings() : FragmentMyEarnings
+    abstract fun contributeFragmentFragmentMyEarnings(): FragmentMyEarnings
 
     @ContributesAndroidInjector
     abstract fun contributeFragmentChangePrice(): FragmentChangePrice

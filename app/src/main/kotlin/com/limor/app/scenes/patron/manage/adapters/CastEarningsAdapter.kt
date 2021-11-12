@@ -87,7 +87,7 @@ class CastEarningsAdapter(
 class CastEarningViewHolder(
     val binding: ItemCastEarningsBinding,
     val onClick: () -> Unit
-): ViewHolderBindable<String>(binding){
+) : ViewHolderBindable<String>(binding) {
     override fun bind(name: String) {
         binding.castNameTextView.text = name
         binding.root.setOnClickListener {

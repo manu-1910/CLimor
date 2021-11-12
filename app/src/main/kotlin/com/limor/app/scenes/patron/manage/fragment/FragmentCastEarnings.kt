@@ -26,8 +26,8 @@ class FragmentCastEarnings : Fragment(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val model: ManagePatronViewModel by activityViewModels{ viewModelFactory }
-    private lateinit var binding : FragmentCastEarningsBinding
+    private val model: ManagePatronViewModel by activityViewModels { viewModelFactory }
+    private lateinit var binding: FragmentCastEarningsBinding
 
     private var castBuyersAdapter: CastBuyersAdapter? = null
     private var offset = 0
@@ -54,14 +54,14 @@ class FragmentCastEarnings : Fragment(), Injectable {
         loadBuyers()
     }
 
-    private fun initialiseViews(){
+    private fun initialiseViews() {
         binding.toolbar.title.text = resources.getString(R.string.cast_earnings)
         binding.toolbar.btnNotification.visibility = View.GONE
         binding.castNameTextview.text = "Cast Name"
         binding.castDurationTextview.text = "5m 30s"
     }
 
-    private fun setClickListeners(){
+    private fun setClickListeners() {
         binding.toolbar.btnBack.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -70,13 +70,13 @@ class FragmentCastEarnings : Fragment(), Injectable {
         }
     }
 
-    private fun setUpRecyclerView(){
+    private fun setUpRecyclerView() {
         castBuyersAdapter = CastBuyersAdapter(
-        onLoadMore = {
-            offset = castEarningsList.size
-            castBuyersAdapter?.isLoading = true
-            loadBuyers()
-        })
+            onLoadMore = {
+                offset = castEarningsList.size
+                castBuyersAdapter?.isLoading = true
+                loadBuyers()
+            })
         val layoutManager = LinearLayoutManager(requireContext())
         binding.castBuyersRecyclerView.layoutManager = layoutManager
         val itemMargin = resources.getDimension(R.dimen.marginMedium).toInt()
@@ -91,13 +91,13 @@ class FragmentCastEarnings : Fragment(), Injectable {
         )
     }
 
-    private fun subscribeViewModels(){
+    private fun subscribeViewModels() {
         model.buyersData.observe(viewLifecycleOwner) {
             onLoadCastEarnings(it)
         }
     }
 
-    private fun onLoadCastEarnings(earnings: List<String>){
+    private fun onLoadCastEarnings(earnings: List<String>) {
         castEarningsList.addAll(earnings)
 
         val all = mutableListOf<String>()

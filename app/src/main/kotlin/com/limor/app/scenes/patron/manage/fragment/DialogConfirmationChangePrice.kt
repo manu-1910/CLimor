@@ -17,12 +17,12 @@ import com.limor.app.scenes.patron.manage.viewmodels.ManagePatronViewModel
 import kotlinx.android.synthetic.main.fragment_change_price.*
 import javax.inject.Inject
 
-class DialogConfirmationChangePrice: DialogFragment(), Injectable {
+class DialogConfirmationChangePrice : DialogFragment(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val model: ManagePatronViewModel by activityViewModels{ viewModelFactory }
-    private lateinit var binding : DialogErrorPublishCastBinding
+    private val model: ManagePatronViewModel by activityViewModels { viewModelFactory }
+    private lateinit var binding: DialogErrorPublishCastBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +30,10 @@ class DialogConfirmationChangePrice: DialogFragment(), Injectable {
 
     override fun onStart() {
         super.onStart()
-        dialog!!.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog!!.window!!.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
     }
 
     override fun onCreateView(
@@ -52,14 +55,15 @@ class DialogConfirmationChangePrice: DialogFragment(), Injectable {
         super.onAttach(context)
     }
 
-    private fun initViews(){
+    private fun initViews() {
         binding.textTitle.text = resources.getString(R.string.change_cast_prices)
         binding.textDescription.text = resources.getString(R.string.change_price_confirmation_text)
         binding.okButton.text = resources.getString(R.string.continue_button)
         binding.okButton.background = null
         binding.cancelButton.text = resources.getString(R.string.cancel)
         binding.cancelButton.visibility = View.VISIBLE
-        binding.cancelButton.background = resources.getDrawable(R.drawable.bg_round_yellow_ripple_new)
+        binding.cancelButton.background =
+            resources.getDrawable(R.drawable.bg_round_yellow_ripple_new)
     }
 
     private fun setOnClicks() {

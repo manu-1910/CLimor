@@ -91,7 +91,7 @@ abstract class ViewModelsModule {
     @Binds
     @IntoMap
     @ViewModelKey(LanguagesViewModel::class)
-    abstract fun bindLanguagesViewModel(languagesViewModel: LanguagesViewModel) : ViewModel
+    abstract fun bindLanguagesViewModel(languagesViewModel: LanguagesViewModel): ViewModel
 
     @Binds
     @IntoMap

@@ -27,8 +27,8 @@ class FragmentMyEarnings : Fragment(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val model: ManagePatronViewModel by activityViewModels{ viewModelFactory }
-    private lateinit var binding : FragmentMyEarningsBinding
+    private val model: ManagePatronViewModel by activityViewModels { viewModelFactory }
+    private lateinit var binding: FragmentMyEarningsBinding
 
     private var castEarningsAdapter: CastEarningsAdapter? = null
     private var offset = 0
@@ -56,7 +56,7 @@ class FragmentMyEarnings : Fragment(), Injectable {
         loadEarnings()
     }
 
-    private fun initialiseViews(){
+    private fun initialiseViews() {
         binding.toolbar.title.text = resources.getString(R.string.my_earnings)
 
         binding.totalEarningsLayout.amountTextView.text = "$100"
@@ -78,14 +78,14 @@ class FragmentMyEarnings : Fragment(), Injectable {
         binding.toolbar.btnNotification.visibility = View.GONE
     }
 
-    private fun setClickListeners(){
+    private fun setClickListeners() {
         binding.toolbar.btnBack.setOnClickListener {
             findNavController().navigateUp()
         }
     }
 
-    private fun setUpRecyclerView(){
-        castEarningsAdapter = CastEarningsAdapter (
+    private fun setUpRecyclerView() {
+        castEarningsAdapter = CastEarningsAdapter(
             onLoadMore = {
                 offset = castEarningsList.size
                 castEarningsAdapter?.isLoading = true
@@ -120,20 +120,21 @@ class FragmentMyEarnings : Fragment(), Injectable {
             }
     }
 
-    private fun subscribeViewModels(){
+    private fun subscribeViewModels() {
         model.earningsData.observe(viewLifecycleOwner) {
             onLoadBuyers(it)
         }
     }
 
-    private fun onLoadBuyers(buyers: List<String>){
+    private fun onLoadBuyers(buyers: List<String>) {
         castEarningsList.addAll(buyers)
 
         val all = mutableListOf<String>()
         all.addAll(castEarningsList)
 
 
-        val recyclerViewState = binding.castEarningsRecyclerView.layoutManager?.onSaveInstanceState()
+        val recyclerViewState =
+            binding.castEarningsRecyclerView.layoutManager?.onSaveInstanceState()
         castEarningsAdapter?.apply {
             loadMore =
                 buyers.size >= 10 &&

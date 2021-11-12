@@ -34,7 +34,6 @@
         app:layout_constraintEnd_toStartOf="@id/cast_play_button"
         android:textSize="@dimen/textSize16"
         android:fontFamily="@font/roboto"
-        android:textFontWeight="500"
         android:textColor="@color/black"
         android:ellipsize="marquee"
         android:maxLines="1"
@@ -74,7 +73,6 @@
         app:layout_constraintTop_toBottomOf="@id/cast_name_textview"
         android:layout_marginStart="@dimen/marginMediumSmall"
         android:textSize="@dimen/textSize16"
-        android:textFontWeight="400"
         android:textColor="@color/subtitle_text_color"
         android:fontFamily="@font/roboto"
         tools:text="5m 30s"/>
@@ -84,7 +82,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/roboto"
-        android:textFontWeight="700"
         android:textSize="@dimen/textSize14"
         android:text="@string/bought_by"
         android:textColor="@color/subtitle_text_color"

@@ -140,16 +140,16 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
 
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
-            if(isEditFlow){
+            if (isEditFlow) {
                 findNavController().navigateUp()
-            } else{
+            } else {
                 //update categories
                 lifecycleScope.launch {
                     switchCommonVisibility(true)
                     publishViewModel.addPatronCategories().collect {
-                        if(isEditFlow){
+                        if (isEditFlow) {
                             findNavController().navigateUp()
-                        } else{
+                        } else {
                             findNavController().navigate(R.id.action_fragmentPatronCategories_to_fragmentPatronLanguages)
                         }
                     }
@@ -157,8 +157,10 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
             }
 
         }
-        val balloon = CommonsKt.createPopupBalloon(requireContext(),
-            "You can only select 5 categories. if you talk about sport, Select `Sport`")
+        val balloon = CommonsKt.createPopupBalloon(
+            requireContext(),
+            "You can only select 5 categories. if you talk about sport, Select `Sport`"
+        )
         btnCategoriesInfo.setOnClickListener {
             balloon.showAlignBottom(it)
             if (!balloon.isShowing) {
@@ -169,15 +171,15 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
         }
 
         topAppBar.setNavigationOnClickListener {
-            if(isEditFlow){
-               findNavController().navigateUp()
-            } else{
+            if (isEditFlow) {
+                findNavController().navigateUp()
+            } else {
                 activity?.finish()
             }
         }
     }
 
-    companion object{
+    companion object {
         const val EDIT_FLOW = "EDIT_FLOW"
     }
 

@@ -23,8 +23,8 @@ class FragmentChangePrice : Fragment(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val model: ManagePatronViewModel by activityViewModels{ viewModelFactory }
-    private lateinit var binding : FragmentChangePriceBinding
+    private val model: ManagePatronViewModel by activityViewModels { viewModelFactory }
+    private lateinit var binding: FragmentChangePriceBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,25 +64,29 @@ class FragmentChangePrice : Fragment(), Injectable {
         }
     }
 
-    private fun setPrices(){
+    private fun setPrices() {
         val editText = priceTIL.editText as AutoCompleteTextView
 
         val adapter: ArrayAdapter<String> =
-            ArrayAdapter(requireContext(), R.layout.select_dialog_item, listOf("2.99", "3.99", "4.99", "5.99"))
+            ArrayAdapter(
+                requireContext(),
+                R.layout.select_dialog_item,
+                listOf("2.99", "3.99", "4.99", "5.99")
+            )
         editText.setAdapter(adapter)
     }
 
-    private fun subscribeViewModel(){
+    private fun subscribeViewModel() {
         model.priceChangeResult.observe(viewLifecycleOwner, {
             Handler().postDelayed(Runnable() {
-                if(it == true){
+                if (it == true) {
                     findNavController().navigateUp()
                 }
             }, 1000)
         })
     }
 
-    private fun initialiseViews(){
+    private fun initialiseViews() {
         binding.toolbar.title.text = getString(com.limor.app.R.string.edit_price)
         binding.toolbar.btnNotification.setImageDrawable(resources.getDrawable(R.drawable.ic_menu_info_details))
     }
