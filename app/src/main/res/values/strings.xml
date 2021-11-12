@@ -740,5 +740,7 @@
     <string name="total_earnings">Total Earnings</string>
     <string name="transaction_fee">Transaction Fee</string>
     <string name="bought_by">Bought By</string>
+    <string name="invites_count_description">You can send 5 invites</string>
+    <string name="invite_friends">Invite Friends</string>
 
 </resources>
