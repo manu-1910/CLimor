@@ -150,13 +150,12 @@ class DialogCommentMoreActions : DialogFragment() {
         alert(getString(R.string.confirmation_block_user)) {
             okButton {
                 model.blockUser(userId)
+                dismiss()
             }
             cancelButton {
 
             }
         }.show()
-
-        dismiss()
     }
 
     private fun commentIsEditable(): Boolean {
