@@ -35,7 +35,7 @@
                 app:icon="@drawable/ic_edit_podcast"
                 app:iconGravity="textStart"
                 app:iconPadding="8dp"
-                app:iconSize="14dp" />
+                app:iconSize="16dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -52,10 +52,10 @@
                 android:layout_margin="0dp"
                 android:text="@string/report_comment"
                 android:textColor="@color/black"
-                app:icon="@drawable/ic_edit_podcast"
+                app:icon="@drawable/ic_exclamation_triangle"
                 app:iconGravity="textStart"
                 app:iconPadding="8dp"
-                app:iconSize="14dp" />
+                app:iconSize="16dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -73,10 +73,10 @@
                 android:layout_margin="0dp"
                 android:text="@string/report_user"
                 android:textColor="@color/black"
-                app:icon="@drawable/ic_edit_podcast"
+                app:icon="@drawable/ic_user_exclamation"
                 app:iconGravity="textStart"
                 app:iconPadding="8dp"
-                app:iconSize="14dp" />
+                app:iconSize="16dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -89,15 +89,15 @@
             <Button
                 android:visibility="gone"
                 android:id="@+id/btnDeleteComment"
-                style="@style/ButtonTextStyle.Icon"
+                style="@style/ButtonTextStyle.Icon.Red"
                 android:layout_width="match_parent"
                 android:layout_margin="0dp"
                 android:text="@string/delete_comment"
                 android:textColor="#FF5A4E"
-                app:icon="@drawable/ic_delete_podcast"
+                app:icon="@drawable/ic_delete_bin"
                 app:iconGravity="textStart"
                 app:iconPadding="8dp"
-                app:iconSize="14dp" />
+                app:iconSize="16dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -113,10 +113,10 @@
                 android:layout_width="match_parent"
                 android:text="@string/block_user"
                 android:textColor="#FF5A4E"
-                app:icon="@drawable/delete_symbol"
+                app:icon="@drawable/ic_slash"
                 app:iconGravity="textStart"
                 app:iconPadding="8dp"
-                app:iconSize="14dp" />
+                app:iconSize="16dp" />
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
