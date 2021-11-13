@@ -3,8 +3,11 @@ package com.limor.app.scenes.main.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.limor.app.scenes.auth_new.model.UserInfoProvider
 import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.usecases.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 enum class CommentActionType {
@@ -18,6 +21,7 @@ data class CommentAction(
 
 class HandleCommentActionsViewModel @Inject constructor(
     private val deleteCommentUseCase: DeleteCommentUseCaseNew,
+    private val userInfoProvider: UserInfoProvider
 ): ViewModel() {
 
     private val _actionDelete = MutableLiveData<CommentUIModel?>()
@@ -57,5 +61,11 @@ class HandleCommentActionsViewModel @Inject constructor(
 
     fun resetCommentAction() {
         _commentAction.value = null;
+    }
+
+    fun blockUser(id: Int) {
+        viewModelScope.launch {
+            userInfoProvider.blockUser(id)
+        }
     }
 }
