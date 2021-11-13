@@ -707,6 +707,7 @@
     <string name="no_comments_title">No Comments</string>
     <string name="no_comments_hint">Be the first one to start conversation</string>
 
+    <string name="reported_successfully__with_format">%s reported successfully!</string>
 
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
