@@ -6,26 +6,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.DialogOtherUserActionsBinding
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileViewModel
-import com.limor.app.scenes.main.fragments.settings.SettingsActivity
-import com.limor.app.scenes.main_new.fragments.DialogPodcastReportP2
 import com.limor.app.uimodels.UserUIModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
 import timber.log.Timber
-import javax.inject.Inject
 
 class DialogUserProfileActions : DialogFragment() {
 
@@ -34,7 +26,7 @@ class DialogUserProfileActions : DialogFragment() {
     }
     private val model: UserProfileViewModel by viewModels({ activity as UserProfileActivity }) { (activity as UserProfileActivity).viewModelFactory }
     lateinit var binding: DialogOtherUserActionsBinding
-    lateinit var args: UserUIModel
+    lateinit var user: UserUIModel
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,9 +45,9 @@ class DialogUserProfileActions : DialogFragment() {
 
     private fun getArgs() {
         arguments?.let {
-            args = it.getParcelable(USER_KEY)!!
-            Timber.d(args.toString())
-            setUserActions(args)
+            user = it.getParcelable(USER_KEY)!!
+            Timber.d(user.toString())
+            setUserActions(user)
         }
     }
 
@@ -74,7 +66,7 @@ class DialogUserProfileActions : DialogFragment() {
         binding.btnBlockUser.setOnClickListener {
             alert(getString(R.string.confirmation_block_user)) {
                 okButton {
-                    model.blockUser(args.id)
+                    model.blockUser(user.id)
                     findNavController().previousBackStackEntry?.savedStateHandle?.set("blocked", true)
                     findNavController().popBackStack()
                 }
@@ -86,7 +78,7 @@ class DialogUserProfileActions : DialogFragment() {
         binding.btnUnBlockUser.setOnClickListener {
             alert(getString(R.string.confirmation_unblock_user)) {
                 okButton {
-                    model.unblockUser(args.id)
+                    model.unblockUser(user.id)
                     findNavController().previousBackStackEntry?.savedStateHandle?.set("blocked", false)
                     findNavController().popBackStack()
                 }
@@ -96,8 +88,7 @@ class DialogUserProfileActions : DialogFragment() {
         }
 
         binding.btnReportUser.setOnClickListener {
-            DialogUserReport.newInstance(args.id)
-                .show(parentFragmentManager, DialogUserReport.TAG)
+            DialogUserReport.reportUser(user.id).show(parentFragmentManager, DialogUserReport.TAG)
             dismiss()
         }
     }
