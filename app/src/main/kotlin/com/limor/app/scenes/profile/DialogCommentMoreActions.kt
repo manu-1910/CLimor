@@ -8,9 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.limor.app.BuildConfig
+import com.limor.app.R
 import com.limor.app.databinding.DialogCommentMoreActionsBinding
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.viewmodels.CommentActionType
@@ -18,6 +21,9 @@ import com.limor.app.scenes.main.viewmodels.HandleCommentActionsViewModel
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
 import dagger.android.support.AndroidSupportInjection
+import org.jetbrains.anko.cancelButton
+import org.jetbrains.anko.okButton
+import org.jetbrains.anko.support.v4.alert
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -120,9 +126,37 @@ class DialogCommentMoreActions : DialogFragment() {
         }
 
         binding.btnReportUser.setOnClickListener {
-            DialogUserReport.newInstance(cast.id).show(parentFragmentManager, DialogUserReport.TAG)
+            comment.user?.let {
+                DialogUserReport.reportUser(it.id).show(parentFragmentManager, DialogUserReport.TAG)
+            }
+
             dismiss()
         }
+
+        binding.btnReportComment.setOnClickListener {
+            DialogUserReport.reportUser(comment.id).show(parentFragmentManager, DialogUserReport.TAG)
+
+            dismiss()
+        }
+
+        binding.btnBlockUser.setOnClickListener {
+            blockUser()
+        }
+    }
+
+    fun blockUser() {
+        val userId = comment.user?.id ?: return
+
+        alert(getString(R.string.confirmation_block_user)) {
+            okButton {
+                model.blockUser(userId)
+            }
+            cancelButton {
+
+            }
+        }.show()
+
+        dismiss()
     }
 
     private fun commentIsEditable(): Boolean {
