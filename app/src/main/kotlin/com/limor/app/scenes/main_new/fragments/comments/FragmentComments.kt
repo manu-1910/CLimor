@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.FragmentCommentsBinding
 import com.limor.app.extensions.dismissFragment
@@ -212,21 +213,8 @@ class FragmentComments : UserMentionFragment() {
         item: CommentParentItem,
         section: ParentCommentSection
     ) {
-        Timber.d("${isOwnerOf(comment)} comment owner and ${isOwnerOf(cast)} cast owner ")
-        if (isOwnerOf(comment) || isOwnerOf(cast)) {
-            //If current user is owner of the comment or the cast he can delete the comment
-
-            itemParentComment = item
-            this.section = section
-
-            val bundle = bundleOf(
-                DialogCommentMoreActions.COMMENT_KEY to comment,
-                DialogCommentMoreActions.FROM to "comment",
-                DialogCommentMoreActions.ITEM to "parent",
-                DialogCommentMoreActions.KEY_CAN_EDIT_COMMENT to commentIsEditable(comment)
-            )
-            findNavController().navigate(R.id.dialogCommentMoreActions, bundle)
-        }
+        itemParentComment = item
+        showActions(comment, cast, section, false)
     }
 
     private fun handleThreeDotsClick(
@@ -235,20 +223,29 @@ class FragmentComments : UserMentionFragment() {
         item: CommentChildItem,
         section: ParentCommentSection
     ) {
-        Timber.d("${isOwnerOf(comment)} comment owner and ${isOwnerOf(cast)} cast owner ")
-        if (isOwnerOf(comment) || isOwnerOf(cast)) {
-            //If current user is owner of the comment or the cast he can delete the comment
-            itemChildComment = item
-            this.section = section
+        itemChildComment = item
+        showActions(comment, cast, section, true)
+    }
 
-            val bundle = bundleOf(
-                DialogCommentMoreActions.COMMENT_KEY to comment,
-                DialogCommentMoreActions.FROM to "comment",
-                DialogCommentMoreActions.ITEM to "child",
-                DialogCommentMoreActions.KEY_CAN_EDIT_COMMENT to commentIsEditable(comment)
-            )
-            findNavController().navigate(R.id.dialogCommentMoreActions, bundle)
+    private fun showActions(
+        comment: CommentUIModel,
+        cast: CastUIModel,
+        section: ParentCommentSection,
+        isChild: Boolean) {
+
+        if (BuildConfig.DEBUG) {
+            Timber.d("Show comment actions for comment ID ${comment.id} on cast ID ${cast.id}. Current user is owner of comment -> ${isOwnerOf(comment)} and owner of cast -> ${isOwnerOf(cast)}.")
         }
+
+        this.section = section
+
+        val bundle = bundleOf(
+            DialogCommentMoreActions.KEY_COMMENT to comment,
+            DialogCommentMoreActions.KEY_PODCAST to cast,
+            DialogCommentMoreActions.FROM to "comment",
+            DialogCommentMoreActions.ITEM to if (isChild) "child" else "parent",
+        )
+        findNavController().navigate(R.id.dialogCommentMoreActions, bundle)
     }
 
     private fun isOwnerOf(cast: CastUIModel): Boolean {
