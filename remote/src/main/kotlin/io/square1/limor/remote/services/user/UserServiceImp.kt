@@ -11,6 +11,7 @@ import io.square1.limor.remote.services.RemoteServiceConfig
 
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import javax.inject.Inject
 
@@ -41,7 +42,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
     fun userMeUpdate(nwUpdateProfileRequest: NWUpdateProfileRequest): Single<NWGetUserResponse> {
         return service.userMeUpdate(
             RequestBody.create(
-                MediaType.parse("application/json"),
+                "application/json".toMediaTypeOrNull(),
                 json.encodeToString(NWUpdateProfileRequest.serializer(), nwUpdateProfileRequest)
             )
         )
@@ -60,7 +61,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
     fun logOut(nwLogoutRequest: NWLogoutRequest): Single<NWErrorResponse> {
         return service.logOut(
             RequestBody.create(
-                MediaType.parse("application/json"),
+                "application/json".toMediaTypeOrNull(),
                 json.encodeToString(NWLogoutRequest.serializer(), nwLogoutRequest)
             )
         )
@@ -135,7 +136,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
     fun createBlockedUser(userIDRequest: NWUserIDRequest): Single<NWBlockedUserResponse> {
         val requestString = json.encodeToString(NWUserIDRequest.serializer(), userIDRequest)
         val request = RequestBody.create(
-            MediaType.parse("application/json"),
+            "application/json".toMediaTypeOrNull(),
             requestString
         )
         return service.createBlockedUser(request)
@@ -153,7 +154,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
     fun deleteBlockedUser(userIDRequest: NWUserIDRequest): Single<NWBlockedUserResponse> {
         return service.deleteBlockedUser(
             RequestBody.create(
-                MediaType.parse("application/json"),
+                "application/json".toMediaTypeOrNull(),
                 json.encodeToString(NWUserIDRequest.serializer(), userIDRequest)
             )
         )
@@ -169,7 +170,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
     fun reportUser(id:Int, createReportRequest: NWCreateReportRequest): Single<NWCreateReportResponse> {
         val requestString = json.encodeToString(NWCreateReportRequest.serializer(), createReportRequest)
         val request = RequestBody.create(
-            MediaType.parse("application/json"),
+            "application/json".toMediaTypeOrNull(),
             requestString
         )
         return service.reportUser(id, request)
@@ -255,7 +256,7 @@ class UserServiceImp @Inject constructor(serviceConfig: RemoteServiceConfig) :
     fun sendUserDevice(userDeviceRequest: NWUserDeviceRequest): Single<NWUserDeviceResponse> {
         return service.sendUserDevice(
             RequestBody.create(
-                MediaType.parse("application/json"),
+                "application/json".toMediaTypeOrNull(),
                 json.encodeToString(NWUserDeviceRequest.serializer(), userDeviceRequest)
             )
         )

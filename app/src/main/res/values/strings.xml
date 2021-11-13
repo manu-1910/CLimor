@@ -708,6 +708,7 @@
     <string name="no_comments_hint">Be the first one to start conversation</string>
 
     <string name="reported_successfully__with_format">%s reported successfully!</string>
+    <string name="logout_warning_message">Are you sure you want to log out? Logging out of or uninstalling Limor would result in the loss of your chat history.</string>
 
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>

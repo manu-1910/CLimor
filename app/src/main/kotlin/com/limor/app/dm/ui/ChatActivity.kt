@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.ActivityChatBinding
 import com.limor.app.dm.ChatSessionWithUser
@@ -114,7 +115,9 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun onChatData(chatData: ChatWithData) {
-        println("ZZZZ Got chat data with ${chatData.messages.size} messages")
+        if (BuildConfig.DEBUG) {
+            println("ZZZZ Got chat data with ${chatData.messages.size} messages")
+        }
         chatSession = chatData.sessionWithUser
 
         if (null == chatAdapter) {
@@ -160,7 +163,9 @@ class ChatActivity : AppCompatActivity() {
         if (session.draftContent.equals(text)) {
             return
         }
-        println("Will set draft to $text")
+        if (BuildConfig.DEBUG) {
+            println("Will set draft to $text")
+        }
         chat.setDraft(session, text)
     }
 
