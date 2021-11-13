@@ -173,6 +173,13 @@ class UserRepository @Inject constructor(val apollo: Apollo) {
         Timber.d("  -> $reported")
     }
 
+    suspend fun reportComment(id: Int, reason: String) {
+        val query = CreateReportsMutation(reason, "Comment", id)
+        val result = apollo.mutate(query)
+        val reported = result?.data?.createReports?.reported
+        Timber.d("  -> $reported")
+    }
+
     suspend fun updateUserNotificationStatus(enabled: Boolean) {
         val query = UpdateUserNotificationStatusMutation(Input.fromNullable(enabled))
         val result = apollo.mutate(query)
