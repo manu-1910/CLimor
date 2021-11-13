@@ -134,7 +134,7 @@ class DialogCommentMoreActions : DialogFragment() {
         }
 
         binding.btnReportComment.setOnClickListener {
-            DialogUserReport.reportUser(comment.id).show(parentFragmentManager, DialogUserReport.TAG)
+            DialogUserReport.reportComment(comment.id).show(parentFragmentManager, DialogUserReport.TAG)
 
             dismiss()
         }
