@@ -27,14 +27,14 @@ class DialogUserReport : DialogFragment() {
         private const val DATA_TYPE_COMMENT = "comment"
         private const val DATA_TYPE_USER = "user"
 
-        private const val DATA_ID = "DATA_ID"
-        private const val DATA_TYPE = "DATA_TYPE"
+        private const val KEY_DATA_ID = "DATA_ID"
+        private const val KEY_DATA_TYPE = "DATA_TYPE"
 
         fun reportUser(userId: Int): DialogUserReport {
             return DialogUserReport().apply {
                 arguments = bundleOf(
-                    DATA_ID to userId,
-                    DATA_TYPE to DATA_TYPE_USER
+                    KEY_DATA_ID to userId,
+                    KEY_DATA_TYPE to DATA_TYPE_USER
                 )
             }
         }
@@ -42,8 +42,8 @@ class DialogUserReport : DialogFragment() {
         fun reportComment(commentId: Int): DialogUserReport {
             return DialogUserReport().apply {
                 arguments = bundleOf(
-                    DATA_ID to commentId,
-                    DATA_TYPE to DATA_TYPE_COMMENT
+                    KEY_DATA_ID to commentId,
+                    KEY_DATA_TYPE to DATA_TYPE_COMMENT
                 )
             }
         }
@@ -86,8 +86,8 @@ class DialogUserReport : DialogFragment() {
     }
 
     private fun handleReport(reason: String) {
-        val type = arguments?.getString(DATA_TYPE_COMMENT, null) ?: return
-        val dataId = arguments?.getInt(DATA_ID, -1)
+        val type = arguments?.getString(KEY_DATA_TYPE, null) ?: return
+        val dataId = arguments?.getInt(KEY_DATA_ID, -1)
         if (dataId == -1) {
             return
         }
