@@ -120,7 +120,7 @@ class DialogCommentMoreActions : DialogFragment() {
         }
 
         binding.btnReportUser.setOnClickListener {
-            DialogUserReport.newInstance(comment.id).show(parentFragmentManager, DialogUserReport.TAG)
+            DialogUserReport.newInstance(cast.id).show(parentFragmentManager, DialogUserReport.TAG)
             dismiss()
         }
     }
