@@ -709,6 +709,8 @@
 
     <string name="logout_warning_message">Are you sure you want to log out? Logging out of or uninstalling Limor would result in the loss of your chat history.</string>
 
+    <string name="confirmation_block_user__with_format">Are you sure you want to block %s?</string>
+
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
         <item quantity="other">%d Likes</item>
