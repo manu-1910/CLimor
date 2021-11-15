@@ -167,22 +167,24 @@ class DialogCommentMoreActions : DialogFragment() {
         }
 
         binding.btnBlockUser.setOnClickListener {
-            blockUser()
+            showBlockUserAlert()
         }
     }
 
-    fun blockUser() {
-        val userId = comment.user?.id ?: return
+    private fun showBlockUserAlert() {
+        val user = comment.user ?: return
+        DialogUserProfileActions.showBlockDialog(
+            user,
+            requireContext(),
+            true,
+            this::onBlockUser
+        )
+    }
 
-        alert(getString(R.string.confirmation_block_user)) {
-            okButton {
-                model.blockUser(userId)
-                dismiss()
-            }
-            cancelButton {
-
-            }
-        }.show()
+    private fun onBlockUser() {
+        val user = comment.user ?: return
+        model.blockUser(user.id)
+        dismiss()
     }
 
     private fun commentIsEditable(): Boolean {
