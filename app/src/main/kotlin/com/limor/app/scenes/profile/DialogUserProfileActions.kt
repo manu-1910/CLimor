@@ -99,21 +99,44 @@ class DialogUserProfileActions : DialogFragment() {
         findNavController().popBackStack()
     }
 
+    private fun showUnBlockUserDialog(){
+        val userName = user.username ?: ""
+        val message = getString(R.string.confirmation_unblock_user__with_format, userName)
+        val spannable = SpannableString(message)
+
+        // - 1 because of the question mark at the end
+        val start = message.length - userName.length - 1
+        val end = start + userName.length
+        val flags = Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+
+        // Black
+        spannable.setSpan(ForegroundColorSpan(Color.BLACK), start, end, flags)
+
+        // Bold
+        spannable.setSpan(StyleSpan(Typeface.BOLD), start, end, flags)
+
+        LimorDialog(layoutInflater).apply {
+            setTitle(R.string.unblock_user)
+            setMessage(spannable)
+            setIcon(R.drawable.ic_block_user_full)
+            addButton(R.string.unblock, false) { onUnBlockUser() }
+            addButton(R.string.cancel, true)
+        }.show()
+    }
+
+    private fun onUnBlockUser(){
+        model.unblockUser(user.id)
+        findNavController().previousBackStackEntry?.savedStateHandle?.set("blocked", false)
+        findNavController().popBackStack()
+    }
+
     private fun setOnClicks() {
         binding.btnCancel.setOnClickListener { this.dismiss() }
         binding.btnBlockUser.setOnClickListener {
             showBlockDialog()
         }
         binding.btnUnBlockUser.setOnClickListener {
-            alert(getString(R.string.confirmation_unblock_user)) {
-                okButton {
-                    model.unblockUser(user.id)
-                    findNavController().previousBackStackEntry?.savedStateHandle?.set("blocked", false)
-                    findNavController().popBackStack()
-                }
-                cancelButton {  }
-            }.show()
-
+            showUnBlockUserDialog()
         }
 
         binding.btnReportUser.setOnClickListener {
