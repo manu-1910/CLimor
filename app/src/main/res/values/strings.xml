@@ -282,6 +282,7 @@
     <string name="report_comment">Report Comment</string>
     <string name="delete_comment">Delete Comment</string>
     <string name="block_user">Block User</string>
+    <string name="unblock_user">Unblock User</string>
     <string name="error_report">We couldn\'t send your report at the moment, please, try again later</string>
     <string name="comment_reported_ok">Comment reported successfully</string>
     <string name="comment_already_reported">Your comment was already reported</string>
@@ -708,6 +709,9 @@
     <string name="no_comments_hint">Be the first one to start conversation</string>
 
     <string name="logout_warning_message">Are you sure you want to log out? Logging out of or uninstalling Limor would result in the loss of your chat history.</string>
+
+    <string name="confirmation_block_user__with_format">Are you sure you want to block %s?</string>
+    <string name="confirmation_unblock_user__with_format">Are you sure you want to unblock %s?</string>
 
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
