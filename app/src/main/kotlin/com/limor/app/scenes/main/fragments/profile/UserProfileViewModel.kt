@@ -82,11 +82,18 @@ class UserProfileViewModel @Inject constructor(
     fun reportUser(reason: String, id: Int?) {
         id?.let{
             viewModelScope.launch {
-                userInfoProvider.userRepository.reportUser(id,reason)
+                userInfoProvider.userRepository.reportUser(id, reason)
             }
         }
     }
 
+    fun reportComment(reason: String, id: Int?) {
+        id?.let{
+            viewModelScope.launch {
+                userInfoProvider.userRepository.reportComment(id, reason)
+            }
+        }
+    }
 
     fun createDeviceToken(token: String) {
         viewModelScope.launch {

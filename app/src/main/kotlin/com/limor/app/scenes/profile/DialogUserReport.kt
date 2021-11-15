@@ -11,8 +11,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import com.limor.app.R
 import com.limor.app.databinding.DialogReportCastP2Binding
-import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileViewModel
 import dagger.android.support.AndroidSupportInjection
 import org.jetbrains.anko.support.v4.toast
@@ -20,15 +20,35 @@ import javax.inject.Inject
 
 class DialogUserReport : DialogFragment() {
 
+
     companion object {
         val TAG = DialogUserReport::class.qualifiedName
-        private const val CAST_ID_KEY = "CAST_ID_KEY"
-        fun newInstance(castId: Int): DialogUserReport {
+
+        private const val DATA_TYPE_COMMENT = "comment"
+        private const val DATA_TYPE_USER = "user"
+
+        private const val KEY_DATA_ID = "DATA_ID"
+        private const val KEY_DATA_TYPE = "DATA_TYPE"
+
+        fun reportUser(userId: Int): DialogUserReport {
             return DialogUserReport().apply {
-                arguments = bundleOf(CAST_ID_KEY to castId)
+                arguments = bundleOf(
+                    KEY_DATA_ID to userId,
+                    KEY_DATA_TYPE to DATA_TYPE_USER
+                )
+            }
+        }
+
+        fun reportComment(commentId: Int): DialogUserReport {
+            return DialogUserReport().apply {
+                arguments = bundleOf(
+                    KEY_DATA_ID to commentId,
+                    KEY_DATA_TYPE to DATA_TYPE_COMMENT
+                )
             }
         }
     }
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: UserProfileViewModel by viewModels{ viewModelFactory }
@@ -66,8 +86,26 @@ class DialogUserReport : DialogFragment() {
     }
 
     private fun handleReport(reason: String) {
-        model.reportUser(reason,arguments?.getInt(CAST_ID_KEY))
-        toast("User Reported Successfully")
+        val type = arguments?.getString(KEY_DATA_TYPE, null) ?: return
+        val dataId = arguments?.getInt(KEY_DATA_ID, -1)
+        if (dataId == -1) {
+            return
+        }
+
+        if (DATA_TYPE_COMMENT == type) {
+            model.reportComment(reason, dataId)
+
+        } else if (DATA_TYPE_USER == type) {
+            model.reportUser(reason, dataId)
+
+        }
+
+        getString(R.string.reported_successfully__with_format, type.replaceFirstChar {
+            it.uppercase()
+        }).also {
+            toast(it)
+        }
+
         dismiss()
     }
 
