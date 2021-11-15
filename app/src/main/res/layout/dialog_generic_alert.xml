@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/alert_background"
@@ -13,7 +14,7 @@
         android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/marginAlmostLarge"
+        android:layout_marginBottom="12dp"
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/ic_cancel_draft" />
 
@@ -25,11 +26,10 @@
         android:layout_marginStart="@dimen/marginAlmostLarge"
         android:layout_marginEnd="@dimen/marginAlmostLarge"
         android:fontFamily="@font/roboto_medium"
-        android:layout_marginTop="@dimen/marginMediumSmall"
-        android:text="@string/cancel_draft"
         android:includeFontPadding="false"
         android:textColor="@color/textPrimary"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        tools:text="Dialog Title" />
 
     <TextView
         android:id="@+id/textMessage"
@@ -37,13 +37,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginStart="@dimen/marginAlmostLarge"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="6dp"
         android:layout_marginEnd="@dimen/marginMedium"
-        android:lineSpacingMultiplier="1.4"
         android:fontFamily="@font/roboto"
-        android:text="@string/what_you_wish_to_do_cast"
+        android:lineSpacingMultiplier="1.4"
         android:textColor="@color/textSecondary"
-        android:textSize="@dimen/textSizeTiny" />
+        android:textSize="@dimen/textSizeTiny"
+        tools:text="This is some question  the dialog is asking?" />
 
 
     <LinearLayout
@@ -51,9 +51,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/marginTwenty"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="@dimen/marginTwenty"
-        android:layout_marginBottom="@dimen/marginAlmostLarge"
+        android:layout_marginBottom="28dp"
         android:orientation="horizontal"
         android:visibility="visible"
         android:weightSum="2">
