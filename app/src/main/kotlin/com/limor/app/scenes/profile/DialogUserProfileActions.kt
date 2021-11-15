@@ -140,7 +140,7 @@ class DialogUserProfileActions : DialogFragment() {
         }
 
         binding.btnReportUser.setOnClickListener {
-            DialogUserReport.newInstance(user.id)
+            DialogUserReport.reportUser(user.id)
                 .show(parentFragmentManager, DialogUserReport.TAG)
             dismiss()
         }
