@@ -55,6 +55,19 @@ class LimorDialog(private val layoutInflater: LayoutInflater) {
         dialogView.textMessage.setText(spannable, TextView.BufferType.SPANNABLE)
     }
 
+    fun setMessage(messageResId: Int) {
+        dialogView.textMessage.setText(messageResId)
+    }
+
+    fun setMessage(message: String) {
+        dialogView.textMessage.text = message
+    }
+
+
+    fun setMessageColor(colorValue: Int) {
+        dialogView.textMessage.setTextColor(colorValue)
+    }
+
     fun setIcon(iconResId: Int) {
         dialogView.headerIcon.apply {
             setImageResource(iconResId)
