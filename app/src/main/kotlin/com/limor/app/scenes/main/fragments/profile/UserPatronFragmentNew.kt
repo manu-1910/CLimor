@@ -222,12 +222,10 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
 
                     }
                     "REJECTED" -> {
-                        setupViewPager(getNormalStateItems())
-                        binding.patronButton.isEnabled = false
+                        setNotInitiatedState()
                     }
                     "REVOKED" -> {
-                        setupViewPager(getNormalStateItems())
-                        binding.patronButton.isEnabled = false
+                        setNotInitiatedState()
                     }
                 }
             }
@@ -249,6 +247,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
         binding.requestStateLayout.visibility = View.VISIBLE
         binding.checkLayout.visibility = View.VISIBLE
         binding.patronButton.isEnabled = false
+        binding.termsCheckBox.isChecked = false
         subscribeToInvite()
     }
 
@@ -307,11 +306,16 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                 }
                 "APPROVED" -> checkPatronState()
                 "REJECTED" -> {
-
+                    binding.patronButton.isEnabled = false
+                    binding.patronButton.text = getString(R.string.requesting)
+                    requestInvitation()
                 }
                 "REVOKED" -> {
-
+                    binding.patronButton.isEnabled = false
+                    binding.patronButton.text = getString(R.string.requesting)
+                    requestInvitation()
                 }
+
             }
             //Should setup Limor patron
         }
