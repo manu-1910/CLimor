@@ -719,4 +719,11 @@
         <item quantity="other">%d Listens</item>
     </plurals>
 
+    <string-array name="feed_colors">
+        <item name="feed_blue">#148DFF</item>
+        <item name="feed_black_off">#172229</item>
+        <item name="feed_limor_color">#FFC550</item>
+        <item name="feed_purple">#623CEA</item>
+        <item name="feed_orange">#FE721C</item>
+    </string-array>
 </resources>
