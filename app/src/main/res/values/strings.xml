@@ -742,5 +742,6 @@
     <string name="bought_by">Bought By</string>
     <string name="invites_count_description">You can send 5 invites</string>
     <string name="invite_friends">Invite Friends</string>
+    <string name="invite">Invite</string>
 
 </resources>
