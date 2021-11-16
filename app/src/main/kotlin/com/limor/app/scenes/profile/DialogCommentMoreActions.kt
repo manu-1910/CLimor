@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -18,6 +19,7 @@ import com.limor.app.databinding.DialogCommentMoreActionsBinding
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.viewmodels.CommentActionType
 import com.limor.app.scenes.main.viewmodels.HandleCommentActionsViewModel
+import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
 import dagger.android.support.AndroidSupportInjection
@@ -97,6 +99,46 @@ class DialogCommentMoreActions : DialogFragment() {
         }
     }
 
+    private fun onDeleteComment() {
+        when (from) {
+            "comment" -> {
+                when (actionItem) {
+                    "parent" -> model.actionDeleteParentComment(comment)
+                    "child" -> model.actionDeleteChildComment(comment)
+                }
+            }
+            "reply" -> {
+                when (actionItem) {
+                    "parent" -> model.actionDeleteParentReply(comment)
+                    "child" -> model.actionDeleteChildReply(comment)
+                }
+            }
+        }
+
+        dismissAllowingStateLoss()
+    }
+
+    private fun showDeleteCommentAlert() {
+        val message = if (isOwnerOfComment())
+            getString(R.string.delete_comment_confirmation)
+        else
+            getString(
+                R.string.delete_comment_confirmation__with_format,
+                comment.user?.username ?: "user"
+            )
+
+        LimorDialog(layoutInflater).apply {
+            // UI
+            setTitle(R.string.delete_comment_title)
+            setMessage(message)
+            setMessageColor(ContextCompat.getColor(requireContext(), R.color.error_stroke_color))
+            setIcon(R.drawable.ic_delete_cast)
+
+            // Actions
+            addButton(R.string.dialog_yes_button, false) { onDeleteComment() }
+            addButton(R.string.cancel, true)
+        }.show()
+    }
 
     private fun setOnClicks() {
         binding.btnCancel.setOnClickListener { this.dismiss() }
@@ -107,22 +149,7 @@ class DialogCommentMoreActions : DialogFragment() {
         }
 
         binding.btnDeleteComment.setOnClickListener {
-            when (from) {
-                "comment" -> {
-                    when (actionItem) {
-                        "parent" -> model.actionDeleteParentComment(comment)
-                        "child" -> model.actionDeleteChildComment(comment)
-                    }
-                }
-                "reply" -> {
-                    when (actionItem) {
-                        "parent" -> model.actionDeleteParentReply(comment)
-                        "child" -> model.actionDeleteChildReply(comment)
-                    }
-                }
-            }
-
-            dismissAllowingStateLoss()
+            showDeleteCommentAlert()
         }
 
         binding.btnReportUser.setOnClickListener {
@@ -140,22 +167,24 @@ class DialogCommentMoreActions : DialogFragment() {
         }
 
         binding.btnBlockUser.setOnClickListener {
-            blockUser()
+            showBlockUserAlert()
         }
     }
 
-    fun blockUser() {
-        val userId = comment.user?.id ?: return
+    private fun showBlockUserAlert() {
+        val user = comment.user ?: return
+        DialogUserProfileActions.showBlockDialog(
+            user,
+            requireContext(),
+            true,
+            this::onBlockUser
+        )
+    }
 
-        alert(getString(R.string.confirmation_block_user)) {
-            okButton {
-                model.blockUser(userId)
-                dismiss()
-            }
-            cancelButton {
-
-            }
-        }.show()
+    private fun onBlockUser() {
+        val user = comment.user ?: return
+        model.blockUser(user.id)
+        dismiss()
     }
 
     private fun commentIsEditable(): Boolean {
