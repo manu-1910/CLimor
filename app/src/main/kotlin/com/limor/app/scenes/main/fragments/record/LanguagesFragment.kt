@@ -125,15 +125,17 @@ class LanguagesFragment : FragmentWithLoading(), Injectable {
         chip.apply {
             text = language.name
             MAIN {
-                isChecked = (lastCheckedId == chip.id)
+                isChecked = (publishViewModel.languageSelected == language.name)
             }
             setOnCheckedChangeListener { buttonView, isChecked ->
-                language.isSelected = isChecked
-                lastCheckedId = chip.id
+
                 if (isChecked) {
+                    language.isSelected = isChecked
+                    lastCheckedId = chip.id
                     publishViewModel.languageSelected = text.toString()
                     publishViewModel.languageCode = language.code
                 } else {
+                    language.isSelected = false
                     lastCheckedId = View.NO_ID
                 }
                 Timber.d("Chip -> ${language.code} -- ${language.name}")
