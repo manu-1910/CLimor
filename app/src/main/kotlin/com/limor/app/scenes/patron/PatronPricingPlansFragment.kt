@@ -232,12 +232,12 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
     }
 
     private fun getAdapterItems(): ArrayList<FragmentShortItemSlider> {
-        val item1 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,
-            R.drawable.ic_patron_welcome)
+        val item1 = FragmentShortItemSlider.newInstance(R.string.patron_carousel_slide_1_title,
+            R.drawable.patron_carousel_slide_1_image,R.string.patron_carousel_slide_1_sub_title)
         val item2 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,
-            R.drawable.ic_patron_welcome)
+            R.drawable.patron_carousel_slide_2_image, R.string.patron_carousel_slide_2_sub_title)
         val item3 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,
-            R.drawable.ic_patron_welcome)
+            R.drawable.patron_carousel_slide_3_image,R.string.patron_carousel_slide_3_sub_title)
         return arrayListOf(item1, item2, item3)
     }
 

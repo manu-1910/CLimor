@@ -77,15 +77,18 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
     private fun getNormalStateItems(): ArrayList<FragmentShortItemSlider> {
         val item1 = FragmentShortItemSlider.newInstance(
             R.string.patron_carousel_slide_1_title,
-            R.drawable.patron_carousel_slide_1_image
+            R.drawable.patron_carousel_slide_1_image,
+            R.string.patron_carousel_slide_1_sub_title,
         )
         val item2 = FragmentShortItemSlider.newInstance(
             R.string.patron_carousel_slide_2_title,
-            R.drawable.patron_carousel_slide_2_image
+            R.drawable.patron_carousel_slide_2_image,
+            R.string.patron_carousel_slide_2_sub_title,
         )
         val item3 = FragmentShortItemSlider.newInstance(
             R.string.patron_carousel_slide_3_title,
-            R.drawable.patron_carousel_slide_3_image
+            R.drawable.patron_carousel_slide_3_image,
+            R.string.patron_carousel_slide_3_sub_title,
         )
         return arrayListOf(item1, item2, item3)
     }
@@ -93,7 +96,8 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
     private fun getApprovedStateItems(): ArrayList<FragmentShortItemSlider> {
         val item1 = FragmentShortItemSlider.newInstance(
             R.string.patron_carousel_slide_approved_title,
-            R.drawable.ic_patron_invite_accepted
+            R.drawable.ic_patron_invite_accepted,
+            0
         )
         return arrayListOf(item1)
     }
@@ -147,6 +151,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
             HtmlCompat.FROM_HTML_MODE_LEGACY)
         binding.termsTV.text = result
         binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
+        binding.termsCheckBox.isChecked = false
         Timber.d("Current User state -> ${user.patronInvitationStatus} ---")
         if (currentUser()) {
             if (user.isPatron == true) {

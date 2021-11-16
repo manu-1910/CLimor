@@ -701,10 +701,13 @@
         <item quantity="other">%d Listens</item>
     </plurals>
 
-    <string name="patron_carousel_slide_1_title">Create AMA <font fgcolor='#F9BB4B'>DM’s</font> and more with your fans</string>
-    <string name="patron_carousel_slide_2_title">Create premium <font fgcolor='#F9BB4B'>casts</font> for your community</string>
-    <string name="patron_carousel_slide_3_title">Freedom to <font fgcolor='#F9BB4B'>monetize</font> your content</string>
-    <string name="patron_carousel_slide_approved_title">Congratulations! Your request has been approved.</string>
+    <string name="patron_carousel_slide_1_title">Claim your exclusive <font fgcolor='#F9BB4B'>Limor Patron invitation</font> and more with your fans</string>
+    <string name="patron_carousel_slide_1_sub_title">Gain the tools to help your fans help you.</string>
+    <string name="patron_carousel_slide_2_title">Create premium <font fgcolor='#F9BB4B'>casts</font> for your followers</string>
+    <string name="patron_carousel_slide_2_sub_title">Give your Patrons exclusive content, access and conversation</string>
+    <string name="patron_carousel_slide_3_title">Gain Freedom to <font fgcolor='#F9BB4B'>monetize</font> your audio content</string>
+    <string name="patron_carousel_slide_3_sub_title">Monetise, analize and convert your voice into income.</string>
+    <string name="patron_carousel_slide_approved_title">Congratulations! Your request \n has been approved.</string>
     <string name="requesting">Requesting...</string>
     <string name="patron_categories">Patron Categories</string>
     <string name="patron_languages">Patron Languages</string>
