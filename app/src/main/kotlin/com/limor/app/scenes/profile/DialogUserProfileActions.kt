@@ -21,6 +21,7 @@ import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileViewModel
 import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.uimodels.UserUIModel
+import dagger.android.support.AndroidSupportInjection
 import org.jetbrains.anko.layoutInflater
 import timber.log.Timber
 
@@ -67,7 +68,7 @@ class DialogUserProfileActions : DialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DialogOtherUserActionsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -79,6 +80,11 @@ class DialogUserProfileActions : DialogFragment() {
         setOnClicks()
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        AndroidSupportInjection.inject(this)
+    }
+
     private fun getArgs() {
         arguments?.let {
             user = it.getParcelable(USER_KEY)!!
@@ -88,13 +94,18 @@ class DialogUserProfileActions : DialogFragment() {
     }
 
     private fun setUserActions(user: UserUIModel) {
-        if(user.isBlocked == true){
+        binding.btnUnfollowUser.visibility = if (user.isFollowed == true) View.VISIBLE else View.GONE
+        binding.separatorBtnUnfollowUser.visibility = binding.btnUnfollowUser.visibility
+
+        if (user.isBlocked == true) {
             binding.btnUnBlockUser.visibility = View.VISIBLE
             binding.btnBlockUser.visibility = View.GONE
-        }else{
+        } else {
             binding.btnUnBlockUser.visibility = View.GONE
             binding.btnBlockUser.visibility = View.VISIBLE
         }
+
+        binding.separatorBtnUnBlockUser.visibility = binding.btnUnBlockUser.visibility
     }
 
     private fun onBlockUser() {
@@ -125,6 +136,13 @@ class DialogUserProfileActions : DialogFragment() {
             DialogUserReport.reportUser(user.id)
                 .show(parentFragmentManager, DialogUserReport.TAG)
             dismiss()
+        }
+
+        binding.btnUnfollowUser.setOnClickListener {
+            user = user.copy(isFollowed = false)
+            model.unFollow(user.id)
+            findNavController().previousBackStackEntry?.savedStateHandle?.set("followed", false)
+            findNavController().popBackStack()
         }
     }
 }
