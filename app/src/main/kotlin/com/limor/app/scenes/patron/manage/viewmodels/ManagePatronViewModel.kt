@@ -7,12 +7,19 @@ import androidx.lifecycle.viewModelScope
 import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.common.Constants
 import com.limor.app.scenes.auth_new.model.UserInfoProvider
+import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchFragment
+import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchViewModel
 import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.UserUIModel
+import com.limor.app.usecases.SearchUsersUseCase
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 class ManagePatronViewModel @Inject constructor(
+    val searchUsersUseCase: SearchUsersUseCase,
     val generalInfoRepository: GeneralInfoRepository,
     val userInfoProvider: UserInfoProvider
 ) : ViewModel() {
@@ -64,6 +71,11 @@ class ManagePatronViewModel @Inject constructor(
     private val _priceChangeResult = MutableLiveData<Boolean>()
     val priceChangeResult: LiveData<Boolean> get() = _priceChangeResult
 
+    private val _searchResult = MutableLiveData<List<UserUIModel>>()
+    val searchResult: LiveData<List<UserUIModel>> = _searchResult
+
+    private var searchJob: Job? = null
+
     fun loadCastBuyers(offset: Int = 0, limit: Int = 10) {
         if (offset < buyers.size) {
             _buyersData.postValue(
@@ -91,6 +103,16 @@ class ManagePatronViewModel @Inject constructor(
             _priceChangeResult.postValue(true)
             delay(1000)
             _priceChangeResult.postValue(false)
+        }
+    }
+
+    fun search(searchQuery: String) {
+        Timber.d("Search for: $searchQuery")
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            searchUsersUseCase.execute(searchQuery)
+                .onSuccess { _searchResult.value = it }
+                .onFailure { Timber.e(it, "Error while searching for users") }
         }
     }
 

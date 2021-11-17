@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="@dimen/marginSmall"
@@ -32,11 +33,12 @@
         app:layout_constraintStart_toEndOf="@id/iv_user"
         android:layout_marginStart="@dimen/marginMediumSmall"/>
 
-    <CheckBox
+    <ImageView
         android:id="@+id/select_contact_checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:padding="0dp"
+        android:src="@drawable/ic_unselected_checkbox"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
