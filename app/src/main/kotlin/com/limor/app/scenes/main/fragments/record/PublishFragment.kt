@@ -696,8 +696,8 @@ class PublishFragment : BaseFragment() {
     }
 
     private fun publishCast() {
-        /*ensurePreviewIsPaused()
-        startPublishing()*/
+        //ensurePreviewIsPaused()
+        //startPublishing()
         alert("Temporarily blocked publishing until api is fixed").show()
     }
 
@@ -1125,11 +1125,16 @@ class PublishFragment : BaseFragment() {
             if (it.isNotEmpty())
                 publishViewModel.languageCode = it
         }
-        uiDraft.language?.let {
-            if (it.isNotEmpty())
+        if(publishViewModel.languageSelected.isEmpty()){
+           uiDraft.language?.let {
+            if (it.isNotEmpty()){
                 publishViewModel.languageSelected = it
+            }
         }
-        Timber.d("Existing Data: -> $uiDraft")
+
+        }
+
+        Timber.d("Existing Data: -> ${publishViewModel.languageSelected}")
         updatePublishBtnState()
     }
 
