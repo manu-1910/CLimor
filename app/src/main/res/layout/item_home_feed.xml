@@ -355,7 +355,7 @@
         android:id="@+id/btnAddPreview"
         style="@style/ButtonTextStyle"
         android:layout_width="0dp"
-        android:layout_height="43dp"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin28"
         android:background="@color/transparent"
         android:fontFamily="@font/roboto_bold"
@@ -373,7 +373,7 @@
         android:id="@+id/btnEditPrice"
         style="@android:style/Widget.Material.Button.Borderless.Colored"
         android:layout_width="0dp"
-        android:layout_height="43dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin24"
         android:background="@drawable/btn_primary_background"
         android:drawableStart="@drawable/ic_edit_small"
@@ -402,6 +402,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        android:background="@color/grayWave"
         app:constraint_referenced_ids="btnAddPreview,btnEditPrice" />
 
 

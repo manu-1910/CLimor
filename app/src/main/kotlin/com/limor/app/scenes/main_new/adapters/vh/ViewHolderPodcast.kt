@@ -11,6 +11,8 @@ import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.extensions.*
+import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
@@ -32,6 +34,7 @@ class ViewHolderPodcast(
         setPodcastGeneralInfo(item)
         setPodcastOwnerInfo(item)
         setPodcastCounters(item)
+        setPatronPodcastStatus(item)
         setAudioInfo(item)
         loadImages(item)
         setOnClicks(item)
@@ -66,6 +69,35 @@ class ViewHolderPodcast(
         binding.tvPodcastComments.text = item.commentsCount?.toString()
         binding.tvPodcastReply.text = item.sharesCount?.toString()
         binding.tvPodcastNumberOfListeners.text = if(item.listensCount == 0) "0" else item.listensCount?.toLong()?.formatHumanReadable
+    }
+
+    private fun setPatronPodcastStatus(item: CastUIModel){
+        if(item.patronCast == true){
+            val userId = PrefsHandler.getCurrentUserId(context)
+            when{
+                (item.owner?.id != userId) -> {
+                    binding.notCastOwnerActions.visibility = View.VISIBLE
+                    binding.btnAddPreview.visibility = View.GONE
+                    binding.btnEditPrice.visibility = View.GONE
+                    binding.btnPurchasedCast.visibility = View.GONE
+                }
+                item.owner.id == userId -> {
+                    binding.btnPlayStopPreview.visibility = View.GONE
+                    binding.btnBuyCast.visibility = View.GONE
+                    binding.castOwnerActions.visibility = View.VISIBLE
+                    binding.btnPurchasedCast.visibility = View.GONE
+                }
+                else -> {
+                    binding.notCastOwnerActions.visibility = View.GONE
+                    binding.castOwnerActions.visibility = View.GONE
+                    binding.btnPurchasedCast.visibility = View.VISIBLE
+                }
+            }
+        } else {
+            binding.notCastOwnerActions.visibility = View.GONE
+            binding.castOwnerActions.visibility = View.GONE
+            binding.btnPurchasedCast.visibility = View.GONE
+        }
     }
 
     private fun setAudioInfo(item: CastUIModel) {
@@ -122,6 +154,18 @@ class ViewHolderPodcast(
 
         binding.sharesLayout.setOnClickListener {
             onShareClick(item)
+        }
+
+        binding.btnAddPreview.setOnClickListener {
+
+        }
+
+        binding.btnEditPrice.setOnClickListener {
+
+        }
+
+        binding.btnPlayStopPreview.setOnClickListener {
+
         }
     }
 

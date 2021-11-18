@@ -113,6 +113,14 @@ query FeedItemsQuery($limit: Int!,$offset:Int!){
                     end_index
                 }
             }
+            mature_content
+            patron_cast
+            patron_details{
+                price_id
+                preview_duration
+                starts_at
+                ends_at
+            }
         }
         recaster {
             id
