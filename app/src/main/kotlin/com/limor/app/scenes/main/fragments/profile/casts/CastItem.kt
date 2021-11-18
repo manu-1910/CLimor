@@ -45,19 +45,8 @@ class CastItem(
                 ivPodcastBackground.loadImage(it)
             }
 
-            Timber.d("CAST_DETAILS: ${cast.imageLinks}")
-            if (cast.imageLinks?.large == null) {
-                cast.colorCode?.let {
-                    colorFeedBackground.setBackgroundColor(Color.parseColor(it))
-                    colorFeedText.setTextColor(ContextCompat.getColor(viewBinding.root.context,
-                        CommonsKt.getTextColorByBackground(it)))
-                    colorFeedState.visibility = View.VISIBLE
-                }
-                colorFeedText.text = cast.title
-                colorFeedState.visibility = View.VISIBLE
-            } else {
-                colorFeedState.visibility = View.GONE
-            }
+            //Handling the color background for podcast
+            CommonsKt.handleColorFeed(cast,colorFeedText,root.context)
 
             tvPodcastLikes.text = cast.likesCount.toString()
             tvPodcastRecast.text = cast.recastsCount.toString()

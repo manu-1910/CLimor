@@ -2,11 +2,14 @@ package com.limor.app.scenes.utils
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.text.Editable
 import android.text.format.DateFormat
 import android.util.TypedValue
+import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +17,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.scenes.authentication.SignActivity
+import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.UIErrorResponse
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
@@ -202,7 +206,7 @@ class CommonsKt {
             button: Button,
             primaryStatus: Boolean,
             textPrimary: Int,
-            textSecondary: Int
+            textSecondary: Int,
         ) {
             if (primaryStatus) {
                 button.background = ContextCompat.getDrawable(
@@ -229,7 +233,7 @@ class CommonsKt {
             button: Button,
             primaryStatus: Boolean,
             textPrimary: Int,
-            textSecondary: Int
+            textSecondary: Int,
         ) {
             if (primaryStatus) {
                 button.background = ContextCompat.getDrawable(
@@ -251,7 +255,7 @@ class CommonsKt {
             button: Button,
             primaryStatus: Boolean,
             textPrimary: Int,
-            textSecondary: Int
+            textSecondary: Int,
         ) {
             if (primaryStatus) {
                 button.background = ContextCompat.getDrawable(
@@ -299,7 +303,7 @@ class CommonsKt {
             app: App,
             context: Context,
             fragment: Fragment,
-            errorResponse: UIErrorResponse
+            errorResponse: UIErrorResponse,
         ) {
             if (app.merlinsBeard!!.isConnected) {
                 val message: StringBuilder = StringBuilder()
@@ -361,8 +365,26 @@ class CommonsKt {
             }
         }
 
-        fun getTextColorByBackground(it: String): Int {
-            return if(it == "#FFC550") R.color.black else R.color.white
+        private fun getTextColorByBackground(it: String): Int {
+            return if (it == "#FFC550") R.color.black else R.color.white
+        }
+
+        fun handleColorFeed(
+            cast: CastUIModel,
+            colorFeedText: TextView,
+            context: Context,
+        ) {
+            if (cast.imageLinks?.large == null) {
+                cast.colorCode?.let {
+                    colorFeedText.setBackgroundColor(Color.parseColor(it))
+                    colorFeedText.setTextColor(ContextCompat.getColor(context,
+                        getTextColorByBackground(it)))
+                    colorFeedText.visibility = View.VISIBLE
+                    colorFeedText.text = cast.title
+                }
+            } else {
+                colorFeedText.visibility = View.GONE
+            }
         }
 
 

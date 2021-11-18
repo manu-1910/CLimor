@@ -86,18 +86,8 @@ class ViewHolderPodcast(
             binding.ivPodcastBackground.loadImage(it)
         }
 
-        Timber.d("CAST_DETAILS: ${item.imageLinks}")
-        if (item.imageLinks?.large == null) {
-            item.colorCode?.let {
-                binding.colorFeedBackground.setBackgroundColor(Color.parseColor(it))
-                binding.colorFeedText.setTextColor(ContextCompat.getColor(context,
-                    CommonsKt.getTextColorByBackground(it)))
-                binding.colorFeedText.text = item.title
-                binding.colorFeedState.visibility = View.VISIBLE
-            }
-        } else {
-            binding.colorFeedState.visibility = View.GONE
-        }
+        //Handling the color background for podcast
+        CommonsKt.handleColorFeed(item,binding.colorFeedText,context)
     }
 
     private fun setOnClicks(item: CastUIModel) {

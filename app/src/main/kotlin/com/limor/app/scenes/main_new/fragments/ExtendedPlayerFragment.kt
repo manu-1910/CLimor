@@ -387,18 +387,8 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         cast.imageLinks?.large?.let {
             binding.ivPodcastBackground.loadImage(it)
         }
-        if (cast.imageLinks?.large == null) {
-            cast.colorCode?.let {
-                colorFeedBackground.setBackgroundColor(Color.parseColor(it))
-                colorFeedText.setTextColor(ContextCompat.getColor(requireContext(),
-                    CommonsKt.getTextColorByBackground(it)))
-                colorFeedState.visibility = View.VISIBLE
-            }
-            colorFeedText.text = cast.title
-            colorFeedState.visibility = View.VISIBLE
-        } else {
-            colorFeedState.visibility = View.GONE
-        }
+        //Handling the color background for podcast
+        CommonsKt.handleColorFeed(cast,colorFeedText,requireContext())
     }
 
     private fun setViewsVisibility() {

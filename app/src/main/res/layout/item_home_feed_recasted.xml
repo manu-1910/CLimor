@@ -177,24 +177,12 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/shadowTop" />
 
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/colorFeedState"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:constraint_referenced_ids="colorFeedBackground,colorFeedText"/>
-            <RelativeLayout
-                android:id="@+id/colorFeedBackground"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="@color/primaryYellowColor"
-                app:layout_constraintBottom_toBottomOf="@+id/ivPodcastBackground"
-                app:layout_constraintTop_toTopOf="@+id/ivPodcastBackground" />
             <TextView
                 android:id="@+id/colorFeedText"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:fontFamily="@font/roboto_bold"
+                android:background="@color/primaryYellowColor"
                 android:textSize="@dimen/textSize20"
                 android:text="@string/lorem"
                 android:maxLines="4"
@@ -203,9 +191,11 @@
                 android:lineHeight="30dp"
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:textAlignment="center"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:textAlignment="gravity"
+                android:gravity="center"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/ivPodcastBackground"
                 app:layout_constraintTop_toTopOf="parent" />
 
