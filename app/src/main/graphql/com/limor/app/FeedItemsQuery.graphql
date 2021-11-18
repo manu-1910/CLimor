@@ -109,6 +109,7 @@ query FeedItemsQuery($limit: Int!,$offset:Int!){
                     end_index
                 }
             }
+            color_code
         }
         recaster {
             id

@@ -43,7 +43,8 @@ data class CastUIModel(
     val tags: List<TagUIModel>?,
     val mentions: MentionUIModel?,
     val links: LinkUIModel?,
-    val recaster: UserUIModel?
+    val recaster: UserUIModel?,
+    var colorCode: String? = null,
 ) : Parcelable {
 
     /**
@@ -178,7 +179,7 @@ fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
         commentsCount = number_of_comments, sharesCount = number_of_shares,
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(), recaster = null
+        links = links?.mapToUIModel(), recaster = null,colorCode = color_code
     )
 
 fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
@@ -196,7 +197,7 @@ fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
         isActive = podcast.active, sharingUrl = podcast.sharing_url,
         tags = podcast.tags?.caption?.map { it!!.mapToUIModel() },
         mentions = podcast.mentions?.mapToUIModel(),
-        links = podcast.links?.mapToUIModel(), recaster = recaster?.mapToUIModel()
+        links = podcast.links?.mapToUIModel(), recaster = recaster?.mapToUIModel(), colorCode = podcast.color_code
     )
 
 fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
@@ -212,5 +213,5 @@ fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
         commentsCount = number_of_comments, sharesCount = number_of_shares,
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(), recaster = null
+        links = links?.mapToUIModel(), recaster = null, colorCode = color_code
     )
