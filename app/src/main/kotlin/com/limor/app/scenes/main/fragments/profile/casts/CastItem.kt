@@ -46,6 +46,12 @@ class CastItem(
                 ivPodcastBackground.loadImage(it)
             }
 
+            if(cast.imageLinks == null){
+                colorFeedState.visibility = View.VISIBLE
+            }else{
+                colorFeedState.visibility = View.GONE
+            }
+
             tvPodcastLikes.text = cast.likesCount.toString()
             tvPodcastRecast.text = cast.recastsCount.toString()
             tvPodcastComments.text = cast.commentsCount.toString()

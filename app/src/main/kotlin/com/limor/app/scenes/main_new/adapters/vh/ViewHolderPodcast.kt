@@ -52,6 +52,12 @@ class ViewHolderPodcast(
             onUserMentionClick,
             onHashTagClick
         )
+        if(item.imageLinks == null){
+            binding.colorFeedState.visibility = View.VISIBLE
+        }else{
+            binding.colorFeedState.visibility = View.GONE
+        }
+
     }
 
     private fun setPodcastOwnerInfo(item: CastUIModel) {
