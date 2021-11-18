@@ -335,7 +335,6 @@ class PublishFragment : BaseFragment() {
         val isTitleValid = etDraftTitle?.text?.trim()?.isNotEmpty() ?: false
         val isCaptionValid = etDraftCaption?.text?.trim()?.isNotEmpty() ?: false
         val isAllRequiredFieldsFilled = isCategorySelected
-                && isImageChosen
                 && isLanguageSelected
                 && isCaptionValid
                 && isTitleValid

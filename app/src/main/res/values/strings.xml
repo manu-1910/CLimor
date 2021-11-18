@@ -518,7 +518,7 @@
     <string name="hashtag_subtitle">Use “#” for hashtags</string>
     <string name="publishing_your_cast">Publishing your cast</string>
     <string name="cast_published">Cast Published</string>
-    <string name="upload_your_photo">Upload your photo<font color='#FF0000'>*</font></string>
+    <string name="upload_your_photo">Upload your photo</string>
     <string name="save_as_draft">Save as Draft</string>
     <string name="battery_low">Battery Low</string>
     <string name="battery_low_description">Battery level is very low. App may close soon.</string>
