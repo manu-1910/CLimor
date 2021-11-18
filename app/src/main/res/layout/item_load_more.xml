@@ -1,15 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
         android:id="@+id/load_more"
-        android:text="@string/load_more_label"
-        android:padding="30dp"
+        android:text="@string/view_more"
+        android:padding="20dp"
+        android:paddingEnd="0dp"
         android:textAlignment="center"
         android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:textColor="@color/textAccent"
+        android:fontFamily="@font/roboto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerInParent="true"/>
 
-</FrameLayout>
+    <ImageView
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/arrow_left"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/load_more"
+        android:rotation="270"
+        android:layout_marginStart="4dp"
+        app:tint="@color/textAccent"/>
+
+</RelativeLayout>

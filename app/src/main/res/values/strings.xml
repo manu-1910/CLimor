@@ -729,4 +729,35 @@
     <string name="payment_terms"><font fgcolor='#F9BB4B'><u>Payment Terms</u></font></string>
     <string name="free_cast_selection">Free (Will appear in Cast Tab)</string>
 
+    <string name="manage_limor_patron_title">Manage Limor Patron</string>
+    <string name="limor_patron_settings">Limor Patron Settings</string>
+    <string name="invitations">Invitations</string>
+    <string name="invitations_description">Invite your friends or random people to become a Limor Patron user</string>
+    <string name="my_earnings">My Earnings</string>
+    <string name="patron_catagories_description">Choose a category that best describes your content.</string>
+    <string name="edit_patron_catagories">Edit Patron Categories</string>
+    <string name="manage_patron_membership">Manage Patron Membership</string>
+    <string name="change_cast_prices">Change all cast prices</string>
+    <string name="change_price">Change Price</string>
+    <string name="change_price_description">Changing the price will change all your cast prices</string>
+    <string name="change_price_confirmation_text">Are you sure, you want to change all cast prices?</string>
+    <string name="cancel_patron_membership">Cancel Patron Membership</string>
+    <string name="cancel_patron_membership_description">Do you really want to cancel your Limor Patron  membership?</string>
+    <string name="cancel_patron_membership_success_title">Patron Membership Cancelled</string>
+    <string name="cancel_patron_membership_success_description">Your payment have successfully cancelled your patron membership</string>
+    <string name="total_withdrawn">Total Withdrawn</string>
+    <string name="cast_earnings">Cast Earnings</string>
+    <string name="price">Price</string>
+    <string name="edit_price">Edit Price</string>
+    <string name="submit">Submit</string>
+    <string name="view_more">View more</string>
+    <string name="total_earnings">Total Earnings</string>
+    <string name="transaction_fee">Transaction Fee</string>
+    <string name="bought_by">Bought By</string>
+    <string name="invites_count_description">You can send %d invites</string>
+    <string name="invite_friends">Invite Friends</string>
+    <string name="invite">Invite</string>
+    <string name="invite_people">Invite %d People</string>
+    <string name="joined">Joined</string>
+
 </resources>

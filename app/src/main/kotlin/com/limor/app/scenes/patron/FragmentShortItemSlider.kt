@@ -1,5 +1,6 @@
 package com.limor.app.scenes.patron
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import com.limor.app.databinding.FragmentShortItemSliderBinding
 import android.text.style.ForegroundColorSpan
 import android.text.SpannableString
 import android.text.Spanned
+import com.limor.app.scenes.patron.manage.ManagePatronActivity
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -69,7 +71,6 @@ class FragmentShortItemSlider : Fragment() {
         text?.let {
             binding.patronStatusTv.text = fixSpanColor(getText(it))
         }
-
         return binding.root
     }
 
