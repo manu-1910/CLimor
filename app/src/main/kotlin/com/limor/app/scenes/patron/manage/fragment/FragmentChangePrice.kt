@@ -87,7 +87,7 @@ class FragmentChangePrice : Fragment(), Injectable {
     }
 
     private fun initialiseViews() {
-        binding.toolbar.title.text = getString(com.limor.app.R.string.edit_price)
+        binding.toolbar.title.text = getString(com.limor.app.R.string.edit_price_text)
         binding.toolbar.btnNotification.setImageDrawable(resources.getDrawable(R.drawable.ic_menu_info_details))
     }
 

@@ -748,7 +748,7 @@
     <string name="total_withdrawn">Total Withdrawn</string>
     <string name="cast_earnings">Cast Earnings</string>
     <string name="price">Price</string>
-    <string name="edit_price">Edit Price</string>
+    <string name="edit_price_text">Edit Price</string>
     <string name="submit">Submit</string>
     <string name="view_more">View more</string>
     <string name="total_earnings">Total Earnings</string>

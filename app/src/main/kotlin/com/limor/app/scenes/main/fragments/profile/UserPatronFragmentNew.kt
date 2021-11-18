@@ -22,6 +22,7 @@ import com.limor.app.databinding.FragmnetUserPatronNewBinding
 import com.limor.app.extensions.isOnline
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.patron.FragmentShortItemSlider
+import com.limor.app.scenes.patron.manage.ManagePatronActivity
 import com.limor.app.scenes.patron.setup.PatronSetupActivity
 import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.UserUIModel
@@ -205,6 +206,10 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                                     binding.pager.visibility = View.GONE
                                     binding.indicator.visibility = View.INVISIBLE
                                     binding.checkLayout.visibility = View.INVISIBLE
+
+                                    binding.managePatron.setOnClickListener {
+                                        startActivity(Intent(requireActivity(), ManagePatronActivity::class.java))
+                                    }
                                 }
                                 else -> {
                                     setupViewPager(getApprovedStateItems())
