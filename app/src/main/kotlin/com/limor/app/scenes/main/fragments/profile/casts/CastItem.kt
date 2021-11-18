@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main.fragments.profile.casts
 
+import android.graphics.Color
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.limor.app.R
@@ -7,15 +8,13 @@ import com.limor.app.databinding.ItemUserCastBinding
 import com.limor.app.dm.ShareResult
 import com.limor.app.extensions.*
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
-import com.limor.app.scenes.utils.CommonsKt.Companion.toEditable
 import com.limor.app.scenes.utils.CommonsKt
-import com.limor.app.scenes.utils.recycler.HorizontalSpacingItemDecoration
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
-import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
-import kotlinx.android.synthetic.main.activity_edit_cast.*
+import kotlinx.android.synthetic.main.fragment_extended_player.*
+import timber.log.Timber
 
 class CastItem(
     val cast: CastUIModel,
@@ -25,7 +24,7 @@ class CastItem(
     private val onRecastClick: (CastUIModel, isRecasted: Boolean) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
     private val onShareClick: (CastUIModel, onShared: ((shareResult: ShareResult) -> Unit)?) -> Unit,
-    private val onHashTagClick: (hashTag: TagUIModel) -> Unit
+    private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
 ) : BindableItem<ItemUserCastBinding>() {
 
     override fun bind(viewBinding: ItemUserCastBinding, position: Int) {
@@ -46,9 +45,17 @@ class CastItem(
                 ivPodcastBackground.loadImage(it)
             }
 
-            if(cast.imageLinks == null){
+            Timber.d("CAST_DETAILS: ${cast.imageLinks}")
+            if (cast.imageLinks?.large == null) {
+                cast.colorCode?.let {
+                    colorFeedBackground.setBackgroundColor(Color.parseColor(it))
+                    colorFeedText.setTextColor(ContextCompat.getColor(viewBinding.root.context,
+                        CommonsKt.getTextColorByBackground(it)))
+                    colorFeedState.visibility = View.VISIBLE
+                }
+                colorFeedText.text = cast.title
                 colorFeedState.visibility = View.VISIBLE
-            }else{
+            } else {
                 colorFeedState.visibility = View.GONE
             }
 
@@ -140,7 +147,7 @@ class CastItem(
         }
     }
 
-    private fun applyShareStyle(binding: ItemUserCastBinding, isShared : Boolean){
+    private fun applyShareStyle(binding: ItemUserCastBinding, isShared: Boolean) {
         // new requirement as of October 28th, 2021
         // - the share button shouldn't have state
         binding.tvPodcastReply.setTextColor(ContextCompat.getColor(

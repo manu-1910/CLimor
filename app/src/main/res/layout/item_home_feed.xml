@@ -20,6 +20,7 @@
         android:id="@+id/colorFeedState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="visible"
         app:constraint_referenced_ids="colorFeedBackground,colorFeedText"/>
     <RelativeLayout
         android:id="@+id/colorFeedBackground"
@@ -34,8 +35,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fontFamily="@font/roboto_bold"
-        android:scrollbarSize="@dimen/textSize20"
+        android:textSize="@dimen/textSize20"
         android:text="@string/lorem"
+        android:maxLines="4"
+        android:ellipsize="end"
         android:lineSpacingExtra="18dp"
         android:lineHeight="30dp"
         android:textColor="@color/white"

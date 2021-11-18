@@ -361,6 +361,10 @@ class CommonsKt {
             }
         }
 
+        fun getTextColorByBackground(it: String): Int {
+            return if(it == "#FFC550") R.color.black else R.color.white
+        }
+
 
     }
 }

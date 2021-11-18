@@ -1,9 +1,8 @@
 package com.limor.app.scenes.main_new.adapters.vh
 
 import android.content.Intent
+import android.graphics.Color
 import android.view.View
-import android.widget.TextView
-import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.findViewTreeLifecycleOwner
@@ -18,6 +17,8 @@ import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
+import kotlinx.android.synthetic.main.fragment_extended_player.*
+import timber.log.Timber
 
 class ViewHolderPodcast(
     val binding: ItemHomeFeedBinding,
@@ -52,11 +53,6 @@ class ViewHolderPodcast(
             onUserMentionClick,
             onHashTagClick
         )
-        if(item.imageLinks == null){
-            binding.colorFeedState.visibility = View.VISIBLE
-        }else{
-            binding.colorFeedState.visibility = View.GONE
-        }
 
     }
 
@@ -88,6 +84,19 @@ class ViewHolderPodcast(
 
         item.imageLinks?.large?.let {
             binding.ivPodcastBackground.loadImage(it)
+        }
+
+        Timber.d("CAST_DETAILS: ${item.imageLinks}")
+        if (item.imageLinks?.large == null) {
+            item.colorCode?.let {
+                binding.colorFeedBackground.setBackgroundColor(Color.parseColor(it))
+                binding.colorFeedText.setTextColor(ContextCompat.getColor(context,
+                    CommonsKt.getTextColorByBackground(it)))
+                binding.colorFeedText.text = item.title
+                binding.colorFeedState.visibility = View.VISIBLE
+            }
+        } else {
+            binding.colorFeedState.visibility = View.GONE
         }
     }
 
