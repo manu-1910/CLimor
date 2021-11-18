@@ -20,7 +20,7 @@
         android:id="@+id/colorFeedState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:visibility="gone"
         app:constraint_referenced_ids="colorFeedBackground,colorFeedText"/>
     <RelativeLayout
         android:id="@+id/colorFeedBackground"
