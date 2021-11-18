@@ -719,6 +719,8 @@
     <string name="delete_comment_title">Delete</string>
     <string name="dialog_yes_button">Yes</string>
 
+    <string name="unfollow_user">Unfollow User</string>
+
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
         <item quantity="other">%d Likes</item>
