@@ -1,5 +1,7 @@
 package com.limor.app.scenes.main_new.fragments
 
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +16,7 @@ import com.limor.app.databinding.FragmentSmallPlayerBinding
 import com.limor.app.extensions.*
 import com.limor.app.scenes.main.viewmodels.PodcastViewModel
 import com.limor.app.scenes.main_new.view_model.ListenPodcastViewModel
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
@@ -78,7 +81,7 @@ class SmallPlayerFragment : BaseFragment() {
     }
 
     private fun initPlayerViews(cast: CastUIModel) {
-        cast.imageLinks?.medium?.let {
+        cast.imageLinks?.large?.let {
             binding.ivAvatarMiniPlayer.loadCircleImage(it)
         }
         binding.tvMiniPlayerTitle.text = cast.title
@@ -102,6 +105,10 @@ class SmallPlayerFragment : BaseFragment() {
             Timber.d("Layout click")
             openExtendedPlayer()
         }
+        if(cast.imageLinks?.large == null){
+            binding.circleImageView2.setColorFilter(Color.parseColor(cast.colorCode))
+        }
+
     }
 
     private fun subscribeToPlayerUpdates(cast: CastUIModel) {
