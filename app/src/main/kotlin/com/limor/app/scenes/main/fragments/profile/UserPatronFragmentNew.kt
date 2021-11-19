@@ -154,7 +154,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
 
     private fun loadCasts() {
         Timber.d("Patron Casts Loading for ${user.id}")
-        viewModel.loadPatronCasts(7877, Constants.CAST_BATCH_SIZE, castOffset)
+        viewModel.loadPatronCasts(user.id, Constants.CAST_BATCH_SIZE, castOffset)
     }
 
     override fun onAttach(context: Context) {
