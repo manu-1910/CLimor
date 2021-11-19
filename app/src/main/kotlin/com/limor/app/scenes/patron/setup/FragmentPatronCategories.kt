@@ -18,11 +18,9 @@ import com.limor.app.scenes.auth_new.data.CategoryWrapper
 import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.main.viewmodels.PublishCategoriesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
-import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.utils.BACKGROUND
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.MAIN
-import com.limor.app.uimodels.CastUIModel
 import com.skydoves.balloon.*
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_patron_categories.*
@@ -42,8 +40,6 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: PublishCategoriesViewModel by activityViewModels { viewModelFactory }
     private val publishViewModel: PublishViewModel by activityViewModels { viewModelFactory }
-
-    private val isEditFlow: Boolean by lazy { requireArguments().getBoolean(EDIT_FLOW, false) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -140,27 +136,17 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
 
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
-            if (isEditFlow) {
-                findNavController().navigateUp()
-            } else {
-                //update categories
-                lifecycleScope.launch {
-                    switchCommonVisibility(true)
-                    publishViewModel.addPatronCategories().collect {
-                        if (isEditFlow) {
-                            findNavController().navigateUp()
-                        } else {
-                            findNavController().navigate(R.id.action_fragmentPatronCategories_to_fragmentPatronLanguages)
-                        }
-                    }
+            //update categories
+            lifecycleScope.launch {
+                switchCommonVisibility(true)
+                publishViewModel.addPatronCategories().collect {
+                    findNavController().navigate(R.id.action_fragmentPatronCategories_to_fragmentPatronLanguages)
                 }
             }
 
         }
-        val balloon = CommonsKt.createPopupBalloon(
-            requireContext(),
-            "You can only select 5 categories. if you talk about sport, Select `Sport`"
-        )
+        val balloon = CommonsKt.createPopupBalloon(requireContext(),
+            "You can only select 5 categories. if you talk about sport, Select `Sport`")
         btnCategoriesInfo.setOnClickListener {
             balloon.showAlignBottom(it)
             if (!balloon.isShowing) {
@@ -171,16 +157,9 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
         }
 
         topAppBar.setNavigationOnClickListener {
-            if (isEditFlow) {
-                findNavController().navigateUp()
-            } else {
-                activity?.finish()
-            }
+            activity?.finish()
         }
     }
 
-    companion object {
-        const val EDIT_FLOW = "EDIT_FLOW"
-    }
 
 }
