@@ -187,6 +187,23 @@ fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
         maturedContent = false, patronCast = false, previewDuration = 0.0, priceId = "1", startsAt = 0.0, endsAt = 0.0
     )
 
+fun GetPatronPodcastsQuery.GetPatronCast.mapToUIModel() =
+    CastUIModel(
+        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
+        imageLinks = images?.mapToUIModel(), caption = caption!!,
+        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
+        updatedAt = updated_at?.toLocalDateTime(),
+        latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked, isShared = false,
+        isReported = reported, isRecasted = recasted, isListened = listened,
+        isBookmarked = bookmarked, listensCount = number_of_listens,
+        likesCount = number_of_likes, recastsCount = number_of_recasts,
+        commentsCount = number_of_comments, sharesCount = number_of_shares,
+        audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
+        tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
+        links = links?.mapToUIModel(), recaster = null,
+        maturedContent = false, patronCast = false, previewDuration = 0.0, priceId = "1", startsAt = 0.0, endsAt = 0.0
+    )
+
 fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
     CastUIModel(
         id = podcast!!.id!!, owner = podcast.owner?.mapToUIModel(), title = podcast.title,
