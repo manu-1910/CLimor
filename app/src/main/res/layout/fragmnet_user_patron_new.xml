@@ -190,6 +190,16 @@
                     android:background="@color/notification_divider"
                     app:layout_constraintTop_toBottomOf="@id/mangePatronTV" />
 
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/casts_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/patronDivider" />
+
                 <androidx.constraintlayout.widget.Group
                     android:id="@+id/managePatronStateLayout"
                     android:layout_width="wrap_content"
