@@ -201,7 +201,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                                 "COMPLETED" -> {
                                     //Show Limor Patron
                                     setupViewPager(ArrayList())
-                                    binding.audioPlayerView.visibility = View.GONE
+                                    binding.audioPlayerView.visibility = View.VISIBLE
                                     binding.termsCheckBox.isChecked = false
                                     binding.patronButton.text =
                                         getString(R.string.limorPatronSetupWallet)
