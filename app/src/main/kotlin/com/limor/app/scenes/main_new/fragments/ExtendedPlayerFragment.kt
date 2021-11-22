@@ -2,7 +2,6 @@ package com.limor.app.scenes.main_new.fragments
 
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -388,7 +387,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
             binding.ivPodcastBackground.loadImage(it)
         }
         //Handling the color background for podcast
-        CommonsKt.handleColorFeed(cast,colorFeedText,requireContext())
+        CommonsKt.handleColorFeed(cast, colorFeedText, requireContext())
     }
 
     private fun setViewsVisibility() {
