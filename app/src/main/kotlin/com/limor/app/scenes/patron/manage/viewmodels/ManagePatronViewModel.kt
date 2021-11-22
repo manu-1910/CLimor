@@ -4,24 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.limor.app.apollo.GeneralInfoRepository
-import com.limor.app.common.Constants
-import com.limor.app.scenes.auth_new.model.UserInfoProvider
-import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchFragment
-import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchViewModel
-import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.PatronCategoryUIModel
 import com.limor.app.uimodels.UserUIModel
+import com.limor.app.usecases.CategoriesUseCase
 import com.limor.app.usecases.SearchUsersUseCase
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.callbackFlow
 import timber.log.Timber
 import javax.inject.Inject
 
 class ManagePatronViewModel @Inject constructor(
-    val searchUsersUseCase: SearchUsersUseCase,
-    val generalInfoRepository: GeneralInfoRepository,
-    val userInfoProvider: UserInfoProvider
+    private val searchUsersUseCase: SearchUsersUseCase,
+    private val categoriesUseCase: CategoriesUseCase
 ) : ViewModel() {
 
     private val buyers = mutableListOf<String>(
@@ -62,6 +56,8 @@ class ManagePatronViewModel @Inject constructor(
         "changed"
     )
 
+    var categorySelectedIdsList: ArrayList<Int> = arrayListOf()
+
     private val _buyersData = MutableLiveData<List<String>>()
     val buyersData: LiveData<List<String>> get() = _buyersData
 
@@ -73,6 +69,12 @@ class ManagePatronViewModel @Inject constructor(
 
     private val _searchResult = MutableLiveData<List<UserUIModel>>()
     val searchResult: LiveData<List<UserUIModel>> = _searchResult
+
+    private val _patronCategories = MutableLiveData<List<PatronCategoryUIModel?>>()
+    val patronCategories: LiveData<List<PatronCategoryUIModel?>> = _patronCategories
+
+    private val _categoryUpdateResult = MutableLiveData<Boolean>()
+    val categoryUpdateResult: LiveData<Boolean> = _categoryUpdateResult
 
     private var searchJob: Job? = null
 
@@ -113,6 +115,34 @@ class ManagePatronViewModel @Inject constructor(
             searchUsersUseCase.execute(searchQuery)
                 .onSuccess { _searchResult.value = it }
                 .onFailure { Timber.e(it, "Error while searching for users") }
+        }
+    }
+
+    fun loadPatronCategories() {
+        viewModelScope.launch {
+            categoriesUseCase.executeDownloadCategories()
+                .onSuccess {
+                    _patronCategories.value = it
+                }
+                .onFailure { Timber.e(it, "Error while searching for categories") }
+        }
+    }
+
+    fun clearCategories(){
+        _patronCategories.value = ArrayList()
+    }
+
+    fun updatePatronCategories()/* = callbackFlow<String?>*/{
+        viewModelScope.launch {
+            categoriesUseCase.executeAddPatronCategories(categorySelectedIdsList)
+                .onSuccess {
+                    _categoryUpdateResult.value = true
+                    delay(1000)
+                    _categoryUpdateResult.value = false
+                }
+                .onFailure {
+                    _categoryUpdateResult.value = false
+                }
         }
     }
 

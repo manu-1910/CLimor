@@ -2,56 +2,37 @@ package com.limor.app.scenes.patron.setup
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.chip.Chip
+import com.limor.app.FragmentCategoriesSelectionBase
 import com.limor.app.R
 import com.limor.app.di.Injectable
-import com.limor.app.scenes.auth_new.data.CategoryWrapper
-import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
+import com.limor.app.scenes.auth_new.data.transform
 import com.limor.app.scenes.main.viewmodels.PublishCategoriesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
-import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
-import com.limor.app.scenes.utils.BACKGROUND
 import com.limor.app.scenes.utils.CommonsKt
-import com.limor.app.scenes.utils.MAIN
-import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.PatronCategoryUIModel
 import com.skydoves.balloon.*
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_patron_categories.*
 import kotlinx.android.synthetic.main.fragment_publish_categories.*
 import kotlinx.android.synthetic.main.fragment_publish_categories.btnContinue
-import kotlinx.android.synthetic.main.fragment_publish_categories.cgCategories
 import kotlinx.android.synthetic.main.fragment_publish_categories.topAppBar
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import org.jetbrains.anko.design.snackbar
-import timber.log.Timber
 import javax.inject.Inject
 
-class FragmentPatronCategories : FragmentWithLoading(), Injectable {
+class FragmentPatronCategories : FragmentCategoriesSelectionBase(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: PublishCategoriesViewModel by activityViewModels { viewModelFactory }
     private val publishViewModel: PublishViewModel by activityViewModels { viewModelFactory }
-
-    private val isEditFlow: Boolean by lazy { requireArguments().getBoolean(EDIT_FLOW, false) }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_patron_categories, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -65,8 +46,13 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
 
     override fun load() = model.downloadCategories()
 
-    var lastCheckedId = View.NO_ID
-    var lastCheckedIds = hashSetOf<Int>()
+    override fun updateCategoriesSelection(id: Int, add: Boolean) {
+        if(add){
+            publishViewModel.categorySelectedIdsList.add(id)
+        } else{
+            publishViewModel.categorySelectedIdsList.remove(id)
+        }
+    }
 
     override val errorLiveData: LiveData<String>
         get() = model.categoryLiveDataError
@@ -77,7 +63,11 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
             if (it.isEmpty())
                 return@Observer
             switchCommonVisibility()
-            createCategoriesArray(it)
+            val list = mutableListOf<PatronCategoryUIModel>()
+            it.forEach {
+                 categoryWrapper -> list.add(categoryWrapper.transform())
+            }
+            createCategoriesArray(list)
         })
 
         model.categorySelectionDone.observe(viewLifecycleOwner, Observer {
@@ -85,7 +75,7 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
         })
     }
 
-    private fun createCategoriesArray(categories: List<CategoryWrapper>) {
+    /*private fun createCategoriesArray(categories: List<CategoryWrapper>) {
         cgCategories.isSingleSelection = false
         if (categories.isNotEmpty()) cgCategories.removeAllViews()
         BACKGROUND({
@@ -100,9 +90,9 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
                 }
             }
         })
-    }
+    }*/
 
-    private fun getVariantChip(category: CategoryWrapper): Chip {
+    /*private fun getVariantChip(category: CategoryWrapper): Chip {
         val chip = layoutInflater.inflate(R.layout.item_chip_category, null) as Chip
         chip.text = category.name
         MAIN {
@@ -136,23 +126,15 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
             btnContinue.isEnabled = ids.isNotEmpty()
         }
         return chip
-    }
+    }*/
 
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
-            if (isEditFlow) {
-                findNavController().navigateUp()
-            } else {
-                //update categories
-                lifecycleScope.launch {
-                    switchCommonVisibility(true)
-                    publishViewModel.addPatronCategories().collect {
-                        if (isEditFlow) {
-                            findNavController().navigateUp()
-                        } else {
-                            findNavController().navigate(R.id.action_fragmentPatronCategories_to_fragmentPatronLanguages)
-                        }
-                    }
+            //update categories
+            lifecycleScope.launch {
+                switchCommonVisibility(true)
+                publishViewModel.addPatronCategories().collect {
+                    findNavController().navigate(R.id.action_fragmentPatronCategories_to_fragmentPatronLanguages)
                 }
             }
 
@@ -171,16 +153,8 @@ class FragmentPatronCategories : FragmentWithLoading(), Injectable {
         }
 
         topAppBar.setNavigationOnClickListener {
-            if (isEditFlow) {
-                findNavController().navigateUp()
-            } else {
-                activity?.finish()
-            }
+            activity?.finish()
         }
-    }
-
-    companion object {
-        const val EDIT_FLOW = "EDIT_FLOW"
     }
 
 }

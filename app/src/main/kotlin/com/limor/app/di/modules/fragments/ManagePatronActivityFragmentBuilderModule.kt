@@ -30,4 +30,7 @@ abstract class ManagePatronActivityFragmentBuilderModule {
     @ContributesAndroidInjector
     abstract fun contributeFragmentInviteFriends(): FragmentInviteFriends
 
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentUpdatePatronCaregories(): FragmentUpdatePatronCategories
+
 }

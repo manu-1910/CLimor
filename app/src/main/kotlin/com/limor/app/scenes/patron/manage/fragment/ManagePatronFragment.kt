@@ -44,7 +44,7 @@ class ManagePatronFragment : BaseFragment() {
 
     private fun setListeners() {
         binding.toolbar.btnBack.setOnClickListener {
-            requireActivity().finish()
+            findNavController().navigateUp()
         }
         binding.invitationsLayout.setOnClickListener {
             findNavController().navigate(R.id.action_manage_patron_fragment_to_fragment_invite_friends)
@@ -53,11 +53,8 @@ class ManagePatronFragment : BaseFragment() {
             findNavController().navigate(R.id.action_manage_patron_fragment_to_dialog_change_price)
         }
         binding.catagoriesLayout.setOnClickListener {
-            val args = Bundle()
-            args.putBoolean(FragmentPatronCategories.EDIT_FLOW, true)
             findNavController().navigate(
-                R.id.action_manage_patron_fragment_to_fragment_patron_categories,
-                args
+                R.id.action_manage_patron_fragment_to_fragment_patron_categories
             )
         }
         binding.earningsLayout.setOnClickListener {

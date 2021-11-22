@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
 import com.limor.app.extensions.isOnline
@@ -208,7 +209,8 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                                     binding.checkLayout.visibility = View.INVISIBLE
 
                                     binding.managePatron.setOnClickListener {
-                                        startActivity(Intent(requireActivity(), ManagePatronActivity::class.java))
+                                        findNavController().navigate(R.id.action_navigateProfileFragment_to_managePatronFragment)
+                                        //startActivity(Intent(requireActivity(), ManagePatronActivity::class.java))
                                     }
                                 }
                                 else -> {

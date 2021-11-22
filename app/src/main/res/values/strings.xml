@@ -759,5 +759,6 @@
     <string name="invite">Invite</string>
     <string name="invite_people">Invite %d People</string>
     <string name="joined">Joined</string>
+    <string name="update_patron_categories">Update Patron Categories</string>
 
 </resources>

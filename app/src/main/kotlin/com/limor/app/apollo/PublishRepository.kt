@@ -5,9 +5,9 @@ import com.apollographql.apollo.api.Input
 import com.limor.app.*
 import com.limor.app.type.CreatePodcastInput
 import timber.log.Timber
-import java.lang.Exception
 import java.util.ArrayList
 import javax.inject.Inject
+import kotlin.Exception
 
 class PublishRepository @Inject constructor(val apollo: Apollo) {
 
@@ -64,6 +64,11 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
         }catch (e: Exception){
             null
         }
+    }
+
+    suspend fun getPatronCategories(): List<PatronCategoriesQuery.GetPatronCategory?>{
+        val query = PatronCategoriesQuery()
+        return apollo.launchQuery(query)?.data?.getPatronCategories ?: emptyList()
     }
 
     suspend fun getPlans(): List<GetPlansQuery.Plan?>? {

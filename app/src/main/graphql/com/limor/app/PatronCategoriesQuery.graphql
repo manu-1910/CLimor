@@ -1,0 +1,9 @@
+query PatronCategoriesQuery {
+    getPatronCategories{
+        id,
+        slug,
+        name,
+        priority,
+        selected
+    }
+}
