@@ -28,6 +28,7 @@ import androidx.viewbinding.ViewBinding
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
+import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
@@ -417,8 +418,8 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                                     binding.checkLayout.visibility = View.INVISIBLE
 
                                     binding.managePatron.setOnClickListener {
-                                        startActivity(Intent(requireActivity(),
-                                            ManagePatronActivity::class.java))
+                                        findNavController().navigate(R.id.action_navigateProfileFragment_to_managePatronFragment)
+                                        //startActivity(Intent(requireActivity(), ManagePatronActivity::class.java))
                                     }
                                 }
                                 else -> {

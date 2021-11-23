@@ -18,6 +18,7 @@ import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.patron.manage.adapters.CastBuyersAdapter
 import com.limor.app.scenes.patron.manage.adapters.CastEarningsAdapter
 import com.limor.app.scenes.patron.manage.viewmodels.ManagePatronViewModel
+import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.uimodels.CastUIModel
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import javax.inject.Inject
@@ -66,7 +67,7 @@ class FragmentCastEarnings : Fragment(), Injectable {
             findNavController().navigateUp()
         }
         binding.castPlayButton.setOnClickListener {
-
+            openPlayer(17112)
         }
     }
 
@@ -112,6 +113,15 @@ class FragmentCastEarnings : Fragment(), Injectable {
             isLoading = false
         }
         binding.castBuyersRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+    }
+
+    private fun openPlayer(/*cast: CastUIModel*/id: Int) {
+        (activity as? PlayerViewManager)?.showPlayer(
+            PlayerViewManager.PlayerArgs(
+                PlayerViewManager.PlayerType.EXTENDED,
+                id
+            )
+        )
     }
 
 }

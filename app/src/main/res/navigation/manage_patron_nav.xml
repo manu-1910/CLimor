@@ -70,7 +70,7 @@
 
     <fragment
         android:id="@+id/fragment_patron_categories"
-        android:name="com.limor.app.scenes.patron.setup.FragmentPatronCategories"
+        android:name="com.limor.app.scenes.patron.manage.fragment.FragmentUpdatePatronCategories"
         android:label="FragmentPatronCategories"
         tools:layout="@layout/fragment_patron_categories">
     </fragment>

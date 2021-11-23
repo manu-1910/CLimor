@@ -14,6 +14,8 @@ import com.limor.app.scenes.main_new.fragments.*
 import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.fragments.comments.FragmentCommentReplies
 import com.limor.app.scenes.notifications.Notification
+import com.limor.app.scenes.patron.manage.fragment.*
+import com.limor.app.scenes.patron.setup.FragmentPatronCategories
 import com.limor.app.scenes.profile.DialogCommentMoreActions
 import com.limor.app.scenes.profile.DialogUserReport
 import dagger.Module
@@ -81,6 +83,30 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeCommentActionsActionsFragmentInjector(): DialogCommentMoreActions
+
+    @ContributesAndroidInjector
+    abstract fun contributeManagePatronFragmentInjector(): ManagePatronFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentPatronCategories(): FragmentPatronCategories
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentCastEarnings(): FragmentCastEarnings
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentFragmentMyEarnings(): FragmentMyEarnings
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentChangePrice(): FragmentChangePrice
+
+    @ContributesAndroidInjector
+    abstract fun contributeDialogConfirmationChangePrice(): DialogConfirmationChangePrice
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentInviteFriends(): FragmentInviteFriends
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentUpdatePatronCaregories(): FragmentUpdatePatronCategories
 
 }
 
