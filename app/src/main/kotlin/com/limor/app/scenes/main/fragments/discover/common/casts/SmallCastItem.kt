@@ -43,6 +43,13 @@ class SmallCastItem(
                 castDuration.text = CommonsKt.getFeedDuration(cast.audio.duration)
             }
             Timber.d("${cast.title}  ${cast.imageLinks?.medium}")
+            if(cast.imageLinks?.medium!=null){
+                Glide.with(root)
+                    .load(cast.imageLinks.medium)
+                    .into(castImage)
+            }else{
+                castImage.setBackgroundColor(Color.parseColor(cast.colorCode))
+            }
             Glide.with(root)
                 .load(cast.owner?.getAvatarUrl())
                 .signature(ObjectKey(cast.owner?.getAvatarUrl() ?: ""))
