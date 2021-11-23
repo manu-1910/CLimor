@@ -12,7 +12,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.limor.app.R
@@ -98,11 +97,12 @@ class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
             }
         }
         topAppBar.setNavigationOnClickListener {
-            if (activity?.intent?.getStringExtra("page") != null) {
+            /*if (activity?.intent?.getStringExtra("page") != null) {
                 activity?.finish()
             } else {
                 it.findNavController().popBackStack()
-            }
+            }*/
+            activity?.finish()
 
         }
 

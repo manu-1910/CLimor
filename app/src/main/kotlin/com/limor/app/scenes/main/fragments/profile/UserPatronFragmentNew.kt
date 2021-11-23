@@ -214,7 +214,8 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                                 else -> {
                                     setupViewPager(getApprovedStateItems())
                                     binding.patronButton.text = getString(R.string.limorPatronSetup)
-                                    binding.patronButton.isEnabled = true
+                                    binding.checkLayout.visibility = View.VISIBLE
+                                    binding.patronButton.isEnabled = false
                                 }
 
                             }
@@ -338,7 +339,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                 //Go to Categories
                 val intent = Intent(requireContext(), PatronSetupActivity::class.java)
                 intent.putExtra("user", user)
-                //intent.putExtra("page", "categories")
+                intent.putExtra("page", "categories")
                 startActivity(intent)
 
             }

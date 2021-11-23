@@ -81,11 +81,11 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         Timber.d("PURCHASE ${purchase.packageName}")
         model.consumePurchasedSub(purchase).collect {
             if (it == "Success") {
-                lifecycleScope.launch(Dispatchers.Main){
+                lifecycleScope.launch(Dispatchers.Main) {
                     binding.progressBar.visibility = View.GONE
                     findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
                 }
-            }else{
+            } else {
                 hideProgressBar()
             }
         }
@@ -107,7 +107,6 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
             }
 
         }*/
-
 
 
     }
@@ -158,6 +157,10 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
 
         binding.termsTV.setOnClickListener { binding.termsCheckBox.performClick() }
         binding.ukAccountText.setOnClickListener { binding.accCheckBox.performClick() }
+
+        binding.backButton.setOnClickListener {
+            activity?.onBackPressed()
+        }
     }
 
     private fun startConnectingToClient() {
@@ -233,23 +236,23 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
 
     private fun getAdapterItems(): ArrayList<FragmentShortItemSlider> {
         val item1 = FragmentShortItemSlider.newInstance(R.string.patron_carousel_slide_1_title,
-            R.drawable.patron_carousel_slide_1_image,R.string.patron_carousel_slide_1_sub_title)
+            R.drawable.patron_carousel_slide_1_image, R.string.patron_carousel_slide_1_sub_title)
         val item2 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,
             R.drawable.patron_carousel_slide_2_image, R.string.patron_carousel_slide_2_sub_title)
         val item3 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,
-            R.drawable.patron_carousel_slide_3_image,R.string.patron_carousel_slide_3_sub_title)
+            R.drawable.patron_carousel_slide_3_image, R.string.patron_carousel_slide_3_sub_title)
         return arrayListOf(item1, item2, item3)
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onUserClicked(item: SkuDetails, position: Int) {
 
-     //   if (item.freeTrialPeriod.isNotEmpty()) {
-            selectedSku = item
-            adapter.selectedSku = item.sku
-            adapter.notifyDataSetChanged()
-            onSelectedSkuChange(item)
-      //  }
+        //   if (item.freeTrialPeriod.isNotEmpty()) {
+        selectedSku = item
+        adapter.selectedSku = item.sku
+        adapter.notifyDataSetChanged()
+        onSelectedSkuChange(item)
+        //  }
 
     }
 
@@ -257,18 +260,18 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         selectedSku = item
         //TODO How to check if only free trial is selectable
         //if (item.freeTrialPeriod.isNotEmpty()) {
-            val termsEnd =
-                getString(R.string.plans_terms_start) + getString(R.string.plans_terms_text)
-            val termsT: Spanned = HtmlCompat.fromHtml(
-                "After free trial ends ${item.originalPrice}. \n" +termsEnd,
-                    HtmlCompat.FROM_HTML_MODE_LEGACY)
-            binding.termsTV.text = termsT
-            binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
-            val bankText: Spanned = HtmlCompat.fromHtml(getString(R.string.patron_uk_account_learn_more),
+        val termsEnd = getString(R.string.plans_terms_text)
+        val termsT: Spanned = HtmlCompat.fromHtml(
+            "${getString(R.string.after_free_trial)} ${item.originalPrice}" + termsEnd,
+            HtmlCompat.FROM_HTML_MODE_LEGACY)
+        binding.termsTV.text = termsT
+        binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
+        val bankText: Spanned =
+            HtmlCompat.fromHtml(getString(R.string.patron_uk_account_learn_more),
                 HtmlCompat.FROM_HTML_MODE_LEGACY)
-            binding.ukAccountText.text = bankText
-            binding.ukAccountText.movementMethod = LinkMovementMethod.getInstance()
-       // }
+        binding.ukAccountText.text = bankText
+        binding.ukAccountText.movementMethod = LinkMovementMethod.getInstance()
+        // }
 
     }
 

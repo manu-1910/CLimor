@@ -676,7 +676,7 @@
     <string name="requested">Requested</string>
     <string name="dummy_plan_text">Choose the best plan that works for you</string>
     <string name="limor_patron_empty_state">Record your first Limor Patron cast and start earning money from your voice</string>
-    <string name="plans_terms_text"><![CDATA[ <html> <a href="http://google.com"> <b>Terms and Conditions</b> </a> </html]]></string>
+    <string name="plans_terms_text"><![CDATA[ <html>. <br>Please visit our <a href="http://google.com"> <font color="black"><strong>Terms and Conditions</strong></font> </a> </html]]></string>
     <string name="limor_patron_complete">Your Limor Patron onboarding is complete</string>
     <string name="limor_patron_manage_description">In order to begin receiving payment via your Limor Patron account please set up your digital wallet</string>
     <string name="limor_patron_manage">Manage Limor Patron</string>
@@ -711,11 +711,13 @@
     <string name="requesting">Requesting...</string>
     <string name="patron_categories">Patron Categories</string>
     <string name="patron_languages">Patron Languages</string>
-    <string name="plans_terms_start">I confirm that I have read and agree to all of the </string>
+
     <string name="limorPatronSetupWallet">Setup My Digital Wallet</string>
     <string name="text_uk_account">I have an active UK based Bank account</string>
-    <string name="patron_uk_account_learn_more"><![CDATA[I have an active UK based Bank account \n <br><a href=\'https://google.com\'><b>Learn More</b></a>]]></string>
+    <string name="patron_uk_account_learn_more"><![CDATA[I have an active UK based Bank account \n <br><a href=\'https://google.com\'><font color="black"><strong>Learn More</strong></font></a>]]></string>
+
     <string name="spot_secured_title">Spot Secured</string>
     <string name="sport_secured_description">You have secured your spot. You\'re going to have your digital wallet soon</string>
+    <string name="after_free_trial">After free trial ends it will cost</string>
 
 </resources>
