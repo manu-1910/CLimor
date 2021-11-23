@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.limor.app.R
 
-class UserPatronFragmentNew(): Fragment() {
+class UserPatronFragmentNew : Fragment() {
 
     companion object {
         fun newInstance(newUserId: Int) = UserPatronFragmentNew()
@@ -16,23 +16,11 @@ class UserPatronFragmentNew(): Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragmnet_user_patron_new, container, false)
         return rootView
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-    }
-
-
-
-
-
-
-
 
 
 }

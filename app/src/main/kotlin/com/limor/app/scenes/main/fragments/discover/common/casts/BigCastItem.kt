@@ -25,7 +25,7 @@ import java.time.Duration
 class BigCastItem(
     val cast: CastUIModel,
     private val width: Int = -1,
-    private val spanSize: Int = 2
+    private val spanSize: Int = 2,
 ) : BindableItem<ItemDiscoverBigCastBinding>() {
 
     init {
@@ -39,18 +39,19 @@ class BigCastItem(
             }
 
             authorName.text = cast.owner?.username
-            ivVerifiedAvatar.visibility = if(cast.owner?.isVerified == true) View.VISIBLE else View.GONE
+            ivVerifiedAvatar.visibility =
+                if (cast.owner?.isVerified == true) View.VISIBLE else View.GONE
             dateLocation.text = cast.getCreationDateAndPlace(root.context, true)
             castName.text = cast.title
             cast.audio?.duration?.let {
                 castDuration.text = CommonsKt.getFeedDuration(cast.audio.duration)
             }
 
-            if(cast.imageLinks?.medium!=null){
+            if (cast.imageLinks?.medium != null) {
                 Glide.with(root)
                     .load(cast.imageLinks.medium)
                     .into(castImage)
-            }else{
+            } else {
                 castImage.setBackgroundColor(Color.parseColor(cast.colorCode))
             }
 
@@ -82,7 +83,7 @@ class BigCastItem(
     private fun openUserProfile(viewBinding: ItemDiscoverBigCastBinding) {
         val userProfileIntent = Intent(viewBinding.root.context, UserProfileActivity::class.java)
         userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, cast.owner?.username)
-        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY,cast.owner?.id)
+        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, cast.owner?.id)
         viewBinding.root.context.startActivity(userProfileIntent)
     }
 

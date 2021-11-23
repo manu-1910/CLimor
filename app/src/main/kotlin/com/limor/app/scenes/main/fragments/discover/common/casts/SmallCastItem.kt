@@ -8,7 +8,6 @@ import com.bumptech.glide.signature.ObjectKey
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverSmallCastBinding
 import com.limor.app.extensions.getActivity
-import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.utils.CommonsKt
@@ -22,7 +21,7 @@ import java.time.Duration
 
 class SmallCastItem(
     val cast: CastUIModel,
-    private val spanSize: Int = 1
+    private val spanSize: Int = 1,
 ) : BindableItem<ItemDiscoverSmallCastBinding>() {
 
     init {
@@ -34,20 +33,23 @@ class SmallCastItem(
         viewBinding.apply {
             authorName.text = cast.owner?.username
             castName.text = cast.title
-            if(cast.owner?.isVerified == true){
-                authorName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_verified_badge, 0)
-            } else{
+            if (cast.owner?.isVerified == true) {
+                authorName.setCompoundDrawablesWithIntrinsicBounds(0,
+                    0,
+                    R.drawable.ic_verified_badge,
+                    0)
+            } else {
                 authorName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
             }
             cast.audio?.duration?.let {
                 castDuration.text = CommonsKt.getFeedDuration(cast.audio.duration)
             }
             Timber.d("${cast.title}  ${cast.imageLinks?.medium}")
-            if(cast.imageLinks?.medium!=null){
+            if (cast.imageLinks?.medium != null) {
                 Glide.with(root)
                     .load(cast.imageLinks.medium)
                     .into(castImage)
-            }else{
+            } else {
                 castImage.setBackgroundColor(Color.parseColor(cast.colorCode))
             }
             Glide.with(root)

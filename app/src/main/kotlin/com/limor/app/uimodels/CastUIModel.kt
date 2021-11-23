@@ -51,13 +51,13 @@ data class CastUIModel(
      * X days ago - Berlin
      * Today - Berlin
      */
-    fun getCreationDateAndPlace(context: Context, activePodcast: Boolean): String{
+    fun getCreationDateAndPlace(context: Context, activePodcast: Boolean): String {
         var location = address
-        if(location.isNullOrEmpty()){
+        if (location.isNullOrEmpty()) {
             location = getLocation(context)
         }
         return "${
-            if(activePodcast) {
+            if (activePodcast) {
                 podcastCreatedAt?.let {
                     DateUiUtil.getTimeAgoText(
                         podcastCreatedAt,
@@ -72,11 +72,11 @@ data class CastUIModel(
                     )
                 }
             }
-        } ${if(!activePodcast || location.isNullOrEmpty()) "" else " - $location"}"
+        } ${if (!activePodcast || location.isNullOrEmpty()) "" else " - $location"}"
     }
 
-    private fun getLocation(context: Context): String{
-        if(latitude != null && longitude != null){
+    private fun getLocation(context: Context): String {
+        if (latitude != null && longitude != null) {
             val geoCoder = Geocoder(context, Locale.getDefault()) //it is Geocoder
             try {
                 val address: List<Address> = geoCoder.getFromLocation(
@@ -104,114 +104,245 @@ data class CastUIModel(
 
 fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =
     CastUIModel(
-        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
-        imageLinks = images?.mapToUIModel(), caption = caption!!,
-        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
+        id = id!!,
+        owner = owner?.mapToUIModel(),
+        title = title,
+        address = address,
+        recasted = false,
+        imageLinks = images?.mapToUIModel(),
+        caption = caption!!,
+        createdAt = created_at?.toLocalDateTime(),
+        podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
-        latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked,
-        isReported = reported, isRecasted = recasted, isListened = listened, isShared = false,
-        isBookmarked = bookmarked, listensCount = number_of_listens,
-        likesCount = number_of_likes, recastsCount = number_of_recasts,
-        commentsCount = number_of_comments, sharesCount = number_of_shares,
-        audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
-        tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(), recaster = null, colorCode = color_code
+        latitude = latitude?.toFloat(),
+        longitude = longitude?.toFloat(),
+        isLiked = liked,
+        isReported = reported,
+        isRecasted = recasted,
+        isListened = listened,
+        isShared = false,
+        isBookmarked = bookmarked,
+        listensCount = number_of_listens,
+        likesCount = number_of_likes,
+        recastsCount = number_of_recasts,
+        commentsCount = number_of_comments,
+        sharesCount = number_of_shares,
+        audio = audio?.mapToUIModel(),
+        isActive = active,
+        sharingUrl = sharing_url,
+        tags = tags?.caption?.map { it!!.mapToUIModel() },
+        mentions = mentions?.mapToUIModel(),
+        links = links?.mapToUIModel(),
+        recaster = null,
+        colorCode = color_code
     )
 
 fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
     CastUIModel(
-        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
-        imageLinks = images?.mapToUIModel(), caption = caption!!,
-        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
+        id = id!!,
+        owner = owner?.mapToUIModel(),
+        title = title,
+        address = address,
+        recasted = false,
+        imageLinks = images?.mapToUIModel(),
+        caption = caption!!,
+        createdAt = created_at?.toLocalDateTime(),
+        podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
-        latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked,
-        isReported = reported, isRecasted = recasted, isListened = listened, isShared = false,
-        isBookmarked = bookmarked, listensCount = number_of_listens,
-        likesCount = number_of_likes, recastsCount = number_of_recasts,
-        commentsCount = number_of_comments, sharesCount = number_of_shares,
-        audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
-        tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(), recaster = null, colorCode = color_code
+        latitude = latitude?.toFloat(),
+        longitude = longitude?.toFloat(),
+        isLiked = liked,
+        isReported = reported,
+        isRecasted = recasted,
+        isListened = listened,
+        isShared = false,
+        isBookmarked = bookmarked,
+        listensCount = number_of_listens,
+        likesCount = number_of_likes,
+        recastsCount = number_of_recasts,
+        commentsCount = number_of_comments,
+        sharesCount = number_of_shares,
+        audio = audio?.mapToUIModel(),
+        isActive = active,
+        sharingUrl = sharing_url,
+        tags = tags?.caption?.map { it!!.mapToUIModel() },
+        mentions = mentions?.mapToUIModel(),
+        links = links?.mapToUIModel(),
+        recaster = null,
+        colorCode = color_code
     )
 
 fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
     CastUIModel(
-        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
-        imageLinks = images?.mapToUIModel(), caption = caption!!,
-        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
+        id = id!!,
+        owner = owner?.mapToUIModel(),
+        title = title,
+        address = address,
+        recasted = false,
+        imageLinks = images?.mapToUIModel(),
+        caption = caption!!,
+        createdAt = created_at?.toLocalDateTime(),
+        podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
-        latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked,
-        isReported = reported, isRecasted = recasted, isListened = listened, isShared = false,
-        isBookmarked = bookmarked, listensCount = number_of_listens,
-        likesCount = number_of_likes, recastsCount = number_of_recasts,
-        commentsCount = number_of_comments, sharesCount = number_of_shares,
-        audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
-        tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(), recaster = null, colorCode = color_code
+        latitude = latitude?.toFloat(),
+        longitude = longitude?.toFloat(),
+        isLiked = liked,
+        isReported = reported,
+        isRecasted = recasted,
+        isListened = listened,
+        isShared = false,
+        isBookmarked = bookmarked,
+        listensCount = number_of_listens,
+        likesCount = number_of_likes,
+        recastsCount = number_of_recasts,
+        commentsCount = number_of_comments,
+        sharesCount = number_of_shares,
+        audio = audio?.mapToUIModel(),
+        isActive = active,
+        sharingUrl = sharing_url,
+        tags = tags?.caption?.map { it!!.mapToUIModel() },
+        mentions = mentions?.mapToUIModel(),
+        links = links?.mapToUIModel(),
+        recaster = null,
+        colorCode = color_code
     )
 
 fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
     CastUIModel(
-        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
-        imageLinks = images?.mapToUIModel(), caption = caption!!,
-        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
+        id = id!!,
+        owner = owner?.mapToUIModel(),
+        title = title,
+        address = address,
+        recasted = false,
+        imageLinks = images?.mapToUIModel(),
+        caption = caption!!,
+        createdAt = created_at?.toLocalDateTime(),
+        podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
-        latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked,
-        isReported = reported, isRecasted = recasted, isListened = listened, isShared = false,
-        isBookmarked = bookmarked, listensCount = number_of_listens,
-        likesCount = number_of_likes, recastsCount = number_of_recasts,
-        commentsCount = number_of_comments, sharesCount = number_of_shares,
-        audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
-        tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(), recaster = null, colorCode = color_code
+        latitude = latitude?.toFloat(),
+        longitude = longitude?.toFloat(),
+        isLiked = liked,
+        isReported = reported,
+        isRecasted = recasted,
+        isListened = listened,
+        isShared = false,
+        isBookmarked = bookmarked,
+        listensCount = number_of_listens,
+        likesCount = number_of_likes,
+        recastsCount = number_of_recasts,
+        commentsCount = number_of_comments,
+        sharesCount = number_of_shares,
+        audio = audio?.mapToUIModel(),
+        isActive = active,
+        sharingUrl = sharing_url,
+        tags = tags?.caption?.map { it!!.mapToUIModel() },
+        mentions = mentions?.mapToUIModel(),
+        links = links?.mapToUIModel(),
+        recaster = null,
+        colorCode = color_code
     )
 
 fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
     CastUIModel(
-        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
-        imageLinks = images?.mapToUIModel(), caption = caption!!,
-        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
+        id = id!!,
+        owner = owner?.mapToUIModel(),
+        title = title,
+        address = address,
+        recasted = false,
+        imageLinks = images?.mapToUIModel(),
+        caption = caption!!,
+        createdAt = created_at?.toLocalDateTime(),
+        podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
-        latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked, isShared = false,
-        isReported = reported, isRecasted = recasted, isListened = listened,
-        isBookmarked = bookmarked, listensCount = number_of_listens,
-        likesCount = number_of_likes, recastsCount = number_of_recasts,
-        commentsCount = number_of_comments, sharesCount = number_of_shares,
-        audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
-        tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(), recaster = null,colorCode = color_code
+        latitude = latitude?.toFloat(),
+        longitude = longitude?.toFloat(),
+        isLiked = liked,
+        isShared = false,
+        isReported = reported,
+        isRecasted = recasted,
+        isListened = listened,
+        isBookmarked = bookmarked,
+        listensCount = number_of_listens,
+        likesCount = number_of_likes,
+        recastsCount = number_of_recasts,
+        commentsCount = number_of_comments,
+        sharesCount = number_of_shares,
+        audio = audio?.mapToUIModel(),
+        isActive = active,
+        sharingUrl = sharing_url,
+        tags = tags?.caption?.map { it!!.mapToUIModel() },
+        mentions = mentions?.mapToUIModel(),
+        links = links?.mapToUIModel(),
+        recaster = null,
+        colorCode = color_code
     )
 
 fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
     CastUIModel(
-        id = podcast!!.id!!, owner = podcast.owner?.mapToUIModel(), title = podcast.title,
-        address = podcast.address, recasted = recasted, imageLinks = podcast.images?.mapToUIModel(),
-        caption = podcast.caption, createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = podcast.created_at?.toLocalDateTime(),
-        updatedAt = podcast.updated_at?.toLocalDateTime(), latitude = podcast.latitude?.toFloat(),
-        longitude = podcast.longitude?.toFloat(), isLiked = podcast.liked, isShared = false,
-        isReported = podcast.reported, isRecasted = podcast.recasted,
-        isListened = podcast.listened, isBookmarked = podcast.bookmarked,
-        listensCount = podcast.number_of_listens, likesCount = podcast.number_of_likes,
-        recastsCount = podcast.number_of_recasts, commentsCount = podcast.number_of_comments,
-        sharesCount = podcast.number_of_shares, audio = podcast.audio?.mapToUIModel(),
-        isActive = podcast.active, sharingUrl = podcast.sharing_url,
+        id = podcast!!.id!!,
+        owner = podcast.owner?.mapToUIModel(),
+        title = podcast.title,
+        address = podcast.address,
+        recasted = recasted,
+        imageLinks = podcast.images?.mapToUIModel(),
+        caption = podcast.caption,
+        createdAt = created_at?.toLocalDateTime(),
+        podcastCreatedAt = podcast.created_at?.toLocalDateTime(),
+        updatedAt = podcast.updated_at?.toLocalDateTime(),
+        latitude = podcast.latitude?.toFloat(),
+        longitude = podcast.longitude?.toFloat(),
+        isLiked = podcast.liked,
+        isShared = false,
+        isReported = podcast.reported,
+        isRecasted = podcast.recasted,
+        isListened = podcast.listened,
+        isBookmarked = podcast.bookmarked,
+        listensCount = podcast.number_of_listens,
+        likesCount = podcast.number_of_likes,
+        recastsCount = podcast.number_of_recasts,
+        commentsCount = podcast.number_of_comments,
+        sharesCount = podcast.number_of_shares,
+        audio = podcast.audio?.mapToUIModel(),
+        isActive = podcast.active,
+        sharingUrl = podcast.sharing_url,
         tags = podcast.tags?.caption?.map { it!!.mapToUIModel() },
         mentions = podcast.mentions?.mapToUIModel(),
-        links = podcast.links?.mapToUIModel(), recaster = recaster?.mapToUIModel(), colorCode = podcast.color_code
+        links = podcast.links?.mapToUIModel(),
+        recaster = recaster?.mapToUIModel(),
+        colorCode = podcast.color_code
     )
 
 fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
     CastUIModel(
-        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
-        imageLinks = images?.mapToUIModel(), caption = caption!!,
-        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
+        id = id!!,
+        owner = owner?.mapToUIModel(),
+        title = title,
+        address = address,
+        recasted = false,
+        imageLinks = images?.mapToUIModel(),
+        caption = caption!!,
+        createdAt = created_at?.toLocalDateTime(),
+        podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
-        latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked,
-        isReported = reported, isRecasted = recasted, isListened = listened, isShared = false,
-        isBookmarked = bookmarked, listensCount = number_of_listens,
-        likesCount = number_of_likes, recastsCount = number_of_recasts,
-        commentsCount = number_of_comments, sharesCount = number_of_shares,
-        audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
-        tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(), recaster = null, colorCode = color_code
+        latitude = latitude?.toFloat(),
+        longitude = longitude?.toFloat(),
+        isLiked = liked,
+        isReported = reported,
+        isRecasted = recasted,
+        isListened = listened,
+        isShared = false,
+        isBookmarked = bookmarked,
+        listensCount = number_of_listens,
+        likesCount = number_of_likes,
+        recastsCount = number_of_recasts,
+        commentsCount = number_of_comments,
+        sharesCount = number_of_shares,
+        audio = audio?.mapToUIModel(),
+        isActive = active,
+        sharingUrl = sharing_url,
+        tags = tags?.caption?.map { it!!.mapToUIModel() },
+        mentions = mentions?.mapToUIModel(),
+        links = links?.mapToUIModel(),
+        recaster = null,
+        colorCode = color_code
     )
