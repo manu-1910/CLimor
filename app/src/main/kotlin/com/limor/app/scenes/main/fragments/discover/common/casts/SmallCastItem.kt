@@ -1,6 +1,7 @@
 package com.limor.app.scenes.main.fragments.discover.common.casts
 
 import android.content.Intent
+import android.graphics.Color
 import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.signature.ObjectKey
@@ -16,6 +17,7 @@ import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
+import timber.log.Timber
 import java.time.Duration
 
 class SmallCastItem(
@@ -40,11 +42,7 @@ class SmallCastItem(
             cast.audio?.duration?.let {
                 castDuration.text = CommonsKt.getFeedDuration(cast.audio.duration)
             }
-
-            Glide.with(root)
-                .load(cast.imageLinks?.medium)
-                .into(castImage)
-
+            Timber.d("${cast.title}  ${cast.imageLinks?.medium}")
             Glide.with(root)
                 .load(cast.owner?.getAvatarUrl())
                 .signature(ObjectKey(cast.owner?.getAvatarUrl() ?: ""))

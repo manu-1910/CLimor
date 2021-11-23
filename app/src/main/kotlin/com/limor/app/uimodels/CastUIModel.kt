@@ -115,7 +115,7 @@ fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =
         commentsCount = number_of_comments, sharesCount = number_of_shares,
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(), recaster = null
+        links = links?.mapToUIModel(), recaster = null, colorCode = color_code
     )
 
 fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
@@ -131,7 +131,7 @@ fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
         commentsCount = number_of_comments, sharesCount = number_of_shares,
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(), recaster = null
+        links = links?.mapToUIModel(), recaster = null, colorCode = color_code
     )
 
 fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
@@ -147,7 +147,7 @@ fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
         commentsCount = number_of_comments, sharesCount = number_of_shares,
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(), recaster = null
+        links = links?.mapToUIModel(), recaster = null, colorCode = color_code
     )
 
 fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
@@ -163,7 +163,7 @@ fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
         commentsCount = number_of_comments, sharesCount = number_of_shares,
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(), recaster = null
+        links = links?.mapToUIModel(), recaster = null, colorCode = color_code
     )
 
 fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =

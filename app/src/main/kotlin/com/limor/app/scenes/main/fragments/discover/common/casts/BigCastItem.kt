@@ -1,6 +1,7 @@
 package com.limor.app.scenes.main.fragments.discover.common.casts
 
 import android.content.Intent
+import android.graphics.Color
 import android.view.View
 import androidx.core.view.updateLayoutParams
 import com.bumptech.glide.Glide
@@ -45,9 +46,13 @@ class BigCastItem(
                 castDuration.text = CommonsKt.getFeedDuration(cast.audio.duration)
             }
 
-            Glide.with(root)
-                .load(cast.imageLinks?.medium)
-                .into(castImage)
+            if(cast.imageLinks?.medium!=null){
+                Glide.with(root)
+                    .load(cast.imageLinks.medium)
+                    .into(castImage)
+            }else{
+                castImage.setBackgroundColor(Color.parseColor(cast.colorCode))
+            }
 
             Glide.with(root)
                 .load(cast.owner?.getAvatarUrl())

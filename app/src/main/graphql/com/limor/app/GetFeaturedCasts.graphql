@@ -107,5 +107,6 @@ query GetFeaturedCasts($limit: Int!, $offset: Int!) {
                 end_index
             }
         }
+        color_code
     }
 }
