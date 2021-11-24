@@ -362,13 +362,11 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                 binding.indicator.visibility = View.INVISIBLE
                 binding.checkLayout.visibility = View.INVISIBLE
 
-                binding.managePatron.setOnClickListener {
-                    startActivity(Intent(requireActivity(), ManagePatronActivity::class.java))
-                }
-
                 loadCasts()
 
-
+                binding.managePatron.setOnClickListener {
+                    findNavController().navigate(R.id.action_navigateProfileFragment_to_managePatronFragment)
+                }
             } else {
 
                 // audio should be present for all patron invitation statuses
@@ -419,7 +417,6 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
 
                                     binding.managePatron.setOnClickListener {
                                         findNavController().navigate(R.id.action_navigateProfileFragment_to_managePatronFragment)
-                                        //startActivity(Intent(requireActivity(), ManagePatronActivity::class.java))
                                     }
                                 }
                                 else -> {

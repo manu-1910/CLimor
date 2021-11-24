@@ -29,6 +29,8 @@ abstract class FragmentCategoriesSelectionBase : FragmentWithLoading() {
 
     abstract override fun load()
     abstract fun updateCategoriesSelection(id: Int, add: Boolean)
+    abstract fun showError()
+    abstract fun hideError()
     abstract override val errorLiveData: LiveData<String>
 
     var lastCheckedId = View.NO_ID
@@ -79,13 +81,15 @@ abstract class FragmentCategoriesSelectionBase : FragmentWithLoading() {
                 //Get all checked chips in the group
                 if (ids.size > 5) {
                     chip.isChecked = false //force to unchecked the chip
-                    chip.snackbar("You can only select 5 categories")
+                    //chip.snackbar("You can only select 5 categories")
+                    showError()
                 } else {
                     chip.id = category?.id!!
                     lastCheckedIds.add(chip.id)
                     category.id.let {
                         updateCategoriesSelection(it, true)
                     }
+                    hideError()
                 }
             } else {
                 lastCheckedId = View.NO_ID

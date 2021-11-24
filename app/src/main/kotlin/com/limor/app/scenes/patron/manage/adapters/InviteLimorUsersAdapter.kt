@@ -43,8 +43,8 @@ class InviteLimorUsersAdapter(
             onSelected(inviteCount)
         }
         Glide.with(holder.avatar)
-            .load(users[position].imageLinks)
-            .placeholder(R.color.dark_transparent)
+            .load(users[position].imageLinks?.medium)
+            .placeholder(R.drawable.ic_podcast_listening)
             .into(holder.avatar)
     }
 

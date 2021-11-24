@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/sign_in_new_background"
     tools:context=".scenes.patron.manage.fragment.FragmentMyEarnings">
 
@@ -12,206 +12,212 @@
         layout="@layout/toolbar_discover"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true" />
 
-    <LinearLayout
-        android:id="@+id/earnings_layout"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="156dp"
-        android:orientation="horizontal"
-        android:background="@color/sign_in_new_background"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/marginMedium"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
-        android:layout_marginTop="@dimen/marginMedium"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:clipToPadding="false">
-
-        <include
-            android:id="@+id/total_earnings_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            layout="@layout/layout_earnings_breakup"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="@dimen/margin10"/>
-
-        <include
-            android:id="@+id/transaction_fee_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            layout="@layout/layout_earnings_breakup"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="@dimen/margin10"/>
-
-        <include
-            android:id="@+id/current_balance_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            layout="@layout/layout_earnings_breakup"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"/>
-
-    </LinearLayout>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/summary_layout"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/earnings_layout"
-        app:cardCornerRadius="@dimen/marginSmall"
-        android:layout_marginTop="@dimen/marginMedium"
-        android:layout_marginStart="@dimen/marginTwenty"
-        android:layout_marginEnd="@dimen/marginTwenty"
-        android:padding="@dimen/margin10">
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/margin64">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical">
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/earnings_layout"
+                android:layout_width="match_parent"
+                android:layout_height="156dp"
+                android:layout_alignParentTop="true"
+                android:background="@color/sign_in_new_background"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp">
+
+                <include
+                    android:id="@+id/total_earnings_layout"
+                    layout="@layout/layout_earnings_breakup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="@dimen/margin10"
+                    android:layout_weight="1" />
+
+                <include
+                    android:id="@+id/transaction_fee_layout"
+                    layout="@layout/layout_earnings_breakup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="@dimen/margin10"
+                    android:layout_weight="1" />
+
+                <include
+                    android:id="@+id/current_balance_layout"
+                    layout="@layout/layout_earnings_breakup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/withdrawn_indicator"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="@dimen/marginMediumSmall"
-                app:cardBackgroundColor="@color/credit_card_background_color"
-                app:cardCornerRadius="@dimen/cornerRadiusSmall"
-                app:cardElevation="0dp">
+                android:id="@+id/summary_layout"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_below="@id/earnings_layout"
+                android:layout_marginStart="@dimen/marginTwenty"
+                android:layout_marginTop="@dimen/marginMedium"
+                android:layout_marginEnd="@dimen/marginTwenty"
+                android:padding="@dimen/margin10"
+                app:cardCornerRadius="@dimen/marginSmall">
 
-                <ImageView
-                    android:id="@+id/credit_card_image_view"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_earnings"
-                    app:tint="@color/credit_card_color"
-                    android:layout_gravity="center"/>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/withdrawn_indicator"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="@dimen/marginMediumSmall"
+                        app:cardBackgroundColor="@color/credit_card_background_color"
+                        app:cardCornerRadius="@dimen/cornerRadiusSmall"
+                        app:cardElevation="0dp">
+
+                        <ImageView
+                            android:id="@+id/credit_card_image_view"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_earnings"
+                            app:tint="@color/credit_card_color" />
+
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="@dimen/marginSmall"
+                        android:layout_toEndOf="@id/withdrawn_indicator"
+                        android:fontFamily="@font/roboto"
+                        android:text="@string/total_withdrawn"
+                        android:textColor="@color/grayWave"
+                        android:textSize="@dimen/textSize14" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="@dimen/marginMedium"
+                        android:fontFamily="@font/roboto_bold"
+                        android:text="$350"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/textSize20" />
+
+                </RelativeLayout>
 
             </androidx.cardview.widget.CardView>
 
             <TextView
+                android:id="@+id/cast_earnings_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/total_withdrawn"
-                android:textSize="@dimen/textSize14"
-                android:textColor="@color/grayWave"
+                android:layout_below="@id/summary_layout"
+                android:layout_marginStart="@dimen/marginTwenty"
+                android:layout_marginTop="@dimen/margin26"
                 android:fontFamily="@font/roboto"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="@dimen/marginSmall"
-                android:layout_toEndOf="@id/withdrawn_indicator"/>
+                android:text="@string/cast_earnings"
+                android:textColor="@color/grayWave"
+                android:textSize="@dimen/textSize14" />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/etFilter"
+                style="@style/TextInputLayoutOutlineDropdownWithError"
+                android:layout_width="120dp"
+                android:layout_height="@dimen/margin38"
+                android:layout_below="@id/summary_layout"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="@dimen/marginMedium"
+                android:layout_marginEnd="@dimen/margin26"
+                android:background="@color/lightBlueColor"
+                android:visibility="visible"
+                app:boxStrokeColor="@color/lightBlueColor"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
+                app:layout_constraintHorizontal_bias="1.0">
+
+                <AutoCompleteTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:editable="false"
+                    android:inputType="none"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <RelativeLayout
+                android:layout_width="120dp"
+                android:layout_height="@dimen/margin38"
+                android:layout_below="@id/summary_layout"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="@dimen/marginMedium"
+                android:layout_marginEnd="@dimen/marginTwenty"
+                android:background="@color/lightBlueColor"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/selected_filter_text_view"
+                    android:layout_width="80dp"
+                    android:layout_height="16dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="12dp"
+                    android:fontFamily="@font/roboto"
+                    android:text="Last 3 months"
+                    android:textColor="@color/notification_secondary_text"
+                    android:textSize="@dimen/textSizeTiny" />
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="14dp"
+                    android:rotation="270"
+                    android:src="@drawable/arrow_left"
+                    app:tint="@color/notification_secondary_text" />
+
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/cast_earnings_recycler_view"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="$350"
-                android:textSize="@dimen/textSize20"
-                android:textColor="@color/black"
-                android:fontFamily="@font/roboto_bold"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/marginMedium"
-                android:layout_alignParentEnd="true"/>
+                android:layout_below="@id/cast_earnings_text_view"
+                android:layout_marginStart="@dimen/marginTwenty"
+                android:layout_marginTop="@dimen/margin22"
+                android:layout_marginEnd="@dimen/marginMediumSmall"
+                android:orientation="vertical"
+                tools:itemCount="15"
+                tools:listitem="@layout/item_cast_earnings" />
 
         </RelativeLayout>
 
-    </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:id="@+id/cast_earnings_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/cast_earnings"
-        android:textSize="@dimen/textSize14"
-        android:textColor="@color/grayWave"
-        android:fontFamily="@font/roboto"
-        app:layout_constraintTop_toBottomOf="@id/summary_layout"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="@dimen/marginTwenty"
-        android:layout_marginTop="@dimen/margin26"/>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/etFilter"
-        style="@style/TextInputLayoutOutlineDropdownWithError"
-        android:layout_width="120dp"
-        android:layout_height="@dimen/margin38"
-        android:layout_marginStart="24dp"
-        android:visibility="visible"
-        android:layout_marginEnd="@dimen/marginTwenty"
-        android:background="@color/lightBlueColor"
-        app:boxStrokeColor="@color/lightBlueColor"
-        app:boxStrokeWidth="0dp"
-        app:boxStrokeWidthFocused="0dp"
-        app:layout_constraintTop_toBottomOf="@id/summary_layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/cast_earnings_recycler_view"
-        app:layout_constraintStart_toEndOf="@id/cast_earnings_text_view"
-        app:layout_constraintHorizontal_bias="1.0">
-
-        <AutoCompleteTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:editable="false"
-            android:inputType="none"
-            android:layout_gravity="center"
-            android:textColor="@color/black"
-            android:textSize="12sp" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <RelativeLayout
-        android:layout_width="120dp"
-        android:layout_height="@dimen/margin38"
-        android:layout_marginStart="24dp"
-        android:visibility="visible"
-        android:layout_marginEnd="@dimen/marginTwenty"
-        android:background="@color/lightBlueColor"
-        app:layout_constraintTop_toBottomOf="@id/summary_layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/cast_earnings_recycler_view"
-        app:layout_constraintStart_toEndOf="@id/cast_earnings_text_view"
-        app:layout_constraintHorizontal_bias="1.0">
-
-        <TextView
-            android:id="@+id/selected_filter_text_view"
-            android:layout_width="80dp"
-            android:layout_height="16dp"
-            android:text="Last 3 months"
-            android:fontFamily="@font/roboto"
-            android:textColor="@color/notification_secondary_text"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="12dp"
-            android:textSize="@dimen/textSizeTiny"/>
-
-        <ImageView
-            android:layout_width="14dp"
-            android:layout_height="14dp"
-            android:src="@drawable/arrow_left"
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="14dp"
-            android:rotation="270"
-            app:tint="@color/notification_secondary_text"/>
-
-    </RelativeLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/cast_earnings_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:layout_marginStart="@dimen/marginTwenty"
-        android:layout_marginEnd="@dimen/marginMediumSmall"
-        android:layout_marginTop="@dimen/margin22"
-        android:paddingBottom="@dimen/margin22"
-        android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/cast_earnings_text_view"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:itemCount="15"
-        tools:listitem="@layout/item_cast_earnings" />
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -32,7 +32,7 @@ class ContactsListAdapter(
         holder.name.text = contacts[position].contactName
         Glide.with(holder.avatar)
             .load(contacts[position].profilePhoto)
-            .placeholder(R.color.dark_transparent)
+            .placeholder(R.drawable.ic_podcast_listening)
             .into(holder.avatar)
         holder.selector.setImageDrawable(
             if (selectedContacts.find { it.id == contacts[position].id } != null) holder.rootView.context.getDrawable(
@@ -60,6 +60,12 @@ class ContactsListAdapter(
     }
 
     fun setContacts(contactsList: List<ContactUIModel>) {
+        contactsList.onEach {
+            val contact = selectedContacts.filter { uiModel -> it.id == uiModel.id }.firstOrNull()
+            contact?.let { model ->
+                it.checked = model.checked
+            }
+        }
         contacts.clear()
         contacts.addAll(contactsList)
         notifyDataSetChanged()

@@ -66,7 +66,7 @@ class FragmentCastEarnings : Fragment(), Injectable {
         binding.toolbar.btnBack.setOnClickListener {
             findNavController().navigateUp()
         }
-        binding.castPlayButton.setOnClickListener {
+        binding.castDetailsLayout.setOnClickListener {
             openPlayer(17112)
         }
     }
@@ -115,7 +115,7 @@ class FragmentCastEarnings : Fragment(), Injectable {
         binding.castBuyersRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 
-    private fun openPlayer(/*cast: CastUIModel*/id: Int) {
+    private fun openPlayer(id: Int) {
         (activity as? PlayerViewManager)?.showPlayer(
             PlayerViewManager.PlayerArgs(
                 PlayerViewManager.PlayerType.EXTENDED,

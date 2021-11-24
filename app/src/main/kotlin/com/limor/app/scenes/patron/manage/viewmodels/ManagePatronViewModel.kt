@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.limor.app.uimodels.PatronCategoryUIModel
 import com.limor.app.uimodels.UserUIModel
 import com.limor.app.usecases.CategoriesUseCase
+import com.limor.app.usecases.PatronPodcastUseCase
 import com.limor.app.usecases.SearchUsersUseCase
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.callbackFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 class ManagePatronViewModel @Inject constructor(
     private val searchUsersUseCase: SearchUsersUseCase,
-    private val categoriesUseCase: CategoriesUseCase
+    private val categoriesUseCase: CategoriesUseCase,
+    private val patronPodcastUseCase: PatronPodcastUseCase
 ) : ViewModel() {
 
     private val buyers = mutableListOf<String>(
@@ -64,9 +66,6 @@ class ManagePatronViewModel @Inject constructor(
     private val _earningsData = MutableLiveData<List<String>>()
     val earningsData: LiveData<List<String>> get() = _earningsData
 
-    private val _priceChangeResult = MutableLiveData<Boolean>()
-    val priceChangeResult: LiveData<Boolean> get() = _priceChangeResult
-
     private val _searchResult = MutableLiveData<List<UserUIModel>>()
     val searchResult: LiveData<List<UserUIModel>> = _searchResult
 
@@ -75,6 +74,9 @@ class ManagePatronViewModel @Inject constructor(
 
     private val _categoryUpdateResult = MutableLiveData<Boolean>()
     val categoryUpdateResult: LiveData<Boolean> = _categoryUpdateResult
+
+    private val _priceUpdated = MutableLiveData<Boolean>()
+    val priceUpdated: LiveData<Boolean> = _priceUpdated
 
     private var searchJob: Job? = null
 
@@ -97,14 +99,6 @@ class ManagePatronViewModel @Inject constructor(
                     if (offset + limit < buyers.size) offset + limit else buyers.size
                 ).toList()
             )
-        }
-    }
-
-    fun updateCastPrice() {
-        viewModelScope.launch {
-            _priceChangeResult.postValue(true)
-            delay(1000)
-            _priceChangeResult.postValue(false)
         }
     }
 
@@ -132,7 +126,15 @@ class ManagePatronViewModel @Inject constructor(
         _patronCategories.value = ArrayList()
     }
 
-    fun updatePatronCategories()/* = callbackFlow<String?>*/{
+    fun clearUserSearchResults(){
+        _searchResult.value = ArrayList()
+    }
+
+    fun clearBuyers(){
+        _buyersData.value = ArrayList()
+    }
+
+    fun updatePatronCategories(){
         viewModelScope.launch {
             categoriesUseCase.executeAddPatronCategories(categorySelectedIdsList)
                 .onSuccess {
@@ -142,6 +144,20 @@ class ManagePatronViewModel @Inject constructor(
                 }
                 .onFailure {
                     _categoryUpdateResult.value = false
+                }
+        }
+    }
+
+    fun updateAllCastsPrice(priceId: String){
+        viewModelScope.launch {
+            patronPodcastUseCase.executeAllCastsPriceUpdate(priceId)
+                .onSuccess {
+                    _priceUpdated.value = true
+                    delay(1000)
+                    _priceUpdated.value = false
+                }
+                .onFailure {
+                    _priceUpdated.value = false
                 }
         }
     }

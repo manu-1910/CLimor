@@ -47,16 +47,17 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
+        android:id="@+id/categoriesScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="@dimen/marginTwenty"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="@dimen/marginTwenty"
         android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnContinue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2">
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2"
+        app:layout_constraintBottom_toTopOf="@id/errorTV">
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/cgCategories"
@@ -66,7 +67,23 @@
             app:selectionRequired="true"
             app:singleLine="false"
             app:singleSelection="true" />
+
     </ScrollView>
+
+    <TextView
+        android:id="@+id/errorTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="You cannot select more than 5 categories"
+        android:fontFamily="@font/roboto"
+        android:textSize="@dimen/textSize14"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/error_stroke_color"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/categoriesScrollView"
+        android:visibility="invisible"/>
 
     <Button
         android:id="@+id/btnContinue"
@@ -75,15 +92,17 @@
         android:layout_marginStart="@dimen/marginTwenty"
         android:layout_marginEnd="@dimen/marginTwenty"
         android:layout_marginBottom="@dimen/margin48"
+        android:layout_marginTop="@dimen/marginMedium"
         android:background="@drawable/btn_primary_background"
         android:enabled="false"
         android:fontFamily="@font/roboto_bold"
         android:text="@string/continue_button"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/errorTV"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="1.0"/>
 
     <include
         layout="@layout/fragment_new_auth_loading_include"

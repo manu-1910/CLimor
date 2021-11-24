@@ -80,6 +80,7 @@ class FragmentMyEarnings : Fragment(), Injectable {
 
     private fun setClickListeners() {
         binding.toolbar.btnBack.setOnClickListener {
+            model.clearBuyers()
             findNavController().navigateUp()
         }
     }

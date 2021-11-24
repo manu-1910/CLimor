@@ -7,8 +7,10 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -18,6 +20,7 @@ import com.limor.app.di.Injectable
 import com.limor.app.scenes.patron.manage.viewmodels.ManagePatronViewModel
 import kotlinx.android.synthetic.main.fragment_change_price.*
 import javax.inject.Inject
+
 
 class FragmentChangePrice : Fragment(), Injectable {
 
@@ -71,13 +74,18 @@ class FragmentChangePrice : Fragment(), Injectable {
             ArrayAdapter(
                 requireContext(),
                 R.layout.select_dialog_item,
-                listOf("2.99", "3.99", "4.99", "5.99")
+                resources.getStringArray(com.limor.app.R.array.prices_list)
             )
         editText.setAdapter(adapter)
+
+        editText.onItemClickListener =
+            AdapterView.OnItemClickListener { parent, arg1, pos, id ->
+                binding.yesButton.isEnabled = true
+            }
     }
 
     private fun subscribeViewModel() {
-        model.priceChangeResult.observe(viewLifecycleOwner, {
+        model.priceUpdated.observe(viewLifecycleOwner, {
             Handler().postDelayed(Runnable() {
                 if (it == true) {
                     findNavController().navigateUp()
@@ -89,6 +97,7 @@ class FragmentChangePrice : Fragment(), Injectable {
     private fun initialiseViews() {
         binding.toolbar.title.text = getString(com.limor.app.R.string.edit_price_text)
         binding.toolbar.btnNotification.setImageDrawable(resources.getDrawable(R.drawable.ic_menu_info_details))
+        binding.yesButton.isEnabled = false
     }
 
 }

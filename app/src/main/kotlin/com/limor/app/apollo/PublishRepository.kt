@@ -80,4 +80,16 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
         return createPodcastResult?.plans
     }
 
+    suspend fun updatePriceForAllCasts(priceId: String): String{
+        val mutation = UpdatePriceForAllCastsMutation(priceId)
+        val result = apollo.mutate(mutation)
+        return result?.data?.updatePriceForAllCasts?.status ?: ""
+    }
+
+    suspend fun updatePriceForCast(castId: Int, priceId: String): String{
+        val mutation = UpdatePriceForSingleCastMutation(castId, priceId)
+        val result = apollo.mutate(mutation)
+        return result?.data?.updatePriceForSingleCast?.status ?: ""
+    }
+
 }

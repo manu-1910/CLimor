@@ -60,6 +60,7 @@ class DialogConfirmationChangePrice : DialogFragment(), Injectable {
         binding.textDescription.text = resources.getString(R.string.change_price_confirmation_text)
         binding.okButton.text = resources.getString(R.string.continue_button)
         binding.okButton.background = null
+        binding.imageView.setImageDrawable(resources?.getDrawable(R.drawable.ic_change_price))
         binding.cancelButton.text = resources.getString(R.string.cancel)
         binding.cancelButton.visibility = View.VISIBLE
         binding.cancelButton.background =
@@ -71,7 +72,7 @@ class DialogConfirmationChangePrice : DialogFragment(), Injectable {
             this.dismiss()
         }
         binding.okButton.setOnClickListener {
-            model.updateCastPrice()
+            model.updateAllCastsPrice("com.limor.dev.tier_65")
             this.dismiss()
         }
     }

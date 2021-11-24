@@ -58,6 +58,14 @@ class FragmentPatronCategories : FragmentCategoriesSelectionBase(), Injectable {
         }
     }
 
+    override fun showError() {
+        errorTV.visibility = View.VISIBLE
+    }
+
+    override fun hideError() {
+        errorTV.visibility = View.GONE
+    }
+
     override val errorLiveData: LiveData<String>
         get() = model.categoryLiveDataError
 

@@ -760,6 +760,69 @@
     <string name="invite_people">Invite %d People</string>
     <string name="joined">Joined</string>
     <string name="update_patron_categories">Update Patron Categories</string>
+    
+    <string-array name="prices_list">
+        <item>0.99</item>
+        <item>1.99</item>
+        <item>2.99</item>
+        <item>3.99</item>
+        <item>4.99</item>
+        <item>5.99</item>
+        <item>6.99</item>
+        <item>7.99</item>
+        <item>8.99</item>
+        <item>9.99</item>
+        <item>10.99</item>
+        <item>11.99</item>
+        <item>12.99</item>
+        <item>13.99</item>
+        <item>14.99</item>
+        <item>15.99</item>
+        <item>16.99</item>
+        <item>17.99</item>
+        <item>18.99</item>
+        <item>19.99</item>
+        <item>20.99</item>
+        <item>21.99</item>
+        <item>22.99</item>
+        <item>23.99</item>
+        <item>24.99</item>
+        <item>25.99</item>
+        <item>26.99</item>
+        <item>27.99</item>
+        <item>28.99</item>
+        <item>29.99</item>
+        <item>30.99</item>
+        <item>31.99</item>
+        <item>32.99</item>
+        <item>33.99</item>
+        <item>34.99</item>
+        <item>35.99</item>
+        <item>36.99</item>
+        <item>37.99</item>
+        <item>38.99</item>
+        <item>39.99</item>
+        <item>40.99</item>
+        <item>41.99</item>
+        <item>42.99</item>
+        <item>43.99</item>
+        <item>44.99</item>
+        <item>45.99</item>
+        <item>46.99</item>
+        <item>47.99</item>
+        <item>48.99</item>
+        <item>49.99</item>
+        <item>54.99</item>
+        <item>59.99</item>
+        <item>64.99</item>
+        <item>69.99</item>
+        <item>74.99</item>
+        <item>79.99</item>
+        <item>84.99</item>
+        <item>89.99</item>
+        <item>94.99</item>
+        <item>99.99</item>
+    </string-array>
     <string name="category_selection_hint">You can only select 5 categories. if you talk about sport, Select `Sport`</string>
 
 </resources>

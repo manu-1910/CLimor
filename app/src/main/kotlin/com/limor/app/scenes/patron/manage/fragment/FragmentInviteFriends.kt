@@ -98,7 +98,13 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
     }
 
     private fun updateInviteButton(count: Int) {
-        binding.inviteButton.text = resources.getString(R.string.invite_people, count)
+        if (count > 0) {
+            binding.inviteButton.text = resources.getString(R.string.invite_people, count)
+            binding.inviteButton.isEnabled = true
+        } else {
+            binding.inviteButton.text = resources.getString(R.string.invite)
+            binding.inviteButton.isEnabled = false
+        }
     }
 
     private fun updateCountText(count: Int) {
@@ -131,6 +137,9 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
 
     private fun subscribeViewModels() {
         model.searchResult.observe(viewLifecycleOwner, {
+            if(binding.userSearchResultsLayout.visibility == View.GONE){
+                binding.userSearchResultsLayout.visibility = View.VISIBLE
+            }
             limorUsersAdapter?.setUsers(it)
         })
     }
@@ -140,6 +149,7 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
             if (mode == InviteMode.CONTACTS) {
                 showLimorUsers()
             } else {
+                model.clearUserSearchResults()
                 findNavController().navigateUp()
             }
         }
@@ -160,8 +170,16 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
     private fun performSearch(searchItem: String) {
         searchString = searchItem
         when (mode) {
-            InviteMode.CONTACTS -> loaderManager.restartLoader(0, null, this)
-            else -> if (searchString.length > 3) model.search(searchItem)
+            InviteMode.CONTACTS -> {
+                loaderManager.restartLoader(0, null, this)
+            }
+            else -> {
+                if (searchString.length > 3) {
+                    model.search(searchItem)
+                } else{
+                    hideLimorUsersLayout()
+                }
+            }
         }
     }
 
@@ -178,6 +196,17 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
         binding.contactsListLayout.visibility = View.GONE
         binding.userSearchResultsLayout.visibility = View.VISIBLE
         binding.toolbar.btnNotification.visibility = View.VISIBLE
+        performSearch(searchString)
+    }
+
+    private fun hideContactsLayout(){
+        binding.contactsListLayout.visibility = View.GONE
+        contactsAdapter?.setContacts(ArrayList())
+    }
+
+    private fun hideLimorUsersLayout(){
+        binding.userSearchResultsLayout.visibility = View.GONE
+        limorUsersAdapter?.setUsers(ArrayList())
     }
 
     val requestPermissionLauncher =
@@ -226,10 +255,11 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
             data.moveToNext()
         }
         contactsAdapter?.setContacts(result)
+        //binding.contactsListLayout.visibility = View.VISIBLE
     }
 
     override fun onLoaderReset(loader: Loader<Cursor>) {
-        contactsAdapter?.setContacts(ArrayList())
+        hideContactsLayout()
     }
 
     enum class InviteMode {
