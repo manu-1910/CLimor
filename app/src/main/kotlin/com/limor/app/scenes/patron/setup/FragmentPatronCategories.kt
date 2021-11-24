@@ -2,7 +2,9 @@ package com.limor.app.scenes.patron.setup
 
 import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -16,7 +18,6 @@ import com.limor.app.scenes.auth_new.data.transform
 import com.limor.app.scenes.main.viewmodels.PublishCategoriesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.BACKGROUND
-import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.MAIN
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.PatronCategoryUIModel
@@ -36,14 +37,6 @@ class FragmentPatronCategories : FragmentCategoriesSelectionBase(), Injectable {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: PublishCategoriesViewModel by activityViewModels { viewModelFactory }
     private val publishViewModel: PublishViewModel by activityViewModels { viewModelFactory }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_patron_categories, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
