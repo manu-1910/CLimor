@@ -84,7 +84,6 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         model.consumePurchasedSub(purchase).collect {
             if (it == "Success") {
                 lifecycleScope.launch(Dispatchers.Main) {
-                    binding.progressBar.visibility = View.GONE
                     findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
                 }
             } else {
@@ -171,7 +170,7 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
                 Timber.d("Billing Result -> ${billingResult.responseCode}")
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     // The BillingClient is ready. You can query purchases here.
-                    lifecycleScope.launch {
+                    lifecycleScope.launch(Dispatchers.Main) {
                         querySkuDetails()
                     }
                 }
@@ -202,9 +201,8 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
             it?.forEach { sku ->
                 skuList.add(sku!!.productId!!)
             }
-
             val params = SkuDetailsParams.newBuilder()
-            params.setSkusList(skuList).setType(BillingClient.SkuType.SUBS)
+            params.setSkusList(skuList)
             params.setType(BillingClient.SkuType.SUBS)
 
             // leverage querySkuDetails Kotlin extension function

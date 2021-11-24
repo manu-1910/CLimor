@@ -28,14 +28,14 @@ android {
         targetSdkVersion build_versions.target_sdk
 
         applicationId globalConfiguration.androidApplicationId
-        versionCode 90
-        versionName "0.0.90-patron1.1"
+        versionCode 8
+        versionName "0.0.8"
 
         testInstrumentationRunner globalConfiguration.testInstrumentationRunner
         testApplicationId globalConfiguration.testApplicationId
-        ndk{
+        /*ndk{
             abiFilters "arm64-v8a"
-        }
+        }*/
     }
 
     compileOptions {
