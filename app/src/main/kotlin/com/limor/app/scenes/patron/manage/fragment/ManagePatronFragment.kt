@@ -53,6 +53,7 @@ class ManagePatronFragment : BaseFragment() {
             findNavController().navigate(R.id.action_manage_patron_fragment_to_dialog_change_price)
         }
         binding.catagoriesLayout.setOnClickListener {
+
             findNavController().navigate(
                 R.id.action_manage_patron_fragment_to_fragment_patron_categories
             )

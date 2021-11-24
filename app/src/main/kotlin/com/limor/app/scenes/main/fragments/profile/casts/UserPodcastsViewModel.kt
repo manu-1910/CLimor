@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.uimodels.CastUIModel
+import com.limor.app.usecases.GetPatronPodcastsUseCase
 import com.limor.app.usecases.GetPodcastsByUserUseCase
 import com.limor.app.usecases.LikePodcastUseCase
 import kotlinx.coroutines.launch
@@ -13,11 +14,17 @@ import javax.inject.Inject
 
 class UserPodcastsViewModel @Inject constructor(
     private val likePodcastUseCase: LikePodcastUseCase,
-    private val getPodcastsByUserUseCase: GetPodcastsByUserUseCase
+    private val getPodcastsByUserUseCase: GetPodcastsByUserUseCase,
+    private val getPatronPodcastsUseCase: GetPatronPodcastsUseCase
+
+
 ) : ViewModel() {
 
     private val _casts = MutableLiveData<List<CastUIModel>>()
     val casts: LiveData<List<CastUIModel>> get() = _casts
+
+    private val _patronCasts = MutableLiveData<List<CastUIModel>>()
+    val patronCasts: LiveData<List<CastUIModel>> get() = _patronCasts
 
     fun loadCasts(
         userId: Int,
@@ -32,6 +39,25 @@ class UserPodcastsViewModel @Inject constructor(
                 }
                 .onFailure {
                     _casts.value = emptyList()
+                    Timber.e(it, "Error while loading user casts")
+                }
+        }
+    }
+
+    fun loadPatronCasts(
+        userId: Int,
+        limit: Int = Int.MAX_VALUE,
+        offset: Int = 0
+    ) {
+        viewModelScope.launch {
+            Timber.d("patron casts -> $userId $limit $offset")
+            getPatronPodcastsUseCase.execute(userId, limit, offset)
+                .onSuccess {
+                    Timber.d("patron casts -> $it")
+                    _patronCasts.value = it
+                }
+                .onFailure {
+                    _patronCasts.value = emptyList()
                     Timber.e(it, "Error while loading user casts")
                 }
         }

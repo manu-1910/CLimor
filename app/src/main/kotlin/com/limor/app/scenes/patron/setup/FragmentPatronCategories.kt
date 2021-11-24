@@ -2,7 +2,9 @@ package com.limor.app.scenes.patron.setup
 
 import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -15,6 +17,8 @@ import com.limor.app.di.Injectable
 import com.limor.app.scenes.auth_new.data.transform
 import com.limor.app.scenes.main.viewmodels.PublishCategoriesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
+import com.limor.app.scenes.utils.BACKGROUND
+import com.limor.app.scenes.utils.MAIN
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.PatronCategoryUIModel
 import com.skydoves.balloon.*
@@ -75,59 +79,6 @@ class FragmentPatronCategories : FragmentCategoriesSelectionBase(), Injectable {
         })
     }
 
-    /*private fun createCategoriesArray(categories: List<CategoryWrapper>) {
-        cgCategories.isSingleSelection = false
-        if (categories.isNotEmpty()) cgCategories.removeAllViews()
-        BACKGROUND({
-            val categoriesChips =
-                categories.map { category ->
-                    getVariantChip(category)
-                }
-            MAIN {
-                categoriesChips.forEach {
-                    it.id = View.generateViewId()
-                    cgCategories.addView(it)
-                }
-            }
-        })
-    }*/
-
-    /*private fun getVariantChip(category: CategoryWrapper): Chip {
-        val chip = layoutInflater.inflate(R.layout.item_chip_category, null) as Chip
-        chip.text = category.name
-        MAIN {
-            chip.isChecked = lastCheckedIds.contains(chip.id)
-        }
-        Timber.d("Chip -> ${category.categoryId} -- ${category.name}")
-        chip.setOnCheckedChangeListener { buttonView, isChecked ->
-            val ids: List<Int> = cgCategories.checkedChipIds
-            Timber.d("$isChecked")
-            if (isChecked) {
-                category.isSelected = isChecked
-                //Get all checked chips in the group
-                if (ids.size > 5) {
-                    chip.isChecked = false //force to unchecked the chip
-                    chip.snackbar("You can only select 5 categories")
-                } else {
-                    lastCheckedIds.add(chip.id)
-                    category.categoryId?.let {
-                        //publishViewModel.categorySelectedId = it
-                        publishViewModel.categorySelectedIdsList.add(it)
-                    }
-                }
-            } else {
-                lastCheckedId = View.NO_ID
-                lastCheckedIds.remove(chip.id)
-                chip.isChecked = false
-                publishViewModel.categorySelectedIdsList.remove(category.categoryId)
-                category.isSelected = false
-                //model.updateCategoriesSelection()
-            }
-            btnContinue.isEnabled = ids.isNotEmpty()
-        }
-        return chip
-    }*/
-
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
             //update categories
@@ -139,18 +90,7 @@ class FragmentPatronCategories : FragmentCategoriesSelectionBase(), Injectable {
             }
 
         }
-        val balloon = CommonsKt.createPopupBalloon(
-            requireContext(),
-            "You can only select 5 categories. if you talk about sport, Select `Sport`"
-        )
-        btnCategoriesInfo.setOnClickListener {
-            balloon.showAlignBottom(it)
-            if (!balloon.isShowing) {
-                it.showAlignBottom(balloon, 0, 0)
-            } else {
-                balloon.dismiss()
-            }
-        }
+
 
         topAppBar.setNavigationOnClickListener {
             activity?.finish()

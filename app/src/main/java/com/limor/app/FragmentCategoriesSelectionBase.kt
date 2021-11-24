@@ -9,9 +9,14 @@ import androidx.lifecycle.LiveData
 import com.google.android.material.chip.Chip
 import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.utils.BACKGROUND
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.MAIN
 import com.limor.app.uimodels.PatronCategoryUIModel
+import com.skydoves.balloon.showAlignBottom
+import kotlinx.android.synthetic.main.fragment_patron_categories.*
 import kotlinx.android.synthetic.main.fragment_publish_categories.*
+import kotlinx.android.synthetic.main.fragment_publish_categories.btnContinue
+import kotlinx.android.synthetic.main.fragment_publish_categories.cgCategories
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.support.v4.runOnUiThread
 import timber.log.Timber
@@ -35,6 +40,11 @@ abstract class FragmentCategoriesSelectionBase : FragmentWithLoading() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_patron_categories, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setCommonClickListeners()
     }
 
     fun createCategoriesArray(categories: List<PatronCategoryUIModel?>) {
@@ -96,6 +106,19 @@ abstract class FragmentCategoriesSelectionBase : FragmentWithLoading() {
             Log.d("Checked_Checked_chip", chip.id.toString() + "_" + chip.isChecked.toString())
         }
         return chip
+    }
+
+    private fun setCommonClickListeners() {
+        val balloon = CommonsKt.createPopupBalloon(requireContext(),
+            getString(R.string.category_selection_hint))
+        btnCategoriesInfo.setOnClickListener {
+            balloon.showAlignBottom(it)
+            if (!balloon.isShowing) {
+                it.showAlignBottom(balloon, 0, 0)
+            } else {
+                balloon.dismiss()
+            }
+        }
     }
 
 }
