@@ -69,10 +69,12 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
     }
 
     private fun hideProgressBar() {
-        binding.progressBar.visibility = View.GONE
-        binding.checkLayout.visibility = View.VISIBLE
-        binding.continueButton.visibility = View.VISIBLE
-        binding.patronPlansRV.visibility = View.VISIBLE
+        lifecycleScope.launch(Dispatchers.Main) {
+            binding.progressBar.visibility = View.GONE
+            binding.checkLayout.visibility = View.VISIBLE
+            binding.continueButton.visibility = View.VISIBLE
+            binding.patronPlansRV.visibility = View.VISIBLE
+        }
     }
 
     private suspend fun handlePurchase(purchase: Purchase) {
