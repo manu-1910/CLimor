@@ -13,6 +13,7 @@ import io.square1.limor.remote.services.RemoteServiceConfig
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.properties.Properties
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import javax.inject.Inject
 

@@ -1,33 +1,26 @@
 package com.limor.app.scenes.notifications
 
 import android.content.Context
-import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.limor.app.App
 import com.limor.app.R
-import com.limor.app.scenes.utils.Commons
-import com.limor.app.scenes.utils.DateUiUtil
 import com.limor.app.scenes.utils.DateUiUtil.getTimeElapsedFromDateString
 import com.limor.app.uimodels.NotiUIMode
 import de.hdodenhof.circleimageview.CircleImageView
-import io.opencensus.internal.Utils
-import org.jetbrains.anko.okButton
-import org.jetbrains.anko.support.v4.alert
 import timber.log.Timber
 
 class NotificationAdapter(val context: Context, val notificationsList: ArrayList<NotiUIMode>) :
     RecyclerView.Adapter<NotificationAdapter.ViewHolder>() {
 
     private lateinit var castCallback: (castId: Int?) -> Unit
-    private lateinit var userCallback: (userId: Int?, username: String?, tab:Int) -> Unit
+    private lateinit var userCallback: (userId: Int?, username: String?) -> Unit
     private lateinit var notiReadCallback: (nId: Int?, read: Boolean) -> Unit
     private lateinit var noInternetAlertCallback: () -> Unit
     private val imageicon = arrayOf(
@@ -101,7 +94,7 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
             notificationAdapter: NotificationAdapter,
             position: Int,
             notificationsList: java.util.ArrayList<NotiUIMode>,
-            noti: NotiUIMode
+            noti: NotiUIMode,
         ) {
             itemView.setOnClickListener {
                 if (!App.instance.merlinsBeard!!.isConnected) {
@@ -109,32 +102,26 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
                 } else {
                     //Destination
 
-                if(noti.read == false){
-                    notificationAdapter.notiReadCallback.invoke(
-                        noti.id,
-                        true
-                    )
-                }
-                when (noti.redirectTarget?.type) {
-                    "podcast" -> notificationAdapter.castCallback.invoke(noti.redirectTarget.id)
-                    "user" -> {
-                        var tab  = 0
-                        if(noti.notificationType == "patronRequest"){
-                            tab = 1
-                        }
-                        notificationAdapter.userCallback.invoke(
-                            noti.redirectTarget.id,
-                            noti.initiator?.username,
-                            tab
+                    if (noti.read == false) {
+                        notificationAdapter.notiReadCallback.invoke(
+                            noti.id,
+                            true
                         )
                     }
-                    "comment" -> notificationAdapter.userCallback.invoke(
-                        noti.redirectTarget.id,
-                        noti.initiator?.username,0
-                    )
-                    else -> Timber.d("Unable to handle this type")
+                    when (noti.redirectTarget?.type) {
+                        "podcast" -> notificationAdapter.castCallback.invoke(noti.redirectTarget.id)
+                        "user" -> notificationAdapter.userCallback.invoke(
+                            noti.redirectTarget.id,
+                            noti.initiator?.username
+                        )
+                        "comment" -> notificationAdapter.userCallback.invoke(
+                            noti.redirectTarget.id,
+                            noti.initiator?.username
+                        )
+                        else -> Timber.d("Unable to handle this type")
+                    }
+                    notificationAdapter.updateRead(position)
                 }
-                notificationAdapter.updateRead(position)
 
             }
 
@@ -175,7 +162,7 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
         this.castCallback = callback
     }
 
-    fun addUserTypeCallback(callback: (userId: Int?, username: String?, tab: Int) -> Unit) {
+    fun addUserTypeCallback(callback: (userId: Int?, username: String?) -> Unit) {
         this.userCallback = callback
     }
 
@@ -188,7 +175,3 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
     }
 
 }
-
-
-
-
