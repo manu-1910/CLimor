@@ -143,16 +143,7 @@ class FragmentPatronCategories : FragmentCategoriesSelectionBase(), Injectable {
             }
 
         }
-        val balloon = CommonsKt.createPopupBalloon(requireContext(),
-            "You can only select 5 categories. if you talk about sport, Select `Sport`")
-        btnCategoriesInfo.setOnClickListener {
-            balloon.showAlignBottom(it)
-            if (!balloon.isShowing) {
-                it.showAlignBottom(balloon, 0, 0)
-            } else {
-                balloon.dismiss()
-            }
-        }
+
 
         topAppBar.setNavigationOnClickListener {
             activity?.finish()
