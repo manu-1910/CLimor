@@ -85,6 +85,9 @@ class Notification : Fragment() {
                 notificationViewModel.updateReadStatus(it, read)
             }
         }
+        notificationAdapter.addNoInternetAlertCallback {
+            showInternetErrorDialog()
+        }
         getNotifications()
     }
 
