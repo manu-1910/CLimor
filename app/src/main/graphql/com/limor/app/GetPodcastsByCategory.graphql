@@ -107,5 +107,6 @@ query GetPodcastsByCategory($categoryId: Int!, $limit: Int!, $offset: Int!) {
                 end_index
             }
         }
+        color_code
     }
 }

@@ -1,9 +1,8 @@
 package com.limor.app.scenes.main_new.adapters.vh
 
 import android.content.Intent
+import android.graphics.Color
 import android.view.View
-import android.widget.TextView
-import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.findViewTreeLifecycleOwner
@@ -18,6 +17,8 @@ import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
+import kotlinx.android.synthetic.main.fragment_extended_player.*
+import timber.log.Timber
 
 class ViewHolderPodcast(
     val binding: ItemHomeFeedBinding,
@@ -52,6 +53,7 @@ class ViewHolderPodcast(
             onUserMentionClick,
             onHashTagClick
         )
+
     }
 
     private fun setPodcastOwnerInfo(item: CastUIModel) {
@@ -83,6 +85,9 @@ class ViewHolderPodcast(
         item.imageLinks?.large?.let {
             binding.ivPodcastBackground.loadImage(it)
         }
+
+        //Handling the color background for podcast
+        CommonsKt.handleColorFeed(item,binding.colorFeedText,context)
     }
 
     private fun setOnClicks(item: CastUIModel) {

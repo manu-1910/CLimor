@@ -1,10 +1,8 @@
 package com.limor.app.scenes.main_new.adapters.vh
 
 import android.content.Intent
-import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.View
-import android.widget.TextView
-import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
@@ -15,6 +13,7 @@ import com.limor.app.extensions.*
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
@@ -33,7 +32,8 @@ class ViewHolderRecast(
 
         binding.tvRecastUserName.text = item.recaster?.username
         binding.tvRecastUserSubtitle.text = item.getCreationDateAndPlace(context, false)
-        binding.ivVerifiedAvatar.visibility = if(item.recaster?.isVerified == true) View.VISIBLE else View.GONE
+        binding.ivVerifiedAvatar.visibility =
+            if (item.recaster?.isVerified == true) View.VISIBLE else View.GONE
 
         binding.tvRecastMessage.text = ""
 
@@ -41,7 +41,8 @@ class ViewHolderRecast(
         binding.tvRecastPlayMaxPosition.text = "???"
 
         binding.tvPodcastUserName.text = item.owner?.username
-        binding.ivPodcastUserVerifiedAvatar.visibility = if(item.owner?.isVerified == true) View.VISIBLE else View.GONE
+        binding.ivPodcastUserVerifiedAvatar.visibility =
+            if (item.owner?.isVerified == true) View.VISIBLE else View.GONE
 
         binding.tvPodcastUserSubtitle.text = item.getCreationDateAndPlace(context, true)
 
@@ -69,6 +70,9 @@ class ViewHolderRecast(
         item.imageLinks?.large?.let {
             binding.ivPodcastBackground.loadImage(it)
         }
+
+        //Handling the color background for podcast
+        CommonsKt.handleColorFeed(item,binding.colorFeedText,context)
 
         setPodcastCounters(item)
         setInterationStatus(item)
@@ -179,7 +183,7 @@ class ViewHolderRecast(
         }
     }
 
-    private fun setInterationStatus(item: CastUIModel){
+    private fun setInterationStatus(item: CastUIModel) {
         binding.btnPodcastLikes.isLiked = item.isLiked ?: false
         binding.tvPodcastLikes.setTextColor(
             ContextCompat.getColor(

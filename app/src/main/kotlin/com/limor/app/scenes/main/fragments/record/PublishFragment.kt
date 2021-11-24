@@ -103,6 +103,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.inject.Inject
 import kotlin.collections.ArrayList
+import kotlin.random.Random
 
 
 class PublishFragment : BaseFragment() {
@@ -334,7 +335,6 @@ class PublishFragment : BaseFragment() {
         val isTitleValid = etDraftTitle?.text?.trim()?.isNotEmpty() ?: false
         val isCaptionValid = etDraftCaption?.text?.trim()?.isNotEmpty() ?: false
         val isAllRequiredFieldsFilled = isCategorySelected
-                && isImageChosen
                 && isLanguageSelected
                 && isCaptionValid
                 && isTitleValid
@@ -918,6 +918,7 @@ class PublishFragment : BaseFragment() {
                     image_url = Input.fromNullable(imageUrlFinal),
                     category_id = publishViewModel.categorySelectedId,
                     language_code = publishViewModel.languageCode,
+                    color_code = getRandomColorCode()
                 )
         )
         Timber.d("$podcast")
@@ -955,6 +956,11 @@ class PublishFragment : BaseFragment() {
         }
       //  publishViewModel.uiPublishRequest = uiPublishRequest
        // publishPodcastTrigger.onNext(Unit)
+    }
+
+    private fun getRandomColorCode(): Input<String> {
+        val colorsArray = resources.getStringArray(R.array.feed_colors)
+        return Input.fromNullable(colorsArray[Random.nextInt(colorsArray.size)])
     }
 
 

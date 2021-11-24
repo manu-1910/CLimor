@@ -519,7 +519,7 @@
     <string name="hashtag_subtitle">Use “#” for hashtags</string>
     <string name="publishing_your_cast">Publishing your cast</string>
     <string name="cast_published">Cast Published</string>
-    <string name="upload_your_photo">Upload your photo<font color='#FF0000'>*</font></string>
+    <string name="upload_your_photo">Upload your photo</string>
     <string name="save_as_draft">Save as Draft</string>
     <string name="battery_low">Battery Low</string>
     <string name="battery_low_description">Battery level is very low. App may close soon.</string>
@@ -731,4 +731,11 @@
         <item quantity="other">%d Listens</item>
     </plurals>
 
+    <string-array name="feed_colors">
+        <item name="feed_blue">#148DFF</item>
+        <item name="feed_black_off">#172229</item>
+        <item name="feed_limor_color">#FFC550</item>
+        <item name="feed_purple">#623CEA</item>
+        <item name="feed_orange">#FE721C</item>
+    </string-array>
 </resources>

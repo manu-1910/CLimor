@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main_new.fragments
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -55,7 +56,7 @@ class SmallPlayerFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentSmallPlayerBinding.inflate(inflater, container, false)
         podcastViewModel.loadCast(castId)
@@ -71,14 +72,14 @@ class SmallPlayerFragment : BaseFragment() {
         }
     }
 
-    private fun setClickListeners(){
+    private fun setClickListeners() {
         binding.btnCloseMiniPlayer.setOnClickListener {
             closePlayer()
         }
     }
 
     private fun initPlayerViews(cast: CastUIModel) {
-        cast.imageLinks?.medium?.let {
+        cast.imageLinks?.large?.let {
             binding.ivAvatarMiniPlayer.loadCircleImage(it)
         }
         binding.tvMiniPlayerTitle.text = cast.title
@@ -86,7 +87,7 @@ class SmallPlayerFragment : BaseFragment() {
         binding.btnMiniPlayerPlay.setOnClickListener {
             Timber.d("LOGGGG")
             cast.audio?.let { audio ->
-                if(playerBinder.audioTrackIsInInitState(audio.mapToAudioTrack())){
+                if (playerBinder.audioTrackIsInInitState(audio.mapToAudioTrack())) {
                     restarted = true
                 }
                 playerBinder.playPause(audio.mapToAudioTrack(), showNotification = true)
@@ -102,6 +103,10 @@ class SmallPlayerFragment : BaseFragment() {
             Timber.d("Layout click")
             openExtendedPlayer()
         }
+        if (cast.imageLinks?.large == null) {
+            binding.circleImageView2.setColorFilter(Color.parseColor(cast.colorCode))
+        }
+
     }
 
     private fun subscribeToPlayerUpdates(cast: CastUIModel) {
@@ -110,11 +115,12 @@ class SmallPlayerFragment : BaseFragment() {
             val audioModel = cast.audio!!.mapToAudioTrack()
             playerBinder.getCurrentPlayingPosition(audioModel)
                 .onEach { duration ->
-                    if(audioModel.duration.seconds>0){
+                    if (audioModel.duration.seconds > 0) {
                         binding.cpiPodcastListeningProgress.progress =
                             ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
                         binding.tvMiniplayerSubtitle.text = getString(
-                            R.string.progress, duration.toReadableStringFormat(DURATION_READABLE_FORMAT_3)
+                            R.string.progress,
+                            duration.toReadableStringFormat(DURATION_READABLE_FORMAT_3)
                         )
 
                     }
@@ -180,7 +186,7 @@ class SmallPlayerFragment : BaseFragment() {
     }
 
     private fun closePlayer() {
-        if(restarted){
+        if (restarted) {
             listenPodcastViewModel.listenPodcast(castId)
         }
         (activity as? PlayerViewManager)?.hidePlayer()
