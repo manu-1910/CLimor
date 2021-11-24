@@ -79,59 +79,6 @@ class FragmentPatronCategories : FragmentCategoriesSelectionBase(), Injectable {
         })
     }
 
-    /*private fun createCategoriesArray(categories: List<CategoryWrapper>) {
-        cgCategories.isSingleSelection = false
-        if (categories.isNotEmpty()) cgCategories.removeAllViews()
-        BACKGROUND({
-            val categoriesChips =
-                categories.map { category ->
-                    getVariantChip(category)
-                }
-            MAIN {
-                categoriesChips.forEach {
-                    it.id = View.generateViewId()
-                    cgCategories.addView(it)
-                }
-            }
-        })
-    }*/
-
-    /*private fun getVariantChip(category: CategoryWrapper): Chip {
-        val chip = layoutInflater.inflate(R.layout.item_chip_category, null) as Chip
-        chip.text = category.name
-        MAIN {
-            chip.isChecked = lastCheckedIds.contains(chip.id)
-        }
-        Timber.d("Chip -> ${category.categoryId} -- ${category.name}")
-        chip.setOnCheckedChangeListener { buttonView, isChecked ->
-            val ids: List<Int> = cgCategories.checkedChipIds
-            Timber.d("$isChecked")
-            if (isChecked) {
-                category.isSelected = isChecked
-                //Get all checked chips in the group
-                if (ids.size > 5) {
-                    chip.isChecked = false //force to unchecked the chip
-                    chip.snackbar("You can only select 5 categories")
-                } else {
-                    lastCheckedIds.add(chip.id)
-                    category.categoryId?.let {
-                        //publishViewModel.categorySelectedId = it
-                        publishViewModel.categorySelectedIdsList.add(it)
-                    }
-                }
-            } else {
-                lastCheckedId = View.NO_ID
-                lastCheckedIds.remove(chip.id)
-                chip.isChecked = false
-                publishViewModel.categorySelectedIdsList.remove(category.categoryId)
-                category.isSelected = false
-                //model.updateCategoriesSelection()
-            }
-            btnContinue.isEnabled = ids.isNotEmpty()
-        }
-        return chip
-    }*/
-
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
             //update categories
