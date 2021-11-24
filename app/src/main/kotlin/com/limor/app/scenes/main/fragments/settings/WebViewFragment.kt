@@ -8,10 +8,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebChromeClient
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import android.widget.TextView
 import androidx.navigation.fragment.findNavController
 import com.limor.app.R
@@ -54,7 +51,7 @@ class WebViewFragment : BaseFragment() {
     }
 
 
-    private fun configureWebView(){
+    private fun configureWebView() {
         // Get the web view settings instance
         val settings = wvMore?.settings
 
@@ -112,18 +109,36 @@ class WebViewFragment : BaseFragment() {
 
 
         // Set web view client
-        wvMore?.webViewClient = object: WebViewClient(){
+        wvMore?.webViewClient = object : WebViewClient() {
+            var error: Int? = 0
+
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                err: WebResourceError?
+            ) {
+                super.onReceivedError(view, request, err)
+                error = err?.errorCode
+            }
+
+
             override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             }
 
+
             override fun onPageFinished(view: WebView, url: String) {
                 loader.visibility = View.GONE
+                if (error != 0) {
+                    no_internet_layout.visibility = View.VISIBLE
+                } else {
+                    no_internet_layout.visibility = View.GONE
+                }
             }
         }
 
 
         // Set web view chrome client
-        wvMore?.webChromeClient = object: WebChromeClient(){
+        wvMore?.webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView, newProgress: Int) {
             }
         }

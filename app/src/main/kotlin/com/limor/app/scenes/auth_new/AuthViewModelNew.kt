@@ -84,12 +84,14 @@ class AuthViewModelNew @Inject constructor(
             override fun onTick(millisUntilFinished: Long) {
                 _resendButtonCountDownLiveData.postValue((millisUntilFinished / 1000).toInt())
             }
+
             override fun onFinish() {
                 _resendButtonEnableLiveData.postValue(true)
                 _resendButtonCountDownLiveData.postValue(null)
             }
         }.start()
     }
+
     private val _countries = MutableLiveData<List<Country>>().apply { value = emptyList() }
 
     val countriesLiveData: LiveData<List<Country>>
@@ -99,6 +101,13 @@ class AuthViewModelNew @Inject constructor(
 
     val phoneIsValidLiveData: LiveData<Boolean>
         get() = _validatePhoneLiveData
+
+    val phoneNumberExistsLiveData: LiveData<Boolean?>
+        get() = userInfoProvider.userExists
+
+    fun checkPhoneNumberExistence() {
+        userInfoProvider.checkIfUserExistsWithThisPhoneNumber(viewModelScope, formattedPhone)
+    }
 
     private var currentCountry: Country = Country()
     private var currentPhone: String = ""
@@ -241,8 +250,41 @@ class AuthViewModelNew @Inject constructor(
         get() = userInfoProvider.userNameAttachedToUserLiveData
 
 
-    /* Gender */
+    /* First name and Last name */
+    var firstName: String = ""
+        private set
 
+    var lastName: String = ""
+        private set
+
+    private val _currentUserFullNameIsValid = MutableLiveData<Boolean?>().apply { value = null }
+
+    val currentUserFullNameIsValid: LiveData<Boolean?>
+        get() = _currentUserFullNameIsValid
+
+    fun changeFirstName(fName: String) {
+        firstName = fName
+        if (firstName.trim().isNotEmpty() && lastName.trim().isNotEmpty()) {
+            _currentUserFullNameIsValid.postValue(true)
+        } else {
+            _currentUserFullNameIsValid.postValue(false)
+        }
+    }
+
+    fun changeLastName(lName: String) {
+        lastName = lName
+        if (firstName.trim().isNotEmpty() && lastName.trim().isNotEmpty()) {
+            _currentUserFullNameIsValid.postValue(true)
+        } else {
+            _currentUserFullNameIsValid.postValue(false)
+        }
+    }
+
+    fun submitNames() {
+        userInfoProvider.updateUserFirstNameAndLastName(viewModelScope, firstName, lastName)
+    }
+
+    /* Gender */
 
     fun downloadGenders() = gendersProvider.downloadGenders(viewModelScope)
     val currentGenderId: Int
@@ -421,6 +463,9 @@ class AuthViewModelNew @Inject constructor(
 
     val updateUserDOBLiveData: LiveData<String?>
         get() = userInfoProvider.updateUserDOBLiveData
+
+    val updateUserFirstNameAndLastNameLiveData: LiveData<String?>
+        get() = userInfoProvider.updateUserFirstNameAndLastNameLiveData
 
     fun checkJwtForLuidAndProceed() {
         viewModelScope.launch {

@@ -111,5 +111,6 @@ query GetPodcastByIdQuery($podcastId: Int!){
                 end_index
             }
         }
+        color_code
     }
 }

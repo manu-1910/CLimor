@@ -203,6 +203,10 @@ crashlytics-build.properties
 *.tar.gz
 *.rar
 
+# Why were .jar files excluded initially?! This here is just a temporary workaround until we know
+# why .jars were set to be ignored:
+!/app/libs/*.jar
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 
 ### Linux ###

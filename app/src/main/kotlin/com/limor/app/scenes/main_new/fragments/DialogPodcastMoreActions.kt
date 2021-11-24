@@ -153,8 +153,7 @@ class DialogPodcastMoreActions : DialogFragment() {
 
         binding.btnReportUser.setOnClickListener {
             cast.owner?.id?.let {
-                DialogUserReport.newInstance(it)
-                    .show(parentFragmentManager, DialogUserReport.TAG)
+                DialogUserReport.reportUser(it).show(parentFragmentManager, DialogUserReport.TAG)
                 dismiss()
             }
 

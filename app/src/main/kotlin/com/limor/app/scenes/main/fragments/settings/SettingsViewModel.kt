@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.limor.app.*
 import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.scenes.auth_new.model.UserInfoProvider
+import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.UserUIModel
+import com.limor.app.uimodels.mapToUIModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,20 +47,32 @@ class SettingsViewModel @Inject constructor(
 
 
     private var _followersData =
-        MutableLiveData<List<FollowersQuery.GetFollower?>?>()
-    val followersData: LiveData<List<FollowersQuery.GetFollower?>?>
+        MutableLiveData<List<UserUIModel?>?>()
+    val followersData: LiveData<List<UserUIModel?>?>
         get() = _followersData
 
     private var _followingsData =
-        MutableLiveData<List<FriendsQuery.GetFriend?>>()
-    val followingsData: LiveData<List<FriendsQuery.GetFriend?>>
+        MutableLiveData<List<UserUIModel?>>()
+    val followingsData: LiveData<List<UserUIModel?>>
         get() = _followingsData
+
+    var searchFollowersOffset: Int = 0
+    private var _searchFollowersData =
+        MutableLiveData<List<UserUIModel?>?>()
+    val searchFollowersData: LiveData<List<UserUIModel?>?>
+        get() = _searchFollowersData
+
+    var searchFollowingOffset: Int = 0
+    private var _searchFollowingsData =
+        MutableLiveData<List<UserUIModel?>?>()
+    val searchFollowingsData: LiveData<List<UserUIModel?>?>
+        get() = _searchFollowingsData
 
     fun getBlockedUsers(offset: Int) {
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 val blockedUsers = withContext(Dispatchers.IO) {
-                    generalInfoRepository.getBlockedUsers(blockedUsersLimit,offset)
+                    generalInfoRepository.getBlockedUsers(blockedUsersLimit, offset)
                 }
                 _blockedUsersData.postValue(blockedUsers!!)
                 Timber.d("Got Blocked -> $blockedUsers")
@@ -81,13 +95,16 @@ class SettingsViewModel @Inject constructor(
         _blockedUsersData.postValue(ArrayList())
     }
 
-    fun getFollowers(userId:Int?,offset: Int) {
+    fun getFollowers(userId: Int?, offset: Int) {
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 val blockedUsers = withContext(Dispatchers.IO) {
-                    generalInfoRepository.getFollowers(userId,blockedUsersLimit, offset)
+                    generalInfoRepository.getFollowers(userId, blockedUsersLimit, offset)
                 }
-                _followersData.postValue(blockedUsers)
+                val followers: List<UserUIModel?>? = blockedUsers?.map {
+                    it?.mapToUIModel()
+                }
+                _followersData.postValue(followers)
                 Timber.d("Got Follow -> $blockedUsers")
             } catch (e: Exception) {
                 Timber.d("Got Follow -> $e")
@@ -95,14 +112,17 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun getFollowings(userId:Int?,offset: Int) {
+    fun getFollowings(userId: Int?, offset: Int) {
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 val blockedUsers = withContext(Dispatchers.IO) {
-                    generalInfoRepository.getFollowings(userId,blockedUsersLimit, offset)
+                    generalInfoRepository.getFollowings(userId, blockedUsersLimit, offset)
                 }
-                blockedUsers?.let{
-                    _followingsData.postValue(it)
+                blockedUsers?.let {
+                    val followingUsers = it.map {
+                        it?.mapToUIModel()
+                    }
+                    _followingsData.postValue(followingUsers)
                 }
                 Timber.d("Got Following -> $blockedUsers $offset")
             } catch (e: Exception) {
@@ -117,7 +137,7 @@ class SettingsViewModel @Inject constructor(
                 val userInfo = withContext(Dispatchers.IO) {
                     generalInfoRepository.getUserProfile()
                 }
-                userInfo?.let{
+                userInfo?.let {
                     _userInfoLiveData.postValue(it)
                 }
                 Timber.d("Got UserInfo -> $userInfo")
@@ -147,7 +167,16 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 val response = withContext(Dispatchers.IO) {
-                    userInfoProvider.updateUserProfile(userName, firstName, lastName, bio, website, imageURL, voiceBioURL, durationSeconds)
+                    userInfoProvider.updateUserProfile(
+                        userName,
+                        firstName,
+                        lastName,
+                        bio,
+                        website,
+                        imageURL,
+                        voiceBioURL,
+                        durationSeconds
+                    )
                 }
                 _userUpdatedResponse.postValue(USER_UPDATE_SUCCESS)
                 Timber.d("Updated UserInfo -> $response")
@@ -158,12 +187,60 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun searchFollowers(searchTerm: String, offset: Int) {
+        viewModelScope.launch(Dispatchers.Default) {
+            try {
+                val followersResults = withContext(Dispatchers.IO) {
+                    generalInfoRepository.searchFollowers(searchTerm, blockedUsersLimit, offset)
+                }
+                val followers: List<UserUIModel?> = followersResults.map {
+                    it?.mapToUIModel()
+                }
+                _searchFollowersData.postValue(followers)
+                Timber.d("Got Follow -> $followersResults")
+            } catch (e: Exception) {
+                Timber.d("Got Follow -> $e")
+            }
+        }
+    }
+
+    fun searchFollowings(searchTerm: String, offset: Int) {
+        viewModelScope.launch(Dispatchers.Default) {
+            try {
+                val followingResults = withContext(Dispatchers.IO) {
+                    generalInfoRepository.searchFollowing(searchTerm, blockedUsersLimit, offset)
+                }
+                followingResults.let {
+                    val followingUsers = it.map {
+                        it?.mapToUIModel()
+                    }
+                    _searchFollowingsData.postValue(followingUsers)
+                }
+                Timber.d("Got Following -> $followingResults $offset")
+            } catch (e: Exception) {
+                Timber.d("Got Following -> $e")
+            }
+        }
+    }
+
     fun clearFollowers() {
+        searchFollowersOffset = 0
         _followersData.postValue(ArrayList())
     }
 
     fun clearFollowing() {
+        searchFollowingOffset = 0
         _followingsData.postValue(ArrayList())
+    }
+
+    fun removeSearchFollowersResults() {
+        searchFollowersOffset = 0
+        _searchFollowersData.postValue(null)
+    }
+
+    fun removeSearchFollowingResults() {
+        searchFollowingOffset = 0
+        _searchFollowingsData.postValue(null)
     }
 
     fun followUser(id: Int) {
@@ -180,7 +257,7 @@ class SettingsViewModel @Inject constructor(
 
     fun setToolbarTitle(title: String) {
         _settingsToolBarTitle.value = title
-         clearBlockedUsers()
+        clearBlockedUsers()
     }
 
     fun createBlockedUser(id: Int) {

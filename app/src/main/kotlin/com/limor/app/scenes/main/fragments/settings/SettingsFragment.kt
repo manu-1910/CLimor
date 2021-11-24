@@ -1,12 +1,22 @@
 package com.limor.app.scenes.main.fragments.settings
 
+import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -25,9 +35,11 @@ import com.limor.app.R
 import io.reactivex.subjects.PublishSubject
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.SessionManager
-import com.limor.app.databinding.FragmentEditProfileBinding
-import com.limor.app.databinding.FragmentSettingsBinding
+import com.limor.app.databinding.*
+import com.limor.app.dm.ChatManager
+import com.limor.app.extensions.dp
 import com.limor.app.extensions.hideKeyboard
+import com.limor.app.extensions.px
 import com.limor.app.scenes.auth_new.firebase.FirebaseSessionHandler
 import com.limor.app.scenes.main.fragments.settings.EditProfileFragment.Companion.TIMBER_TAG
 import com.limor.app.scenes.main.viewmodels.LogoutViewModel
@@ -37,11 +49,13 @@ import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.CommonsKt.Companion.handleOnApiError
 import com.limor.app.uimodels.UIUser
 import com.limor.app.uimodels.UserUIModel
+import kotlinx.android.synthetic.main.dialog_cancel_draft.view.*
+import kotlinx.android.synthetic.main.dialog_save_draft.view.*
+import kotlinx.android.synthetic.main.dialog_save_draft.view.saveButton
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.jetbrains.anko.sdk23.listeners.onClick
 import timber.log.Timber
 import javax.inject.Inject
@@ -51,11 +65,17 @@ class SettingsFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val  model: SettingsViewModel by viewModels({activity as SettingsActivity}) { viewModelFactory }
+    private val model: SettingsViewModel by viewModels({ activity as SettingsActivity }) { viewModelFactory }
+
+    @Inject
+    lateinit var chatManager: ChatManager
 
     private var rootView: View? = null
     private var currentUser: UserUIModel? = null
     private lateinit var binding: FragmentSettingsBinding
+
+    private var coroutineJob: Job = Job()
+    private val scope = CoroutineScope(Dispatchers.IO + coroutineJob)
 
     companion object {
         val TAG: String = SettingsFragment::class.java.simpleName
@@ -130,7 +150,7 @@ class SettingsFragment : BaseFragment() {
         }
     }
 
-    private fun listeners(){
+    private fun listeners() {
 
         lytEditProfile.onClick {
             findNavController().navigate(R.id.action_settings_fragment_to_edit_profile_fragment)
@@ -147,14 +167,17 @@ class SettingsFragment : BaseFragment() {
         swPushNotifications?.onClick {
             val currentStatus = swPushNotifications.isChecked
             model.setNotificationsEnabled(currentStatus)
-           // callToUpdateUser(userItem)
+            // callToUpdateUser(userItem)
         }
 
         lytReportProblem.onClick {
             try {
-                val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", getString(R.string.support_email), null))
+                val emailIntent = Intent(
+                    Intent.ACTION_SENDTO,
+                    Uri.fromParts("mailto", getString(R.string.support_email), null)
+                )
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject))
-                emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.request_from) )
+                emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.request_from))
                 startActivity(emailIntent)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -166,28 +189,85 @@ class SettingsFragment : BaseFragment() {
         }
 
         lytLogout.onClick {
-            lifecycleScope.launch {
-                try {
-                    FirebaseSessionHandler.logout(requireContext())
-                    Toast.makeText(requireContext(), "Done!", Toast.LENGTH_LONG).show()
-                    (activity)?.finishAffinity()
-                    startActivity(Intent(requireContext(),SplashActivity::class.java)
-                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
-                } catch (e: Exception) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Error -> ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
+            showLogoutWarning()
         }
 
     }
 
+    private fun logout() {
+        lifecycleScope.launch {
+            scope.launch {
+                App.instance.chatManager.logout()
+            }
+            try {
+                FirebaseSessionHandler.logout(requireContext())
+                Toast.makeText(requireContext(), "Done!", Toast.LENGTH_LONG).show()
+                (activity)?.finishAffinity()
+                startActivity(
+                    Intent(requireContext(), SplashActivity::class.java)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                )
+            } catch (e: Exception) {
+                Toast.makeText(
+                    requireContext(),
+                    "Error -> ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    private fun getDialogButton(labelResId: Int, mainAction: Boolean = false): Button {
+        val resId = if (mainAction) R.layout.dialog_button_main else R.layout.dialog_button_normal
+        return (layoutInflater.inflate(resId, null) as Button).apply {
+            setText(labelResId)
+            layoutParams = LinearLayout.LayoutParams(0, 48.px).apply {
+                weight = 1.0f
+            }
+        }
+    }
+
+    private fun showLogoutWarning() {
+
+        val dialogView = DialogGenericAlertBinding.inflate(layoutInflater).apply {
+            // TODO get icon?
+            //  headerIcon.setImageResource(R.drawable.ic_delete_cast)
+
+            textTitle.setText(R.string.logout)
+            textMessage.setText(R.string.logout_warning_message)
+        }
+
+        val dialogBuilder = AlertDialog.Builder(context).apply {
+            setView(dialogView.root)
+            setCancelable(true)
+        }
+
+        val dialog: AlertDialog = dialogBuilder.create()
+
+        getDialogButton(R.string.btn_cancel, true).also {
+            dialogView.buttons.addView(it)
+        }.onClick {
+            dialog.dismiss()
+        }
+
+        getDialogButton(R.string.btn_yes).also {
+            dialogView.buttons.addView(it)
+        }.onClick {
+            dialog.dismiss()
+            logout()
+        }
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset)
+            show()
+        }
+    }
+
 
     private fun configureToolbar() {
-        model.setToolbarTitle( resources.getString(R.string.settings))
+        model.setToolbarTitle(resources.getString(R.string.settings))
     }
 
 

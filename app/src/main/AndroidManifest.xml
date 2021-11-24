@@ -47,6 +47,11 @@
         <activity android:name=".EditCastActivity"
             android:theme="@style/MaterialMainTheme.FullScreen">
         </activity>
+
+        <activity android:name=".dm.ui.ChatActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            android:theme="@style/MaterialMainTheme.FullScreen" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBckUZU2E7j0ybySIxZvxL_zIzjlf2lRQY" />
@@ -143,7 +148,7 @@
         <activity
             android:name=".scenes.main.fragments.profile.UserProfileActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/MaterialMainTheme.FullScreen"
             android:windowSoftInputMode="adjustResize" />
 
         <activity

@@ -12,7 +12,7 @@ object PhoneNumberChecker {
         val phoneNumber: Phonenumber.PhoneNumber = try {
             phoneUtil.parse(number, region)
         } catch (e: Exception) {
-            print(e)
+            // println(e) no need of that
             return false
         }
         return phoneUtil.isValidNumberForRegion(phoneNumber, region)
@@ -26,7 +26,7 @@ object PhoneNumberChecker {
         val phoneNumber: Phonenumber.PhoneNumber = try {
             phoneUtil.parse(number, region)
         } catch (e: Exception) {
-            print(e)
+            // println(e) no need of that
             return null
         }
         return phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164)

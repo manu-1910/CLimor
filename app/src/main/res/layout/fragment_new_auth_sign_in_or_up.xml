@@ -103,28 +103,11 @@ android:layout_height="match_parent">
     android:height="56dp"
     android:text="@string/register"
     android:textAllCaps="false"
-    android:layout_marginBottom="14dp"
-    app:layout_constraintHorizontal_bias="0.5"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintBottom_toTopOf="@+id/enteredBeforeTV"
-    app:layout_constraintVertical_chainStyle="packed"
-    app:layout_constraintStart_toStartOf="parent" />
-
-<TextView
-    android:id="@+id/enteredBeforeTV"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="24dp"
-    android:layout_marginEnd="24dp"
-    android:text="@string/sign_in_sign_up_enter_before_2021"
-    android:textAllCaps="false"
-    android:textAlignment="center"
-    android:layout_marginBottom="32dp"
-    android:textStyle="bold"
+    android:layout_marginBottom="64dp"
     app:layout_constraintHorizontal_bias="0.5"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintVertical_chainStyle="packed"
-    app:layout_constraintStart_toStartOf="parent"/>
+    app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

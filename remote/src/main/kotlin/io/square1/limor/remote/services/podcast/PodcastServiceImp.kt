@@ -100,7 +100,10 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
         idPodcast: Int,
         request: NWCreateCommentRequest
     ): Single<NWCreateCommentResponse> {
-        return service.createComment(idPodcast, RequestBody.create("application/json".toMediaTypeOrNull(), json.encodeToString(NWCreateCommentRequest.serializer(), request)))
+        return service.createComment(idPodcast, RequestBody.create(
+            "application/json".toMediaTypeOrNull(),
+            json.encodeToString(NWCreateCommentRequest.serializer(), request)
+        ))
             .map {
                     response -> response.parseSuccessResponse(NWCreateCommentResponse.serializer())
             }
@@ -116,7 +119,10 @@ class PodcastServiceImp @Inject constructor(private val serviceConfig: RemoteSer
         idPodcast: Int,
         request: NWDropOffRequest
     ): Single<NWUpdatedResponse> {
-        return service.createDropOff(idPodcast, RequestBody.create("application/json".toMediaTypeOrNull(), json.encodeToString(NWDropOffRequest.serializer(), request)))
+        return service.createDropOff(idPodcast, RequestBody.create(
+            "application/json".toMediaTypeOrNull(),
+            json.encodeToString(NWDropOffRequest.serializer(), request)
+        ))
             .map {
                     response -> response.parseSuccessResponse(NWUpdatedResponse.serializer())
             }

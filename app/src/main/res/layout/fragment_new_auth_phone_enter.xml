@@ -85,6 +85,8 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:hint="@string/enter_phone_hint"
+        app:errorEnabled="true"
+        app:errorIconTint="@color/redError"
         app:endIconDrawable="@drawable/baseline_cancel_black_24dp"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
@@ -100,6 +102,24 @@
             android:maxLines="1" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/tvSignInHereMsg"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/sign_in_with_phone_number"
+        android:textColor="@color/error_stroke_color"
+        android:textAlignment="textStart"
+        android:lineSpacingMultiplier="1.4"
+        android:textSize="12dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/etPhoneCode"
+        app:layout_constraintTop_toBottomOf="@+id/etEnterPhone"/>
 
     <Button
         android:id="@+id/btnBack"

@@ -2,12 +2,14 @@ package com.limor.app.scenes.main.fragments.profile
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -24,6 +26,8 @@ import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.adapters.UserFollowersAdapter
 import com.limor.app.scenes.main.fragments.settings.SettingsViewModel
 import com.limor.app.scenes.main.viewmodels.GetBlockedUsersViewModel
+import com.limor.app.uimodels.UserUIModel
+import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_users_blocked.*
 import kotlinx.android.synthetic.main.item_grid_casts_list.view.*
 import kotlinx.coroutines.Dispatchers
@@ -36,27 +40,28 @@ import java.util.ArrayList
 import javax.inject.Inject
 
 
-
 class UserFollowersFragmentNew(private val uiUserId: Int?) : BaseFragment() {
 
-    private lateinit var arrayList: ArrayList<FollowersQuery.GetFollower?>
+    private lateinit var arrayList: ArrayList<UserUIModel?>
+    private lateinit var searchResults: ArrayList<UserUIModel?>
     private var isLastPage: Boolean = false
     private var isScrolling: Boolean = false
     private var isRequestingNewData: Boolean = false
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val  model: SettingsViewModel by viewModels { viewModelFactory }
+    private val model: SettingsViewModel by activityViewModels { viewModelFactory }
 
     private lateinit var binding: FragmentUsersBlockedBinding
 
     private lateinit var blockedUsersAdapter: UserFollowersAdapter
+    private lateinit var followersAdapter: UserFollowersAdapter
 
-
+    private var offset = 0
 
     companion object {
         val TAG: String = UserFollowersFragmentNew::class.java.simpleName
-        fun newInstance( uiUser: Int?) = UserFollowersFragmentNew(uiUser)
+        fun newInstance(uiUser: Int?) = UserFollowersFragmentNew(uiUser)
         private const val OFFSET_INFINITE_SCROLL: Int = 10
     }
 
@@ -66,8 +71,9 @@ class UserFollowersFragmentNew(private val uiUserId: Int?) : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentUsersBlockedBinding.inflate(inflater,container,false)
+        binding = FragmentUsersBlockedBinding.inflate(inflater, container, false)
         arrayList = ArrayList()
+        searchResults = ArrayList()
         return binding.root
     }
 
@@ -84,22 +90,7 @@ class UserFollowersFragmentNew(private val uiUserId: Int?) : BaseFragment() {
         initApiCallCreateBlockedUser()
         initApiCallDeleteBlockedUser()
         initSwipeAndRefreshLayout()
-
-
-        model.followersData.observe(viewLifecycleOwner, Observer{
-            Timber.d("observe -> $it")
-            if(it?.size == 0){
-                   // showEmptyScenario()
-            }else{
-                 isRequestingNewData = false
-                 val adapter = ( binding.rvBlockedUsers.adapter as UserFollowersAdapter )
-                 arrayList.addAll(it!!)
-                 adapter.notifyDataSetChanged()
-                 hideEmptyScenario()
-            }
-
-            hideProgressBar()
-        })
+        subscribeViewModel()
 
         reload()
     }
@@ -107,7 +98,8 @@ class UserFollowersFragmentNew(private val uiUserId: Int?) : BaseFragment() {
     private fun configureEmptyScenario() {
         binding.layEmptyScenario.ivEmptyScenario.visibility = View.GONE
         binding.layEmptyScenario.tvTitleEmptyScenario.text = ""
-        binding.layEmptyScenario.tvDescriptionEmptyScenario.text = getString(R.string.empty_scenario_followers)
+        binding.layEmptyScenario.tvDescriptionEmptyScenario.text =
+            getString(R.string.empty_scenario_followers)
         binding.layEmptyScenario.tvActionEmptyScenario.visibility = View.GONE
     }
 
@@ -121,7 +113,7 @@ class UserFollowersFragmentNew(private val uiUserId: Int?) : BaseFragment() {
         blockedUsersAdapter = UserFollowersAdapter(arrayList,
             object : UserFollowersAdapter.OnFollowerClickListener {
                 override fun onUserClicked(
-                    item: FollowersQuery.GetFollower,
+                    item: UserUIModel,
                     position: Int
                 ) {
                     val userProfileIntent = Intent(context, UserProfileActivity::class.java)
@@ -130,83 +122,157 @@ class UserFollowersFragmentNew(private val uiUserId: Int?) : BaseFragment() {
                     startActivity(userProfileIntent)
                 }
 
-                override fun onUserLongClicked(item: FollowersQuery.GetFollower, position: Int) {
+                override fun onUserLongClicked(item: UserUIModel, position: Int) {
 
                 }
 
                 override fun onFollowClicked(
-                    item: FollowersQuery.GetFollower,
+                    item: UserUIModel,
                     position: Int
                 ) {
-                    if(item.followed!!) {
-                        requestUnfollow(item,position)
+                    if (item.isFollowed!!) {
+                        requestUnfollow(item, position)
                     } else {
 
                         followUser(item)
-                        blockedUsersAdapter.updateItem(item,position)
+                        blockedUsersAdapter.updateItem(item, position)
                     }
 
                 }
-
-
 
 
             })
 
-       /* binding.rvBlockedUsers.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
-                    isScrolling = true
-            }
+        /* binding.rvBlockedUsers.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                 super.onScrollStateChanged(recyclerView, newState)
+                 if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
+                     isScrolling = true
+             }
 
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
+             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                 super.onScrolled(recyclerView, dx, dy)
 
-                // if we scroll down...
-                if (dy > 0) {
+                 // if we scroll down...
+                 if (dy > 0) {
 
-                    // those are the items that we have already passed in the list, the items we already saw
-                    val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
+                     // those are the items that we have already passed in the list, the items we already saw
+                     val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
 
-                    // this are the items that are currently showing on screen
-                    val visibleItemsCount = layoutManager.childCount
+                     // this are the items that are currently showing on screen
+                     val visibleItemsCount = layoutManager.childCount
 
-                    // this are the total amount of items
-                    val totalItemsCount = layoutManager.itemCount
+                     // this are the total amount of items
+                     val totalItemsCount = layoutManager.itemCount
 
-                    // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
-                    if (!isRequestingNewData && isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
-                        isScrolling = false
-                        setViewModelVariables()
-                        requestNewData(false)
-                    }
-                }
-            }
-        })*/
+                     // if the past items + the current visible items + offset is greater than the total amount of items, we have to retrieve more data
+                     if (!isRequestingNewData && isScrolling && !isLastPage && visibleItemsCount + pastVisibleItems + OFFSET_INFINITE_SCROLL >= totalItemsCount) {
+                         isScrolling = false
+                         setViewModelVariables()
+                         requestNewData(false)
+                     }
+                 }
+             }
+         })*/
         binding.rvBlockedUsers.adapter = blockedUsersAdapter
         binding.rvBlockedUsers.setHasFixedSize(false)
+
+        val followersLayoutManager = LinearLayoutManager(context)
+        binding.rvSearchResults.layoutManager = followersLayoutManager
+        followersAdapter = UserFollowersAdapter(searchResults,
+            object : UserFollowersAdapter.OnFollowerClickListener {
+                override fun onUserClicked(
+                    item: UserUIModel,
+                    position: Int
+                ) {
+                    val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+                    userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, item.username)
+                    userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, item.id)
+                    startActivity(userProfileIntent)
+                }
+
+                override fun onUserLongClicked(item: UserUIModel, position: Int) {
+
+                }
+
+                override fun onFollowClicked(
+                    item: UserUIModel,
+                    position: Int
+                ) {
+                    if (item.isFollowed!!) {
+                        requestUnfollow(item, position)
+                    } else {
+
+                        followUser(item)
+                        blockedUsersAdapter.updateItem(item, position)
+                    }
+
+                }
+
+
+            })
+        binding.rvSearchResults.adapter = followersAdapter
+        binding.rvSearchResults.setHasFixedSize(false)
     }
 
     private fun setViewModelVariables() {
 
     }
 
-    private fun requestUnfollow(item: FollowersQuery.GetFollower,position:Int) {
+    private fun subscribeViewModel() {
+        model.followersData.observe(viewLifecycleOwner, Observer {
+            Timber.d("observe -> $it")
+            if (it?.size == 0) {
+                // showEmptyScenario()
+            } else {
+                isRequestingNewData = false
+                val adapter = (binding.rvBlockedUsers.adapter as UserFollowersAdapter)
+                arrayList.addAll(it!!)
+                adapter.notifyDataSetChanged()
+                hideEmptyScenario()
+            }
+
+            hideProgressBar()
+        })
+        model.searchFollowersData.observe(viewLifecycleOwner, {
+            if (it == null) {
+                binding.tvNoFollowers.visibility = View.GONE
+                binding.rvSearchResults.visibility = View.GONE
+                binding.laySwipeRefresh.visibility = View.VISIBLE
+            } else if (it.isEmpty()) {
+                binding.tvNoFollowers.visibility = View.VISIBLE
+                binding.rvSearchResults.visibility = View.GONE
+                binding.laySwipeRefresh.visibility = View.GONE
+            } else {
+                Log.d("follower_count", model.searchFollowersOffset.toString())
+                if (model.searchFollowersOffset == 0)
+                    searchResults.clear()
+                searchResults.addAll(it)
+                followersAdapter.notifyDataSetChanged()
+                if (binding.rvSearchResults.visibility == View.GONE)
+                    binding.rvSearchResults.visibility = View.VISIBLE
+                binding.tvNoFollowers.visibility = View.GONE
+                binding.laySwipeRefresh.visibility = View.GONE
+            }
+        })
+    }
+
+    private fun requestUnfollow(item: UserUIModel, position: Int) {
         alert(getString(R.string.confirmation_unfollow_user)) {
             okButton {
                 unFollowUser(item)
-                blockedUsersAdapter.updateItem(item, position )
+                blockedUsersAdapter.updateItem(item, position)
             }
-            cancelButton {  }
+            cancelButton { }
         }.show()
     }
-    private fun followUser(item: FollowersQuery.GetFollower) {
-            model.followUser(item.id!!)
+
+    private fun followUser(item: UserUIModel) {
+        model.followUser(item.id!!)
     }
 
-    private fun unFollowUser(item: FollowersQuery.GetFollower) {
-            model.unFollowUser(item.id!!)
+    private fun unFollowUser(item: UserUIModel) {
+        model.unFollowUser(item.id!!)
 
     }
 
@@ -235,12 +301,11 @@ class UserFollowersFragmentNew(private val uiUserId: Int?) : BaseFragment() {
     }
 
 
-
     private fun reload() {
         isLastPage = false
         model.blockUsersOffset = 0
         hideEmptyScenario()
-       // model.clearFollowers()
+        // model.clearFollowers()
         arrayList.clear()
         requestNewData()
     }
@@ -248,18 +313,18 @@ class UserFollowersFragmentNew(private val uiUserId: Int?) : BaseFragment() {
 
     private fun initApiCallGetBlockedUsers() {
 
-        if(model.followersData.value == null || model.followersData.value?.size != 0){
-            model.getFollowers(uiUserId,arrayList.size)
-        }else{
+        if (model.followersData.value == null || model.followersData.value?.size != 0) {
+            model.getFollowers(uiUserId, arrayList.size)
+        } else {
             model.clearFollowers()
-            model.getFollowers(uiUserId,0)
+            model.getFollowers(uiUserId, 0)
         }
 
     }
 
-    private fun requestNewData(showProgress : Boolean = true) {
+    private fun requestNewData(showProgress: Boolean = true) {
         if (!isRequestingNewData) {
-            if(showProgress)
+            if (showProgress)
                 showProgressBar()
             isRequestingNewData = true
             initApiCallGetBlockedUsers()

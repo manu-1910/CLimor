@@ -267,9 +267,17 @@ class RecordFragment : BaseFragment() {
                 setPlayPauseButtonState(false)
             }
             if (isRecording) {
-                pauseRecording()
-                needToInitializeMediaPlayer = true
-                enablePlayButton(true)
+                pauseRecording(false)
+                //needToInitializeMediaPlayer = true
+                //enablePlayButton(true)
+                mergeFilesIfNecessary {
+                    needToInitializeMediaPlayer = true
+                    enablePlayButton(true)
+                    isFirstTapRecording = true
+                    draftViewModel.uiDraft = uiDraft
+                    draftViewModel.filesArray.clear()
+                    draftViewModel.filesArray.add(File(uiDraft?.filePath))
+                }
             } else {
                 if (needAnimatedCountDown) {
                     showCountdownAnimation {
@@ -977,7 +985,7 @@ class RecordFragment : BaseFragment() {
             if (draftViewModel.filesArray.size == 1) {
                 uiDraft?.filePath = draftViewModel.filesArray[0].absolutePath
                 uiThread { callback() }
-
+                fileRecording = draftViewModel.filesArray[0].absolutePath
                 // this means that there are actually two files to merge
             } else if (draftViewModel.filesArray.size == 2) {
                 if (WavHelper.combineWaveFile(
@@ -997,6 +1005,7 @@ class RecordFragment : BaseFragment() {
                     draftViewModel.filesArray.add(finalAudio)
 
                     uiDraft?.filePath = finalAudio.absolutePath
+                    fileRecording = finalAudio.absolutePath
 
                     uiThread {
                         callback()
@@ -1117,9 +1126,13 @@ class RecordFragment : BaseFragment() {
         handlerCountdown.postDelayed(runnableAnim, 1000)
     }
 
-    private fun pauseRecording() {
+    private fun pauseRecording(pause: Boolean) {
         println("RECORD --> PAUSE")
-        mRecorder?.pauseRecording()
+        if(pause){
+            mRecorder?.pauseRecording()
+        } else{
+            mRecorder?.stopRecording()
+        }
         //Stop the chronometer and anotate the time when it is stopped
         timeWhenStopped = c_meter.base - SystemClock.elapsedRealtime()
         isRecording = false
@@ -1409,7 +1422,7 @@ class RecordFragment : BaseFragment() {
     private val lowBatteryReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(c: Context, i: Intent) {
             if (isRecording) {
-                pauseRecording()
+                pauseRecording(true)
             }
             showLowBatteryDialog()
         }
@@ -1510,7 +1523,17 @@ class RecordFragment : BaseFragment() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onPhoneCallEvent(event: PhoneCallEvent){
-        // pauseRecording()
+        if(event.state == PhoneCallEvent.RINGING){
+            pauseRecording(false)
+            mergeFilesIfNecessary {
+                needToInitializeMediaPlayer = true
+                enablePlayButton(true)
+                isFirstTapRecording = true
+                draftViewModel.uiDraft = uiDraft
+                draftViewModel.filesArray.clear()
+                draftViewModel.filesArray.add(File(uiDraft?.filePath))
+            }
+        }
     }
 
 

@@ -28,14 +28,26 @@ android {
         targetSdkVersion build_versions.target_sdk
 
         applicationId globalConfiguration.androidApplicationId
-        versionCode 8
-        versionName "0.0.8"
+        versionCode 4
+        versionName "0.0.4"
 
         testInstrumentationRunner globalConfiguration.testInstrumentationRunner
         testApplicationId globalConfiguration.testApplicationId
         /*ndk{
             abiFilters "arm64-v8a"
         }*/
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
 
     compileOptions {
@@ -114,6 +126,9 @@ android {
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://devlimorapp.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
 
+            buildConfigField "String", "CHAT_USER_ID_PREFIX", '"development"'
+            buildConfigField "String", "AGORA_APP_ID", '"09955231503f4b18a6ad0a2f243711e3"'
+
             minifyEnabled false
             debuggable true
             zipAlignEnabled true
@@ -145,6 +160,9 @@ android {
 
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://devlimorapp.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
+
+            buildConfigField "String", "CHAT_USER_ID_PREFIX", '"staging"'
+            buildConfigField "String", "AGORA_APP_ID", '"09955231503f4b18a6ad0a2f243711e3"'
 
             minifyEnabled false
             debuggable true
@@ -179,6 +197,9 @@ android {
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://staginglimorapp.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-staging.web.app"'
 
+            buildConfigField "String", "CHAT_USER_ID_PREFIX", '"staging"'
+            buildConfigField "String", "AGORA_APP_ID", '"09955231503f4b18a6ad0a2f243711e3"'
+
             minifyEnabled false
             debuggable true
             zipAlignEnabled true
@@ -211,6 +232,9 @@ android {
             buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://castpreview.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://castpreview.limor.ie"'
 
+            buildConfigField "String", "CHAT_USER_ID_PREFIX", '"production"'
+            buildConfigField "String", "AGORA_APP_ID", '"7a35ed47a3794d1894081e959b24da1b"'
+
             minifyEnabled false
             debuggable true
             zipAlignEnabled true
@@ -221,6 +245,7 @@ android {
     }
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        main.jniLibs.srcDirs = ['src/main/jniLibs']
         test.java.srcDirs += 'src/test/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
     }
@@ -449,18 +474,18 @@ dependencies {
     //Circle ImageView
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
-    implementation 'com.android.volley:volley:1.1.1'
+    implementation 'com.android.volley:volley:1.2.1'
 
     implementation 'androidx.core:core-ktx:1.5.0'
 
     implementation 'com.github.zerobranch:SwipeLayout:1.3.1'
     implementation "androidx.activity:activity-ktx:1.2.3"
-    implementation "androidx.fragment:fragment-ktx:1.3.4"
+    implementation "androidx.fragment:fragment-ktx:1.3.6"
     implementation "com.googlecode.libphonenumber:libphonenumber:8.12.21"
-    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    implementation 'com.google.android.gms:play-services-auth:19.2.0'
 
     // The core runtime dependencies
-    implementation("com.apollographql.apollo:apollo-runtime:2.5.9")
+    implementation("com.apollographql.apollo:apollo-runtime:2.5.10")
     //decoding firebase JWT
     implementation 'com.auth0.android:jwtdecode:2.0.0'
 
@@ -478,7 +503,7 @@ dependencies {
 
     implementation 'com.tyorikan:voice-recording-visualizer:1.0.3@aar'
 
-    implementation 'com.google.android.libraries.places:places:2.4.0'
+    implementation 'com.google.android.libraries.places:places:2.5.0'
 
     //StickyList Headers
     implementation 'com.github.luizgrp:SectionedRecyclerViewAdapter:v3.2.0'
@@ -491,4 +516,14 @@ dependencies {
     implementation "com.android.billingclient:billing-ktx:$billing_version"
 
     implementation "com.github.skydoves:balloon:1.4.0"
+
+    // =============================================================================================
+    // ROOM
+    // =============================================================================================
+    def room_version = "2.3.0"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
 }

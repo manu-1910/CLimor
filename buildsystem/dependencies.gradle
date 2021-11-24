@@ -1,8 +1,7 @@
 def addRepos(RepositoryHandler handler) {
-    handler.jcenter()
+    handler.maven { url "https://plugins.gradle.org/m2/" }
     handler.mavenCentral()
     handler.maven { url "https://jitpack.io" }
-    handler.maven { url "https://kotlin.bintray.com/kotlinx" }
     handler.google()
 }
 ext.addRepos = this.&addRepos

@@ -13,7 +13,6 @@ import io.square1.limor.remote.services.RemoteServiceConfig
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.properties.Properties
 import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import javax.inject.Inject
 
@@ -102,7 +101,10 @@ class AuthServiceImp @Inject constructor(private val serviceConfig: RemoteServic
 
 
     fun changePassword(nwChangePasswordRequest: NWChangePasswordRequest): Single<NWChangePasswordResponse> {
-        return service.changePassword(RequestBody.create("application/json".toMediaTypeOrNull(), json.encodeToString(NWChangePasswordRequest.serializer(), nwChangePasswordRequest)))
+        return service.changePassword(RequestBody.create(
+            "application/json".toMediaTypeOrNull(),
+            json.encodeToString(NWChangePasswordRequest.serializer(), nwChangePasswordRequest)
+        ))
             .map { response -> response.parseSuccessResponse(NWChangePasswordResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")

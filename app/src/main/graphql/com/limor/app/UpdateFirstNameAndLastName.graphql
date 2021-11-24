@@ -1,0 +1,10 @@
+mutation UpdateFirstNameAndLastNameMutation($firstName: String!, $lastName: String!){
+    updateUser(user:{
+        firstName: $firstName,
+        lastName: $lastName,
+        userOnboardingStatus: {    nextStep: "USERNAME_CREATION"  }
+    }){
+        status,
+        message
+    }
+}

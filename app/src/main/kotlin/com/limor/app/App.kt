@@ -14,6 +14,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
 import com.limor.app.di.AppInjector
 import com.limor.app.di.components.AppComponent
+import com.limor.app.dm.ChatManager
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.service.PlayerBinder
 import com.limor.app.util.AppState
@@ -41,6 +42,9 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
     lateinit var serviceInjector: DispatchingAndroidInjector<Service>
     @Inject
     lateinit var playerBinder: PlayerBinder
+
+    @Inject
+    lateinit var chatManager: ChatManager
 
     private var realm: Realm? = null
     lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -117,6 +121,8 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
 //            }
 //        })
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+
+
     }
 
     @OnLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_STOP)

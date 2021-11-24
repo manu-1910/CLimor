@@ -149,6 +149,12 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
                 user = user.copy(isBlocked = blocked)
                 setupConditionalViews(user)
             }
+
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("followed")
+            ?.observe(viewLifecycleOwner) { followed ->
+                user = user.copy(isFollowed = followed)
+                setupConditionalViews(user)
+            }
     }
 
     private fun setupListeners() {
@@ -224,7 +230,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             openSettings.launch(null)
 
         } else if (::user.isInitialized){
-            //Show Other user actions dialog
+            // Show Other user actions dialog
             val bundle = bundleOf(
                 DialogUserProfileActions.USER_KEY to user
             )
@@ -287,7 +293,9 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
         ensureToolbar()
         binding.toolbar.title.text = "@${user.username}"
-        binding.btnFollow.visibility = if (isSignedInUser) View.GONE else View.VISIBLE
+
+        binding.btnFollow.visibility = if (isSignedInUser || user.isFollowed == true) View.GONE else View.VISIBLE
+
         binding.profileMainContainer.visibility = View.VISIBLE
 
         if (isSignedInUser) {
@@ -311,12 +319,12 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             if (user.isFollowed == true) {
                 //Followed state
 
-                binding.btnFollow.setBackgroundResource(R.drawable.bg_round_bluish_ripple)
-                binding.btnFollow.text = getString(R.string.unfollow)
+                binding.btnFollow.visibility = View.GONE
                 //ToastMaker.showToast(requireContext(), "Unfollow UI")
 
             } else {
                 //New User State
+                binding.btnFollow.visibility = View.VISIBLE
                 binding.btnFollow.setBackgroundResource(R.drawable.bg_round_yellow_ripple)
                 binding.btnFollow.text = getString(R.string.follow)
                 //ToastMaker.showToast(requireContext(), "Follow UI")
