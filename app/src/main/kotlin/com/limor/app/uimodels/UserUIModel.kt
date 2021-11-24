@@ -37,7 +37,7 @@ data class UserUIModel(
     var patronOnBoardingStatus: String? = null,
     val isPatron: Boolean? = false,
     val patronAudioURL: String? = null,
-    val patronAudioDurationSeconds: Double?
+    val patronAudioDurationSeconds: Double? = null
 ) : Parcelable {
 
     fun getFullName() = if (firstName == null && lastName == null) username else String.format(
