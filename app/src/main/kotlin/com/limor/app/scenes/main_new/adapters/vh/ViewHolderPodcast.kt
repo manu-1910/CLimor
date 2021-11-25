@@ -29,6 +29,7 @@ class ViewHolderPodcast(
     private val onReloadData: (castId: Int, reload: Boolean) -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val onUserMentionClick: (username: String, userId: Int) -> Unit,
+    private val onEditPreviewClick: () -> Unit
 ) : ViewHolderBindable<CastUIModel>(binding) {
     override fun bind(item: CastUIModel) {
         setPodcastGeneralInfo(item)
@@ -157,15 +158,15 @@ class ViewHolderPodcast(
         }
 
         binding.btnAddPreview.setOnClickListener {
-
+            onEditPreviewClick()
         }
 
         binding.btnEditPrice.setOnClickListener {
-
+            onEditPreviewClick()
         }
 
         binding.btnPlayStopPreview.setOnClickListener {
-
+            onEditPreviewClick()
         }
     }
 

@@ -23,7 +23,8 @@ class HomeFeedAdapter(
     private val onShareClick: (CastUIModel) -> Unit,
     private val onLoadMore: () -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
-    private val onUserMentionClick: (username: String, userId: Int) -> Unit
+    private val onUserMentionClick: (username: String, userId: Int) -> Unit,
+    private val onEditPreviewClick: () -> Unit
 ) : ListAdapter<CastUIModel, RecyclerView.ViewHolder>(
     HomeFeedDiffCallback()
 ) {
@@ -91,7 +92,8 @@ class HomeFeedAdapter(
                     onShareClick,
                     onReloadData,
                     onHashTagClick,
-                    onUserMentionClick
+                    onUserMentionClick,
+                    onEditPreviewClick
                 )
             }
             else -> {
