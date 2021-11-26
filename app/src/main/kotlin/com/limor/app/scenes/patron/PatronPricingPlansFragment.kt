@@ -24,9 +24,7 @@ import com.limor.app.scenes.main.fragments.profile.ShortPagerAdapter
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.support.v4.runOnUiThread
 import timber.log.Timber
@@ -47,11 +45,7 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
             //This is called once there is some update about purchase after launching the billing flow
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
                 showProgressBar()
-                for (purchase in purchases) {
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        handlePurchase(purchase!!)
-                    }
-                }
+                handlePurchase(purchases.first()!!)
             } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
                 // Handle an error caused by a user cancelling the purchase flow.
                 binding.root.snackbar("Cancelled")
@@ -79,19 +73,18 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         }
     }
 
-    private suspend fun handlePurchase(purchase: Purchase) {
+    private fun handlePurchase(purchase: Purchase) {
         // Verify the purchase.
         Timber.d("PURCHASE ${purchase.purchaseToken}")
         Timber.d("PURCHASE ${purchase.packageName}")
-        model.consumePurchasedSub(purchase).collect {
+        model.consumePurchasedSub(purchase).observe(viewLifecycleOwner, {
             if (it == "Success") {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
-                }
+                findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
             } else {
                 hideProgressBar()
             }
         }
+        )
         /*val consumeParams =
             ConsumeParams.newBuilder()
                 .setPurchaseToken(purchase.purchaseToken)
@@ -172,9 +165,7 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
                 Timber.d("Billing Result -> ${billingResult.responseCode}")
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     // The BillingClient is ready. You can query purchases here.
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        querySkuDetails()
-                    }
+                    querySkuDetails()
                 }
             }
 

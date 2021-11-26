@@ -11,7 +11,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.limor.app.R
@@ -31,8 +30,6 @@ import kotlinx.android.synthetic.main.fragment_languages.clMain
 import kotlinx.android.synthetic.main.fragment_languages.etSearchLanguage
 import kotlinx.android.synthetic.main.fragment_languages.topAppBar
 import kotlinx.android.synthetic.main.fragment_patron_languages.*
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import javax.inject.Inject
@@ -75,14 +72,12 @@ class FragmentPatronLanguages : FragmentWithLoading(), Injectable {
 
         btnContinue.setOnClickListener {
             if (publishViewModel.languageSelectedCodesList.isNotEmpty()) {
-                lifecycleScope.launch {
-                    switchCommonVisibility(true)
-                    publishViewModel.addPatronLanguages().collect {
-                        if (it == "Success") {
-                            findNavController().navigate(R.id.action_fragmentPatronLanguages_to_fragmentPatronOnboardingSuccess)
-                        } else {
-                            btnContinue.snackbar(it!!)
-                        }
+                switchCommonVisibility(true)
+                publishViewModel.addPatronLanguages().observe(viewLifecycleOwner) {
+                    if (it == "Success") {
+                        findNavController().navigate(R.id.action_fragmentPatronLanguages_to_fragmentPatronOnboardingSuccess)
+                    } else {
+                        btnContinue.snackbar(it!!)
                     }
                 }
             }
