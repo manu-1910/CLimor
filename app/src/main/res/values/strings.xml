@@ -769,5 +769,7 @@
     <string name="sport_secured_description">You have secured your spot. You\'re going to have your digital wallet soon</string>
     <string name="after_free_trial">After free trial ends it will cost</string>
     <string name="no_plans_found_message">No Plans Found</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="patron_invite_not_required">Patron Invitation wasn\'t requested</string>
 
 </resources>

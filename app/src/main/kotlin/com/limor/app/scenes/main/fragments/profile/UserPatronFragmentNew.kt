@@ -269,7 +269,7 @@ class UserPatronFragmentNew : Fragment() {
                 user.patronInvitationStatus = "REQUESTED"
                 handleUIStates()
             } else {
-                binding.root.snackbar("Patron Invitation wasn't requested")
+                binding.root.snackbar(getString(R.string.patron_invite_not_required))
                 user.patronInvitationStatus = "NOT_REQUESTED"
                 handleUIStates()
             }

@@ -48,10 +48,10 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
                 handlePurchase(purchases.first()!!)
             } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
                 // Handle an error caused by a user cancelling the purchase flow.
-                binding.root.snackbar("Cancelled")
+                binding.root.snackbar(getString(R.string.cancelled))
             } else {
                 // Handle any other error codes.
-                binding.root.snackbar("Try Again Later")
+                binding.root.snackbar(getString(R.string.try_again))
             }
         }
 
@@ -165,7 +165,9 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
                 Timber.d("Billing Result -> ${billingResult.responseCode}")
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     // The BillingClient is ready. You can query purchases here.
-                    querySkuDetails()
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        querySkuDetails()
+                    }
                 }
             }
 

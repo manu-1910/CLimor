@@ -346,7 +346,7 @@ class PublishFragment : BaseFragment() {
                     "caption valid -> $isCaptionValid " +
                     "tags-> $isTagsSelected" +
                     "title-> $isTitleValid"
-        )
+        )   
         btnPublishDraft?.isEnabled = isAllRequiredFieldsFilled
     }
 
