@@ -41,7 +41,7 @@ class PublishViewModel @Inject constructor(
     var categorySelected: String = ""
     var categorySelectedId: Int = -1
     var categorySelectedIdsList: ArrayList<Int> = arrayListOf()
-    var categorySelectedNamesList: ArrayList<String> = arrayListOf()
+    var categorySelectedNamesList: ArrayList<UISimpleCategory> = arrayListOf()
     var languageSelectedCodesList: ArrayList<String> = arrayListOf()
     var languageSelected: String = ""
     var languageCode: String = ""

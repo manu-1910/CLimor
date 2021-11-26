@@ -19,6 +19,7 @@ import com.limor.app.scenes.main.viewmodels.PublishCategoriesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.BACKGROUND
 import com.limor.app.scenes.utils.MAIN
+import com.limor.app.uimodels.UISimpleCategory
 import kotlinx.android.synthetic.main.fragment_publish_categories.*
 import kotlinx.android.synthetic.main.view_follow_button.*
 import org.jetbrains.anko.design.snackbar
@@ -93,7 +94,7 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
         val chip = layoutInflater.inflate(R.layout.item_chip_category, null) as Chip
         chip.text = category.name
         MAIN {
-            //chip.isChecked = lastCheckedIds.contains(chip.id)
+            chip.isChecked = publishViewModel.categorySelectedNamesList.any { it.name == category.name }
              Timber.d("Chip -> ${category.name} -- ${publishViewModel.categorySelectedNamesList}")
         }
         Timber.d("Chip -> ${category.categoryId} -- ${category.name}")
@@ -110,7 +111,7 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
                     category.categoryId?.let {
                         //publishViewModel.categorySelectedId = it
                         publishViewModel.categorySelectedIdsList.add(it)
-                        publishViewModel.categorySelectedNamesList.add(category.name)
+                        publishViewModel.categorySelectedNamesList.add(UISimpleCategory(category.name,category.categoryId!!))
                         publishViewModel.categorySelected = getSelectedCategoriesText()
                     }
                 }
@@ -121,7 +122,7 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
                 lastCheckedId = View.NO_ID
                 lastCheckedIds.remove(chip.id)
                 publishViewModel.categorySelectedIdsList.remove(category.categoryId)
-                publishViewModel.categorySelectedNamesList.remove(category.name)
+                publishViewModel.categorySelectedNamesList.remove(UISimpleCategory(category.name,category.categoryId!!))
                 category.isSelected = false
                 btnContinue.isEnabled =
                     cgCategories.checkedChipIds.isNotEmpty() && cgCategories.checkedChipIds.size <= maxSelection
@@ -139,10 +140,10 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
                 ""
             }
             cgCategories.checkedChipIds.size > 1 -> {
-                "${selections[0]} +${selections.size - 1}"
+                "${selections[0].name} +${selections.size - 1}"
             }
             else -> {
-                selections[0]
+                selections[0].name
             }
         }
 
@@ -150,7 +151,7 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
 
 private fun setOnClickListeners() {
     btnContinue.setOnClickListener {
-        publishViewModel.categorySelectedNamesList.clear()
+        //publishViewModel.categorySelectedNamesList.clear()
         findNavController().popBackStack()
     }
 

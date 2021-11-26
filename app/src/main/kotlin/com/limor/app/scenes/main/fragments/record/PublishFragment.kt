@@ -359,6 +359,7 @@ class PublishFragment : BaseFragment() {
             tvSelectedCategory?.text = publishViewModel.categorySelected
             uiDraft.category = publishViewModel.categorySelected
             uiDraft.categoryId = publishViewModel.categorySelectedId
+            uiDraft.categories = publishViewModel.categorySelectedNamesList
             isCategorySelected = true
             updatePublishBtnState()
         }
