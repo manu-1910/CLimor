@@ -340,7 +340,7 @@ class UserPatronFragmentNew : Fragment() {
     }
 
     private fun checkPatronState() {
-        user.patronOnBoardingStatus = "NOT_INITIATED"
+        //user.patronOnBoardingStatus = "NOT_INITIATED"
         when (user.patronOnBoardingStatus) {
             "NOT_INITIATED" -> {
                 val intent = Intent(requireContext(), PatronSetupActivity::class.java)
