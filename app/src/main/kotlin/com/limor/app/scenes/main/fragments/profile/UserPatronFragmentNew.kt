@@ -12,6 +12,7 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -21,6 +22,7 @@ import com.limor.app.R
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
 import com.limor.app.extensions.isOnline
 import com.limor.app.scenes.auth_new.util.PrefsHandler
+import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsFragmentNew
 import com.limor.app.scenes.patron.FragmentShortItemSlider
 import com.limor.app.scenes.patron.setup.PatronSetupActivity
 import com.limor.app.uimodels.AudioCommentUIModel
@@ -33,22 +35,31 @@ import java.time.Duration
 import javax.inject.Inject
 
 
-class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
+class UserPatronFragmentNew : Fragment() {
 
+
+    companion object {
+        private const val USER_ID_KEY = "USER_ID_KEY"
+        fun newInstance(user: UserUIModel) = UserPatronFragmentNew().apply {
+            arguments = bundleOf(USER_ID_KEY to user)
+        }
+    }
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: UserProfileViewModel by viewModels { viewModelFactory }
+    private lateinit var user: UserUIModel
 
     lateinit var binding: FragmnetUserPatronNewBinding
     var requested = false
 
-    companion object {
-        fun newInstance(user: UserUIModel) = UserPatronFragmentNew(user)
-    }
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         AndroidSupportInjection.inject(this)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        user = requireArguments().getParcelable(USER_ID_KEY)!!
     }
 
     override fun onCreateView(
