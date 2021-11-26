@@ -67,10 +67,13 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
-    fun blockUser(id: Int) {
+    fun blockUser(userId: Int): LiveData<Boolean> {
+        val liveData = MutableLiveData<Boolean>()
         viewModelScope.launch {
-            userInfoProvider.blockUser(id)
+            userInfoProvider.blockUser(userId)
+            liveData.postValue(true)
         }
+        return liveData
     }
 
     fun unblockUser(id: Int) {
