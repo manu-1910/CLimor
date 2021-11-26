@@ -1,3 +1,6 @@
+// This must come first
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
+//
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -126,6 +129,8 @@ android {
             buildConfigField "String", "CHAT_USER_ID_PREFIX", '"development"'
             buildConfigField "String", "AGORA_APP_ID", '"09955231503f4b18a6ad0a2f243711e3"'
 
+            buildConfigField "String", "ONE_SIGNAL_APP_ID", '"79a09ccb-2c5f-4147-a0ac-9998ac2b4ea9"'
+
             minifyEnabled false
             debuggable true
             zipAlignEnabled true
@@ -160,6 +165,8 @@ android {
 
             buildConfigField "String", "CHAT_USER_ID_PREFIX", '"staging"'
             buildConfigField "String", "AGORA_APP_ID", '"09955231503f4b18a6ad0a2f243711e3"'
+
+            buildConfigField "String", "ONE_SIGNAL_APP_ID", '"3c2a34b4-b49e-402b-b756-a66bba97ef5e"'
 
             minifyEnabled false
             debuggable true
@@ -197,6 +204,8 @@ android {
             buildConfigField "String", "CHAT_USER_ID_PREFIX", '"staging"'
             buildConfigField "String", "AGORA_APP_ID", '"09955231503f4b18a6ad0a2f243711e3"'
 
+            buildConfigField "String", "ONE_SIGNAL_APP_ID", '"3c2a34b4-b49e-402b-b756-a66bba97ef5e"'
+
             minifyEnabled false
             debuggable true
             zipAlignEnabled true
@@ -231,6 +240,8 @@ android {
 
             buildConfigField "String", "CHAT_USER_ID_PREFIX", '"production"'
             buildConfigField "String", "AGORA_APP_ID", '"7a35ed47a3794d1894081e959b24da1b"'
+
+            buildConfigField "String", "ONE_SIGNAL_APP_ID", '"ab674a40-a739-41db-bfbf-4b53d45db2c4"'
 
             minifyEnabled false
             debuggable true
@@ -509,4 +520,7 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
     kapt("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
+
+    // OneSignal is a marketing tool, here's more info: https://onesignal.com/
+    implementation 'com.onesignal:OneSignal:[4.0.0, 4.99.99]'
 }
