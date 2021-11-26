@@ -139,11 +139,13 @@ class PublishViewModel @Inject constructor(
     }
 
 
-    suspend fun getPlans() = callbackFlow<List<GetPlansQuery.Plan?>?> {
-        send(withContext(Dispatchers.IO) {
-            publishRepository.getPlans()
-        })
-        awaitClose()
+    fun getPlanIds(): LiveData<List<String>> {
+        val liveData = MutableLiveData<List<String>>()
+        viewModelScope.launch(Dispatchers.IO) {
+            val ids = publishRepository.getPlans()?.mapNotNull { it?.productId }
+            liveData.postValue(ids ?: listOf())
+        }
+        return liveData
     }
 
 }
