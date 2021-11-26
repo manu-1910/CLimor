@@ -768,5 +768,6 @@
     <string name="spot_secured_title">Spot Secured</string>
     <string name="sport_secured_description">You have secured your spot. You\'re going to have your digital wallet soon</string>
     <string name="after_free_trial">After free trial ends it will cost</string>
+    <string name="no_plans_found_message">No Plans Found</string>
 
 </resources>
