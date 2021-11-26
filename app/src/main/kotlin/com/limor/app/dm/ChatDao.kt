@@ -14,8 +14,11 @@ interface ChatDao {
     fun getSessionWithUserId(sessionId: Int): ChatSessionWithUser
 
     @Query(
-        "SELECT * FROM chat_session " +
-                "INNER JOIN chat_users ON chat_users.user_id = chat_session.chat_user_id"
+        """
+            SELECT * FROM chat_session 
+                INNER JOIN chat_users ON chat_users.user_id = chat_session.chat_user_id
+            ORDER BY last_message_timestamp DESC
+        """
     )
     fun getSessions(): Flow<List<ChatSessionWithUser>>
 

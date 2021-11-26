@@ -109,8 +109,9 @@ class DialogUserProfileActions : DialogFragment() {
     }
 
     private fun onBlockUser() {
-        model.blockUser(user.id)
-        navigateAfterBlock(true)
+        model.blockUser(user.id).observe(viewLifecycleOwner) {
+            navigateAfterBlock(true)
+        }
     }
 
     private fun onUnBlockUser(){

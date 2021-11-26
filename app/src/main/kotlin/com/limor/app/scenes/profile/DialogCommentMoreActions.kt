@@ -183,8 +183,9 @@ class DialogCommentMoreActions : DialogFragment() {
 
     private fun onBlockUser() {
         val user = comment.user ?: return
-        model.blockUser(user.id)
-        dismiss()
+        model.blockUser(user.id).observe(viewLifecycleOwner) {
+            dismiss()
+        }
     }
 
     private fun commentIsEditable(): Boolean {

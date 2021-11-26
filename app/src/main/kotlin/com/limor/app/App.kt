@@ -20,6 +20,7 @@ import com.limor.app.service.PlayerBinder
 import com.limor.app.util.AppState
 import com.limor.app.util.CrashReportingTree
 import com.novoda.merlin.MerlinsBeard
+import com.onesignal.OneSignal
 import com.smartlook.sdk.smartlook.Smartlook
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -122,6 +123,12 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
 //        })
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
+        // Enable verbose OneSignal logging to debug issues if needed.
+        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
+
+        // OneSignal Initialization
+        OneSignal.initWithContext(this);
+        OneSignal.setAppId(BuildConfig.ONE_SIGNAL_APP_ID);
 
     }
 
