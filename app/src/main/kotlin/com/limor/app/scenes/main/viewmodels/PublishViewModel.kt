@@ -122,7 +122,6 @@ class PublishViewModel @Inject constructor(
 
     suspend fun consumePurchasedSub(purchase: Purchase) = callbackFlow<String?> {
         send(publishRepository.updateSubscriptionDetails(purchase))
-        awaitClose()
     }
 
     suspend fun addPatronCategories() = callbackFlow<String?> {

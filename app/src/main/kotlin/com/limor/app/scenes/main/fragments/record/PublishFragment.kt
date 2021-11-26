@@ -88,6 +88,7 @@ import com.limor.app.type.PodcastMetadata
 import com.limor.app.uimodels.TagUIModel
 import com.limor.app.uimodels.UIDraft
 import com.limor.app.uimodels.UILocations
+import com.limor.app.uimodels.UISimpleCategory
 import com.yalantis.ucrop.UCrop
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.cancelButton
@@ -125,7 +126,7 @@ class PublishFragment : BaseFragment() {
 
     private lateinit var binding: FragmentPublishBinding
     private val isPatron: Boolean by lazy {
-        Random.nextBoolean()
+        true
     }
 
     @Inject
@@ -295,7 +296,7 @@ class PublishFragment : BaseFragment() {
         ViewCompat.setTranslationZ(view, 100f)
 
         uiDraft = requireArguments()["recordingItem"] as UIDraft
-
+        Timber.d("Categories -> ${uiDraft.category} mDraf ${uiDraft.categories}")
         updateUIState()
         configureToolbar()
         listeners()
@@ -355,11 +356,12 @@ class PublishFragment : BaseFragment() {
             uiDraft.location = podcastLocation
         }
 
-        if (publishViewModel.categorySelected.isNotEmpty()) {
+        if (publishViewModel.categorySelectedNamesList.isNotEmpty()) {
             tvSelectedCategory?.text = publishViewModel.categorySelected
             uiDraft.category = publishViewModel.categorySelected
             uiDraft.categoryId = publishViewModel.categorySelectedId
             uiDraft.categories = publishViewModel.categorySelectedNamesList
+            Timber.d("Categories -> updated draft ${uiDraft.categories}")
             isCategorySelected = true
             updatePublishBtnState()
         }
@@ -1101,12 +1103,13 @@ class PublishFragment : BaseFragment() {
             lytImagePlaceholder?.visibility = View.VISIBLE
             lytImage?.visibility = View.INVISIBLE
         }
-        if (!uiDraft.category.toString().isNullOrEmpty()) {
+        if (uiDraft.category.toString().isNotEmpty()) {
             tvSelectedCategory?.text = uiDraft.category
             this.isCategorySelected = true
         } else {
             tvSelectedCategory?.text = publishViewModel.categorySelected
             uiDraft.category = publishViewModel.categorySelected
+            uiDraft.categories = publishViewModel.categorySelectedNamesList
             uiDraft.categoryId = publishViewModel.categorySelectedId
         }
         if (!uiDraft.location?.address.toString().isNullOrEmpty()) {
@@ -1132,6 +1135,15 @@ class PublishFragment : BaseFragment() {
                 publishViewModel.languageSelected = it
             }
         }
+
+            uiDraft.categories?.let{
+                Timber.d("Categories -> $it")
+                if(it.isNotEmpty()){
+                    publishViewModel.categorySelectedNamesList = (it as ArrayList<UISimpleCategory>)
+                }
+            }
+
+
 
         }
 
