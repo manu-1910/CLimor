@@ -59,7 +59,8 @@ fun DraftEntity.asStorageEntity(): RLMDraft {
         category,
         location?.asStorageEntity(),
         parentDraft?.asStorageEntity(),
-        isNewRecording
+        isNewRecording,
+        getRLMCategories(categories)
     )
 }
 
@@ -74,6 +75,13 @@ fun RLMTimeStamp.asDataEntity(): TimeStampEntity {
 
 fun RLMOnDeviceCategory.asDataEntity(): OnDeviceCategoryEntity {
     return OnDeviceCategoryEntity(
+        name,
+        categoryId
+    )
+}
+
+fun OnDeviceCategoryEntity.asStorageEntity(): RLMOnDeviceCategory {
+    return RLMOnDeviceCategory(
         name,
         categoryId
     )
@@ -126,6 +134,12 @@ fun getRLMTimeStamps(entityObj: ArrayList<TimeStampEntity>?): RealmList<RLMTimeS
             rlmObj.add(option.asStorageEntity())
         }
     return rlmObj
+}
+
+fun getRLMCategories(cats: ArrayList<OnDeviceCategoryEntity>?): RealmList<RLMOnDeviceCategory> {
+    return RealmList<RLMOnDeviceCategory>().apply {
+        addAll(cats?.map { it.asStorageEntity() } ?: listOf())
+    }
 }
 
 fun getOnDeviceCategoryEntities(realmObj: RealmList<RLMOnDeviceCategory>?): ArrayList<OnDeviceCategoryEntity> {
