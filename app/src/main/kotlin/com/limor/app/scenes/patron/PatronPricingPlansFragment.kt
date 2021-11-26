@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.billingclient.api.*
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.FragmentPatronPricingPlansBinding
 import com.limor.app.scenes.main.fragments.profile.ShortPagerAdapter
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.design.snackbar
+import org.jetbrains.anko.support.v4.runOnUiThread
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -192,40 +194,38 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
             .build()
     }
 
-    suspend fun querySkuDetails() {
+    fun querySkuDetails() {
 
-        val skuList = ArrayList<String>()
         binding.progressBar.visibility = View.VISIBLE
-        model.getPlans().collect {
+        model.getPlanIds().observe(viewLifecycleOwner) { skuIdList ->
 
-            it?.forEach { sku ->
-                skuList.add(sku!!.productId!!)
-            }
             val params = SkuDetailsParams.newBuilder()
-            params.setSkusList(skuList)
+            params.setSkusList(skuIdList)
             params.setType(BillingClient.SkuType.SUBS)
 
-            // leverage querySkuDetails Kotlin extension function
-            val skuDetailsResult = withContext(Dispatchers.IO) {
-                billingClient.querySkuDetails(params.build())
+            billingClient.querySkuDetailsAsync(params.build()) { _, skuDetails ->
+                runOnUiThread {  onSkuDetails(skuDetails) }
             }
-
-            Timber.d("Billing SKUs-> ${skuDetailsResult.skuDetailsList}")
-
-            skuDetailsResult.skuDetailsList?.let { skuDetails ->
-                if (skuDetails.isNotEmpty()) {
-                    binding.patronPlansRV.layoutManager = LinearLayoutManager(requireContext())
-                    adapter = PricingPlansAdapter(skuDetails, this)
-                    binding.patronPlansRV.adapter = adapter
-                } else {
-                    binding.continueButton.visibility = View.GONE
-                    binding.root.snackbar("No Plans Found")
-                }
-            }
-            binding.checkLayout.visibility = View.VISIBLE
-            binding.progressBar.visibility = View.GONE
         }
 
+    }
+
+    private fun onSkuDetails(skuDetailsList: List<SkuDetails>?) {
+        if (BuildConfig.DEBUG) {
+            Timber.d("Billing SKUs-> $skuDetailsList")
+        }
+
+        if (skuDetailsList?.isNotEmpty() == true) {
+            binding.patronPlansRV.layoutManager = LinearLayoutManager(requireContext())
+            adapter = PricingPlansAdapter(skuDetailsList, this)
+            binding.patronPlansRV.adapter = adapter
+        } else {
+            binding.continueButton.visibility = View.GONE
+            binding.root.snackbar(getString(R.string.no_plans_found_message))
+        }
+
+        binding.checkLayout.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.GONE
     }
 
     private fun setupViewPager() {
