@@ -2,8 +2,6 @@ package com.limor.app.scenes.main_new.adapters.vh
 
 import android.content.Intent
 import android.view.View
-import android.widget.TextView
-import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.findViewTreeLifecycleOwner
@@ -11,7 +9,6 @@ import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.extensions.*
-import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
@@ -29,7 +26,7 @@ class ViewHolderPodcast(
     private val onReloadData: (castId: Int, reload: Boolean) -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val onUserMentionClick: (username: String, userId: Int) -> Unit,
-    private val onEditPreviewClick: () -> Unit
+    private val onEditPreviewClick: (cast: CastUIModel) -> Unit
 ) : ViewHolderBindable<CastUIModel>(binding) {
     override fun bind(item: CastUIModel) {
         setPodcastGeneralInfo(item)
@@ -158,15 +155,19 @@ class ViewHolderPodcast(
         }
 
         binding.btnAddPreview.setOnClickListener {
-            onEditPreviewClick()
+            onEditPreviewClick(item)
         }
 
         binding.btnEditPrice.setOnClickListener {
-            onEditPreviewClick()
+            onEditPreviewClick(item)
         }
 
         binding.btnPlayStopPreview.setOnClickListener {
-            onEditPreviewClick()
+            onEditPreviewClick(item)
+        }
+
+        binding.tvPodcastTitle.setOnClickListener {
+            onEditPreviewClick(item)
         }
     }
 

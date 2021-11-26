@@ -44,6 +44,7 @@ import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.adapters.HomeFeedAdapter
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
+import com.limor.app.scenes.main_new.view.BottomSheetEditPreview
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
@@ -232,7 +233,7 @@ class FragmentHomeNew : BaseFragment() {
                 context?.let { context -> UserProfileActivity.show(context, username, userId) }
             },
             onEditPreviewClick = {
-                showEditPreviewDialog()
+                BottomSheetEditPreview.newInstance(it).show(requireActivity().supportFragmentManager, BottomSheetEditPreview.TAG)
             }
         )
     }
@@ -310,7 +311,7 @@ class FragmentHomeNew : BaseFragment() {
     }
 
     private fun showEditPreviewDialog() {
-        val bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialog)
+        /*val bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialog)
         val dialogView = layoutInflater.inflate(R.layout.sheet_edit_preview, null)
         val behaviour = bottomSheetDialog.behavior
         behaviour.state = BottomSheetBehavior.STATE_EXPANDED
@@ -334,7 +335,7 @@ class FragmentHomeNew : BaseFragment() {
                     mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
 
                     val seekHandler: Handler = Handler(Looper.getMainLooper())
-                    var seekUpdater: Runnable = object : Runnable {
+                    val seekUpdater: Runnable = object : Runnable {
                         override fun run() {
                             seekHandler.postDelayed(this, 100)
                             mediaPlayer.let {
@@ -395,14 +396,14 @@ class FragmentHomeNew : BaseFragment() {
 
         }
 
-        dialogView.save_button.setOnClickListener{
+        dialogView.saveButton.setOnClickListener{
             bottomSheetDialog.dismiss()
         }
 
         bottomSheetDialog.apply {
             show()
             window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        }
+        }*/
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
