@@ -1,10 +1,6 @@
 package com.limor.app.scenes.main_new.view
 
 import android.app.Dialog
-import android.content.DialogInterface
-import android.media.AudioFormat
-import android.media.AudioManager
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +13,7 @@ import com.limor.app.R
 import com.limor.app.databinding.SheetEditPreviewBinding
 import com.limor.app.uimodels.CastUIModel
 
-class BottomSheetEditPreview : BottomSheetDialogFragment() {
+class EditPreviewDialog : BottomSheetDialogFragment() {
 
     private val cast: CastUIModel by lazy {
         requireArguments().getParcelable(KEY_PODCAST)!!
@@ -68,8 +64,8 @@ class BottomSheetEditPreview : BottomSheetDialogFragment() {
 
     companion object {
         private const val KEY_PODCAST = "KEY_PODCAST"
-        fun newInstance(cast: CastUIModel): BottomSheetEditPreview {
-            return BottomSheetEditPreview().apply {
+        fun newInstance(cast: CastUIModel): EditPreviewDialog {
+            return EditPreviewDialog().apply {
                 arguments = bundleOf(KEY_PODCAST to cast)
             }
         }
