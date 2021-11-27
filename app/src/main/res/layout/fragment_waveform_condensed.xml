@@ -32,19 +32,37 @@
     <RelativeLayout
         android:id="@+id/layWaveform"
         android:layout_width="match_parent"
-        android:layout_height="158dp"
+        android:layout_height="290dp"
         app:layout_constrainedHeight="true"
         android:layout_marginTop="2dp"
         android:background="@color/white"
+        android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintBottom_toTopOf="@id/playersLayout">
 
+        <View
+            android:id="@+id/topd"
+            android:background="#F0F3F8"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+
+        <View
+            android:id="@+id/bottomd"
+            android:layout_alignParentBottom="true"
+            android:background="#F0F3F8"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+
         <com.limor.app.scenes.utils.waveform.view.WaveformView
             android:id="@+id/waveform"
+            android:layout_above="@id/bottomd"
+            android:layout_below="@id/topd"
             android:layout_width="match_parent"
-            android:layout_height="158dp" />
+            android:layout_height="288dp" />
+
+
 
     </RelativeLayout>
 

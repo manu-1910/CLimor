@@ -43,12 +43,10 @@ class EditPreviewFragment : WaveformFragment() {
     }
 
     override fun populateMarkers() {
-        addMarker(
-            waveformView.millisecsToPixels(0),
-            waveformView.millisecsToPixels(5000),
-            false,
-            R.color.white
-        )
+        val startPixels = waveformView.millisecsToPixels(0)
+        val endPixels = waveformView.millisecsToPixels(5000)
+        println("End pixels: $endPixels")
+        addMarker(startPixels, endPixels, false, R.color.white)
     }
 
     override fun shouldWaitForAudio(): Boolean {
@@ -61,7 +59,7 @@ class EditPreviewFragment : WaveformFragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = super.onCreateView(inflater, container, savedInstanceState)
-        // downloadCast()
+        downloadCast()
         return view
     }
 
@@ -96,7 +94,7 @@ class EditPreviewFragment : WaveformFragment() {
                         input.copyTo(output)
                         WavHelper.convertToWavFile(requireContext(), original, audioFileName)
                         lifecycleScope.launch {
-                            loadFromFile()
+                            onDownloadCompelte()
                         }
                     }
                 }
@@ -105,6 +103,10 @@ class EditPreviewFragment : WaveformFragment() {
                 Log.d("sdvf", e.toString())
             }
         }
+    }
+
+    private fun onDownloadCompelte() {
+        loadFromFile()
     }
 
     companion object {
