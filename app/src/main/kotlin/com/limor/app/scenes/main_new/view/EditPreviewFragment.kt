@@ -7,9 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
+import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
 import com.limor.app.scenes.utils.waveform.WaveformFragment
 import com.limor.app.uimodels.CastUIModel
+import kotlinx.android.synthetic.main.fragment_waveform.*
+import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.doAsync
 import java.io.File
@@ -38,7 +41,12 @@ class EditPreviewFragment : WaveformFragment() {
     }
 
     override fun populateMarkers() {
-        // TODO("Not yet implemented")
+        addMarker(
+            waveformView.millisecsToPixels(0),
+            waveformView.millisecsToPixels(5000),
+            false,
+            R.color.white
+        )
     }
 
     override fun shouldWaitForAudio(): Boolean {
@@ -53,6 +61,20 @@ class EditPreviewFragment : WaveformFragment() {
         val view = super.onCreateView(inflater, container, savedInstanceState)
         downloadCast()
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setUI(view)
+    }
+
+    private fun setUI(root: View?) {
+        val view = root ?: return
+        view.findViewById<View>(R.id.seekbar).visibility = View.GONE
+        closeButton.visibility = View.GONE
+        rlPreviewSection.visibility = View.GONE
+
+        tvToolbarTitle?.text = getString(R.string.edit_preview)
     }
 
     private fun downloadCast() {
