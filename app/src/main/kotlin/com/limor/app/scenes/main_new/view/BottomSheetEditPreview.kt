@@ -23,6 +23,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.audio.wav.waverecorder.calculateAmplitude
+import com.limor.app.databinding.SheetEditPreviewBinding
 import com.limor.app.scenes.main.fragments.podcast.SimpleRecorder
 import com.limor.app.scenes.utils.visualizer.PlayVisualizer
 import com.limor.app.uimodels.CastUIModel
@@ -45,13 +46,8 @@ class BottomSheetEditPreview : BottomSheetDialogFragment() {
         // requireArguments()[CAST_URL] as String
     }
 
-    private lateinit var playVisualiser: PlayVisualizer
-    private lateinit var rewindButton: ImageButton
-    private lateinit var forwardButton: ImageButton
-    private lateinit var playButton: ImageButton
-    private lateinit var saveButton: Button
-
-    private lateinit var progressBar: ProgressBar
+    private var _binding: SheetEditPreviewBinding? = null
+    private val binding get() = _binding!!
 
     private var destinationFile: File? = null
 
@@ -67,12 +63,13 @@ class BottomSheetEditPreview : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.sheet_edit_preview, container, false)
+        val binding = SheetEditPreviewBinding.inflate(inflater, container, false);
+        _binding = binding
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initialiseViews(view)
         downloadCast()
         setClickListeners()
     }
@@ -101,26 +98,17 @@ class BottomSheetEditPreview : BottomSheetDialogFragment() {
         }
     }
 
-    private fun initialiseViews(view: View) {
-        playVisualiser = view.findViewById(R.id.playVisualizer)
-        rewindButton = view.findViewById(R.id.rewindButton)
-        forwardButton = view.findViewById(R.id.forwardButton)
-        playButton = view.findViewById(R.id.playButton)
-        saveButton = view.findViewById(R.id.saveButton)
-        progressBar = view.findViewById(R.id.progressBar)
-    }
-
     private fun setClickListeners() {
-        rewindButton.setOnClickListener {
+        binding.rewindButton.setOnClickListener {
 
         }
-        forwardButton.setOnClickListener {
+        binding.forwardButton.setOnClickListener {
 
         }
-        playButton.setOnClickListener {
+        binding.playButton.setOnClickListener {
             if (mediaPlayer.isPlaying) {
                 mediaPlayer.pause()
-                playButton.setImageDrawable(
+                binding.playButton.setImageDrawable(
                     ContextCompat.getDrawable(
                         requireContext(),
                         R.drawable.ic_play
@@ -130,7 +118,7 @@ class BottomSheetEditPreview : BottomSheetDialogFragment() {
                 playAudio()
             }
         }
-        saveButton.setOnClickListener {
+        binding.saveButton.setOnClickListener {
             try {
                 if (mediaPlayer.isPlaying) {
                     mediaPlayer.stop()
@@ -155,7 +143,7 @@ class BottomSheetEditPreview : BottomSheetDialogFragment() {
                 mediaPlayer.let {
                     if (it.isPlaying) {
                         val currentPosition = it.currentPosition
-                        playVisualiser.updateTime(currentPosition.toLong(), true)
+                        binding.playVisualizer.updateTime(currentPosition.toLong(), true)
                     }
                 }
             }
@@ -164,9 +152,9 @@ class BottomSheetEditPreview : BottomSheetDialogFragment() {
         mediaPlayer.prepareAsync()
 
         mediaPlayer.setOnCompletionListener {
-            playVisualiser.updateTime(mediaPlayer.duration.toLong(), false)
+            binding.playVisualizer.updateTime(mediaPlayer.duration.toLong(), false)
             it.pause()
-            playButton.setImageDrawable(
+            binding.playButton.setImageDrawable(
                 ContextCompat.getDrawable(
                     requireContext(),
                     R.drawable.ic_play
@@ -175,7 +163,7 @@ class BottomSheetEditPreview : BottomSheetDialogFragment() {
         }
         mediaPlayer.setOnPreparedListener {
             it.start()
-            playButton.setImageDrawable(
+            binding.playButton.setImageDrawable(
                 ContextCompat.getDrawable(
                     requireContext(),
                     R.drawable.ic_pause
@@ -186,13 +174,13 @@ class BottomSheetEditPreview : BottomSheetDialogFragment() {
     }
 
     private fun showProgress() {
-        progressBar.visibility = View.VISIBLE
-        playButton.visibility = View.INVISIBLE
+        binding.progressBar.visibility = View.VISIBLE
+        binding.playButton.visibility = View.INVISIBLE
     }
 
     private fun hideProgress() {
-        progressBar.visibility = View.GONE
-        playButton.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.GONE
+        binding.playButton.visibility = View.VISIBLE
     }
 
     private fun downloadCast() {
@@ -238,13 +226,13 @@ class BottomSheetEditPreview : BottomSheetDialogFragment() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             val amps: List<Int> = loadAmps(audioFile.path, mRecorder.bufferSize)
-            playVisualiser.setWaveForm(
+            binding.playVisualizer.setWaveForm(
                 amps,
                 mRecorder.tickDuration
             )
         }
 
-        playVisualiser.apply {
+        binding.playVisualizer.apply {
             ampNormalizer = { sqrt(it.toFloat()).toInt() }
             visibility = View.VISIBLE
         }
@@ -252,33 +240,33 @@ class BottomSheetEditPreview : BottomSheetDialogFragment() {
         hideProgress();
     }
 
-    suspend fun loadAmps(recordFile: String, bufferSize: Int): List<Int> =
-        withContext(Dispatchers.IO) {
-            val amps = mutableListOf<Int>()
-            val buffer = ByteArray(bufferSize)
-            File(recordFile).inputStream().use {
-                it.skip(44.toLong())
+    private fun loadAmps(recordFile: String, bufferSize: Int): List<Int> {
+        val amps = mutableListOf<Int>()
+        val buffer = ByteArray(bufferSize)
+        File(recordFile).inputStream().use {
+            it.skip(44.toLong())
 
-                var count = it.read(buffer)
-                while (count > 0) {
-                    amps.add(buffer.calculateAmplitude())
-                    count = it.read(buffer)
-                }
+            var count = it.read(buffer)
+            while (count > 0) {
+                amps.add(buffer.calculateAmplitude())
+                count = it.read(buffer)
             }
-            amps
         }
+        return amps;
+    }
 
     companion object {
         const val CAST_ID = "CAST_ID"
         const val CAST_URL = "CAST_URL"
         const val TAG = "EDIT_PREVIEW_SHEET"
+
         fun newInstance(cast: CastUIModel): BottomSheetEditPreview {
-            val instance = BottomSheetEditPreview()
-            val args = Bundle()
-            args.putInt(BottomSheetEditPreview.CAST_ID, cast.id)
-            args.putString(BottomSheetEditPreview.CAST_URL, cast.audio?.url)
-            instance.arguments = args
-            return instance
+            return BottomSheetEditPreview().apply {
+                arguments = Bundle().apply {
+                    putInt(CAST_ID, cast.id)
+                    putString(CAST_URL, cast.audio?.url)
+                }
+            }
         }
     }
 
