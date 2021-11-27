@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main_new.view
 
+import android.app.Dialog
 import android.content.DialogInterface
 import android.media.AudioFormat
 import android.media.AudioManager
@@ -16,6 +17,8 @@ import android.widget.ImageButton
 import android.widget.ProgressBar
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.WaveRecorder
@@ -63,6 +66,19 @@ class BottomSheetEditPreview : BottomSheetDialogFragment() {
         initialiseViews(view)
         downloadCast()
         setClickListeners()
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+
+        dialog.setOnShowListener {
+            if (dialog is BottomSheetDialog) {
+                val behavior: BottomSheetBehavior<*> = dialog.behavior
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
+
+        return dialog
     }
 
     override fun onCancel(dialog: DialogInterface) {
