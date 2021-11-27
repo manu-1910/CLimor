@@ -5,7 +5,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
@@ -59,7 +61,7 @@ class EditPreviewFragment : WaveformFragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = super.onCreateView(inflater, container, savedInstanceState)
-        downloadCast()
+        // downloadCast()
         return view
     }
 
@@ -75,6 +77,10 @@ class EditPreviewFragment : WaveformFragment() {
         rlPreviewSection.visibility = View.GONE
 
         tvToolbarTitle?.text = getString(R.string.edit_preview)
+    }
+
+    override fun getLayoutId(): Int {
+        return R.layout.fragment_waveform_condensed
     }
 
     private fun downloadCast() {

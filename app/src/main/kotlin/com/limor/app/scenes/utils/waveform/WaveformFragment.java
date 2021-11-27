@@ -132,7 +132,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_waveform, container, false);
+            rootView = inflater.inflate(getLayoutId(), container, false);
             loadGui(rootView);
         }
 
@@ -1458,6 +1458,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     public boolean shouldWaitForAudio() {
         return false;
+    }
+
+    public int getLayoutId() {
+        return R.layout.fragment_waveform;
     }
 
 }
