@@ -180,15 +180,15 @@
         style="@android:style/Widget.Material.Button.Borderless.Colored"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin48"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="@dimen/margin38"
-        android:text="@string/save_as_preview"
-        android:textColor="@color/text_btn_primary_color"
-        android:textAllCaps="false"
-        android:background="@drawable/btn_primary_background"
         android:layout_marginStart="@dimen/marginTwenty"
-        android:layout_marginEnd="@dimen/marginTwenty"/>
+        android:layout_marginEnd="@dimen/marginTwenty"
+        android:layout_marginBottom="36dp"
+        android:background="@drawable/btn_primary_background"
+        android:text="@string/save_as_preview"
+        android:textAllCaps="false"
+        android:textColor="@color/text_btn_primary_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
