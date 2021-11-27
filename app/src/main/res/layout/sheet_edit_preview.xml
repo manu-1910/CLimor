@@ -1,201 +1,194 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:cardCornerRadius="@dimen/marginMediumSmall">
+    android:background="@drawable/bg_comments">
+
+    <View
+        android:id="@+id/drag_indicator_view"
+        android:layout_width="60dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="@dimen/marginMedium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_round_grey_ripple_new"/>
+
+    <TextView
+        android:id="@+id/edit_preview_title_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/edit_preview"
+        android:textSize="@dimen/textSize16"
+        android:fontFamily="@font/roboto_bold"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/margin44"/>
+
+    <com.limor.app.scenes.utils.visualizer.RecordVisualizer
+        android:id="@+id/graphVisualizer"
+        android:layout_width="match_parent"
+        android:layout_height="158dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_preview_title_textview"
+        app:layout_constraintBottom_toTopOf="@id/note_text_view"
+        android:layout_marginTop="62dp"
+        android:layout_marginBottom="@dimen/margin24"
+        app:maxAmp="200"
+        app:approximateBarDuration="50"
+        app:barWidth="1.3dp"
+        app:loadedBarPrimeColor="@color/waveFormColor"
+        app:spaceBetweenBar="2dp" />
+
+    <com.limor.app.scenes.utils.visualizer.PlayVisualizer
+        android:id="@+id/playVisualizer"
+        android:layout_width="match_parent"
+        android:layout_height="158dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_preview_title_textview"
+        app:layout_constraintBottom_toTopOf="@id/note_text_view"
+        android:layout_marginTop="62dp"
+        android:layout_marginBottom="@dimen/margin24"
+        android:visibility="gone"
+        app:maxAmp="200"
+        app:approximateBarDuration="50"
+        app:barWidth="1.3dp"
+        app:loadedBarPrimeColor="@color/waveFormColor"
+        app:spaceBetweenBar="2dp" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="2dp"
+        android:layout_height="158dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="24dp"
+        android:background="@color/waveFormColor"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/graphVisualizer"/>
+
+    <ImageView
+        android:id="@+id/top_circle_imageview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        app:srcCompat="@drawable/small_blue_circle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/divider"/>
+
+    <ImageView
+        android:id="@+id/bottom_circle_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="16dp"
+        app:srcCompat="@drawable/small_blue_circle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider"/>
+
+    <TextView
+        android:id="@+id/note_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/preview_note"
+        android:gravity="center_horizontal"
+        android:fontFamily="@font/roboto"
+        android:textSize="@dimen/textSize14"
+        android:textColor="@color/error_stroke_color"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/layoutPlay"
+        app:layout_constraintTop_toBottomOf="@id/graphVisualizer"
+        android:layout_marginBottom="@dimen/marginForty"
+        android:layout_marginTop="@dimen/margin24"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutPlay"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="@dimen/margin48"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/saveButton">
 
-        <View
-            android:id="@+id/drag_indicator_view"
-            android:layout_width="60dp"
-            android:layout_height="4dp"
-            android:layout_marginTop="@dimen/marginMedium"
-            app:layout_constraintStart_toStartOf="parent"
+        <ImageButton
+            android:id="@+id/rewindButton"
+            style="@android:style/MediaButton"
+            android:layout_width="64dip"
+            android:layout_height="52dip"
+            android:layout_marginEnd="16dp"
+            android:layout_toStartOf="@id/playButton"
+            android:contentDescription="@string/rewind"
+            android:src="@drawable/rewind_button"
+            app:layout_constraintEnd_toStartOf="@+id/playButton"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/playButton"
+            style="@android:style/MediaButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_centerHorizontal="true"
+            android:contentDescription="@string/play"
+            android:src="@drawable/play_button"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/bg_round_grey_ripple_new"/>
+            android:visibility="invisible"/>
 
-        <TextView
-            android:id="@+id/edit_preview_title_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/edit_preview"
-            android:textSize="@dimen/textSize16"
-            android:fontFamily="@font/roboto_bold"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="@dimen/margin44"/>
-
-        <com.limor.app.scenes.utils.visualizer.RecordVisualizer
-            android:id="@+id/graphVisualizer"
-            android:layout_width="match_parent"
-            android:layout_height="158dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/edit_preview_title_textview"
-            app:layout_constraintBottom_toTopOf="@id/note_text_view"
-            android:layout_marginTop="62dp"
-            android:layout_marginBottom="@dimen/margin24"
-            app:maxAmp="200"
-            app:approximateBarDuration="50"
-            app:barWidth="1.3dp"
-            app:loadedBarPrimeColor="@color/waveFormColor"
-            app:spaceBetweenBar="2dp" />
-
-        <com.limor.app.scenes.utils.visualizer.PlayVisualizer
-            android:id="@+id/playVisualizer"
-            android:layout_width="match_parent"
-            android:layout_height="158dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/edit_preview_title_textview"
-            app:layout_constraintBottom_toTopOf="@id/note_text_view"
-            android:layout_marginTop="62dp"
-            android:layout_marginBottom="@dimen/margin24"
-            android:visibility="gone"
-            app:maxAmp="200"
-            app:approximateBarDuration="50"
-            app:barWidth="1.3dp"
-            app:loadedBarPrimeColor="@color/waveFormColor"
-            app:spaceBetweenBar="2dp" />
-
-        <View
-            android:id="@+id/divider"
-            android:layout_width="2dp"
-            android:layout_height="158dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentBottom="true"
-            android:layout_centerInParent="true"
-            android:layout_marginBottom="24dp"
-            android:background="@color/waveFormColor"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/graphVisualizer"/>
-
-        <ImageView
-            android:id="@+id/top_circle_imageview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerInParent="true"
-            app:srcCompat="@drawable/small_blue_circle"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/divider"/>
-
-        <ImageView
-            android:id="@+id/bottom_circle_image_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerInParent="true"
-            android:layout_marginBottom="16dp"
-            app:srcCompat="@drawable/small_blue_circle"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/divider"/>
-
-        <TextView
-            android:id="@+id/note_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/preview_note"
-            android:gravity="center_horizontal"
-            android:fontFamily="@font/roboto"
-            android:textSize="@dimen/textSize14"
-            android:textColor="@color/error_stroke_color"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/layoutPlay"
-            app:layout_constraintTop_toBottomOf="@id/graphVisualizer"
-            android:layout_marginBottom="@dimen/marginForty"
-            android:layout_marginTop="@dimen/margin24"/>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutPlay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="@dimen/margin48"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/saveButton">
-
-            <ImageButton
-                android:id="@+id/rewindButton"
-                style="@android:style/MediaButton"
-                android:layout_width="64dip"
-                android:layout_height="52dip"
-                android:layout_marginEnd="16dp"
-                android:layout_toStartOf="@id/playButton"
-                android:contentDescription="@string/rewind"
-                android:src="@drawable/rewind_button"
-                app:layout_constraintEnd_toStartOf="@+id/playButton"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageButton
-                android:id="@+id/playButton"
-                style="@android:style/MediaButton"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:layout_centerHorizontal="true"
-                android:contentDescription="@string/play"
-                android:src="@drawable/play_button"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:visibility="invisible"/>
-
-            <ImageButton
-                android:id="@+id/forwardButton"
-                style="@android:style/MediaButton"
-                android:layout_width="64dip"
-                android:layout_height="52dip"
-                android:layout_marginStart="16dp"
-                android:layout_toEndOf="@id/playButton"
-                android:contentDescription="@string/ffwd"
-                android:src="@drawable/forward_button"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/playButton"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <Button
-            android:id="@+id/saveButton"
-            style="@android:style/Widget.Material.Button.Borderless.Colored"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/margin48"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+        <ImageButton
+            android:id="@+id/forwardButton"
+            style="@android:style/MediaButton"
+            android:layout_width="64dip"
+            android:layout_height="52dip"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/playButton"
+            android:contentDescription="@string/ffwd"
+            android:src="@drawable/forward_button"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="@dimen/margin38"
-            android:text="@string/save_as_preview"
-            android:textColor="@color/text_btn_primary_color"
-            android:textAllCaps="false"
-            android:background="@drawable/btn_primary_background"
-            android:layout_marginStart="@dimen/marginTwenty"
-            android:layout_marginEnd="@dimen/marginTwenty"/>
-
+            app:layout_constraintStart_toEndOf="@+id/playButton"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.cardview.widget.CardView>
+    <Button
+        android:id="@+id/saveButton"
+        style="@android:style/Widget.Material.Button.Borderless.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin48"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/margin38"
+        android:text="@string/save_as_preview"
+        android:textColor="@color/text_btn_primary_color"
+        android:textAllCaps="false"
+        android:background="@drawable/btn_primary_background"
+        android:layout_marginStart="@dimen/marginTwenty"
+        android:layout_marginEnd="@dimen/marginTwenty"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
