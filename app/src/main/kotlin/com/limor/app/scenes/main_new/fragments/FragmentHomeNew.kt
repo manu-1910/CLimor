@@ -3,23 +3,36 @@ package com.limor.app.scenes.main_new.fragments
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.media.AudioFormat
+import android.media.AudioManager
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
 import com.limor.app.R
+import com.limor.app.audio.wav.waverecorder.WaveRecorder
+import com.limor.app.audio.wav.waverecorder.calculateAmplitude
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentHomeNewBinding
@@ -31,16 +44,31 @@ import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.adapters.HomeFeedAdapter
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
+import com.limor.app.scenes.main_new.view.BottomSheetEditPreview
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.UIDraft
 import com.xwray.groupie.viewbinding.BindableItem
 import kotlinx.android.synthetic.main.fragment_home_new.*
+import kotlinx.android.synthetic.main.fragment_record.*
+import kotlinx.android.synthetic.main.fragment_record.view.*
+import kotlinx.android.synthetic.main.sheet_edit_preview.view.*
+import kotlinx.android.synthetic.main.sheet_edit_preview.view.playButton
+import kotlinx.android.synthetic.main.sheet_edit_preview.view.playVisualizer
+import kotlinx.android.synthetic.main.sheet_more_draft.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.toast
 import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
+import kotlin.math.sqrt
 
 class FragmentHomeNew : BaseFragment() {
 
@@ -203,6 +231,9 @@ class FragmentHomeNew : BaseFragment() {
             },
             onUserMentionClick = { username, userId ->
                 context?.let { context -> UserProfileActivity.show(context, username, userId) }
+            },
+            onEditPreviewClick = {
+                BottomSheetEditPreview.newInstance(it).show(requireActivity().supportFragmentManager, BottomSheetEditPreview.TAG)
             }
         )
     }
@@ -277,6 +308,118 @@ class FragmentHomeNew : BaseFragment() {
 
     private fun scrollList(){
         binding.rvHome.scrollBy(0, 10)
+    }
+
+    private fun showEditPreviewDialog() {
+        /*val bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialog)
+        val dialogView = layoutInflater.inflate(R.layout.sheet_edit_preview, null)
+        val behaviour = bottomSheetDialog.behavior
+        behaviour.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetDialog.setContentView(dialogView)
+        bottomSheetDialog.setCancelable(true)
+
+        val mediaPlayer = MediaPlayer()
+
+        dialogView.playButton.setOnClickListener {
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
+                dialogView.playButton.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_play
+                    )
+                )
+            } else {
+                lifecycleScope.launch {
+                    mediaPlayer.setDataSource("/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/1637835053364.wav")
+                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+
+                    val seekHandler: Handler = Handler(Looper.getMainLooper())
+                    val seekUpdater: Runnable = object : Runnable {
+                        override fun run() {
+                            seekHandler.postDelayed(this, 100)
+                            mediaPlayer.let {
+                                if (it.isPlaying) {
+                                    val currentPosition = it.currentPosition
+                                    dialogView.playVisualizer.updateTime(currentPosition.toLong(), true)
+                                }
+                            }
+                        }
+                    }
+
+                    val mRecorder = WaveRecorder("/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/1637835053364.wav")
+                    mRecorder.waveConfig.sampleRate = 44100
+                    mRecorder.waveConfig.channels = AudioFormat.CHANNEL_IN_STEREO
+                    mRecorder.waveConfig.audioEncoding = AudioFormat.ENCODING_PCM_16BIT
+                    val amps: List<Int> = loadAmps("/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/1637835053364.wav", mRecorder.bufferSize)
+
+                    mediaPlayer.prepareAsync()
+                    dialogView.playVisualizer.visibility = View.VISIBLE
+
+                    mediaPlayer.setOnCompletionListener {
+                        dialogView.playVisualizer.updateTime(mediaPlayer.duration.toLong(), false)
+                        it.pause()
+                        dialogView.playButton.setImageDrawable(
+                            ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.ic_play
+                            )
+                        )
+                    }
+                    mediaPlayer.setOnPreparedListener {
+                        it.start()
+                        dialogView.playButton.setImageDrawable(
+                            ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.ic_pause
+                            )
+                        )
+                        seekHandler.post(seekUpdater)
+                    }
+
+                    dialogView.playVisualizer.apply {
+                        ampNormalizer = { sqrt(it.toFloat()).toInt() }
+                    }
+                    dialogView.playVisualizer.setWaveForm(
+                        amps,
+                        mRecorder.tickDuration
+                    )
+                }
+            }
+        }
+
+        dialogView.rewindButton.setOnClickListener{
+
+        }
+
+        dialogView.forwardButton.setOnClickListener{
+
+        }
+
+        dialogView.saveButton.setOnClickListener{
+            bottomSheetDialog.dismiss()
+        }
+
+        bottomSheetDialog.apply {
+            show()
+            window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }*/
+    }
+
+    @Suppress("BlockingMethodInNonBlockingContext")
+    suspend fun loadAmps(recordFile: String, bufferSize: Int): List<Int> = withContext(Dispatchers.IO) {
+        val amps = mutableListOf<Int>()
+        val buffer = ByteArray(bufferSize)
+        File(recordFile).inputStream().use {
+            it.skip(44.toLong())
+
+            var count = it.read(buffer)
+            while (count > 0) {
+                amps.add(buffer.calculateAmplitude())
+                count = it.read(buffer)
+            }
+        }
+        amps
     }
 
 }
