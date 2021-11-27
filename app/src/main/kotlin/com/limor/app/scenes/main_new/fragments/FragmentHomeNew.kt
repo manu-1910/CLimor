@@ -208,7 +208,9 @@ class FragmentHomeNew : BaseFragment() {
                 context?.let { context -> UserProfileActivity.show(context, username, userId) }
             },
             onEditPreviewClick = {
-                EditPreviewDialog.newInstance(it).show(requireActivity().supportFragmentManager, EditPreviewDialog.TAG)
+                EditPreviewDialog.newInstance(it).also { fragment ->
+                    fragment.show(parentFragmentManager, fragment.requireTag())
+                }
             }
         )
     }
