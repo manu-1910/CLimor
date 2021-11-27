@@ -136,6 +136,16 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             loadGui(rootView);
         }
 
+        if (shouldWaitForAudio()) {
+            return rootView;
+        } else {
+            loadFromFile();
+        }
+
+        return rootView;
+    }
+
+    protected void loadFromFile() {
         // if the soundFile object is not loaded yet, then let's load it
         if (soundFile == null) {
             loadFromFile(fileName); // this method also calls reloadVisualizer
@@ -144,8 +154,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         } else {
             handler.post(this::reloadVisualizer);
         }
-
-        return rootView;
     }
 
     @Override
@@ -1448,5 +1456,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     protected abstract void populateMarkers();
 
+    public boolean shouldWaitForAudio() {
+        return false;
+    }
 
 }
