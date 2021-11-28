@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main_new.view
+package com.limor.app.scenes.main_new.view.editpreview
 
 import android.app.Dialog
 import android.content.DialogInterface

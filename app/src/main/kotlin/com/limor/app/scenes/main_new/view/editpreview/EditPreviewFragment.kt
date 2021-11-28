@@ -1,4 +1,4 @@
-package com.limor.app.scenes.main_new.view
+package com.limor.app.scenes.main_new.view.editpreview
 
 import android.os.Bundle
 import android.util.Log
@@ -7,9 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
-import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
@@ -51,8 +49,7 @@ class EditPreviewFragment : WaveformFragment() {
 
     override fun populateMarkers() {
         val startPixels = waveformView.adjustedMillisecsToPixels(0)
-        val endPixels = waveformView.adjustedMillisecsToPixels(20100)
-        println("End pixels: $endPixels")
+        val endPixels = waveformView.adjustedMillisecsToPixels(5000)
         addMarker(startPixels, endPixels, false, R.color.white)
     }
 

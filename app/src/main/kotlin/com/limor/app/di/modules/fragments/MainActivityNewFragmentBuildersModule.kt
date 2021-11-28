@@ -13,7 +13,7 @@ import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsFragmentNew
 import com.limor.app.scenes.main_new.fragments.*
 import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.fragments.comments.FragmentCommentReplies
-import com.limor.app.scenes.main_new.view.EditPreviewFragment
+import com.limor.app.scenes.main_new.view.editpreview.EditPreviewFragment
 import com.limor.app.scenes.notifications.Notification
 import com.limor.app.scenes.patron.manage.fragment.*
 import com.limor.app.scenes.patron.setup.FragmentPatronCategories
