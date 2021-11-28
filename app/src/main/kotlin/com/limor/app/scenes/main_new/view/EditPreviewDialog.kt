@@ -1,6 +1,7 @@
 package com.limor.app.scenes.main_new.view
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +23,8 @@ class EditPreviewDialog : BottomSheetDialogFragment() {
     private var _binding: SheetEditPreviewBinding? = null
     private val binding get() = _binding!!
 
+    private var editPreviewFragment: EditPreviewFragment? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheet)
@@ -35,13 +38,22 @@ class EditPreviewDialog : BottomSheetDialogFragment() {
         val binding = SheetEditPreviewBinding.inflate(inflater, container, false);
         _binding = binding
 
+        val fragment = EditPreviewFragment.newInstance(cast).apply {
+            // TODO add callbacks...
+        }.also {
+            editPreviewFragment = it
+        }
+
         childFragmentManager.beginTransaction()
-            .replace(R.id.content_container, EditPreviewFragment.newInstance(cast).also {
-                // TODO add callbacks...
-            })
+            .replace(R.id.content_container, fragment)
             .commitNow()
 
         return binding.root
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        editPreviewFragment?.onDestroy()
     }
 
     override fun onDestroyView() {

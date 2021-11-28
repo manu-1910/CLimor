@@ -75,6 +75,11 @@ class EditPreviewFragment : WaveformFragment() {
         setUI(view)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        // TODO stop audio, stop processing etc
+    }
+
     private fun setUI(root: View?) {
         val view = root ?: return
 
@@ -122,6 +127,12 @@ class EditPreviewFragment : WaveformFragment() {
             } catch (e: Exception) {
                 // TODO show error ?
                 Log.d("sdvf", e.toString())
+            }
+
+            try {
+                file.delete()
+            } catch (t: Throwable) {
+                // ignored
             }
         }
     }
