@@ -382,6 +382,14 @@ public class WaveformView extends View {
         return (int) (pixels * (1000.0 * samplesPerFrame) / (sampleRate * z) + 0.5);
     }
 
+    public int adjustedPixelsToMillisecs(int pixels) {
+        if (zoomFactorByZoomLevel == null) {
+            return -1;
+        }
+        double z = zoomFactorByZoomLevel[zoomLevel];
+        return (int) ((pixels / NEW_WIDTH) * (1000.0 * samplesPerFrame) / (sampleRate * z) + 0.5);
+    }
+
     public void setParameters(ArrayList<MarkerSet> markerSets, int offset) {
         this.markerSets = markerSets;
         this.offset = offset;
