@@ -398,7 +398,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
 
-    protected void addMarker(int startPos, int endPos, boolean isEditMarker, Integer color) {
+    protected MarkerSet addMarker(int startPos, int endPos, boolean isEditMarker, Integer color) {
 
         //Only 1 marker is available at same time, except when copy and paste marker is selected
         if (markerSets.size() >= 1 && !isEditMarker) {
@@ -465,6 +465,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         shouldReloadPreview = true;
         isEditMode = isEditMarker;
         updateDisplay();
+
+        return newMarkerSet;
     }
 
 
