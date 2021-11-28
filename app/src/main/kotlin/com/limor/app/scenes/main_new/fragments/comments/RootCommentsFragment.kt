@@ -57,6 +57,7 @@ class RootCommentsFragment : BottomSheetDialogFragment() {
             if (dialog is BottomSheetDialog) {
                 val behavior: BottomSheetBehavior<*> = dialog.behavior
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                behavior.skipCollapsed = true
             }
         }
 
