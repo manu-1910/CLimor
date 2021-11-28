@@ -828,5 +828,6 @@
     <string name="preview_note">Preview must be in between 10 secs to 30 secs</string>
     <string name="save_as_preview">Save as Preview</string>
     <string name="fetching_audio">Fetching audio...</string>
+    <string name="button_save_as_preview">Save as Preview</string>
 
 </resources>

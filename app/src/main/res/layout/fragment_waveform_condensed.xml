@@ -32,7 +32,7 @@
     <RelativeLayout
         android:id="@+id/layWaveform"
         android:layout_width="match_parent"
-        android:layout_height="290dp"
+        android:layout_height="250dp"
         app:layout_constrainedHeight="true"
         android:layout_marginTop="2dp"
         android:background="@color/white"
@@ -58,7 +58,7 @@
         <com.limor.app.scenes.utils.waveform.view.WaveformView
             android:id="@+id/waveform"
             android:layout_width="match_parent"
-            android:layout_height="288dp"
+            android:layout_height="248dp"
             android:layout_above="@id/bottomd"
             android:layout_below="@id/topd" />
 
@@ -184,7 +184,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin24"
-                android:layout_marginBottom="@dimen/marginForty"
+                android:layout_marginBottom="36dp"
                 android:fontFamily="@font/roboto"
                 android:gravity="center_horizontal"
                 android:text="@string/preview_note"
@@ -272,13 +272,13 @@
                     android:id="@+id/nextButtonEdit"
                     style="@android:style/Widget.Material.Button.Borderless.Colored"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_gravity="bottom"
                     android:background="@drawable/bg_round_yellow_ripple_new"
-                    android:fontFamily="@font/roboto_medium"
+                    android:fontFamily="@font/roboto_bold"
                     android:paddingTop="14dp"
                     android:paddingBottom="14dp"
-                    android:text="@string/go_to_publish"
+                    android:text="@string/button_save_as_preview"
                     android:textAllCaps="false"
                     android:textColor="@color/textPrimary"
                     android:textSize="@dimen/textSize14" />
