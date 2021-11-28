@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.os.bundleOf
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
@@ -20,8 +22,13 @@ import org.jetbrains.anko.doAsync
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
+import javax.inject.Inject
 
 class EditPreviewFragment : WaveformFragment() {
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val model: UpdatePreviewViewModel by viewModels { viewModelFactory }
 
     private var progressWrapper: View? = null
     private var progressTitle: TextView? = null
@@ -94,6 +101,26 @@ class EditPreviewFragment : WaveformFragment() {
         waveformView.setZoomInMax(true)
 
         setOnlyShowPreview(true)
+
+        nextButtonEdit.setOnClickListener {
+            updatePreview()
+        }
+    }
+
+    private fun updatePreview() {
+        nextButtonEdit.isEnabled = false
+
+        // TODO stop any currently playing media
+
+        model.updatePreview(podcast = cast).observe(viewLifecycleOwner) { success ->
+            if (success) {
+                // dismiss
+                EditPreviewDialog.DismissEvent.dismiss()
+            } else {
+                // TODO display error message?
+                nextButtonEdit.isEnabled = true
+            }
+        }
     }
 
     override fun useCustomProgressCallback(): Boolean {
