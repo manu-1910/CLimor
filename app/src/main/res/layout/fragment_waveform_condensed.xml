@@ -30,61 +30,60 @@
 
 
     <RelativeLayout
-        android:id="@+id/layWaveform"
+        android:id="@+id/waveFormWrapper"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="248dp"
         app:layout_constrainedHeight="true"
         android:layout_marginTop="2dp"
-        android:background="@color/white"
-        android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintBottom_toTopOf="@id/playersLayout">
-
+        
         <View
-            android:id="@+id/topd"
-            android:background="#F0F3F8"
+            android:layout_marginTop="52dp"
+            android:background="#0f148DFF"
             android:layout_width="match_parent"
-            android:layout_height="1dp"/>
+            android:layout_height="170dp"/>
 
-        <View
-            android:id="@+id/bottomd"
-            android:layout_alignParentBottom="true"
-            android:background="#F0F3F8"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"/>
-
-        <com.limor.app.scenes.utils.waveform.view.WaveformView
-            android:id="@+id/waveform"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="248dp"
-            android:layout_above="@id/bottomd"
-            android:layout_below="@id/topd" />
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            app:layout_constrainedHeight="true"
+            android:id="@+id/layWaveform"
+            android:clipChildren="false">
+
+            <com.limor.app.scenes.utils.waveform.view.WaveformView
+                android:id="@+id/waveform"
+                android:layout_width="match_parent"
+                android:layout_height="248dp" />
+        </RelativeLayout>
 
 
         <LinearLayout
             android:id="@+id/progressWrapper"
-            android:orientation="vertical"
-            android:layout_centerVertical="true"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/progressTitle"
-                android:layout_marginBottom="20dp"
-                android:textAlignment="center"
-                android:fontFamily="@font/roboto_bold"
-                android:textSize="16sp"
-                android:text="@string/fetching_audio"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:fontFamily="@font/roboto_bold"
+                android:text="@string/fetching_audio"
+                android:textAlignment="center"
+                android:textSize="16sp" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
-                android:layout_gravity="center_horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal" />
 
             <ProgressBar
                 android:id="@+id/processingProgressBar"
@@ -94,8 +93,8 @@
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
                 android:indeterminate="false"
-                android:visibility="gone"
-                android:max="100" />
+                android:max="100"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -109,7 +108,7 @@
         android:background="@color/brandSecondary300"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layWaveform" />
+        app:layout_constraintTop_toBottomOf="@id/waveFormWrapper" />
 
 
     <RelativeLayout
@@ -183,7 +182,7 @@
                 android:id="@+id/note_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin24"
+                android:layout_marginTop="20dp"
                 android:layout_marginBottom="36dp"
                 android:fontFamily="@font/roboto"
                 android:gravity="center_horizontal"
