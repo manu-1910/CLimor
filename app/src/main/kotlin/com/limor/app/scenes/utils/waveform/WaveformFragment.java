@@ -706,12 +706,19 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         progressDialog.setTitle(getString(R.string.processing_audio));
         progressDialog.setCancelable(false);
         progressDialog.setOnCancelListener((DialogInterface dialog) -> loadingKeepGoing = false);
-        progressDialog.show();
+
+        if (!useCustomProgressCallback()) {
+            progressDialog.show();
+        }
 
         final SoundFile.ProgressListener listener = (double fractionComplete) -> {
             long now = System.currentTimeMillis();
             if (now - loadingLastUpdateTime > 100) {
-                progressDialog.setProgress((int) (progressDialog.getMax() * fractionComplete));
+                if (useCustomProgressCallback()) {
+                    onProcessingProgress((float) fractionComplete);
+                } else {
+                    progressDialog.setProgress((int) (progressDialog.getMax() * fractionComplete));
+                }
                 loadingLastUpdateTime = now;
             }
             return loadingKeepGoing;
@@ -743,12 +750,16 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     soundFile = SoundFile.create(file.getAbsolutePath(), listener);
                 } catch (OutOfMemoryError e) {
                     e.printStackTrace();
-                    progressDialog.dismiss();
+                    if (!useCustomProgressCallback()) {
+                        progressDialog.dismiss();
+                    }
                     Commons.showAlertYesNo(getContext(), getContext().getString(R.string.title_error), getContext().getString(R.string.error_memory_full), null);
                     return;
                 } catch (final Exception e) {
                     e.printStackTrace();
-                    progressDialog.dismiss();
+                    if (!useCustomProgressCallback()) {
+                        progressDialog.dismiss();
+                    }
                     Commons.showAlertOkButton(getContext(), R.string.title_error, R.string.error_memory_full, null);
                     return;
                 }
@@ -769,7 +780,11 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         touchDragging = false;
         offset = 0;
         offsetGoal = 0;
-        progressDialog.dismiss();
+        if (useCustomProgressCallback()) {
+            onProcessingProgress(1);
+        } else {
+            progressDialog.dismiss();
+        }
         updateDisplay();
         setupSeekBar();
         populateMarkers();
@@ -1462,6 +1477,14 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     public int getLayoutId() {
         return R.layout.fragment_waveform;
+    }
+
+    public boolean useCustomProgressCallback() {
+        return false;
+    }
+
+    public void onProcessingProgress(float progress) {
+
     }
 
 }

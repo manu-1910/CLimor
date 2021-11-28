@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.core.view.updateLayoutParams
@@ -22,6 +24,11 @@ import java.io.FileOutputStream
 import java.net.URL
 
 class EditPreviewFragment : WaveformFragment() {
+
+    private var progressWrapper: View? = null
+    private var progressTitle: TextView? = null
+    private var progressBar: ProgressBar? = null
+    private var processingProgressBar: ProgressBar? = null
 
     private val cast: CastUIModel by lazy {
         requireArguments().getParcelable(KEY_PODCAST)!!
@@ -70,11 +77,27 @@ class EditPreviewFragment : WaveformFragment() {
 
     private fun setUI(root: View?) {
         val view = root ?: return
-        view.findViewById<View>(R.id.seekbar).visibility = View.GONE
-        closeButton.visibility = View.GONE
-        rlPreviewSection.visibility = View.GONE
+
+        progressWrapper = view.findViewById(R.id.progressWrapper)
+        progressTitle = view.findViewById(R.id.progressTitle)
+        progressBar = view.findViewById(R.id.progressBar)
+        processingProgressBar = view.findViewById(R.id.processingProgressBar)
 
         tvToolbarTitle?.text = getString(R.string.edit_preview)
+
+        closeButton.visibility = View.GONE
+    }
+
+    override fun useCustomProgressCallback(): Boolean {
+        return true
+    }
+
+    override fun onProcessingProgress(progress: Float) {
+        val pb = processingProgressBar ?: return
+        pb.progress = (progress * pb.max).toInt()
+        if (progress >= 1) {
+            progressWrapper?.visibility = View.GONE
+        }
     }
 
     override fun getLayoutId(): Int {
@@ -93,9 +116,7 @@ class EditPreviewFragment : WaveformFragment() {
                     FileOutputStream(file).use { output ->
                         input.copyTo(output)
                         WavHelper.convertToWavFile(requireContext(), original, audioFileName)
-                        lifecycleScope.launch {
-                            onDownloadCompelte()
-                        }
+                        lifecycleScope.launch { onDownloadComplete() }
                     }
                 }
             } catch (e: Exception) {
@@ -105,7 +126,11 @@ class EditPreviewFragment : WaveformFragment() {
         }
     }
 
-    private fun onDownloadCompelte() {
+    private fun onDownloadComplete() {
+        progressTitle?.text = getString(R.string.processing_audio)
+        progressBar?.visibility = View.GONE
+        processingProgressBar?.visibility = View.VISIBLE
+
         loadFromFile()
     }
 
