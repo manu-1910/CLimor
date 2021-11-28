@@ -13,8 +13,17 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.limor.app.R
 import com.limor.app.databinding.SheetEditPreviewBinding
 import com.limor.app.uimodels.CastUIModel
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 class EditPreviewDialog : BottomSheetDialogFragment() {
+
+    class DismissEvent {
+        companion object {
+            fun dismiss() = EventBus.getDefault().post(DismissEvent())
+        }
+    }
 
     private val cast: CastUIModel by lazy {
         requireArguments().getParcelable(KEY_PODCAST)!!
@@ -28,6 +37,23 @@ class EditPreviewDialog : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheet)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onDismissEvent(event: DismissEvent) {
+        _binding?.root?.post {
+            dismiss()
+        }
     }
 
     override fun onCreateView(
