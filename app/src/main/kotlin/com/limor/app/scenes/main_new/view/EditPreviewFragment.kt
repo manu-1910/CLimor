@@ -83,6 +83,8 @@ class EditPreviewFragment : WaveformFragment() {
     private fun setUI(root: View?) {
         val view = root ?: return
 
+        nextButtonEdit.isEnabled = false
+
         progressWrapper = view.findViewById(R.id.progressWrapper)
         progressTitle = view.findViewById(R.id.progressTitle)
         progressBar = view.findViewById(R.id.progressBar)
@@ -91,6 +93,8 @@ class EditPreviewFragment : WaveformFragment() {
         tvToolbarTitle?.text = getString(R.string.edit_preview)
 
         closeButton.visibility = View.GONE
+
+        setOnlyShowPreview(true)
     }
 
     override fun useCustomProgressCallback(): Boolean {
@@ -102,6 +106,7 @@ class EditPreviewFragment : WaveformFragment() {
         pb.progress = (progress * pb.max).toInt()
         if (progress >= 1) {
             progressWrapper?.visibility = View.GONE
+            nextButtonEdit.isEnabled = true
         }
     }
 
