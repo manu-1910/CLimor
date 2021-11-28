@@ -208,16 +208,21 @@ public class WaveformView extends View {
             public boolean onScale(ScaleGestureDetector d) {
                 float scaleX = Math.abs(d.getCurrentSpanX());
                 float scaleY = Math.abs(d.getCurrentSpanY());
-                if (scaleX - initialScaleSpanX > 20 || scaleY - initialScaleSpanY > 20) {
+                if (d.getScaleFactor() > 1) {
                     listener.waveformZoomIn();
-                    initialScaleSpanX = scaleX;
-                    initialScaleSpanY = scaleY;
-                }
-                if (scaleX - initialScaleSpanX < -20 || scaleY - initialScaleSpanY < -20) {
+                } else {
                     listener.waveformZoomOut();
-                    initialScaleSpanX = scaleX;
-                    initialScaleSpanY = scaleY;
                 }
+//                if (scaleX - initialScaleSpanX > 20 || scaleY - initialScaleSpanY > 20) {
+//                    listener.waveformZoomIn();
+//                    initialScaleSpanX = scaleX;
+//                    initialScaleSpanY = scaleY;
+//                }
+//                if (scaleX - initialScaleSpanX < -20 || scaleY - initialScaleSpanY < -20) {
+//                    listener.waveformZoomOut();
+//                    initialScaleSpanX = scaleX;
+//                    initialScaleSpanY = scaleY;
+//                }
                 return true;
             }
         });
@@ -262,8 +267,6 @@ public class WaveformView extends View {
         this.soundFile = soundFile;
         sampleRate = soundFile.getSampleRate();
         samplesPerFrame = soundFile.getSamplesPerFrame();
-
-        System.out.println("End pixels duration millis -> " + soundFile.getDurationMillis());
 
         // If longer than 10 minutes add more zoom levels
         if (soundFile.getDurationMillis() > 5 * 60 * 1000) {
