@@ -57,10 +57,47 @@
 
         <com.limor.app.scenes.utils.waveform.view.WaveformView
             android:id="@+id/waveform"
-            android:layout_above="@id/bottomd"
-            android:layout_below="@id/topd"
             android:layout_width="match_parent"
-            android:layout_height="288dp" />
+            android:layout_height="288dp"
+            android:layout_above="@id/bottomd"
+            android:layout_below="@id/topd" />
+
+
+        <LinearLayout
+            android:id="@+id/progressWrapper"
+            android:orientation="vertical"
+            android:layout_centerVertical="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/progressTitle"
+                android:layout_marginBottom="20dp"
+                android:textAlignment="center"
+                android:fontFamily="@font/roboto_bold"
+                android:textSize="16sp"
+                android:text="@string/fetching_audio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ProgressBar
+                android:id="@+id/processingProgressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:indeterminate="false"
+                android:visibility="gone"
+                android:max="100" />
+
+        </LinearLayout>
 
 
 
@@ -96,7 +133,8 @@
                 android:layout_marginStart="@dimen/marginMedium"
                 android:layout_marginTop="@dimen/marginSmall"
                 android:layout_marginEnd="@dimen/marginMedium"
-                android:background="@color/white">
+                android:background="@color/white"
+                android:visibility="gone">
 
                 <SeekBar
                     android:id="@+id/seekBar"
@@ -141,6 +179,18 @@
 
             </RelativeLayout>
 
+            <TextView
+                android:id="@+id/note_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin24"
+                android:layout_marginBottom="@dimen/marginForty"
+                android:fontFamily="@font/roboto"
+                android:gravity="center_horizontal"
+                android:text="@string/preview_note"
+                android:textColor="@color/error_stroke_color"
+                android:textSize="@dimen/textSize14" />
+
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="62dip">
@@ -156,7 +206,8 @@
                     android:gravity="center"
                     android:text="@string/undo"
                     android:textColor="@color/textSecondary"
-                    android:textSize="@dimen/textSize16" />
+                    android:textSize="@dimen/textSize16"
+                    android:visibility="gone" />
 
                 <ImageButton
                     android:id="@+id/rew"
@@ -203,7 +254,8 @@
                     android:gravity="center"
                     android:text="@string/redo"
                     android:textColor="@color/textSecondary"
-                    android:textSize="@dimen/textSize16" />
+                    android:textSize="@dimen/textSize16"
+                    android:visibility="gone" />
             </RelativeLayout>
 
             <LinearLayout
@@ -237,14 +289,13 @@
         <LinearLayout
             android:id="@+id/rlPreviewSection"
             android:paddingTop="@dimen/marginMedium"
-            tools:visibility="gone"
             android:paddingBottom="50dp"
             android:layout_centerVertical="true"
             android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <RelativeLayout
                 android:layout_width="match_parent"
