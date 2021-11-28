@@ -251,13 +251,16 @@ public class SoundFile {
         // estimate of the total size needed to store all the samples in order to resize the buffer
         // only once.
         mDecodedBytes = ByteBuffer.allocate(1<<20);
-        Boolean firstSampleData = true;
+        boolean firstSampleData = true;
+        final boolean isLatm = format.getString(MediaFormat.KEY_MIME).equals("audio/mp4a-latm");
+
         while (true) {
+
             // read data from file and feed it to the decoder input buffers.
-            int inputBufferIndex = codec.dequeueInputBuffer(100);
+            final int inputBufferIndex = codec.dequeueInputBuffer(100);
             if (!done_reading && inputBufferIndex >= 0) {
                 sample_size = extractor.readSampleData(codec.getInputBuffer(inputBufferIndex), 0);
-                if (firstSampleData && format.getString(MediaFormat.KEY_MIME).equals("audio/mp4a-latm") && sample_size == 2) {
+                if (firstSampleData && isLatm && sample_size == 2) {
                     // For some reasons on some devices (e.g. the Samsung S3) you should not
                     // provide the first two bytes of an AAC stream, otherwise the MediaCodec will
                     // crash. These two bytes do not contain music data but basic info on the
@@ -305,9 +308,9 @@ public class SoundFile {
                 if (mDecodedBytes.remaining() < info.size) {
                     // Getting a rough estimate of the total size, allocate 20% more, and
                     // make sure to allocate at least 5MB more than the initial size.
-                    int position = mDecodedBytes.position();
-                    int newSize = (int)((position * (1.0 * mFileSize / tot_size_read)) * 1.2);
-                    newSize = mFileSize;
+                    final int position = mDecodedBytes.position();
+                    // int newSize = (int)((position * (1.0 * mFileSize / tot_size_read)) * 1.2);
+                    int newSize = mFileSize;
                     if (newSize - position < info.size + 5 * (1<<20)) {
                         newSize = position + info.size + 5 * (1<<20);
                     }
@@ -337,13 +340,15 @@ public class SoundFile {
                 }
                 mDecodedBytes.put(decodedSamples, 0, info.size);
                 codec.releaseOutputBuffer(outputBufferIndex, false);
-            } else if (outputBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-//                outputBuffers = codec.getOutputBuffers();
-            } else if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                // Subsequent data will conform to new format.
-                // We could check that codec.getOutputFormat(), which is the new output format,
-                // is what we expect.
             }
+//            else if (outputBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+////                outputBuffers = codec.getOutputBuffers();
+//            } else if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+//                // Subsequent data will conform to new format.
+//                // We could check that codec.getOutputFormat(), which is the new output format,
+//                // is what we expect.
+//            }
+
             if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0 || (mDecodedBytes.position() / (2 * mChannels)) >= expectedNumSamples) {
                 // We got all the decoded data from the decoder. Stop here.
                 // Theoretically dequeueOutputBuffer(info, ...) should have set info.flags to
@@ -357,6 +362,7 @@ public class SoundFile {
                 break;
             }
         }
+
         mNumSamples = mDecodedBytes.position() / (mChannels * 2);  // One sample = 2 bytes.
         mDecodedBytes.rewind();
         mDecodedBytes.order(ByteOrder.LITTLE_ENDIAN);
