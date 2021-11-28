@@ -17,7 +17,7 @@ data class PatronDetails(
     val previewDuration: Float?,
     val startsAt: Float?,
     val endsAt: Float?,
-) {
+) : Parcelable {
     fun getDurationMillis(): Int = ((previewDuration ?: 0f) * 1000).toInt()
     fun getStartsAtMillis(): Int = ((startsAt ?: 0f) * 1000).toInt()
     fun getEndsAtMillis(): Int = ((endsAt ?: 0f) * 1000).toInt()
