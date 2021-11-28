@@ -125,6 +125,12 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         Copy, Paste, Delete, Dismiss, Preview, Cancel
     }
 
+    private boolean onlyShowPreview = false;
+
+    public void setOnlyShowPreview(boolean onlyShowPreview) {
+        this.onlyShowPreview = onlyShowPreview;
+    }
+
     // endregion
 
 
@@ -492,7 +498,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         // with the following line but it's not real. But I insist, be careful, if this fails in the future, take a look at it.
         @SuppressLint("RestrictedApi")
         CustomPopupMenuView menuView = new CustomPopupMenuView(requireContext(), R.menu.menu_popup_edit, new MenuBuilder(requireActivity()));
-        if (marker.getMarkerSet().isMiddleVisible() && marker.getMarkerSet().isEditMarker()) {
+
+        if (onlyShowPreview) {
+            menuView.setMenuItems(Arrays.asList(new OptionMenu(getString(R.string.menu_preview))));
+        } else if (marker.getMarkerSet().isMiddleVisible() && marker.getMarkerSet().isEditMarker()) {
             menuView.setMenuItems(Arrays.asList(
                     new OptionMenu(getString(R.string.menu_paste)),
                     new OptionMenu(getString(R.string.menu_cancel))
