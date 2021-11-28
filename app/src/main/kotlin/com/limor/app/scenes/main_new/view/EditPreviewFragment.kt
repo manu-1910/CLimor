@@ -94,6 +94,8 @@ class EditPreviewFragment : WaveformFragment() {
 
         closeButton.visibility = View.GONE
 
+        waveformView.setZoomInMax(true)
+
         setOnlyShowPreview(true)
     }
 

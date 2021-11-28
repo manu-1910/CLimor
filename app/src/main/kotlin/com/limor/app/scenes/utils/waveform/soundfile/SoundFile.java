@@ -54,6 +54,7 @@ public class SoundFile {
     private int mFileSize;
     private int mAvgBitRate;  // Average bit rate in kbps.
     private int mSampleRate;
+    private long mDuration;
     private int mChannels;
     private int mNumSamples;  // total number of samples per channel in audio file
     private ByteBuffer mDecodedBytes;  // Raw audio data
@@ -70,6 +71,11 @@ public class SoundFile {
     private int[] mFrameOffsets;
 
     public static final int NEW_WIDTH = 20;
+
+    public long getDurationMillis() {
+        // mDuration is in microseconds
+        return (long) (mDuration * 0.001);
+    }
 
     // Progress listener interface.
     public interface ProgressListener {
@@ -228,6 +234,7 @@ public class SoundFile {
         }
         mChannels = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
         mSampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+        mDuration = format.getLong(MediaFormat.KEY_DURATION);
         // Expected total number of samples per channel.
         int expectedNumSamples =
             (int)((format.getLong(MediaFormat.KEY_DURATION) / 1000000.f) * mSampleRate + 0.5f);
