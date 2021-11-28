@@ -42,7 +42,7 @@
         
         <View
             android:layout_marginTop="52dp"
-            android:background="#0f148DFF"
+            android:background="#f1f8ff"
             android:layout_width="match_parent"
             android:layout_height="170dp"/>
 

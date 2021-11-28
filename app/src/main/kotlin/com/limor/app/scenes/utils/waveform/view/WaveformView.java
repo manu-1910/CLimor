@@ -152,7 +152,7 @@ public class WaveformView extends View {
 
         lightBlueBackgroundPaint = new Paint();
         lightBlueBackgroundPaint.setAntiAlias(false);
-        lightBlueBackgroundPaint.setColor(Color.parseColor("#0f148DFF")); //green500
+        lightBlueBackgroundPaint.setColor(Color.parseColor("#f1f8ff")); //green500
 
         dividerBackgroundPaint = new Paint();
         dividerBackgroundPaint.setAntiAlias(false);
