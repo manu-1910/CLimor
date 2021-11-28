@@ -366,8 +366,12 @@ public class WaveformView extends View {
 
     public int millisecsToPixels(int msecs) {
         double z = zoomFactorByZoomLevel[zoomLevel];
-        System.out.println("End pixels zoom factor is " + z + " at zoom level of " + zoomLevel);
         return (int) ((msecs * 1.0 * sampleRate * z) / (1000.0 * samplesPerFrame) + 0.5);
+    }
+
+    public int adjustedMillisecsToPixels(int msecs) {
+        double z = zoomFactorByZoomLevel[zoomLevel];
+        return (int) ((NEW_WIDTH * msecs * 1.0 * sampleRate * z) / (1000.0 * samplesPerFrame) + 0.5);
     }
 
     public int pixelsToMillisecs(int pixels) {
