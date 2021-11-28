@@ -14,9 +14,9 @@ import java.util.*
 @Parcelize
 data class PatronDetails(
     val priceId: String?,
-    val previewDuration: Float?,
-    val startsAt: Float?,
-    val endsAt: Float?,
+    var previewDuration: Float?,
+    var startsAt: Float?,
+    var endsAt: Float?,
 ) : Parcelable {
     fun getDurationMillis(): Int = ((previewDuration ?: 0f) * 1000).toInt()
     fun getStartsAtMillis(): Int = ((startsAt ?: 0f) * 1000).toInt()
