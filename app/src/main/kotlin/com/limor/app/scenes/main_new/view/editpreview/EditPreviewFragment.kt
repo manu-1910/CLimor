@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
+import com.limor.app.scenes.utils.waveform.MarkerSet
 import com.limor.app.scenes.utils.waveform.WaveformFragment
 import com.limor.app.uimodels.CastUIModel
 import kotlinx.android.synthetic.main.fragment_waveform.*
@@ -34,6 +35,8 @@ class EditPreviewFragment : WaveformFragment() {
     private var progressTitle: TextView? = null
     private var progressBar: ProgressBar? = null
     private var processingProgressBar: ProgressBar? = null
+
+    private var marker: MarkerSet? = null
 
     private val cast: CastUIModel by lazy {
         requireArguments().getParcelable(KEY_PODCAST)!!
@@ -57,7 +60,7 @@ class EditPreviewFragment : WaveformFragment() {
     override fun populateMarkers() {
         val startPixels = waveformView.adjustedMillisecsToPixels(0)
         val endPixels = waveformView.adjustedMillisecsToPixels(5000)
-        addMarker(startPixels, endPixels, false, R.color.white)
+        marker =  addMarker(startPixels, endPixels, false, R.color.white)
     }
 
     override fun shouldWaitForAudio(): Boolean {
@@ -108,14 +111,24 @@ class EditPreviewFragment : WaveformFragment() {
     }
 
     private fun updatePreview() {
+        val marker = marker ?: return
+        val details = cast.patronDetails ?: return
+
+        val startsAt = waveformView.adjustedPixelsToMillisecs(marker.startPos) / 1000f
+        val endsAt = waveformView.adjustedPixelsToMillisecs(marker.endPos) / 1000f
+
+        details.startsAt = startsAt
+        details.endsAt = endsAt
+        details.previewDuration = endsAt - startsAt
+
         nextButtonEdit.isEnabled = false
 
         // TODO stop any currently playing media
 
         model.updatePreview(podcast = cast).observe(viewLifecycleOwner) { success ->
             if (success) {
-                // dismiss
                 EditPreviewDialog.DismissEvent.dismiss()
+
             } else {
                 // TODO display error message?
                 nextButtonEdit.isEnabled = true
