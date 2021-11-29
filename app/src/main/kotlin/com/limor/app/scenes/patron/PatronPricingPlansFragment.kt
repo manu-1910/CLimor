@@ -159,6 +159,11 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        billingClient.endConnection()
+    }
+
     private fun startConnectingToClient() {
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
