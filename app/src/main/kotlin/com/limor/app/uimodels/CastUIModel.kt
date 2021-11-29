@@ -12,6 +12,18 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Parcelize
+data class PatronDetails(
+    val priceId: String?,
+    var previewDuration: Float?,
+    var startsAt: Float?,
+    var endsAt: Float?,
+) : Parcelable {
+    fun getDurationMillis(): Int = ((previewDuration ?: 0f) * 1000).toInt()
+    fun getStartsAtMillis(): Int = ((startsAt ?: 0f) * 1000).toInt()
+    fun getEndsAtMillis(): Int = ((endsAt ?: 0f) * 1000).toInt()
+}
+
+@Parcelize
 data class CastUIModel(
     val id: Int,
     val owner: UserUIModel?,
@@ -45,10 +57,7 @@ data class CastUIModel(
     val recaster: UserUIModel?,
     val maturedContent: Boolean?,
     val patronCast: Boolean?,
-    val priceId: String?,
-    val previewDuration: Double?,
-    val startsAt: Double?,
-    val endsAt: Double?
+    val patronDetails: PatronDetails? = null
 ) : Parcelable {
 
     /**
@@ -116,7 +125,7 @@ fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(), recaster = null,
-        maturedContent = false, patronCast = false, previewDuration = 0.0, priceId = "1", startsAt = 0.0, endsAt = 0.0
+        maturedContent = false, patronCast = false
     )
 
 fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
@@ -133,7 +142,7 @@ fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(), recaster = null,
-        maturedContent = false, patronCast = false, previewDuration = 0.0, priceId = "1", startsAt = 0.0, endsAt = 0.0
+        maturedContent = false, patronCast = false
     )
 
 fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
@@ -150,7 +159,7 @@ fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(), recaster = null,
-        maturedContent = false, patronCast = false, previewDuration = 0.0, priceId = "1", startsAt = 0.0, endsAt = 0.0
+        maturedContent = false, patronCast = false
     )
 
 fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
@@ -167,7 +176,7 @@ fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(), recaster = null,
-        maturedContent = false, patronCast = false, previewDuration = 0.0, priceId = "1", startsAt = 0.0, endsAt = 0.0
+        maturedContent = false, patronCast = false
     )
 
 fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
@@ -184,7 +193,7 @@ fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(), recaster = null,
-        maturedContent = false, patronCast = false, previewDuration = 0.0, priceId = "1", startsAt = 0.0, endsAt = 0.0
+        maturedContent = false, patronCast = false
     )
 
 fun GetPatronPodcastsQuery.GetPatronCast.mapToUIModel() =
@@ -201,7 +210,7 @@ fun GetPatronPodcastsQuery.GetPatronCast.mapToUIModel() =
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(), recaster = null,
-        maturedContent = false, patronCast = false, previewDuration = 0.0, priceId = "1", startsAt = 0.0, endsAt = 0.0
+        maturedContent = false, patronCast = false
     )
 
 fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
@@ -220,7 +229,15 @@ fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
         tags = podcast.tags?.caption?.map { it!!.mapToUIModel() },
         mentions = podcast.mentions?.mapToUIModel(),
         links = podcast.links?.mapToUIModel(), recaster = recaster?.mapToUIModel(),
-        maturedContent = podcast.mature_content, patronCast = podcast.patron_cast, previewDuration = podcast.patron_details?.preview_duration, priceId = podcast.patron_details?.price_id, startsAt = podcast.patron_details?.starts_at, endsAt = podcast.patron_details?.ends_at
+        maturedContent = podcast.mature_content, patronCast = podcast.patron_cast,
+        patronDetails = podcast.patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration?.toFloat(),
+                startsAt = it.starts_at?.toFloat(),
+                endsAt = it.ends_at?.toFloat()
+            )
+        }
     )
 
 fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
@@ -237,5 +254,5 @@ fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(), recaster = null,
-        maturedContent = false, patronCast = false, previewDuration = 0.0, priceId = "1", startsAt = 0.0, endsAt = 0.0
+        maturedContent = false, patronCast = false
     )

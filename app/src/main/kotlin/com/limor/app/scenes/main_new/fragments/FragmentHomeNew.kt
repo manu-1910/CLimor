@@ -1,74 +1,45 @@
 package com.limor.app.scenes.main_new.fragments
 
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.media.AudioFormat
-import android.media.AudioManager
-import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
 import com.limor.app.R
-import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.audio.wav.waverecorder.calculateAmplitude
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentHomeNewBinding
 import com.limor.app.extensions.requireTag
-import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.adapters.HomeFeedAdapter
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
-import com.limor.app.scenes.main_new.view.BottomSheetEditPreview
+import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.uimodels.CastUIModel
-import com.limor.app.uimodels.UIDraft
-import com.xwray.groupie.viewbinding.BindableItem
 import kotlinx.android.synthetic.main.fragment_home_new.*
-import kotlinx.android.synthetic.main.fragment_record.*
-import kotlinx.android.synthetic.main.fragment_record.view.*
-import kotlinx.android.synthetic.main.sheet_edit_preview.view.*
-import kotlinx.android.synthetic.main.sheet_edit_preview.view.playButton
-import kotlinx.android.synthetic.main.sheet_edit_preview.view.playVisualizer
-import kotlinx.android.synthetic.main.sheet_more_draft.view.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.okButton
-import org.jetbrains.anko.support.v4.toast
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
-import kotlin.math.sqrt
 
 class FragmentHomeNew : BaseFragment() {
 
@@ -233,7 +204,9 @@ class FragmentHomeNew : BaseFragment() {
                 context?.let { context -> UserProfileActivity.show(context, username, userId) }
             },
             onEditPreviewClick = {
-                BottomSheetEditPreview.newInstance(it).show(requireActivity().supportFragmentManager, BottomSheetEditPreview.TAG)
+                EditPreviewDialog.newInstance(it).also { fragment ->
+                    fragment.show(parentFragmentManager, fragment.requireTag())
+                }
             }
         )
     }
