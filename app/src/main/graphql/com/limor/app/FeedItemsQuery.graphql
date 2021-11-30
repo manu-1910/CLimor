@@ -120,6 +120,7 @@ query FeedItemsQuery($limit: Int!,$offset:Int!){
                 preview_duration
                 starts_at
                 ends_at
+                purchased
             }
         }
         recaster {
