@@ -14,13 +14,12 @@ import java.util.*
 @Parcelize
 data class PatronDetails(
     val priceId: String?,
-    var previewDuration: Float?,
-    var startsAt: Float?,
-    var endsAt: Float?,
+    var previewDuration: Int?,
+    var startsAt: Int?,
+    var endsAt: Int?,
+    val purchased: Boolean?
 ) : Parcelable {
-    fun getDurationMillis(): Int = ((previewDuration ?: 0f) * 1000).toInt()
-    fun getStartsAtMillis(): Int = ((startsAt ?: 0f) * 1000).toInt()
-    fun getEndsAtMillis(): Int = ((endsAt ?: 0f) * 1000).toInt()
+
 }
 
 @Parcelize
@@ -233,9 +232,10 @@ fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
         patronDetails = podcast.patron_details?.let {
             PatronDetails(
                 priceId = it.price_id,
-                previewDuration = it.preview_duration?.toFloat(),
-                startsAt = it.starts_at?.toFloat(),
-                endsAt = it.ends_at?.toFloat()
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased
             )
         }
     )
