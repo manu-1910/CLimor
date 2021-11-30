@@ -3,8 +3,6 @@ package com.limor.app.scenes.utils
 import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Build
 import android.text.Editable
 import android.text.format.DateFormat
@@ -17,12 +15,11 @@ import androidx.viewpager2.widget.ViewPager2
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.scenes.authentication.SignActivity
+import com.limor.app.scenes.main_new.MainActivityNew
 import com.limor.app.uimodels.UIErrorResponse
 import com.skydoves.balloon.ArrowOrientation
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
-import com.skydoves.balloon.createBalloon
-import org.jetbrains.anko.connectivityManager
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.toast
@@ -36,6 +33,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.TimeUnit
+import android.content.res.XmlResourceParser
+import android.util.SparseArray
+import kotlin.collections.HashMap
 
 
 class CommonsKt {
@@ -209,7 +209,7 @@ class CommonsKt {
             button: Button,
             primaryStatus: Boolean,
             textPrimary: Int,
-            textSecondary: Int
+            textSecondary: Int,
         ) {
             if (primaryStatus) {
                 button.background = ContextCompat.getDrawable(
@@ -230,7 +230,7 @@ class CommonsKt {
             button: Button,
             primaryStatus: Boolean,
             textPrimary: Int,
-            textSecondary: Int
+            textSecondary: Int,
         ) {
             if (primaryStatus) {
                 button.background = ContextCompat.getDrawable(
@@ -251,7 +251,7 @@ class CommonsKt {
             button: Button,
             primaryStatus: Boolean,
             textPrimary: Int,
-            textSecondary: Int
+            textSecondary: Int,
         ) {
             if (primaryStatus) {
                 button.background = ContextCompat.getDrawable(
@@ -293,7 +293,7 @@ class CommonsKt {
             app: App,
             context: Context,
             fragment: Fragment,
-            errorResponse: UIErrorResponse
+            errorResponse: UIErrorResponse,
         ) {
             if (app.merlinsBeard!!.isConnected) {
                 val message: StringBuilder = StringBuilder()
@@ -369,6 +369,16 @@ class CommonsKt {
                 isVisibleOverlay = true
                 setDismissWhenOverlayClicked(true)
             }.build()
+        }
+
+        fun getLocalPriceTiers(context: Context) : HashMap<String,String>{
+            val stringArray: Array<String> = context.resources.getStringArray(R.array.cast_tiers)
+            val outputArray = HashMap<String,String>()
+            for (entry in stringArray) {
+                val splitResult = entry.split("\\|".toRegex(), 2).toTypedArray()
+                outputArray[splitResult[0]] = splitResult[1]
+            }
+            return outputArray
         }
 
 
