@@ -14,9 +14,9 @@ class UpdatePreviewViewModel @Inject constructor(
             emit(
                 updatePreviewUseCase.execute(
                     podcast.id,
-                    it.getDurationMillis(),
-                    it.getStartsAtMillis(),
-                    it.getEndsAtMillis(),
+                    it.previewDuration ?: 5000,
+                    it.startsAt ?: 0,
+                    it.endsAt ?: 5000,
                 )
             )
         }
