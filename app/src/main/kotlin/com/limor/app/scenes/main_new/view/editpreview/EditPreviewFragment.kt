@@ -58,8 +58,9 @@ class EditPreviewFragment : WaveformFragment() {
     }
 
     override fun populateMarkers() {
-        val startPixels = waveformView.adjustedMillisecsToPixels(0)
-        val endPixels = waveformView.adjustedMillisecsToPixels(5000)
+        val details = cast.patronDetails ?: return
+        val startPixels = waveformView.adjustedMillisecsToPixels(details.startsAt ?: 0)
+        val endPixels = waveformView.adjustedMillisecsToPixels(details.endsAt ?: 5000)
         marker =  addMarker(startPixels, endPixels, false, R.color.white)
     }
 
@@ -114,8 +115,8 @@ class EditPreviewFragment : WaveformFragment() {
         val marker = marker ?: return
         val details = cast.patronDetails ?: return
 
-        val startsAt = waveformView.adjustedPixelsToMillisecs(marker.startPos) / 1000f
-        val endsAt = waveformView.adjustedPixelsToMillisecs(marker.endPos) / 1000f
+        val startsAt = waveformView.adjustedPixelsToMillisecs(marker.startPos)
+        val endsAt = waveformView.adjustedPixelsToMillisecs(marker.endPos)
 
         details.startsAt = startsAt
         details.endsAt = endsAt

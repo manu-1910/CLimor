@@ -9,14 +9,14 @@ class UpdatePreviewViewModel @Inject constructor(
     private val updatePreviewUseCase: UpdatePreviewUseCase
 ) : ViewModel() {
 
-    fun updatePreview(podcast: CastUIModel) = liveData<Boolean> {
+    fun updatePreview(podcast: CastUIModel) = liveData {
         podcast.patronDetails?.let {
             emit(
                 updatePreviewUseCase.execute(
                     podcast.id,
-                    it.getDurationMillis(),
-                    it.getStartsAtMillis(),
-                    it.getEndsAtMillis(),
+                    it.previewDuration ?: 5000,
+                    it.startsAt ?: 0,
+                    it.endsAt ?: 5000,
                 )
             )
         }
