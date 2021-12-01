@@ -51,8 +51,8 @@ versions.map_utils = "2.2.3"
 versions.coordinator = "1.1.0"
 
 //Firebase
-versions.firebase_bom = "28.1.0"
-versions.firebase_crashlytics_plugin = "2.7.0"
+versions.firebase_bom = "29.0.0"
+versions.firebase_crashlytics_plugin = "2.8.0"
 
 //Kotlin
 versions.kotlin = "1.5.10"

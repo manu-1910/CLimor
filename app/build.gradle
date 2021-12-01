@@ -32,7 +32,7 @@ android {
 
         applicationId globalConfiguration.androidApplicationId
         versionCode 9
-        versionName "0.0.9"
+        versionName "0.0.9-a"
 
         testInstrumentationRunner globalConfiguration.testInstrumentationRunner
         testApplicationId globalConfiguration.testApplicationId
@@ -540,4 +540,6 @@ dependencies {
 
     // OneSignal is a marketing tool, here's more info: https://onesignal.com/
     implementation 'com.onesignal:OneSignal:[4.0.0, 4.99.99]'
+
+    implementation 'com.bugfender.sdk:android:3.+'
 }
