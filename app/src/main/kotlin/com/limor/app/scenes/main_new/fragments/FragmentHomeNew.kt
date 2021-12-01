@@ -1,43 +1,29 @@
 package com.limor.app.scenes.main_new.fragments
 
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.media.AudioFormat
-import android.media.AudioManager
-import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.android.billingclient.api.*
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
 import com.limor.app.R
-import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.audio.wav.waverecorder.calculateAmplitude
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentHomeNewBinding
 import com.limor.app.extensions.requireTag
-import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
@@ -48,27 +34,17 @@ import com.limor.app.scenes.main_new.view.BottomSheetEditPreview
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
+import com.limor.app.service.PlayBillingHandler
 import com.limor.app.uimodels.CastUIModel
-import com.limor.app.uimodels.UIDraft
-import com.xwray.groupie.viewbinding.BindableItem
 import kotlinx.android.synthetic.main.fragment_home_new.*
-import kotlinx.android.synthetic.main.fragment_record.*
-import kotlinx.android.synthetic.main.fragment_record.view.*
-import kotlinx.android.synthetic.main.sheet_edit_preview.view.*
-import kotlinx.android.synthetic.main.sheet_edit_preview.view.playButton
-import kotlinx.android.synthetic.main.sheet_edit_preview.view.playVisualizer
-import kotlinx.android.synthetic.main.sheet_more_draft.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.okButton
-import org.jetbrains.anko.support.v4.toast
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
-import kotlin.math.sqrt
 
 class FragmentHomeNew : BaseFragment() {
 
@@ -79,7 +55,9 @@ class FragmentHomeNew : BaseFragment() {
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
     private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
     private val podcastInteractionViewModel: PodcastInteractionViewModel by activityViewModels { viewModelFactory }
-
+    @Inject
+    lateinit var playBillingHandler: PlayBillingHandler
+    var inAppProducts: List<SkuDetails>? = null
     lateinit var binding: FragmentHomeNewBinding
 
     private var homeFeedAdapter: HomeFeedAdapter? = null
@@ -99,11 +77,49 @@ class FragmentHomeNew : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initPlayHandler()
         initSwipeToRefresh()
         createAdapter()
         setUpRecyclerView()
         subscribeToViewModel()
         setOnClicks()
+    }
+
+    private fun initPlayHandler() {
+        playBillingHandler.connectToBillingClient{ connected ->
+            if (connected) {
+                // The BillingClient is ready. You can query purchases here.
+                lifecycleScope.launch {
+                    fetchProducts()
+                }
+            }
+        }
+    }
+
+    private suspend fun fetchProducts() {
+        val tiers = CommonsKt.getLocalPriceTiers(requireContext())
+        val ids = tiers.keys.toTypedArray().toCollection(ArrayList())
+        //val ids = arrayListOf("com.limor.dev.monthly_plan")
+        Timber.d("Billing $ids")
+        inAppProducts = playBillingHandler.queryInAppSKUDetails(ids) { purchase ->
+            //Handle Purchase, should be consumed it right away
+            val consumeParams =
+                ConsumeParams.newBuilder()
+                    .setPurchaseToken(purchase.purchaseToken)
+                    .build()
+            lifecycleScope.launch {
+                playBillingHandler.consumePurchase(consumeParams)
+            }
+        }
+        Timber.d("Saved $inAppProducts")
+
+
+    }
+
+    private fun launchPurchaseCast(sku: SkuDetails?) {
+        sku?.let{
+            playBillingHandler.launchBillingFlowFor(it,requireActivity())
+        }
     }
 
     private fun setOnClicks() {
@@ -234,6 +250,9 @@ class FragmentHomeNew : BaseFragment() {
             },
             onEditPreviewClick = {
                 BottomSheetEditPreview.newInstance(it).show(requireActivity().supportFragmentManager, BottomSheetEditPreview.TAG)
+            },
+            onPurchaseCast = { cast, sku ->
+                launchPurchaseCast(sku)
             }
         )
     }
@@ -422,4 +441,8 @@ class FragmentHomeNew : BaseFragment() {
         amps
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        playBillingHandler.close()
+    }
 }

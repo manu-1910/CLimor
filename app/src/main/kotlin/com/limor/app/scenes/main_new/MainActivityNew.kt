@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.android.billingclient.api.*
 import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.limor.app.R
@@ -30,6 +31,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main_new.*
+import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -45,8 +47,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     lateinit var playerBinder: PlayerBinder
 
 
-    @Inject
-    lateinit var playBillingHandler: PlayBillingHandler
+
 
     private var activityPlayerViewManager: ActivityPlayerViewManager? = null
 
@@ -72,8 +73,6 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
             JwtChecker.getUserIdFromJwt(false)?.let {
                 PrefsHandler.saveCurrentUserId(this@MainActivityNew, it)
             }
-            val tiers = CommonsKt.getLocalPriceTiers(this@MainActivityNew)
-            playBillingHandler.queryInAppSKUDetails(tiers.keys.toTypedArray().toCollection(ArrayList()) )
         }
     }
 

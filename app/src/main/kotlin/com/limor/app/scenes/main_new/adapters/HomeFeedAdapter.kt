@@ -5,6 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.SkuDetails
 import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.databinding.ItemHomeFeedRecastedBinding
 import com.limor.app.databinding.ItemLoadMoreBinding
@@ -24,7 +26,8 @@ class HomeFeedAdapter(
     private val onLoadMore: () -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val onUserMentionClick: (username: String, userId: Int) -> Unit,
-    private val onEditPreviewClick: (cast: CastUIModel) -> Unit
+    private val onEditPreviewClick: (cast: CastUIModel) -> Unit,
+    private val onPurchaseCast: (cast: CastUIModel, sku: SkuDetails?) -> Unit
 ) : ListAdapter<CastUIModel, RecyclerView.ViewHolder>(
     HomeFeedDiffCallback()
 ) {
@@ -93,7 +96,8 @@ class HomeFeedAdapter(
                     onReloadData,
                     onHashTagClick,
                     onUserMentionClick,
-                    onEditPreviewClick
+                    onEditPreviewClick,
+                    onPurchaseCast
                 )
             }
             else -> {

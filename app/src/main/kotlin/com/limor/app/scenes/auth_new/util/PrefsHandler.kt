@@ -3,11 +3,13 @@ package com.limor.app.scenes.auth_new.util
 import android.content.Context
 import android.preference.PreferenceManager
 import androidx.core.content.edit
+import com.android.billingclient.api.SkuDetails
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.limor.app.uimodels.UILocations
 import com.limor.app.uimodels.UILocationsList
 import com.limor.app.util.AppState
+import timber.log.Timber
 import java.lang.reflect.Type
 
 
@@ -127,6 +129,17 @@ object PrefsHandler {
 
     fun getBoolean(context: Context, s: String): Any {
         return sharedPreferences(context).getBoolean(s,false)
+    }
+
+    fun getSkuDetails(context: Context,s: String): SkuDetails? {
+        val skuDetails = Gson().fromJson(sharedPreferences(context).getString(s,""), SkuDetails::class.java)
+        Timber.d("Saved get cast $s ---- $skuDetails")
+        return skuDetails
+    }
+
+    fun saveSkuDetails(context: Context,s: String,v:SkuDetails) {
+        Timber.d("Saved Cast product $s --- $v")
+        sharedPreferences(context).edit().putString(s,Gson().toJson(v)).apply()
     }
 
 }

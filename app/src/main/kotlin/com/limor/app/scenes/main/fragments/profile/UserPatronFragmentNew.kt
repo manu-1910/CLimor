@@ -341,7 +341,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
         binding.termsTV.text = result
         binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
         Timber.d("Current User state -> ${user.patronInvitationStatus} ---")
-        user.isPatron = true
+        user.isPatron = false
         if (currentUser()) {
             if (user.isPatron == true) {
                 //is already a patron
