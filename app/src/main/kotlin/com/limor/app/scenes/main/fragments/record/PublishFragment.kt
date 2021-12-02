@@ -242,7 +242,6 @@ class PublishFragment : BaseFragment() {
             //getCityOfDevice()
             loadDrafts()
 
-            loadDefaults()
 
             deleteDraft()
             apiCallHashTags()
@@ -251,7 +250,8 @@ class PublishFragment : BaseFragment() {
         return rootView
     }
 
-    private fun loadDefaults() {
+    private fun loadCastTiers(productIds: List<String>) {
+        //Get Actual Prices From Play Billing library using these product ids
         val items = listOf(getString(R.string.free_cast_selection), "0.99", "4.99", "9.99", "12.99")
         val adapter =
             ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, items)
@@ -313,6 +313,7 @@ class PublishFragment : BaseFragment() {
 
     private fun updateUIState() {
         if (isPatronUser()) {
+            publishViewModel.getInAppPriceTiers()
             binding.menu.visibility = View.VISIBLE
             binding.paymentTerms.visibility = View.VISIBLE
             val content = SpannableString(getString(R.string.payment_terms))
@@ -334,6 +335,13 @@ class PublishFragment : BaseFragment() {
     private fun subscribeToViewModel() {
         locationViewModel.locationData.observe(viewLifecycleOwner) {
             onNewLocation(it)
+        }
+
+        publishViewModel.inAppPricesData.observe(viewLifecycleOwner){
+            tiers ->
+            tiers?.let{ ids ->
+                loadCastTiers(ids.filterNotNull())
+            }
         }
     }
 
@@ -700,9 +708,9 @@ class PublishFragment : BaseFragment() {
     }
 
     private fun publishCast() {
-        //ensurePreviewIsPaused()
-        //startPublishing()
-        alert("Temporarily blocked publishing until api is fixed").show()
+        ensurePreviewIsPaused()
+        startPublishing()
+        //alert("Temporarily blocked publishing until api is fixed").show()
     }
 
     private fun showPublishPatronCastDialog() {
@@ -1018,8 +1026,12 @@ class PublishFragment : BaseFragment() {
                 latitude = Input.fromNullable(latitude),
                 longitude = Input.fromNullable(longitude),
                 image_url = Input.fromNullable(imageUrlFinal),
-                category_id = publishViewModel.categorySelectedId,
+                category_id = publishViewModel.categorySelectedNamesList.map { it.categoryId },
                 language_code = publishViewModel.languageCode,
+                mature_content = Input.fromNullable(binding.sw18Content.isChecked),
+                color_code = getRandomColorCode(),
+                price_id = Input.absent()
+
             )
         )
         Timber.d("$podcast")
@@ -1057,6 +1069,11 @@ class PublishFragment : BaseFragment() {
         }
         //  publishViewModel.uiPublishRequest = uiPublishRequest
         // publishPodcastTrigger.onNext(Unit)
+    }
+
+    private fun getRandomColorCode(): Input<String> {
+        val colorsArray = resources.getStringArray(R.array.feed_colors)
+        return Input.fromNullable(colorsArray[Random.nextInt(colorsArray.size)])
     }
 
 
@@ -1726,8 +1743,8 @@ class PublishFragment : BaseFragment() {
     }
 
     private fun isPatronUser(): Boolean {
-        //TODO Should Get User Details here From SharedPref
-        return isPatron
+        //assumes getUserProfile called when home is loaded
+        return CommonsKt.user?.isPatron?:false
     }
 
 

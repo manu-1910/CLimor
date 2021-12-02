@@ -6,23 +6,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.Purchase
-import com.limor.app.FeedItemsQuery
 import com.limor.app.GetPlansQuery
 import com.limor.app.apollo.PublishRepository
 import com.limor.app.common.SingleLiveEvent
 import com.limor.app.type.CreatePodcastInput
-import com.limor.app.uimodels.*
+import com.limor.app.uimodels.UIErrorResponse
+import com.limor.app.uimodels.UIPublishRequest
+import com.limor.app.uimodels.UIPublishResponse
+import com.limor.app.uimodels.UISimpleCategory
+import com.limor.app.usecases.InAppPricesUseCase
 import com.limor.app.usecases.PublishUseCase
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.square1.limor.remote.extensions.parseSuccessResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.HttpException
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -30,8 +30,12 @@ import javax.inject.Inject
 class PublishViewModel @Inject constructor(
     private val publishUseCase: PublishUseCase,
     private val publishRepository: PublishRepository,
+    private val inAppPricesUseCase: InAppPricesUseCase,
 ) : ViewModel() {
 
+    private val _inAppPricesData = MutableLiveData<List<String?>>()
+    val inAppPricesData: LiveData<List<String?>>
+        get() = _inAppPricesData
     var uiPublishRequest = UIPublishRequest(
         podcast = null
     )
@@ -144,6 +148,18 @@ class PublishViewModel @Inject constructor(
             publishRepository.getPlans()
         })
         awaitClose()
+    }
+
+    fun getInAppPriceTiers(){
+        viewModelScope.launch {
+            inAppPricesUseCase.executeInAppProductTiers()
+                .onSuccess {
+                    _inAppPricesData.value = it
+                }
+                .onFailure {
+                    Timber.e(it, "Error while getting in app prices")
+                }
+        }
     }
 
 }

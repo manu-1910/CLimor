@@ -9,6 +9,7 @@ import com.limor.app.apollo.Apollo
 import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.scenes.auth_new.model.UserInfoProvider
 import com.limor.app.scenes.auth_new.util.PrefsHandler
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UserUIModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,6 +41,7 @@ class UserProfileViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val user = generalInfoRepository.getUserProfile()
+                CommonsKt.user = user
                 _userProfileData.postValue(user)
             } catch (e: Exception) {
                 _profileErrorLiveData.postValue(e.localizedMessage)

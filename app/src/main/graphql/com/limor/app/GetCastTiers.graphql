@@ -1,0 +1,5 @@
+query GetCastTiers($type: String! = castPriceTiers) {
+    getInAppPrices(type : $type){
+        castPriceTiers
+    }
+}
