@@ -15,7 +15,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
-import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.calculateAmplitude
 import com.limor.app.common.BaseFragment
@@ -34,6 +33,7 @@ import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.mapToAudioTrack
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -79,7 +79,7 @@ class FragmentHomeNew : BaseFragment() {
 
     private fun setOnClicks() {
         binding.btnNotification.setOnClickListener {
-           findNavController().navigate(R.id.navigation_notifications)
+            findNavController().navigate(R.id.navigation_notifications)
         }
     }
 
@@ -207,6 +207,21 @@ class FragmentHomeNew : BaseFragment() {
                 EditPreviewDialog.newInstance(it).also { fragment ->
                     fragment.show(parentFragmentManager, fragment.requireTag())
                 }
+            },
+            onPlayPreviewClick = { cast, play ->
+                cast.audio?.mapToAudioTrack()?.let { it1 ->
+                    cast.patronDetails?.startsAt?.let { it2 ->
+                        cast.patronDetails.endsAt?.let { it3 ->
+                            if(play){
+                                (activity as? PlayerViewManager)?.playPreview(
+                                    it1, it2.toInt(), it3.toInt()
+                                )
+                            } else{
+                                (activity as? PlayerViewManager)?.stopPreview()
+                            }
+                        }
+                    }
+                }
             }
         )
     }
@@ -235,10 +250,10 @@ class FragmentHomeNew : BaseFragment() {
         val dynamicLink = Firebase.dynamicLinks.dynamicLink {
             link = Uri.parse(podcastLink)
             domainUriPrefix = Constants.LIMOR_DOMAIN_URL
-            androidParameters(BuildConfig.APPLICATION_ID) {
+            androidParameters(com.limor.app.BuildConfig.APPLICATION_ID) {
                 fallbackUrl = Uri.parse(podcastLink)
             }
-            iosParameters(BuildConfig.IOS_BUNDLE_ID) {
+            iosParameters(com.limor.app.BuildConfig.IOS_BUNDLE_ID) {
             }
             socialMetaTagParameters {
                 title = cast.title.toString()
