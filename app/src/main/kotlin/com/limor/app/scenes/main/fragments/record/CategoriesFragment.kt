@@ -110,9 +110,12 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
                     lastCheckedIds.add(chip.id)
                     category.categoryId?.let {
                         //publishViewModel.categorySelectedId = it
-                        publishViewModel.categorySelectedIdsList.add(it)
-                        publishViewModel.categorySelectedNamesList.add(UISimpleCategory(category.name,category.categoryId!!))
-                        publishViewModel.categorySelected = getSelectedCategoriesText()
+                        if (!publishViewModel.categorySelectedNamesList.any { cat -> cat.name == category.name }) {
+                            publishViewModel.categorySelectedIdsList.add(it)
+                            publishViewModel.categorySelectedNamesList.add(UISimpleCategory(category.name,
+                                category.categoryId!!))
+                            publishViewModel.categorySelected = getSelectedCategoriesText()
+                        }
                     }
                 }
                 btnContinue.isEnabled =
@@ -122,7 +125,7 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
                 lastCheckedId = View.NO_ID
                 lastCheckedIds.remove(chip.id)
                 publishViewModel.categorySelectedIdsList.remove(category.categoryId)
-                publishViewModel.categorySelectedNamesList.remove(UISimpleCategory(category.name,category.categoryId!!))
+                publishViewModel.categorySelectedNamesList.removeIf { category.name == it.name }
                 category.isSelected = false
                 btnContinue.isEnabled =
                     cgCategories.checkedChipIds.isNotEmpty() && cgCategories.checkedChipIds.size <= maxSelection
