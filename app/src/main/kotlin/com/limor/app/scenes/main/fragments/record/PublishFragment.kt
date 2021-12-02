@@ -96,6 +96,7 @@ import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.okButton
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.textDescription
 import kotlinx.android.synthetic.main.dialog_publish_patron_free_cast.view.*
 import kotlinx.android.synthetic.main.fragment_publish.*
+import kotlinx.android.synthetic.main.fragment_publish_categories.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
@@ -1103,15 +1104,7 @@ class PublishFragment : BaseFragment() {
             lytImagePlaceholder?.visibility = View.VISIBLE
             lytImage?.visibility = View.INVISIBLE
         }
-        if (uiDraft.category.toString().isNotEmpty()) {
-            tvSelectedCategory?.text = uiDraft.category
-            this.isCategorySelected = true
-        } else {
-            tvSelectedCategory?.text = publishViewModel.categorySelected
-            uiDraft.category = publishViewModel.categorySelected
-            uiDraft.categories = publishViewModel.categorySelectedNamesList
-            uiDraft.categoryId = publishViewModel.categorySelectedId
-        }
+
         if (!uiDraft.location?.address.toString().isNullOrEmpty()) {
             tvSelectedLocation?.text = uiDraft.location?.address
         } else {
@@ -1139,8 +1132,16 @@ class PublishFragment : BaseFragment() {
             uiDraft.categories?.let{
                 Timber.d("Categories -> $it")
                 if(it.isNotEmpty()){
+                    this.isCategorySelected = true
                     publishViewModel.categorySelectedNamesList = (it as ArrayList<UISimpleCategory>)
+                    publishViewModel.categorySelected = getSelectedCategoriesText()
+                }else{
+                    uiDraft.category = publishViewModel.categorySelected
+                    uiDraft.categories = publishViewModel.categorySelectedNamesList
+                    uiDraft.categoryId = publishViewModel.categorySelectedId
                 }
+                tvSelectedCategory?.text = publishViewModel.categorySelected
+
             }
 
 
@@ -1171,6 +1172,21 @@ class PublishFragment : BaseFragment() {
         callToUpdateDraft()
     }
 
+    fun getSelectedCategoriesText(): String {
+        val selections = publishViewModel.categorySelectedNamesList
+        return when {
+            selections.isEmpty() -> {
+                ""
+            }
+            selections.size > 1 -> {
+                "${selections[0].name} +${selections.size - 1}"
+            }
+            else -> {
+                selections[0].name
+            }
+        }
+
+    }
 
     private fun loadImagePicker() {
         ImagePicker.create(this)

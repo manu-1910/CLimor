@@ -133,7 +133,7 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
         return chip
     }
 
-    private fun getSelectedCategoriesText(): String {
+    fun getSelectedCategoriesText(): String {
         val selections = publishViewModel.categorySelectedNamesList
         return when {
             selections.isEmpty() -> {
