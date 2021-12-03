@@ -1011,6 +1011,14 @@ class PublishFragment : BaseFragment() {
         val tags = etDraftTags?.text.toString()
         val fullCaption = "$caption${if (caption.isEmpty()) "" else "\n\n"}$tags"
 
+        var priceId = Input.absent<String>()
+        var selectedCats = publishViewModel.categorySelectedNamesList.map { it.categoryId }
+        if(!isPatronUser()){
+            selectedCats = selectedCats.subList(0,1)
+        }else{
+            //TODO update with the value selected from drop down menu
+            priceId = Input.fromNullable("com.limor.dev.tier_1")
+        }
         val podcast = CreatePodcastInput(
             audio = PodcastAudio(
                 audio_url = audioUrlFinal.toString(),
@@ -1026,11 +1034,11 @@ class PublishFragment : BaseFragment() {
                 latitude = Input.fromNullable(latitude),
                 longitude = Input.fromNullable(longitude),
                 image_url = Input.fromNullable(imageUrlFinal),
-                category_id = publishViewModel.categorySelectedNamesList.map { it.categoryId },
+                category_id = selectedCats,
                 language_code = publishViewModel.languageCode,
                 mature_content = Input.fromNullable(binding.sw18Content.isChecked),
                 color_code = getRandomColorCode(),
-                price_id = Input.absent()
+                price_id = priceId
 
             )
         )
