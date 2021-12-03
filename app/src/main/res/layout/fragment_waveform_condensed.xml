@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/white"
     android:clickable="true"
     android:focusable="true"
@@ -30,21 +30,75 @@
 
 
     <RelativeLayout
-        android:id="@+id/layWaveform"
+        android:id="@+id/waveFormWrapper"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="248dp"
         app:layout_constrainedHeight="true"
         android:layout_marginTop="2dp"
-        android:background="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintBottom_toTopOf="@id/playersLayout">
-
-        <com.limor.app.scenes.utils.waveform.view.WaveformView
-            android:id="@+id/waveform"
+        
+        <View
+            android:layout_marginTop="52dp"
+            android:background="#f1f8ff"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="170dp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="248dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            app:layout_constrainedHeight="true"
+            android:id="@+id/layWaveform"
+            android:clipChildren="false">
+
+            <com.limor.app.scenes.utils.waveform.view.WaveformView
+                android:id="@+id/waveform"
+                android:layout_width="match_parent"
+                android:layout_height="248dp" />
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:id="@+id/progressWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/progressTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:fontFamily="@font/roboto_bold"
+                android:text="@string/fetching_audio"
+                android:textAlignment="center"
+                android:textSize="16sp" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal" />
+
+            <ProgressBar
+                android:id="@+id/processingProgressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:indeterminate="false"
+                android:max="100"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+
 
     </RelativeLayout>
 
@@ -54,7 +108,7 @@
         android:background="@color/brandSecondary300"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layWaveform" />
+        app:layout_constraintTop_toBottomOf="@id/waveFormWrapper" />
 
 
     <RelativeLayout
@@ -78,7 +132,8 @@
                 android:layout_marginStart="@dimen/marginMedium"
                 android:layout_marginTop="@dimen/marginSmall"
                 android:layout_marginEnd="@dimen/marginMedium"
-                android:background="@color/white">
+                android:background="@color/white"
+                android:visibility="gone">
 
                 <SeekBar
                     android:id="@+id/seekBar"
@@ -123,6 +178,18 @@
 
             </RelativeLayout>
 
+            <TextView
+                android:id="@+id/note_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="36dp"
+                android:fontFamily="@font/roboto"
+                android:gravity="center_horizontal"
+                android:text="@string/preview_note"
+                android:textColor="@color/error_stroke_color"
+                android:textSize="@dimen/textSize14" />
+
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="62dip">
@@ -138,7 +205,8 @@
                     android:gravity="center"
                     android:text="@string/undo"
                     android:textColor="@color/textSecondary"
-                    android:textSize="@dimen/textSize16" />
+                    android:textSize="@dimen/textSize16"
+                    android:visibility="gone" />
 
                 <ImageButton
                     android:id="@+id/rew"
@@ -185,7 +253,8 @@
                     android:gravity="center"
                     android:text="@string/redo"
                     android:textColor="@color/textSecondary"
-                    android:textSize="@dimen/textSize16" />
+                    android:textSize="@dimen/textSize16"
+                    android:visibility="gone" />
             </RelativeLayout>
 
             <LinearLayout
@@ -202,15 +271,15 @@
                     android:id="@+id/nextButtonEdit"
                     style="@android:style/Widget.Material.Button.Borderless.Colored"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_gravity="bottom"
-                    android:background="@drawable/bg_round_yellow_ripple_new"
-                    android:fontFamily="@font/roboto_medium"
+                    android:background="@drawable/btn_primary_background"
+                    android:fontFamily="@font/roboto_bold"
                     android:paddingTop="14dp"
                     android:paddingBottom="14dp"
-                    android:text="@string/go_to_publish"
+                    android:text="@string/button_save_as_preview"
                     android:textAllCaps="false"
-                    android:textColor="@color/textPrimary"
+                    android:textColor="@color/text_btn_primary_color"
                     android:textSize="@dimen/textSize14" />
 
             </LinearLayout>
@@ -219,14 +288,19 @@
         <LinearLayout
             android:id="@+id/rlPreviewSection"
             android:paddingTop="@dimen/marginMedium"
-            tools:visibility="gone"
             android:paddingBottom="50dp"
             android:layout_centerVertical="true"
             android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="gone">
+
+            <View
+                android:background="#F0F3F8"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="15dp"
+                android:layout_height="2dp"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"

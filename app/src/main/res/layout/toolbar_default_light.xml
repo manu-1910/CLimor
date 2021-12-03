@@ -48,12 +48,12 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="@dimen/marginSmall"
             android:fontFamily="@font/roboto_medium"
-            android:textColor="@color/colorAccent"
-            android:textSize="@dimen/textSize16"
-            tools:text="Right"
             android:gravity="center_vertical"
             android:textAllCaps="false"
-            android:visibility="visible"/>
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/textSize16"
+            android:visibility="visible"
+            tools:text="Right" />
 
     </RelativeLayout>
 </androidx.appcompat.widget.Toolbar>

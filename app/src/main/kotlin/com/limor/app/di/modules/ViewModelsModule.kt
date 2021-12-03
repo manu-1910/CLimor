@@ -17,6 +17,7 @@ import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchViewMod
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleViewModel
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsViewModel
 import com.limor.app.scenes.main.viewmodels.*
+import com.limor.app.scenes.main_new.view.editpreview.UpdatePreviewViewModel
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.main_new.view_model.ListenPodcastViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
@@ -373,5 +374,10 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(ManagePatronViewModel::class)
     abstract fun bindManagePatronViewModel(viewModel: ManagePatronViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(UpdatePreviewViewModel::class)
+    abstract fun bindUpdatePreviewViewModel(viewModel: UpdatePreviewViewModel): ViewModel
 
 }

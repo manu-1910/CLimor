@@ -1,9 +1,8 @@
 package com.limor.app.scenes.main_new.adapters.vh
 
 import android.content.Intent
+import android.os.Handler
 import android.view.View
-import android.widget.TextView
-import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.findViewTreeLifecycleOwner
@@ -11,7 +10,6 @@ import androidx.navigation.findNavController
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.extensions.*
-import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
@@ -29,7 +27,12 @@ class ViewHolderPodcast(
     private val onReloadData: (castId: Int, reload: Boolean) -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val onUserMentionClick: (username: String, userId: Int) -> Unit,
+    private val onEditPreviewClick: (cast: CastUIModel) -> Unit,
+    private val onPlayPreviewClick: (cast: CastUIModel, play: Boolean) -> Unit
 ) : ViewHolderBindable<CastUIModel>(binding) {
+
+    private var playingPreview = false
+
     override fun bind(item: CastUIModel) {
         setPodcastGeneralInfo(item)
         setPodcastOwnerInfo(item)
@@ -120,7 +123,7 @@ class ViewHolderPodcast(
             val bundle = bundleOf(DialogPodcastMoreActions.CAST_KEY to item)
             val navController = it.findNavController()
             it.findViewTreeLifecycleOwner()?.let{
-                ownerLife ->
+                    ownerLife ->
                 navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("reload_feed")?.observe(
                     ownerLife
                 ){
@@ -157,15 +160,27 @@ class ViewHolderPodcast(
         }
 
         binding.btnAddPreview.setOnClickListener {
-
+            onEditPreviewClick(item)
         }
 
         binding.btnEditPrice.setOnClickListener {
-
         }
 
         binding.btnPlayStopPreview.setOnClickListener {
+            playingPreview = !playingPreview
+            binding.btnPlayStopPreview.text = if(playingPreview) "Stop" else "Preview"
+            onPlayPreviewClick(item, playingPreview)
+            item.patronDetails?.previewDuration.let {
+                if (it != null) {
+                    Handler().postDelayed(Runnable {
+                        playingPreview = !playingPreview
+                        binding.btnPlayStopPreview.text = if(playingPreview) "Stop" else "Preview"
+                    }, it.toLong())
+                }
+            }
+        }
 
+        binding.tvPodcastTitle.setOnClickListener {
         }
     }
 

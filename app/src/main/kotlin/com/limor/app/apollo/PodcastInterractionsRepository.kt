@@ -123,4 +123,15 @@ class PodcastInteractionsRepository @Inject constructor(val apollo: Apollo) {
         val result = apollo.mutate(mutation)
         return result?.data?.updateComment?.content
     }
+
+    suspend fun updatePreview(
+        podcastId: Int,
+        previewDuration: Int,
+        startsAt: Int,
+        endsAt: Int
+    ): Boolean {
+        val mutation = UpdatePreviewMutation(podcastId, previewDuration, startsAt, endsAt)
+        val result = apollo.mutate(mutation)
+        return result?.data?.updateCastPreview?.status == "Success"
+    }
 }
