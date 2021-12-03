@@ -44,7 +44,7 @@ class FirebaseMessenger : FirebaseMessagingService() {
             Timber.d("Push message (Pusher) --> $json")
         }
 
-       // val notification = remoteMessage.notification
+        //val notification = remoteMessage.notification
         val data = remoteMessage.data
         try {
             val dataObject = JSONObject(Gson().toJson(data))

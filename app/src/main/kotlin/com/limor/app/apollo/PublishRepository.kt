@@ -71,6 +71,11 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
         return apollo.launchQuery(query)?.data?.getPatronCategories ?: emptyList()
     }
 
+    suspend fun getInAppPricesTiers(): List<String?> {
+        val query = GetCastTiersQuery("castPriceTiers")
+        return apollo.launchQuery(query)?.data?.getInAppPrices?.castPriceTiers ?: emptyList()
+    }
+
     suspend fun getPlans(): List<GetPlansQuery.Plan?>? {
         val query = GetPlansQuery()
         val queryResult = apollo.launchQuery(query)

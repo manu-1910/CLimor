@@ -701,6 +701,14 @@
         <item quantity="other">%d Listens</item>
     </plurals>
 
+    <string-array name="feed_colors">
+        <item name="feed_blue">#148DFF</item>
+        <item name="feed_black_off">#172229</item>
+        <item name="feed_limor_color">#FFC550</item>
+        <item name="feed_purple">#623CEA</item>
+        <item name="feed_orange">#FE721C</item>
+    </string-array>
+
     <string name="patron_carousel_slide_1_title">Create AMA <font fgcolor='#F9BB4B'>DM’s</font> and more with your fans</string>
     <string name="patron_carousel_slide_2_title">Create premium <font fgcolor='#F9BB4B'>casts</font> for your community</string>
     <string name="patron_carousel_slide_3_title">Freedom to <font fgcolor='#F9BB4B'>monetize</font> your content</string>
@@ -760,7 +768,7 @@
     <string name="invite_people">Invite %d People</string>
     <string name="joined">Joined</string>
     <string name="update_patron_categories">Update Patron Categories</string>
-    
+
     <string-array name="prices_list">
         <item>0.99</item>
         <item>1.99</item>
