@@ -19,10 +19,10 @@ class SharePodcastViewModel @Inject constructor(
     val sharedResponse: LiveData<ShareCastUIModel?>
         get() = _sharedResponse
 
-    fun share(castId : Int){
+    fun share(castId : Int, shareCount: Int = 1){
         viewModelScope.launch {
             runCatching {
-                val result = sharePodcastUseCase.execute(castId)
+                val result = sharePodcastUseCase.execute(castId, shareCount)
                 _sharedResponse.postValue(result)
             }.onFailure {
                 Timber.e(it, "Error while recasting")

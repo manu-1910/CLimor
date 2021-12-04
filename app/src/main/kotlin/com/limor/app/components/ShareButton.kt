@@ -50,13 +50,9 @@ class ShareButton(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     }
 
     fun applyState(isShared: Boolean){
-        shareBtn.apply {
-            if(isShared){
-                imageTintList = ColorStateList.valueOf(sharedColor)
-            } else{
-                imageTintList = ColorStateList.valueOf(notSharedColor)
-            }
-        }
+        // new requirement as of October 28th, 2021
+        // - the share button shouldn't have state
+        shareBtn.imageTintList = ColorStateList.valueOf(notSharedColor)
     }
 
     fun setStyle(sharedColor: Int = this.sharedColor,

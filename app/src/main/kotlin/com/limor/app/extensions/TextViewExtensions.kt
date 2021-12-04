@@ -2,6 +2,7 @@ package com.limor.app.extensions
 
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
+import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
@@ -27,9 +28,33 @@ fun TextView.highlight(regex: Regex, colorResId: Int) {
 
     val spannable = SpannableString(text)
     for (matchResult in results) {
-        spannable.setSpan(ForegroundColorSpan(color), matchResult.range.first, matchResult.range.last + 1, 0)
+        spannable.setSpan(
+            ForegroundColorSpan(color),
+            matchResult.range.first,
+            matchResult.range.last + 1,
+            0
+        )
     }
     this.text = spannable
+}
+
+fun TextView.setHighlighted(text: String, textToHighlight: String, colorValue: Int) {
+    val spanned = SpannableString(text)
+    textToHighlight
+        .toRegex(RegexOption.IGNORE_CASE)
+        .findAll(text)
+        .map { it.range }
+        .filter { it.last + 1 <= text.length}
+        .forEach {
+            spanned.setSpan(
+                ForegroundColorSpan(colorValue),
+                it.first,
+                it.last + 1,
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE
+            )
+        }
+
+    this.text = spanned
 }
 
 fun TextView.setTextWithTagging(
@@ -68,7 +93,7 @@ fun TextView.setTextWithTagging(
             }
         }
     }
-    
+
     for (tag in listTags) {
         val clickableSpan: ClickableSpan = object : ClickableSpan() {
             override fun updateDrawState(ds: TextPaint) {
@@ -99,7 +124,7 @@ fun TextView.setTextWithTagging(
 }
 
 fun TextView.setRightDrawable(@DrawableRes id: Int = 0, @DimenRes sizeRes: Int) {
-    try{
+    try {
         var drawable: Drawable? = null
         if (id != 0) {
             drawable = ContextCompat.getDrawable(context, id)
@@ -107,7 +132,7 @@ fun TextView.setRightDrawable(@DrawableRes id: Int = 0, @DimenRes sizeRes: Int) 
             drawable?.setBounds(0, 0, size, size)
         }
         this.setCompoundDrawables(null, null, drawable, null)
-    } catch (e: Exception){
+    } catch (e: Exception) {
         e.printStackTrace()
     }
 }

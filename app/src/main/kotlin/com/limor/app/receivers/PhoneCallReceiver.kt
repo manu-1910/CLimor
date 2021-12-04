@@ -13,9 +13,9 @@ class PhoneCallReceiver : BroadcastReceiver() {
         if (intent?.action == "android.intent.action.PHONE_STATE") {
             val phoneState = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
             if (phoneState == TelephonyManager.EXTRA_STATE_RINGING) {
-                EventBus.getDefault().post(PhoneCallEvent())
+                EventBus.getDefault().post(PhoneCallEvent(PhoneCallEvent.RINGING))
             } else if (phoneState == TelephonyManager.EXTRA_STATE_OFFHOOK) {
-                EventBus.getDefault().post(PhoneCallEvent())
+                EventBus.getDefault().post(PhoneCallEvent(PhoneCallEvent.OFFHOOK))
             } else if (phoneState == TelephonyManager.EXTRA_STATE_IDLE) {
             }
         }

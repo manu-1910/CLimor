@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.limor.app.common.ViewModelFactory
 import com.limor.app.di.ViewModelKey
+import com.limor.app.dm.SessionsViewModel
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.authentication.viewmodels.*
 import com.limor.app.scenes.main.fragments.profile.UserProfileViewModel
@@ -370,6 +371,11 @@ abstract class ViewModelsModule {
     @ViewModelKey(UserMentionViewModel::class)
     abstract fun bindUserMentionViewModel(viewModel: UserMentionViewModel): ViewModel
 
+    @Binds
+    @IntoMap
+    @ViewModelKey(SessionsViewModel::class)
+    abstract fun bindSessionsViewModel(viewModel: SessionsViewModel): ViewModel
+  
     @Binds
     @IntoMap
     @ViewModelKey(ManagePatronViewModel::class)

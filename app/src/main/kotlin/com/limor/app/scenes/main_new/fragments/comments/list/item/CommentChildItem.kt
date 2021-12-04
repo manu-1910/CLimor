@@ -1,24 +1,23 @@
 package com.limor.app.scenes.main_new.fragments.comments.list.item
 
-import android.text.SpannableString
-import android.text.TextPaint
-import android.text.TextUtils
+import android.graphics.Color
+import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.load.engine.bitmap_recycle.IntegerArrayAdapter
 import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.ItemChildCommentBinding
-import com.limor.app.databinding.ItemParentCommentBinding
 import com.limor.app.extensions.*
-import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.utils.DateUiUtil
-import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
 import com.xwray.groupie.viewbinding.BindableItem
 import timber.log.Timber
+
 
 /**
  * @param isSimplified - should item be simplified (e.g. comment size limit)
@@ -63,7 +62,7 @@ class CommentChildItem(
             onThreeDotsClick(comment, this, position)
         }
         if (isSimplified) {
-            viewBinding.tvCommentContent.maxLines = 3
+            viewBinding.tvCommentContent.maxLines = 2
             viewBinding.tvCommentContent.ellipsize = TextUtils.TruncateAt.END
         } else {
             viewBinding.tvCommentContent.maxLines = Int.MAX_VALUE
@@ -111,7 +110,10 @@ class CommentChildItem(
             }
         }
         tvCommentContent.text = spannable
-        tvCommentContent.movementMethod = LinkMovementMethod.getInstance();
+        tvCommentContent.movementMethod = LinkMovementMethod.getInstance()
+        val maxLines = if(isSimplified) 2 else Int.MAX_VALUE
+        if(isSimplified)
+            makeTextViewResizable(tvCommentContent, maxLines, "..See More", true)
     }
 
     private fun initAudioPlayer(binding: ItemChildCommentBinding) {
@@ -172,6 +174,78 @@ class CommentChildItem(
         }
     }
 
+    fun makeTextViewResizable(tv: TextView, maxLine: Int, expandText: String, viewMore: Boolean) {
+        if (tv.tag == null) {
+            tv.tag = tv.text
+        }
+        val vto = tv.viewTreeObserver
+        vto.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val obs = tv.viewTreeObserver
+                obs.removeGlobalOnLayoutListener(this)
+                if (maxLine == 0) {
+                    val lineEndIndex = tv.layout.getLineEnd(0)
+                    val text = tv.text.subSequence(0, lineEndIndex - expandText.length + 1)
+                        .toString() + " " + expandText
+                    tv.text = text
+                    tv.setText(
+                        addClickablePartTextViewResizable(
+                            Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
+                            viewMore
+                        ), TextView.BufferType.SPANNABLE
+                    )
+                } else if (maxLine > 0 && tv.lineCount >= maxLine) {
+                    val lineEndIndex = tv.layout.getLineEnd(maxLine - 1) - 10
+                    val text = tv.text.subSequence(0, lineEndIndex - expandText.length + 1)
+                        .toString() + " " + expandText
+                    tv.text = text
+                    tv.setText(
+                        addClickablePartTextViewResizable(
+                            Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
+                            viewMore
+                        ), TextView.BufferType.SPANNABLE
+                    )
+                } else {
+                    tv.setText(
+                        addClickablePartTextViewResizable(
+                            Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
+                            viewMore
+                        ), TextView.BufferType.SPANNABLE
+                    )
+                }
+            }
+        })
+    }
+
+    private fun addClickablePartTextViewResizable(
+        strSpanned: Spanned, tv: TextView,
+        maxLine: Int, spanableText: String, viewMore: Boolean
+    ): SpannableStringBuilder? {
+        val str = strSpanned.toString()
+        val ssb = SpannableStringBuilder(strSpanned)
+        if (str.contains(spanableText)) {
+            ssb.setSpan(object : MySpannable(false) {
+                override fun onClick(widget: View) {
+                    if (viewMore) {
+                        tv.movementMethod = null
+                        tv.maxLines = Int.MAX_VALUE
+                        tv.layoutParams = tv.layoutParams
+                        tv.setText(tv.tag.toString(), TextView.BufferType.SPANNABLE)
+                        tv.invalidate()
+                        makeTextViewResizable(tv, Int.MAX_VALUE, "See Less", false)
+                    } else {
+                        tv.maxLines = 2
+                        tv.layoutParams = tv.layoutParams
+                        tv.setText(tv.tag.toString(), TextView.BufferType.SPANNABLE)
+                        tv.invalidate()
+                        makeTextViewResizable(tv, 3, "..See More", true)
+                    }
+                }
+            }, str.indexOf(spanableText), str.indexOf(spanableText) + spanableText.length, 0)
+        }
+        return ssb
+    }
+
     private fun setListensUI(binding: ItemChildCommentBinding, listensCountValue: Int) {
 
         binding.listensCount.tag = listensCountValue
@@ -201,5 +275,18 @@ class CommentChildItem(
     private fun isOwnerOf(id: Int, comment: CommentUIModel): Boolean {
         Timber.d("Owner Comment $id-> ${comment.user?.id}")
         return id == comment.user?.id
+    }
+}
+open class MySpannable(isUnderline: Boolean) : ClickableSpan() {
+    private var isUnderline = true
+    override fun updateDrawState(ds: TextPaint) {
+        ds.isUnderlineText = isUnderline
+        ds.color = Color.parseColor("#ED9D0C")
+    }
+
+    override fun onClick(widget: View) {}
+
+    init {
+        this.isUnderline = isUnderline
     }
 }

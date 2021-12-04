@@ -10,15 +10,18 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.Configuration
+import com.bugfender.sdk.Bugfender
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
 import com.limor.app.di.AppInjector
 import com.limor.app.di.components.AppComponent
+import com.limor.app.dm.ChatManager
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.service.PlayerBinder
 import com.limor.app.util.AppState
 import com.limor.app.util.CrashReportingTree
 import com.novoda.merlin.MerlinsBeard
+import com.onesignal.OneSignal
 import com.smartlook.sdk.smartlook.Smartlook
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -41,6 +44,9 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
     lateinit var serviceInjector: DispatchingAndroidInjector<Service>
     @Inject
     lateinit var playerBinder: PlayerBinder
+
+    @Inject
+    lateinit var chatManager: ChatManager
 
     private var realm: Realm? = null
     lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -117,6 +123,21 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
 //            }
 //        })
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+
+        // Enable verbose OneSignal logging to debug issues if needed.
+        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
+
+        // OneSignal Initialization
+        OneSignal.initWithContext(this);
+        OneSignal.setAppId(BuildConfig.ONE_SIGNAL_APP_ID);
+
+
+        Bugfender.init(this, "f3uD19EuFhTDd4XaMHCflDlMW5Bo18AZ", BuildConfig.DEBUG)
+        Bugfender.enableCrashReporting()
+        Bugfender.enableUIEventLogging(this)
+        Bugfender.enableLogcatLogging() // optional, if you want logs automatically collected from logcat
+
+        Timber.plant(BugfenderTree())
     }
 
     @OnLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_STOP)

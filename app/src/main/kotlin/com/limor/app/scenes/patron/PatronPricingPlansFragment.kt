@@ -17,16 +17,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.billingclient.api.*
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.FragmentPatronPricingPlansBinding
 import com.limor.app.scenes.main.fragments.profile.ShortPagerAdapter
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jetbrains.anko.design.snackbar
+import org.jetbrains.anko.support.v4.runOnUiThread
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -45,17 +45,13 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
             //This is called once there is some update about purchase after launching the billing flow
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
                 showProgressBar()
-                for (purchase in purchases) {
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        handlePurchase(purchase!!)
-                    }
-                }
+                handlePurchase(purchases.first()!!)
             } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
                 // Handle an error caused by a user cancelling the purchase flow.
-                binding.root.snackbar("Cancelled")
+                binding.root.snackbar(getString(R.string.cancelled))
             } else {
                 // Handle any other error codes.
-                binding.root.snackbar("Try Again Later")
+                binding.root.snackbar(getString(R.string.try_again))
             }
         }
 
@@ -69,26 +65,26 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
     }
 
     private fun hideProgressBar() {
-        binding.progressBar.visibility = View.GONE
-        binding.checkLayout.visibility = View.VISIBLE
-        binding.continueButton.visibility = View.VISIBLE
-        binding.patronPlansRV.visibility = View.VISIBLE
+        lifecycleScope.launch(Dispatchers.Main) {
+            binding.progressBar.visibility = View.GONE
+            binding.checkLayout.visibility = View.VISIBLE
+            binding.continueButton.visibility = View.VISIBLE
+            binding.patronPlansRV.visibility = View.VISIBLE
+        }
     }
 
-    private suspend fun handlePurchase(purchase: Purchase) {
+    private fun handlePurchase(purchase: Purchase) {
         // Verify the purchase.
         Timber.d("PURCHASE ${purchase.purchaseToken}")
         Timber.d("PURCHASE ${purchase.packageName}")
-        model.consumePurchasedSub(purchase).collect {
+        model.consumePurchasedSub(purchase).observe(viewLifecycleOwner, {
             if (it == "Success") {
-                lifecycleScope.launch(Dispatchers.Main){
-                    binding.progressBar.visibility = View.GONE
-                    findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
-                }
-            }else{
+                findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
+            } else {
                 hideProgressBar()
             }
         }
+        )
         /*val consumeParams =
             ConsumeParams.newBuilder()
                 .setPurchaseToken(purchase.purchaseToken)
@@ -107,7 +103,6 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
             }
 
         }*/
-
 
 
     }
@@ -158,6 +153,15 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
 
         binding.termsTV.setOnClickListener { binding.termsCheckBox.performClick() }
         binding.ukAccountText.setOnClickListener { binding.accCheckBox.performClick() }
+
+        binding.backButton.setOnClickListener {
+            activity?.onBackPressed()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        billingClient.endConnection()
     }
 
     private fun startConnectingToClient() {
@@ -166,7 +170,7 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
                 Timber.d("Billing Result -> ${billingResult.responseCode}")
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     // The BillingClient is ready. You can query purchases here.
-                    lifecycleScope.launch {
+                    lifecycleScope.launch(Dispatchers.Main) {
                         querySkuDetails()
                     }
                 }
@@ -188,41 +192,38 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
             .build()
     }
 
-    suspend fun querySkuDetails() {
+    fun querySkuDetails() {
 
-        val skuList = ArrayList<String>()
         binding.progressBar.visibility = View.VISIBLE
-        model.getPlans().collect {
-
-            it?.forEach { sku ->
-                skuList.add(sku!!.productId!!)
-            }
+        model.getPlanIds().observe(viewLifecycleOwner) { skuIdList ->
 
             val params = SkuDetailsParams.newBuilder()
-            params.setSkusList(skuList).setType(BillingClient.SkuType.SUBS)
+            params.setSkusList(skuIdList)
             params.setType(BillingClient.SkuType.SUBS)
 
-            // leverage querySkuDetails Kotlin extension function
-            val skuDetailsResult = withContext(Dispatchers.IO) {
-                billingClient.querySkuDetails(params.build())
+            billingClient.querySkuDetailsAsync(params.build()) { _, skuDetails ->
+                runOnUiThread {  onSkuDetails(skuDetails) }
             }
-
-            Timber.d("Billing SKUs-> ${skuDetailsResult.skuDetailsList}")
-
-            skuDetailsResult.skuDetailsList?.let { skuDetails ->
-                if (skuDetails.isNotEmpty()) {
-                    binding.patronPlansRV.layoutManager = LinearLayoutManager(requireContext())
-                    adapter = PricingPlansAdapter(skuDetails, this)
-                    binding.patronPlansRV.adapter = adapter
-                } else {
-                    binding.continueButton.visibility = View.GONE
-                    binding.root.snackbar("No Plans Found")
-                }
-            }
-            binding.checkLayout.visibility = View.VISIBLE
-            binding.progressBar.visibility = View.GONE
         }
 
+    }
+
+    private fun onSkuDetails(skuDetailsList: List<SkuDetails>?) {
+        if (BuildConfig.DEBUG) {
+            Timber.d("Billing SKUs-> $skuDetailsList")
+        }
+
+        if (skuDetailsList?.isNotEmpty() == true) {
+            binding.patronPlansRV.layoutManager = LinearLayoutManager(requireContext())
+            adapter = PricingPlansAdapter(skuDetailsList, this)
+            binding.patronPlansRV.adapter = adapter
+        } else {
+            binding.continueButton.visibility = View.GONE
+            binding.root.snackbar(getString(R.string.no_plans_found_message))
+        }
+
+        binding.checkLayout.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.GONE
     }
 
     private fun setupViewPager() {
@@ -232,24 +233,24 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
     }
 
     private fun getAdapterItems(): ArrayList<FragmentShortItemSlider> {
-        val item1 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,
-            R.drawable.ic_patron_welcome)
+        val item1 = FragmentShortItemSlider.newInstance(R.string.patron_carousel_slide_1_title,
+            R.drawable.patron_carousel_slide_1_image, R.string.patron_carousel_slide_1_sub_title)
         val item2 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,
-            R.drawable.ic_patron_welcome)
+            R.drawable.patron_carousel_slide_2_image, R.string.patron_carousel_slide_2_sub_title)
         val item3 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,
-            R.drawable.ic_patron_welcome)
+            R.drawable.patron_carousel_slide_3_image, R.string.patron_carousel_slide_3_sub_title)
         return arrayListOf(item1, item2, item3)
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onUserClicked(item: SkuDetails, position: Int) {
 
-     //   if (item.freeTrialPeriod.isNotEmpty()) {
-            selectedSku = item
-            adapter.selectedSku = item.sku
-            adapter.notifyDataSetChanged()
-            onSelectedSkuChange(item)
-      //  }
+        //   if (item.freeTrialPeriod.isNotEmpty()) {
+        selectedSku = item
+        adapter.selectedSku = item.sku
+        adapter.notifyDataSetChanged()
+        onSelectedSkuChange(item)
+        //  }
 
     }
 
@@ -257,18 +258,18 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         selectedSku = item
         //TODO How to check if only free trial is selectable
         //if (item.freeTrialPeriod.isNotEmpty()) {
-            val termsEnd =
-                getString(R.string.plans_terms_start) + getString(R.string.plans_terms_text)
-            val termsT: Spanned = HtmlCompat.fromHtml(
-                "After free trial ends ${item.originalPrice}. \n" +termsEnd,
-                    HtmlCompat.FROM_HTML_MODE_LEGACY)
-            binding.termsTV.text = termsT
-            binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
-            val bankText: Spanned = HtmlCompat.fromHtml(getString(R.string.patron_uk_account_learn_more),
+        val termsEnd = getString(R.string.plans_terms_text)
+        val termsT: Spanned = HtmlCompat.fromHtml(
+            "${getString(R.string.after_free_trial)} ${item.originalPrice}" + termsEnd,
+            HtmlCompat.FROM_HTML_MODE_LEGACY)
+        binding.termsTV.text = termsT
+        binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
+        val bankText: Spanned =
+            HtmlCompat.fromHtml(getString(R.string.patron_uk_account_learn_more),
                 HtmlCompat.FROM_HTML_MODE_LEGACY)
-            binding.ukAccountText.text = bankText
-            binding.ukAccountText.movementMethod = LinkMovementMethod.getInstance()
-       // }
+        binding.ukAccountText.text = bankText
+        binding.ukAccountText.movementMethod = LinkMovementMethod.getInstance()
+        // }
 
     }
 

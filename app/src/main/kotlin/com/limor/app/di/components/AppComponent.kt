@@ -24,7 +24,8 @@ import dagger.android.ContributesAndroidInjector
         StorageModule::class,
         ApolloModule::class,
         MockModule::class,
-        ServicesModule::class
+        ServicesModule::class,
+        DatabaseModule::class
     ]
 )
 interface AppComponent {

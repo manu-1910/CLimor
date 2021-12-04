@@ -1,6 +1,7 @@
 package com.limor.app.scenes.main.fragments.discover.common.casts
 
 import android.content.Intent
+import android.graphics.Color
 import android.view.View
 import androidx.core.view.updateLayoutParams
 import com.bumptech.glide.Glide
@@ -13,6 +14,7 @@ import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDec
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration.Companion.GRID_CAST_ITEM_TYPE_KEY
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
@@ -23,7 +25,7 @@ import java.time.Duration
 class BigCastItem(
     val cast: CastUIModel,
     private val width: Int = -1,
-    private val spanSize: Int = 2
+    private val spanSize: Int = 2,
 ) : BindableItem<ItemDiscoverBigCastBinding>() {
 
     init {
@@ -37,20 +39,27 @@ class BigCastItem(
             }
 
             authorName.text = cast.owner?.username
-            ivVerifiedAvatar.visibility = if(cast.owner?.isVerified == true) View.VISIBLE else View.GONE
+            ivVerifiedAvatar.visibility =
+                if (cast.owner?.isVerified == true) View.VISIBLE else View.GONE
             dateLocation.text = cast.getCreationDateAndPlace(root.context, true)
             castName.text = cast.title
             cast.audio?.duration?.let {
-                castDuration.text = getCastDuration(cast.audio.duration)
+                castDuration.text = CommonsKt.getFeedDuration(cast.audio.duration)
             }
 
-            Glide.with(root)
-                .load(cast.imageLinks?.medium)
-                .into(castImage)
+            if (cast.imageLinks?.medium != null) {
+                Glide.with(root)
+                    .load(cast.imageLinks.medium)
+                    .into(castImage)
+            } else {
+                castImage.setBackgroundColor(Color.parseColor(cast.colorCode))
+            }
 
             Glide.with(root)
                 .load(cast.owner?.getAvatarUrl())
                 .signature(ObjectKey(cast.owner?.getAvatarUrl() ?: ""))
+                .error(R.drawable.ic_default_avatar)
+                .placeholder(R.drawable.ic_default_avatar)
                 .circleCrop()
                 .into(ownerIcon)
 
@@ -74,7 +83,7 @@ class BigCastItem(
     private fun openUserProfile(viewBinding: ItemDiscoverBigCastBinding) {
         val userProfileIntent = Intent(viewBinding.root.context, UserProfileActivity::class.java)
         userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, cast.owner?.username)
-        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY,cast.owner?.id)
+        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, cast.owner?.id)
         viewBinding.root.context.startActivity(userProfileIntent)
     }
 

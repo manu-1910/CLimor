@@ -2,11 +2,15 @@ package com.limor.app.scenes.patron
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.limor.app.databinding.FragmentShortItemSliderBinding
+
 import android.text.style.ForegroundColorSpan
 import android.text.SpannableString
 import android.text.Spanned
@@ -17,6 +21,7 @@ import com.limor.app.scenes.patron.manage.ManagePatronActivity
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
+private const val ARG_PARAM3 = "param3"
 
 /**
  * A simple [Fragment] subclass.
@@ -26,6 +31,7 @@ private const val ARG_PARAM2 = "param2"
 class FragmentShortItemSlider : Fragment() {
     // TODO: Rename and change types of parameters
     private var text: Int? = null
+    private var subTitle: Int? = null
     private var imageRes: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +39,7 @@ class FragmentShortItemSlider : Fragment() {
         arguments?.let {
             text = it.getInt(ARG_PARAM1)
             imageRes = it.getInt(ARG_PARAM2)
+            subTitle = it.getInt(ARG_PARAM3)
         }
     }
 
@@ -61,7 +68,7 @@ class FragmentShortItemSlider : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         // Inflate the layout for this fragment
         val binding = FragmentShortItemSliderBinding.inflate(inflater, container, false)
@@ -71,6 +78,15 @@ class FragmentShortItemSlider : Fragment() {
         text?.let {
             binding.patronStatusTv.text = fixSpanColor(getText(it))
         }
+
+        subTitle?.let {
+            if (it == 0) {
+                binding.descriptionTV.visibility = View.GONE
+            } else {
+                binding.descriptionTV.text = getText(it)
+            }
+        }
+
         return binding.root
     }
 
@@ -85,11 +101,12 @@ class FragmentShortItemSlider : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: Int, param2: Int) =
+        fun newInstance(param1: Int, param2: Int, param3: Int) =
             FragmentShortItemSlider().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_PARAM1, param1)
                     putInt(ARG_PARAM2, param2)
+                    putInt(ARG_PARAM3, param3)
                 }
             }
     }

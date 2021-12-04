@@ -15,6 +15,7 @@ import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.DobInfo
+import com.limor.app.scenes.auth_new.data.SignInMethod
 import kotlinx.android.synthetic.main.fragment_new_auth_dob_picker.*
 
 
@@ -27,6 +28,7 @@ class FragmentDobPicker : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        model.setCurrentSignInMethod(SignInMethod.NONE)
         return inflater.inflate(R.layout.fragment_new_auth_dob_picker, container, false)
     }
 

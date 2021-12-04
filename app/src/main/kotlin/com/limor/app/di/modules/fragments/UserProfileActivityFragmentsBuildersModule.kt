@@ -1,5 +1,6 @@
 package com.limor.app.di.modules.fragments
 
+import com.limor.app.dm.ui.ShareFragment
 import com.limor.app.scenes.main.fragments.ProfileFragment
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.fragments.profile.*
@@ -72,5 +73,9 @@ abstract class UserProfileActivityFragmentsBuildersModule {
     abstract fun contributeCommentActionsActionsFragmentInjector(): DialogCommentMoreActions
 
     @ContributesAndroidInjector
+    abstract fun contributeShareFragmentInjector(): ShareFragment
+
+    @ContributesAndroidInjector
     abstract fun contributeEditPreviewFragmentInjector(): EditPreviewFragment
+
 }

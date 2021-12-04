@@ -7,6 +7,7 @@ class Constants{
 
 
     companion object {
+        const val DIRECT_MESSAGING_DB_NAME = "limor-direct-messaging-db"
         const val CAST_BATCH_SIZE = 10
         const val HOME_FEED_ITEM_BATCH_SIZE = 20
 

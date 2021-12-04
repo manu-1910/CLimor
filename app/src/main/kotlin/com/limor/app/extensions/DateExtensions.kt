@@ -2,6 +2,7 @@ package com.limor.app.extensions
 
 import java.time.*
 import java.time.format.DateTimeParseException
+import java.util.*
 
 fun Long.epochSecondToLocalDate(): LocalDate {
     return Instant.ofEpochSecond(this).atZone(ZoneId.systemDefault())
@@ -45,4 +46,9 @@ fun String.toLocalDateTime(): LocalDateTime {
         ex.printStackTrace()
         LocalDateTime.of(2000, 1, 1, 1, 1)
     }
+}
+
+fun Calendar.isToday() : Boolean {
+    val today = Calendar.getInstance()
+    return today[Calendar.YEAR] == get(Calendar.YEAR) && today[Calendar.DAY_OF_YEAR] == get(Calendar.DAY_OF_YEAR)
 }

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.databinding.ItemHomeFeedRecastedBinding
 import com.limor.app.databinding.ItemLoadMoreBinding
+import com.limor.app.dm.ShareResult
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderBindable
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderPodcast
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderRecast
@@ -20,7 +21,7 @@ class HomeFeedAdapter(
     private val onReCastClick: (castId: Int, isRecasted: Boolean) -> Unit,
     private val onReloadData: (castId: Int, reload: Boolean) -> Unit,
     private val onCommentsClick: (CastUIModel) -> Unit,
-    private val onShareClick: (CastUIModel) -> Unit,
+    private val onShareClick: (CastUIModel, onShared: ((shareResult: ShareResult) -> Unit)?) -> Unit,
     private val onLoadMore: () -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val onUserMentionClick: (username: String, userId: Int) -> Unit,

@@ -400,7 +400,7 @@ class PublishFragment : BaseFragment() {
                     "language -> $isLanguageSelected " +
                     "caption valid -> $isCaptionValid " +
                     "title-> $isTitleValid"
-        )
+        )   
         btnPublishDraft?.isEnabled = isAllRequiredFieldsFilled
     }
 
@@ -1039,7 +1039,6 @@ class PublishFragment : BaseFragment() {
                 mature_content = Input.fromNullable(binding.sw18Content.isChecked),
                 color_code = getRandomColorCode(),
                 price_id = priceId
-
             )
         )
         Timber.d("$podcast")
@@ -1077,6 +1076,11 @@ class PublishFragment : BaseFragment() {
         }
         //  publishViewModel.uiPublishRequest = uiPublishRequest
         // publishPodcastTrigger.onNext(Unit)
+    }
+
+    private fun getRandomColorCode(): Input<String> {
+        val colorsArray = resources.getStringArray(R.array.feed_colors)
+        return Input.fromNullable(colorsArray[Random.nextInt(colorsArray.size)])
     }
 
     private fun getRandomColorCode(): Input<String> {

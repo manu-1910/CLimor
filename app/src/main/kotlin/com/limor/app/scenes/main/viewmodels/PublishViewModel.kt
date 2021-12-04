@@ -13,14 +13,14 @@ import com.limor.app.type.CreatePodcastInput
 import com.limor.app.uimodels.UIErrorResponse
 import com.limor.app.uimodels.UIPublishRequest
 import com.limor.app.uimodels.UIPublishResponse
+
 import com.limor.app.uimodels.UISimpleCategory
 import com.limor.app.usecases.InAppPricesUseCase
+
 import com.limor.app.usecases.PublishUseCase
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -124,30 +124,42 @@ class PublishViewModel @Inject constructor(
         }
     }
 
-    suspend fun consumePurchasedSub(purchase: Purchase) = callbackFlow<String?> {
-        send(publishRepository.updateSubscriptionDetails(purchase))
+
+    fun consumePurchasedSub(purchase: Purchase): LiveData<String?> {
+        val liveData = MutableLiveData<String?>()
+        viewModelScope.launch(Dispatchers.IO) {
+            val status = publishRepository.updateSubscriptionDetails(purchase)
+            liveData.postValue(status)
+        }
+        return liveData
     }
 
-    suspend fun addPatronCategories() = callbackFlow<String?> {
-        send(withContext(Dispatchers.IO) {
-            publishRepository.addPatronCategories(categorySelectedIdsList)
-        })
-        awaitClose()
-    }
-
-    suspend fun addPatronLanguages() = callbackFlow<String?> {
-        send(withContext(Dispatchers.IO) {
-            publishRepository.addPatronLanguages(languageSelectedCodesList)
-        })
-        awaitClose()
+    fun addPatronCategories(): LiveData<String?> {
+        val liveData = MutableLiveData<String?>()
+        viewModelScope.launch(Dispatchers.IO) {
+            val status = publishRepository.addPatronCategories(categorySelectedIdsList)
+            liveData.postValue(status)
+        }
+        return liveData
     }
 
 
-    suspend fun getPlans() = callbackFlow<List<GetPlansQuery.Plan?>?> {
-        send(withContext(Dispatchers.IO) {
-            publishRepository.getPlans()
-        })
-        awaitClose()
+    fun addPatronLanguages(): LiveData<String?> {
+        val liveData = MutableLiveData<String?>()
+        viewModelScope.launch(Dispatchers.IO) {
+            val status = publishRepository.addPatronLanguages(languageSelectedCodesList)
+            liveData.postValue(status)
+        }
+        return liveData
+    }
+
+    fun getPlanIds(): LiveData<List<String>> {
+        val liveData = MutableLiveData<List<String>>()
+        viewModelScope.launch(Dispatchers.IO) {
+            val ids = publishRepository.getPlans()?.mapNotNull { it?.productId }
+            liveData.postValue(ids ?: listOf())
+        }
+        return liveData
     }
 
     fun getInAppPriceTiers(){

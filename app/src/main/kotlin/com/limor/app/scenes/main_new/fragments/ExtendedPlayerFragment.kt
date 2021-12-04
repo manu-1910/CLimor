@@ -1,8 +1,5 @@
 package com.limor.app.scenes.main_new.fragments
 
-import android.app.Activity
-import android.content.ActivityNotFoundException
-import android.net.Uri
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
@@ -10,30 +7,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
 import com.google.firebase.dynamiclinks.ktx.*
-import com.google.firebase.ktx.Firebase
-import com.limor.app.BuildConfig
 import com.limor.app.R
-import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentExtendedPlayerBinding
+import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.*
-import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
-import com.limor.app.scenes.main.viewmodels.CommentsViewModel
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.main.viewmodels.PodcastViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
@@ -41,11 +29,8 @@ import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.main_new.fragments.comments.UserMentionFragment
 import com.limor.app.scenes.main_new.view_model.ListenPodcastViewModel
-import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
-import com.limor.app.scenes.utils.MissingPermissions
-import com.limor.app.scenes.utils.PlayerViewManager
-import com.limor.app.scenes.utils.SendData
+import com.limor.app.scenes.utils.*
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
 import com.limor.app.uimodels.*
@@ -55,10 +40,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
-import java.io.File
-import java.lang.Math.round
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 class ExtendedPlayerFragment : UserMentionFragment(),
     DialogPodcastMoreActions.UpdatePodcastListener {
@@ -70,7 +52,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         fun newInstance(
             castId: Int,
             autoPlay: Boolean = false,
-            restarted: Boolean = false
+            restarted: Boolean = false,
         ): ExtendedPlayerFragment {
             return ExtendedPlayerFragment().apply {
                 arguments = bundleOf(
@@ -126,7 +108,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentExtendedPlayerBinding.inflate(inflater, container, false)
         podcastViewModel.loadCast(castId)
@@ -143,7 +125,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
             override fun onProgressChanged(
                 seekBar: SeekBar?,
                 progress: Int,
-                fromUser: Boolean
+                fromUser: Boolean,
             ) {
                 if (fromUser) {
                     val progressMs = progress * 1000
@@ -188,17 +170,30 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         }
     }
 
+    private fun setFirstCommentContent(comment: CommentUIModel) {
+        binding.tvFirstCollapsedComment.setTextWithTagging(
+            comment.content,
+            comment.mentions,
+            comment.tags,
+            { username, userId ->
+                context?.let { context -> UserProfileActivity.show(context, username, userId) }
+            },
+            { hashTag -> onHashTagClick(hashTag) }
+        )
+    }
+
     private fun subscribeToCommentUpdates() {
         commentsViewModel.comments.observe(viewLifecycleOwner) { comments ->
             val firstComment = comments.firstOrNull()
             if (firstComment != null) {
-                binding.tvFirstCollapsedComment.text = firstComment.content
+                setFirstCommentContent(firstComment)
                 firstComment.user?.getAvatarUrl()?.let { imageUrl ->
                     binding.ivAvatarFirstCollapsedComment.loadCircleImage(imageUrl)
                 }
                 binding.tvCommentName.text = firstComment.user?.username
                 binding.firstCollapsedCommentVisibilityGroup.makeVisible()
                 binding.noCommentsMessage.makeGone()
+                binding.llExtendCommentsHeader.isEnabled = true
                 binding.llExtendCommentsHeader.makeVisible()
             } else {
                 binding.firstCollapsedCommentVisibilityGroup.makeGone()
@@ -338,7 +333,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
                 .onEach { duration ->
                     if (audioModel.duration.seconds > 0) {
                         binding.lpiPodcastProgress.progress = duration.seconds.toInt()
-                            // ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
+                        // ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
                         binding.tvRecastPlayCurrentPosition.text =
                             duration.toReadableStringFormat(DURATION_READABLE_FORMAT_3)
                     }
@@ -391,6 +386,8 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         cast.imageLinks?.large?.let {
             binding.ivPodcastBackground.loadImage(it)
         }
+        //Handling the color background for podcast
+        CommonsKt.handleColorFeed(cast, colorFeedText, requireContext())
     }
 
     private fun setViewsVisibility() {
@@ -438,10 +435,13 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         binding.btnPodcastComments.throttledClick(onClick = openCommentsClickListener)
         binding.tvPodcastComments.throttledClick(onClick = openCommentsClickListener)
 
-        binding.btnPodcastReply.setOnClickListener {
-            //btnPodcastReply.shared = true
-            updatePodcasts = true
-            sharePodcast(cast)
+        binding.btnPodcastReply.throttledClick {
+            ShareDialog.newInstance(cast).also { fragment ->
+                fragment.setOnSharedListener {
+                    binding.btnPodcastReply.shared = (cast.isShared ?: false) || it.hasShared
+                }
+                fragment.show(parentFragmentManager, fragment.requireTag())
+            }
         }
 
         // This is copy pasted from FragmentComments, will need to be refactored later...
@@ -503,48 +503,6 @@ class ExtendedPlayerFragment : UserMentionFragment(),
             }
         }
 
-    val sharePodcast: (CastUIModel) -> Unit = { cast ->
-
-        val podcastLink = Constants.PODCAST_URL.format(cast.id)
-
-        val dynamicLink = Firebase.dynamicLinks.dynamicLink {
-            link = Uri.parse(podcastLink)
-            domainUriPrefix = Constants.LIMOR_DOMAIN_URL
-            androidParameters(BuildConfig.APPLICATION_ID) {
-                fallbackUrl = Uri.parse(podcastLink)
-            }
-            iosParameters(BuildConfig.IOS_BUNDLE_ID) {
-            }
-            socialMetaTagParameters {
-                title = cast.title.toString()
-                description = cast.caption.toString()
-                cast.imageLinks?.large?.let {
-                    imageUrl = Uri.parse(cast.imageLinks.large)
-                }
-            }
-        }
-
-        Firebase.dynamicLinks.shortLinkAsync {
-            longLink = dynamicLink.uri
-        }.addOnSuccessListener { (shortLink, flowChartLink) ->
-            try {
-                val sendIntent: Intent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_SUBJECT, cast.title)
-                    putExtra(Intent.EXTRA_TEXT, "Hey, check out this podcast: $shortLink")
-                    type = "text/plain"
-                }
-                sharedPodcastId = cast.id
-                val shareIntent = Intent.createChooser(sendIntent, null)
-                launcher.launch(shareIntent)
-            } catch (e: ActivityNotFoundException) {
-            }
-
-        }.addOnFailureListener {
-            Timber.d("Failed in creating short dynamic link")
-        }
-    }
-
     private fun initRecastState(item: CastUIModel) {
         fun applyRecastState(isRecasted: Boolean) {
             binding.tvPodcastRecast.setTextColor(
@@ -556,7 +514,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         }
         binding.apply {
             applyRecastState(item.isRecasted!!)
-            btnPodcastRecast.recasted = item.isRecasted!!
+            btnPodcastRecast.recasted = item.isRecasted
 
             btnPodcastRecast.setOnClickListener {
                 val isRecasted = !btnPodcastRecast.recasted
@@ -607,7 +565,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         binding.apply {
             tvPodcastLikes.text = cast.likesCount.toString()
             applyLikeStyle(cast.isLiked!!)
-            btnPodcastLikes.isLiked = cast.isLiked!!
+            btnPodcastLikes.isLiked = cast.isLiked
 
             btnPodcastLikes.setOnClickListener {
                 val isLiked = btnPodcastLikes.isLiked

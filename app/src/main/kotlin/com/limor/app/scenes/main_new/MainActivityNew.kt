@@ -18,6 +18,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.limor.app.R
 import com.limor.app.databinding.ActivityMainNewBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
+import com.limor.app.dm.ChatManager
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
@@ -45,6 +46,9 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     lateinit var playerBinding: ContainerWithSwipeablePlayerBinding
 
     @Inject
+    lateinit var chatManager: ChatManager
+
+    @Inject
     lateinit var playerBinder: PlayerBinder
 
     private var activityPlayerViewManager: ActivityPlayerViewManager? = null
@@ -70,6 +74,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         lifecycleScope.launchWhenCreated {
             JwtChecker.getUserIdFromJwt(false)?.let {
                 PrefsHandler.saveCurrentUserId(this@MainActivityNew, it)
+                chatManager.loginCurrentUser()
             }
         }
     }

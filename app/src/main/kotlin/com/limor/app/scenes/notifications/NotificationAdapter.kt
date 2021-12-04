@@ -1,19 +1,16 @@
 package com.limor.app.scenes.notifications
 
 import android.content.Context
-import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.limor.app.App
 import com.limor.app.R
-import com.limor.app.scenes.utils.Commons
-import com.limor.app.scenes.utils.DateUiUtil
 import com.limor.app.scenes.utils.DateUiUtil.getTimeElapsedFromDateString
 import com.limor.app.uimodels.NotiUIMode
 import de.hdodenhof.circleimageview.CircleImageView
@@ -23,8 +20,9 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
     RecyclerView.Adapter<NotificationAdapter.ViewHolder>() {
 
     private lateinit var castCallback: (castId: Int?) -> Unit
-    private lateinit var userCallback: (userId: Int?, username: String?, tab:Int) -> Unit
+    private lateinit var userCallback: (userId: Int?, username: String?, tab: Int) -> Unit
     private lateinit var notiReadCallback: (nId: Int?, read: Boolean) -> Unit
+    lateinit var noInternetAlertCallback: () -> Unit
     private val imageicon = arrayOf(
         R.drawable.ic_icon_follower,
         R.drawable.ic_icon_comment,
@@ -44,7 +42,8 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
             val noti = notificationsList[position]
 
             noti.let { notification ->
-                Glide.with(context).load(notification.initiator?.imageUrl).error(R.drawable.ic_podcast_listening).into(holder.profilePic)
+                Glide.with(context).load(notification.initiator?.imageUrl)
+                    .error(R.drawable.ic_podcast_listening).into(holder.profilePic)
                 when (notification.notificationType) {
                     "newFollower" -> holder.profileIcon.setImageResource(imageicon[0])
                     "podcastComment" -> holder.profileIcon.setImageResource(imageicon[1])
@@ -90,63 +89,6 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
         return notificationsList.size
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(
-            notificationAdapter: NotificationAdapter,
-            position: Int,
-            notificationsList: java.util.ArrayList<NotiUIMode>,
-            noti: NotiUIMode
-        ) {
-            itemView.setOnClickListener {
-                //Destination
-
-                if(noti.read == false){
-                    notificationAdapter.notiReadCallback.invoke(
-                        noti.id,
-                        true
-                    )
-                }
-                when (noti.redirectTarget?.type) {
-                    "podcast" -> notificationAdapter.castCallback.invoke(noti.redirectTarget.id)
-                    "user" -> {
-                        var tab  = 0
-                        if(noti.notificationType == "patronRequest"){
-                            tab = 1
-                        }
-                        notificationAdapter.userCallback.invoke(
-                            noti.redirectTarget.id,
-                            noti.initiator?.username,
-                            tab
-                        )
-                    }
-                    "comment" -> notificationAdapter.userCallback.invoke(
-                        noti.redirectTarget.id,
-                        noti.initiator?.username,0
-                    )
-                    else -> Timber.d("Unable to handle this type")
-                }
-                notificationAdapter.updateRead(position)
-
-            }
-
-            profilePic.setOnClickListener {
-                //User Profile Activity
-                notificationAdapter.userCallback.invoke(
-                    noti.initiator?.userId,
-                    noti.initiator?.username,0
-                )
-            }
-        }
-
-        var profilePic: CircleImageView = itemView.findViewById(R.id.iv_user)
-        var profileIcon: CircleImageView = itemView.findViewById(R.id.circleImageView)
-        var title: TextView = itemView.findViewById(R.id.tv_title)
-        var subTitle: TextView = itemView.findViewById(R.id.tv_subtitle)
-        var mainBg: ConstraintLayout = itemView.findViewById(R.id.main_notification_bg)
-
-
-
-    }
 
     private fun updateRead(position: Int) {
         notificationsList[position] = notificationsList[position].copy(read = true)
@@ -172,8 +114,76 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
         this.notiReadCallback = callback
     }
 
+    fun addNoInternetAlertCallback(callback: () -> Unit) {
+        this.noInternetAlertCallback = callback
+    }
+
+
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var profilePic: CircleImageView = itemView.findViewById(R.id.iv_user)
+        var profileIcon: CircleImageView = itemView.findViewById(R.id.circleImageView)
+        var title: TextView = itemView.findViewById(R.id.tv_title)
+        var subTitle: TextView = itemView.findViewById(R.id.tv_subtitle)
+        var mainBg: ConstraintLayout = itemView.findViewById(R.id.main_notification_bg)
+
+        fun bind(
+            notificationAdapter: NotificationAdapter,
+            position: Int,
+            notificationsList: java.util.ArrayList<NotiUIMode>,
+            noti: NotiUIMode,
+        ) {
+            itemView.setOnClickListener {
+                if (!App.instance.merlinsBeard!!.isConnected) {
+                    notificationAdapter.noInternetAlertCallback.invoke()
+                } else {
+                    //Destination
+
+                    if (noti.read == false) {
+                        notificationAdapter.notiReadCallback.invoke(
+                            noti.id,
+                            true
+                        )
+                    }
+                    when (noti.redirectTarget?.type) {
+                        "podcast" -> notificationAdapter.castCallback.invoke(noti.redirectTarget.id)
+                        "user" -> {
+                            var tab = 0
+                            if (noti.notificationType == "patronRequest") {
+                                tab = 1
+                            }
+                            notificationAdapter.userCallback.invoke(
+                                noti.redirectTarget.id,
+                                noti.initiator?.username,
+                                tab
+                            )
+                        }
+                        "comment" -> notificationAdapter.userCallback.invoke(
+                            noti.redirectTarget.id,
+                            noti.initiator?.username, 0
+                        )
+                        else -> Timber.d("Unable to handle this type")
+                    }
+                    notificationAdapter.updateRead(position)
+
+                }
+            }
+
+            profilePic.setOnClickListener {
+                if (!App.instance.merlinsBeard!!.isConnected) {
+                    notificationAdapter.noInternetAlertCallback.invoke()
+                } else {
+                    //User Profile Activity
+                    notificationAdapter.userCallback.invoke(
+                        noti.initiator?.userId,
+                        noti.initiator?.username,
+                        0
+                    )
+                }
+            }
+        }
+    }
+
+
 }
-
-
 
 
