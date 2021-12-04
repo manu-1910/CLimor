@@ -2,6 +2,7 @@ package com.limor.app.scenes.main_new.adapters.vh
 
 import android.content.Intent
 import android.graphics.Color
+import android.os.Handler
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -11,6 +12,7 @@ import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.dm.ShareResult
 import com.limor.app.extensions.*
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
@@ -30,11 +32,17 @@ class ViewHolderPodcast(
     private val onReloadData: (castId: Int, reload: Boolean) -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val onUserMentionClick: (username: String, userId: Int) -> Unit,
+    private val onEditPreviewClick: (cast: CastUIModel) -> Unit,
+    private val onPlayPreviewClick: (cast: CastUIModel, play: Boolean) -> Unit
 ) : ViewHolderBindable<CastUIModel>(binding) {
+
+    private var playingPreview = false
+
     override fun bind(item: CastUIModel) {
         setPodcastGeneralInfo(item)
         setPodcastOwnerInfo(item)
         setPodcastCounters(item)
+        setPatronPodcastStatus(item)
         setAudioInfo(item)
         loadImages(item)
         setOnClicks(item)
@@ -70,6 +78,35 @@ class ViewHolderPodcast(
         binding.tvPodcastReply.text = item.sharesCount?.toString()
         binding.tvPodcastNumberOfListeners.text =
             if (item.listensCount == 0) "0" else item.listensCount?.toLong()?.formatHumanReadable
+    }
+
+    private fun setPatronPodcastStatus(item: CastUIModel){
+        if(item.patronCast == true){
+            val userId = PrefsHandler.getCurrentUserId(context)
+            when{
+                (item.owner?.id != userId) -> {
+                    binding.notCastOwnerActions.visibility = View.VISIBLE
+                    binding.btnAddPreview.visibility = View.GONE
+                    binding.btnEditPrice.visibility = View.GONE
+                    binding.btnPurchasedCast.visibility = View.GONE
+                }
+                item.owner.id == userId -> {
+                    binding.btnPlayStopPreview.visibility = View.GONE
+                    binding.btnBuyCast.visibility = View.GONE
+                    binding.castOwnerActions.visibility = View.VISIBLE
+                    binding.btnPurchasedCast.visibility = View.GONE
+                }
+                else -> {
+                    binding.notCastOwnerActions.visibility = View.GONE
+                    binding.castOwnerActions.visibility = View.GONE
+                    binding.btnPurchasedCast.visibility = View.VISIBLE
+                }
+            }
+        } else {
+            binding.notCastOwnerActions.visibility = View.GONE
+            binding.castOwnerActions.visibility = View.GONE
+            binding.btnPurchasedCast.visibility = View.GONE
+        }
     }
 
     private fun setAudioInfo(item: CastUIModel) {
@@ -131,6 +168,30 @@ class ViewHolderPodcast(
                 item.updateShares(shareResult)
                 initShareState(item)
             }
+        }
+
+        binding.btnAddPreview.setOnClickListener {
+            onEditPreviewClick(item)
+        }
+
+        binding.btnEditPrice.setOnClickListener {
+        }
+
+        binding.btnPlayStopPreview.setOnClickListener {
+            playingPreview = !playingPreview
+            binding.btnPlayStopPreview.text = if(playingPreview) "Stop" else "Preview"
+            onPlayPreviewClick(item, playingPreview)
+            item.patronDetails?.previewDuration.let {
+                if (it != null) {
+                    Handler().postDelayed(Runnable {
+                        playingPreview = !playingPreview
+                        binding.btnPlayStopPreview.text = if(playingPreview) "Stop" else "Preview"
+                    }, it.toLong())
+                }
+            }
+        }
+
+        binding.tvPodcastTitle.setOnClickListener {
         }
     }
 

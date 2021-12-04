@@ -26,6 +26,7 @@ import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
+import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.TagUIModel
 import com.limor.app.util.AppNavigationManager
@@ -146,6 +147,14 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
                 bundleOf(DiscoverHashtagFragment.HASHTAG_KEY to hashtag)
             )
         }
+    }
+
+    override fun playPreview(audio: AudioService.AudioTrack, startPosition: Int, endPosition: Int) {
+        activityPlayerViewManager?.playPreview(audio, startPosition, endPosition)
+    }
+
+    override fun stopPreview() {
+        activityPlayerViewManager?.stopPreview()
     }
 
     fun checkPodCastDynamicLink() {

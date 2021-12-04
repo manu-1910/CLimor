@@ -154,7 +154,6 @@
     <color name="ripple_color">#33F9BB4B</color>
 
 
-
     <!--Notifications Colors-->
     <color name="un_read_background">#0F148DFF</color>
     <color name="read_background">#FFFFFF</color>
@@ -172,5 +171,12 @@
 
     <color name="background_color">#FBFCFF</color>
     <color name="bg_grey">#E5E5E5</color>
+
+    <color name="total_earnings_background">#EDF6FF</color>
+    <color name="transaction_fee_background">#FBECEE</color>
+    <color name="total_balance_background">#E7FCF5</color>
+
+    <color name="credit_card_color">#623CEA</color>
+    <color name="credit_card_background_color">#F0ECFD</color>
 
 </resources>

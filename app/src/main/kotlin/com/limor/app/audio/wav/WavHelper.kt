@@ -299,6 +299,11 @@ class WavHelper {
             return null
         }
 
+        fun convertToWavFile(context: Context, fileToConvert : String, fileToOutput: String)  {
+            val commandToExecute3 = "-i $fileToConvert $fileToOutput"
+            FFmpeg.execute(commandToExecute3)
+        }
+
 
         // receives a file path and tries to convert it to m4a.
         // it will return the new generated file if success or null if error

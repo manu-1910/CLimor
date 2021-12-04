@@ -88,7 +88,7 @@
 
     <string name="cast_published_ok_title">Cast Published</string>
     <string name="cast_published_ok_description">Your cast has been published successfully</string>
-    <string name="hint_caption">Caption here<font color='#FF0000'>*</font></string>
+    <string name="hint_caption">Caption &amp; Tags here<font color='#FF0000'>*</font></string>
     <string name="hint_title">Title here<font color='#FF0000'>*</font></string>
 
     <string name="text_seperator">C_TAG_SEP</string>
@@ -750,13 +750,14 @@
         <item name="feed_purple">#623CEA</item>
         <item name="feed_orange">#FE721C</item>
     </string-array>
-    <string name="patron_carousel_slide_1_title">Claim your exclusive <font fgcolor='#F9BB4B'>Limor Patron invitation</font> and more with your fans</string>
     <string name="patron_carousel_slide_1_sub_title">Gain the tools to help your fans help you.</string>
-    <string name="patron_carousel_slide_2_title">Create premium <font fgcolor='#F9BB4B'>casts</font> for your followers</string>
     <string name="patron_carousel_slide_2_sub_title">Give your Patrons exclusive content, access and conversation</string>
-    <string name="patron_carousel_slide_3_title">Gain Freedom to <font fgcolor='#F9BB4B'>monetize</font> your audio content</string>
     <string name="patron_carousel_slide_3_sub_title">Monetise, analize and convert your voice into income.</string>
-    <string name="patron_carousel_slide_approved_title">Congratulations! Your request \n has been approved.</string>
+
+    <string name="patron_carousel_slide_1_title">Create AMA <font fgcolor='#F9BB4B'>DM’s</font> and more with your fans</string>
+    <string name="patron_carousel_slide_2_title">Create premium <font fgcolor='#F9BB4B'>casts</font> for your community</string>
+    <string name="patron_carousel_slide_3_title">Freedom to <font fgcolor='#F9BB4B'>monetize</font> your content</string>
+    <string name="patron_carousel_slide_approved_title">Congratulations! Your request has been approved.</string>
     <string name="requesting">Requesting...</string>
     <string name="patron_categories">Patron Categories</string>
     <string name="patron_languages">Patron Languages</string>
@@ -767,9 +768,126 @@
 
     <string name="spot_secured_title">Spot Secured</string>
     <string name="sport_secured_description">You have secured your spot. You\'re going to have your digital wallet soon</string>
+  
     <string name="after_free_trial">After free trial ends it will cost</string>
     <string name="no_plans_found_message">No Plans Found</string>
     <string name="cancelled">Cancelled</string>
     <string name="patron_invite_not_required">Patron Invitation wasn\'t requested</string>
+
+    <string name="mature_content">Mature Content (18+)</string>
+    <string name="mature_content_description">Does your cast contain profanity, swearing, sexual, gambling references.</string>
+    <string name="edit_price">Edit Price - 6.99</string>
+    <string name="add_preview">Add Preview</string>
+    <string name="buy_cast">Buy $ 1.99</string>
+    <string name="preview">Preview</string>
+    <string name="cast_purchased">Purchased at $19.99</string>
+    <string name="publish_free_cast_patron">Are you sure you want to publish this cast for free?</string>
+    <string name="donot_shoe_again">Do not show this message again</string>
+    <string name="setup_receving">Setup receiving account</string>
+    <string name="setup_receving_desc">It seems like you have not setup your payment receiving account. To continue you need to setup your receiving account</string>
+    <string name="setup">Setup</string>
+    <string name="payment_terms"><font fgcolor='#F9BB4B'><u>Payment Terms</u></font></string>
+    <string name="free_cast_selection">Free (Will appear in Cast Tab)</string>
+
+    <string name="manage_limor_patron_title">Manage Limor Patron</string>
+    <string name="limor_patron_settings">Limor Patron Settings</string>
+    <string name="invitations">Invitations</string>
+    <string name="invitations_description">Invite your friends or random people to become a Limor Patron user</string>
+    <string name="my_earnings">My Earnings</string>
+    <string name="patron_catagories_description">Choose a category that best describes your content.</string>
+    <string name="edit_patron_catagories">Edit Patron Categories</string>
+    <string name="manage_patron_membership">Manage Patron Membership</string>
+    <string name="change_cast_prices">Change all cast prices</string>
+    <string name="change_price">Change Price</string>
+    <string name="change_price_description">Changing the price will change all your cast prices</string>
+    <string name="change_price_confirmation_text">Are you sure, you want to change all cast prices?</string>
+    <string name="cancel_patron_membership">Cancel Patron Membership</string>
+    <string name="cancel_patron_membership_description">Do you really want to cancel your Limor Patron  membership?</string>
+    <string name="cancel_patron_membership_success_title">Patron Membership Cancelled</string>
+    <string name="cancel_patron_membership_success_description">Your payment have successfully cancelled your patron membership</string>
+    <string name="total_withdrawn">Total Withdrawn</string>
+    <string name="cast_earnings">Cast Earnings</string>
+    <string name="price">Price</string>
+    <string name="edit_price_text">Edit Price</string>
+    <string name="submit">Submit</string>
+    <string name="view_more">View more</string>
+    <string name="total_earnings">Total Earnings</string>
+    <string name="transaction_fee">Transaction Fee</string>
+    <string name="bought_by">Bought By</string>
+    <string name="invites_count_description">You can send %d invites</string>
+    <string name="invite_friends">Invite Friends</string>
+    <string name="invite">Invite</string>
+    <string name="invite_people">Invite %d People</string>
+    <string name="joined">Joined</string>
+    <string name="update_patron_categories">Update Patron Categories</string>
+
+    <string-array name="prices_list">
+        <item>0.99</item>
+        <item>1.99</item>
+        <item>2.99</item>
+        <item>3.99</item>
+        <item>4.99</item>
+        <item>5.99</item>
+        <item>6.99</item>
+        <item>7.99</item>
+        <item>8.99</item>
+        <item>9.99</item>
+        <item>10.99</item>
+        <item>11.99</item>
+        <item>12.99</item>
+        <item>13.99</item>
+        <item>14.99</item>
+        <item>15.99</item>
+        <item>16.99</item>
+        <item>17.99</item>
+        <item>18.99</item>
+        <item>19.99</item>
+        <item>20.99</item>
+        <item>21.99</item>
+        <item>22.99</item>
+        <item>23.99</item>
+        <item>24.99</item>
+        <item>25.99</item>
+        <item>26.99</item>
+        <item>27.99</item>
+        <item>28.99</item>
+        <item>29.99</item>
+        <item>30.99</item>
+        <item>31.99</item>
+        <item>32.99</item>
+        <item>33.99</item>
+        <item>34.99</item>
+        <item>35.99</item>
+        <item>36.99</item>
+        <item>37.99</item>
+        <item>38.99</item>
+        <item>39.99</item>
+        <item>40.99</item>
+        <item>41.99</item>
+        <item>42.99</item>
+        <item>43.99</item>
+        <item>44.99</item>
+        <item>45.99</item>
+        <item>46.99</item>
+        <item>47.99</item>
+        <item>48.99</item>
+        <item>49.99</item>
+        <item>54.99</item>
+        <item>59.99</item>
+        <item>64.99</item>
+        <item>69.99</item>
+        <item>74.99</item>
+        <item>79.99</item>
+        <item>84.99</item>
+        <item>89.99</item>
+        <item>94.99</item>
+        <item>99.99</item>
+    </string-array>
+    <string name="category_selection_hint">You can only select 5 categories. if you talk about sport, Select `Sport`</string>
+    <string name="edit_preview">Edit Preview</string>
+    <string name="preview_note">Preview must be in between 10 secs to 30 secs</string>
+    <string name="save_as_preview">Save as Preview</string>
+    <string name="fetching_audio">Fetching audio...</string>
+    <string name="button_save_as_preview">Save as Preview</string>
 
 </resources>

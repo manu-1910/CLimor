@@ -35,7 +35,7 @@ data class UserUIModel(
     // Patron stuff
     var patronInvitationStatus: String? = null,
     var patronOnBoardingStatus: String? = null,
-    val isPatron: Boolean? = false,
+    var isPatron: Boolean? = false,
     val patronAudioURL: String? = null,
     val patronAudioDurationSeconds: Double? = null
 ) : Parcelable {
@@ -210,6 +210,25 @@ fun GetUserProfileByIdQuery.GetUserById.mapToUIModel(): UserUIModel =
     )
 
 fun GetUserPodcastsQuery.Owner.mapToUIModel(): UserUIModel =
+    UserUIModel(
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = blocked, isFollowed = followed,
+        isBlockedBy = blocked_by, isFollowedBy = followed_by,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = website, gender = gender,
+        dateOfBirth = date_of_birth?.toLocalDate(),
+        areNotificationsEnabled = notifications_enabled, isActive = active,
+        isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
+    )
+
+fun GetPatronPodcastsQuery.Owner.mapToUIModel(): UserUIModel =
     UserUIModel(
         id = id!!, username = username, firstName = first_name, lastName = last_name,
         imageLinks = images?.mapToUIModel(), isBlocked = blocked, isFollowed = followed,

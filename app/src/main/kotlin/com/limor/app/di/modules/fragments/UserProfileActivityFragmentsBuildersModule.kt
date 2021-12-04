@@ -11,6 +11,7 @@ import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
 import com.limor.app.scenes.main_new.fragments.SmallPlayerFragment
 import com.limor.app.scenes.main_new.fragments.comments.FragmentCommentReplies
 import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
+import com.limor.app.scenes.main_new.view.editpreview.EditPreviewFragment
 import com.limor.app.scenes.profile.DialogCommentMoreActions
 import com.limor.app.scenes.profile.DialogUserProfileActions
 import com.limor.app.scenes.profile.DialogUserReport
@@ -73,4 +74,8 @@ abstract class UserProfileActivityFragmentsBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeShareFragmentInjector(): ShareFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeEditPreviewFragmentInjector(): EditPreviewFragment
+
 }

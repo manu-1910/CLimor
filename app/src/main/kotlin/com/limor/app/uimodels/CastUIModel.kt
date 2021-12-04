@@ -13,6 +13,17 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Parcelize
+data class PatronDetails(
+    val priceId: String?,
+    var previewDuration: Int?,
+    var startsAt: Int?,
+    var endsAt: Int?,
+    val purchased: Boolean?
+) : Parcelable {
+
+}
+
+@Parcelize
 data class CastUIModel(
     val id: Int,
     val owner: UserUIModel?,
@@ -45,6 +56,9 @@ data class CastUIModel(
     val links: LinkUIModel?,
     val recaster: UserUIModel?,
     var colorCode: String? = null,
+    val maturedContent: Boolean?,
+    val patronCast: Boolean?,
+    val patronDetails: PatronDetails? = null
 ) : Parcelable {
 
     /**
@@ -135,6 +149,8 @@ fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =
         links = links?.mapToUIModel(),
         recaster = null,
         colorCode = color_code
+        maturedContent = false, 
+        patronCast = false
     )
 
 fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
@@ -170,6 +186,8 @@ fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
         links = links?.mapToUIModel(),
         recaster = null,
         colorCode = color_code
+        maturedContent = false, 
+        patronCast = false
     )
 
 fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
@@ -184,6 +202,7 @@ fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
         createdAt = created_at?.toLocalDateTime(),
         podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
+
         latitude = latitude?.toFloat(),
         longitude = longitude?.toFloat(),
         isLiked = liked,
@@ -205,6 +224,8 @@ fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
         links = links?.mapToUIModel(),
         recaster = null,
         colorCode = color_code
+        maturedContent = false,
+        patronCast = false
     )
 
 fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
@@ -240,6 +261,8 @@ fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
         links = links?.mapToUIModel(),
         recaster = null,
         colorCode = color_code
+        maturedContent = false, 
+        patronCast = false
     )
 
 fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
@@ -275,6 +298,26 @@ fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
         links = links?.mapToUIModel(),
         recaster = null,
         colorCode = color_code
+        maturedContent = false, 
+        patronCast = false
+    )
+
+fun GetPatronPodcastsQuery.GetPatronCast.mapToUIModel() =
+    CastUIModel(
+        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
+        imageLinks = images?.mapToUIModel(), caption = caption!!,
+        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
+        updatedAt = updated_at?.toLocalDateTime(),
+        latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked, isShared = false,
+        isReported = reported, isRecasted = recasted, isListened = listened,
+        isBookmarked = bookmarked, listensCount = number_of_listens,
+        likesCount = number_of_likes, recastsCount = number_of_recasts,
+        commentsCount = number_of_comments, sharesCount = number_of_shares,
+        audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
+        tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
+        links = links?.mapToUIModel(), recaster = null,
+        maturedContent = false, 
+        patronCast = false
     )
 
 fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
@@ -310,6 +353,17 @@ fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
         links = podcast.links?.mapToUIModel(),
         recaster = recaster?.mapToUIModel(),
         colorCode = podcast.color_code
+        maturedContent = podcast.mature_content, 
+        patronCast = podcast.patron_cast,
+        patronDetails = podcast.patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased
+            )
+        }
     )
 
 fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
@@ -345,4 +399,6 @@ fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
         links = links?.mapToUIModel(),
         recaster = null,
         colorCode = color_code
+        maturedContent = false, 
+        patronCast = false
     )

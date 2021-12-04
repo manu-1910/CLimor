@@ -5,9 +5,9 @@ import com.apollographql.apollo.api.Input
 import com.limor.app.*
 import com.limor.app.type.CreatePodcastInput
 import timber.log.Timber
-import java.lang.Exception
 import java.util.ArrayList
 import javax.inject.Inject
+import kotlin.Exception
 
 class PublishRepository @Inject constructor(val apollo: Apollo) {
 
@@ -66,6 +66,16 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
         }
     }
 
+    suspend fun getPatronCategories(): List<PatronCategoriesQuery.GetPatronCategory?>{
+        val query = PatronCategoriesQuery()
+        return apollo.launchQuery(query)?.data?.getPatronCategories ?: emptyList()
+    }
+
+    suspend fun getInAppPricesTiers(): List<String?> {
+        val query = GetCastTiersQuery("castPriceTiers")
+        return apollo.launchQuery(query)?.data?.getInAppPrices?.castPriceTiers ?: emptyList()
+    }
+
     suspend fun getPlans(): List<GetPlansQuery.Plan?>? {
         val query = GetPlansQuery()
         val queryResult = apollo.launchQuery(query)
@@ -73,6 +83,18 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
             queryResult?.data?.getPlans
         Timber.d("GetPlans Query -> ${createPodcastResult?.status}")
         return createPodcastResult?.plans
+    }
+
+    suspend fun updatePriceForAllCasts(priceId: String): String{
+        val mutation = UpdatePriceForAllCastsMutation(priceId)
+        val result = apollo.mutate(mutation)
+        return result?.data?.updatePriceForAllCasts?.status ?: ""
+    }
+
+    suspend fun updatePriceForCast(castId: Int, priceId: String): String{
+        val mutation = UpdatePriceForSingleCastMutation(castId, priceId)
+        val result = apollo.mutate(mutation)
+        return result?.data?.updatePriceForSingleCast?.status ?: ""
     }
 
 }

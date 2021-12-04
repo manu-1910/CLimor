@@ -1,14 +1,9 @@
 package com.limor.app.mappers
 
-import com.limor.app.uimodels.UIDraft
-import com.limor.app.uimodels.UIDraftsResponse
-import com.limor.app.uimodels.UILocations
-import com.limor.app.uimodels.UITimeStamp
-import entities.response.DraftEntity
-import entities.response.DraftsResponseEntity
-import entities.response.LocationsEntity
-import entities.response.TimeStampEntity
+import com.limor.app.uimodels.*
+import entities.response.*
 import io.reactivex.Single
+import org.apache.commons.collections4.iterators.ArrayListIterator
 
 
 fun Single<DraftsResponseEntity>.asUIModel(): Single<UIDraftsResponse> {
@@ -44,6 +39,10 @@ fun getAllUITimeStamps(entityList: ArrayList<TimeStampEntity>?): ArrayList<UITim
     return uiList
 }
 
+fun getAllUICategories(uiList: List<OnDeviceCategoryEntity>?): ArrayList<UISimpleCategory> {
+    return ArrayList(uiList?.map { it.asUIModel() } ?: listOf())
+}
+
 fun DraftEntity.asUIModel(): UIDraft {
     return UIDraft(
         id,
@@ -63,7 +62,8 @@ fun DraftEntity.asUIModel(): UIDraft {
         category,
         location?.asUIModel(),
         parentDraft?.asUIModel(),
-        isNewRecording
+        isNewRecording,
+        getAllUICategories(categories)
     )
 }
 
@@ -74,6 +74,10 @@ fun TimeStampEntity.asUIModel(): UITimeStamp {
         startSample,
         endSample
     )
+}
+
+fun OnDeviceCategoryEntity.asUIModel(): UISimpleCategory {
+    return UISimpleCategory(name, categoryId)
 }
 
 
@@ -97,7 +101,8 @@ fun UIDraft.asDataEntity(): DraftEntity {
         category,
         location?.asDataEntity(),
         draftParent?.asDataEntity(),
-        isNewRecording
+        isNewRecording,
+        getAllCategories(categories)
     )
 }
 
@@ -118,6 +123,16 @@ fun UITimeStamp.asDataEntity(): TimeStampEntity{
     )
 }
 
+fun UISimpleCategory.asDataEntity(): OnDeviceCategoryEntity {
+    return OnDeviceCategoryEntity(
+        name,
+        categoryId
+    )
+}
+
+fun getAllCategories(uiList: List<UISimpleCategory>?): ArrayList<OnDeviceCategoryEntity> {
+    return ArrayList(uiList?.map { it.asDataEntity() } ?: listOf())
+}
 
 fun getAllTimeStamps(uiList: ArrayList<UITimeStamp>?): ArrayList<TimeStampEntity> {
     val entityList = ArrayList<TimeStampEntity>()

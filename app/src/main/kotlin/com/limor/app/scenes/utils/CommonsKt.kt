@@ -22,6 +22,7 @@ import com.limor.app.R
 import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.UIErrorResponse
+import com.limor.app.uimodels.UserUIModel
 import com.skydoves.balloon.ArrowOrientation
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
@@ -49,6 +50,8 @@ class CommonsKt {
 
         //val audioFileFormat: String = ".amr"
         val audioFileFormat: String = ".wav"
+
+        var user: UserUIModel? = null
 
         fun getDateTimeFormatted(): String {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

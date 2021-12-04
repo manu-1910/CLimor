@@ -5,9 +5,7 @@
     android:layout_height="wrap_content"
     android:ellipsize="end"
     android:maxLines="1"
-    android:paddingLeft="8dp"
-    android:paddingTop="4dp"
-    android:paddingRight="8dp"
-    android:paddingBottom="4dp"
-    android:textAppearance="?attr/textAppearanceSubtitle1"
-    android:textColor="@color/subtitle_text_color" />
+    android:padding="14dp"
+    android:textSize="@dimen/textSizeTiny"
+    android:textColor="@color/black"
+    android:textAppearance="?attr/textAppearanceSubtitle1" />

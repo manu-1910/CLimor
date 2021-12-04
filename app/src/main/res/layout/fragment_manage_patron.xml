@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parentLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/sign_in_new_background"
+    android:focusableInTouchMode="true">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_discover"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:background="@color/white"
+        android:layout_below="@id/toolbar"
+        android:layout_marginTop="@dimen/marginSmall">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/marginTwenty">
+
+            <RelativeLayout
+                android:id="@+id/invitationsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/earningsDescriptionTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/invitations_description"
+                    android:layout_alignParentTop="true"
+                    android:textSize="@dimen/textSize14"
+                    android:fontFamily="@font/roboto"
+                    android:textColor="@color/textSecondary"
+                    android:lineHeight="14dp"/>
+
+                <TextView
+                    android:id="@+id/invitationTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/invitations"
+                    android:layout_below="@id/earningsDescriptionTextView"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="@dimen/margin22"
+                    android:textColor="@color/toolbar_text_dark"
+                    android:textSize="@dimen/textSize16"
+                    android:fontFamily="@font/roboto_bold"/>
+
+                <TextView
+                    android:id="@+id/invitationsCountTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5 Left"
+                    android:layout_below="@id/earningsDescriptionTextView"
+                    android:layout_marginTop="@dimen/margin22"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="@dimen/textSize16"
+                    android:fontFamily="@font/roboto"
+                    android:layout_alignParentEnd="true"
+                    android:drawableEnd="@drawable/ic_rigth_arrow"
+                    tools:text="5 Left"/>
+
+                <View
+                    android:id="@+id/invitationsSeperatorView"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@id/invitationTextView"
+                    android:background="@color/lightBlueColor"
+                    android:layout_marginTop="@dimen/margin18"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/earningsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin28">
+
+                <TextView
+                    android:id="@+id/earningsTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/my_earnings"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:textColor="@color/toolbar_text_dark"
+                    android:textSize="@dimen/textSize16"
+                    android:fontFamily="@font/roboto_bold"/>
+
+                <TextView
+                    android:id="@+id/earningValueTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="@dimen/textSize16"
+                    android:layout_alignParentEnd="true"
+                    android:drawableEnd="@drawable/ic_rigth_arrow"
+                    tools:text="5 Left"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@id/earningValueTextView"
+                    android:background="@color/lightBlueColor"
+                    android:layout_marginTop="@dimen/margin18"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/catagoriesLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin28">
+
+                <TextView
+                    android:id="@+id/catagoriesDescriptionTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/patron_catagories_description"
+                    android:layout_alignParentTop="true"
+                    android:textSize="@dimen/textSize14"
+                    android:fontFamily="@font/roboto"
+                    android:textColor="@color/textSecondary"/>
+
+                <TextView
+                    android:id="@+id/catagoriesTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/edit_patron_catagories"
+                    android:layout_below="@id/catagoriesDescriptionTextView"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="@dimen/margin22"
+                    android:textColor="@color/toolbar_text_dark"
+                    android:textSize="@dimen/textSize16"
+                    android:fontFamily="@font/roboto_bold"/>
+
+                <TextView
+                    android:id="@+id/catagoriesCountTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/catagoriesDescriptionTextView"
+                    android:layout_marginTop="@dimen/margin22"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="@dimen/textSize16"
+                    android:layout_alignParentEnd="true"
+                    android:drawableEnd="@drawable/ic_rigth_arrow"
+                    tools:text="5 Left"/>
+
+                <View
+                    android:id="@+id/catagoriesSeperatorView"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@id/catagoriesTextView"
+                    android:background="@color/lightBlueColor"
+                    android:layout_marginTop="@dimen/margin18"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/changeCastPricesLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin28">
+
+                <TextView
+                    android:id="@+id/changeCastPriceTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/change_cast_prices"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentStart="true"
+                    android:textColor="@color/toolbar_text_dark"
+                    android:textSize="@dimen/textSize16"
+                    android:fontFamily="@font/roboto_bold"/>
+
+                <TextView
+                    android:id="@+id/priceTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="@dimen/textSize16"
+                    android:layout_alignParentEnd="true"
+                    android:drawableEnd="@drawable/ic_rigth_arrow"
+                    tools:text="5 Left"/>
+
+                <View
+                    android:id="@+id/priceSeperatorView"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@id/priceTextView"
+                    android:background="@color/lightBlueColor"
+                    android:layout_marginTop="@dimen/margin18"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>
