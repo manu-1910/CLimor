@@ -29,6 +29,7 @@ import kotlinx.android.synthetic.main.fragment_publish_categories.*
 import kotlinx.android.synthetic.main.fragment_publish_categories.btnContinue
 import kotlinx.android.synthetic.main.fragment_publish_categories.topAppBar
 import kotlinx.coroutines.launch
+import org.jetbrains.anko.design.snackbar
 import javax.inject.Inject
 
 class FragmentPatronCategories : FragmentCategoriesSelectionBase(), Injectable {

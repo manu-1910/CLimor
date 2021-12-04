@@ -148,7 +148,7 @@ fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =
         mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(),
         recaster = null,
-        colorCode = color_code
+        colorCode = color_code,
         maturedContent = false, 
         patronCast = false
     )
@@ -185,7 +185,7 @@ fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
         mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(),
         recaster = null,
-        colorCode = color_code
+        colorCode = color_code,
         maturedContent = false, 
         patronCast = false
     )
@@ -223,7 +223,7 @@ fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
         mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(),
         recaster = null,
-        colorCode = color_code
+        colorCode = color_code,
         maturedContent = false,
         patronCast = false
     )
@@ -260,7 +260,7 @@ fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
         mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(),
         recaster = null,
-        colorCode = color_code
+        colorCode = color_code,
         maturedContent = false, 
         patronCast = false
     )
@@ -297,7 +297,7 @@ fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
         mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(),
         recaster = null,
-        colorCode = color_code
+        colorCode = color_code,
         maturedContent = false, 
         patronCast = false
     )
@@ -352,7 +352,7 @@ fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
         mentions = podcast.mentions?.mapToUIModel(),
         links = podcast.links?.mapToUIModel(),
         recaster = recaster?.mapToUIModel(),
-        colorCode = podcast.color_code
+        colorCode = podcast.color_code,
         maturedContent = podcast.mature_content, 
         patronCast = podcast.patron_cast,
         patronDetails = podcast.patron_details?.let {
@@ -398,7 +398,7 @@ fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
         mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(),
         recaster = null,
-        colorCode = color_code
+        colorCode = color_code,
         maturedContent = false, 
         patronCast = false
     )

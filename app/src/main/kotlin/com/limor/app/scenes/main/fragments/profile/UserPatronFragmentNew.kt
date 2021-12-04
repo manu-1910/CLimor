@@ -32,11 +32,11 @@ import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
+import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.isOnline
 import com.limor.app.extensions.requireTag
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
-import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsFragmentNew
 import com.limor.app.scenes.main.fragments.profile.casts.CastItem
 import com.limor.app.scenes.main.fragments.profile.casts.LoadMoreItem
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsViewModel
@@ -80,7 +80,6 @@ class UserPatronFragmentNew : Fragment() {
 
     private val viewModel: UserPodcastsViewModel by viewModels { viewModelFactory }
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
-    private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
 
     lateinit var binding: FragmnetUserPatronNewBinding
     var requested = false
@@ -93,60 +92,6 @@ class UserPatronFragmentNew : Fragment() {
     private val loadMoreItem = LoadMoreItem {
         updateLoadMore(false)
         onLoadMore()
-    }
-    var launcher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (sharedPodcastId != -1) {
-                sharePodcastViewModel.share(sharedPodcastId)
-                sharedPodcastId = -1
-            }
-        }
-
-    val sharePodcast: (CastUIModel) -> Unit = { cast ->
-
-        val podcastLink = Constants.PODCAST_URL.format(cast.id)
-
-        val dynamicLink = Firebase.dynamicLinks.dynamicLink {
-            link = Uri.parse(podcastLink)
-            domainUriPrefix = Constants.LIMOR_DOMAIN_URL
-            androidParameters(BuildConfig.APPLICATION_ID) {
-                fallbackUrl = Uri.parse(podcastLink)
-            }
-            iosParameters(BuildConfig.IOS_BUNDLE_ID) {
-            }
-            socialMetaTagParameters {
-                title = cast.title.toString()
-                description = cast.caption.toString()
-                cast.imageLinks?.large?.let {
-                    imageUrl = Uri.parse(cast.imageLinks.large)
-                }
-            }
-        }
-
-        Firebase.dynamicLinks.shortLinkAsync {
-            longLink = dynamicLink.uri
-        }.addOnSuccessListener { (shortLink, flowChartLink) ->
-            try {
-                val sendIntent: Intent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_SUBJECT, cast.title)
-                    putExtra(Intent.EXTRA_TEXT, "Hey, check out this podcast: $shortLink")
-                    type = "text/plain"
-                }
-                sharedPodcastId = cast.id
-                val shareIntent = Intent.createChooser(sendIntent, null)
-                launcher.launch(shareIntent)
-            } catch (e: ActivityNotFoundException) {
-            }
-
-        }.addOnFailureListener {
-            Timber.d("Failed in creating short dynamic link")
-        }
-
-    }
-
-    companion object {
-        fun newInstance(user: UserUIModel) = UserPatronFragmentNew(user)
     }
 
     private fun updateLoadMore(isEnabled: Boolean) {
@@ -294,8 +239,11 @@ class UserPatronFragmentNew : Fragment() {
                         fragment.show(parentFragmentManager, fragment.requireTag())
                     }
                 },
-                onShareClick = {
-                    sharePodcast(it)
+                onShareClick = { cast, onShared ->
+                    ShareDialog.newInstance(cast).also { fragment ->
+                        fragment.setOnSharedListener(onShared)
+                        fragment.show(parentFragmentManager, fragment.requireTag())
+                    }
                 },
                 onHashTagClick = { hashtag ->
                     (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)

@@ -1083,12 +1083,6 @@ class PublishFragment : BaseFragment() {
         return Input.fromNullable(colorsArray[Random.nextInt(colorsArray.size)])
     }
 
-    private fun getRandomColorCode(): Input<String> {
-        val colorsArray = resources.getStringArray(R.array.feed_colors)
-        return Input.fromNullable(colorsArray[Random.nextInt(colorsArray.size)])
-    }
-
-
     private fun loadExistingData() {
 
         //recordingItem

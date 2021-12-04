@@ -16,8 +16,6 @@ class UserPodcastsViewModel @Inject constructor(
     private val likePodcastUseCase: LikePodcastUseCase,
     private val getPodcastsByUserUseCase: GetPodcastsByUserUseCase,
     private val getPatronPodcastsUseCase: GetPatronPodcastsUseCase
-
-
 ) : ViewModel() {
 
     private val _casts = MutableLiveData<List<CastUIModel>>()

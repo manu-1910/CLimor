@@ -110,7 +110,7 @@ class Notification : Fragment() {
         dialogBuilder.setCancelable(true)
         val dialog: AlertDialog = dialogBuilder.create()
 
-        dialogView.iconIV.image = resources.getDrawable(R.drawable.ic_alert)
+        dialogView.imageView.image = resources.getDrawable(R.drawable.ic_alert)
         dialogView.textTitle.text = resources.getString(R.string.no_connection_title)
         dialogView.textDescription.text = resources.getString(R.string.no_connection_description)
         dialogView.okButton.text = resources.getString(R.string.ok)

@@ -1,6 +1,5 @@
 package com.limor.app.scenes.patron
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -10,12 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.limor.app.databinding.FragmentShortItemSliderBinding
-
-import android.text.style.ForegroundColorSpan
-import android.text.SpannableString
-import android.text.Spanned
-import com.limor.app.scenes.patron.manage.ManagePatronActivity
-
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

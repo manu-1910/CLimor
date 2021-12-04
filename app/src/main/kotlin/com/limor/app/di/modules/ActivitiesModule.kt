@@ -99,11 +99,7 @@ abstract class ActivitiesModule {
     @ContributesAndroidInjector
     abstract fun contributeAuthActivityNewInjector(): AuthActivityNew
 
-    @ContributesAndroidInjector(
-        modules = [
-            ViewModelsModule::class
-        ]
-    )
+    @ContributesAndroidInjector
     abstract fun contributeEditCastActivityInjector(): EditCastActivity
 
     @ContributesAndroidInjector(
@@ -113,11 +109,7 @@ abstract class ActivitiesModule {
     )
     abstract fun contributeSetupPatronInjectorInjector(): PatronSetupActivity
 
-    @ContributesAndroidInjector(
-        modules = [
-            ViewModelsModule::class
-        ]
-    )
+    @ContributesAndroidInjector
     abstract fun contributeChatActivityInjector(): ChatActivity
 
     @ContributesAndroidInjector(
