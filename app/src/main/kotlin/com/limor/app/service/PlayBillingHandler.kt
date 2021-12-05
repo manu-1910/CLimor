@@ -110,23 +110,28 @@ class PlayBillingHandler @Inject constructor(
     }
 
     fun connectToBillingClient(connection: (Boolean) -> Unit) {
-        if (billingClient.connectionState == BillingClient.ConnectionState.DISCONNECTED) {
-
-            billingClient.startConnection(object : BillingClientStateListener {
-                override fun onBillingServiceDisconnected() {
-                    connectToBillingClient(connection)
-                }
-
-                override fun onBillingSetupFinished(p0: BillingResult) {
-                    uiScope.launch {
-                        connection(true)
-                    }
-                }
-
-            })
-        } else {
+        if (billingClient.connectionState == BillingClient.ConnectionState.CONNECTED) {
             connection(true)
+            return
         }
+
+        if (billingClient.connectionState == BillingClient.ConnectionState.CONNECTING) {
+            connection(false)
+            return
+        }
+
+        billingClient.startConnection(object : BillingClientStateListener {
+            override fun onBillingServiceDisconnected() {
+                connectToBillingClient(connection)
+            }
+
+            override fun onBillingSetupFinished(p0: BillingResult) {
+                uiScope.launch {
+                    connection(true)
+                }
+            }
+
+        })
     }
 
     private suspend fun fetchProducts(): List<SkuDetails> {
@@ -167,7 +172,7 @@ class PlayBillingHandler @Inject constructor(
         }
     }
 
-    private fun onListener(detailsAvailableListener: DetailsAvailableListener) {
+    private fun addListener(detailsAvailableListener: DetailsAvailableListener) {
         for (listener in detailsListeners) {
             // Listener already in the list of listeners
             if (listener.get() == detailsAvailableListener) {
@@ -196,7 +201,7 @@ class PlayBillingHandler @Inject constructor(
             throw RuntimeException("getPrice must be called on the main thread.")
         }
 
-        onListener(listener)
+        addListener(listener)
 
         // Always refresh the product IDs if the refresh time limit is reached
         //
@@ -206,6 +211,8 @@ class PlayBillingHandler @Inject constructor(
             return
         }
 
+        // If we already have the SKU Details for this particular product we immediately notify
+        // its listener.
         if (productSkuDetails.containsKey(productId)) {
             listener.onDetailsAvailable(productSkuDetails)
             return
