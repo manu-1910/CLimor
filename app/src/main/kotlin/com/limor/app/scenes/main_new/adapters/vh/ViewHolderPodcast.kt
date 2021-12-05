@@ -16,6 +16,7 @@ import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
+import com.limor.app.scenes.patron.unipaas.UniPaasActivity
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
@@ -192,6 +193,8 @@ class ViewHolderPodcast(
         }
 
         binding.tvPodcastTitle.setOnClickListener {
+            var intent = Intent(context, UniPaasActivity::class.java)
+            context.startActivity(intent)
         }
     }
 

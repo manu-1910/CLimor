@@ -889,5 +889,15 @@
     <string name="save_as_preview">Save as Preview</string>
     <string name="fetching_audio">Fetching audio...</string>
     <string name="button_save_as_preview">Save as Preview</string>
-
+    <string name="setup_my_digital_wallet">Setup My Digital Wallet</string>
+    <string name="hint_name">Name</string>
+    <string name="complete_setup">Complete Setup</string>
+    <string name="complete_setup_description">Complete your digital wallet setup and start monetizing your casts and receive money.</string>
+    <string name="do_it_later">Do it later</string>
+    <string name="country">Country</string>
+    <string name="date_of_birth">Date of Birth</string>
+    <string name="last_name">Last name</string>
+    <string name="first_name">First name</string>
+    <string name="setup_later">Setup Later</string>
+    <string name="set_up_later_description">You will not be able to monetize your casts until your digital wallet setup is completed.</string>
 </resources>

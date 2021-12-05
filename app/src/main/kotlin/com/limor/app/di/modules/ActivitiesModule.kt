@@ -16,6 +16,7 @@ import com.limor.app.scenes.main.fragments.setup_patron.SetupPatronActivity
 import com.limor.app.scenes.main_new.MainActivityNew
 import com.limor.app.scenes.patron.manage.ManagePatronActivity
 import com.limor.app.scenes.patron.setup.PatronSetupActivity
+import com.limor.app.scenes.patron.unipaas.UniPaasActivity
 import com.limor.app.scenes.splash.SplashActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -118,4 +119,11 @@ abstract class ActivitiesModule {
         ]
     )
     abstract fun contributeManagePatronActivityInjector(): ManagePatronActivity
+
+    @ContributesAndroidInjector(
+        modules = [
+            (UniPaasActivityFragmentBuilderModule::class)
+        ]
+    )
+    abstract fun contributeUniPassActivityInjector(): UniPaasActivity
 }

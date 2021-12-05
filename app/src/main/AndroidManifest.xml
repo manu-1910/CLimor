@@ -36,6 +36,9 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning,AllowBackup">
         <activity
+            android:name=".scenes.patron.unipaas.UniPaasActivity"
+            android:theme="@style/MaterialMainTheme.FullScreen"></activity>
+        <activity
             android:name=".scenes.patron.setup.PatronSetupActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -320,10 +323,11 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/MaterialMainTheme.Podcast" />
-        <activity android:name=".scenes.patron.manage.ManagePatronActivity"
+        <activity
+            android:name=".scenes.patron.manage.ManagePatronActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/MaterialMainTheme.FullScreen"></activity>
+            android:theme="@style/MaterialMainTheme.FullScreen" />
 
         <receiver android:name=".receivers.PhoneCallReceiver">
             <intent-filter>
