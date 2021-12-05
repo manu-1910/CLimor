@@ -19,6 +19,7 @@ interface DetailsAvailableListener {
 
 interface ProductDetails {
     fun getPrice(productId: String, listener: DetailsAvailableListener)
+    fun getPrices(listener: DetailsAvailableListener)
 }
 
 @Singleton
@@ -150,6 +151,7 @@ class PlayBillingHandler @Inject constructor(
 
     private fun onDetails(details: List<SkuDetails>) {
         uiScope.launch {
+            lastFetchTime = System.currentTimeMillis()
             productSkuDetails.apply {
                 clear()
                 putAll(details.map { it.sku to it })
@@ -162,7 +164,6 @@ class PlayBillingHandler @Inject constructor(
      * This connects to the billing client if not connected and fetches the product IDs.
      */
     private fun fetchProductIDs() {
-        lastFetchTime = System.currentTimeMillis()
         connectToBillingClient { connected ->
             if (connected) {
                 billingScope.launch {
@@ -220,6 +221,20 @@ class PlayBillingHandler @Inject constructor(
 
         // At this point the passed product ID does not exist in the cached list so we refresh
         // the list
+        fetchProductIDs()
+    }
+
+    /**
+     * Get pricing details and notify all listeners. This always makes an API call to get the latest
+     * product IDs and then an SDK call to get their SKU details.
+     */
+    override fun getPrices(listener: DetailsAvailableListener) {
+        if (!Looper.getMainLooper().isCurrentThread) {
+            throw RuntimeException("getPrice must be called on the main thread.")
+        }
+
+        addListener(listener)
+
         fetchProductIDs()
     }
 
