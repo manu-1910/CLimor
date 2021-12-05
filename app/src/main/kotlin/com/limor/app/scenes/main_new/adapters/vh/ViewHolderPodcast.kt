@@ -20,6 +20,8 @@ import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.patron.unipaas.UniPaasActivity
 import com.limor.app.scenes.utils.CommonsKt
+import com.limor.app.service.DetailsAvailableListener
+import com.limor.app.service.ProductDetails
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
 import kotlinx.android.synthetic.main.fragment_extended_player.*
@@ -36,13 +38,18 @@ class ViewHolderPodcast(
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val onUserMentionClick: (username: String, userId: Int) -> Unit,
     private val onEditPreviewClick: (cast: CastUIModel) -> Unit,
-    private val onPlayPreviewClick: (cast: CastUIModel, play: Boolean) -> Unit
+    private val onPlayPreviewClick: (cast: CastUIModel, play: Boolean) -> Unit,
     private val onPurchaseCast:  (cast: CastUIModel, sku: SkuDetails?) -> Unit,
-) : ViewHolderBindable<CastUIModel>(binding) {
+    private val productDetailsFetcher: ProductDetails
+) : ViewHolderBindable<CastUIModel>(binding), DetailsAvailableListener {
 
     private var playingPreview = false
+    private var skuDetails: SkuDetails? = null
+    private var cast: CastUIModel? = null
 
     override fun bind(item: CastUIModel) {
+        cast = item
+
         setPodcastGeneralInfo(item)
         setPodcastOwnerInfo(item)
         setPodcastCounters(item)
@@ -87,10 +94,11 @@ class ViewHolderPodcast(
     private fun setPatronPodcastStatus(item: CastUIModel){
         if (item.patronCast == true) {
             val userId = PrefsHandler.getCurrentUserId(context)
-            val sku = PrefsHandler.getSkuDetails(binding.root.context, item.priceId.toString())
 
             binding.btnBuyCast.setOnClickListener {
-                onPurchaseCast(item,sku)
+                skuDetails?.let {
+                    onPurchaseCast(item, it)
+                }
             }
             when {
                 (item.owner?.id != userId) -> {
@@ -99,7 +107,7 @@ class ViewHolderPodcast(
                     binding.btnAddPreview.visibility = View.GONE
                     binding.btnEditPrice.visibility = View.GONE
                     binding.btnPurchasedCast.visibility = View.GONE
-                    binding.btnBuyCast.text = sku?.originalPrice
+                    setPurchaseLabel()
                 }
                 item.owner.id == userId -> {
                     //Self Patron Cast
@@ -297,6 +305,24 @@ class ViewHolderPodcast(
         binding.tvPodcastReply.setTextColor(
             ContextCompat.getColor(binding.root.context, R.color.white)
         )
+    }
+
+    private fun setPurchaseLabel() {
+        val priceId = cast?.patronDetails?.priceId ?: return
+        val details = skuDetails
+        if (details == null) {
+            productDetailsFetcher.getPrice(priceId, this)
+            return
+        }
+        binding.btnBuyCast.text = details.price
+    }
+
+    override fun onDetailsAvailable(details: Map<String, SkuDetails>) {
+        val priceId = cast?.patronDetails?.priceId ?: return
+        if (details.containsKey(priceId)) {
+            skuDetails = details[priceId]
+            setPurchaseLabel()
+        }
     }
 
 }
