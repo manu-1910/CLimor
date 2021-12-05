@@ -14,8 +14,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.billingclient.api.*
 
 import com.google.firebase.dynamiclinks.ktx.*
@@ -82,43 +80,11 @@ class FragmentHomeNew : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initPlayHandler()
         initSwipeToRefresh()
         createAdapter()
         setUpRecyclerView()
         subscribeToViewModel()
         setOnClicks()
-    }
-
-    private fun initPlayHandler() {
-        playBillingHandler.connectToBillingClient{ connected ->
-            if (connected) {
-                // The BillingClient is ready. You can query purchases here.
-                lifecycleScope.launch {
-                    fetchProducts()
-                }
-            }
-        }
-    }
-
-    private suspend fun fetchProducts() {
-        val tiers = CommonsKt.getLocalPriceTiers(requireContext())
-        val ids = tiers.keys.toTypedArray().toCollection(ArrayList())
-        //val ids = arrayListOf("com.limor.dev.monthly_plan")
-        Timber.d("Billing $ids")
-        inAppProducts = playBillingHandler.queryInAppSKUDetails(ids) { purchase ->
-            //Handle Purchase, should be consumed it right away
-            val consumeParams =
-                ConsumeParams.newBuilder()
-                    .setPurchaseToken(purchase.purchaseToken)
-                    .build()
-            lifecycleScope.launch {
-                playBillingHandler.consumePurchase(consumeParams)
-            }
-        }
-        Timber.d("Saved $inAppProducts")
-
-
     }
 
     private fun launchPurchaseCast(sku: SkuDetails?) {
@@ -275,7 +241,6 @@ class FragmentHomeNew : BaseFragment() {
                         }
                     }
                 }
-                BottomSheetEditPreview.newInstance(it).show(requireActivity().supportFragmentManager, BottomSheetEditPreview.TAG)
             },
             onPurchaseCast = { cast, sku ->
                 launchPurchaseCast(sku)
