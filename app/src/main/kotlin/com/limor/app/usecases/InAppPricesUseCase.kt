@@ -13,9 +13,9 @@ class InAppPricesUseCase @Inject constructor(
     private val dispatcherProvider: DispatcherProvider
 ) {
 
-    suspend fun executeInAppProductTiers(): Result<List<String?>> = runCatching {
+    suspend fun executeInAppProductTiers(type: String = "castPriceTiers"): Result<List<String?>> = runCatching {
         withContext(dispatcherProvider.io) {
-            repository.getInAppPricesTiers()
+            repository.getInAppPricesTiers(type)
         }
     }
 
