@@ -58,9 +58,10 @@ class FragmentHomeNew : BaseFragment() {
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
     private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
     private val podcastInteractionViewModel: PodcastInteractionViewModel by activityViewModels { viewModelFactory }
+
     @Inject
     lateinit var playBillingHandler: PlayBillingHandler
-    var inAppProducts: List<SkuDetails>? = null
+
     lateinit var binding: FragmentHomeNewBinding
 
     private var homeFeedAdapter: HomeFeedAdapter? = null
@@ -88,8 +89,8 @@ class FragmentHomeNew : BaseFragment() {
     }
 
     private fun launchPurchaseCast(sku: SkuDetails?) {
-        sku?.let{
-            playBillingHandler.launchBillingFlowFor(it,requireActivity())
+        sku?.let {
+            playBillingHandler.launchBillingFlowFor(it, requireActivity())
         }
     }
 
@@ -244,7 +245,8 @@ class FragmentHomeNew : BaseFragment() {
             },
             onPurchaseCast = { cast, sku ->
                 launchPurchaseCast(sku)
-            }
+            },
+            productDetailsFetcher = playBillingHandler
         )
     }
 
