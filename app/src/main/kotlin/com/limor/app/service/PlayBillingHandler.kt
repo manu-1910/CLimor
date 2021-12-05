@@ -3,6 +3,8 @@ package com.limor.app.service
 import android.app.Activity
 import android.content.Context
 import android.os.Looper
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.android.billingclient.api.*
 import com.limor.app.BuildConfig
 import com.limor.app.apollo.PublishRepository
@@ -20,6 +22,7 @@ interface DetailsAvailableListener {
 interface ProductDetails {
     fun getPrice(productId: String, listener: DetailsAvailableListener)
     fun getPrices(listener: DetailsAvailableListener)
+    fun getPrices(): LiveData<List<SkuDetails>>
 }
 
 @Singleton
@@ -82,9 +85,11 @@ class PlayBillingHandler @Inject constructor(
                 SkuDetailsParams.newBuilder()
                     .setSkusList(skuIds)
                     .setType(BillingClient.SkuType.INAPP)
-            }.map {
+            }
+            .map {
                 getSkusFromParams(it)
-            }.flatten()
+            }
+            .flatten()
     }
 
     private suspend fun getSkusFromParams(params: SkuDetailsParams.Builder): List<SkuDetails> {
@@ -149,25 +154,30 @@ class PlayBillingHandler @Inject constructor(
         return details
     }
 
-    private fun onDetails(details: List<SkuDetails>) {
-        uiScope.launch {
-            lastFetchTime = System.currentTimeMillis()
-            productSkuDetails.apply {
-                clear()
-                putAll(details.map { it.sku to it })
-            }
+    private fun onDetails(details: List<SkuDetails>, notifyListeners: Boolean = true) {
+        lastFetchTime = System.currentTimeMillis()
+        productSkuDetails.apply {
+            clear()
+            putAll(details.map { it.sku to it })
+        }
+        if (notifyListeners) {
             notifyListeners()
         }
+
     }
 
     /**
      * This connects to the billing client if not connected and fetches the product IDs.
      */
-    private fun fetchProductIDs() {
+    private fun fetchProductIDs(onDone: ((details: List<SkuDetails>) -> Unit)? = null) {
         connectToBillingClient { connected ->
             if (connected) {
                 billingScope.launch {
-                    onDetails(fetchProducts())
+                    val details = fetchProducts()
+                    uiScope.launch {
+                        onDetails(details, onDone == null)
+                        onDone?.invoke(details)
+                    }
                 }
             }
         }
@@ -181,6 +191,15 @@ class PlayBillingHandler @Inject constructor(
             }
         }
         detailsListeners.add(WeakReference(detailsAvailableListener))
+    }
+
+    private fun removeListener(detailsAvailableListener: DetailsAvailableListener) {
+        for (listener in detailsListeners) {
+            if (listener.get() == detailsAvailableListener) {
+                detailsListeners.remove(listener)
+                return
+            }
+        }
     }
 
     private fun notifyListeners() {
@@ -236,6 +255,17 @@ class PlayBillingHandler @Inject constructor(
         addListener(listener)
 
         fetchProductIDs()
+    }
+
+    /**
+     * Util function to get the prices
+     */
+    override fun getPrices(): LiveData<List<SkuDetails>> {
+        val liveData = MutableLiveData<List<SkuDetails>>()
+        fetchProductIDs {
+            liveData.postValue(it)
+        }
+        return liveData
     }
 
     companion object {
