@@ -309,7 +309,7 @@ class UserPatronFragmentNew : Fragment() {
         binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
         binding.termsCheckBox.isChecked = false
         Timber.d("Current User state -> ${user.patronInvitationStatus} ---")
-        user.isPatron = true
+        user.isPatron = false
         if (currentUser()) {
             if (user.isPatron == true) {
                 //is already a patron

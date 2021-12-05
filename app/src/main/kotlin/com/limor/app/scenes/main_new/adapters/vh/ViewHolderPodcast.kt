@@ -8,6 +8,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.navigation.findNavController
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.SkuDetails
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.dm.ShareResult
@@ -35,6 +37,7 @@ class ViewHolderPodcast(
     private val onUserMentionClick: (username: String, userId: Int) -> Unit,
     private val onEditPreviewClick: (cast: CastUIModel) -> Unit,
     private val onPlayPreviewClick: (cast: CastUIModel, play: Boolean) -> Unit
+    private val onPurchaseCast:  (cast: CastUIModel, sku: SkuDetails?) -> Unit,
 ) : ViewHolderBindable<CastUIModel>(binding) {
 
     private var playingPreview = false
@@ -82,16 +85,24 @@ class ViewHolderPodcast(
     }
 
     private fun setPatronPodcastStatus(item: CastUIModel){
-        if(item.patronCast == true){
+        if (item.patronCast == true) {
             val userId = PrefsHandler.getCurrentUserId(context)
-            when{
+            val sku = PrefsHandler.getSkuDetails(binding.root.context, item.priceId.toString())
+
+            binding.btnBuyCast.setOnClickListener {
+                onPurchaseCast(item,sku)
+            }
+            when {
                 (item.owner?.id != userId) -> {
+                    //Purchase a cast actions
                     binding.notCastOwnerActions.visibility = View.VISIBLE
                     binding.btnAddPreview.visibility = View.GONE
                     binding.btnEditPrice.visibility = View.GONE
                     binding.btnPurchasedCast.visibility = View.GONE
+                    binding.btnBuyCast.text = sku?.originalPrice
                 }
                 item.owner.id == userId -> {
+                    //Self Patron Cast
                     binding.btnPlayStopPreview.visibility = View.GONE
                     binding.btnBuyCast.visibility = View.GONE
                     binding.castOwnerActions.visibility = View.VISIBLE
@@ -101,6 +112,7 @@ class ViewHolderPodcast(
                     binding.notCastOwnerActions.visibility = View.GONE
                     binding.castOwnerActions.visibility = View.GONE
                     binding.btnPurchasedCast.visibility = View.VISIBLE
+
                 }
             }
         } else {

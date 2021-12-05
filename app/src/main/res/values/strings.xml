@@ -887,6 +887,7 @@
     <string name="edit_preview">Edit Preview</string>
     <string name="preview_note">Preview must be in between 10 secs to 30 secs</string>
     <string name="save_as_preview">Save as Preview</string>
+
     <string name="fetching_audio">Fetching audio...</string>
     <string name="button_save_as_preview">Save as Preview</string>
     <string name="setup_my_digital_wallet">Setup My Digital Wallet</string>
@@ -900,4 +901,67 @@
     <string name="first_name">First name</string>
     <string name="setup_later">Setup Later</string>
     <string name="set_up_later_description">You will not be able to monetize your casts until your digital wallet setup is completed.</string>
+    <string-array name="cast_tiers">
+        <item>com.limor.dev.tier_1|0.99</item>
+        <item>com.limor.dev.tier_2|1.99</item>
+        <item>com.limor.dev.tier_3|2.99</item>
+        <item>com.limor.dev.tier_4|3.99</item>
+        <item>com.limor.dev.tier_5|4.99</item>
+        <item>com.limor.dev.tier_6|5.99</item>
+        <item>com.limor.dev.tier_7|6.99</item>
+        <item>com.limor.dev.tier_8|7.99</item>
+        <item>com.limor.dev.tier_9|8.99</item>
+        <item>com.limor.dev.tier_10|9.99</item>
+        <item>com.limor.dev.tier_11|10.99</item>
+        <item>com.limor.dev.tier_12|11.99</item>
+        <item>com.limor.dev.tier_13|12.99</item>
+        <item>com.limor.dev.tier_14|13.99</item>
+        <item>com.limor.dev.tier_15|14.99</item>
+        <item>com.limor.dev.tier_16|15.99</item>
+        <item>com.limor.dev.tier_17|16.99</item>
+        <item>com.limor.dev.tier_18|17.99</item>
+        <item>com.limor.dev.tier_19|18.99</item>
+        <item>com.limor.dev.tier_20|19.99</item>
+        <item>com.limor.dev.tier_21|20.99</item>
+        <item>com.limor.dev.tier_22|21.99</item>
+        <item>com.limor.dev.tier_23|22.99</item>
+        <item>com.limor.dev.tier_24|23.99</item>
+        <item>com.limor.dev.tier_25|24.99</item>
+        <item>com.limor.dev.tier_26|25.99</item>
+        <item>com.limor.dev.tier_27|26.99</item>
+        <item>com.limor.dev.tier_28|27.99</item>
+        <item>com.limor.dev.tier_29|28.99</item>
+        <item>com.limor.dev.tier_30|29.99</item>
+        <item>com.limor.dev.tier_31|30.99</item>
+        <item>com.limor.dev.tier_32|31.99</item>
+        <item>com.limor.dev.tier_33|32.99</item>
+        <item>com.limor.dev.tier_34|33.99</item>
+        <item>com.limor.dev.tier_35|34.99</item>
+        <item>com.limor.dev.tier_36|35.99</item>
+        <item>com.limor.dev.tier_37|36.99</item>
+        <item>com.limor.dev.tier_38|37.99</item>
+        <item>com.limor.dev.tier_39|38.99</item>
+        <item>com.limor.dev.tier_40|39.99</item>
+        <item>com.limor.dev.tier_41|40.99</item>
+        <item>com.limor.dev.tier_42|41.99</item>
+        <item>com.limor.dev.tier_43|42.99</item>
+        <item>com.limor.dev.tier_44|43.99</item>
+        <item>com.limor.dev.tier_45|44.99</item>
+        <item>com.limor.dev.tier_46|45.99</item>
+        <item>com.limor.dev.tier_47|46.99</item>
+        <item>com.limor.dev.tier_48|47.99</item>
+        <item>com.limor.dev.tier_49|48.99</item>
+        <item>com.limor.dev.tier_50|49.99</item>
+        <item>com.limor.dev.tier_51|54.99</item>
+        <item>com.limor.dev.tier_52|59.99</item>
+        <item>com.limor.dev.tier_53|64.99</item>
+        <item>com.limor.dev.tier_54|69.99</item>
+        <item>com.limor.dev.tier_55|74.99</item>
+        <item>com.limor.dev.tier_56|79.99</item>
+        <item>com.limor.dev.tier_57|84.99</item>
+        <item>com.limor.dev.tier_58|89.99</item>
+        <item>com.limor.dev.tier_59|94.99</item>
+        <item>com.limor.dev.tier_60|99.99</item>
+        <item>com.limor.dev.tier_65|129.99</item>
+    </string-array>
 </resources>
