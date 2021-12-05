@@ -29,6 +29,9 @@ class PlayBillingHandler @Inject constructor(
 
     lateinit var handlePurchases: (Purchase) -> Unit
 
+    private val mainThreadJob = Job()
+    private val uiScope = CoroutineScope(Dispatchers.Main + mainThreadJob)
+
     private val billingJob = SupervisorJob()
     private val billingScope = CoroutineScope(Dispatchers.IO + billingJob)
 
@@ -115,18 +118,18 @@ class PlayBillingHandler @Inject constructor(
                 }
 
                 override fun onBillingSetupFinished(p0: BillingResult) {
-                    connection(true)
+                    uiScope.launch {
+                        connection(true)
+                    }
                 }
 
             })
-
-
         } else {
             connection(true)
         }
     }
 
-    private suspend fun fetchProducts() {
+    private suspend fun fetchProducts(): List<SkuDetails> {
         // TODO use a constant for the type
         val productIds = publishRepository.getInAppPricesTiers("castPriceTiers")
         if (BuildConfig.DEBUG) {
@@ -135,6 +138,18 @@ class PlayBillingHandler @Inject constructor(
         val details = queryInAppSKUDetails(productIds)
         if (BuildConfig.DEBUG) {
             Timber.d("Got SKU Details -> $details")
+        }
+
+        return details
+    }
+
+    private fun onDetails(details: List<SkuDetails>) {
+        uiScope.launch {
+            productSkuDetails.apply {
+                clear()
+                putAll(details.map { it.sku to it })
+            }
+            notifyListeners()
         }
     }
 
@@ -146,10 +161,8 @@ class PlayBillingHandler @Inject constructor(
         connectToBillingClient { connected ->
             if (connected) {
                 billingScope.launch {
-                    fetchProducts()
-                    println("Thread is main 1 -> ${Looper.getMainLooper().isCurrentThread}")
+                    onDetails(fetchProducts())
                 }
-                println("Thread is main 2 -> ${Looper.getMainLooper().isCurrentThread}")
             }
         }
     }
