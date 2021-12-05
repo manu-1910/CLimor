@@ -1,14 +1,13 @@
 package com.limor.app.scenes.main_new.adapters.vh
 
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Color
 import android.os.Handler
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.navigation.findNavController
-import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.SkuDetails
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
@@ -24,8 +23,6 @@ import com.limor.app.service.DetailsAvailableListener
 import com.limor.app.service.ProductDetails
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
-import kotlinx.android.synthetic.main.fragment_extended_player.*
-import timber.log.Timber
 
 class ViewHolderPodcast(
     val binding: ItemHomeFeedBinding,
@@ -107,7 +104,7 @@ class ViewHolderPodcast(
                     binding.btnAddPreview.visibility = View.GONE
                     binding.btnEditPrice.visibility = View.GONE
                     binding.btnPurchasedCast.visibility = View.GONE
-                    setPurchaseLabel()
+                    setPricingLabel()
                 }
                 item.owner.id == userId -> {
                     //Self Patron Cast
@@ -115,6 +112,7 @@ class ViewHolderPodcast(
                     binding.btnBuyCast.visibility = View.GONE
                     binding.castOwnerActions.visibility = View.VISIBLE
                     binding.btnPurchasedCast.visibility = View.GONE
+                    setPricingLabel()
                 }
                 else -> {
                     binding.notCastOwnerActions.visibility = View.GONE
@@ -307,21 +305,23 @@ class ViewHolderPodcast(
         )
     }
 
-    private fun setPurchaseLabel() {
+    @SuppressLint("SetTextI18n")
+    private fun setPricingLabel() {
         val priceId = cast?.patronDetails?.priceId ?: return
         val details = skuDetails
         if (details == null) {
             productDetailsFetcher.getPrice(priceId, this)
             return
         }
-        binding.btnBuyCast.text = details.price
+        binding.btnBuyCast.text = "${getString(R.string.buy_cast)}\n${details.price}"
+        binding.btnEditPrice.text = "${getString(R.string.edit_price)}\n${details.price}"
     }
 
     override fun onDetailsAvailable(details: Map<String, SkuDetails>) {
         val priceId = cast?.patronDetails?.priceId ?: return
         if (details.containsKey(priceId)) {
             skuDetails = details[priceId]
-            setPurchaseLabel()
+            setPricingLabel()
         }
     }
 
