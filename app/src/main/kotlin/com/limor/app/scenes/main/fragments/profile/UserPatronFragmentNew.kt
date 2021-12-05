@@ -32,6 +32,7 @@ import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
+import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.isOnline
 import com.limor.app.extensions.requireTag
 import com.limor.app.scenes.auth_new.util.JwtChecker
@@ -62,15 +63,23 @@ import java.time.Duration
 import javax.inject.Inject
 
 
-class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
+class UserPatronFragmentNew : Fragment() {
 
+
+    companion object {
+        private const val USER_ID_KEY = "USER_ID_KEY"
+        fun newInstance(user: UserUIModel) = UserPatronFragmentNew().apply {
+            arguments = bundleOf(USER_ID_KEY to user)
+        }
+    }
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: UserProfileViewModel by viewModels { viewModelFactory }
+
+    private lateinit var user: UserUIModel
+
     private val viewModel: UserPodcastsViewModel by viewModels { viewModelFactory }
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
-    private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
-
 
     lateinit var binding: FragmnetUserPatronNewBinding
     var requested = false
@@ -83,60 +92,6 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
     private val loadMoreItem = LoadMoreItem {
         updateLoadMore(false)
         onLoadMore()
-    }
-    var launcher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (sharedPodcastId != -1) {
-                sharePodcastViewModel.share(sharedPodcastId)
-                sharedPodcastId = -1
-            }
-        }
-
-    val sharePodcast: (CastUIModel) -> Unit = { cast ->
-
-        val podcastLink = Constants.PODCAST_URL.format(cast.id)
-
-        val dynamicLink = Firebase.dynamicLinks.dynamicLink {
-            link = Uri.parse(podcastLink)
-            domainUriPrefix = Constants.LIMOR_DOMAIN_URL
-            androidParameters(BuildConfig.APPLICATION_ID) {
-                fallbackUrl = Uri.parse(podcastLink)
-            }
-            iosParameters(BuildConfig.IOS_BUNDLE_ID) {
-            }
-            socialMetaTagParameters {
-                title = cast.title.toString()
-                description = cast.caption.toString()
-                cast.imageLinks?.large?.let {
-                    imageUrl = Uri.parse(cast.imageLinks.large)
-                }
-            }
-        }
-
-        Firebase.dynamicLinks.shortLinkAsync {
-            longLink = dynamicLink.uri
-        }.addOnSuccessListener { (shortLink, flowChartLink) ->
-            try {
-                val sendIntent: Intent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_SUBJECT, cast.title)
-                    putExtra(Intent.EXTRA_TEXT, "Hey, check out this podcast: $shortLink")
-                    type = "text/plain"
-                }
-                sharedPodcastId = cast.id
-                val shareIntent = Intent.createChooser(sendIntent, null)
-                launcher.launch(shareIntent)
-            } catch (e: ActivityNotFoundException) {
-            }
-
-        }.addOnFailureListener {
-            Timber.d("Failed in creating short dynamic link")
-        }
-
-    }
-
-    companion object {
-        fun newInstance(user: UserUIModel) = UserPatronFragmentNew(user)
     }
 
     private fun updateLoadMore(isEnabled: Boolean) {
@@ -161,6 +116,11 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         AndroidSupportInjection.inject(this)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        user = requireArguments().getParcelable(USER_ID_KEY)!!
     }
 
     override fun onCreateView(
@@ -189,15 +149,18 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
     private fun getNormalStateItems(): ArrayList<FragmentShortItemSlider> {
         val item1 = FragmentShortItemSlider.newInstance(
             R.string.patron_carousel_slide_1_title,
-            R.drawable.patron_carousel_slide_1_image
+            R.drawable.patron_carousel_slide_1_image,
+            R.string.patron_carousel_slide_1_sub_title,
         )
         val item2 = FragmentShortItemSlider.newInstance(
             R.string.patron_carousel_slide_2_title,
-            R.drawable.patron_carousel_slide_2_image
+            R.drawable.patron_carousel_slide_2_image,
+            R.string.patron_carousel_slide_2_sub_title,
         )
         val item3 = FragmentShortItemSlider.newInstance(
             R.string.patron_carousel_slide_3_title,
-            R.drawable.patron_carousel_slide_3_image
+            R.drawable.patron_carousel_slide_3_image,
+            R.string.patron_carousel_slide_3_sub_title,
         )
         return arrayListOf(item1, item2, item3)
     }
@@ -205,7 +168,8 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
     private fun getApprovedStateItems(): ArrayList<FragmentShortItemSlider> {
         val item1 = FragmentShortItemSlider.newInstance(
             R.string.patron_carousel_slide_approved_title,
-            R.drawable.ic_patron_invite_accepted
+            R.drawable.ic_patron_invite_accepted,
+            0
         )
         return arrayListOf(item1)
     }
@@ -275,8 +239,11 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                         fragment.show(parentFragmentManager, fragment.requireTag())
                     }
                 },
-                onShareClick = {
-                    sharePodcast(it)
+                onShareClick = { cast, onShared ->
+                    ShareDialog.newInstance(cast).also { fragment ->
+                        fragment.setOnSharedListener(onShared)
+                        fragment.show(parentFragmentManager, fragment.requireTag())
+                    }
                 },
                 onHashTagClick = { hashtag ->
                     (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)
@@ -340,6 +307,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
             HtmlCompat.FROM_HTML_MODE_LEGACY)
         binding.termsTV.text = result
         binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
+        binding.termsCheckBox.isChecked = false
         Timber.d("Current User state -> ${user.patronInvitationStatus} ---")
         user.isPatron = false
         if (currentUser()) {
@@ -405,7 +373,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                                 "COMPLETED" -> {
                                     //Show Limor Patron
                                     setupViewPager(ArrayList())
-                                    binding.audioPlayerView.visibility = View.GONE
+                                    binding.audioPlayerView.visibility = View.VISIBLE
                                     binding.termsCheckBox.isChecked = false
                                     binding.patronButton.text =
                                         getString(R.string.limorPatronSetupWallet)
@@ -422,7 +390,8 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                                 else -> {
                                     setupViewPager(getApprovedStateItems())
                                     binding.patronButton.text = getString(R.string.limorPatronSetup)
-                                    binding.patronButton.isEnabled = true
+                                    binding.checkLayout.visibility = View.VISIBLE
+                                    binding.patronButton.isEnabled = false
                                 }
 
                             }
@@ -430,12 +399,10 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
 
                     }
                     "REJECTED" -> {
-                        setupViewPager(getNormalStateItems())
-                        binding.patronButton.isEnabled = false
+                        setNotInitiatedState()
                     }
                     "REVOKED" -> {
-                        setupViewPager(getNormalStateItems())
-                        binding.patronButton.isEnabled = false
+                        setNotInitiatedState()
                     }
                 }
             }
@@ -473,6 +440,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
         binding.requestStateLayout.visibility = View.VISIBLE
         binding.checkLayout.visibility = View.VISIBLE
         binding.patronButton.isEnabled = false
+        binding.termsCheckBox.isChecked = false
         subscribeToInvite()
     }
 
@@ -482,7 +450,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                 user.patronInvitationStatus = "REQUESTED"
                 handleUIStates()
             } else {
-                binding.root.snackbar("Patron Invitation wasn't requested")
+                binding.root.snackbar(getString(R.string.patron_invite_not_required))
                 user.patronInvitationStatus = "NOT_REQUESTED"
                 handleUIStates()
             }
@@ -531,11 +499,16 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                 }
                 "APPROVED" -> checkPatronState()
                 "REJECTED" -> {
-
+                    binding.patronButton.isEnabled = false
+                    binding.patronButton.text = getString(R.string.requesting)
+                    requestInvitation()
                 }
                 "REVOKED" -> {
-
+                    binding.patronButton.isEnabled = false
+                    binding.patronButton.text = getString(R.string.requesting)
+                    requestInvitation()
                 }
+
             }
             //Should setup Limor patron
         }
@@ -548,7 +521,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
     }
 
     private fun checkPatronState() {
-        user.patronOnBoardingStatus ="NOT_INITIATED"
+        // user.patronOnBoardingStatus = "NOT_INITIATED"
         when (user.patronOnBoardingStatus) {
             "NOT_INITIATED" -> {
                 val intent = Intent(requireContext(), PatronSetupActivity::class.java)
@@ -559,7 +532,7 @@ class UserPatronFragmentNew(var user: UserUIModel) : Fragment() {
                 //Go to Categories
                 val intent = Intent(requireContext(), PatronSetupActivity::class.java)
                 intent.putExtra("user", user)
-                //intent.putExtra("page", "categories")
+                intent.putExtra("page", "categories")
                 startActivity(intent)
 
             }

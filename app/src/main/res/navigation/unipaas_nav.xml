@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/unipaas_nav"
+    app:startDestination="@id/unipaas_set_up_form_fragment">
+
+    <fragment
+        android:id="@+id/unipaas_set_up_form_fragment"
+        android:name="com.limor.app.scenes.patron.unipaas.FragmentSetUpDigitalWalletForm"
+        android:label="SetUpDigitalWalletFormFragment"
+        tools:layout="@layout/fragment_set_up_digital_wallet_form">
+        <action
+            android:id="@+id/action_set_up_digital_wallet_form_fragment_to_set_up_digital_wallet_confirmation"
+            app:destination="@id/unipaas_set_up_confirmation_fragment" />
+        <action
+            android:id="@+id/action_set_up_digital_wallet_form_fragment_to_country_code_selection"
+            app:destination="@id/fragment_country_code" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/unipaas_set_up_confirmation_fragment"
+        android:name="com.limor.app.scenes.patron.unipaas.FragmentDigitalWalletSetUpConfirmation"
+        android:label="SetUpDigitalWalletFormFragment"
+        tools:layout="@layout/fragment_set_up_digital_wallet_form"></fragment>
+
+    <fragment
+        android:id="@+id/fragment_country_code"
+        android:name="com.limor.app.scenes.auth_new.fragments.FragmentCountryCode"
+        android:label="CountryCode"
+        tools:layout="@layout/fragment_country_code"></fragment>
+
+</navigation>

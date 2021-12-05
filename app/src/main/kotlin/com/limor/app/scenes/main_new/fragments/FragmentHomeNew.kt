@@ -11,18 +11,21 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.billingclient.api.*
+
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
-import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.calculateAmplitude
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentHomeNewBinding
+import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.requireTag
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
@@ -30,7 +33,7 @@ import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.adapters.HomeFeedAdapter
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
-import com.limor.app.scenes.main_new.view.BottomSheetEditPreview
+import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
@@ -38,9 +41,11 @@ import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.PlayBillingHandler
 import com.limor.app.uimodels.CastUIModel
+
+import com.limor.app.uimodels.mapToAudioTrack
+
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
@@ -124,7 +129,7 @@ class FragmentHomeNew : BaseFragment() {
 
     private fun setOnClicks() {
         binding.btnNotification.setOnClickListener {
-           findNavController().navigate(R.id.navigation_notifications)
+            findNavController().navigate(R.id.navigation_notifications)
         }
     }
 
@@ -231,8 +236,11 @@ class FragmentHomeNew : BaseFragment() {
                     fragment.show(parentFragmentManager, fragment.requireTag())
                 }
             },
-            onShareClick = { cast ->
-                sharePodcast(cast)
+            onShareClick = { cast, onShared ->
+                ShareDialog.newInstance(cast).also { fragment ->
+                    fragment.setOnSharedListener(onShared)
+                    fragment.show(parentFragmentManager, fragment.requireTag())
+                }
             },
             onReloadData = { _, _ ->
                 reloadCurrentCasts()
@@ -249,6 +257,24 @@ class FragmentHomeNew : BaseFragment() {
                 context?.let { context -> UserProfileActivity.show(context, username, userId) }
             },
             onEditPreviewClick = {
+                EditPreviewDialog.newInstance(it).also { fragment ->
+                    fragment.show(parentFragmentManager, fragment.requireTag())
+                }
+            },
+            onPlayPreviewClick = { cast, play ->
+                cast.audio?.mapToAudioTrack()?.let { it1 ->
+                    cast.patronDetails?.startsAt?.let { it2 ->
+                        cast.patronDetails.endsAt?.let { it3 ->
+                            if(play){
+                                (activity as? PlayerViewManager)?.playPreview(
+                                    it1, it2.toInt(), it3.toInt()
+                                )
+                            } else{
+                                (activity as? PlayerViewManager)?.stopPreview()
+                            }
+                        }
+                    }
+                }
                 BottomSheetEditPreview.newInstance(it).show(requireActivity().supportFragmentManager, BottomSheetEditPreview.TAG)
             },
             onPurchaseCast = { cast, sku ->
@@ -272,48 +298,6 @@ class FragmentHomeNew : BaseFragment() {
             sharePodcastViewModel.share(sharedPodcastId)
             sharedPodcastId = -1
         }
-    }
-
-    val sharePodcast : (CastUIModel) -> Unit =  { cast ->
-
-        val podcastLink = Constants.PODCAST_URL.format(cast.id)
-
-        val dynamicLink = Firebase.dynamicLinks.dynamicLink {
-            link = Uri.parse(podcastLink)
-            domainUriPrefix = Constants.LIMOR_DOMAIN_URL
-            androidParameters(BuildConfig.APPLICATION_ID) {
-                fallbackUrl = Uri.parse(podcastLink)
-            }
-            iosParameters(BuildConfig.IOS_BUNDLE_ID) {
-            }
-            socialMetaTagParameters {
-                title = cast.title.toString()
-                description = cast.caption.toString()
-                cast.imageLinks?.large?.let {
-                    imageUrl = Uri.parse(cast.imageLinks.large)
-                }
-            }
-        }
-
-        Firebase.dynamicLinks.shortLinkAsync {
-            longLink = dynamicLink.uri
-        }.addOnSuccessListener { (shortLink, flowChartLink) ->
-            try{
-                val sendIntent: Intent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_SUBJECT, cast.title)
-                    putExtra(Intent.EXTRA_TEXT, "Hey, check out this podcast: $shortLink")
-                    type = "text/plain"
-                }
-                sharedPodcastId = cast.id
-                val shareIntent = Intent.createChooser(sendIntent, null)
-                launcher.launch(shareIntent)
-            } catch (e: ActivityNotFoundException){}
-
-        }.addOnFailureListener {
-            Timber.d("Failed in creating short dynamic link")
-        }
-
     }
 
     private fun openPlayer(cast: CastUIModel) {

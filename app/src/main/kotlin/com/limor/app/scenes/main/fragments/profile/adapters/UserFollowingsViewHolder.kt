@@ -17,6 +17,7 @@ import com.limor.app.databinding.ItemUserFollowersBinding
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.utils.CommonsKt
+import com.limor.app.uimodels.UserUIModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,22 +28,24 @@ import timber.log.Timber
 import java.util.*
 
 class UserFollowingsViewHolder(
-    val binding: ItemUserFollowersBinding, val listener: UserFollowingsAdapter.OnFollowerClickListener
+    val binding: ItemUserFollowersBinding,
+    val listener: UserFollowingsAdapter.OnFollowerClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
     private var ivUser: ImageView = binding.ivUser
     private var btnFollow: Button = binding.btnFollow
     private var tvCapitals: TextView = binding.tvTitle
     private var tvUsername: TextView = binding.tvSubtitle
 
-    fun bind(currentItem: FriendsQuery.GetFriend, position: Int) {
+    fun bind(currentItem: UserUIModel, position: Int) {
 
-        btnFollow.visibility = if (signedInUserWith(currentItem.id,binding.root.context)) View.GONE else View.VISIBLE
+        btnFollow.visibility =
+            if (signedInUserWith(currentItem.id, binding.root.context)) View.GONE else View.VISIBLE
 
         btnFollow.onClick {
             listener.onFollowClicked(currentItem, position)
         }
 
-        if (currentItem.followed!!) {
+        if (currentItem.isFollowed!!) {
             CommonsKt.setButtonFollowerStylePressed(
                 btnFollow,
                 false,
@@ -59,8 +62,8 @@ class UserFollowingsViewHolder(
         }
 
 
-        val firstName = currentItem.first_name
-        val lastName = currentItem.last_name
+        val firstName = currentItem.firstName
+        val lastName = currentItem.lastName
         val fullname = binding.root.context.getString(R.string.user_fullname, firstName, lastName)
 
         tvCapitals.text = currentItem.username
@@ -70,13 +73,13 @@ class UserFollowingsViewHolder(
         tvUsername.onClick { listener.onUserClicked(currentItem, position) }
 
         binding.root.onLongClick {
-            listener.onUserLongClicked(currentItem,position)
+            listener.onUserLongClicked(currentItem, position)
             return@onLongClick true
         }
 
 
         Glide.with(itemView.context)
-            .load(currentItem.images?.small_url)
+            .load(currentItem.imageLinks?.small)
             .placeholder(R.drawable.ic_podcast_listening)
             .error(R.drawable.ic_podcast_listening)
             .apply(RequestOptions.circleCropTransform())

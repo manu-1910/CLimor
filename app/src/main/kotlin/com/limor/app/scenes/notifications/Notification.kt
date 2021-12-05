@@ -1,7 +1,11 @@
 package com.limor.app.scenes.notifications
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,12 +17,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.limor.app.R
 import com.limor.app.databinding.FragmentNotificationBinding
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.MainActivityNew
 import com.limor.app.uimodels.NotiUIMode
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
+import kotlinx.android.synthetic.main.toolbar_discover.view.*
+import org.jetbrains.anko.image
+import org.jetbrains.anko.okButton
+import org.jetbrains.anko.sdk23.listeners.onClick
+import org.jetbrains.anko.support.v4.alert
 import javax.inject.Inject
 
 class Notification : Fragment() {
@@ -60,8 +71,8 @@ class Notification : Fragment() {
             }
         })
 
-        notificationAdapter.openCastCallback{
-            it?.let{ castId ->
+        notificationAdapter.openCastCallback {
+            it?.let { castId ->
                 (activity as MainActivityNew).openExtendedPlayer(castId)
             }
         }
@@ -70,9 +81,12 @@ class Notification : Fragment() {
             UserProfileActivity.show(requireContext(),username!!,userId!!,tab)
         }
         notificationAdapter.addNotificationReadListener { nId, read ->
-            nId?.let{
-                notificationViewModel.updateReadStatus(it,read)
+            nId?.let {
+                notificationViewModel.updateReadStatus(it, read)
             }
+        }
+        notificationAdapter.addNoInternetAlertCallback {
+            showInternetErrorDialog()
         }
         getNotifications()
     }
@@ -86,4 +100,33 @@ class Notification : Fragment() {
             findNavController().popBackStack()
         }
     }
+
+    private fun showInternetErrorDialog() {
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_error_publish_cast, null)
+
+        dialogBuilder.setView(dialogView)
+        dialogBuilder.setCancelable(true)
+        val dialog: AlertDialog = dialogBuilder.create()
+
+        dialogView.imageView.image = resources.getDrawable(R.drawable.ic_alert)
+        dialogView.textTitle.text = resources.getString(R.string.no_connection_title)
+        dialogView.textDescription.text = resources.getString(R.string.no_connection_description)
+        dialogView.okButton.text = resources.getString(R.string.ok)
+        dialogView.cancelButton.onClick {
+            dialog.dismiss()
+        }
+        dialogView.okButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset)
+            show()
+        }
+    }
+
 }

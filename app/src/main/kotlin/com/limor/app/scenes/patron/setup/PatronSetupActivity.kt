@@ -10,6 +10,7 @@ import androidx.navigation.fragment.NavHostFragment
 import com.limor.app.R
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
+import org.jetbrains.anko.toast
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -44,6 +45,7 @@ class PatronSetupActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
     override fun onBackPressed() {
         if(navController.currentDestination?.id == R.id.patronPricingPlansFragment){
+            navController.popBackStack()
             super.onBackPressed()
         }
     }

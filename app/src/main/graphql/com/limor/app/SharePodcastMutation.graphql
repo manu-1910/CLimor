@@ -1,7 +1,8 @@
 mutation SharePodcastMutation(
-    $podcastId: Int!
+    $podcastId: Int!,
+    $shareCount: Int!
 ){
-    sharePodcast(podcastId : $podcastId)
+    sharePodcast(podcastId : $podcastId, shareCount: $shareCount)
     {
         podcast_id,
         count,

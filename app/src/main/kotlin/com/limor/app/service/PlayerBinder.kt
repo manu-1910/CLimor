@@ -30,6 +30,8 @@ class PlayerBinder @Inject constructor(
     private val currentPlayingPosition = MutableStateFlow(Duration.ZERO)
     private val playerStatus = MutableStateFlow<PlayerStatus>(PlayerStatus.Init)
 
+    private var previewEndPosition = 0
+
     private val connection = object : ServiceConnection {
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -47,6 +49,9 @@ class PlayerBinder @Inject constructor(
                 audioService.getCurrentPlayingPosition()
                     .onEach {
                         currentPlayingPosition.value = Duration.ofMillis(it)
+                        if(it > 0 && it >= previewEndPosition && previewEndPosition != 0){
+                            stop()
+                        }
                     }
                     .launchIn(playerBinderScope)
 
@@ -95,6 +100,7 @@ class PlayerBinder @Inject constructor(
 
     fun playPause(audioTrack: AudioService.AudioTrack, showNotification: Boolean) {
         currentAudioTrack = audioTrack
+        previewEndPosition = 0
         if (audioService == null) {
             bindToAudioService()
         } else {
@@ -102,23 +108,39 @@ class PlayerBinder @Inject constructor(
         }
     }
 
+    fun playPreview(audioTrack: AudioService.AudioTrack, startPosition: Int, endPosition: Int) {
+        currentAudioTrack = audioTrack
+        previewEndPosition = endPosition
+        if (audioService == null) {
+            bindToAudioService()
+        } else {
+            internalPlayPause(audioTrack, showNotification, startPosition)
+        }
+    }
+
     fun pauseCurrentTrack() {
         audioService?.pause()
     }
 
-    private fun internalPlayPause(audioTrack: AudioService.AudioTrack, showNotification: Boolean) {
+    private fun internalPlayPause(audioTrack: AudioService.AudioTrack, showNotification: Boolean, startPosition: Int = 0, endPosition: Int = 0) {
         audioService?.let { audioService ->
             if (audioService.audioTrack != audioTrack) {
                 // Use different track
                 audioService.stop()
                 audioService.play(
                     audioTrack,
-                    withNotification = showNotification
+                    withNotification = showNotification,
+                    startPosition = startPosition.toLong()
                 )
             } else {
                 when (playerStatus.value) {
                     is PlayerStatus.Playing -> {
-                        audioService.pause()
+                        if(endPosition == 0){
+                            audioService.pause()
+                        } else{
+                            previewEndPosition = 0
+                            audioService.stop()
+                        }
                     }
                     is PlayerStatus.Paused -> {
                         audioService.resume()
@@ -126,7 +148,8 @@ class PlayerBinder @Inject constructor(
                     else -> {
                         audioService.play(
                             audioTrack,
-                            withNotification = showNotification
+                            withNotification = showNotification,
+                            startPosition = startPosition.toLong()
                         )
                     }
                 }
@@ -135,6 +158,7 @@ class PlayerBinder @Inject constructor(
     }
 
     fun stop() {
+        previewEndPosition = 0
         unbindAudioService()
     }
 

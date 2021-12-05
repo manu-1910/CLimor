@@ -4,6 +4,8 @@
     <string name="exception_message_generic">There was an error</string>
     <string name="image_content_description_default">image description</string>
     <string name="default_no_internet">Check your internet connection and try again.</string>
+    <string name="no_connection_title">No Connection!</string>
+    <string name="no_connection_description">Unfortunately, your internet connection has been lost. Please try again</string>
 
 
     <!-- Signin and Signup strings -->
@@ -28,7 +30,11 @@
     <string name="email_login_only_for_users"><font color='#FF5A4E'>Email login is only for users who have registered accounts before 2021</font></string>
     <string name="sign_in_here"><font color='#F9BB4B'><u>Sign in here</u></font></string>
     <string name="choose_country">Choose your country</string>
+    <string name="email_sign_in_message">This number is not registered yet. Try signing in with email instead.</string>
+    <string name="phone_number_already_exists">This phone number already exists</string>
+    <string name="sign_in_with_phone_number">Already in use. Please Sign in.</string>
 
+    <string name="no_account_fount_with_email">No Limor Account found with this email. Please Register.</string>
 
     <!-- Bottom Menu Navigation Strings -->
     <string name="bottom_menu_home">Home</string>
@@ -274,8 +280,9 @@
     <string name="report_cast">Report Cast</string>
     <string name="report_user">Report User</string>
     <string name="report_comment">Report Comment</string>
-    <string name="delete_comment">Delete Comment</string>
+    <string name="delete_comment">Delete</string>
     <string name="block_user">Block User</string>
+    <string name="unblock_user">Unblock User</string>
     <string name="error_report">We couldn\'t send your report at the moment, please, try again later</string>
     <string name="comment_reported_ok">Comment reported successfully</string>
     <string name="comment_already_reported">Your comment was already reported</string>
@@ -557,6 +564,10 @@
     <string name="sex_male">Male</string>
     <string name="sex_female">Female</string>
     <string name="sex_other">Other</string>
+    <string name="first_name_last_name">First name &amp; Last name</string>
+    <string name="name_description">Enter your first name and last name that people can find you easily</string>
+    <string name="enter_first_name">First name</string>
+    <string name="enter_last_name">Last name</string>
     <string name="categories">Categories</string>
     <string name="languages">Languages</string>
     <string name="search_hint">Search…</string>
@@ -664,7 +675,7 @@
     <string name="view_all_n_comments__with_format">View all %d comments</string>
     <string name="uploading_your_voice_comment">Uploading your voice comment</string>
 
-    <string name="edit_comment">Edit comment</string>
+    <string name="edit_comment">Edit</string>
 
     <string name="uploading_notification_title">Limor</string>
     <string name="uploading_notification_text">Limor is uploading your comment</string>
@@ -676,7 +687,7 @@
     <string name="requested">Requested</string>
     <string name="dummy_plan_text">Choose the best plan that works for you</string>
     <string name="limor_patron_empty_state">Record your first Limor Patron cast and start earning money from your voice</string>
-    <string name="plans_terms_text"><![CDATA[ <html> <a href="http://google.com"> <b>Terms and Conditions</b> </a> </html]]></string>
+    <string name="plans_terms_text"><![CDATA[ <html>. <br>Please visit our <a href="http://google.com"> <font color="black"><strong>Terms and Conditions</strong></font> </a> </html]]></string>
     <string name="limor_patron_complete">Your Limor Patron onboarding is complete</string>
     <string name="limor_patron_manage_description">In order to begin receiving payment via your Limor Patron account please set up your digital wallet</string>
     <string name="limor_patron_manage">Manage Limor Patron</string>
@@ -691,6 +702,37 @@
     <string name="tos_title">Terms &amp; Conditions</string>
     <string name="privacy_policy_title">Privacy Policy</string>
 
+    <string name="share_dialog_title">Share</string>
+    <string name="share_copy_link_button">Copy Link</string>
+    <string name="share_via_label">Share via</string>
+    <string name="share_message__with_format">Hey, check out this podcast: %s</string>
+    <string name="share_search_placeholder">Search…</string>
+    <string name="share_now_label">Share Now</string>
+    <string name="share_separately_label">Share Separately</string>
+    <string name="share_with_label">Share with</string>
+    <string name="messages_title">Messages</string>
+    <string name="no_messages">No messages</string>
+    <string name="no_messages_description">You currently have no direct messages. Try searching for followers to start messaging.</string>
+    <string name="more_label">More</string>
+    <string name="generic_chat_error_message">Could not start chat. Please try later.</string>
+
+    <string name="something_wrong">Something went wrong</string>
+    <string name="no_comments_title">No Comments</string>
+    <string name="no_comments_hint">Be the first one to start conversation</string>
+
+    <string name="reported_successfully__with_format">%s reported successfully!</string>
+    <string name="logout_warning_message">Are you sure you want to log out? Logging out of or uninstalling Limor would result in the loss of your chat history.</string>
+
+    <string name="confirmation_block_user__with_format">Are you sure you want to block %s?</string>
+    <string name="confirmation_unblock_user__with_format">Are you sure you want to unblock %s?</string>
+
+    <string name="delete_comment_confirmation">Are you sure you want to delete this comment?</string>
+    <string name="delete_comment_confirmation__with_format">Are you sure you want to delete %s\'s comment?</string>
+    <string name="delete_comment_title">Delete</string>
+    <string name="dialog_yes_button">Yes</string>
+
+    <string name="unfollow_user">Unfollow User</string>
+
     <plurals name="likes_count">
         <item quantity="one">%d Like</item>
         <item quantity="other">%d Likes</item>
@@ -701,6 +743,17 @@
         <item quantity="other">%d Listens</item>
     </plurals>
 
+    <string-array name="feed_colors">
+        <item name="feed_blue">#148DFF</item>
+        <item name="feed_black_off">#172229</item>
+        <item name="feed_limor_color">#FFC550</item>
+        <item name="feed_purple">#623CEA</item>
+        <item name="feed_orange">#FE721C</item>
+    </string-array>
+    <string name="patron_carousel_slide_1_sub_title">Gain the tools to help your fans help you.</string>
+    <string name="patron_carousel_slide_2_sub_title">Give your Patrons exclusive content, access and conversation</string>
+    <string name="patron_carousel_slide_3_sub_title">Monetise, analize and convert your voice into income.</string>
+
     <string name="patron_carousel_slide_1_title">Create AMA <font fgcolor='#F9BB4B'>DM’s</font> and more with your fans</string>
     <string name="patron_carousel_slide_2_title">Create premium <font fgcolor='#F9BB4B'>casts</font> for your community</string>
     <string name="patron_carousel_slide_3_title">Freedom to <font fgcolor='#F9BB4B'>monetize</font> your content</string>
@@ -708,12 +761,19 @@
     <string name="requesting">Requesting...</string>
     <string name="patron_categories">Patron Categories</string>
     <string name="patron_languages">Patron Languages</string>
-    <string name="plans_terms_start">I confirm that I have read and agree to all of the </string>
+
     <string name="limorPatronSetupWallet">Setup My Digital Wallet</string>
     <string name="text_uk_account">I have an active UK based Bank account</string>
-    <string name="patron_uk_account_learn_more"><![CDATA[I have an active UK based Bank account \n <br><a href=\'https://google.com\'><b>Learn More</b></a>]]></string>
+    <string name="patron_uk_account_learn_more"><![CDATA[I have an active UK based Bank account \n <br><a href=\'https://google.com\'><font color="black"><strong>Learn More</strong></font></a>]]></string>
+
     <string name="spot_secured_title">Spot Secured</string>
     <string name="sport_secured_description">You have secured your spot. You\'re going to have your digital wallet soon</string>
+  
+    <string name="after_free_trial">After free trial ends it will cost</string>
+    <string name="no_plans_found_message">No Plans Found</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="patron_invite_not_required">Patron Invitation wasn\'t requested</string>
+
     <string name="mature_content">Mature Content (18+)</string>
     <string name="mature_content_description">Does your cast contain profanity, swearing, sexual, gambling references.</string>
     <string name="edit_price">Edit Price - 6.99</string>
@@ -760,7 +820,7 @@
     <string name="invite_people">Invite %d People</string>
     <string name="joined">Joined</string>
     <string name="update_patron_categories">Update Patron Categories</string>
-    
+
     <string-array name="prices_list">
         <item>0.99</item>
         <item>1.99</item>
@@ -828,7 +888,19 @@
     <string name="preview_note">Preview must be in between 10 secs to 30 secs</string>
     <string name="save_as_preview">Save as Preview</string>
 
-
+    <string name="fetching_audio">Fetching audio...</string>
+    <string name="button_save_as_preview">Save as Preview</string>
+    <string name="setup_my_digital_wallet">Setup My Digital Wallet</string>
+    <string name="hint_name">Name</string>
+    <string name="complete_setup">Complete Setup</string>
+    <string name="complete_setup_description">Complete your digital wallet setup and start monetizing your casts and receive money.</string>
+    <string name="do_it_later">Do it later</string>
+    <string name="country">Country</string>
+    <string name="date_of_birth">Date of Birth</string>
+    <string name="last_name">Last name</string>
+    <string name="first_name">First name</string>
+    <string name="setup_later">Setup Later</string>
+    <string name="set_up_later_description">You will not be able to monetize your casts until your digital wallet setup is completed.</string>
     <string-array name="cast_tiers">
         <item>com.limor.dev.tier_1|0.99</item>
         <item>com.limor.dev.tier_2|1.99</item>

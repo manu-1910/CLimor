@@ -88,6 +88,7 @@ import com.limor.app.type.PodcastMetadata
 import com.limor.app.uimodels.TagUIModel
 import com.limor.app.uimodels.UIDraft
 import com.limor.app.uimodels.UILocations
+import com.limor.app.uimodels.UISimpleCategory
 import com.yalantis.ucrop.UCrop
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.cancelButton
@@ -95,6 +96,7 @@ import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.okButton
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.textDescription
 import kotlinx.android.synthetic.main.dialog_publish_patron_free_cast.view.*
 import kotlinx.android.synthetic.main.fragment_publish.*
+import kotlinx.android.synthetic.main.fragment_publish_categories.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
@@ -125,7 +127,7 @@ class PublishFragment : BaseFragment() {
 
     private lateinit var binding: FragmentPublishBinding
     private val isPatron: Boolean by lazy {
-        Random.nextBoolean()
+        true
     }
 
     @Inject
@@ -240,7 +242,6 @@ class PublishFragment : BaseFragment() {
             //getCityOfDevice()
             loadDrafts()
 
-            loadDefaults()
 
             deleteDraft()
             apiCallHashTags()
@@ -249,7 +250,8 @@ class PublishFragment : BaseFragment() {
         return rootView
     }
 
-    private fun loadDefaults() {
+    private fun loadCastTiers(productIds: List<String>) {
+        //Get Actual Prices From Play Billing library using these product ids
         val items = listOf(getString(R.string.free_cast_selection), "0.99", "4.99", "9.99", "12.99")
         val adapter =
             ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, items)
@@ -295,7 +297,7 @@ class PublishFragment : BaseFragment() {
         ViewCompat.setTranslationZ(view, 100f)
 
         uiDraft = requireArguments()["recordingItem"] as UIDraft
-
+        Timber.d("Categories -> ${uiDraft.category} mDraf ${uiDraft.categories}")
         updateUIState()
         configureToolbar()
         listeners()
@@ -311,6 +313,7 @@ class PublishFragment : BaseFragment() {
 
     private fun updateUIState() {
         if (isPatronUser()) {
+            publishViewModel.getInAppPriceTiers()
             binding.menu.visibility = View.VISIBLE
             binding.paymentTerms.visibility = View.VISIBLE
             val content = SpannableString(getString(R.string.payment_terms))
@@ -332,6 +335,13 @@ class PublishFragment : BaseFragment() {
     private fun subscribeToViewModel() {
         locationViewModel.locationData.observe(viewLifecycleOwner) {
             onNewLocation(it)
+        }
+
+        publishViewModel.inAppPricesData.observe(viewLifecycleOwner){
+            tiers ->
+            tiers?.let{ ids ->
+                loadCastTiers(ids.filterNotNull())
+            }
         }
     }
 
@@ -355,10 +365,12 @@ class PublishFragment : BaseFragment() {
             uiDraft.location = podcastLocation
         }
 
-        if (publishViewModel.categorySelected.isNotEmpty()) {
+        if (publishViewModel.categorySelectedNamesList.isNotEmpty()) {
             tvSelectedCategory?.text = publishViewModel.categorySelected
             uiDraft.category = publishViewModel.categorySelected
             uiDraft.categoryId = publishViewModel.categorySelectedId
+            uiDraft.categories = publishViewModel.categorySelectedNamesList
+            Timber.d("Categories -> updated draft ${uiDraft.categories}")
             isCategorySelected = true
             updatePublishBtnState()
         }
@@ -388,7 +400,7 @@ class PublishFragment : BaseFragment() {
                     "language -> $isLanguageSelected " +
                     "caption valid -> $isCaptionValid " +
                     "title-> $isTitleValid"
-        )
+        )   
         btnPublishDraft?.isEnabled = isAllRequiredFieldsFilled
     }
 
@@ -696,9 +708,9 @@ class PublishFragment : BaseFragment() {
     }
 
     private fun publishCast() {
-        //ensurePreviewIsPaused()
-        //startPublishing()
-        alert("Temporarily blocked publishing until api is fixed").show()
+        ensurePreviewIsPaused()
+        startPublishing()
+        //alert("Temporarily blocked publishing until api is fixed").show()
     }
 
     private fun showPublishPatronCastDialog() {
@@ -999,6 +1011,14 @@ class PublishFragment : BaseFragment() {
         val tags = etDraftTags?.text.toString()
         val fullCaption = "$caption${if (caption.isEmpty()) "" else "\n\n"}$tags"
 
+        var priceId = Input.absent<String>()
+        var selectedCats = publishViewModel.categorySelectedNamesList.map { it.categoryId }
+        if(!isPatronUser()){
+            selectedCats = selectedCats.subList(0,1)
+        }else{
+            //TODO update with the value selected from drop down menu
+            priceId = Input.fromNullable("com.limor.dev.tier_1")
+        }
         val podcast = CreatePodcastInput(
             audio = PodcastAudio(
                 audio_url = audioUrlFinal.toString(),
@@ -1014,8 +1034,11 @@ class PublishFragment : BaseFragment() {
                 latitude = Input.fromNullable(latitude),
                 longitude = Input.fromNullable(longitude),
                 image_url = Input.fromNullable(imageUrlFinal),
-                category_id = publishViewModel.categorySelectedId,
+                category_id = selectedCats,
                 language_code = publishViewModel.languageCode,
+                mature_content = Input.fromNullable(binding.sw18Content.isChecked),
+                color_code = getRandomColorCode(),
+                price_id = priceId
             )
         )
         Timber.d("$podcast")
@@ -1055,6 +1078,10 @@ class PublishFragment : BaseFragment() {
         // publishPodcastTrigger.onNext(Unit)
     }
 
+    private fun getRandomColorCode(): Input<String> {
+        val colorsArray = resources.getStringArray(R.array.feed_colors)
+        return Input.fromNullable(colorsArray[Random.nextInt(colorsArray.size)])
+    }
 
     private fun loadExistingData() {
 
@@ -1100,14 +1127,7 @@ class PublishFragment : BaseFragment() {
             lytImagePlaceholder?.visibility = View.VISIBLE
             lytImage?.visibility = View.INVISIBLE
         }
-        if (!uiDraft.category.toString().isNullOrEmpty()) {
-            tvSelectedCategory?.text = uiDraft.category
-            this.isCategorySelected = true
-        } else {
-            tvSelectedCategory?.text = publishViewModel.categorySelected
-            uiDraft.category = publishViewModel.categorySelected
-            uiDraft.categoryId = publishViewModel.categorySelectedId
-        }
+
         if (!uiDraft.location?.address.toString().isNullOrEmpty()) {
             tvSelectedLocation?.text = uiDraft.location?.address
         } else {
@@ -1131,6 +1151,23 @@ class PublishFragment : BaseFragment() {
                 publishViewModel.languageSelected = it
             }
         }
+
+            uiDraft.categories?.let{
+                Timber.d("Categories -> $it")
+                if(it.isNotEmpty()){
+                    this.isCategorySelected = true
+                    publishViewModel.categorySelectedNamesList = (it as ArrayList<UISimpleCategory>)
+                    publishViewModel.categorySelected = getSelectedCategoriesText()
+                }else{
+                    uiDraft.category = publishViewModel.categorySelected
+                    uiDraft.categories = publishViewModel.categorySelectedNamesList
+                    uiDraft.categoryId = publishViewModel.categorySelectedId
+                }
+                tvSelectedCategory?.text = publishViewModel.categorySelected
+
+            }
+
+
 
         }
 
@@ -1158,6 +1195,21 @@ class PublishFragment : BaseFragment() {
         callToUpdateDraft()
     }
 
+    fun getSelectedCategoriesText(): String {
+        val selections = publishViewModel.categorySelectedNamesList
+        return when {
+            selections.isEmpty() -> {
+                ""
+            }
+            selections.size > 1 -> {
+                "${selections[0].name} +${selections.size - 1}"
+            }
+            else -> {
+                selections[0].name
+            }
+        }
+
+    }
 
     private fun loadImagePicker() {
         ImagePicker.create(this)
@@ -1697,8 +1749,8 @@ class PublishFragment : BaseFragment() {
     }
 
     private fun isPatronUser(): Boolean {
-        //TODO Should Get User Details here From SharedPref
-        return isPatron
+        //assumes getUserProfile called when home is loaded
+        return CommonsKt.user?.isPatron?:false
     }
 
 

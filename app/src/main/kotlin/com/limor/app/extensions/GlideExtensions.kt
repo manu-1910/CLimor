@@ -91,7 +91,11 @@ fun <T> RequestBuilder<T>.listener(
     }
 )
 
-fun <T : ImageView> T.loadCircleImage(url: String) {
+fun <T : ImageView> T.loadCircleImage(url: String?) {
+    if (url == null) {
+        setImageResource(R.drawable.ic_podcast_listening)
+        return
+    }
     loadCircleImage(url, true);
 }
 

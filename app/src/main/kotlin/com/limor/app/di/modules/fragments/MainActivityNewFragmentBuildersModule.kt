@@ -1,5 +1,7 @@
 package com.limor.app.di.modules.fragments
 
+import com.limor.app.dm.ui.ChatSessionsFragment
+import com.limor.app.dm.ui.ShareFragment
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategoriesFragment
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverCategoryFragment
 import com.limor.app.scenes.main.fragments.discover.discover.DiscoverFragment
@@ -13,6 +15,7 @@ import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsFragmentNew
 import com.limor.app.scenes.main_new.fragments.*
 import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.fragments.comments.FragmentCommentReplies
+import com.limor.app.scenes.main_new.view.editpreview.EditPreviewFragment
 import com.limor.app.scenes.notifications.Notification
 import com.limor.app.scenes.patron.manage.fragment.*
 import com.limor.app.scenes.patron.setup.FragmentPatronCategories
@@ -85,6 +88,12 @@ abstract class MainActivityNewFragmentBuildersModule {
     abstract fun contributeCommentActionsActionsFragmentInjector(): DialogCommentMoreActions
 
     @ContributesAndroidInjector
+    abstract fun contributeShareFragmentInjector(): ShareFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeChatSessionsFragmentInjector(): ChatSessionsFragment
+
+    @ContributesAndroidInjector
     abstract fun contributeManagePatronFragmentInjector(): ManagePatronFragment
 
     @ContributesAndroidInjector
@@ -107,6 +116,9 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeFragmentUpdatePatronCaregories(): FragmentUpdatePatronCategories
+
+    @ContributesAndroidInjector
+    abstract fun contributeEditPreviewFragmentInjector(): EditPreviewFragment
 
 }
 

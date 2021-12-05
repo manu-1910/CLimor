@@ -9,6 +9,7 @@ object FirebaseSessionHandler {
 
     fun logout(context: Context){
         PrefsHandler.clearNavigationBreakPoint(context)
+        PrefsHandler.saveCurrentUserId(context, 0)
         Firebase.auth.signOut()
     }
 }

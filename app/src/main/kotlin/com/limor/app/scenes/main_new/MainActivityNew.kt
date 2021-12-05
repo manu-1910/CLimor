@@ -16,6 +16,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.limor.app.R
 import com.limor.app.databinding.ActivityMainNewBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
+import com.limor.app.dm.ChatManager
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
@@ -23,6 +24,7 @@ import com.limor.app.scenes.utils.ActivityPlayerViewManager
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
+import com.limor.app.service.AudioService
 import com.limor.app.service.PlayBillingHandler
 import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.TagUIModel
@@ -42,6 +44,9 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
 
     lateinit var binding: ActivityMainNewBinding
     lateinit var playerBinding: ContainerWithSwipeablePlayerBinding
+
+    @Inject
+    lateinit var chatManager: ChatManager
 
     @Inject
     lateinit var playerBinder: PlayerBinder
@@ -72,6 +77,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         lifecycleScope.launchWhenCreated {
             JwtChecker.getUserIdFromJwt(false)?.let {
                 PrefsHandler.saveCurrentUserId(this@MainActivityNew, it)
+                chatManager.loginCurrentUser()
             }
         }
     }
@@ -144,6 +150,14 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
                 bundleOf(DiscoverHashtagFragment.HASHTAG_KEY to hashtag)
             )
         }
+    }
+
+    override fun playPreview(audio: AudioService.AudioTrack, startPosition: Int, endPosition: Int) {
+        activityPlayerViewManager?.playPreview(audio, startPosition, endPosition)
+    }
+
+    override fun stopPreview() {
+        activityPlayerViewManager?.stopPreview()
     }
 
     fun checkPodCastDynamicLink() {

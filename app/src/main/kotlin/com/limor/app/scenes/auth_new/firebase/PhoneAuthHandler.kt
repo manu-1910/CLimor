@@ -103,7 +103,7 @@ class PhoneAuthHandler @Inject constructor() :
         Timber.d("onVerificationCompleted:$credential")
 
         if (isAuto) {
-            Toast.makeText(activity, "Auto verification", Toast.LENGTH_LONG).show()
+            activity?.let { Toast.makeText(it, "Auto verification", Toast.LENGTH_LONG).show() }
         }
 
         Firebase.auth.currentUser?.let {

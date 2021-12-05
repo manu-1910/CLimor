@@ -28,6 +28,7 @@ import com.limor.app.extensions.makeInVisible
 import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.main.viewmodels.PodcastViewModel
+import com.limor.app.scenes.profile.DialogUserProfileActions
 import com.limor.app.scenes.profile.DialogUserReport
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.mapToUIModel
@@ -137,24 +138,19 @@ class DialogPodcastMoreActions : DialogFragment() {
         }
 
         binding.btnBlockUser.setOnClickListener {
-            cast.owner?.id?.let { id ->
-                alert(getString(R.string.confirmation_block_user)) {
-                    okButton {
-                        podcastViewModel.blockUser(id)
-                        findNavController().previousBackStackEntry?.savedStateHandle?.set("reload_feed", false)
-                        dismiss()
-                    }
-                    cancelButton {  }
-                }.show()
-
+            cast.owner?.let { user ->
+                DialogUserProfileActions.showBlockDialog(
+                    user,
+                    requireContext(),
+                    true,
+                    this::onBlockUser
+                )
             }
-
         }
 
         binding.btnReportUser.setOnClickListener {
             cast.owner?.id?.let {
-                DialogUserReport.newInstance(it)
-                    .show(parentFragmentManager, DialogUserReport.TAG)
+                DialogUserReport.reportUser(it).show(parentFragmentManager, DialogUserReport.TAG)
                 dismiss()
             }
 
@@ -168,6 +164,14 @@ class DialogPodcastMoreActions : DialogFragment() {
                 intent.putExtra(EditCastActivity.ID, cast.id)
                 launcher.launch(intent)
             }
+        }
+    }
+
+    private fun onBlockUser() {
+        val user = cast.owner ?: return
+        podcastViewModel.blockUser(user.id).observe(viewLifecycleOwner) {
+            findNavController().previousBackStackEntry?.savedStateHandle?.set("reload_feed", false)
+            dismiss()
         }
     }
 

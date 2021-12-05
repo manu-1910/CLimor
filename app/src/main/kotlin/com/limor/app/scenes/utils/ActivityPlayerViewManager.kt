@@ -1,5 +1,6 @@
 package com.limor.app.scenes.utils
 
+import android.media.AudioTrack
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -9,6 +10,7 @@ import com.limor.app.extensions.makeGone
 import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
 import com.limor.app.scenes.main_new.fragments.SmallPlayerFragment
+import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.TagUIModel
 import timber.log.Timber
@@ -98,6 +100,15 @@ class ActivityPlayerViewManager(
     fun stop() {
         playerBinder.stop()
     }
+
+    override fun playPreview(audioTrack: AudioService.AudioTrack, startPosition: Int, endPosition: Int){
+        playerBinder.playPreview(audioTrack, startPosition, endPosition)
+    }
+
+    override fun stopPreview() {
+        playerBinder.stop()
+    }
+
 
     private inline fun <reified T> showFragment(fragment: () -> Fragment) {
         if (currentFragment is T) {

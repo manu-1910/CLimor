@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".scenes.patron.unipaas.FragmentSetUpDigitalWalletForm">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/marginForty">
+
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="@dimen/marginMediumSmall"
+            android:layout_marginStart="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:srcCompat="@drawable/limor_top_item" />
+
+        <TextView
+            android:id="@+id/title_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/setup_my_digital_wallet"
+            android:layout_marginTop="@dimen/margin38"
+            android:textSize="@dimen/textSize20"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imageView6" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etEnterName"
+            style="@style/TextInputLayoutOutlineWithError"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="@dimen/marginTwenty"
+            android:layout_marginEnd="@dimen/marginTwenty"
+            android:layout_marginTop="32dp"
+            android:hint="@string/hint_name"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title_text_view">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEnterHintInner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:inputType="phone"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etEnterFirstName"
+            style="@style/TextInputLayoutOutlineWithError"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="@dimen/marginTwenty"
+            android:layout_marginEnd="@dimen/marginTwenty"
+            android:layout_marginTop="@dimen/marginTwenty"
+            android:hint="@string/first_name"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etEnterName">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEnterFirstNameInner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:inputType="phone"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etEnterLastName"
+            style="@style/TextInputLayoutOutlineWithError"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="@dimen/marginTwenty"
+            android:layout_marginEnd="@dimen/marginTwenty"
+            android:layout_marginTop="@dimen/marginTwenty"
+            android:hint="@string/last_name"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etEnterFirstName">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEnterLastNameInner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:inputType="phone"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etEnterDateOfBirth"
+            style="@style/TextInputLayoutOutlineWithError"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="@dimen/marginTwenty"
+            android:layout_marginEnd="@dimen/marginTwenty"
+            android:layout_marginTop="@dimen/marginTwenty"
+            android:hint="@string/date_of_birth"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etEnterLastName">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEnterDOBInner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:inputType="phone"
+                android:maxLines="1"
+                android:cursorVisible="false"
+                android:editable="false"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etEnterEmail"
+            style="@style/TextInputLayoutOutlineWithError"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="@dimen/marginTwenty"
+            android:layout_marginEnd="@dimen/marginTwenty"
+            android:layout_marginTop="@dimen/marginTwenty"
+            android:hint="@string/email"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etEnterDateOfBirth">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEnterEmailInner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:inputType="phone"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etPhoneCode"
+            style="@style/TextInputLayoutOutlineDropdownWithError"
+            android:layout_width="108dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="@dimen/marginTwenty"
+            android:layout_marginTop="@dimen/marginTwenty"
+            android:visibility="visible"
+            app:endIconMode="dropdown_menu"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etEnterEmail">
+
+            <AutoCompleteTextView
+                android:id="@+id/tvCountryCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="-24dp"
+                android:editable="false"
+                android:inputType="none"
+                android:paddingStart="8dp"
+                android:paddingEnd="0dp"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:id="@+id/vCountryCode"
+            style="@style/TextInputLayoutOutlineDropdownWithError"
+            android:layout_width="108dp"
+            android:layout_height="56dp"
+            android:translationZ="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etEnterEmail"
+            android:layout_marginStart="24dp"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etEnterPhone"
+            style="@style/TextInputLayoutOutlineWithError"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="@dimen/marginTwenty"
+            android:layout_marginEnd="@dimen/marginTwenty"
+            android:hint="@string/phone_number"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/etPhoneCode"
+            app:layout_constraintTop_toBottomOf="@+id/etEnterEmail">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEnterPhoneInner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:inputType="phone"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etEnterCountry"
+            style="@style/TextInputLayoutOutlineWithError"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="@dimen/marginTwenty"
+            android:layout_marginEnd="@dimen/marginTwenty"
+            android:layout_marginTop="@dimen/marginTwenty"
+            android:hint="@string/country"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etEnterPhone">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEnterCountryInner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:editable="false"
+                android:text="Great Britain"
+                android:inputType="phone"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnContinue"
+            style="@android:style/Widget.Material.Button.Borderless.Colored"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/margin48"
+            android:layout_marginStart="@dimen/marginTwenty"
+            android:layout_marginEnd="@dimen/marginTwenty"
+            android:layout_marginTop="@dimen/margin36"
+            android:background="@drawable/btn_primary_background"
+            android:text="@string/submit"
+            android:textColor="@color/black"
+            android:textAllCaps="false"
+            android:fontFamily="@font/roboto"
+            app:layout_constraintTop_toBottomOf="@id/etEnterCountry"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_bias="0.6"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

@@ -2,6 +2,7 @@ package com.limor.app.di.modules
 
 import com.limor.app.EditCastActivity
 import com.limor.app.di.modules.fragments.*
+import com.limor.app.dm.ui.ChatActivity
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.authentication.SignActivity
 import com.limor.app.scenes.main.fragments.onboarding.OnBoardingActivity
@@ -15,6 +16,7 @@ import com.limor.app.scenes.main.fragments.setup_patron.SetupPatronActivity
 import com.limor.app.scenes.main_new.MainActivityNew
 import com.limor.app.scenes.patron.manage.ManagePatronActivity
 import com.limor.app.scenes.patron.setup.PatronSetupActivity
+import com.limor.app.scenes.patron.unipaas.UniPaasActivity
 import com.limor.app.scenes.splash.SplashActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -98,11 +100,7 @@ abstract class ActivitiesModule {
     @ContributesAndroidInjector
     abstract fun contributeAuthActivityNewInjector(): AuthActivityNew
 
-    @ContributesAndroidInjector(
-        modules = [
-            ViewModelsModule::class
-        ]
-    )
+    @ContributesAndroidInjector
     abstract fun contributeEditCastActivityInjector(): EditCastActivity
 
     @ContributesAndroidInjector(
@@ -112,10 +110,20 @@ abstract class ActivitiesModule {
     )
     abstract fun contributeSetupPatronInjectorInjector(): PatronSetupActivity
 
+    @ContributesAndroidInjector
+    abstract fun contributeChatActivityInjector(): ChatActivity
+
     @ContributesAndroidInjector(
         modules = [
             (ManagePatronActivityFragmentBuilderModule::class)
         ]
     )
     abstract fun contributeManagePatronActivityInjector(): ManagePatronActivity
+
+    @ContributesAndroidInjector(
+        modules = [
+            (UniPaasActivityFragmentBuilderModule::class)
+        ]
+    )
+    abstract fun contributeUniPassActivityInjector(): UniPaasActivity
 }

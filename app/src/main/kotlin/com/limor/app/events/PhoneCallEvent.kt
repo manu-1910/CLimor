@@ -1,6 +1,7 @@
 package com.limor.app.events
 
-class PhoneCallEvent {
+class PhoneCallEvent(state: String) {
+    var state : String = state
     companion object{
         const val IDLE = "IDLE"
         const val RINGING = "RINGING"

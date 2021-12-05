@@ -2,11 +2,13 @@ package io.square1.limor.storage.mappers
 
 import entities.response.DraftEntity
 import entities.response.LocationsEntity
+import entities.response.OnDeviceCategoryEntity
 import entities.response.TimeStampEntity
 import io.square1.limor.storage.entities.RLMDraft
 import io.reactivex.Single
 import io.realm.RealmList
 import io.square1.limor.storage.entities.RLMLocations
+import io.square1.limor.storage.entities.RLMOnDeviceCategory
 import io.square1.limor.storage.entities.RLMTimeStamp
 
 
@@ -29,7 +31,8 @@ fun RLMDraft.asDataEntity(): DraftEntity {
         category,
         location?.asDataEntity(),
         parentDraft?.asDataEntity(),
-        isNewRecording
+        isNewRecording,
+        getOnDeviceCategoryEntities(categories)
     )
 }
 
@@ -56,7 +59,8 @@ fun DraftEntity.asStorageEntity(): RLMDraft {
         category,
         location?.asStorageEntity(),
         parentDraft?.asStorageEntity(),
-        isNewRecording
+        isNewRecording,
+        getRLMCategories(categories)
     )
 }
 
@@ -66,6 +70,20 @@ fun RLMTimeStamp.asDataEntity(): TimeStampEntity {
         duration,
         startSample,
         endSample
+    )
+}
+
+fun RLMOnDeviceCategory.asDataEntity(): OnDeviceCategoryEntity {
+    return OnDeviceCategoryEntity(
+        name,
+        categoryId
+    )
+}
+
+fun OnDeviceCategoryEntity.asStorageEntity(): RLMOnDeviceCategory {
+    return RLMOnDeviceCategory(
+        name,
+        categoryId
     )
 }
 
@@ -116,4 +134,14 @@ fun getRLMTimeStamps(entityObj: ArrayList<TimeStampEntity>?): RealmList<RLMTimeS
             rlmObj.add(option.asStorageEntity())
         }
     return rlmObj
+}
+
+fun getRLMCategories(cats: ArrayList<OnDeviceCategoryEntity>?): RealmList<RLMOnDeviceCategory> {
+    return RealmList<RLMOnDeviceCategory>().apply {
+        addAll(cats?.map { it.asStorageEntity() } ?: listOf())
+    }
+}
+
+fun getOnDeviceCategoryEntities(realmObj: RealmList<RLMOnDeviceCategory>?): ArrayList<OnDeviceCategoryEntity> {
+    return ArrayList(realmObj?.map { it.asDataEntity() } ?: listOf())
 }

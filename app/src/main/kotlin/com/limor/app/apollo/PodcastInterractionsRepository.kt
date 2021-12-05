@@ -54,9 +54,10 @@ class PodcastInteractionsRepository @Inject constructor(val apollo: Apollo) {
     }
 
     suspend fun sharePodcast(
-        podcastId: Int
+        podcastId: Int,
+        shareCount: Int = 1
     ) : SharePodcastMutation.SharePodcast? {
-        val mutation = SharePodcastMutation(podcastId)
+        val mutation = SharePodcastMutation(podcastId, shareCount)
         val result = apollo.mutate(mutation)
         return result?.data?.sharePodcast
     }
@@ -122,5 +123,16 @@ class PodcastInteractionsRepository @Inject constructor(val apollo: Apollo) {
         val mutation = UpdateCommentMutation(commentId, text)
         val result = apollo.mutate(mutation)
         return result?.data?.updateComment?.content
+    }
+
+    suspend fun updatePreview(
+        podcastId: Int,
+        previewDuration: Int,
+        startsAt: Int,
+        endsAt: Int
+    ): Boolean {
+        val mutation = UpdatePreviewMutation(podcastId, previewDuration, startsAt, endsAt)
+        val result = apollo.mutate(mutation)
+        return result?.data?.updateCastPreview?.status == "Success"
     }
 }

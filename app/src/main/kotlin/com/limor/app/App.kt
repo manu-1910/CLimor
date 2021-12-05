@@ -10,22 +10,25 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.Configuration
+import com.bugfender.sdk.Bugfender
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
 import com.limor.app.di.AppInjector
 import com.limor.app.di.components.AppComponent
+import com.limor.app.dm.ChatManager
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.service.PlayerBinder
 import com.limor.app.util.AppState
 import com.limor.app.util.CrashReportingTree
 import com.novoda.merlin.MerlinsBeard
+import com.onesignal.OneSignal
 import com.smartlook.sdk.smartlook.Smartlook
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import dagger.android.HasServiceInjector
-import io.realm.Realm
-import io.realm.RealmConfiguration
+import io.realm.*
+import io.square1.limor.storage.entities.RLMOnDeviceCategory
 import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -41,6 +44,9 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
     lateinit var serviceInjector: DispatchingAndroidInjector<Service>
     @Inject
     lateinit var playerBinder: PlayerBinder
+
+    @Inject
+    lateinit var chatManager: ChatManager
 
     private var realm: Realm? = null
     lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -117,6 +123,21 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
 //            }
 //        })
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+
+        // Enable verbose OneSignal logging to debug issues if needed.
+        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
+
+        // OneSignal Initialization
+        OneSignal.initWithContext(this);
+        OneSignal.setAppId(BuildConfig.ONE_SIGNAL_APP_ID);
+
+
+        Bugfender.init(this, "f3uD19EuFhTDd4XaMHCflDlMW5Bo18AZ", BuildConfig.DEBUG)
+        Bugfender.enableCrashReporting()
+        Bugfender.enableUIEventLogging(this)
+        Bugfender.enableLogcatLogging() // optional, if you want logs automatically collected from logcat
+
+        Timber.plant(BugfenderTree())
     }
 
     @OnLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_STOP)
@@ -163,7 +184,9 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
     private fun initRealm(): Realm? {
         Realm.init(this)
         val realmConfiguration: RealmConfiguration = RealmConfiguration.Builder()
-            .deleteRealmIfMigrationNeeded()
+            .schemaVersion(1)
+            .migration(Migration())
+            // .deleteRealmIfMigrationNeeded()
             //TODO: Encrypt database!!
             .build()
         Realm.setDefaultConfiguration(realmConfiguration)
@@ -183,4 +206,31 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
                 .build()
         }
     }
+
+    open class Migration : RealmMigration {
+
+        override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
+            val schema = realm.schema
+            // This is the only known migration as of yet and it introduces a new field in the
+            // Draft object called "Categories":
+            if (oldVersion == 0L && newVersion == 1L) {
+                val draftSchema = schema.get("RLMDraft")
+                if (draftSchema == null) {
+                    println("could not get schemas...")
+                    return
+                }
+
+                val categorySchema = schema.create("RLMOnDeviceCategory",).apply {
+                    addField("name", String::class.java)
+                    setRequired("name", true)
+
+                    addField("categoryId", Int::class.java)
+                }
+
+                draftSchema.addRealmListField("categories", categorySchema)
+            }
+            println("Realm --> $oldVersion -> $newVersion")
+        }
+    }
+
 }

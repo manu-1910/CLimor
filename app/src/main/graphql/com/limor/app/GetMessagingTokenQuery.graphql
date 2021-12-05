@@ -1,0 +1,7 @@
+query GetMessagingToken {
+    getMessagingToken {
+        status,
+        message,
+        token
+    }
+}

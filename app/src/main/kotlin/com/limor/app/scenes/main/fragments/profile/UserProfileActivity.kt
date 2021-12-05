@@ -20,6 +20,7 @@ import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
 import com.limor.app.scenes.utils.PlayerViewManager
+import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.TagUIModel
 import dagger.android.DispatchingAndroidInjector
@@ -114,6 +115,12 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector, PlayerVi
                 DiscoverHashtagFragment.KEY_SHOW_NOTIFICATION_ICON to false
             )
         )
+    }
+
+    override fun playPreview(audio: AudioService.AudioTrack, startPosition: Int, endPosition: Int) {
+    }
+
+    override fun stopPreview() {
     }
 
     override fun onDestroy() {

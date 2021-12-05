@@ -59,6 +59,15 @@ class UserInfoProvider @Inject constructor(
     val userInfoProviderErrorLiveData: LiveData<Any?>
         get() = _userInfoProviderErrorLiveData
 
+    private val _userExistsLiveData = MutableLiveData<Boolean?>().apply { value = null }
+    val userExists: LiveData<Boolean?>
+        get() = _userExistsLiveData
+
+    private val _updateUserFirstNameAndLastNameLiveData =
+        MutableLiveData<String?>().apply { value = null }
+    val updateUserFirstNameAndLastNameLiveData: LiveData<String?>
+        get() = _updateUserFirstNameAndLastNameLiveData
+
     @ExperimentalCoroutinesApi
     fun getUserOnboardingStatus(scope: CoroutineScope) {
         scope.launch(Dispatchers.Default) {
@@ -85,7 +94,7 @@ class UserInfoProvider @Inject constructor(
         //check if user has an email on it's JWT
         val jwt = AuthInterceptor.getToken()
         val hasEmail = JwtChecker.isJwtContainsEmail(jwt)
-        return if (hasEmail) response else NavigationBreakpoints.ACCOUNT_CREATION.destination
+        return response
 
     }
 
@@ -122,13 +131,14 @@ class UserInfoProvider @Inject constructor(
                 val formattedDate = parseForUserCreation(dob)
                 Timber.d("Formatted DOB $formattedDate")
                 val response = userRepository.createUser(formattedDate) ?: ""
-                if(response == "Success"){
+                if (response == "Success") {
                     createDeviceToken().collect {
                         userRepository.createUserDevice(it)
                     }
                 }
 
                 _createUserLiveData.postValue(response)
+                getUserOnboardingStatus(this)
                 delay(500)
                 _createUserLiveData.postValue(null)
             } catch (e: Exception) {
@@ -140,10 +150,30 @@ class UserInfoProvider @Inject constructor(
         }
     }
 
+    fun checkIfUserExistsWithThisPhoneNumber(scope: CoroutineScope, phoneNumber: String) {
+        scope.launch {
+            if (phoneNumber.isEmpty()) {
+                _userExistsLiveData.postValue(false)
+                delay(500)
+                _userExistsLiveData.postValue(null)
+            }
+            try {
+                val response = userRepository.getUserByPhoneNumber(phoneNumber)
+                _userExistsLiveData.postValue(response)
+                delay(500)
+                _userExistsLiveData.postValue(null)
+            } catch (exception: Exception) {
+                _userExistsLiveData.postValue(false)
+                delay(500)
+                _userExistsLiveData.postValue(null)
+            }
+
+        }
+    }
+
     @ExperimentalCoroutinesApi
-    suspend fun createDeviceToken() =  callbackFlow<String>{
-        FirebaseMessaging.getInstance().token.addOnSuccessListener {
-            token ->
+    suspend fun createDeviceToken() = callbackFlow<String> {
+        FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
             trySend(token)
             close()
         }
@@ -157,6 +187,21 @@ class UserInfoProvider @Inject constructor(
                 _updateUserNameLiveData.postValue(response)
                 delay(500)
                 _updateUserNameLiveData.postValue(null)
+            } catch (e: Exception) {
+                _userInfoProviderErrorLiveData.postValue(e.message)
+                delay(500)
+                _userInfoProviderErrorLiveData.postValue(null)
+            }
+        }
+    }
+
+    fun updateUserFirstNameAndLastName(scope: CoroutineScope, firstName: String, lastName: String) {
+        scope.launch(Dispatchers.Default) {
+            try {
+                val response = userRepository.updateFirstNameAndLastName(firstName, lastName)
+                _updateUserFirstNameAndLastNameLiveData.postValue(response)
+                delay(500)
+                _updateUserFirstNameAndLastNameLiveData.postValue(null)
             } catch (e: Exception) {
                 _userInfoProviderErrorLiveData.postValue(e.message)
                 delay(500)
@@ -257,17 +302,17 @@ class UserInfoProvider @Inject constructor(
         imageURL: String?,
         voiceBioURL: String?,
         durationSeconds: Double?
-    ) :String? {
-       return userRepository.updateUserProfile(
-           userName,
-           firstName,
-           lastName,
-           bio,
-           website,
-           imageURL,
-           voiceBioURL,
-           durationSeconds
-       )
+    ): String? {
+        return userRepository.updateUserProfile(
+            userName,
+            firstName,
+            lastName,
+            bio,
+            website,
+            imageURL,
+            voiceBioURL,
+            durationSeconds
+        )
     }
 
     suspend fun startFollowingUser(id: Int) {
@@ -296,6 +341,7 @@ class UserInfoProvider @Inject constructor(
             null
         }
     }
+
     suspend fun unblockUser(id: Int) {
         try {
             userRepository.unblockUser(id)
@@ -305,9 +351,9 @@ class UserInfoProvider @Inject constructor(
         }
     }
 
-    suspend fun reportUser(id: Int,reason:String) {
+    suspend fun reportUser(id: Int, reason: String) {
         try {
-            userRepository.reportUser(id,reason)
+            userRepository.reportUser(id, reason)
         } catch (e: Exception) {
             Timber.e(e)
             null

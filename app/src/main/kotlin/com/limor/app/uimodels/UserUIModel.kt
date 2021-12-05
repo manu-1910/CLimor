@@ -37,10 +37,14 @@ data class UserUIModel(
     var patronOnBoardingStatus: String? = null,
     var isPatron: Boolean? = false,
     val patronAudioURL: String? = null,
-    val patronAudioDurationSeconds: Double?
+    val patronAudioDurationSeconds: Double? = null
 ) : Parcelable {
 
-    fun getFullName() = if(firstName == null && lastName == null) username else String.format("%s %s", firstName, lastName)
+    fun getFullName() = if (firstName == null && lastName == null) username else String.format(
+        "%s %s",
+        firstName,
+        lastName
+    )
 
     /**
      * This function returns the best suited image url to be used as the avatar picture everywhere
@@ -50,7 +54,8 @@ data class UserUIModel(
      * - original
      * - small
      */
-    fun getAvatarUrl(): String? = imageLinks?.medium ?: imageLinks?.large ?: imageLinks?.original ?: imageLinks?.small
+    fun getAvatarUrl(): String? =
+        imageLinks?.medium ?: imageLinks?.large ?: imageLinks?.original ?: imageLinks?.small
 
     fun hasNotificationsEnabled(): Boolean = areNotificationsEnabled ?: false
 }
@@ -373,4 +378,64 @@ fun GetPodcastByIdQuery.Owner.mapToUIModel(): UserUIModel =
         isPatron = isPatron,
         patronAudioURL = patronAudioURL,
         patronAudioDurationSeconds = patronAudioDuration
+    )
+
+fun FollowersQuery.GetFollower.mapToUIModel(): UserUIModel =
+    UserUIModel(
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = null, isFollowed = followed,
+        isBlockedBy = null, isFollowedBy = followed,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = null, gender = null,
+        dateOfBirth = null,
+        areNotificationsEnabled = null, isActive = null,
+        isSuspended = null, isVerified = null, isAutoplayEnabled = null,
+        sharingUrl = null,
+        voiceBioURL = null,
+        durationSeconds = null
+    )
+
+fun FriendsQuery.GetFriend.mapToUIModel(): UserUIModel =
+    UserUIModel(
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = null, isFollowed = followed,
+        isBlockedBy = null, isFollowedBy = followed,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = null, gender = null,
+        dateOfBirth = null,
+        areNotificationsEnabled = null, isActive = null,
+        isSuspended = null, isVerified = null, isAutoplayEnabled = null,
+        sharingUrl = null,
+        voiceBioURL = null,
+        durationSeconds = null
+    )
+
+fun SearchFollowersQuery.SearchFollower.mapToUIModel(): UserUIModel =
+    UserUIModel(
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = null, isFollowed = followed,
+        isBlockedBy = null, isFollowedBy = followed,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = null, gender = null,
+        dateOfBirth = null,
+        areNotificationsEnabled = null, isActive = null,
+        isSuspended = null, isVerified = null, isAutoplayEnabled = null,
+        sharingUrl = null,
+        voiceBioURL = null,
+        durationSeconds = null
+    )
+
+fun SearchFollowingQuery.SearchFollowing.mapToUIModel(): UserUIModel =
+    UserUIModel(
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = null, isFollowed = followed,
+        isBlockedBy = null, isFollowedBy = followed,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = null, gender = null,
+        dateOfBirth = null,
+        areNotificationsEnabled = null, isActive = null,
+        isSuspended = null, isVerified = null, isAutoplayEnabled = null,
+        sharingUrl = null,
+        voiceBioURL = null,
+        durationSeconds = null
     )

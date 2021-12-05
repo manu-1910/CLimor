@@ -113,6 +113,7 @@ query FeedItemsQuery($limit: Int!,$offset:Int!){
                     end_index
                 }
             }
+            color_code
             mature_content
             patron_cast
             patron_details{
@@ -120,6 +121,7 @@ query FeedItemsQuery($limit: Int!,$offset:Int!){
                 preview_duration
                 starts_at
                 ends_at
+                purchased
             }
         }
         recaster {
