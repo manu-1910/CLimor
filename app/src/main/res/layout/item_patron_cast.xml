@@ -391,7 +391,7 @@
         android:fontFamily="@font/roboto_bold"
         android:paddingTop="14dp"
         android:paddingBottom="14dp"
-        android:text="@string/add_preview"
+        android:text="@string/edit_preview"
         android:textAllCaps="false"
         android:textColor="@color/text_btn_primary_color"
         android:textSize="@dimen/textSize14"

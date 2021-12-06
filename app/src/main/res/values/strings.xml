@@ -776,9 +776,9 @@
 
     <string name="mature_content">Mature Content (18+)</string>
     <string name="mature_content_description">Does your cast contain profanity, swearing, sexual, gambling references.</string>
-    <string name="edit_price">Edit Price - 6.99</string>
-    <string name="add_preview">Add Preview</string>
-    <string name="buy_cast">Buy $ 1.99</string>
+    <string name="edit_price">Edit Price</string>
+    <string name="edit_preview">Edit Preview</string>
+    <string name="buy_cast">Buy</string>
     <string name="preview">Preview</string>
     <string name="cast_purchased">Purchased at $19.99</string>
     <string name="publish_free_cast_patron">Are you sure you want to publish this cast for free?</string>
@@ -884,7 +884,6 @@
         <item>99.99</item>
     </string-array>
     <string name="category_selection_hint">You can only select 5 categories. if you talk about sport, Select `Sport`</string>
-    <string name="edit_preview">Edit Preview</string>
     <string name="preview_note">Preview must be in between 10 secs to 30 secs</string>
     <string name="save_as_preview">Save as Preview</string>
 

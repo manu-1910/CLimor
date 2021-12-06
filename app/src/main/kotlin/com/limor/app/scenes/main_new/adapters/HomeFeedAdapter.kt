@@ -14,6 +14,7 @@ import com.limor.app.dm.ShareResult
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderBindable
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderPodcast
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderRecast
+import com.limor.app.service.ProductDetails
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
 
@@ -28,8 +29,9 @@ class HomeFeedAdapter(
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val onUserMentionClick: (username: String, userId: Int) -> Unit,
     private val onEditPreviewClick: (cast: CastUIModel) -> Unit,
-    private val onPlayPreviewClick:(cast: CastUIModel, play: Boolean) -> Unit
-    private val onPurchaseCast: (cast: CastUIModel, sku: SkuDetails?) -> Unit
+    private val onPlayPreviewClick:(cast: CastUIModel, play: Boolean) -> Unit,
+    private val onPurchaseCast: (cast: CastUIModel, sku: SkuDetails?) -> Unit,
+    private val productDetailsFetcher: ProductDetails
 ) : ListAdapter<CastUIModel, RecyclerView.ViewHolder>(
     HomeFeedDiffCallback()
 ) {
@@ -99,8 +101,9 @@ class HomeFeedAdapter(
                     onHashTagClick,
                     onUserMentionClick,
                     onEditPreviewClick,
-                    onPlayPreviewClick
-                    onPurchaseCast
+                    onPlayPreviewClick,
+                    onPurchaseCast,
+                    productDetailsFetcher
                 )
             }
             else -> {
