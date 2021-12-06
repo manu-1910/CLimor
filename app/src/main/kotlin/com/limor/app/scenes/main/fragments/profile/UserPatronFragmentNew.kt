@@ -1,47 +1,37 @@
 package com.limor.app.scenes.main.fragments.profile
 
 import android.app.AlertDialog
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
-import com.google.firebase.dynamiclinks.ktx.*
-import com.google.firebase.ktx.Firebase
-import com.limor.app.BuildConfig
-import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
 import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.isOnline
 import com.limor.app.extensions.requireTag
-import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.casts.CastItem
 import com.limor.app.scenes.main.fragments.profile.casts.LoadMoreItem
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
-import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.patron.FragmentShortItemSlider
@@ -56,7 +46,6 @@ import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
-import kotlinx.coroutines.launch
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import java.time.Duration
@@ -72,6 +61,7 @@ class UserPatronFragmentNew : Fragment() {
             arguments = bundleOf(USER_ID_KEY to user)
         }
     }
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: UserProfileViewModel by viewModels { viewModelFactory }
@@ -284,9 +274,11 @@ class UserPatronFragmentNew : Fragment() {
 
     private fun currentUser(): Boolean {
 
-        Timber.d("Current User Check -> ${user.id} --- ${
-            PrefsHandler.getCurrentUserId(requireContext())
-        }")
+        Timber.d(
+            "Current User Check -> ${user.id} --- ${
+                PrefsHandler.getCurrentUserId(requireContext())
+            }"
+        )
         return when (user.id) {
             PrefsHandler.getCurrentUserId(requireContext()) -> {
                 //Current user
@@ -303,8 +295,10 @@ class UserPatronFragmentNew : Fragment() {
         binding.emptyStateTv.text = if (currentUser()) {
             getString(R.string.limor_patron_empty_state)
         } else getString(R.string.patron_empty_state_other)
-        val result: Spanned = HtmlCompat.fromHtml(getString(R.string.patron_uk_account_learn_more),
-            HtmlCompat.FROM_HTML_MODE_LEGACY)
+        val result: Spanned = HtmlCompat.fromHtml(
+            getString(R.string.patron_uk_account_learn_more),
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
         binding.termsTV.text = result
         binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
         binding.termsCheckBox.isChecked = false
@@ -333,7 +327,9 @@ class UserPatronFragmentNew : Fragment() {
                 loadCasts()
 
                 binding.managePatron.setOnClickListener {
-                    findNavController().navigate(R.id.action_navigateProfileFragment_to_managePatronFragment)
+                    val intent = Intent(requireActivity(), ManagePatronActivity::class.java)
+                    startActivity(intent)
+                    //findNavController().navigate(R.id.action_navigateProfileFragment_to_managePatronFragment)
                 }
             } else {
 
@@ -384,7 +380,11 @@ class UserPatronFragmentNew : Fragment() {
                                     binding.checkLayout.visibility = View.INVISIBLE
 
                                     binding.managePatron.setOnClickListener {
-                                        findNavController().navigate(R.id.action_navigateProfileFragment_to_managePatronFragment)
+                                        val intent = Intent(
+                                            requireActivity(),
+                                            ManagePatronActivity::class.java
+                                        )
+                                        startActivity(intent)
                                     }
                                 }
                                 else -> {

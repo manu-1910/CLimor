@@ -1,8 +1,7 @@
 package com.limor.app.scenes.main_new.fragments
 
-import android.content.ActivityNotFoundException
+import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,11 +12,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+
 import androidx.lifecycle.lifecycleScope
 import com.android.billingclient.api.*
 
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
+
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.calculateAmplitude
 import com.limor.app.common.BaseFragment
@@ -31,11 +32,14 @@ import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.adapters.HomeFeedAdapter
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
-import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
+import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
+import com.limor.app.scenes.patron.manage.fragment.ChangePriceActivity
+
 import com.limor.app.scenes.utils.CommonsKt
+
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.PlayBillingHandler
 import com.limor.app.uimodels.CastUIModel
@@ -45,7 +49,6 @@ import com.limor.app.uimodels.mapToAudioTrack
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -154,21 +157,21 @@ class FragmentHomeNew : BaseFragment() {
             binding.swipeToRefresh.isRefreshing = false
             onLoadCasts(casts)
         }
-        likePodcastViewModel.reload.observe(viewLifecycleOwner){
+        likePodcastViewModel.reload.observe(viewLifecycleOwner) {
             reloadCurrentCasts()
         }
-        recastPodcastViewModel.recastedResponse.observe(viewLifecycleOwner){
+        recastPodcastViewModel.recastedResponse.observe(viewLifecycleOwner) {
             reloadCurrentCasts()
         }
-        recastPodcastViewModel.deleteRecastResponse.observe(viewLifecycleOwner){
+        recastPodcastViewModel.deleteRecastResponse.observe(viewLifecycleOwner) {
             reloadCurrentCasts()
         }
-        sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner){
+        sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner) {
             println("Will reload...")
             reloadCurrentCasts()
         }
-        podcastInteractionViewModel.reload.observe(viewLifecycleOwner){
-            if(it == true){
+        podcastInteractionViewModel.reload.observe(viewLifecycleOwner) {
+            if (it == true) {
                 reloadCurrentCasts()
             }
         }
@@ -192,13 +195,13 @@ class FragmentHomeNew : BaseFragment() {
                 openPlayer(cast)
             },
             onReCastClick = { castId, isRecasted ->
-                if(isRecasted){
+                if (isRecasted) {
                     recastPodcastViewModel.reCast(castId)
-                } else{
+                } else {
                     recastPodcastViewModel.deleteRecast(castId)
                 }
             },
-            onCommentsClick = {cast ->
+            onCommentsClick = { cast ->
                 RootCommentsFragment.newInstance(cast).also { fragment ->
                     fragment.show(parentFragmentManager, fragment.requireTag())
                 }
@@ -232,17 +235,23 @@ class FragmentHomeNew : BaseFragment() {
                 cast.audio?.mapToAudioTrack()?.let { it1 ->
                     cast.patronDetails?.startsAt?.let { it2 ->
                         cast.patronDetails.endsAt?.let { it3 ->
-                            if(play){
+                            if (play) {
                                 (activity as? PlayerViewManager)?.playPreview(
                                     it1, it2.toInt(), it3.toInt()
                                 )
-                            } else{
+                            } else {
                                 (activity as? PlayerViewManager)?.stopPreview()
                             }
                         }
                     }
                 }
             },
+            onEditPriceClick = { cast ->
+                val intent = Intent(requireActivity(), ChangePriceActivity::class.java)
+                intent.putExtra(ChangePriceActivity.CHANGE_PRICE_FOR_ALL_CASTS, false)
+                intent.putExtra(ChangePriceActivity.CAST_ID, cast.id)
+                editPriceLauncher.launch(intent)
+            }
             onPurchaseCast = { cast, sku ->
                 launchPurchaseCast(sku)
             },
@@ -260,12 +269,20 @@ class FragmentHomeNew : BaseFragment() {
         rvHome.adapter = homeFeedAdapter
     }
 
-    var launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if(sharedPodcastId != -1) {
-            sharePodcastViewModel.share(sharedPodcastId)
-            sharedPodcastId = -1
+    var launcher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (sharedPodcastId != -1) {
+                sharePodcastViewModel.share(sharedPodcastId)
+                sharedPodcastId = -1
+            }
         }
-    }
+
+    var editPriceLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                reloadCurrentCasts()
+            }
+        }
 
     private fun openPlayer(cast: CastUIModel) {
         (activity as? PlayerViewManager)?.showPlayer(
@@ -276,7 +293,7 @@ class FragmentHomeNew : BaseFragment() {
         )
     }
 
-    private fun scrollList(){
+    private fun scrollList() {
         binding.rvHome.scrollBy(0, 10)
     }
 
@@ -377,20 +394,21 @@ class FragmentHomeNew : BaseFragment() {
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    suspend fun loadAmps(recordFile: String, bufferSize: Int): List<Int> = withContext(Dispatchers.IO) {
-        val amps = mutableListOf<Int>()
-        val buffer = ByteArray(bufferSize)
-        File(recordFile).inputStream().use {
-            it.skip(44.toLong())
+    suspend fun loadAmps(recordFile: String, bufferSize: Int): List<Int> =
+        withContext(Dispatchers.IO) {
+            val amps = mutableListOf<Int>()
+            val buffer = ByteArray(bufferSize)
+            File(recordFile).inputStream().use {
+                it.skip(44.toLong())
 
-            var count = it.read(buffer)
-            while (count > 0) {
-                amps.add(buffer.calculateAmplitude())
-                count = it.read(buffer)
+                var count = it.read(buffer)
+                while (count > 0) {
+                    amps.add(buffer.calculateAmplitude())
+                    count = it.read(buffer)
+                }
             }
+            amps
         }
-        amps
-    }
 
     override fun onDestroy() {
         super.onDestroy()

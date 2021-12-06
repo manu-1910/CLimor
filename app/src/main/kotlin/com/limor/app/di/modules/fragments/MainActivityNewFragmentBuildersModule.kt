@@ -107,12 +107,6 @@ abstract class MainActivityNewFragmentBuildersModule {
     abstract fun contributeFragmentFragmentMyEarnings(): FragmentMyEarnings
 
     @ContributesAndroidInjector
-    abstract fun contributeFragmentChangePrice(): FragmentChangePrice
-
-    @ContributesAndroidInjector
-    abstract fun contributeDialogConfirmationChangePrice(): DialogConfirmationChangePrice
-
-    @ContributesAndroidInjector
     abstract fun contributeFragmentInviteFriends(): FragmentInviteFriends
 
     @ContributesAndroidInjector

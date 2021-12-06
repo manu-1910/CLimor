@@ -36,6 +36,7 @@ class ViewHolderPodcast(
     private val onUserMentionClick: (username: String, userId: Int) -> Unit,
     private val onEditPreviewClick: (cast: CastUIModel) -> Unit,
     private val onPlayPreviewClick: (cast: CastUIModel, play: Boolean) -> Unit,
+    private val onEditPriceClick: (cast: CastUIModel) -> Unit,
     private val onPurchaseCast:  (cast: CastUIModel, sku: SkuDetails?) -> Unit,
     private val productDetailsFetcher: ProductDetails
 ) : ViewHolderBindable<CastUIModel>(binding), DetailsAvailableListener {
@@ -88,7 +89,7 @@ class ViewHolderPodcast(
             if (item.listensCount == 0) "0" else item.listensCount?.toLong()?.formatHumanReadable
     }
 
-    private fun setPatronPodcastStatus(item: CastUIModel){
+    private fun setPatronPodcastStatus(item: CastUIModel) {
         if (item.patronCast == true) {
             val userId = PrefsHandler.getCurrentUserId(context)
 
@@ -97,6 +98,7 @@ class ViewHolderPodcast(
                     onPurchaseCast(item, it)
                 }
             }
+
             when {
                 (item.owner?.id != userId) -> {
                     //Purchase a cast actions
@@ -143,7 +145,7 @@ class ViewHolderPodcast(
         }
 
         //Handling the color background for podcast
-        CommonsKt.handleColorFeed(item,binding.colorFeedText,context)
+        CommonsKt.handleColorFeed(item, binding.colorFeedText, context)
     }
 
     private fun setOnClicks(item: CastUIModel) {
@@ -190,21 +192,21 @@ class ViewHolderPodcast(
         }
 
         binding.btnAddPreview.setOnClickListener {
-            onEditPreviewClick(item)
         }
 
         binding.btnEditPrice.setOnClickListener {
+            onEditPriceClick(item)
         }
 
         binding.btnPlayStopPreview.setOnClickListener {
             playingPreview = !playingPreview
-            binding.btnPlayStopPreview.text = if(playingPreview) "Stop" else "Preview"
+            binding.btnPlayStopPreview.text = if (playingPreview) "Stop" else "Preview"
             onPlayPreviewClick(item, playingPreview)
             item.patronDetails?.previewDuration.let {
                 if (it != null) {
                     Handler().postDelayed(Runnable {
                         playingPreview = !playingPreview
-                        binding.btnPlayStopPreview.text = if(playingPreview) "Stop" else "Preview"
+                        binding.btnPlayStopPreview.text = if (playingPreview) "Stop" else "Preview"
                     }, it.toLong())
                 }
             }

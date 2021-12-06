@@ -26,6 +26,7 @@ import com.limor.app.scenes.main_new.view_model.UserMentionViewModel
 import com.limor.app.scenes.notifications.NotificationViewModel
 import com.limor.app.scenes.notifications.PushNotificationsViewModel
 import com.limor.app.scenes.patron.manage.viewmodels.ManagePatronViewModel
+import com.limor.app.scenes.patron.viewmodels.CastPriceViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -375,7 +376,7 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(SessionsViewModel::class)
     abstract fun bindSessionsViewModel(viewModel: SessionsViewModel): ViewModel
-  
+
     @Binds
     @IntoMap
     @ViewModelKey(ManagePatronViewModel::class)
@@ -385,5 +386,10 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(UpdatePreviewViewModel::class)
     abstract fun bindUpdatePreviewViewModel(viewModel: UpdatePreviewViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CastPriceViewModel::class)
+    abstract fun bindCastPriceViewModel(viewModel: CastPriceViewModel): ViewModel
 
 }

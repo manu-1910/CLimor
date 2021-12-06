@@ -3,16 +3,11 @@ package com.limor.app.scenes.main.fragments.profile
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.navigation.ui.setupWithNavController
-import com.facebook.BuildConfig
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.databinding.ActivityProfileBinding
@@ -118,9 +113,11 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector, PlayerVi
     }
 
     override fun playPreview(audio: AudioService.AudioTrack, startPosition: Int, endPosition: Int) {
+        activityPlayerViewManager?.playPreview(audio, startPosition, endPosition)
     }
 
     override fun stopPreview() {
+        activityPlayerViewManager?.stopPreview()
     }
 
     override fun onDestroy() {

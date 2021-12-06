@@ -15,6 +15,7 @@ import com.limor.app.scenes.main.fragments.settings.SettingsActivity
 import com.limor.app.scenes.main.fragments.setup_patron.SetupPatronActivity
 import com.limor.app.scenes.main_new.MainActivityNew
 import com.limor.app.scenes.patron.manage.ManagePatronActivity
+import com.limor.app.scenes.patron.manage.fragment.ChangePriceActivity
 import com.limor.app.scenes.patron.setup.PatronSetupActivity
 import com.limor.app.scenes.patron.unipaas.UniPaasActivity
 import com.limor.app.scenes.splash.SplashActivity
@@ -126,4 +127,8 @@ abstract class ActivitiesModule {
         ]
     )
     abstract fun contributeUniPassActivityInjector(): UniPaasActivity
+
+    @ContributesAndroidInjector
+    abstract fun contributeChangePriceActivityInjector(): ChangePriceActivity
+
 }

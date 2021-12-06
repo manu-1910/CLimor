@@ -1,6 +1,7 @@
 package com.limor.app.di.modules.fragments
 
-import com.limor.app.scenes.patron.PatronPricingPlansFragment
+import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
+import com.limor.app.scenes.main_new.fragments.SmallPlayerFragment
 import com.limor.app.scenes.patron.manage.fragment.*
 import com.limor.app.scenes.patron.setup.FragmentPatronCategories
 import dagger.Module
@@ -22,15 +23,15 @@ abstract class ManagePatronActivityFragmentBuilderModule {
     abstract fun contributeFragmentFragmentMyEarnings(): FragmentMyEarnings
 
     @ContributesAndroidInjector
-    abstract fun contributeFragmentChangePrice(): FragmentChangePrice
-
-    @ContributesAndroidInjector
-    abstract fun contributeDialogConfirmationChangePrice(): DialogConfirmationChangePrice
-
-    @ContributesAndroidInjector
     abstract fun contributeFragmentInviteFriends(): FragmentInviteFriends
 
     @ContributesAndroidInjector
-    abstract fun contributeFragmentUpdatePatronCaregories(): FragmentUpdatePatronCategories
+    abstract fun contributeFragmentUpdatePatronCategories(): FragmentUpdatePatronCategories
+
+    @ContributesAndroidInjector
+    abstract fun contributeExtendedPlayerFragmentInjector(): ExtendedPlayerFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeSmallPlayerFragmentInjector(): SmallPlayerFragment
 
 }

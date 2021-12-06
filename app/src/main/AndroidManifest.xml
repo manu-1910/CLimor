@@ -44,13 +44,14 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name=".EditCastActivity"
-            android:theme="@style/MaterialMainTheme.FullScreen">
-        </activity>
+        <activity
+            android:name=".EditCastActivity"
+            android:theme="@style/MaterialMainTheme.FullScreen"></activity>
 
-        <activity android:name=".dm.ui.ChatActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
-            android:theme="@style/MaterialMainTheme.FullScreen" />
+        <activity
+            android:name=".dm.ui.ChatActivity"
+            android:theme="@style/MaterialMainTheme.FullScreen"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -329,6 +330,11 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/MaterialMainTheme.FullScreen" />
+        <activity
+            android:name=".scenes.patron.manage.fragment.ChangePriceActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/MaterialMainTheme.FullScreen"></activity>
 
         <receiver android:name=".receivers.PhoneCallReceiver">
             <intent-filter>

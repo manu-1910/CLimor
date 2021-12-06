@@ -798,6 +798,7 @@
     <string name="edit_patron_catagories">Edit Patron Categories</string>
     <string name="manage_patron_membership">Manage Patron Membership</string>
     <string name="change_cast_prices">Change all cast prices</string>
+    <string name="change_cast_price_confirmation_desc">Are you sure, you want to change this cast price?</string>
     <string name="change_price">Change Price</string>
     <string name="change_price_description">Changing the price will change all your cast prices</string>
     <string name="change_price_confirmation_text">Are you sure, you want to change all cast prices?</string>
@@ -889,6 +890,7 @@
 
     <string name="fetching_audio">Fetching audio...</string>
     <string name="button_save_as_preview">Save as Preview</string>
+
     <string name="setup_my_digital_wallet">Setup My Digital Wallet</string>
     <string name="hint_name">Name</string>
     <string name="complete_setup">Complete Setup</string>
@@ -966,5 +968,4 @@
         <item>com.limor.dev.tier_60|99.99</item>
         <item>com.limor.dev.tier_65|129.99</item>
     </string-array>
-
 </resources>
