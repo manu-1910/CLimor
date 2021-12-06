@@ -10,15 +10,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-
-import androidx.lifecycle.lifecycleScope
-import com.android.billingclient.api.*
-
-import com.google.firebase.dynamiclinks.ktx.*
-import com.google.firebase.ktx.Firebase
-
+import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.SkuDetails
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.calculateAmplitude
 import com.limor.app.common.BaseFragment
@@ -37,17 +33,13 @@ import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
 import com.limor.app.scenes.patron.manage.fragment.ChangePriceActivity
-
-import com.limor.app.scenes.utils.CommonsKt
-
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.PlayBillingHandler
 import com.limor.app.uimodels.CastUIModel
-
 import com.limor.app.uimodels.mapToAudioTrack
-
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
@@ -91,9 +83,21 @@ class FragmentHomeNew : BaseFragment() {
         setOnClicks()
     }
 
-    private fun launchPurchaseCast(sku: SkuDetails?) {
+    private fun launchPurchaseCast(cast: CastUIModel, sku: SkuDetails?) {
         sku?.let {
-            playBillingHandler.launchBillingFlowFor(it, requireActivity())
+            playBillingHandler.launchBillingFlowFor(it, requireActivity()) { purchase ->
+                //Call BE createCastPurchase from here
+                lifecycleScope.launch {
+                    playBillingHandler.consumePurchase(ConsumeParams.newBuilder()
+                        .setPurchaseToken(purchase.purchaseToken).build())
+                    val response =
+                        playBillingHandler.publishRepository.createCastPurchase(cast, purchase, sku)
+                    if (response == "Success") {
+                        //reload single cast item for now reloading all items
+                        reload()
+                    }
+                }
+            }
         }
     }
 
@@ -253,7 +257,7 @@ class FragmentHomeNew : BaseFragment() {
                 editPriceLauncher.launch(intent)
             },
             onPurchaseCast = { cast, sku ->
-                launchPurchaseCast(sku)
+                launchPurchaseCast(cast, sku)
             },
             productDetailsFetcher = playBillingHandler
         )

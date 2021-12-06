@@ -18,9 +18,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
+import com.android.billingclient.api.ConsumeParams
 import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
@@ -47,6 +49,7 @@ import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import java.time.Duration
@@ -242,7 +245,21 @@ class UserPatronFragmentNew : Fragment() {
                 },
                 onPurchaseCast = { cast, sku ->
                     sku?.let { skuDetails ->
-                        playBillingHandler.launchBillingFlowFor(skuDetails, requireActivity())
+                        playBillingHandler.launchBillingFlowFor(skuDetails,
+                            requireActivity()) { purchase ->
+                            lifecycleScope.launch {
+                                playBillingHandler.consumePurchase(ConsumeParams.newBuilder()
+                                    .setPurchaseToken(purchase.purchaseToken).build())
+                                val response =
+                                    playBillingHandler.publishRepository.createCastPurchase(cast,
+                                        purchase,
+                                        skuDetails)
+                                if (response == "Success") {
+                                    //reload cast item for now reloading all items
+                                    loadCasts()
+                                }
+                            }
+                        }
                     }
                 },
                 productDetailsFetcher = playBillingHandler

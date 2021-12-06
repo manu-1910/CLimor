@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
+import com.android.billingclient.api.ConsumeParams
 import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentUserCastsBinding
@@ -161,7 +162,17 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                 },
                 onPurchaseCast = {cast, sku ->
                     sku?.let { skuDetails ->
-                        playBillingHandler.launchBillingFlowFor(skuDetails,requireActivity())
+                        playBillingHandler.launchBillingFlowFor(skuDetails, requireActivity()){ purchase ->
+                            lifecycleScope.launch {
+                                playBillingHandler.consumePurchase(ConsumeParams.newBuilder()
+                                    .setPurchaseToken(purchase.purchaseToken).build())
+                                val response  = playBillingHandler.publishRepository.createCastPurchase(cast,purchase,skuDetails)
+                                if(response == "Success"){
+                                    //reload cast item for now reloading all items
+                                    loadCasts()
+                                }
+                            }
+                        }
                     }
                 },
                 productDetailsFetcher = playBillingHandler
