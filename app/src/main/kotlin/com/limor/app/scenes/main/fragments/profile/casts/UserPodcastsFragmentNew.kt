@@ -64,7 +64,8 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
     private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
     private val podcastInteractionViewModel: PodcastInteractionViewModel by activityViewModels { viewModelFactory }
-
+    @Inject
+    lateinit var playBillingHandler: PlayBillingHandler
     private val user: UserUIModel by lazy { requireArguments().getParcelable(USER_ID_KEY)!! }
 
     private var castOffset = 0
@@ -166,7 +167,13 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                 },
                 onHashTagClick = { hashtag ->
                     (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)
-                }
+                },
+                onPurchaseCast = {cast, sku ->
+                    sku?.let { skuDetails ->
+                        playBillingHandler.launchBillingFlowFor(skuDetails,requireActivity())
+                    }
+                },
+                productDetailsFetcher = playBillingHandler
             )
         }
     }

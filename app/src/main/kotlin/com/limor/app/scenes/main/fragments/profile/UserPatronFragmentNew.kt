@@ -39,6 +39,7 @@ import com.limor.app.scenes.patron.manage.ManagePatronActivity
 import com.limor.app.scenes.patron.setup.PatronSetupActivity
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
+import com.limor.app.service.PlayBillingHandler
 import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.UserUIModel
@@ -65,7 +66,8 @@ class UserPatronFragmentNew : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: UserProfileViewModel by viewModels { viewModelFactory }
-
+    @Inject
+    lateinit var playBillingHandler: PlayBillingHandler
     private lateinit var user: UserUIModel
 
     private val viewModel: UserPodcastsViewModel by viewModels { viewModelFactory }
@@ -237,7 +239,13 @@ class UserPatronFragmentNew : Fragment() {
                 },
                 onHashTagClick = { hashtag ->
                     (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)
-                }
+                },
+                onPurchaseCast = { cast, sku ->
+                    sku?.let { skuDetails ->
+                       playBillingHandler.launchBillingFlowFor(skuDetails,requireActivity())
+                    }
+                },
+                productDetailsFetcher = playBillingHandler
             )
         }
     }

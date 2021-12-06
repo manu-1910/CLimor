@@ -214,7 +214,10 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
                 onHashTagClick = { hashtag ->
                     (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)
                 },
-                isPurchased = true
+                isPurchased = true,
+                onPurchaseCast = { cast, sku ->
+
+                }
             )
         }
     }
