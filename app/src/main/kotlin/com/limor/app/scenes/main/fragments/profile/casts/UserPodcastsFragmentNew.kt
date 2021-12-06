@@ -208,7 +208,10 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                         }
                     }
                 },
-                productDetailsFetcher = null
+                productDetailsFetcher = null,
+                onEditPriceClick = {
+
+                }
             )
         }
     }
