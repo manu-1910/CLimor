@@ -121,5 +121,9 @@ query GetPatronPodcasts($userId: Int!, $limit: Int!, $offset: Int!) {
             ends_at
             purchased
         }
+        cast_purchased_info{
+            purchased_at_price
+            purchased_in_currency
+        }
     }
 }
