@@ -245,7 +245,13 @@ class UserPatronFragmentNew : Fragment() {
                         playBillingHandler.launchBillingFlowFor(skuDetails, requireActivity())
                     }
                 },
-                productDetailsFetcher = playBillingHandler
+                productDetailsFetcher = playBillingHandler,
+                onEditPreviewClick = {
+                },
+                onPlayPreviewClick = { cast, play ->
+                },
+                onEditPriceClick = { cast ->
+                }
             )
         }
     }

@@ -192,6 +192,7 @@ class ViewHolderPodcast(
         }
 
         binding.btnAddPreview.setOnClickListener {
+            onEditPreviewClick(item)
         }
 
         binding.btnEditPrice.setOnClickListener {

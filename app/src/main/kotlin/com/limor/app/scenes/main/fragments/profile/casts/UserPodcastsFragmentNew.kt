@@ -1,5 +1,7 @@
 package com.limor.app.scenes.main.fragments.profile.casts
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,12 +27,15 @@ import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
+import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
+import com.limor.app.scenes.patron.manage.fragment.ChangePriceActivity
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.service.PlayBillingHandler
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.UserUIModel
+import com.limor.app.uimodels.mapToAudioTrack
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 import kotlinx.coroutines.launch
@@ -131,6 +136,13 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         }
     }
 
+    var editPriceLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                reloadCurrentCasts()
+            }
+        }
+
     private fun getCastItems(casts: List<CastUIModel>): List<CastItem> {
         return casts.map {
             CastItem(
@@ -163,6 +175,32 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                     sku?.let { skuDetails ->
                         playBillingHandler.launchBillingFlowFor(skuDetails,requireActivity())
                     }
+                },
+                onEditPreviewClick = {
+                    EditPreviewDialog.newInstance(it).also { fragment ->
+                        fragment.show(parentFragmentManager, fragment.requireTag())
+                    }
+                },
+                onPlayPreviewClick = { cast, play ->
+                    cast.audio?.mapToAudioTrack()?.let { it1 ->
+                        cast.patronDetails?.startsAt?.let { it2 ->
+                            cast.patronDetails.endsAt?.let { it3 ->
+                                if (play) {
+                                    (activity as? PlayerViewManager)?.playPreview(
+                                        it1, it2.toInt(), it3.toInt()
+                                    )
+                                } else {
+                                    (activity as? PlayerViewManager)?.stopPreview()
+                                }
+                            }
+                        }
+                    }
+                },
+                onEditPriceClick = { cast ->
+                    val intent = Intent(requireActivity(), ChangePriceActivity::class.java)
+                    intent.putExtra(ChangePriceActivity.CHANGE_PRICE_FOR_ALL_CASTS, false)
+                    intent.putExtra(ChangePriceActivity.CAST_ID, cast.id)
+                    editPriceLauncher.launch(intent)
                 },
                 productDetailsFetcher = playBillingHandler
             )

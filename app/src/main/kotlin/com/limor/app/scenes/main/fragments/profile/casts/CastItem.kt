@@ -2,6 +2,7 @@ package com.limor.app.scenes.main.fragments.profile.casts
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Handler
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.android.billingclient.api.SkuDetails
@@ -31,12 +32,17 @@ class CastItem(
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val isPurchased: Boolean = false,
     private val onPurchaseCast: (cast: CastUIModel, sku: SkuDetails?) -> Unit,
+    private val onEditPreviewClick: (cast: CastUIModel) -> Unit,
+    private val onPlayPreviewClick: (cast: CastUIModel, play: Boolean) -> Unit,
+    private val onEditPriceClick: (cast: CastUIModel) -> Unit,
     private val productDetailsFetcher: ProductDetails? = null,
 ) : BindableItem<ItemUserCastBinding>(), DetailsAvailableListener {
 
     private var skuDetails: SkuDetails? = null
     private lateinit var context: Context
     private lateinit var binding: ItemUserCastBinding
+
+    private var playingPreview = false
 
     override fun bind(viewBinding: ItemUserCastBinding, position: Int) {
         binding = viewBinding
@@ -108,6 +114,28 @@ class CastItem(
 
             tvPodcastComments.throttledClick {
                 onCommentsClick(cast)
+            }
+
+            binding.btnAddPreview.setOnClickListener {
+                onEditPreviewClick(cast)
+            }
+
+            binding.btnEditPrice.setOnClickListener {
+                onEditPriceClick(cast)
+            }
+
+            binding.btnPlayStopPreview.setOnClickListener {
+                playingPreview = !playingPreview
+                binding.btnPlayStopPreview.text = if (playingPreview) "Stop" else "Preview"
+                onPlayPreviewClick(cast, playingPreview)
+                cast.patronDetails?.previewDuration.let {
+                    if (it != null) {
+                        Handler().postDelayed(Runnable {
+                            playingPreview = !playingPreview
+                            binding.btnPlayStopPreview.text = if (playingPreview) "Stop" else "Preview"
+                        }, it.toLong())
+                    }
+                }
             }
 
             sharesLayout.throttledClick {

@@ -31,10 +31,13 @@ import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
+import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
+import com.limor.app.scenes.patron.manage.fragment.ChangePriceActivity
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.UserUIModel
+import com.limor.app.uimodels.mapToAudioTrack
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 import dagger.android.support.AndroidSupportInjection
@@ -217,6 +220,12 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
                 isPurchased = true,
                 onPurchaseCast = { cast, sku ->
 
+                },
+                onEditPreviewClick = {
+                },
+                onPlayPreviewClick = { cast, play ->
+                },
+                onEditPriceClick = { cast ->
                 }
             )
         }
