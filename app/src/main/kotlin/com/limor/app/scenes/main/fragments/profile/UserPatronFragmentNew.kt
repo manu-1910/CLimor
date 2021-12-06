@@ -242,7 +242,7 @@ class UserPatronFragmentNew : Fragment() {
                 },
                 onPurchaseCast = { cast, sku ->
                     sku?.let { skuDetails ->
-                       playBillingHandler.launchBillingFlowFor(skuDetails,requireActivity())
+                        playBillingHandler.launchBillingFlowFor(skuDetails, requireActivity())
                     }
                 },
                 productDetailsFetcher = playBillingHandler

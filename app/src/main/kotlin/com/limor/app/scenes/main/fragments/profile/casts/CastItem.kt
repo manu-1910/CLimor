@@ -2,7 +2,6 @@ package com.limor.app.scenes.main.fragments.profile.casts
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.android.billingclient.api.SkuDetails
@@ -19,7 +18,6 @@ import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
-import kotlinx.android.synthetic.main.fragment_extended_player.*
 import timber.log.Timber
 
 class CastItem(
@@ -32,8 +30,8 @@ class CastItem(
     private val onShareClick: (CastUIModel, onShared: ((shareResult: ShareResult) -> Unit)?) -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val isPurchased: Boolean = false,
-    private val onPurchaseCast:  (cast: CastUIModel, sku: SkuDetails?) -> Unit,
-    private val productDetailsFetcher: ProductDetails? = null
+    private val onPurchaseCast: (cast: CastUIModel, sku: SkuDetails?) -> Unit,
+    private val productDetailsFetcher: ProductDetails? = null,
 ) : BindableItem<ItemUserCastBinding>(), DetailsAvailableListener {
 
     private var skuDetails: SkuDetails? = null
@@ -61,7 +59,7 @@ class CastItem(
             }
 
             //Handling the color background for podcast
-            CommonsKt.handleColorFeed(cast,colorFeedText,root.context)
+            CommonsKt.handleColorFeed(cast, colorFeedText, root.context)
 
             tvPodcastLikes.text = cast.likesCount.toString()
             tvPodcastRecast.text = cast.recastsCount.toString()
@@ -121,15 +119,15 @@ class CastItem(
                 }
             }
 
-            if(isPurchased){
+            if (isPurchased) {
                 btnPurchasedCast.visibility = View.VISIBLE
                 btnPodcastMore.visibility = View.GONE
                 patronCastIndicator.visibility = View.VISIBLE
                 notCastOwnerActions.visibility = View.GONE
                 castOwnerActions.visibility = View.GONE
-            } else{
+            } else {
                 //Set Patron Cast Status
-                setPatronPodcastStatus(cast,viewBinding)
+                setPatronPodcastStatus(cast, viewBinding)
             }
 
         }
@@ -214,8 +212,7 @@ class CastItem(
     override fun initializeViewBinding(view: View) = ItemUserCastBinding.bind(view)
 
 
-
-    private fun setPatronPodcastStatus(item: CastUIModel,binding: ItemUserCastBinding) {
+    private fun setPatronPodcastStatus(item: CastUIModel, binding: ItemUserCastBinding) {
         if (item.patronCast == true) {
 
             val userId = PrefsHandler.getCurrentUserId(binding.root.context)
@@ -257,6 +254,7 @@ class CastItem(
             binding.btnPurchasedCast.visibility = View.GONE
         }
     }
+
     @SuppressLint("SetTextI18n")
     private fun setPricingLabel() {
         val priceId = cast.patronDetails?.priceId ?: return
