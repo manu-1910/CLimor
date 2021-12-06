@@ -768,7 +768,7 @@
 
     <string name="spot_secured_title">Spot Secured</string>
     <string name="sport_secured_description">You have secured your spot. You\'re going to have your digital wallet soon</string>
-  
+
     <string name="after_free_trial">After free trial ends it will cost</string>
     <string name="no_plans_found_message">No Plans Found</string>
     <string name="cancelled">Cancelled</string>
@@ -900,6 +900,9 @@
     <string name="first_name">First name</string>
     <string name="setup_later">Setup Later</string>
     <string name="set_up_later_description">You will not be able to monetize your casts until your digital wallet setup is completed.</string>
+
+    <string name="my_purchases">My Purchases</string>
+
     <string-array name="cast_tiers">
         <item>com.limor.dev.tier_1|0.99</item>
         <item>com.limor.dev.tier_2|1.99</item>
@@ -963,4 +966,5 @@
         <item>com.limor.dev.tier_60|99.99</item>
         <item>com.limor.dev.tier_65|129.99</item>
     </string-array>
+
 </resources>

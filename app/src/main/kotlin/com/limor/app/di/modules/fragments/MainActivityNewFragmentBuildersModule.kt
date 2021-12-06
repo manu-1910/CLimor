@@ -9,6 +9,7 @@ import com.limor.app.scenes.main.fragments.discover.featuredcasts.DiscoverFeatur
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchFragment
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleFragment
+import com.limor.app.scenes.main.fragments.profile.FragmentPurchases
 import com.limor.app.scenes.main.fragments.profile.UserPatronFragmentNew
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsFragmentNew
@@ -119,6 +120,9 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeEditPreviewFragmentInjector(): EditPreviewFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentPurchaseInjector(): FragmentPurchases
 
 }
 

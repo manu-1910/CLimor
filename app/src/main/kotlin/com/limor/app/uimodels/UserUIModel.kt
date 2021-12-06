@@ -439,3 +439,18 @@ fun SearchFollowingQuery.SearchFollowing.mapToUIModel(): UserUIModel =
         voiceBioURL = null,
         durationSeconds = null
     )
+
+fun GetPurchasedCastsQuery.Owner.mapToUIModel(): UserUIModel =
+    UserUIModel(
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = null, isFollowed = followed,
+        isBlockedBy = null, isFollowedBy = followed,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = null, gender = null,
+        dateOfBirth = null,
+        areNotificationsEnabled = null, isActive = null,
+        isSuspended = null, isVerified = null, isAutoplayEnabled = null,
+        sharingUrl = null,
+        voiceBioURL = null,
+        durationSeconds = null
+    )

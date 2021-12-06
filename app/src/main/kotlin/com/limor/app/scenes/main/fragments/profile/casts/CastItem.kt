@@ -25,6 +25,7 @@ class CastItem(
     private val onCommentsClick: (CastUIModel) -> Unit,
     private val onShareClick: (CastUIModel, onShared: ((shareResult: ShareResult) -> Unit)?) -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
+    private val isPurchased: Boolean = false
 ) : BindableItem<ItemUserCastBinding>() {
 
     override fun bind(viewBinding: ItemUserCastBinding, position: Int) {
@@ -105,6 +106,17 @@ class CastItem(
                     applyShareStyle(viewBinding, cast.isShared == true)
                 }
             }
+
+            if(isPurchased){
+                btnPurchased.visibility = View.VISIBLE
+                btnPodcastMore.visibility = View.GONE
+                patronCastIndicator.visibility = View.VISIBLE
+            } else {
+                btnPurchased.visibility = View.GONE
+                btnPodcastMore.visibility = View.VISIBLE
+                patronCastIndicator.visibility = View.GONE
+            }
+
         }
 
     }

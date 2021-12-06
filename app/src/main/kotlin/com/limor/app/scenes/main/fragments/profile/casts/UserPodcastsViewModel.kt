@@ -24,6 +24,9 @@ class UserPodcastsViewModel @Inject constructor(
     private val _patronCasts = MutableLiveData<List<CastUIModel>>()
     val patronCasts: LiveData<List<CastUIModel>> get() = _patronCasts
 
+    private val _purchasedCasts = MutableLiveData<List<CastUIModel>>()
+    val purchasedCasts: LiveData<List<CastUIModel>> get() = _purchasedCasts
+
     fun loadCasts(
         userId: Int,
         limit: Int = Int.MAX_VALUE,
@@ -70,4 +73,22 @@ class UserPodcastsViewModel @Inject constructor(
             }
         }
     }
+
+    fun loadPurchasedCasts(
+        userId: Int,
+        limit: Int = Int.MAX_VALUE,
+        offset: Int = 0
+    ){
+        viewModelScope.launch {
+            getPodcastsByUserUseCase.getPurchasedCasts(userId, limit, offset)
+                .onSuccess {
+                    _purchasedCasts.postValue(it)
+                }
+                .onFailure {
+                    _purchasedCasts.postValue(emptyList())
+                    Timber.e(it, "Error while loading purchased casts")
+                }
+        }
+    }
+
 }

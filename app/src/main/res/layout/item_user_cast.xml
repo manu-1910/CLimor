@@ -5,7 +5,8 @@
     android:id="@+id/clItemPodcastFeed"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:layout_marginBottom="@dimen/margin28">
 
     <ImageView
         android:id="@+id/ivPodcastBackground"
@@ -16,6 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/limor_logo" />
+
     <TextView
         android:id="@+id/colorFeedText"
         android:layout_width="match_parent"
@@ -36,6 +38,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/ivPodcastBackground"
         app:layout_constraintTop_toTopOf="parent" />
+
     <View
         android:id="@+id/shadowTop"
         android:layout_width="match_parent"
@@ -115,6 +118,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:visibility="invisible"/>
+
+    <ImageButton
+        android:id="@+id/patronCastIndicator"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/transparent"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_purchased_symbol"
+        app:layout_constraintBottom_toBottomOf="@id/shadowTop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/likeLayout"
@@ -399,5 +416,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPodcastSubtitle" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnPurchased"
+        style="@android:style/Widget.Material.Button.Borderless"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/marginForty"
+        android:layout_marginTop="@dimen/marginTwenty"
+        android:layout_marginStart="@dimen/marginTwenty"
+        android:layout_marginEnd="@dimen/marginTwenty"
+        android:background="@color/lightBlueColor"
+        android:text="Purchased at  €1000.99"
+        android:textAllCaps="false"
+        android:textColor="@color/grayWave"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tags_horizontal_list"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

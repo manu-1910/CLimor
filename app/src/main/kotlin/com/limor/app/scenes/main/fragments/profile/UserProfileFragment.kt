@@ -49,7 +49,8 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     private val tabs by lazy {
         mapOf(
             Tab.CASTS to getString(R.string.casts),
-            Tab.PATRON to getString(R.string.limor_patron)
+            Tab.PATRON to getString(R.string.limor_patron),
+            Tab.PURCHASES to getString(R.string.my_purchases)
         )
     }
     private var selectedTab: Tab = Tab.CASTS
@@ -109,7 +110,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
         setupDefaultView()
 
-        setupListeners()
+        //setupListeners()
 
         observeProfileActions()
 
@@ -159,7 +160,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
                 binding.profileViewpager.currentItem = position
             }
             setMode(TabSelectorView.Mode.FIXED)
-            setTabs(tabs.values.toList())
+            setTabs(if(currentUserId == user.id) tabs.values.toList() else tabs.values.toList().take(2))
         }
 
 
@@ -275,6 +276,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
                 setupConditionalViews(it)
                 setupViewPager(it)
                 setupDefaultTab()
+                setupListeners()
             }
         })
 
@@ -384,6 +386,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     }
 
     enum class Tab {
-        CASTS, PATRON
+        CASTS, PATRON, PURCHASES
     }
 }

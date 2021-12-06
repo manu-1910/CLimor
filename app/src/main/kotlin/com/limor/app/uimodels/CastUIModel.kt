@@ -402,3 +402,29 @@ fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
         maturedContent = false, 
         patronCast = false
     )
+
+fun GetPurchasedCastsQuery.GetPurchasedCast.mapToUIModel() =
+    CastUIModel(
+        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
+        imageLinks = images?.mapToUIModel(), caption = caption!!,
+        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
+        updatedAt = updated_at?.toLocalDateTime(),
+        latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked,
+        isReported = reported, isRecasted = recasted, isListened = listened, isShared = false,
+        isBookmarked = bookmarked, listensCount = number_of_listens,
+        likesCount = number_of_likes, recastsCount = number_of_recasts,
+        commentsCount = number_of_comments, sharesCount = number_of_shares,
+        audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
+        tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
+        links = links?.mapToUIModel(), recaster = null,
+        maturedContent = mature_content, patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased
+            )
+        }
+    )

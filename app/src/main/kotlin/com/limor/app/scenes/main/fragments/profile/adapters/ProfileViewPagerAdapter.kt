@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.limor.app.scenes.main.fragments.profile.FragmentPurchases
 import com.limor.app.scenes.main.fragments.profile.UserPatronFragmentNew
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsFragmentNew
 import com.limor.app.uimodels.UserUIModel
@@ -18,14 +19,15 @@ class ProfileViewPagerAdapter(
     FragmentStateAdapter(fragmentManager, lifecycleOwner) {
 
     override fun getItemCount(): Int {
-        return 2
+        return if(user.isPatron == true) 3 else 2
     }
 
     override fun createFragment(position: Int): Fragment {
         Timber.d("Current User $user")
         return when (position) {
             0 -> UserPodcastsFragmentNew.newInstance(user)
-            else -> UserPatronFragmentNew.newInstance(user)
+            1 -> UserPatronFragmentNew.newInstance(user)
+            else -> FragmentPurchases.newInstance(user)
         }
     }
 }
