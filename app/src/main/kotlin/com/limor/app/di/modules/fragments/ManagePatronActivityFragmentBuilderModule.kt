@@ -28,6 +28,9 @@ abstract class ManagePatronActivityFragmentBuilderModule {
     abstract fun contributeDialogConfirmationChangePrice(): DialogConfirmationChangePrice
 
     @ContributesAndroidInjector
+    abstract fun contributeFragmentInviteUsers(): FragmentInviteUsers
+
+    @ContributesAndroidInjector
     abstract fun contributeFragmentInviteFriends(): FragmentInviteFriends
 
     @ContributesAndroidInjector

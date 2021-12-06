@@ -47,7 +47,7 @@ class ManagePatronFragment : BaseFragment() {
             findNavController().navigateUp()
         }
         binding.invitationsLayout.setOnClickListener {
-            findNavController().navigate(R.id.action_manage_patron_fragment_to_fragment_invite_friends)
+            findNavController().navigate(R.id.action_manage_patron_fragment_to_fragment_invite_users)
         }
         binding.changeCastPricesLayout.setOnClickListener {
             findNavController().navigate(R.id.action_manage_patron_fragment_to_dialog_change_price)

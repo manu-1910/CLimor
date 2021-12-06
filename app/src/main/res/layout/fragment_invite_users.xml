@@ -24,7 +24,7 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <RelativeLayout
-        android:id="@+id/contacts_list_layout"
+        android:id="@+id/user_search_results_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/marginTwenty"
@@ -33,6 +33,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/search_bar"
         app:layout_constraintBottom_toBottomOf="parent">
+
         <TextView
             android:id="@+id/invite_count_description"
             android:layout_width="wrap_content"
@@ -44,36 +45,19 @@
             android:fontFamily="@font/roboto"
             android:textColor="@color/black"
             android:layout_centerHorizontal="true"/>
+
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/contacts_list_view"
+            android:id="@+id/user_search_results_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:divider="@null"
-            tools:itemCount="8"
             android:layout_marginStart="@dimen/marginTwenty"
+            android:layout_marginTop="@dimen/small_circle_button_size"
             android:layout_marginEnd="@dimen/marginTwenty"
-            android:layout_below="@id/invite_count_description"
-            android:layout_above="@id/invite_button"
-            android:scrollbars="none"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_contact_list"/>
-
-        <Button
-            android:id="@+id/invite_button"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginStart="@dimen/marginTwenty"
-            android:layout_marginEnd="@dimen/marginTwenty"
-            android:layout_marginBottom="@dimen/margin32"
-            android:layout_marginTop="@dimen/margin32"
-            android:background="@drawable/bg_round_yellow_ripple_new"
-            android:text="@string/invite"
-            android:textColor="@color/black"
-            android:fontFamily="@font/roboto_bold"
-            android:textAllCaps="false"
-            android:layout_alignParentBottom="true"/>
+            tools:itemCount="8"
+            tools:listitem="@layout/item_limor_user" />
 
     </RelativeLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

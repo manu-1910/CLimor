@@ -39,4 +39,36 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_setting" />
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_user_settings">
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_invitations"
+            style="@style/Widget.AppCompat.Toolbar.Button.Navigation"
+            android:layout_width="@dimen/toolbar_button_size"
+            android:layout_height="@dimen/toolbar_button_size"
+            app:srcCompat="@drawable/ic_open_message" />
+
+        <TextView
+            android:id="@+id/invite_pending_tv"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="26dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_circle_grey"
+            android:backgroundTint="@color/red400"
+            android:fontFamily="@font/roboto_bold"
+            android:gravity="center"
+            android:text="5"
+            android:textAlignment="gravity"
+            android:textColor="@color/white"
+            android:textSize="10sp" />
+
+    </RelativeLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
