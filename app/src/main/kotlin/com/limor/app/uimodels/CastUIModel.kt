@@ -18,10 +18,16 @@ data class PatronDetails(
     var previewDuration: Int?,
     var startsAt: Int?,
     var endsAt: Int?,
-    val purchased: Boolean?
+    val purchased: Boolean?,
 ) : Parcelable {
 
 }
+
+@Parcelize
+data class CastPurchaseDetails(
+    val purchased_at_price: Double?,
+    val purchased_in_currency: String?,
+) : Parcelable
 
 @Parcelize
 data class CastUIModel(
@@ -58,7 +64,8 @@ data class CastUIModel(
     var colorCode: String? = null,
     val maturedContent: Boolean?,
     val patronCast: Boolean?,
-    val patronDetails: PatronDetails? = null
+    val patronDetails: PatronDetails? = null,
+    val cast_purchased_info: CastPurchaseDetails? = null,
 ) : Parcelable {
 
     /**
@@ -372,6 +379,9 @@ fun GetPatronPodcastsQuery.GetPatronCast.mapToUIModel() =
                 endsAt = it.ends_at,
                 purchased = it.purchased
             )
+        },
+        cast_purchased_info = cast_purchased_info?.let {
+            CastPurchaseDetails(it.purchased_at_price, it.purchased_in_currency)
         }
     )
 
@@ -418,6 +428,9 @@ fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
                 endsAt = it.ends_at,
                 purchased = it.purchased
             )
+        },
+        cast_purchased_info = podcast.cast_purchased_info?.let {
+            CastPurchaseDetails(it.purchased_at_price, it.purchased_in_currency)
         }
     )
 
@@ -491,5 +504,8 @@ fun GetPurchasedCastsQuery.GetPurchasedCast.mapToUIModel() =
                 endsAt = it.ends_at,
                 purchased = it.purchased
             )
+        },
+        cast_purchased_info = cast_purchased_info?.let {
+            CastPurchaseDetails(it.purchased_at_price, it.purchased_in_currency)
         }
     )
