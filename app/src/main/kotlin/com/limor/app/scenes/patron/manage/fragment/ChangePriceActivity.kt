@@ -28,6 +28,7 @@ class ChangePriceActivity : AppCompatActivity() {
         const val CAST_ID = "CAST_ID"
         const val TAG = "CHANGE_PRICE_ACTIVITY"
         const val PRICE_ID = "PRICE_ID"
+        const val SELECTED_PRICE_STRING = "SELECTED_PRICE_STRING"
     }
 
     @Inject
@@ -40,6 +41,7 @@ class ChangePriceActivity : AppCompatActivity() {
 
     private var changePriceForAllCasts: Boolean = false
     private var castId: Int = 0
+    private var selectedPriceId = -1
     private var priceId: String = ""
     private val details = mutableMapOf<String, SkuDetails>()
 
@@ -112,6 +114,10 @@ class ChangePriceActivity : AppCompatActivity() {
                 binding.yesButton.isEnabled = true
                 priceId = details[list[pos]]?.sku ?: ""
             }
+
+        if(selectedPriceId != -1){
+            editText.setSelection(selectedPriceId)
+        }
     }
 
     private fun subscribeViewModel() {
