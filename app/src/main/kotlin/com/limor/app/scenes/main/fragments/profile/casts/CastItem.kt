@@ -119,16 +119,7 @@ class CastItem(
                 }
             }
 
-            if (isPurchased) {
-                btnPurchasedCast.visibility = View.VISIBLE
-                btnPodcastMore.visibility = View.GONE
-                patronCastIndicator.visibility = View.VISIBLE
-                notCastOwnerActions.visibility = View.GONE
-                castOwnerActions.visibility = View.GONE
-            } else {
-                //Set Patron Cast Status
-                setPatronPodcastStatus(cast, viewBinding)
-            }
+            setPatronPodcastStatus(cast, binding)
 
         }
 
@@ -216,6 +207,7 @@ class CastItem(
         if (item.patronCast == true) {
 
             val userId = PrefsHandler.getCurrentUserId(binding.root.context)
+            binding.patronCastIndicator.visibility = View.VISIBLE
 
             binding.btnBuyCast.setOnClickListener {
                 skuDetails?.let {
@@ -226,12 +218,22 @@ class CastItem(
             when {
                 (item.owner?.id != userId) -> {
                     Timber.d("Cast Item not owner -> $item")
-                    //Purchase a cast actions
-                    binding.notCastOwnerActions.visibility = View.VISIBLE
-                    binding.btnAddPreview.visibility = View.GONE
-                    binding.btnEditPrice.visibility = View.GONE
-                    binding.btnPurchasedCast.visibility = View.GONE
-                    setPricingLabel()
+                    if (cast.cast_purchased_info != null) {
+                        binding.btnPurchasedCast.visibility = View.VISIBLE
+                        binding.btnPodcastMore.visibility = View.GONE
+                        binding.notCastOwnerActions.visibility = View.GONE
+                        binding.castOwnerActions.visibility = View.GONE
+                        binding.btnPurchasedCast.text =
+                            "Purchased at ${cast.cast_purchased_info.purchased_in_currency} ${cast.cast_purchased_info.purchased_at_price} "
+                    } else {
+                        //Purchase a cast actions
+                        binding.notCastOwnerActions.visibility = View.VISIBLE
+                        binding.btnAddPreview.visibility = View.GONE
+                        binding.btnEditPrice.visibility = View.GONE
+                        binding.btnPurchasedCast.visibility = View.GONE
+                        setPricingLabel()
+                    }
+
                 }
                 item.owner.id == userId -> {
                     //Self Patron Cast
@@ -249,6 +251,8 @@ class CastItem(
                 }
             }
         } else {
+            binding.btnPurchasedCast.visibility = View.GONE
+            binding.btnPodcastMore.visibility = View.GONE
             binding.notCastOwnerActions.visibility = View.GONE
             binding.castOwnerActions.visibility = View.GONE
             binding.btnPurchasedCast.visibility = View.GONE

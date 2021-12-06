@@ -92,7 +92,7 @@ class ViewHolderPodcast(
     private fun setPatronPodcastStatus(item: CastUIModel) {
         if (item.patronCast == true) {
             val userId = PrefsHandler.getCurrentUserId(context)
-
+            binding.patronCastIndicator.visibility = View.VISIBLE
             binding.btnBuyCast.setOnClickListener {
                 skuDetails?.let {
                     onPurchaseCast(item, it)
@@ -101,12 +101,20 @@ class ViewHolderPodcast(
 
             when {
                 (item.owner?.id != userId) -> {
-                    //Purchase a cast actions
-                    binding.notCastOwnerActions.visibility = View.VISIBLE
-                    binding.btnAddPreview.visibility = View.GONE
-                    binding.btnEditPrice.visibility = View.GONE
-                    binding.btnPurchasedCast.visibility = View.GONE
-                    setPricingLabel()
+                    if(item.cast_purchased_info != null){
+                        binding.btnPurchasedCast.visibility = View.VISIBLE
+                        binding.btnPodcastMore.visibility = View.GONE
+                        binding.notCastOwnerActions.visibility = View.GONE
+                        binding.castOwnerActions.visibility = View.GONE
+                        binding.btnPurchasedCast.text = "Purchased at ${item.cast_purchased_info?.purchased_in_currency} ${item.cast_purchased_info.purchased_at_price} "
+                    }else{
+                        //Purchase a cast actions
+                        binding.notCastOwnerActions.visibility = View.VISIBLE
+                        binding.btnAddPreview.visibility = View.GONE
+                        binding.btnEditPrice.visibility = View.GONE
+                        binding.btnPurchasedCast.visibility = View.GONE
+                        setPricingLabel()
+                    }
                 }
                 item.owner.id == userId -> {
                     //Self Patron Cast

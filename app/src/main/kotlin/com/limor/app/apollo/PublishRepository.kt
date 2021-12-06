@@ -102,7 +102,7 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
     suspend fun createCastPurchase(cast: CastUIModel, purchase: Purchase, sku: SkuDetails): String {
         val mutation = CreateCastPurchaseMutation("and",
             purchase.purchaseToken, cast.id, "IN", sku.price, sku.priceCurrencyCode)
-        //TODO regionCode will be handled on BE, also last update from BE is getting error while acknowledging
+        //TODO regionCode will be handled on BE, also last update from BE    is getting error while acknowledging
         val result = apollo.mutate(mutation)
         return result?.data?.createCastPurchase?.status ?: ""
     }

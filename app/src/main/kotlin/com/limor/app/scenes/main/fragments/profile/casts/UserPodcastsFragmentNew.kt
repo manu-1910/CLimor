@@ -161,7 +161,8 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                     (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)
                 },
                 onPurchaseCast = {cast, sku ->
-                    sku?.let { skuDetails ->
+                    //NOT REQUIRED TO HANDLE THIS IN USER NORMAL CASTS LIST
+                    /*sku?.let { skuDetails ->
                         playBillingHandler.launchBillingFlowFor(skuDetails, requireActivity()){ purchase ->
                             lifecycleScope.launch {
                                 playBillingHandler.consumePurchase(ConsumeParams.newBuilder()
@@ -173,9 +174,9 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                                 }
                             }
                         }
-                    }
+                    }*/
                 },
-                productDetailsFetcher = playBillingHandler
+                productDetailsFetcher = null
             )
         }
     }
