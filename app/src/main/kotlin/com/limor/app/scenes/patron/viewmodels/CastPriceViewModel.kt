@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.billingclient.api.SkuDetails
 import com.limor.app.usecases.PatronPodcastUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -15,6 +16,9 @@ class CastPriceViewModel @Inject constructor(
 
     private val _priceUpdated = MutableLiveData<Boolean>()
     val priceUpdated: LiveData<Boolean> = _priceUpdated
+
+    private val _pricesList = MutableLiveData<List<SkuDetails>>()
+    val pricesList: LiveData<List<SkuDetails>> = _pricesList
 
     fun updatePriceForACast(castId: Int, priceId: String) {
         viewModelScope.launch {

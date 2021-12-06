@@ -262,7 +262,13 @@ class UserPatronFragmentNew : Fragment() {
                         }
                     }
                 },
-                productDetailsFetcher = playBillingHandler
+                productDetailsFetcher = playBillingHandler,
+                onEditPreviewClick = {
+                },
+                onPlayPreviewClick = { cast, play ->
+                },
+                onEditPriceClick = { cast ->
+                }
             )
         }
     }
