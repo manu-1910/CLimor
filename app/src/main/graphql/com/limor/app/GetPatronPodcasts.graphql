@@ -110,6 +110,16 @@ query GetPatronPodcasts($userId: Int!, $limit: Int!, $offset: Int!) {
                 start_index
                 end_index
             }
+        },
+        color_code
+        mature_content
+        patron_cast
+        patron_details{
+            price_id
+            preview_duration
+            starts_at
+            ends_at
+            purchased
         }
     }
 }

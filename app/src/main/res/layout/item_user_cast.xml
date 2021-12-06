@@ -5,8 +5,7 @@
     android:id="@+id/clItemPodcastFeed"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:layout_marginBottom="@dimen/margin28">
+    android:background="@color/white">
 
     <ImageView
         android:id="@+id/ivPodcastBackground"
@@ -218,7 +217,7 @@
             android:background="@color/transparent"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_podcast_comment"
-            android:tint="@color/white" />
+            app:tint="@color/white" />
 
         <TextView
             android:id="@+id/tvPodcastComments"
@@ -394,6 +393,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:paddingBottom="16dp"
         android:textColor="@color/subtitle_text_color"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -412,13 +412,105 @@
         android:layout_marginBottom="16dp"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPodcastSubtitle" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnPurchased"
+        android:id="@+id/btnAddPreview"
+        style="@style/ButtonTextStyle"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_margin="@dimen/margin28"
+        android:background="@color/transparent"
+        android:fontFamily="@font/roboto_bold"
+        android:text="@string/edit_preview"
+        android:textAllCaps="false"
+        android:textAlignment="center"
+        android:textColor="@color/text_btn_primary_color"
+        android:textSize="@dimen/textSize14"
+        app:layout_constraintEnd_toStartOf="@+id/btnEditPrice"
+        app:layout_constraintStart_toStartOf="@+id/tvPodcastSubtitle"
+        app:layout_constraintTop_toBottomOf="@id/tags_horizontal_list" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnEditPrice"
+        style="@android:style/Widget.Material.Button.Borderless.Colored"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="@dimen/margin24"
+        android:background="@drawable/btn_primary_background"
+        android:fontFamily="@font/roboto_bold"
+        android:text="@string/edit_price"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@color/text_btn_primary_color"
+        android:textSize="@dimen/textSize14"
+        app:layout_constraintBottom_toBottomOf="@+id/btnAddPreview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toTopOf="@+id/btnAddPreview" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/castOwnerActions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:background="@color/grayWave"
+        app:constraint_referenced_ids="btnAddPreview,btnEditPrice" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnPlayStopPreview"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/bg_round_transparent_ripple"
+        android:fontFamily="@font/roboto_bold"
+        android:text="@string/preview"
+        android:textAllCaps="false"
+        android:textColor="@color/primaryYellowColor"
+        android:textSize="@dimen/textSize14"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toStartOf="@+id/tvPodcastSubtitle"
+        app:layout_constraintTop_toBottomOf="@id/tags_horizontal_list" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnBuyCast"
+        style="@android:style/Widget.Material.Button.Borderless.Colored"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="@dimen/margin24"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
+        android:background="@drawable/btn_primary_background"
+        android:fontFamily="@font/roboto_bold"
+        android:text="@string/buy_cast"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@color/text_btn_primary_color"
+        android:textSize="@dimen/textSize14"
+        app:layout_constraintBottom_toBottomOf="@+id/btnPlayStopPreview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toTopOf="@+id/btnPlayStopPreview" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/notCastOwnerActions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="btnPlayStopPreview,btnBuyCast" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnPurchasedCast"
         style="@android:style/Widget.Material.Button.Borderless"
         android:layout_width="match_parent"
         android:layout_height="@dimen/marginForty"
@@ -429,7 +521,7 @@
         android:text="Purchased at  €1000.99"
         android:textAllCaps="false"
         android:textColor="@color/grayWave"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tags_horizontal_list"/>

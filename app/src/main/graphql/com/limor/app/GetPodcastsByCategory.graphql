@@ -112,5 +112,14 @@ query GetPodcastsByCategory($categoryId: Int!, $limit: Int!, $offset: Int!) {
             }
         }
         color_code
+        mature_content
+        patron_cast
+        patron_details{
+            price_id
+            preview_duration
+            starts_at
+            ends_at
+            purchased
+        }
     }
 }

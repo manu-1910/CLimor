@@ -112,9 +112,10 @@ query GetPurchasedCasts($userId: Int!, $limit: Int!, $offset: Int!) {
                 end_index
             }
         }
+        color_code
         mature_content
         patron_cast
-        patron_details {
+        patron_details{
             price_id
             preview_duration
             starts_at
