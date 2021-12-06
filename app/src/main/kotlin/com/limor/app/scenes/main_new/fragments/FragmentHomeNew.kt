@@ -251,7 +251,7 @@ class FragmentHomeNew : BaseFragment() {
                 intent.putExtra(ChangePriceActivity.CHANGE_PRICE_FOR_ALL_CASTS, false)
                 intent.putExtra(ChangePriceActivity.CAST_ID, cast.id)
                 editPriceLauncher.launch(intent)
-            }
+            },
             onPurchaseCast = { cast, sku ->
                 launchPurchaseCast(sku)
             },

@@ -31,7 +31,6 @@ class HomeFeedAdapter(
     private val onEditPreviewClick: (cast: CastUIModel) -> Unit,
     private val onPlayPreviewClick: (cast: CastUIModel, play: Boolean) -> Unit,
     private val onEditPriceClick: (cast: CastUIModel) -> Unit,
-    private val onPlayPreviewClick:(cast: CastUIModel, play: Boolean) -> Unit,
     private val onPurchaseCast: (cast: CastUIModel, sku: SkuDetails?) -> Unit,
     private val productDetailsFetcher: ProductDetails
 ) : ListAdapter<CastUIModel, RecyclerView.ViewHolder>(
@@ -104,7 +103,7 @@ class HomeFeedAdapter(
                     onUserMentionClick,
                     onEditPreviewClick,
                     onPlayPreviewClick,
-                    onEditPriceClick
+                    onEditPriceClick,
                     onPurchaseCast,
                     productDetailsFetcher
                 )
