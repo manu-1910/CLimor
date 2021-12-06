@@ -10,7 +10,6 @@ import com.limor.app.BuildConfig
 import com.limor.app.apollo.PublishRepository
 import kotlinx.coroutines.*
 import timber.log.Timber
-import java.lang.RuntimeException
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,7 +27,7 @@ interface ProductDetails {
 @Singleton
 class PlayBillingHandler @Inject constructor(
     private val context: Context,
-    private val publishRepository: PublishRepository,
+    val publishRepository: PublishRepository,
 ) : ProductDetails {
 
     lateinit var handlePurchases: (Purchase) -> Unit
@@ -52,7 +51,7 @@ class PlayBillingHandler @Inject constructor(
                 //showProgressBar()
                 for (purchase in purchases) {
                     //Handle Purchase
-                    handlePurchases.invoke(purchase)
+                    handlePurchases(purchase)
                 }
             } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
 
@@ -104,7 +103,12 @@ class PlayBillingHandler @Inject constructor(
         billingClient.endConnection()
     }
 
-    fun launchBillingFlowFor(sku: SkuDetails, requireActivity: Activity) {
+    fun launchBillingFlowFor(
+        sku: SkuDetails,
+        requireActivity: Activity,
+        handler: (Purchase) -> Unit,
+    ) {
+        handlePurchases = handler
         val flowParams = BillingFlowParams.newBuilder()
             .setSkuDetails(sku)
             .build()
