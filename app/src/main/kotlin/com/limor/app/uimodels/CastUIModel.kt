@@ -149,8 +149,17 @@ fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =
         links = links?.mapToUIModel(),
         recaster = null,
         colorCode = color_code,
-        maturedContent = false, 
-        patronCast = false
+        maturedContent = mature_content,
+        patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased
+            )
+        }
     )
 
 fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
@@ -186,8 +195,17 @@ fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
         links = links?.mapToUIModel(),
         recaster = null,
         colorCode = color_code,
-        maturedContent = false, 
-        patronCast = false
+        maturedContent = mature_content,
+        patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased
+            )
+        }
     )
 
 fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
@@ -224,8 +242,17 @@ fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
         links = links?.mapToUIModel(),
         recaster = null,
         colorCode = color_code,
-        maturedContent = false,
-        patronCast = false
+        maturedContent = mature_content,
+        patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased
+            )
+        }
     )
 
 fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
@@ -261,8 +288,17 @@ fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
         links = links?.mapToUIModel(),
         recaster = null,
         colorCode = color_code,
-        maturedContent = false, 
-        patronCast = false
+        maturedContent = mature_content,
+        patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased
+            )
+        }
     )
 
 fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
@@ -298,8 +334,17 @@ fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
         links = links?.mapToUIModel(),
         recaster = null,
         colorCode = color_code,
-        maturedContent = false, 
-        patronCast = false
+        maturedContent = mature_content,
+        patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased
+            )
+        }
     )
 
 fun GetPatronPodcastsQuery.GetPatronCast.mapToUIModel() =
@@ -316,8 +361,18 @@ fun GetPatronPodcastsQuery.GetPatronCast.mapToUIModel() =
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(), recaster = null,
-        maturedContent = false, 
-        patronCast = false
+        maturedContent = false,
+        colorCode = color_code,
+        patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased
+            )
+        }
     )
 
 fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
@@ -399,8 +454,17 @@ fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
         links = links?.mapToUIModel(),
         recaster = null,
         colorCode = color_code,
-        maturedContent = false, 
-        patronCast = false
+        maturedContent = false,
+        patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased
+            )
+        }
     )
 
 fun GetPurchasedCastsQuery.GetPurchasedCast.mapToUIModel() =
@@ -417,6 +481,7 @@ fun GetPurchasedCastsQuery.GetPurchasedCast.mapToUIModel() =
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(), recaster = null,
+        colorCode = color_code,
         maturedContent = mature_content, patronCast = patron_cast,
         patronDetails = patron_details?.let {
             PatronDetails(
