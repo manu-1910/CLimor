@@ -105,7 +105,7 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
             platform = "and",
             token = purchase.purchaseToken,
             podcastId = cast.id,
-            regionCode = "IN",
+            regionCode = "", // as per Sasank we use an empty value
             purchasedAtLocalPrice = sku.price,
             purchasedInLocalCurrency = sku.priceCurrencyCode
         )
