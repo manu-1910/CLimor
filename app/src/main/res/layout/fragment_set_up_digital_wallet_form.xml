@@ -38,30 +38,6 @@
             app:layout_constraintTop_toBottomOf="@id/imageView6" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/etEnterName"
-            style="@style/TextInputLayoutOutlineWithError"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="@dimen/marginTwenty"
-            android:layout_marginEnd="@dimen/marginTwenty"
-            android:layout_marginTop="32dp"
-            android:hint="@string/hint_name"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/title_text_view">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etEnterHintInner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionDone"
-                android:inputType="phone"
-                android:maxLines="1" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/etEnterFirstName"
             style="@style/TextInputLayoutOutlineWithError"
             android:layout_width="0dp"
@@ -73,7 +49,7 @@
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etEnterName">
+            app:layout_constraintTop_toBottomOf="@+id/title_text_view">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEnterFirstNameInner"
