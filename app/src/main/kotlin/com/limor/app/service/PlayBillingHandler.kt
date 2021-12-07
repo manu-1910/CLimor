@@ -74,17 +74,23 @@ class PlayBillingHandler @Inject constructor(
         }
     }
 
+    private suspend fun consumePurchase(purchase: Purchase) {
+        ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken).build().also {
+            consumePurchase(it)
+        }
+    }
+
     private fun handlePurchase(purchase: Purchase) {
         val target = currentTarget ?: return
+
         billingScope.launch {
 
+            // First we verify the purchase with the backend
             val response = publishRepository.createCastPurchase(target.cast, purchase, target.sku)
 
+            // If and only if the backend says the purchase is valid then we consume it
             if (response == Constants.API_SUCCESS) {
-                ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken).build().also {
-                    consumePurchase(it)
-                }
-
+                consumePurchase(purchase)
                 notifySuccess(true)
 
             } else {
@@ -153,7 +159,7 @@ class PlayBillingHandler @Inject constructor(
         billingClient.launchBillingFlow(requireActivity, flowParams)
     }
 
-    suspend fun consumePurchase(consumeParams: ConsumeParams) {
+    private suspend fun consumePurchase(consumeParams: ConsumeParams) {
         billingClient.consumePurchase(consumeParams)
     }
 
