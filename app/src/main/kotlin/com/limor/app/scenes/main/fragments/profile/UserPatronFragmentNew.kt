@@ -23,6 +23,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
 import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.SkuDetails
 import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
@@ -42,6 +43,7 @@ import com.limor.app.scenes.patron.setup.PatronSetupActivity
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.service.PlayBillingHandler
+import com.limor.app.service.PurchaseTarget
 import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.UserUIModel
@@ -244,23 +246,7 @@ class UserPatronFragmentNew : Fragment() {
                     (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)
                 },
                 onPurchaseCast = { cast, sku ->
-                    sku?.let { skuDetails ->
-                        playBillingHandler.launchBillingFlowFor(skuDetails,
-                            requireActivity()) { purchase ->
-                            lifecycleScope.launch {
-                                playBillingHandler.consumePurchase(ConsumeParams.newBuilder()
-                                    .setPurchaseToken(purchase.purchaseToken).build())
-                                val response =
-                                    playBillingHandler.publishRepository.createCastPurchase(cast,
-                                        purchase,
-                                        skuDetails)
-                                if (response == "Success") {
-                                    //reload cast item for now reloading all items
-                                    loadCasts()
-                                }
-                            }
-                        }
-                    }
+                    onPurchaseRequested(sku, cast)
                 },
                 productDetailsFetcher = playBillingHandler,
                 onEditPreviewClick = {
@@ -270,6 +256,18 @@ class UserPatronFragmentNew : Fragment() {
                 onEditPriceClick = { cast ->
                 }
             )
+        }
+    }
+
+    private fun onPurchaseRequested(skuDetails: SkuDetails?, cast: CastUIModel) {
+        val sku = skuDetails ?: return
+        val purchaseTarget = PurchaseTarget(sku, cast)
+        playBillingHandler.launchBillingFlowFor(purchaseTarget, requireActivity()) { success ->
+            if (success) {
+                lifecycleScope.launch {
+                    loadCasts()
+                }
+            }
         }
     }
 
