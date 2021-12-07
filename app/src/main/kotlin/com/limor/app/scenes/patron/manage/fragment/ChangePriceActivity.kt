@@ -3,6 +3,7 @@ package com.limor.app.scenes.patron.manage.fragment
 import android.R
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -17,7 +18,6 @@ import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.service.PlayBillingHandler
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_change_price.*
-import kotlinx.android.synthetic.main.item_patron_plan.*
 import javax.inject.Inject
 
 
@@ -28,7 +28,7 @@ class ChangePriceActivity : AppCompatActivity() {
         const val CAST_ID = "CAST_ID"
         const val TAG = "CHANGE_PRICE_ACTIVITY"
         const val PRICE_ID = "PRICE_ID"
-        const val SELECTED_PRICE_STRING = "SELECTED_PRICE_STRING"
+        const val SELECTED_PRICE_ID = "SELECTED_PRICE_ID"
     }
 
     @Inject
@@ -41,7 +41,7 @@ class ChangePriceActivity : AppCompatActivity() {
 
     private var changePriceForAllCasts: Boolean = false
     private var castId: Int = 0
-    private var selectedPriceId = -1
+    private var selectedPriceId = ""
     private var priceId: String = ""
     private val details = mutableMapOf<String, SkuDetails>()
 
@@ -98,7 +98,7 @@ class ChangePriceActivity : AppCompatActivity() {
         }
     }
 
-    private fun setPrices(list: ArrayList<String>) {
+    private fun setPrices(list: ArrayList<String>, position: Int) {
         val editText = priceTIL.editText as AutoCompleteTextView
 
         val adapter: ArrayAdapter<String> =
@@ -115,8 +115,10 @@ class ChangePriceActivity : AppCompatActivity() {
                 priceId = details[list[pos]]?.sku ?: ""
             }
 
-        if(selectedPriceId != -1){
-            editText.setSelection(selectedPriceId)
+        if(position != -1){
+            binding.tvPrices.setText(details[list[position]]?.price, false)
+            binding.yesButton.isEnabled = true
+            priceId = details[list[position]]?.sku ?: ""
         }
     }
 
@@ -128,18 +130,21 @@ class ChangePriceActivity : AppCompatActivity() {
             }
         })
         var list = ArrayList<String>()
-        playBillingHandler.getPrices().observe(this, {
-            details.putAll(it.map { skuDetails -> skuDetails.originalPrice to skuDetails })
-            it.forEach { skuDetails ->
+        var selectedPos = -1
+        playBillingHandler.getPrices().observe(this, { skuList ->
+            details.putAll(skuList.map { skuDetails -> skuDetails.originalPrice to skuDetails })
+            skuList.forEachIndexed { i, skuDetails ->
+                selectedPos = if(skuDetails.sku == selectedPriceId){ i } else { -1 }
                 list.add(skuDetails.price)
             }
-            setPrices(list)
+            setPrices(list, selectedPos)
         })
     }
 
     private fun initialiseViews() {
         changePriceForAllCasts = intent.getBooleanExtra(CHANGE_PRICE_FOR_ALL_CASTS, false)
         castId = intent.getIntExtra(CAST_ID, -1)
+        selectedPriceId = intent.getStringExtra(SELECTED_PRICE_ID) ?: ""
         binding.toolbar.title.text = getString(com.limor.app.R.string.edit_price_text)
         binding.toolbar.btnNotification.setImageDrawable(resources.getDrawable(R.drawable.ic_menu_info_details))
         binding.yesButton.isEnabled = false

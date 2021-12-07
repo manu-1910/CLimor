@@ -254,6 +254,7 @@ class FragmentHomeNew : BaseFragment() {
                 val intent = Intent(requireActivity(), ChangePriceActivity::class.java)
                 intent.putExtra(ChangePriceActivity.CHANGE_PRICE_FOR_ALL_CASTS, false)
                 intent.putExtra(ChangePriceActivity.CAST_ID, cast.id)
+                intent.putExtra(ChangePriceActivity.SELECTED_PRICE_ID, cast.patronDetails?.priceId)
                 editPriceLauncher.launch(intent)
             },
             onPurchaseCast = { cast, sku ->
