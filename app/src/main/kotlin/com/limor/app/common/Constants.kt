@@ -75,5 +75,7 @@ class Constants{
         const val LIMOR_DOMAIN_URL = BuildConfig.LIMOR_DOMAIN_URL
         const val PODCAST_URL = BuildConfig.LIMOR_WEB_APP.plus("/podcasts?id=%s")
         const val DOMAIN_URL = BuildConfig.LIMOR_WEB_APP
+
+        const val API_SUCCESS = "Success"
     }
 }
