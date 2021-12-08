@@ -8,6 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import com.android.billingclient.api.*
 import com.limor.app.BuildConfig
 import com.limor.app.apollo.PublishRepository
+import com.limor.app.common.Constants
+import com.limor.app.uimodels.CastUIModel
 import kotlinx.coroutines.*
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -24,13 +26,19 @@ interface ProductDetails {
     fun getPrices(): LiveData<List<SkuDetails>>
 }
 
+data class PurchaseTarget(
+    val sku: SkuDetails,
+    val cast: CastUIModel
+)
+
 @Singleton
 class PlayBillingHandler @Inject constructor(
     private val context: Context,
     val publishRepository: PublishRepository,
 ) : ProductDetails {
 
-    lateinit var handlePurchases: (Purchase) -> Unit
+    private var currentTarget: PurchaseTarget? = null
+    private var onPurchaseDone: ((success: Boolean) -> Unit)? = null
 
     private val mainThreadJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + mainThreadJob)
@@ -46,20 +54,50 @@ class PlayBillingHandler @Inject constructor(
 
     private val purchasesUpdatedListener by lazy {
         PurchasesUpdatedListener { billingResult, purchases ->
-            //This is called once there is some update about purchase after launching the billing flow
+            // This is called once there is some update about purchase after launching the billing flow
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
-                //showProgressBar()
+                // showProgressBar()
                 for (purchase in purchases) {
-                    //Handle Purchase
-                    handlePurchases(purchase)
+                    // Handle Purchase
+                    handlePurchase(purchase)
                 }
-            } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-
             } else {
-
+                onPurchaseDone?.invoke(false)
             }
         }
 
+    }
+
+    private fun notifySuccess(success: Boolean) {
+        uiScope.launch {
+            onPurchaseDone?.invoke(success)
+        }
+    }
+
+    private suspend fun consumePurchase(purchase: Purchase) {
+        ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken).build().also {
+            consumePurchase(it)
+        }
+    }
+
+    private fun handlePurchase(purchase: Purchase) {
+        val target = currentTarget ?: return
+
+        billingScope.launch {
+
+            // First we verify the purchase with the backend
+            val response = publishRepository.createCastPurchase(target.cast, purchase, target.sku)
+
+            // If and only if the backend says the purchase is valid then we consume it
+            if (response == Constants.API_SUCCESS) {
+                consumePurchase(purchase)
+                notifySuccess(true)
+
+            } else {
+                notifySuccess(false)
+            }
+
+        }
     }
 
     private val billingClient by lazy {
@@ -104,18 +142,24 @@ class PlayBillingHandler @Inject constructor(
     }
 
     fun launchBillingFlowFor(
-        sku: SkuDetails,
+        target: PurchaseTarget,
         requireActivity: Activity,
-        handler: (Purchase) -> Unit,
+        onDone: (success: Boolean) -> Unit,
     ) {
-        handlePurchases = handler
+        if (currentTarget != null) {
+            onDone(false)
+            return
+        }
+
+        currentTarget = target
+        onPurchaseDone = onDone
         val flowParams = BillingFlowParams.newBuilder()
-            .setSkuDetails(sku)
+            .setSkuDetails(target.sku)
             .build()
         billingClient.launchBillingFlow(requireActivity, flowParams)
     }
 
-    suspend fun consumePurchase(consumeParams: ConsumeParams) {
+    private suspend fun consumePurchase(consumeParams: ConsumeParams) {
         billingClient.consumePurchase(consumeParams)
     }
 

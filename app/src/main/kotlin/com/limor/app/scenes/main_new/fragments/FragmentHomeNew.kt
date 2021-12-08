@@ -36,6 +36,7 @@ import com.limor.app.scenes.patron.manage.fragment.ChangePriceActivity
 import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.PlayBillingHandler
+import com.limor.app.service.PurchaseTarget
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.mapToAudioTrack
 import kotlinx.android.synthetic.main.fragment_home_new.*
@@ -85,19 +86,13 @@ class FragmentHomeNew : BaseFragment() {
         setOnClicks()
     }
 
-    private fun launchPurchaseCast(cast: CastUIModel, sku: SkuDetails?) {
-        sku?.let {
-            playBillingHandler.launchBillingFlowFor(it, requireActivity()) { purchase ->
-                //Call BE createCastPurchase from here
+    private fun launchPurchaseCast(cast: CastUIModel, skuDetails: SkuDetails?) {
+        val sku = skuDetails ?: return
+        val purchaseTarget = PurchaseTarget(sku, cast)
+        playBillingHandler.launchBillingFlowFor(purchaseTarget, requireActivity()) { success ->
+            if (success) {
                 lifecycleScope.launch {
-                    playBillingHandler.consumePurchase(ConsumeParams.newBuilder()
-                        .setPurchaseToken(purchase.purchaseToken).build())
-                    val response =
-                        playBillingHandler.publishRepository.createCastPurchase(cast, purchase, sku)
-                    if (response == "Success") {
-                        //reload single cast item for now reloading all items
-                        reload()
-                    }
+                    reload()
                 }
             }
         }
