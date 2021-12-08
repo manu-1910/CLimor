@@ -305,19 +305,13 @@ class UserPatronFragmentNew : Fragment() {
         }
     }
 
-    private fun launchPurchaseCast(cast: CastUIModel, sku: SkuDetails?) {
-        sku?.let {
-            playBillingHandler.launchBillingFlowFor(it, requireActivity()) { purchase ->
-                //Call BE createCastPurchase from here
+    private fun launchPurchaseCast(cast: CastUIModel, skuDetails: SkuDetails?) {
+        val sku = skuDetails ?: return
+        val purchaseTarget = PurchaseTarget(sku, cast)
+        playBillingHandler.launchBillingFlowFor(purchaseTarget, requireActivity()) { success ->
+            if (success) {
                 lifecycleScope.launch {
-                    playBillingHandler.consumePurchase(ConsumeParams.newBuilder()
-                        .setPurchaseToken(purchase.purchaseToken).build())
-                    val response =
-                        playBillingHandler.publishRepository.createCastPurchase(cast, purchase, sku)
-                    if (response == "Success") {
-                        //reload single cast item for now reloading all items
-                        reload()
-                    }
+                    reload()
                 }
             }
         }
