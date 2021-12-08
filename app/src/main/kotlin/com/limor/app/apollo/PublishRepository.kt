@@ -106,9 +106,16 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
             token = purchase.purchaseToken,
             podcastId = cast.id,
             regionCode = "", // as per Sasank we use an empty value
-            purchasedAtLocalPrice = sku.price.replace(Regex("\\p{Sc}"),""),
+            // another option is sku.price.replace(Regex("\\p{Sc}"),""),
+            purchasedAtLocalPrice =  "${sku.priceAmountMicros / 1_000_000}",
             purchasedInLocalCurrency = sku.priceCurrencyCode
         )
+
+        if (BuildConfig.DEBUG) {
+            println("sku.priceCurrencyCode -> ${sku.priceCurrencyCode}")
+            println("purchase.purchaseToken -> ${ purchase.purchaseToken}")
+        }
+
         // TODO regionCode will be handled on BE, also last update from BE is getting error while
         //  acknowledging
         val result = apollo.mutate(mutation)
