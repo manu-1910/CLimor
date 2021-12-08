@@ -1,5 +1,5 @@
-mutation createPatronInvitationRequest($requestedForUser: Int!) {
-    createPatronInvitationRequest(requestedForUser: $requestedForUser) {
+mutation createPatronInvitationRequest {
+    createPatronInvitationRequest {
         status
         message
         requestId
