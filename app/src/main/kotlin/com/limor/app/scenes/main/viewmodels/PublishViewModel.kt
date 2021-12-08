@@ -6,17 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.Purchase
-import com.limor.app.GetPlansQuery
+import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.apollo.PublishRepository
 import com.limor.app.common.SingleLiveEvent
 import com.limor.app.type.CreatePodcastInput
-import com.limor.app.uimodels.UIErrorResponse
-import com.limor.app.uimodels.UIPublishRequest
-import com.limor.app.uimodels.UIPublishResponse
-
-import com.limor.app.uimodels.UISimpleCategory
+import com.limor.app.uimodels.*
 import com.limor.app.usecases.InAppPricesUseCase
-
 import com.limor.app.usecases.PublishUseCase
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -30,6 +25,7 @@ import javax.inject.Inject
 class PublishViewModel @Inject constructor(
     private val publishUseCase: PublishUseCase,
     private val publishRepository: PublishRepository,
+    private val generalInfoRepository: GeneralInfoRepository,
     private val inAppPricesUseCase: InAppPricesUseCase,
 ) : ViewModel() {
 
@@ -172,6 +168,15 @@ class PublishViewModel @Inject constructor(
                     Timber.e(it, "Error while getting in app prices")
                 }
         }
+    }
+
+
+    fun getUserProfile(): LiveData<UserUIModel?> {
+        val liveData = MutableLiveData<UserUIModel?>()
+        viewModelScope.launch {
+            liveData.postValue(generalInfoRepository.getUserProfile())
+        }
+        return liveData
     }
 
 }

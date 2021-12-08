@@ -121,6 +121,7 @@ class ViewHolderPodcast(
                     binding.btnPlayStopPreview.visibility = View.GONE
                     binding.btnBuyCast.visibility = View.GONE
                     binding.castOwnerActions.visibility = View.VISIBLE
+                    binding.notCastOwnerActions.visibility = View.GONE
                     binding.btnPurchasedCast.visibility = View.GONE
                     setPricingLabel()
                 }

@@ -98,8 +98,6 @@ import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.okButton
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.textDescription
 import kotlinx.android.synthetic.main.dialog_publish_patron_free_cast.view.*
 import kotlinx.android.synthetic.main.fragment_publish.*
-import kotlinx.android.synthetic.main.fragment_publish_categories.*
-import kotlinx.android.synthetic.main.item_patron_plan.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
@@ -313,7 +311,7 @@ class PublishFragment : BaseFragment() {
 
         uiDraft = requireArguments()["recordingItem"] as UIDraft
         Timber.d("Categories -> ${uiDraft.category} mDraf ${uiDraft.categories}")
-        updateUIState()
+        getUserinfo()
         configureToolbar()
         listeners()
         loadExistingData()
@@ -326,10 +324,20 @@ class PublishFragment : BaseFragment() {
         subscribeToViewModel()
     }
 
+    private fun getUserinfo() {
+        publishViewModel.getUserProfile().observe(viewLifecycleOwner) {
+            it?.let { user ->
+                CommonsKt.user = user
+                Timber.d("Cast patron-> ${user.isPatron}")
+                updateUIState()
+            }
+        }
+    }
+
     private fun updateUIState() {
         if (isPatronUser()) {
             publishViewModel.getInAppPriceTiers()
-            binding.menu.visibility = View.VISIBLE
+            //binding.menu.visibility = View.VISIBLE
             binding.paymentTerms.visibility = View.VISIBLE
             val content = SpannableString(getString(R.string.payment_terms))
             content.setSpan(UnderlineSpan(), 0, content.length, 0)
@@ -352,15 +360,18 @@ class PublishFragment : BaseFragment() {
             onNewLocation(it)
         }
 
-        var list = ArrayList<String>()
-        playBillingHandler.getPrices().observe(viewLifecycleOwner, {
-            details.putAll(it.map { skuDetails -> skuDetails.originalPrice to skuDetails })
-            it.forEach { skuDetails ->
-                list.add(skuDetails.price)
-            }
-            loadCastTiers(list)
-            //setPrices(list)
-        })
+        if (isPatronUser()) {
+            val list = ArrayList<String>()
+            playBillingHandler.getPrices().observe(viewLifecycleOwner, {
+                details.putAll(it.map { skuDetails -> skuDetails.originalPrice to skuDetails })
+                it.forEach { skuDetails ->
+                    list.add(skuDetails.price)
+                }
+                loadCastTiers(list)
+                //setPrices(list)
+            })
+        }
+
 
         /*publishViewModel.inAppPricesData.observe(viewLifecycleOwner){
             tiers ->
