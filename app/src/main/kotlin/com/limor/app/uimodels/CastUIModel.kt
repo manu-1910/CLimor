@@ -19,6 +19,7 @@ data class PatronDetails(
     var startsAt: Int?,
     var endsAt: Int?,
     val purchased: Boolean?,
+    val castPurchasedDetails: CastPurchaseDetails?
 ) : Parcelable {
 
 }
@@ -65,7 +66,6 @@ data class CastUIModel(
     val maturedContent: Boolean?,
     val patronCast: Boolean?,
     val patronDetails: PatronDetails? = null,
-    val cast_purchased_info: CastPurchaseDetails? = null,
 ) : Parcelable {
 
     /**
@@ -164,7 +164,10 @@ fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =
                 previewDuration = it.preview_duration,
                 startsAt = it.starts_at,
                 endsAt = it.ends_at,
-                purchased = it.purchased
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
             )
         }
     )
@@ -210,7 +213,10 @@ fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
                 previewDuration = it.preview_duration,
                 startsAt = it.starts_at,
                 endsAt = it.ends_at,
-                purchased = it.purchased
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
             )
         }
     )
@@ -257,7 +263,10 @@ fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
                 previewDuration = it.preview_duration,
                 startsAt = it.starts_at,
                 endsAt = it.ends_at,
-                purchased = it.purchased
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
             )
         }
     )
@@ -303,7 +312,10 @@ fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
                 previewDuration = it.preview_duration,
                 startsAt = it.starts_at,
                 endsAt = it.ends_at,
-                purchased = it.purchased
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
             )
         }
     )
@@ -349,7 +361,10 @@ fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
                 previewDuration = it.preview_duration,
                 startsAt = it.starts_at,
                 endsAt = it.ends_at,
-                purchased = it.purchased
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
             )
         }
     )
@@ -377,12 +392,13 @@ fun GetPatronPodcastsQuery.GetPatronCast.mapToUIModel() =
                 previewDuration = it.preview_duration,
                 startsAt = it.starts_at,
                 endsAt = it.ends_at,
-                purchased = it.purchased
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
             )
         },
-        cast_purchased_info = cast_purchased_info?.let {
-            CastPurchaseDetails(it.purchased_at_price, it.purchased_in_currency)
-        }
+
     )
 
 fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
@@ -426,11 +442,11 @@ fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
                 previewDuration = it.preview_duration,
                 startsAt = it.starts_at,
                 endsAt = it.ends_at,
-                purchased = it.purchased
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
             )
-        },
-        cast_purchased_info = podcast.cast_purchased_info?.let {
-            CastPurchaseDetails(it.purchased_at_price, it.purchased_in_currency)
         }
     )
 
@@ -475,7 +491,10 @@ fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
                 previewDuration = it.preview_duration,
                 startsAt = it.starts_at,
                 endsAt = it.ends_at,
-                purchased = it.purchased
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
             )
         }
     )
@@ -502,10 +521,10 @@ fun GetPurchasedCastsQuery.GetPurchasedCast.mapToUIModel() =
                 previewDuration = it.preview_duration,
                 startsAt = it.starts_at,
                 endsAt = it.ends_at,
-                purchased = it.purchased
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
             )
-        },
-        cast_purchased_info = cast_purchased_info?.let {
-            CastPurchaseDetails(it.purchased_at_price, it.purchased_in_currency)
         }
     )
