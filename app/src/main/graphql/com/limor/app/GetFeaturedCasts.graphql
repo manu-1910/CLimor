@@ -120,6 +120,10 @@ query GetFeaturedCasts($limit: Int!, $offset: Int!) {
             starts_at
             ends_at
             purchased
+            cast_purchased_info {
+                purchased_at_price
+                purchased_in_currency
+            }
         }
     }
 }
