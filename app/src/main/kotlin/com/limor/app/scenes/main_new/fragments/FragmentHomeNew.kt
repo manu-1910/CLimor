@@ -33,6 +33,7 @@ import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
 import com.limor.app.scenes.patron.manage.fragment.ChangePriceActivity
+import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.PlayBillingHandler
 import com.limor.app.service.PurchaseTarget
@@ -42,6 +43,7 @@ import kotlinx.android.synthetic.main.fragment_home_new.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jetbrains.anko.layoutInflater
 import java.io.File
 import javax.inject.Inject
 
@@ -190,8 +192,8 @@ class FragmentHomeNew : BaseFragment() {
             onLikeClick = { castId, like ->
                 likePodcastViewModel.likeCast(castId, like)
             },
-            onCastClick = { cast ->
-                openPlayer(cast)
+            onCastClick = { cast, sku ->
+                onCastClick(cast, sku)
             },
             onReCastClick = { castId, isRecasted ->
                 if (isRecasted) {
@@ -200,10 +202,8 @@ class FragmentHomeNew : BaseFragment() {
                     recastPodcastViewModel.deleteRecast(castId)
                 }
             },
-            onCommentsClick = { cast ->
-                RootCommentsFragment.newInstance(cast).also { fragment ->
-                    fragment.show(parentFragmentManager, fragment.requireTag())
-                }
+            onCommentsClick = { cast, sku ->
+                onCommentClick(cast, sku)
             },
             onShareClick = { cast, onShared ->
                 ShareDialog.newInstance(cast).also { fragment ->
@@ -249,6 +249,7 @@ class FragmentHomeNew : BaseFragment() {
                 val intent = Intent(requireActivity(), ChangePriceActivity::class.java)
                 intent.putExtra(ChangePriceActivity.CHANGE_PRICE_FOR_ALL_CASTS, false)
                 intent.putExtra(ChangePriceActivity.CAST_ID, cast.id)
+                intent.putExtra(ChangePriceActivity.SELECTED_PRICE_ID, cast.patronDetails?.priceId)
                 editPriceLauncher.launch(intent)
             },
             onPurchaseCast = { cast, sku ->
@@ -282,6 +283,40 @@ class FragmentHomeNew : BaseFragment() {
                 reloadCurrentCasts()
             }
         }
+
+    private fun onCastClick(cast: CastUIModel, sku: SkuDetails?){
+        if(cast.patronDetails?.purchased == false){
+            LimorDialog(layoutInflater).apply {
+                setTitle(R.string.purchase_cast_title)
+                setMessage(R.string.purchase_cast_description)
+                setIcon(R.drawable.ic_purchase)
+                addButton(R.string.cancel, false)
+                addButton(R.string.buy_now, true) {
+                    launchPurchaseCast(cast, sku)
+                }
+            }.show()
+        } else{
+            openPlayer(cast)
+        }
+    }
+
+    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?){
+        if(cast.patronDetails?.purchased == false){
+            LimorDialog(layoutInflater).apply {
+                setTitle(R.string.purchase_cast_title)
+                setMessage(R.string.purchase_cast_description_for_comment)
+                setIcon(R.drawable.ic_comment_purchase)
+                addButton(R.string.cancel, false)
+                addButton(R.string.buy_now, true) {
+                    launchPurchaseCast(cast, sku)
+                }
+            }.show()
+        } else{
+            RootCommentsFragment.newInstance(cast).also { fragment ->
+                fragment.show(parentFragmentManager, fragment.requireTag())
+            }
+        }
+    }
 
     private fun openPlayer(cast: CastUIModel) {
         (activity as? PlayerViewManager)?.showPlayer(

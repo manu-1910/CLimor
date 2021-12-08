@@ -13,9 +13,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
+import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.SkuDetails
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
@@ -33,14 +36,17 @@ import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
 import com.limor.app.scenes.patron.manage.fragment.ChangePriceActivity
+import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
+import com.limor.app.service.PlayBillingHandler
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.UserUIModel
 import com.limor.app.uimodels.mapToAudioTrack
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -53,6 +59,9 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
     private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
 
     lateinit var binding: FragmentPurchasesBinding
+
+    @Inject
+    lateinit var playBillingHandler: PlayBillingHandler
 
     private var castOffset = 0
     private var sharedPodcastId = -1
@@ -203,10 +212,8 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
                         recastPodcastViewModel.deleteRecast(cast.id)
                     }
                 },
-                onCommentsClick = { cast ->
-                    RootCommentsFragment.newInstance(cast).also { fragment ->
-                        fragment.show(parentFragmentManager, fragment.requireTag())
-                    }
+                onCommentsClick = { cast, skuDetails ->
+                    onCommentClick(cast, skuDetails)
                 },
                 onShareClick = { cast, onShared ->
                     ShareDialog.newInstance(it).also { fragment ->
@@ -231,7 +238,44 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
         }
     }
 
-    private fun onCastClick(cast: CastUIModel) {
+    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?){
+        if(cast.patronDetails?.purchased == false){
+            LimorDialog(layoutInflater).apply {
+                setTitle(R.string.purchase_cast_title)
+                setMessage(R.string.purchase_cast_description_for_comment)
+                setIcon(R.drawable.ic_comment_purchase)
+                addButton(R.string.cancel, false)
+                addButton(R.string.buy_now, true) {
+                    launchPurchaseCast(cast, sku)
+                }
+            }.show()
+        } else{
+            RootCommentsFragment.newInstance(cast).also { fragment ->
+                fragment.show(parentFragmentManager, fragment.requireTag())
+            }
+        }
+    }
+
+    private fun launchPurchaseCast(cast: CastUIModel, sku: SkuDetails?) {
+        sku?.let {
+            playBillingHandler.launchBillingFlowFor(it, requireActivity()) { purchase ->
+                //Call BE createCastPurchase from here
+                lifecycleScope.launch {
+                    playBillingHandler.consumePurchase(
+                        ConsumeParams.newBuilder()
+                        .setPurchaseToken(purchase.purchaseToken).build())
+                    val response =
+                        playBillingHandler.publishRepository.createCastPurchase(cast, purchase, sku)
+                    if (response == "Success") {
+                        //reload single cast item for now reloading all items
+                        reload()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun onCastClick(cast: CastUIModel, skuDetails: SkuDetails?) {
         Timber.d("Clicked ${activity}")
         (activity as? PlayerViewManager)?.showExtendedPlayer(cast.id)
     }

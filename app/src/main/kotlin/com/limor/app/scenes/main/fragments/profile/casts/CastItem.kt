@@ -23,11 +23,11 @@ import timber.log.Timber
 
 class CastItem(
     val cast: CastUIModel,
-    private val onCastClick: (CastUIModel) -> Unit,
+    private val onCastClick: (CastUIModel, SkuDetails?) -> Unit,
     private val onLikeClick: (CastUIModel, like: Boolean) -> Unit,
     private val onMoreDialogClick: (CastUIModel) -> Unit,
     private val onRecastClick: (CastUIModel, isRecasted: Boolean) -> Unit,
-    private val onCommentsClick: (CastUIModel) -> Unit,
+    private val onCommentsClick: (CastUIModel, SkuDetails?) -> Unit,
     private val onShareClick: (CastUIModel, onShared: ((shareResult: ShareResult) -> Unit)?) -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val isPurchased: Boolean = false,
@@ -101,7 +101,7 @@ class CastItem(
             btnPodcastReply.shared = cast.isShared == true
 
             clItemPodcastFeed.setOnClickListener {
-                onCastClick(cast)
+                onCastClick(cast, skuDetails)
             }
 
             btnPodcastMore.setOnClickListener {
@@ -109,11 +109,11 @@ class CastItem(
             }
 
             btnPodcastComments.throttledClick {
-                onCommentsClick(cast)
+                onCommentsClick(cast, skuDetails)
             }
 
             tvPodcastComments.throttledClick {
-                onCommentsClick(cast)
+                onCommentsClick(cast, skuDetails)
             }
 
             binding.btnAddPreview.setOnClickListener {

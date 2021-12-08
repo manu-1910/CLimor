@@ -6,6 +6,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
+import com.android.billingclient.api.SkuDetails
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedRecastedBinding
 import com.limor.app.dm.ShareResult
@@ -23,7 +24,7 @@ class ViewHolderRecast(
     val binding: ItemHomeFeedRecastedBinding,
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
     private val onRecastClick: (castId: Int, isRecasted: Boolean) -> Unit,
-    private val onCommentsClick: (CastUIModel) -> Unit,
+    private val onCommentsClick: (CastUIModel, SkuDetails?) -> Unit,
     private val onShareClick: (CastUIModel, onShared: ((shareResult: ShareResult) -> Unit)?) -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val onUserMentionClick: (username: String, userId: Int) -> Unit,
@@ -112,7 +113,7 @@ class ViewHolderRecast(
         }
 
         binding.btnPodcastComments.throttledClick {
-            onCommentsClick(item)
+            onCommentsClick(item, null)
         }
 
         binding.btnPodcastReply.throttledClick {
