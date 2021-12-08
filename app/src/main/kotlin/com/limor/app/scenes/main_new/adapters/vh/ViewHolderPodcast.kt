@@ -27,9 +27,9 @@ import com.limor.app.uimodels.TagUIModel
 class ViewHolderPodcast(
     val binding: ItemHomeFeedBinding,
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
-    private val onCastClick: (cast: CastUIModel) -> Unit,
+    private val onCastClick: (cast: CastUIModel, sku: SkuDetails?) -> Unit,
     private val onRecastClick: (castId: Int, isRecasted: Boolean) -> Unit,
-    private val onCommentsClick: (CastUIModel) -> Unit,
+    private val onCommentsClick: (CastUIModel, SkuDetails?) -> Unit,
     private val onShareClick: (CastUIModel, onShared: ((shareResult: ShareResult) -> Unit)?) -> Unit,
     private val onReloadData: (castId: Int, reload: Boolean) -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
@@ -174,7 +174,7 @@ class ViewHolderPodcast(
         }
 
         binding.clItemPodcastFeed.setOnClickListener {
-            onCastClick(item)
+            onCastClick(item, skuDetails)
         }
 
         binding.tvPodcastUserName.setOnClickListener {
@@ -185,11 +185,11 @@ class ViewHolderPodcast(
         }
 
         binding.btnPodcastComments.throttledClick {
-            onCommentsClick(item)
+            onCommentsClick(item, skuDetails)
         }
 
         binding.tvPodcastComments.throttledClick {
-            onCommentsClick(item)
+            onCommentsClick(item, skuDetails)
         }
 
         binding.sharesLayout.throttledClick {

@@ -17,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
 import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.SkuDetails
 import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentUserCastsBinding
@@ -31,6 +32,7 @@ import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
 import com.limor.app.scenes.patron.manage.fragment.ChangePriceActivity
+import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.service.PlayBillingHandler
@@ -158,10 +160,8 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                         recastPodcastViewModel.deleteRecast(cast.id)
                     }
                 },
-                onCommentsClick = { cast ->
-                    RootCommentsFragment.newInstance(cast).also { fragment ->
-                        fragment.show(parentFragmentManager, fragment.requireTag())
-                    }
+                onCommentsClick = { cast, skuDetails ->
+                    onCommentClick(cast, skuDetails)
                 },
                 onShareClick = { cast, onShared ->
                     ShareDialog.newInstance(cast).also { fragment ->
@@ -213,6 +213,42 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
 
                 }
             )
+        }
+    }
+
+    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?){
+        if(cast.patronDetails?.purchased == false){
+            LimorDialog(layoutInflater).apply {
+                setTitle(R.string.purchase_cast_title)
+                setMessage(R.string.purchase_cast_description_for_comment)
+                setIcon(R.drawable.ic_comment_purchase)
+                addButton(R.string.cancel, false)
+                addButton(R.string.buy_now, true) {
+                    launchPurchaseCast(cast, sku)
+                }
+            }.show()
+        } else{
+            RootCommentsFragment.newInstance(cast).also { fragment ->
+                fragment.show(parentFragmentManager, fragment.requireTag())
+            }
+        }
+    }
+
+    private fun launchPurchaseCast(cast: CastUIModel, sku: SkuDetails?) {
+        sku?.let {
+            playBillingHandler.launchBillingFlowFor(it, requireActivity()) { purchase ->
+                //Call BE createCastPurchase from here
+                lifecycleScope.launch {
+                    playBillingHandler.consumePurchase(ConsumeParams.newBuilder()
+                        .setPurchaseToken(purchase.purchaseToken).build())
+                    val response =
+                        playBillingHandler.publishRepository.createCastPurchase(cast, purchase, sku)
+                    if (response == "Success") {
+                        //reload single cast item for now reloading all items
+                        reload()
+                    }
+                }
+            }
         }
     }
 
@@ -270,7 +306,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         viewModel.loadCasts(user.id, Constants.CAST_BATCH_SIZE, castOffset)
     }
 
-    private fun onCastClick(cast: CastUIModel) {
+    private fun onCastClick(cast: CastUIModel, sku: SkuDetails?) {
         Timber.d("Clicked ${activity}")
         (activity as? PlayerViewManager)?.showExtendedPlayer(cast.id)
     }

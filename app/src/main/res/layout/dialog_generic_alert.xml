@@ -42,6 +42,7 @@
         android:fontFamily="@font/roboto"
         android:lineSpacingMultiplier="1.4"
         android:textColor="@color/textSecondary"
+        android:textAlignment="center"
         android:textSize="@dimen/textSizeTiny"
         tools:text="This is some question  the dialog is asking?" />
 

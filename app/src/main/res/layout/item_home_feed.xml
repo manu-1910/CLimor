@@ -434,6 +434,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        android:layout_marginBottom="@dimen/marginTwenty"
         android:background="@color/grayWave"
         app:constraint_referenced_ids="btnAddPreview,btnEditPrice" />
 
@@ -477,7 +478,8 @@
         android:id="@+id/notCastOwnerActions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:visibility="visible"
+        android:layout_marginBottom="@dimen/marginTwenty"
         app:constraint_referenced_ids="btnPlayStopPreview,btnBuyCast" />
 
     <androidx.appcompat.widget.AppCompatButton

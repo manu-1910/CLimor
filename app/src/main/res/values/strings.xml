@@ -821,6 +821,7 @@
     <string name="invite_people">Invite %d People</string>
     <string name="joined">Joined</string>
     <string name="update_patron_categories">Update Patron Categories</string>
+    <string name="buy_now">Buy Now</string>
 
     <string-array name="prices_list">
         <item>0.99</item>
@@ -902,6 +903,10 @@
     <string name="first_name">First name</string>
     <string name="setup_later">Setup Later</string>
     <string name="set_up_later_description">You will not be able to monetize your casts until your digital wallet setup is completed.</string>
+
+    <string name="purchase_cast_title">Purchase Cast</string>
+    <string name="purchase_cast_description">You have to purchase this cast before you can listen &amp; interact with the audio</string>
+    <string name="purchase_cast_description_for_comment">You have to purchase this cast to listen and leave a comment</string>
 
     <string name="my_purchases">My Purchases</string>
 

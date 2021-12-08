@@ -20,10 +20,10 @@ import com.limor.app.uimodels.TagUIModel
 
 class HomeFeedAdapter(
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
-    private val onCastClick: (cast: CastUIModel) -> Unit,
+    private val onCastClick: (cast: CastUIModel, sku: SkuDetails?) -> Unit,
     private val onReCastClick: (castId: Int, isRecasted: Boolean) -> Unit,
     private val onReloadData: (castId: Int, reload: Boolean) -> Unit,
-    private val onCommentsClick: (CastUIModel) -> Unit,
+    private val onCommentsClick: (CastUIModel, sku: SkuDetails?) -> Unit,
     private val onShareClick: (CastUIModel, onShared: ((shareResult: ShareResult) -> Unit)?) -> Unit,
     private val onLoadMore: () -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
