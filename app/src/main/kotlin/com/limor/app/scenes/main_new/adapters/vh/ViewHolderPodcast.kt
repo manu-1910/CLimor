@@ -101,12 +101,12 @@ class ViewHolderPodcast(
 
             when {
                 (item.owner?.id != userId) -> {
-                    if(item.cast_purchased_info != null){
+                    if(item.patronDetails?.purchased == true){
                         binding.btnPurchasedCast.visibility = View.VISIBLE
                         binding.btnPodcastMore.visibility = View.GONE
                         binding.notCastOwnerActions.visibility = View.GONE
                         binding.castOwnerActions.visibility = View.GONE
-                        binding.btnPurchasedCast.text = "Purchased at ${item.cast_purchased_info?.purchased_in_currency} ${item.cast_purchased_info.purchased_at_price} "
+                        binding.btnPurchasedCast.text = "Purchased at ${item.patronDetails?.castPurchasedDetails?.purchased_in_currency} ${item.patronDetails?.castPurchasedDetails?.purchased_at_price} "
                     }else{
                         //Purchase a cast actions
                         binding.notCastOwnerActions.visibility = View.VISIBLE

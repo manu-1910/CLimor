@@ -246,13 +246,14 @@ class CastItem(
             when {
                 (item.owner?.id != userId) -> {
                     Timber.d("Cast Item not owner -> $item")
-                    if (cast.cast_purchased_info != null) {
+
+                    if (cast.patronDetails?.purchased == true) {
                         binding.btnPurchasedCast.visibility = View.VISIBLE
                         binding.btnPodcastMore.visibility = View.GONE
                         binding.notCastOwnerActions.visibility = View.GONE
                         binding.castOwnerActions.visibility = View.GONE
                         binding.btnPurchasedCast.text =
-                            "Purchased at ${cast.cast_purchased_info.purchased_in_currency} ${cast.cast_purchased_info.purchased_at_price} "
+                            "Purchased at ${cast.patronDetails?.castPurchasedDetails?.purchased_in_currency} ${cast.patronDetails?.castPurchasedDetails?.purchased_at_price} "
                     } else {
                         //Purchase a cast actions
                         binding.notCastOwnerActions.visibility = View.VISIBLE
