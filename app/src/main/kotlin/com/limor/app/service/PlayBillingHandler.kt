@@ -62,6 +62,7 @@ class PlayBillingHandler @Inject constructor(
                     handlePurchase(purchase)
                 }
             } else {
+                currentTarget = null
                 onPurchaseDone?.invoke(false)
             }
         }
@@ -96,6 +97,8 @@ class PlayBillingHandler @Inject constructor(
             } else {
                 notifySuccess(false)
             }
+
+            currentTarget = null
 
         }
     }
