@@ -39,6 +39,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_setting" />
 
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:visibility="gone"
+        android:id="@+id/btn_notification"
+        style="@style/Widget.AppCompat.Toolbar.Button.Navigation"
+        android:layout_width="@dimen/toolbar_button_size"
+        android:layout_height="@dimen/toolbar_button_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_user_settings"
+        app:srcCompat="@drawable/ic_notification" />
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

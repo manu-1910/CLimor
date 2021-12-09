@@ -7,6 +7,8 @@ import com.limor.app.*
 import com.limor.app.type.CreatePodcastInput
 import com.limor.app.uimodels.CastUIModel
 import timber.log.Timber
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 import javax.inject.Inject
 
@@ -101,19 +103,22 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
 
     suspend fun createCastPurchase(cast: CastUIModel, purchase: Purchase, sku: SkuDetails): String {
         // TODO use constants for those 'and' and 'IN' values
+
+        val localRawPrice = sku.priceAmountMicros / 1_000_000.0
+        val localPrice = "${BigDecimal(localRawPrice).setScale(2, RoundingMode.HALF_EVEN)}"
+
         val mutation = CreateCastPurchaseMutation(
             platform = "and",
             token = purchase.purchaseToken,
             podcastId = cast.id,
             regionCode = "", // as per Sasank we use an empty value
             // another option is sku.price.replace(Regex("\\p{Sc}"),""),
-            purchasedAtLocalPrice =  "${sku.priceAmountMicros / 1_000_000}",
+            purchasedAtLocalPrice =  localPrice,
             purchasedInLocalCurrency = sku.priceCurrencyCode
         )
 
         if (BuildConfig.DEBUG) {
-            println("sku.priceCurrencyCode -> ${sku.priceCurrencyCode}")
-            println("purchase.purchaseToken -> ${ purchase.purchaseToken}")
+            println("Local price: $localPrice, sku.priceCurrencyCode -> ${sku.priceCurrencyCode}, purchase.purchaseToken -> ${ purchase.purchaseToken}")
         }
 
         // TODO regionCode will be handled on BE, also last update from BE is getting error while

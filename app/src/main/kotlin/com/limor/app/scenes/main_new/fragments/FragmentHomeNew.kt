@@ -22,6 +22,8 @@ import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentHomeNewBinding
 import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.requireTag
+import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
@@ -285,7 +287,7 @@ class FragmentHomeNew : BaseFragment() {
         }
 
     private fun onCastClick(cast: CastUIModel, sku: SkuDetails?){
-        if(cast.patronDetails?.purchased == false){
+        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())){
             LimorDialog(layoutInflater).apply {
                 setTitle(R.string.purchase_cast_title)
                 setMessage(R.string.purchase_cast_description)
