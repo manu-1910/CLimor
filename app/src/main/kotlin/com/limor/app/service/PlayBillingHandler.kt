@@ -52,6 +52,8 @@ class PlayBillingHandler @Inject constructor(
 
     private val detailsListeners = mutableListOf<WeakReference<DetailsAvailableListener>>()
 
+    private var mFetching = false
+
     private val purchasesUpdatedListener by lazy {
         PurchasesUpdatedListener { billingResult, purchases ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED) {
@@ -258,6 +260,11 @@ class PlayBillingHandler @Inject constructor(
      * This connects to the billing client if not connected and fetches the product IDs.
      */
     private fun fetchProductIDs(onDone: ((details: List<SkuDetails>) -> Unit)? = null) {
+        // This simple flag works because all product fetch requests are done on the main thread
+        if (mFetching) {
+            return
+        }
+        mFetching = true
         connectToBillingClient { connected ->
             if (connected) {
                 billingScope.launch {
@@ -268,6 +275,7 @@ class PlayBillingHandler @Inject constructor(
                     }
                 }
             }
+            mFetching = false
         }
     }
 
