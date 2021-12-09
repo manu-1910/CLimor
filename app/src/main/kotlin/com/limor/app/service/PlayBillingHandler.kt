@@ -54,8 +54,27 @@ class PlayBillingHandler @Inject constructor(
 
     private val purchasesUpdatedListener by lazy {
         PurchasesUpdatedListener { billingResult, purchases ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED) {
+                billingScope.launch {
+                    consumeOldPurchases()
+                    currentTarget = null
+                    onPurchaseDone?.invoke(false)
+                }
+
+                return@PurchasesUpdatedListener
+            }
+
+            if (purchases.isNullOrEmpty() ) {
+                if (BuildConfig.DEBUG) {
+                    println("No purchases and code = ${billingResult.responseCode}")
+                }
+                currentTarget = null
+                onPurchaseDone?.invoke(false)
+                return@PurchasesUpdatedListener
+            }
+
             // This is called once there is some update about purchase after launching the billing flow
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 // showProgressBar()
                 for (purchase in purchases) {
                     // Handle Purchase
@@ -69,6 +88,20 @@ class PlayBillingHandler @Inject constructor(
 
     }
 
+    private fun consumeOldPurchases() {
+        billingScope.launch {
+            val result = billingClient.queryPurchaseHistory(BillingClient.SkuType.INAPP)
+            if (BuildConfig.DEBUG) {
+                println("Result from history -> $result (${result.billingResult.responseCode}), has ${result.purchaseHistoryRecordList?.size ?: 0} old purchases.")
+            }
+            result.purchaseHistoryRecordList?.let {
+                it.forEach {
+                    consumePurchase(it.purchaseToken)
+                }
+            }
+        }
+    }
+
     private fun notifySuccess(success: Boolean) {
         uiScope.launch {
             onPurchaseDone?.invoke(success)
@@ -76,7 +109,11 @@ class PlayBillingHandler @Inject constructor(
     }
 
     private suspend fun consumePurchase(purchase: Purchase) {
-        ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken).build().also {
+        consumePurchase(purchase.purchaseToken)
+    }
+
+    private suspend fun consumePurchase(purchaseToken: String) {
+        ConsumeParams.newBuilder().setPurchaseToken(purchaseToken).build().also {
             consumePurchase(it)
         }
     }
