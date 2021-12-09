@@ -105,25 +105,25 @@
         android:id="@+id/navigation_record"
         android:name="com.limor.app.scenes.main.fragments.record.RecordActivity"
         android:label="RecordActivity"
-        tools:layout="@layout/activity_record"/>
+        tools:layout="@layout/activity_record" />
 
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.limor.app.scenes.notifications.Notification"
         android:label="Notification"
-        tools:layout="@layout/fragment_notification"/>
+        tools:layout="@layout/fragment_notification" />
 
     <fragment
         android:id="@+id/navigation_direct_messenger"
-        android:name="com.limor.app.scenes.main_new.fragments.FragmentDummy"
+        android:name="com.limor.app.dm.ui.ChatSessionsFragment"
         android:label="Messenger"
-        tools:layout="@layout/fragment_dummy"/>
+        tools:layout="@layout/fragment_dummy" />
 
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.limor.app.scenes.main.fragments.profile.UserProfileFragment"
         android:label="ProfileFragment"
-        tools:layout="@layout/user_profile_fragment" >
+        tools:layout="@layout/user_profile_fragment">
 
         <action
             android:id="@+id/action_navigation_profile_to_discoverHashtagFragment"
@@ -163,7 +163,7 @@
         android:name="com.limor.app.scenes.profile.DialogCommentMoreActions"
         android:label="DialogCommentMoreActions" />
 
-    <fragment
+    <!--<fragment
         android:id="@+id/manage_patron_fragment"
         android:name="com.limor.app.scenes.patron.manage.fragment.ManagePatronFragment"
         android:label="ManagePatronFragment"
@@ -189,7 +189,7 @@
         android:id="@+id/dialog_change_price"
         android:name="com.limor.app.scenes.patron.manage.fragment.FragmentChangePrice"
         android:label="Dialog Change Price"
-        tools:layout="@layout/fragment_change_price">
+        tools:layout="@layout/activity_change_price">
         <action
             android:id="@+id/action_dialog_change_price_to_dialog_change_price_confirmation"
             app:destination="@id/dialog_change_price_confirmation" />
@@ -255,5 +255,5 @@
         android:name="com.limor.app.scenes.patron.manage.fragment.FragmentInviteFriends"
         android:label="FragmentInviteFriends"
         tools:layout="@layout/fragment_invite_friends">
-    </fragment>
+    </fragment>-->
 </navigation>

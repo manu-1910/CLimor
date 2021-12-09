@@ -111,5 +111,19 @@ query GetPodcastByIdQuery($podcastId: Int!){
                 end_index
             }
         }
+        color_code
+        mature_content
+        patron_cast
+        patron_details{
+            price_id
+            preview_duration
+            starts_at
+            ends_at
+            purchased
+            cast_purchased_info {
+                purchased_at_price
+                purchased_in_currency
+            }
+        }
     }
 }

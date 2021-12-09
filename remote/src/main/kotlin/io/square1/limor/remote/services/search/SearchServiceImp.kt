@@ -41,7 +41,10 @@ class SearchServiceImp @Inject constructor(private val serviceConfig: RemoteServ
 
 
     fun searchLocations(nwSearchTermRequest: NWSearchTermRequest): Single<NWLocationsResponse>? {
-        return service.searchLocation(RequestBody.create("application/json".toMediaTypeOrNull(), json.encodeToString(NWSearchTermRequest.serializer(), nwSearchTermRequest)))
+        return service.searchLocation(RequestBody.create(
+            "application/json".toMediaTypeOrNull(),
+            json.encodeToString(NWSearchTermRequest.serializer(), nwSearchTermRequest)
+        ))
             .map { response -> response.parseSuccessResponse(NWLocationsResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
@@ -52,7 +55,10 @@ class SearchServiceImp @Inject constructor(private val serviceConfig: RemoteServ
     }
 
     fun searchUsers(usersRequest: NWSearchTermRequest): Single<NWSuggestedUsersResponse>? {
-        return service.searchUsers(RequestBody.create("application/json".toMediaTypeOrNull(), json.encodeToString(NWSearchTermRequest.serializer(), usersRequest)))
+        return service.searchUsers(RequestBody.create(
+            "application/json".toMediaTypeOrNull(),
+            json.encodeToString(NWSearchTermRequest.serializer(), usersRequest)
+        ))
             .map { response -> response.parseSuccessResponse(NWSuggestedUsersResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")

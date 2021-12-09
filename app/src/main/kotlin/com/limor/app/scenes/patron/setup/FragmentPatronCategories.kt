@@ -23,12 +23,13 @@ import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.PatronCategoryUIModel
 import com.skydoves.balloon.*
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.fragment_languages.*
 import kotlinx.android.synthetic.main.fragment_patron_categories.*
 import kotlinx.android.synthetic.main.fragment_publish_categories.*
 import kotlinx.android.synthetic.main.fragment_publish_categories.btnContinue
 import kotlinx.android.synthetic.main.fragment_publish_categories.topAppBar
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.jetbrains.anko.design.snackbar
 import javax.inject.Inject
 
 class FragmentPatronCategories : FragmentCategoriesSelectionBase(), Injectable {
@@ -90,10 +91,12 @@ class FragmentPatronCategories : FragmentCategoriesSelectionBase(), Injectable {
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
             //update categories
-            lifecycleScope.launch {
-                switchCommonVisibility(true)
-                publishViewModel.addPatronCategories().collect {
+            switchCommonVisibility(true)
+            publishViewModel.addPatronCategories().observe(viewLifecycleOwner) {
+                if (it == "Success") {
                     findNavController().navigate(R.id.action_fragmentPatronCategories_to_fragmentPatronLanguages)
+                } else {
+                    btnContinue.snackbar("Something went wrong")
                 }
             }
 

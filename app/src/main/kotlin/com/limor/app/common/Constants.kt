@@ -7,6 +7,7 @@ class Constants{
 
 
     companion object {
+        const val DIRECT_MESSAGING_DB_NAME = "limor-direct-messaging-db"
         const val CAST_BATCH_SIZE = 10
         const val HOME_FEED_ITEM_BATCH_SIZE = 20
 
@@ -74,5 +75,7 @@ class Constants{
         const val LIMOR_DOMAIN_URL = BuildConfig.LIMOR_DOMAIN_URL
         const val PODCAST_URL = BuildConfig.LIMOR_WEB_APP.plus("/podcasts?id=%s")
         const val DOMAIN_URL = BuildConfig.LIMOR_WEB_APP
+
+        const val API_SUCCESS = "Success"
     }
 }

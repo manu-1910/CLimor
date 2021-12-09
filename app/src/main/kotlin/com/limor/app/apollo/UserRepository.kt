@@ -6,7 +6,7 @@ import com.limor.app.scenes.auth_new.util.PrefsHandler
 import timber.log.Timber
 import javax.inject.Inject
 
-class UserRepository @Inject constructor(val apollo: Apollo){
+class UserRepository @Inject constructor(val apollo: Apollo) {
 
     suspend fun createUser(dob: String): String? {
         val query = CreateUserMutation(dob)
@@ -26,12 +26,25 @@ class UserRepository @Inject constructor(val apollo: Apollo){
         return updateUserNameResult
     }
 
+    suspend fun updateFirstNameAndLastName(firstName: String, lastName: String): String?{
+        val query = UpdateFirstNameAndLastNameMutation(firstName, lastName)
+        val queryResult = apollo.mutate(query)
+        val updateResult = queryResult?.data?.updateUser?.status
+        return updateResult
+    }
+
     suspend fun updateUserDOB(dob: String): String? {
         val query = UpdateUserDOBMutation(dob)
         val queryResult = apollo.mutate(query)
         val updateUserDOBResult = queryResult?.data?.updateUser?.status
         Timber.d("updateUserDOB -> $updateUserDOBResult")
         return updateUserDOBResult
+    }
+
+    suspend fun getUserByPhoneNumber(phoneNumber: String): Boolean {
+        val query = GetUserByPhoneNumberQuery(phoneNumber)
+        val queryResult = apollo.launchQuery(query)
+        return queryResult?.data?.getUserByPhoneNumber?.isFound ?: false
     }
 
     suspend fun updateUserProfile(
@@ -44,9 +57,9 @@ class UserRepository @Inject constructor(val apollo: Apollo){
         voiceBioURL: String?,
         duration: Double?
     ): String? {
-        var imageUrl: Input<String> = if(imageURL == null){
+        var imageUrl: Input<String> = if (imageURL == null) {
             Input.absent()
-        }else Input.fromNullable(imageURL)
+        } else Input.fromNullable(imageURL)
         val query = UpdateUserProfileMutation(
             userName,
             firstName,
@@ -143,18 +156,18 @@ class UserRepository @Inject constructor(val apollo: Apollo){
         return status
     }
 
-    suspend fun createUserDevice(token:String) {
-            val query = CreateUserDevicesMutation(App.getDeviceId(),token)
-            val result = apollo.mutate(query)
-            val id = result?.data?.createUserDevices?.id
-            id?.let{
-                PrefsHandler.saveUserDeviceToken(App.instance,token)
-            }
-            Timber.d("createUserDevice -> $id")
+    suspend fun createUserDevice(token: String) {
+        val query = CreateUserDevicesMutation(App.getDeviceId(), token)
+        val result = apollo.mutate(query)
+        val id = result?.data?.createUserDevices?.id
+        id?.let {
+            PrefsHandler.saveUserDeviceToken(App.instance, token)
+        }
+        Timber.d("createUserDevice -> $id")
     }
 
     suspend fun requestPatronInvitation(userId: Int): String? {
-        val query = CreatePatronInvitationRequestMutation(userId)
+        val query = CreatePatronInvitationRequestMutation()
         val result = apollo.mutate(query)
         val status: String? = result?.data?.createPatronInvitationRequest?.status
         Timber.d("patronInvitationRequestStatus -> $status")
@@ -162,7 +175,14 @@ class UserRepository @Inject constructor(val apollo: Apollo){
     }
 
     suspend fun reportUser(id: Int, reason: String) {
-        val query = CreateReportsMutation(reason,"User",id)
+        val query = CreateReportsMutation(reason, "User", id)
+        val result = apollo.mutate(query)
+        val reported = result?.data?.createReports?.reported
+        Timber.d("  -> $reported")
+    }
+
+    suspend fun reportComment(id: Int, reason: String) {
+        val query = CreateReportsMutation(reason, "Comment", id)
         val result = apollo.mutate(query)
         val reported = result?.data?.createReports?.reported
         Timber.d("  -> $reported")

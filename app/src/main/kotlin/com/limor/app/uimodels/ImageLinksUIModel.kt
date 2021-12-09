@@ -43,6 +43,7 @@ fun GetPodcastsByCategoryQuery.Images.mapToUIModel(): ImageLinksUIModel {
 fun GetPodcastsByCategoryQuery.Images1.mapToUIModel(): ImageLinksUIModel {
     return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
+
 fun GetPodcastsByHashtagQuery.Images.mapToUIModel(): ImageLinksUIModel {
     return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
@@ -108,5 +109,29 @@ fun GetPodcastByIdQuery.Images1.mapToUIModel(): ImageLinksUIModel {
 }
 
 fun GetPodcastByIdQuery.Images.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
+}
+
+fun FriendsQuery.Images.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url, "", "", "")
+}
+
+fun FollowersQuery.Images.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url, "", "", "")
+}
+
+fun SearchFollowersQuery.Images.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
+}
+
+fun SearchFollowingQuery.Images.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
+}
+
+fun GetPurchasedCastsQuery.Images1.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
+}
+
+fun GetPurchasedCastsQuery.Images.mapToUIModel(): ImageLinksUIModel {
     return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }

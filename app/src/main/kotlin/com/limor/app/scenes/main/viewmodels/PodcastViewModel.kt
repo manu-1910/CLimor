@@ -38,10 +38,12 @@ class PodcastViewModel @Inject constructor(
         }
     }
 
-    fun blockUser(userId: Int) {
+    fun blockUser(userId: Int): LiveData<Boolean> {
+        val liveData = MutableLiveData<Boolean>()
         viewModelScope.launch {
-            getUserUseCase.blockUser(userId)
+            liveData.postValue(getUserUseCase.blockUser(userId) == true)
         }
+        return liveData
     }
 
     fun reportCast(s: String,id:Int?) {

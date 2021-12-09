@@ -1,13 +1,14 @@
 package com.limor.app.apollo
 
 import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.SkuDetails
 import com.apollographql.apollo.api.Input
 import com.limor.app.*
 import com.limor.app.type.CreatePodcastInput
+import com.limor.app.uimodels.CastUIModel
 import timber.log.Timber
-import java.util.ArrayList
+import java.util.*
 import javax.inject.Inject
-import kotlin.Exception
 
 class PublishRepository @Inject constructor(val apollo: Apollo) {
 
@@ -71,9 +72,9 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
         return apollo.launchQuery(query)?.data?.getPatronCategories ?: emptyList()
     }
 
-    suspend fun getInAppPricesTiers(): List<String?> {
-        val query = GetCastTiersQuery("castPriceTiers")
-        return apollo.launchQuery(query)?.data?.getInAppPrices?.castPriceTiers ?: emptyList()
+    suspend fun getInAppPricesTiers(type: String): List<String> {
+        val query = GetCastTiersQuery(type)
+        return apollo.launchQuery(query)?.data?.getInAppPrices?.castPriceTiers?.map { it.toString() } ?: emptyList()
     }
 
     suspend fun getPlans(): List<GetPlansQuery.Plan?>? {
@@ -91,10 +92,34 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
         return result?.data?.updatePriceForAllCasts?.status ?: ""
     }
 
-    suspend fun updatePriceForCast(castId: Int, priceId: String): String{
+    suspend fun updatePriceForCast(castId: Int, priceId: String): String {
         val mutation = UpdatePriceForSingleCastMutation(castId, priceId)
         val result = apollo.mutate(mutation)
         return result?.data?.updatePriceForSingleCast?.status ?: ""
+    }
+
+
+    suspend fun createCastPurchase(cast: CastUIModel, purchase: Purchase, sku: SkuDetails): String {
+        // TODO use constants for those 'and' and 'IN' values
+        val mutation = CreateCastPurchaseMutation(
+            platform = "and",
+            token = purchase.purchaseToken,
+            podcastId = cast.id,
+            regionCode = "", // as per Sasank we use an empty value
+            // another option is sku.price.replace(Regex("\\p{Sc}"),""),
+            purchasedAtLocalPrice =  "${sku.priceAmountMicros / 1_000_000}",
+            purchasedInLocalCurrency = sku.priceCurrencyCode
+        )
+
+        if (BuildConfig.DEBUG) {
+            println("sku.priceCurrencyCode -> ${sku.priceCurrencyCode}")
+            println("purchase.purchaseToken -> ${ purchase.purchaseToken}")
+        }
+
+        // TODO regionCode will be handled on BE, also last update from BE is getting error while
+        //  acknowledging
+        val result = apollo.mutate(mutation)
+        return result?.data?.createCastPurchase?.status ?: ""
     }
 
 }

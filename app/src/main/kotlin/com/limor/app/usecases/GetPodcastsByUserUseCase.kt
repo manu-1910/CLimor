@@ -24,4 +24,16 @@ class GetPodcastsByUserUseCase @Inject constructor(
                 }
         }
     }
+
+    suspend fun getPurchasedCasts(
+        userId: Int,
+        limit: Int = Int.MAX_VALUE,
+        offset: Int = 0
+    ): Result<List<CastUIModel>> =  kotlin.runCatching {
+        withContext(dispatcherProvider.io){
+            repository.getPurchasedCastsByUser(userId, limit, offset)
+                .map { cast -> cast.mapToUIModel() }
+        }
+    }
+
 }

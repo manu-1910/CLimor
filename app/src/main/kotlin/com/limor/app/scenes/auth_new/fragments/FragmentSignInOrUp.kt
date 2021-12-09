@@ -30,18 +30,15 @@ class FragmentSignInOrUp : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val description = resources.getString(R.string.sign_in_sign_up_enter_before_2021)
-        val content = SpannableString(description)
-        content.setSpan(ForegroundColorSpan(resources.getColor(R.color.colorAccent)), description.lastIndexOf('S'), description.length, 0)
-        content.setSpan(UnderlineSpan(), description.lastIndexOf('S'), description.length, 0)
-        enteredBeforeTV.setText(content, TextView.BufferType.SPANNABLE)
-
         btnSignInNew.setOnClickListener {
             val args = Bundle()
             args.putBoolean(FragmentSignIn.IS_MIGRATION_FLOW, false)
             Timber.d("SignIn Clicked")
             view.findNavController()
-                .navigate(R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_in, args)
+                .navigate(
+                    R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_in,
+                    args
+                )
         }
 
         btnSignUpNew.setOnClickListener {
@@ -54,14 +51,6 @@ class FragmentSignInOrUp : Fragment() {
             view.findNavController()
                 .navigate(destinationId)
         }
-
-        enteredBeforeTV.setOnClickListener {
-            val args = Bundle()
-            args.putBoolean(FragmentSignIn.IS_MIGRATION_FLOW, true)
-            view.findNavController()
-                .navigate(R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_in, args)
-        }
-
         //addVersionInfo()
     }
 
@@ -71,7 +60,8 @@ class FragmentSignInOrUp : Fragment() {
         // for sure not on production
         if (BuildConfig.AWS_S3_BUCKET.indexOf("-development") > 0) {
             val fbInfo = "Firebase project ID: ${FirebaseApp.getInstance().options.projectId}"
-            val info = "${BuildConfig.VERSION_CODE} (${BuildConfig.VERSION_NAME}) on development backend"
+            val info =
+                "${BuildConfig.VERSION_CODE} (${BuildConfig.VERSION_NAME}) on development backend"
             textView7.text = "${textView7.text}\n\n$info\n\n$fbInfo"
         }
     }

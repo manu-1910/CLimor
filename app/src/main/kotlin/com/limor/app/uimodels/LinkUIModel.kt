@@ -355,3 +355,31 @@ fun GetPodcastByIdQuery.Links.mapToUIModel() =
             )
         } ?: emptyList(),
     )
+
+fun GetPurchasedCastsQuery.Links.mapToUIModel() =
+    LinkUIModel(
+        website = website?.map {
+            LinkUIModel.LinkDataUIModel(
+                id = it!!.id!!,
+                link = it.link!!,
+                startIndex = it.start_index!!,
+                endIndex = it.end_index!!,
+            )
+        } ?: emptyList(),
+        content = content?.map {
+            LinkUIModel.LinkDataUIModel(
+                id = it!!.id!!,
+                link = it.link!!,
+                startIndex = it.start_index!!,
+                endIndex = it.end_index!!,
+            )
+        } ?: emptyList(),
+        caption = caption?.map {
+            LinkUIModel.LinkDataUIModel(
+                id = it!!.id!!,
+                link = it.link!!,
+                startIndex = it.start_index!!,
+                endIndex = it.end_index!!,
+            )
+        } ?: emptyList(),
+    )

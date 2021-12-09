@@ -3,29 +3,29 @@ package com.limor.app.scenes.main_new
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
-import androidx.navigation.ui.setupWithNavController
+import com.android.billingclient.api.*
 import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.limor.app.R
 import com.limor.app.databinding.ActivityMainNewBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
+import com.limor.app.dm.ChatManager
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
-import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.service.AudioService
+import com.limor.app.service.PlayBillingHandler
 import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.TagUIModel
 import com.limor.app.util.AppNavigationManager
@@ -33,6 +33,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main_new.*
+import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -45,7 +46,13 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     lateinit var playerBinding: ContainerWithSwipeablePlayerBinding
 
     @Inject
+    lateinit var chatManager: ChatManager
+
+    @Inject
     lateinit var playerBinder: PlayerBinder
+
+
+
 
     private var activityPlayerViewManager: ActivityPlayerViewManager? = null
 
@@ -70,6 +77,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         lifecycleScope.launchWhenCreated {
             JwtChecker.getUserIdFromJwt(false)?.let {
                 PrefsHandler.saveCurrentUserId(this@MainActivityNew, it)
+                chatManager.loginCurrentUser()
             }
         }
     }

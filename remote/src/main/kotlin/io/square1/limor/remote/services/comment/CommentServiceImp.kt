@@ -62,7 +62,9 @@ class CommentServiceImp @Inject constructor(private val serviceConfig: RemoteSer
     fun createComment(idComment: Int, request: NWCreateCommentRequest): Single<NWCreateCommentResponse> {
         return service.createComment(idComment, RequestBody.create(
             "application/json".toMediaTypeOrNull(), json.encodeToString(
-                NWCreateCommentRequest.serializer(), request)))
+                NWCreateCommentRequest.serializer(), request
+            )
+        ))
             .map { response -> response.parseSuccessResponse(NWCreateCommentResponse.serializer()) }
             .doOnSuccess { success ->
                 println("SUCCESS: $success")

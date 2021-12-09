@@ -54,9 +54,10 @@ class PodcastInteractionsRepository @Inject constructor(val apollo: Apollo) {
     }
 
     suspend fun sharePodcast(
-        podcastId: Int
+        podcastId: Int,
+        shareCount: Int = 1
     ) : SharePodcastMutation.SharePodcast? {
-        val mutation = SharePodcastMutation(podcastId)
+        val mutation = SharePodcastMutation(podcastId, shareCount)
         val result = apollo.mutate(mutation)
         return result?.data?.sharePodcast
     }

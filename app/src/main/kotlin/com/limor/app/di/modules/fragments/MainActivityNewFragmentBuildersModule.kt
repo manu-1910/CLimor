@@ -1,5 +1,7 @@
 package com.limor.app.di.modules.fragments
 
+import com.limor.app.dm.ui.ChatSessionsFragment
+import com.limor.app.dm.ui.ShareFragment
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategoriesFragment
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverCategoryFragment
 import com.limor.app.scenes.main.fragments.discover.discover.DiscoverFragment
@@ -7,6 +9,7 @@ import com.limor.app.scenes.main.fragments.discover.featuredcasts.DiscoverFeatur
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchFragment
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleFragment
+import com.limor.app.scenes.main.fragments.profile.FragmentPurchases
 import com.limor.app.scenes.main.fragments.profile.UserPatronFragmentNew
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsFragmentNew
@@ -86,6 +89,12 @@ abstract class MainActivityNewFragmentBuildersModule {
     abstract fun contributeCommentActionsActionsFragmentInjector(): DialogCommentMoreActions
 
     @ContributesAndroidInjector
+    abstract fun contributeShareFragmentInjector(): ShareFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeChatSessionsFragmentInjector(): ChatSessionsFragment
+
+    @ContributesAndroidInjector
     abstract fun contributeManagePatronFragmentInjector(): ManagePatronFragment
 
     @ContributesAndroidInjector
@@ -98,12 +107,6 @@ abstract class MainActivityNewFragmentBuildersModule {
     abstract fun contributeFragmentFragmentMyEarnings(): FragmentMyEarnings
 
     @ContributesAndroidInjector
-    abstract fun contributeFragmentChangePrice(): FragmentChangePrice
-
-    @ContributesAndroidInjector
-    abstract fun contributeDialogConfirmationChangePrice(): DialogConfirmationChangePrice
-
-    @ContributesAndroidInjector
     abstract fun contributeFragmentInviteFriends(): FragmentInviteFriends
 
     @ContributesAndroidInjector
@@ -111,6 +114,9 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeEditPreviewFragmentInjector(): EditPreviewFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentPurchaseInjector(): FragmentPurchases
 
 }
 

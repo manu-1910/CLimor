@@ -1,7 +1,7 @@
 package com.limor.app.scenes.patron.manage.fragment
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +12,6 @@ import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentManagePatronBinding
 import com.limor.app.scenes.patron.manage.viewmodels.ManagePatronViewModel
-import com.limor.app.scenes.patron.setup.FragmentPatronCategories
 import javax.inject.Inject
 
 class ManagePatronFragment : BaseFragment() {
@@ -44,16 +43,18 @@ class ManagePatronFragment : BaseFragment() {
 
     private fun setListeners() {
         binding.toolbar.btnBack.setOnClickListener {
-            findNavController().navigateUp()
+            requireActivity().finish()
         }
         binding.invitationsLayout.setOnClickListener {
             findNavController().navigate(R.id.action_manage_patron_fragment_to_fragment_invite_users)
         }
         binding.changeCastPricesLayout.setOnClickListener {
-            findNavController().navigate(R.id.action_manage_patron_fragment_to_dialog_change_price)
+            val intent = Intent(requireActivity(), ChangePriceActivity::class.java)
+            intent.putExtra(ChangePriceActivity.CHANGE_PRICE_FOR_ALL_CASTS, true)
+            intent.putExtra(ChangePriceActivity.CAST_ID, -1)
+            startActivity(intent)
         }
         binding.catagoriesLayout.setOnClickListener {
-
             findNavController().navigate(
                 R.id.action_manage_patron_fragment_to_fragment_patron_categories
             )

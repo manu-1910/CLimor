@@ -102,3 +102,13 @@ fun AudioUIModel.mapToAudioTrack(title: String? = null) =
         duration = duration,
         title = title
     )
+
+fun GetPurchasedCastsQuery.Audio.mapToUIModel() =
+    AudioUIModel(
+        url = audio_url!!,
+        totalLength = total_length!!.toInt(),
+        totalSamples = total_samples!!.toInt(),
+        duration = Duration.ofMillis(duration!!.toLong()),
+        sampleRate = sample_rate!!.toFloat(),
+        originalUrl = original_audio_url
+    )

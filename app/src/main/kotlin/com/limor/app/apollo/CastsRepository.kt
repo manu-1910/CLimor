@@ -83,4 +83,14 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
         }
 
     }
+
+    suspend fun getPurchasedCastsByUser(
+        userId: Int,
+        limit: Int = Int.MAX_VALUE,
+        offset: Int = 0
+    ): List<GetPurchasedCastsQuery.GetPurchasedCast>{
+        return apollo.launchQuery(GetPurchasedCastsQuery(userId, limit, offset))
+            ?.data?.getPurchasedCasts?.filterNotNull() ?: emptyList()
+    }
+
 }

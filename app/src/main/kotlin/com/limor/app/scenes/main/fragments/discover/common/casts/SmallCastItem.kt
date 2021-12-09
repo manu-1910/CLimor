@@ -1,25 +1,27 @@
 package com.limor.app.scenes.main.fragments.discover.common.casts
 
 import android.content.Intent
+import android.graphics.Color
 import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.signature.ObjectKey
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverSmallCastBinding
 import com.limor.app.extensions.getActivity
-import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
+import timber.log.Timber
 import java.time.Duration
 
 class SmallCastItem(
     val cast: CastUIModel,
-    private val spanSize: Int = 1
+    private val spanSize: Int = 1,
 ) : BindableItem<ItemDiscoverSmallCastBinding>() {
 
     init {
@@ -31,22 +33,30 @@ class SmallCastItem(
         viewBinding.apply {
             authorName.text = cast.owner?.username
             castName.text = cast.title
-            if(cast.owner?.isVerified == true){
-                authorName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_verified_badge, 0)
-            } else{
+            if (cast.owner?.isVerified == true) {
+                authorName.setCompoundDrawablesWithIntrinsicBounds(0,
+                    0,
+                    R.drawable.ic_verified_badge,
+                    0)
+            } else {
                 authorName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
             }
             cast.audio?.duration?.let {
-                castDuration.text = getCastDuration(cast.audio.duration)
+                castDuration.text = CommonsKt.getFeedDuration(cast.audio.duration)
             }
-
-            Glide.with(root)
-                .load(cast.imageLinks?.medium)
-                .into(castImage)
-
+            Timber.d("${cast.title}  ${cast.imageLinks?.medium}")
+            if (cast.imageLinks?.medium != null) {
+                Glide.with(root)
+                    .load(cast.imageLinks.medium)
+                    .into(castImage)
+            } else {
+                castImage.setBackgroundColor(Color.parseColor(cast.colorCode))
+            }
             Glide.with(root)
                 .load(cast.owner?.getAvatarUrl())
                 .signature(ObjectKey(cast.owner?.getAvatarUrl() ?: ""))
+                .error(R.drawable.ic_default_avatar)
+                .placeholder(R.drawable.ic_default_avatar)
                 .circleCrop()
                 .into(ownerIcon)
 

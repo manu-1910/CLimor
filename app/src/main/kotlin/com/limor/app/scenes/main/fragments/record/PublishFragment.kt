@@ -49,6 +49,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
+import com.android.billingclient.api.SkuDetails
 import com.apollographql.apollo.api.Input
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
@@ -82,6 +83,7 @@ import com.limor.app.scenes.utils.CommonsKt.Companion.toEditable
 import com.limor.app.scenes.utils.SpecialCharactersInputFilter
 import com.limor.app.scenes.utils.location.MyLocation
 import com.limor.app.scenes.utils.waveform.KeyboardUtils
+import com.limor.app.service.PlayBillingHandler
 import com.limor.app.type.CreatePodcastInput
 import com.limor.app.type.PodcastAudio
 import com.limor.app.type.PodcastMetadata
@@ -96,7 +98,6 @@ import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.okButton
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.textDescription
 import kotlinx.android.synthetic.main.dialog_publish_patron_free_cast.view.*
 import kotlinx.android.synthetic.main.fragment_publish.*
-import kotlinx.android.synthetic.main.fragment_publish_categories.*
 import kotlinx.android.synthetic.main.toolbar_default.btnToolbarRight
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
@@ -136,6 +137,11 @@ class PublishFragment : BaseFragment() {
     private lateinit var publishViewModel: PublishViewModel
     private lateinit var locationsViewModel: LocationsViewModel
     private lateinit var tagsViewModel: TagsViewModel
+
+    @Inject
+    lateinit var playBillingHandler: PlayBillingHandler
+    private var selectedPriceId: String? = null
+    private val details = mutableMapOf<String, SkuDetails>()
 
     private val locationViewModel: LocationViewModel by activityViewModels()
 
@@ -251,12 +257,19 @@ class PublishFragment : BaseFragment() {
     }
 
     private fun loadCastTiers(productIds: List<String>) {
+        binding.menu.visibility = View.VISIBLE
         //Get Actual Prices From Play Billing library using these product ids
-        val items = listOf(getString(R.string.free_cast_selection), "0.99", "4.99", "9.99", "12.99")
+        val items = listOf(getString(R.string.free_cast_selection)/*"0.99", "4.99", "9.99", "12.99"*/)
+        val prices = ArrayList<String>()
+        prices.addAll(items)
+        prices.addAll(productIds)
         val adapter =
-            ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, items)
+            ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, prices)
         binding.castPrices.setText(items[0])
         binding.castPrices.setAdapter(adapter)
+        binding.castPrices.onItemClickListener = AdapterView.OnItemClickListener { parent, arg1, pos, id ->
+            selectedPriceId = details[prices[pos]]?.sku ?: ""
+        }
     }
 
 
@@ -298,7 +311,7 @@ class PublishFragment : BaseFragment() {
 
         uiDraft = requireArguments()["recordingItem"] as UIDraft
         Timber.d("Categories -> ${uiDraft.category} mDraf ${uiDraft.categories}")
-        updateUIState()
+        getUserinfo()
         configureToolbar()
         listeners()
         loadExistingData()
@@ -311,10 +324,20 @@ class PublishFragment : BaseFragment() {
         subscribeToViewModel()
     }
 
+    private fun getUserinfo() {
+        publishViewModel.getUserProfile().observe(viewLifecycleOwner) {
+            it?.let { user ->
+                CommonsKt.user = user
+                Timber.d("Cast patron-> ${user.isPatron}")
+                updateUIState()
+            }
+        }
+    }
+
     private fun updateUIState() {
         if (isPatronUser()) {
             publishViewModel.getInAppPriceTiers()
-            binding.menu.visibility = View.VISIBLE
+            //binding.menu.visibility = View.VISIBLE
             binding.paymentTerms.visibility = View.VISIBLE
             val content = SpannableString(getString(R.string.payment_terms))
             content.setSpan(UnderlineSpan(), 0, content.length, 0)
@@ -337,12 +360,25 @@ class PublishFragment : BaseFragment() {
             onNewLocation(it)
         }
 
-        publishViewModel.inAppPricesData.observe(viewLifecycleOwner){
+        if (isPatronUser()) {
+            val list = ArrayList<String>()
+            playBillingHandler.getPrices().observe(viewLifecycleOwner, {
+                details.putAll(it.map { skuDetails -> skuDetails.originalPrice to skuDetails })
+                it.forEach { skuDetails ->
+                    list.add(skuDetails.price)
+                }
+                loadCastTiers(list)
+                //setPrices(list)
+            })
+        }
+
+
+        /*publishViewModel.inAppPricesData.observe(viewLifecycleOwner){
             tiers ->
             tiers?.let{ ids ->
                 loadCastTiers(ids.filterNotNull())
             }
-        }
+        }*/
     }
 
     private fun onNewLocation(location: UILocations?) {
@@ -400,7 +436,7 @@ class PublishFragment : BaseFragment() {
                     "language -> $isLanguageSelected " +
                     "caption valid -> $isCaptionValid " +
                     "title-> $isTitleValid"
-        )
+        )   
         btnPublishDraft?.isEnabled = isAllRequiredFieldsFilled
     }
 
@@ -1017,7 +1053,7 @@ class PublishFragment : BaseFragment() {
             selectedCats = selectedCats.subList(0,1)
         }else{
             //TODO update with the value selected from drop down menu
-            priceId = Input.fromNullable("com.limor.dev.tier_1")
+            priceId = Input.fromNullable(selectedPriceId)
         }
         val podcast = CreatePodcastInput(
             audio = PodcastAudio(
@@ -1039,7 +1075,6 @@ class PublishFragment : BaseFragment() {
                 mature_content = Input.fromNullable(binding.sw18Content.isChecked),
                 color_code = getRandomColorCode(),
                 price_id = priceId
-
             )
         )
         Timber.d("$podcast")
@@ -1083,7 +1118,6 @@ class PublishFragment : BaseFragment() {
         val colorsArray = resources.getStringArray(R.array.feed_colors)
         return Input.fromNullable(colorsArray[Random.nextInt(colorsArray.size)])
     }
-
 
     private fun loadExistingData() {
 

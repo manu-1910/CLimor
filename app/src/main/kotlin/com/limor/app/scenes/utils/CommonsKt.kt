@@ -5,11 +5,15 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.graphics.Color
+
 import android.os.Build
 import android.text.Editable
 import android.text.format.DateFormat
 import android.util.TypedValue
+import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -17,13 +21,14 @@ import androidx.viewpager2.widget.ViewPager2
 import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.scenes.authentication.SignActivity
+import com.limor.app.uimodels.CastUIModel
+
+import com.limor.app.scenes.main_new.MainActivityNew
 import com.limor.app.uimodels.UIErrorResponse
 import com.limor.app.uimodels.UserUIModel
 import com.skydoves.balloon.ArrowOrientation
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
-import com.skydoves.balloon.createBalloon
-import org.jetbrains.anko.connectivityManager
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.toast
@@ -33,10 +38,14 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.channels.FileChannel
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.TimeUnit
+import android.content.res.XmlResourceParser
+import android.util.SparseArray
+import kotlin.collections.HashMap
 
 
 class CommonsKt {
@@ -148,7 +157,7 @@ class CommonsKt {
             return TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 dp,
-                context.resources.getDisplayMetrics()
+                context.resources.displayMetrics
             ).toInt()
         }
 
@@ -212,13 +221,19 @@ class CommonsKt {
             button: Button,
             primaryStatus: Boolean,
             textPrimary: Int,
-            textSecondary: Int
+            textSecondary: Int,
         ) {
             if (primaryStatus) {
                 button.background = ContextCompat.getDrawable(
-                    button.context, R.drawable.bg_round_yellow_ripple)
-                    button.setTextColor(ContextCompat.getColor(button.context, R.color.brandSecondary500))
-                    button.text = button.context.getString(textPrimary)
+                    button.context, R.drawable.bg_round_yellow_ripple
+                )
+                button.setTextColor(
+                    ContextCompat.getColor(
+                        button.context,
+                        R.color.brandSecondary500
+                    )
+                )
+                button.text = button.context.getString(textPrimary)
             } else {
                 button.text = button.context.getString(textSecondary)
                 button.background = ContextCompat.getDrawable(
@@ -233,11 +248,12 @@ class CommonsKt {
             button: Button,
             primaryStatus: Boolean,
             textPrimary: Int,
-            textSecondary: Int
+            textSecondary: Int,
         ) {
             if (primaryStatus) {
                 button.background = ContextCompat.getDrawable(
-                    button.context, R.drawable.bg_round_yellow_ripple)
+                    button.context, R.drawable.bg_round_yellow_ripple
+                )
                 button.setTextColor(ContextCompat.getColor(button.context, R.color.black))
                 button.text = button.context.getString(textPrimary)
             } else {
@@ -254,11 +270,12 @@ class CommonsKt {
             button: Button,
             primaryStatus: Boolean,
             textPrimary: Int,
-            textSecondary: Int
+            textSecondary: Int,
         ) {
             if (primaryStatus) {
                 button.background = ContextCompat.getDrawable(
-                    button.context, R.drawable.bg_round_yellow_ripple)
+                    button.context, R.drawable.bg_round_yellow_ripple
+                )
                 button.setTextColor(ContextCompat.getColor(button.context, R.color.black))
                 button.text = button.context.getString(textPrimary)
             } else {
@@ -267,7 +284,12 @@ class CommonsKt {
                     button.context,
                     R.drawable.bg_round_bluish_ripple
                 )
-                button.setTextColor(ContextCompat.getColor(button.context, R.color.notification_divider))
+                button.setTextColor(
+                    ContextCompat.getColor(
+                        button.context,
+                        R.color.notification_divider
+                    )
+                )
             }
         }
 
@@ -296,7 +318,7 @@ class CommonsKt {
             app: App,
             context: Context,
             fragment: Fragment,
-            errorResponse: UIErrorResponse
+            errorResponse: UIErrorResponse,
         ) {
             if (app.merlinsBeard!!.isConnected) {
                 val message: StringBuilder = StringBuilder()
@@ -330,7 +352,7 @@ class CommonsKt {
 
         }
 
-        fun getYearsBetweenTwoCalendars(a : Calendar, b : Calendar) : Int {
+        fun getYearsBetweenTwoCalendars(a: Calendar, b: Calendar): Int {
             var diff = b[Calendar.YEAR] - a[Calendar.YEAR]
             if (a[Calendar.MONTH] > b[Calendar.MONTH] ||
                 a[Calendar.MONTH] == b[Calendar.MONTH] && a[Calendar.DATE] > b[Calendar.DATE]
@@ -340,11 +362,11 @@ class CommonsKt {
             return diff
         }
 
-        fun calculateAge(birth : Calendar) : Int {
+        fun calculateAge(birth: Calendar): Int {
             return getYearsBetweenTwoCalendars(birth, Calendar.getInstance())
         }
 
-        fun calculateAge(timestampBirth : Long) : Int {
+        fun calculateAge(timestampBirth: Long): Int {
             val calendarBirth = Calendar.getInstance()
             calendarBirth.timeInMillis = timestampBirth
             return getYearsBetweenTwoCalendars(calendarBirth, Calendar.getInstance())
@@ -372,6 +394,47 @@ class CommonsKt {
                 isVisibleOverlay = true
                 setDismissWhenOverlayClicked(true)
             }.build()
+        }
+
+        fun getLocalPriceTiers(context: Context) : HashMap<String,String>{
+            val stringArray: Array<String> = context.resources.getStringArray(R.array.cast_tiers)
+            val outputArray = HashMap<String,String>()
+            for (entry in stringArray) {
+                val splitResult = entry.split("\\|".toRegex(), 2).toTypedArray()
+                outputArray[splitResult[0]] = splitResult[1]
+            }
+            return outputArray
+        }
+
+
+        fun getFeedDuration(duration: Duration): String {
+            return if (duration.toMinutes() > 0) {
+                "${duration.toMinutes()}m ${duration.minusMinutes(duration.toMinutes()).seconds}s"
+            } else {
+                "${duration.minusMinutes(duration.toMinutes()).seconds}s"
+            }
+        }
+
+        private fun getTextColorByBackground(it: String): Int {
+            return if (it == "#FFC550") R.color.black else R.color.white
+        }
+
+        fun handleColorFeed(
+            cast: CastUIModel,
+            colorFeedText: TextView,
+            context: Context,
+        ) {
+            if (cast.imageLinks?.large == null) {
+                cast.colorCode?.let {
+                    colorFeedText.setBackgroundColor(Color.parseColor(it))
+                    colorFeedText.setTextColor(ContextCompat.getColor(context,
+                        getTextColorByBackground(it)))
+                    colorFeedText.visibility = View.VISIBLE
+                    colorFeedText.text = cast.title
+                }
+            } else {
+                colorFeedText.visibility = View.GONE
+            }
         }
 
 

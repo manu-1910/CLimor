@@ -24,7 +24,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_alignParentTop="true"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="@dimen/margin32"
                     android:alpha="0.12"
                     android:background="@color/notification_divider"
                     app:layout_constraintTop_toTopOf="parent" />

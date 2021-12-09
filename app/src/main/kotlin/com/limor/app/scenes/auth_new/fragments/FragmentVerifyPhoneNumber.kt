@@ -165,12 +165,12 @@ class FragmentVerifyPhoneNumber : Fragment() {
             if (it == null) return@Observer
             model.saveNavigationBreakPoint(
                 requireContext(),
-                NavigationBreakpoints.ACCOUNT_CREATION.destination
+                NavigationBreakpoints.NAME_COLLECTION.destination
             )
-            navigateToFragmentByNavigationBreakpoints(
+            /*navigateToFragmentByNavigationBreakpoints(
                 requireActivity(),
-                NavigationBreakpoints.ACCOUNT_CREATION.destination
-            )
+                NavigationBreakpoints.NAME_COLLECTION.destination
+            )*/
         })
 
         model.navigationBreakPointLiveData.observe(viewLifecycleOwner, Observer {
@@ -201,8 +201,8 @@ class FragmentVerifyPhoneNumber : Fragment() {
                 tvResendCodeStatus.text =
                     getString(R.string.resend_code_in) + (if (it < 10) " 0$it seconds" else " $it seconds")
         })
-        model.phoneAuthHandler.codeSentListener.observe(viewLifecycleOwner,Observer{
-            if(it){
+        model.phoneAuthHandler.codeSentListener.observe(viewLifecycleOwner, Observer {
+            if (it) {
                 model.enableResend()
             }
         })

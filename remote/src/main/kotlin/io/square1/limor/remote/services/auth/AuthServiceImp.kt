@@ -102,7 +102,10 @@ class AuthServiceImp @Inject constructor(private val serviceConfig: RemoteServic
 
 
     fun changePassword(nwChangePasswordRequest: NWChangePasswordRequest): Single<NWChangePasswordResponse> {
-        return service.changePassword(RequestBody.create("application/json".toMediaTypeOrNull(), json.encodeToString(NWChangePasswordRequest.serializer(), nwChangePasswordRequest)))
+        return service.changePassword(RequestBody.create(
+            "application/json".toMediaTypeOrNull(),
+            json.encodeToString(NWChangePasswordRequest.serializer(), nwChangePasswordRequest)
+        ))
             .map { response -> response.parseSuccessResponse(NWChangePasswordResponse.serializer()) }
             .doOnSuccess {
                     success -> println("SUCCESS: $success")
