@@ -292,7 +292,7 @@ class CastItem(
     private fun setPricingLabel() {
         val priceId = cast.patronDetails?.priceId ?: return
         val details = skuDetails
-        if (details == null) {
+        if (details == null || details.sku != priceId) {
             productDetailsFetcher?.getPrice(priceId, this)
             return
         }
