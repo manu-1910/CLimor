@@ -258,7 +258,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         }
 
         val username = activity?.intent?.extras?.getString(USER_NAME_KEY)
-
+        binding.toolbar.btnNotification.visibility = View.VISIBLE
         if (isSignedInUser) {
             binding.toolbar.btnUserSettings.setImageResource(R.drawable.ic_setting)
 

@@ -90,7 +90,7 @@
         android:id="@+id/brought_by_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto"
+        android:fontFamily="@font/roboto_bold"
         android:textSize="@dimen/textSize14"
         android:text="@string/bought_by"
         android:textColor="@color/subtitle_text_color"

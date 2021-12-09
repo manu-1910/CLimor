@@ -26,6 +26,8 @@
                     android:layout_alignParentTop="true"
                     android:layout_marginTop="@dimen/margin32"
                     android:alpha="0.12"
+                    android:layout_marginStart="@dimen/marginTwenty"
+                    android:layout_marginEnd="@dimen/marginTwenty"
                     android:background="@color/notification_divider"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -36,6 +38,8 @@
                     android:layout_height="1dp"
                     android:layout_alignParentTop="true"
                     android:alpha="0.12"
+                    android:layout_marginStart="@dimen/marginTwenty"
+                    android:layout_marginEnd="@dimen/marginTwenty"
                     android:background="@color/notification_divider"
                     app:layout_constraintTop_toBottomOf="@id/audio_player" />
 
@@ -100,9 +104,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin24"
-                    android:layout_marginTop="36dp"
+                    android:layout_marginTop="@dimen/margin24"
                     android:layout_marginEnd="@dimen/margin24"
-                    android:layout_marginBottom="36dp"
                     android:background="@drawable/btn_primary_background"
                     android:enabled="false"
                     android:fontFamily="@font/roboto_medium"
@@ -171,7 +174,7 @@
                     android:id="@+id/managePatronDescriptionTV"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="20dp"
+                    android:layout_marginTop="@dimen/marginTwenty"
                     android:fontFamily="@font/roboto_medium"
                     android:gravity="center"
                     android:text="@string/limor_patron_manage_description"
@@ -187,6 +190,8 @@
                     android:layout_height="1dp"
                     android:layout_alignParentTop="true"
                     android:alpha="0.12"
+                    android:layout_marginStart="@dimen/marginTwenty"
+                    android:layout_marginEnd="@dimen/marginTwenty"
                     android:background="@color/notification_divider"
                     app:layout_constraintTop_toBottomOf="@id/mangePatronTV" />
 

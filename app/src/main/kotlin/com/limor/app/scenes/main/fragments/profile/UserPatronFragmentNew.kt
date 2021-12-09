@@ -446,8 +446,8 @@ class UserPatronFragmentNew : Fragment() {
                                     binding.patronButton.isEnabled = true
                                     binding.managePatronStateLayout.visibility = View.VISIBLE
                                     binding.pager.visibility = View.GONE
-                                    binding.indicator.visibility = View.INVISIBLE
-                                    binding.checkLayout.visibility = View.INVISIBLE
+                                    binding.indicator.visibility = View.GONE
+                                    binding.checkLayout.visibility = View.GONE
 
                                     binding.managePatron.setOnClickListener {
                                         val intent = Intent(

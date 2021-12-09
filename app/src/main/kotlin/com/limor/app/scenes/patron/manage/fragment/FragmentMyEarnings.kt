@@ -111,7 +111,7 @@ class FragmentMyEarnings : Fragment(), Injectable {
     }
 
     private fun setAdapter() {
-        val items = mutableListOf("Last 2 months", "Last month", "Last week")
+        val items = mutableListOf("This week", "This month", "This year")
         val adapter = ArrayAdapter(requireContext(), R.layout.item_phone_code_country_code, items)
         val editText = etFilter.editText as AutoCompleteTextView
         editText.setAdapter(adapter)

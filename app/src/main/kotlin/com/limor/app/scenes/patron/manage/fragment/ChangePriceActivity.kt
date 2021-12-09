@@ -2,6 +2,7 @@ package com.limor.app.scenes.patron.manage.fragment
 
 import android.app.Activity
 import android.os.Bundle
+import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -149,7 +150,7 @@ class ChangePriceActivity : AppCompatActivity() {
         castId = intent.getIntExtra(CAST_ID, -1)
         selectedPriceId = intent.getStringExtra(SELECTED_PRICE_ID) ?: ""
         binding.toolbar.title.text = getString(com.limor.app.R.string.edit_price_text)
-        binding.toolbar.btnNotification.setImageDrawable(resources.getDrawable(android.R.drawable.ic_menu_info_details))
+        binding.toolbar.btnNotification.visibility = View.GONE
         binding.yesButton.isEnabled = false
 
         subscribeViewModel()
