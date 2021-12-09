@@ -1,9 +1,7 @@
 package com.limor.app.scenes.patron.manage.fragment
 
-import android.R
 import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -12,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.android.billingclient.api.SkuDetails
+import com.limor.app.R
 import com.limor.app.databinding.ActivityChangePriceBinding
 import com.limor.app.scenes.patron.viewmodels.CastPriceViewModel
 import com.limor.app.scenes.utils.LimorDialog
@@ -50,14 +49,14 @@ class ChangePriceActivity : AppCompatActivity() {
         AndroidInjection.inject(this)
         binding = ActivityChangePriceBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        subscribeViewModel()
+        setOnClicks()
+        initialiseViews()
     }
 
     override fun onStart() {
         super.onStart()
-        setOnClicks()
+
         //setPrices()
-        initialiseViews()
     }
 
     private fun setOnClicks() {
@@ -104,7 +103,7 @@ class ChangePriceActivity : AppCompatActivity() {
         val adapter: ArrayAdapter<String> =
             ArrayAdapter(
                 this,
-                R.layout.select_dialog_item,
+                android.R.layout.select_dialog_item,
                 list
             )
         editText.setAdapter(adapter)
@@ -134,7 +133,9 @@ class ChangePriceActivity : AppCompatActivity() {
         playBillingHandler.getPrices().observe(this, { skuList ->
             details.putAll(skuList.map { skuDetails -> skuDetails.originalPrice to skuDetails })
             skuList.forEachIndexed { i, skuDetails ->
-                selectedPos = if(skuDetails.sku == selectedPriceId){ i } else { -1 }
+                if(skuDetails.sku == selectedPriceId) {
+                    selectedPos = i
+                }
                 list.add(skuDetails.price)
             }
             setPrices(list, selectedPos)
@@ -142,12 +143,16 @@ class ChangePriceActivity : AppCompatActivity() {
     }
 
     private fun initialiseViews() {
+        binding.toolbar.title.text = getString(R.string.edit_price)
+
         changePriceForAllCasts = intent.getBooleanExtra(CHANGE_PRICE_FOR_ALL_CASTS, false)
         castId = intent.getIntExtra(CAST_ID, -1)
         selectedPriceId = intent.getStringExtra(SELECTED_PRICE_ID) ?: ""
         binding.toolbar.title.text = getString(com.limor.app.R.string.edit_price_text)
-        binding.toolbar.btnNotification.setImageDrawable(resources.getDrawable(R.drawable.ic_menu_info_details))
+        binding.toolbar.btnNotification.setImageDrawable(resources.getDrawable(android.R.drawable.ic_menu_info_details))
         binding.yesButton.isEnabled = false
+
+        subscribeViewModel()
     }
 
 }
