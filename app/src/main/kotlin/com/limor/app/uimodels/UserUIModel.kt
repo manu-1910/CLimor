@@ -37,7 +37,9 @@ data class UserUIModel(
     var patronOnBoardingStatus: String? = null,
     var isPatron: Boolean? = false,
     val patronAudioURL: String? = null,
-    val patronAudioDurationSeconds: Double? = null
+    val patronAudioDurationSeconds: Double? = null,
+    var availableInvitations: Int = 0,
+    var patronStatus: String? = null
 ) : Parcelable {
 
     fun getFullName() = if (firstName == null && lastName == null) username else String.format(
@@ -130,6 +132,7 @@ fun SearchUsersQuery.SearchUser.mapToUIModel(): UserUIModel =
         isPatron = isPatron,
         patronAudioURL = patronAudioURL,
         patronAudioDurationSeconds = patronAudioDuration
+
     )
 
 fun GetPodcastsByCategoryQuery.Owner.mapToUIModel(): UserUIModel =
@@ -186,7 +189,8 @@ fun GetUserProfileQuery.GetUser.mapToUIModel(): UserUIModel =
         isPatron = isPatron,
         patronAudioURL = patronAudioURL,
         patronAudioDurationSeconds = patronAudioDuration,
-        patronOnBoardingStatus = patronOnboardingStatus
+        patronOnBoardingStatus = patronOnboardingStatus,
+        availableInvitations =  availableInvitations?:0
     )
 
 

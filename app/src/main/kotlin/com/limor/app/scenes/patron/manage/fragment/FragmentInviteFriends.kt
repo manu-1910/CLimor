@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,8 @@ import javax.inject.Inject
 
 class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallbacks<Cursor> {
 
+    private var selectedContacts = ArrayList<ContactUIModel>()
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: ManagePatronViewModel by activityViewModels { viewModelFactory }
@@ -38,15 +41,16 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
     private val PROJECTION: Array<out String> = arrayOf(
         ContactsContract.Contacts._ID,
         ContactsContract.Contacts.LOOKUP_KEY,
-        ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
-        ContactsContract.Data.PHOTO_URI
+        ContactsContract.Data.DISPLAY_NAME_PRIMARY,
+        ContactsContract.CommonDataKinds.Photo.PHOTO_URI,
+        ContactsContract.CommonDataKinds.Phone.NUMBER
     )
 
     @SuppressLint("InlinedApi")
     private val SELECTION: String =
-        "${ContactsContract.Contacts.DISPLAY_NAME_PRIMARY} LIKE ?"
+        "${ContactsContract.Contacts.HAS_PHONE_NUMBER} = ? and ${ContactsContract.Contacts.DISPLAY_NAME_PRIMARY} LIKE ? and ${ContactsContract.RawContacts.ACCOUNT_TYPE} = ?"
     private var searchString: String = ""
-    private val selectionArgs = arrayOf<String>(searchString)
+    private val selectionArgs = arrayOf<String>("1",searchString,"com.google")
 
     private var contactsAdapter: ContactsListAdapter? = null
     private var limorUsersAdapter: InviteLimorUsersAdapter? = null
@@ -78,8 +82,9 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
 
         contactsAdapter = ContactsListAdapter(
             ArrayList(),
-            onSelected = { count ->
-                updateInviteButton(count)
+            onSelected = { contacts ->
+                selectedContacts = contacts as ArrayList<ContactUIModel>
+                updateInviteButton(contacts.size)
             }
         )
         binding.contactsListView.adapter = contactsAdapter
@@ -142,6 +147,11 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
             findNavController().navigateUp()
         }
         binding.toolbar.btnNotification.visibility = View.GONE
+
+        binding.inviteButton.setOnClickListener {
+            val numbers = selectedContacts.mapNotNull { it.phoneNumber }
+            model.inviteExternal(numbers)
+        }
     }
 
     private fun performSearch(searchItem: String) {
@@ -180,11 +190,11 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
-        selectionArgs[0] = "%$searchString%"
+        selectionArgs[1] = "%$searchString%"
         return requireContext().let {
             return CursorLoader(
                 it,
-                ContactsContract.Contacts.CONTENT_URI,
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 PROJECTION,
                 if (searchString.trim().isEmpty()) null else SELECTION,
                 if (searchString.trim().isEmpty()) null else selectionArgs,
@@ -197,8 +207,14 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
         data?.moveToFirst()
         var result = ArrayList<ContactUIModel>()
         while (data?.isAfterLast == false) {
-            val contact =
-                ContactUIModel(data.getInt(0), data.getString(2), data.getString(3), false)
+           val phoneNumber =
+                data.getString(4)
+            Log.d("CONTACT_DATA", phoneNumber)
+            val contact = ContactUIModel(data.getInt(0),
+                data.getString(2),
+                data.getString(3),
+                false,
+                phoneNumber)
             result.add(contact)
             data.moveToNext()
         }

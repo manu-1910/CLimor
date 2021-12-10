@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.item_contact_list.view.*
 
 class ContactsListAdapter(
     private val contacts: ArrayList<ContactUIModel>,
-    private val onSelected: (id: Int) -> Unit
+    private val onSelected: (id: List<ContactUIModel>) -> Unit
 ) : RecyclerView.Adapter<ContactsListAdapter.ContactViewHolder>() {
 
     val selectedContacts = ArrayList<ContactUIModel>()
@@ -51,7 +51,7 @@ class ContactsListAdapter(
                 holder.selector.setImageDrawable(holder.rootView.context.getDrawable(R.drawable.ic_unselected_checkbox))
                 contacts[position].checked = false
             }
-            onSelected(selectedContacts.size)
+            onSelected(selectedContacts)
         }
     }
 

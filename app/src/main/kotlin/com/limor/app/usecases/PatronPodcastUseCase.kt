@@ -19,4 +19,16 @@ class PatronPodcastUseCase @Inject constructor(
             repository.updatePriceForCast(castId, priceId)
         }
     }
+
+    suspend fun executeInviteInternalUser(userId: Int): Result<String> = runCatching {
+        withContext(dispatcherProvider.io){
+            repository.inviteInternalUser(userId)
+        }
+    }
+
+    suspend fun executeInviteExternal(numbers : List<String>): Result<String> = runCatching {
+        withContext(dispatcherProvider.io){
+            repository.inviteExternal(numbers)
+        }
+    }
 }

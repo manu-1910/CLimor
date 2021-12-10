@@ -1,0 +1,6 @@
+mutation SendExternalPatronInvitation($numbers: [String!]!){
+    sendExternalPatronInvitation(invitedForNumbers: $numbers){
+        status
+        message
+    }
+}

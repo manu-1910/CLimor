@@ -162,4 +162,16 @@ class ManagePatronViewModel @Inject constructor(
         }
     }
 
+    fun inviteInternalUsers(id: Int) {
+        viewModelScope.launch {
+            patronPodcastUseCase.executeInviteInternalUser(id)
+        }
+    }
+
+    fun inviteExternal(numbers: List<String>) {
+        viewModelScope.launch {
+            patronPodcastUseCase.executeInviteExternal(numbers)
+        }
+    }
+
 }

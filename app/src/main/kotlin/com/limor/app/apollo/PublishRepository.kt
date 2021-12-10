@@ -127,4 +127,16 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
         return result?.data?.createCastPurchase?.status ?: ""
     }
 
+    suspend fun inviteInternalUser(userId: Int): String {
+        val mutation = SendInternalPatronInvitationMutation(userId)
+        val result = apollo.mutate(mutation)
+        return result?.data?.sendInternalPatronInvitation?.status ?: ""
+    }
+
+    suspend fun inviteExternal(numbers: List<String>): String {
+        val mutation = SendExternalPatronInvitationMutation(numbers)
+        val result = apollo.mutate(mutation)
+        return result?.data?.sendExternalPatronInvitation?.status ?: ""
+    }
+
 }

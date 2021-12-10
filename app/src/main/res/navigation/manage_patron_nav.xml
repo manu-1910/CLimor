@@ -11,9 +11,6 @@
         android:label="ManagePatronFragment"
         tools:layout="@layout/fragment_manage_patron">
         <action
-            android:id="@+id/action_manage_patron_fragment_to_dialog_change_price"
-            app:destination="@id/dialog_change_price" />
-        <action
             android:id="@+id/action_manage_patron_fragment_to_dialog_cancel_patron_membership"
             app:destination="@id/dialog_cancel_patron_membership" />
         <action

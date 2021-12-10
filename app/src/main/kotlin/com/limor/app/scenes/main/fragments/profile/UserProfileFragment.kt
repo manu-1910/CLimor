@@ -258,7 +258,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         }
 
         val username = activity?.intent?.extras?.getString(USER_NAME_KEY)
-        binding.toolbar.btnNotification.visibility = View.VISIBLE
         if (isSignedInUser) {
             binding.toolbar.btnUserSettings.setImageResource(R.drawable.ic_setting)
 
@@ -295,6 +294,10 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         binding.profileMainContainer.visibility = View.VISIBLE
 
         if (isSignedInUser) {
+            if(user.availableInvitations > 0){
+                binding.toolbar.invitePendingTv.text = "${user.availableInvitations}"
+                binding.toolbar.btnInvitations.visibility = View.VISIBLE
+            }
             return
         }
 

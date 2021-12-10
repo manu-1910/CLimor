@@ -1,35 +1,27 @@
 package com.limor.app.scenes.patron.manage.fragment
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.pm.PackageManager
-import android.database.Cursor
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.loader.app.LoaderManager
-import androidx.loader.content.CursorLoader
-import androidx.loader.content.Loader
 import androidx.navigation.fragment.findNavController
 import com.limor.app.R
-import com.limor.app.databinding.FragmentInviteFriendsBinding
 import com.limor.app.databinding.FragmentInviteUsersBinding
 import com.limor.app.di.Injectable
 import com.limor.app.scenes.patron.manage.adapters.ContactsListAdapter
 import com.limor.app.scenes.patron.manage.adapters.InviteLimorUsersAdapter
 import com.limor.app.scenes.patron.manage.viewmodels.ManagePatronViewModel
-import com.limor.app.uimodels.ContactUIModel
+import com.limor.app.scenes.utils.CommonsKt
 import javax.inject.Inject
 
-class FragmentInviteUsers : Fragment(), Injectable, LoaderManager.LoaderCallbacks<Cursor> {
+class FragmentInviteUsers : Fragment(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -76,9 +68,22 @@ class FragmentInviteUsers : Fragment(), Injectable, LoaderManager.LoaderCallback
 
     private fun initialiseViews() {
         binding.toolbar.title.text = getString(R.string.invite_friends)
-        binding.toolbar.btnNotification.setImageDrawable(resources.getDrawable(R.drawable.ic_phone_book))
+        binding.toolbar.btnNotification.setImageDrawable(getDrawable(requireContext(),
+            R.drawable.ic_phone_book))
+        limorUsersAdapter = InviteLimorUsersAdapter(
+            ArrayList(),
+           onSelected = {
+               //invite
+               model.inviteInternalUsers(it.id)
+               CommonsKt.user?.availableInvitations = limorUsersAdapter?.inviteCount?:5
 
-        updateCountText(5)
+           }
+        )
+        limorUsersAdapter?.setUsers(ArrayList())
+        binding.userSearchResultsRecyclerView.adapter = limorUsersAdapter
+
+        Log.d("INVITE count ->","${CommonsKt.user?.availableInvitations}")
+        updateCountText(CommonsKt.user?.availableInvitations?:0)
     }
 
 
@@ -112,9 +117,8 @@ class FragmentInviteUsers : Fragment(), Injectable, LoaderManager.LoaderCallback
 
     private fun subscribeViewModels() {
         model.searchResult.observe(viewLifecycleOwner, {
-            if(binding.userSearchResultsLayout.visibility == View.GONE){
+            Log.d(" Users ", "-> $it")
                 binding.userSearchResultsLayout.visibility = View.VISIBLE
-            }
             limorUsersAdapter?.setUsers(it)
         })
     }
@@ -125,7 +129,7 @@ class FragmentInviteUsers : Fragment(), Injectable, LoaderManager.LoaderCallback
             findNavController().navigateUp()
         }
         binding.toolbar.btnNotification.setOnClickListener {
-            //TODO open contacts invite fragment
+            findNavController().navigate(R.id.action_fragmentInviteUsers_to_fragment_invite_friends)
         }
     }
 
@@ -139,9 +143,6 @@ class FragmentInviteUsers : Fragment(), Injectable, LoaderManager.LoaderCallback
     }
 
 
-    private fun hideContactsLayout(){
-        contactsAdapter?.setContacts(ArrayList())
-    }
 
     private fun hideLimorUsersLayout(){
         binding.userSearchResultsLayout.visibility = View.GONE
@@ -149,40 +150,5 @@ class FragmentInviteUsers : Fragment(), Injectable, LoaderManager.LoaderCallback
     }
 
 
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
-        selectionArgs[0] = "%$searchString%"
-        return requireContext().let {
-            return CursorLoader(
-                it,
-                ContactsContract.Contacts.CONTENT_URI,
-                PROJECTION,
-                if (searchString.trim().isEmpty()) null else SELECTION,
-                if (searchString.trim().isEmpty()) null else selectionArgs,
-                "${ContactsContract.Contacts.DISPLAY_NAME_PRIMARY} ASC"
-            )
-        }
-    }
-
-    override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
-        data?.moveToFirst()
-        var result = ArrayList<ContactUIModel>()
-        while (data?.isAfterLast == false) {
-            val contact =
-                ContactUIModel(data.getInt(0), data.getString(2), data.getString(3), false)
-            result.add(contact)
-            data.moveToNext()
-        }
-        contactsAdapter?.setContacts(result)
-        //binding.contactsListLayout.visibility = View.VISIBLE
-    }
-
-    override fun onLoaderReset(loader: Loader<Cursor>) {
-        hideContactsLayout()
-    }
-
-    enum class InviteMode {
-        LIMOR_USERS,
-        CONTACTS
-    }
 
 }

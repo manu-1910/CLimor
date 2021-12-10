@@ -909,6 +909,7 @@
     <string name="purchase_cast_description_for_comment">You have to purchase this cast to listen and leave a comment</string>
 
     <string name="my_purchases">My Purchases</string>
+    <string name="reminder">Reminder</string>
 
     <string-array name="cast_tiers">
         <item>com.limor.dev.tier_1|0.99</item>
