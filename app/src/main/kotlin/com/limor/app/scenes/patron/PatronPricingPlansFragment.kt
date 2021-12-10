@@ -197,6 +197,10 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         binding.progressBar.visibility = View.VISIBLE
         model.getPlanIds().observe(viewLifecycleOwner) { skuIdList ->
 
+            if (BuildConfig.DEBUG) {
+                println("SKU IDs from the backend -> $skuIdList")
+            }
+
             val params = SkuDetailsParams.newBuilder()
             params.setSkusList(skuIdList)
             params.setType(BillingClient.SkuType.SUBS)

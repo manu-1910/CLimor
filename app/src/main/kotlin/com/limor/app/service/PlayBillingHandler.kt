@@ -174,7 +174,7 @@ class PlayBillingHandler @Inject constructor(
     private suspend fun getSkusFromParams(params: SkuDetailsParams.Builder): List<SkuDetails> {
         val result = billingClient.querySkuDetails(params.build())
         if (BuildConfig.DEBUG) {
-            Timber.d("Billing SKUs-> ${result.skuDetailsList}")
+            Timber.d("getSkusFromParams result is ${result.billingResult.responseCode} (${result.billingResult.debugMessage}), SKUs-> ${result.skuDetailsList}")
         }
         return result.skuDetailsList ?: listOf()
     }
@@ -274,6 +274,10 @@ class PlayBillingHandler @Inject constructor(
                         onDone?.invoke(details)
                     }
                 }
+            } else {
+                if (BuildConfig.DEBUG) {
+                    println("Could not connect to the billing client. Billing client connection state: ${billingClient.connectionState}")
+                }
             }
             mFetching = false
         }
@@ -323,6 +327,9 @@ class PlayBillingHandler @Inject constructor(
         //
         val delta = System.currentTimeMillis() - lastFetchTime
         if (delta > refreshTimeLimit) {
+            if (BuildConfig.DEBUG) {
+                println("Will refetch from Google Play because $delta ms passed since last fetch.")
+            }
             fetchProductIDs()
             return
         }
