@@ -156,7 +156,7 @@ class EditPreviewFragment : WaveformFragment() {
 
     private fun downloadCast() {
         val testURL = "https://limor-platform-development.s3-eu-west-1.amazonaws.com/podcast_audio_direct_upload/audioFile_163661872969286112_1636618729691.x-m4a"
-        val castURL = testURL // cast.audio?.url ?: return
+        val castURL = cast.audio?.url ?: return
         val original = "$audioFileName.original"
         val file = File(original)
 
