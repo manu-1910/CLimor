@@ -26,7 +26,9 @@ import com.limor.app.di.Injectable
 import com.limor.app.scenes.patron.manage.adapters.ContactsListAdapter
 import com.limor.app.scenes.patron.manage.adapters.InviteLimorUsersAdapter
 import com.limor.app.scenes.patron.manage.viewmodels.ManagePatronViewModel
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.ContactUIModel
+import org.jetbrains.anko.design.snackbar
 import javax.inject.Inject
 
 class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallbacks<Cursor> {
@@ -89,7 +91,7 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
         )
         binding.contactsListView.adapter = contactsAdapter
 
-        updateCountText(5)
+        updateCountText(CommonsKt.user?.availableInvitations?:0)
 
         if (!hasPermissions(requireContext(), *PERMISSIONS)) {
             try {
@@ -150,7 +152,13 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
 
         binding.inviteButton.setOnClickListener {
             val numbers = selectedContacts.mapNotNull { it.phoneNumber }
-            model.inviteExternal(numbers)
+            if(numbers.size>CommonsKt.user?.availableInvitations?:0){
+                binding.root.snackbar("You can only invite ${CommonsKt.user?.availableInvitations} people")
+            }else{
+                CommonsKt.user?.availableInvitations = numbers.size
+                model.inviteExternal(numbers)
+            }
+
         }
     }
 

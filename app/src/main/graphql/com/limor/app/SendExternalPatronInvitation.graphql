@@ -2,5 +2,10 @@ mutation SendExternalPatronInvitation($numbers: [String!]!){
     sendExternalPatronInvitation(invitedForNumbers: $numbers){
         status
         message
+        data{
+            isSuccessful
+            phoneNumber
+            message
+        }
     }
 }

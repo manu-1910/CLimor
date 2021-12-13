@@ -4,20 +4,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.limor.app.apollo.GeneralInfoRepository
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.PatronCategoryUIModel
 import com.limor.app.uimodels.UserUIModel
 import com.limor.app.usecases.CategoriesUseCase
 import com.limor.app.usecases.PatronPodcastUseCase
 import com.limor.app.usecases.SearchUsersUseCase
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.callbackFlow
 import timber.log.Timber
 import javax.inject.Inject
 
 class ManagePatronViewModel @Inject constructor(
     private val searchUsersUseCase: SearchUsersUseCase,
     private val categoriesUseCase: CategoriesUseCase,
-    private val patronPodcastUseCase: PatronPodcastUseCase
+    private val patronPodcastUseCase: PatronPodcastUseCase,
+    private val infoRepository: GeneralInfoRepository,
 ) : ViewModel() {
 
     private val buyers = mutableListOf<String>(
@@ -165,12 +167,24 @@ class ManagePatronViewModel @Inject constructor(
     fun inviteInternalUsers(id: Int) {
         viewModelScope.launch {
             patronPodcastUseCase.executeInviteInternalUser(id)
+                .onSuccess {
+                    val user = infoRepository.getUserProfile()
+                    if (user != null) {
+                        CommonsKt.user = user
+                    }
+                }
         }
     }
 
     fun inviteExternal(numbers: List<String>) {
         viewModelScope.launch {
             patronPodcastUseCase.executeInviteExternal(numbers)
+                .onSuccess {
+                    val user = infoRepository.getUserProfile()
+                    if (user != null) {
+                        CommonsKt.user = user
+                    }
+                }
         }
     }
 

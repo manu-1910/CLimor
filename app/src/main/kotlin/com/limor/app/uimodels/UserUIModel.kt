@@ -131,7 +131,8 @@ fun SearchUsersQuery.SearchUser.mapToUIModel(): UserUIModel =
         patronInvitationStatus = patronInvitationStatus,
         isPatron = isPatron,
         patronAudioURL = patronAudioURL,
-        patronAudioDurationSeconds = patronAudioDuration
+        patronAudioDurationSeconds = patronAudioDuration,
+        patronStatus = patronStatus
 
     )
 

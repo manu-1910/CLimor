@@ -23,7 +23,9 @@ import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.main.fragments.profile.adapters.ProfileViewPagerAdapter
 import com.limor.app.scenes.main.fragments.settings.OpenSettings
+import com.limor.app.scenes.patron.manage.ManagePatronActivity
 import com.limor.app.scenes.profile.DialogUserProfileActions
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.UserUIModel
 import java.time.Duration
@@ -250,6 +252,11 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
          }*/
 
         // ensureToolbar()
+
+        binding.toolbar.btnInvitations.setOnClickListener {
+            startActivity(Intent(requireContext(),
+                ManagePatronActivity::class.java).putExtra("invitations", ""))
+        }
     }
 
     private fun ensureToolbar() {
@@ -294,7 +301,9 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         binding.profileMainContainer.visibility = View.VISIBLE
 
         if (isSignedInUser) {
-            if(user.availableInvitations > 0){
+            binding.toolbar.invitePendingTv.text = "${user.availableInvitations}"
+            binding.toolbar.btnInvitations.visibility = View.VISIBLE
+            if (user.isPatron == true && user.availableInvitations > 0) {
                 binding.toolbar.invitePendingTv.text = "${user.availableInvitations}"
                 binding.toolbar.btnInvitations.visibility = View.VISIBLE
             }
@@ -384,11 +393,17 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         get() = model.profileErrorLiveData
 
     private fun setupViewPager(user: UserUIModel) {
-        val adapter = ProfileViewPagerAdapter(user, childFragmentManager, lifecycle, requireContext())
+        val adapter =
+            ProfileViewPagerAdapter(user, childFragmentManager, lifecycle, requireContext())
         binding.profileViewpager.adapter = adapter
     }
 
     enum class Tab {
         CASTS, PATRON, PURCHASES
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.toolbar.invitePendingTv.text = "${CommonsKt.user?.availableInvitations ?: ""}"
     }
 }

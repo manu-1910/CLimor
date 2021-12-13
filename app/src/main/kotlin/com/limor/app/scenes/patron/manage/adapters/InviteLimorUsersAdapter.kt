@@ -34,7 +34,7 @@ class InviteLimorUsersAdapter(
         holder.accountName.text = users[position].getFullName()
         holder.accountNickName.text = users[position].username
 
-        Log.d("INVITE", "-> ${users[position].patronInvitationStatus}")
+        Log.d("INVITE", "-> ${users[position].patronStatus}")
 
         when (users[position].patronStatus) {
             "JOINED" -> {
@@ -76,6 +76,7 @@ class InviteLimorUsersAdapter(
     class LimorUserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun markJoined(userUIModel: UserUIModel) {
             inviteButton.text = accountName.context.getString(R.string.joined)
+            inviteButton.isEnabled = false
             inviteButton.backgroundColor = ContextCompat.getColor(
                 accountName.context,
                 R.color.main_button_background_follow
@@ -89,16 +90,18 @@ class InviteLimorUsersAdapter(
             position: Int,
         ) {
                 inviteButton.text = accountName.context.getString(R.string.invite)
+                inviteButton.isEnabled = true
                 inviteButton.backgroundColor = ContextCompat.getColor(
                     accountName.context,
-                    R.color.main_button_background
+                    R.color.colorAccent
                 )
                 inviteButton.setOnClickListener {
                     if(adapter.inviteCount>0){
-                        userUIModel.patronInvitationStatus = "ALREADY_INVITED"
+                        userUIModel.patronStatus = "ALREADY_INVITED"
                         adapter.inviteCount =
                             if (userUIModel.availableInvitations - 1 <= 0) 0 else userUIModel.availableInvitations - 1
                         adapter.updateItemAt(position, userUIModel)
+                        CommonsKt.user?.availableInvitations = adapter.inviteCount
                         onSelected(userUIModel)
                     }else{
                         inviteButton.snackbar("No More invites left!")

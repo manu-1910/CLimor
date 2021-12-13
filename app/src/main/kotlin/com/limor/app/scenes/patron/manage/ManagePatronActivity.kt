@@ -1,10 +1,14 @@
 package com.limor.app.scenes.patron.manage
 
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Activity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
+import com.limor.app.R
 import com.limor.app.databinding.ActivityManagePatronBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
+import com.limor.app.scenes.main.fragments.settings.SettingsActivity
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.AudioService
@@ -31,7 +35,6 @@ class ManagePatronActivity : AppCompatActivity(), HasSupportFragmentInjector, Pl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         playerBinding = ContainerWithSwipeablePlayerBinding.inflate(layoutInflater)
         binding = ActivityManagePatronBinding.inflate(
             layoutInflater,
@@ -42,6 +45,14 @@ class ManagePatronActivity : AppCompatActivity(), HasSupportFragmentInjector, Pl
 
         activityPlayerViewManager =
             ActivityPlayerViewManager(supportFragmentManager, playerBinding, playerBinder)
+
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+        if (!intent.extras?.getString("invitations", "").isNullOrEmpty()) {
+            navController.navigate(R.id.fragment_invite_users)
+        }
+
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentInjector
@@ -65,4 +76,23 @@ class ManagePatronActivity : AppCompatActivity(), HasSupportFragmentInjector, Pl
 
     override fun stopPreview() {
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        SettingsActivity.finishWithResult(this, false)
+    }
+
+    companion object {
+        fun finishWithResult(targetActivity: Activity?, hasChanges: Boolean) {
+            val activity = targetActivity ?: return
+
+            // Set the result to a known value, in a future iteration this should tell the caller
+            // of this activity whether the User settings/profile has changed or not.
+            activity.apply {
+                setResult(1)
+                finish()
+            }
+        }
+    }
+
 }

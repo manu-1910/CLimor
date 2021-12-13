@@ -66,6 +66,7 @@ class FragmentInviteUsers : Fragment(), Injectable {
         subscribeViewModels()
     }
 
+
     private fun initialiseViews() {
         binding.toolbar.title.text = getString(R.string.invite_friends)
         binding.toolbar.btnNotification.setImageDrawable(getDrawable(requireContext(),
@@ -75,10 +76,11 @@ class FragmentInviteUsers : Fragment(), Injectable {
            onSelected = {
                //invite
                model.inviteInternalUsers(it.id)
-               CommonsKt.user?.availableInvitations = limorUsersAdapter?.inviteCount?:5
+               CommonsKt.user?.availableInvitations = limorUsersAdapter?.inviteCount?:0
 
            }
         )
+        performSearch("")
         limorUsersAdapter?.setUsers(ArrayList())
         binding.userSearchResultsRecyclerView.adapter = limorUsersAdapter
 
