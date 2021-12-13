@@ -114,6 +114,10 @@ class InviteLimorUsersAdapter(
         fun alreadyInvited() {
             inviteButton.isEnabled = false
             inviteButton.text = "Invited"
+            inviteButton.backgroundColor = ContextCompat.getColor(
+                accountName.context,
+                R.color.main_button_background_follow
+            )
         }
 
         fun shouldInviteWithoutCountChange(

@@ -77,22 +77,5 @@ class ManagePatronActivity : AppCompatActivity(), HasSupportFragmentInjector, Pl
     override fun stopPreview() {
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        SettingsActivity.finishWithResult(this, false)
-    }
-
-    companion object {
-        fun finishWithResult(targetActivity: Activity?, hasChanges: Boolean) {
-            val activity = targetActivity ?: return
-
-            // Set the result to a known value, in a future iteration this should tell the caller
-            // of this activity whether the User settings/profile has changed or not.
-            activity.apply {
-                setResult(1)
-                finish()
-            }
-        }
-    }
 
 }

@@ -23,35 +23,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+    <TextView
+        android:id="@+id/invite_count_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="@font/roboto"
+        android:text="@string/invites_count_description"
+        android:textColor="@color/black"
+        android:textSize="@dimen/textSize16"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_bar" />
     <RelativeLayout
         android:id="@+id/user_search_results_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/marginTwenty"
+        android:layout_marginTop="12dp"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_bar"
+        app:layout_constraintTop_toBottomOf="@id/invite_count_description"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <TextView
-            android:id="@+id/invite_count_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/invites_count_description"
-            android:textSize="@dimen/textSize16"
-            android:layout_marginStart="@dimen/marginTwenty"
-            android:layout_marginEnd="@dimen/marginTwenty"
-            android:fontFamily="@font/roboto"
-            android:textColor="@color/black"
-            android:layout_centerHorizontal="true"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/user_search_results_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/marginTwenty"
-            android:layout_marginTop="@dimen/small_circle_button_size"
             android:layout_marginEnd="@dimen/marginTwenty"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="8"

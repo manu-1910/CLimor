@@ -50,9 +50,9 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
 
     @SuppressLint("InlinedApi")
     private val SELECTION: String =
-        "${ContactsContract.Contacts.HAS_PHONE_NUMBER} = ? and ${ContactsContract.Contacts.DISPLAY_NAME_PRIMARY} LIKE ? and ${ContactsContract.RawContacts.ACCOUNT_TYPE} = ?"
+        "${ContactsContract.Contacts.HAS_PHONE_NUMBER} = ? and ${ContactsContract.Contacts.DISPLAY_NAME_PRIMARY} LIKE ?"
     private var searchString: String = ""
-    private val selectionArgs = arrayOf<String>("1",searchString,"com.google")
+    private val selectionArgs = arrayOf<String>("1", searchString)
 
     private var contactsAdapter: ContactsListAdapter? = null
     private var limorUsersAdapter: InviteLimorUsersAdapter? = null
@@ -116,15 +116,7 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
     }
 
     private fun updateCountText(count: Int) {
-        if (count > 0) {
-            binding.inviteCountDescription.visibility = View.VISIBLE
-            binding.inviteCountDescription.text =
-                resources.getString(R.string.invites_count_description, count)
-        } else {
-            binding.inviteCountDescription.visibility = View.GONE
-            binding.inviteCountDescription.text =
-                resources.getString(R.string.invites_count_description, count)
-        }
+        binding.inviteCountDescription.text = resources.getString(R.string.invites_count_description, count)
     }
 
     private fun setTextWatchers() {

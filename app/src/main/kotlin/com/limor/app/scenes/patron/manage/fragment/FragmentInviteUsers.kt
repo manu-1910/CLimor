@@ -90,15 +90,8 @@ class FragmentInviteUsers : Fragment(), Injectable {
 
 
     private fun updateCountText(count: Int) {
-        if (count > 0) {
-            binding.inviteCountDescription.visibility = View.VISIBLE
-            binding.inviteCountDescription.text =
-                resources.getString(R.string.invites_count_description, count)
-        } else {
-            binding.inviteCountDescription.visibility = View.GONE
-            binding.inviteCountDescription.text =
-                resources.getString(R.string.invites_count_description, count)
-        }
+        binding.inviteCountDescription.text =
+            resources.getString(R.string.invites_count_description, count)
     }
 
     private fun setTextWatchers() {
