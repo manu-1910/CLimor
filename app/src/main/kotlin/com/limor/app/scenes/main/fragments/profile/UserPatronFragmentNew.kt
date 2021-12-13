@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main.fragments.profile
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -12,6 +13,7 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
@@ -24,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
 import com.android.billingclient.api.ConsumeParams
 import com.android.billingclient.api.SkuDetails
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmnetUserPatronNewBinding
@@ -37,8 +40,10 @@ import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
+import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
 import com.limor.app.scenes.patron.FragmentShortItemSlider
 import com.limor.app.scenes.patron.manage.ManagePatronActivity
+import com.limor.app.scenes.patron.manage.fragment.ChangePriceActivity
 import com.limor.app.scenes.patron.setup.PatronSetupActivity
 import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.PlayerViewManager
@@ -60,7 +65,6 @@ import javax.inject.Inject
 
 
 class UserPatronFragmentNew : Fragment() {
-
 
     companion object {
         private const val USER_ID_KEY = "USER_ID_KEY"
@@ -86,6 +90,13 @@ class UserPatronFragmentNew : Fragment() {
 
     private val castsAdapter = GroupieAdapter()
 
+    var editPriceLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                reload()
+            }
+        }
+
     private val currentCasts = mutableListOf<CastUIModel>()
     private val loadMoreItem = LoadMoreItem {
         updateLoadMore(false)
@@ -107,7 +118,9 @@ class UserPatronFragmentNew : Fragment() {
     }
 
     private fun loadCasts() {
-        Timber.d("Patron Casts Loading for ${user.id}")
+        if (BuildConfig.DEBUG) {
+            Timber.d("Patron Casts Loading for ${user.id}")
+        }
         viewModel.loadPatronCasts(user.id, Constants.CAST_BATCH_SIZE, castOffset)
     }
 
@@ -194,6 +207,9 @@ class UserPatronFragmentNew : Fragment() {
     }
 
     private fun onLoadCasts(casts: List<CastUIModel>) {
+        if (BuildConfig.DEBUG) {
+            Timber.d("Got ${casts.size} patron casts.")
+        }
         if (castOffset == 0) {
             binding.castsList.layoutManager = LinearLayoutManager(context)
             binding.castsList.adapter = castsAdapter
@@ -248,11 +264,22 @@ class UserPatronFragmentNew : Fragment() {
                     onPurchaseRequested(sku, cast)
                 },
                 productDetailsFetcher = playBillingHandler,
-                onEditPreviewClick = {
+                onEditPreviewClick = { cast ->
+                    EditPreviewDialog.newInstance(cast).also { fragment ->
+                        fragment.show(parentFragmentManager, fragment.requireTag())
+                    }
                 },
                 onPlayPreviewClick = { cast, play ->
                 },
                 onEditPriceClick = { cast ->
+                    Intent(requireActivity(), ChangePriceActivity::class.java).apply {
+                        putExtra(ChangePriceActivity.CHANGE_PRICE_FOR_ALL_CASTS, false)
+                        putExtra(ChangePriceActivity.CAST_ID, cast.id)
+                        putExtra(ChangePriceActivity.SELECTED_PRICE_ID, cast.patronDetails?.priceId)
+                    }.also {
+                        editPriceLauncher.launch(it)
+                    }
+
                 }
             )
         }
@@ -271,7 +298,7 @@ class UserPatronFragmentNew : Fragment() {
     }
     
     private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?){
-        if(cast.patronDetails?.purchased == false){
+        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
             LimorDialog(layoutInflater).apply {
                 setTitle(R.string.purchase_cast_title)
                 setMessage(R.string.purchase_cast_description_for_comment)
@@ -373,7 +400,7 @@ class UserPatronFragmentNew : Fragment() {
         binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
         binding.termsCheckBox.isChecked = false
         Timber.d("Current User state -> ${user.patronInvitationStatus} ---")
-        user.isPatron = false
+        // user.isPatron = false
         if (currentUser()) {
             if (user.isPatron == true) {
                 //is already a patron

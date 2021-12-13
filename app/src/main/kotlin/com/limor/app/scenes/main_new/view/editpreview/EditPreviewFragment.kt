@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
+import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.waveform.MarkerSet
 import com.limor.app.scenes.utils.waveform.WaveformFragment
 import com.limor.app.uimodels.CastUIModel
@@ -85,7 +86,7 @@ class EditPreviewFragment : WaveformFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // TODO stop audio, stop processing etc
+        deleteAudio()
     }
 
     private fun setUI(root: View?) {
@@ -117,10 +118,20 @@ class EditPreviewFragment : WaveformFragment() {
 
         val startsAt = waveformView.adjustedPixelsToMillisecs(marker.startPos)
         val endsAt = waveformView.adjustedPixelsToMillisecs(marker.endPos)
+        val durationMillis = endsAt - startsAt
+
+        if (durationMillis < 30 * 1000) {
+            LimorDialog(layoutInflater).apply {
+                setTitle(R.string.preview_duration)
+                setMessage(R.string.preview_duration_hint)
+                addButton(R.string.ok, true)
+            }.show()
+            return
+        }
 
         details.startsAt = startsAt
         details.endsAt = endsAt
-        details.previewDuration = endsAt - startsAt
+        details.previewDuration = durationMillis
 
         nextButtonEdit.isEnabled = false
 
@@ -128,6 +139,7 @@ class EditPreviewFragment : WaveformFragment() {
 
         model.updatePreview(podcast = cast).observe(viewLifecycleOwner) { success ->
             if (success) {
+                deleteAudio()
                 EditPreviewDialog.DismissEvent.dismiss()
 
             } else {
@@ -156,7 +168,7 @@ class EditPreviewFragment : WaveformFragment() {
 
     private fun downloadCast() {
         val testURL = "https://limor-platform-development.s3-eu-west-1.amazonaws.com/podcast_audio_direct_upload/audioFile_163661872969286112_1636618729691.x-m4a"
-        val castURL = testURL // cast.audio?.url ?: return
+        val castURL = cast.audio?.url ?: return
         val original = "$audioFileName.original"
         val file = File(original)
 
@@ -177,7 +189,18 @@ class EditPreviewFragment : WaveformFragment() {
             try {
                 file.delete()
             } catch (t: Throwable) {
-                // ignored
+                t.printStackTrace()
+            }
+        }
+    }
+
+    private fun deleteAudio() {
+        val file = File(audioFileName)
+        if (file.exists()) {
+            try {
+                file.delete()
+            } catch (t: Throwable) {
+                t.printStackTrace()
             }
         }
     }

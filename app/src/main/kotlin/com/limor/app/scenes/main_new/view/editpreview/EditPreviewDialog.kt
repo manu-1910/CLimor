@@ -77,6 +77,11 @@ class EditPreviewDialog : BottomSheetDialogFragment() {
         return binding.root
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        editPreviewFragment?.onDestroy()
+    }
+
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
         editPreviewFragment?.onDestroy()

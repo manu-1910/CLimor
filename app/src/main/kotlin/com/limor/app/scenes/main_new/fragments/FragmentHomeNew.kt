@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.billingclient.api.ConsumeParams
 import com.android.billingclient.api.SkuDetails
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.calculateAmplitude
 import com.limor.app.common.BaseFragment
@@ -302,8 +303,12 @@ class FragmentHomeNew : BaseFragment() {
         }
     }
 
-    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?){
-        if(cast.patronDetails?.purchased == false){
+    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?) {
+        if (BuildConfig.DEBUG) {
+            println("Cast owner is ${cast.owner?.id}, current user is ${PrefsHandler.getCurrentUserId(requireContext())}");
+        }
+
+        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
             LimorDialog(layoutInflater).apply {
                 setTitle(R.string.purchase_cast_title)
                 setMessage(R.string.purchase_cast_description_for_comment)

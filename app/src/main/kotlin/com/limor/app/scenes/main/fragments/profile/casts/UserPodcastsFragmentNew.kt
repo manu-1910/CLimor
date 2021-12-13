@@ -25,6 +25,7 @@ import com.limor.app.di.Injectable
 import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.requireTag
 import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
@@ -217,8 +218,8 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         }
     }
 
-    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?){
-        if(cast.patronDetails?.purchased == false){
+    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?) {
+        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
             LimorDialog(layoutInflater).apply {
                 setTitle(R.string.purchase_cast_title)
                 setMessage(R.string.purchase_cast_description_for_comment)

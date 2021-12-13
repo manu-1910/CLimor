@@ -52,6 +52,8 @@ class PlayBillingHandler @Inject constructor(
 
     private val detailsListeners = mutableListOf<WeakReference<DetailsAvailableListener>>()
 
+    private var mFetching = false
+
     private val purchasesUpdatedListener by lazy {
         PurchasesUpdatedListener { billingResult, purchases ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED) {
@@ -172,7 +174,7 @@ class PlayBillingHandler @Inject constructor(
     private suspend fun getSkusFromParams(params: SkuDetailsParams.Builder): List<SkuDetails> {
         val result = billingClient.querySkuDetails(params.build())
         if (BuildConfig.DEBUG) {
-            Timber.d("Billing SKUs-> ${result.skuDetailsList}")
+            Timber.d("getSkusFromParams result is ${result.billingResult.responseCode} (${result.billingResult.debugMessage}), SKUs-> ${result.skuDetailsList}")
         }
         return result.skuDetailsList ?: listOf()
     }
@@ -258,6 +260,11 @@ class PlayBillingHandler @Inject constructor(
      * This connects to the billing client if not connected and fetches the product IDs.
      */
     private fun fetchProductIDs(onDone: ((details: List<SkuDetails>) -> Unit)? = null) {
+        // This simple flag works because all product fetch requests are done on the main thread
+        if (mFetching) {
+            return
+        }
+        mFetching = true
         connectToBillingClient { connected ->
             if (connected) {
                 billingScope.launch {
@@ -267,7 +274,12 @@ class PlayBillingHandler @Inject constructor(
                         onDone?.invoke(details)
                     }
                 }
+            } else {
+                if (BuildConfig.DEBUG) {
+                    println("Could not connect to the billing client. Billing client connection state: ${billingClient.connectionState}")
+                }
             }
+            mFetching = false
         }
     }
 
@@ -315,6 +327,9 @@ class PlayBillingHandler @Inject constructor(
         //
         val delta = System.currentTimeMillis() - lastFetchTime
         if (delta > refreshTimeLimit) {
+            if (BuildConfig.DEBUG) {
+                println("Will refetch from Google Play because $delta ms passed since last fetch.")
+            }
             fetchProductIDs()
             return
         }
