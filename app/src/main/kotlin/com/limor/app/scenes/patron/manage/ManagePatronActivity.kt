@@ -49,7 +49,7 @@ class ManagePatronActivity : AppCompatActivity(), HasSupportFragmentInjector, Pl
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
-        if (!intent.extras?.getString("invitations", "").isNullOrEmpty()) {
+        if (intent.extras?.containsKey("invitations") == true) {
             navController.navigate(R.id.fragment_invite_users)
         }
 

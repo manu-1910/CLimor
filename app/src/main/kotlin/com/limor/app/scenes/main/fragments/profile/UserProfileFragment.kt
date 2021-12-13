@@ -28,6 +28,7 @@ import com.limor.app.scenes.profile.DialogUserProfileActions
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.UserUIModel
+import org.jetbrains.anko.design.snackbar
 import java.time.Duration
 import javax.inject.Inject
 
@@ -213,6 +214,13 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         binding.toolbar.btnBack.setOnClickListener {
             (activity)?.onBackPressed()
         }
+
+        binding.toolbar.btnOpenInvitations.setOnClickListener {
+            if(CommonsKt.user?.availableInvitations?:0>0){
+                startActivity(Intent(requireContext(),
+                    ManagePatronActivity::class.java).putExtra("invitations", ""))
+            }
+        }
     }
 
     private fun setupDefaultTab() {
@@ -253,10 +261,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
         // ensureToolbar()
 
-        binding.toolbar.btnInvitations.setOnClickListener {
-            startActivity(Intent(requireContext(),
-                ManagePatronActivity::class.java).putExtra("invitations", ""))
-        }
     }
 
     private fun ensureToolbar() {
@@ -302,7 +306,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
         if (isSignedInUser) {
             binding.toolbar.invitePendingTv.text = "${user.availableInvitations}"
-            binding.toolbar.btnInvitations.visibility = View.VISIBLE
             if (user.isPatron == true && user.availableInvitations > 0) {
                 binding.toolbar.invitePendingTv.text = "${user.availableInvitations}"
                 binding.toolbar.btnInvitations.visibility = View.VISIBLE
@@ -404,6 +407,10 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
     override fun onResume() {
         super.onResume()
-        binding.toolbar.invitePendingTv.text = "${CommonsKt.user?.availableInvitations ?: ""}"
+        if(CommonsKt.user?.availableInvitations?:0 > 0){
+            binding.toolbar.invitePendingTv.text = "${CommonsKt.user?.availableInvitations ?: ""}"
+        }else{
+            binding.toolbar.btnInvitations.visibility = View.GONE
+        }
     }
 }
