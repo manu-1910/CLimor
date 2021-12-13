@@ -4,22 +4,27 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.android.billingclient.api.*
 import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import com.limor.app.BuildConfig
 import com.limor.app.R
+import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.databinding.ActivityMainNewBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
 import com.limor.app.dm.ChatManager
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
+import com.limor.app.scenes.main_new.view_model.MainViewModel
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
@@ -49,6 +54,14 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     lateinit var chatManager: ChatManager
 
     @Inject
+    lateinit var infoRepository: GeneralInfoRepository
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    val model: MainViewModel by viewModels { viewModelFactory }
+
+    @Inject
     lateinit var playerBinder: PlayerBinder
 
 
@@ -69,8 +82,23 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         setUpBottomNavigation()
         setupDefaultValues()
 
+        checkAppVersion()
+
         activityPlayerViewManager =
             ActivityPlayerViewManager(supportFragmentManager, playerBinding, playerBinder)
+    }
+
+    private fun checkAppVersion() {
+            model.checkAppVersion(PLATFORM).observe(this){
+                res ->
+                res?.version?.let{
+                    version ->
+                    if(BuildConfig.VERSION_CODE < version.toInt()){
+                        //Launch Dialog by priority
+                    }
+                }
+
+            }
     }
 
     private fun setupDefaultValues() {
@@ -219,6 +247,10 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
             }
         }
         checkPodCastDynamicLink()
+    }
+
+    companion object{
+        val PLATFORM = "and"
     }
 
 }

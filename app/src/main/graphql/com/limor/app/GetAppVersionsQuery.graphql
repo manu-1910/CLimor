@@ -1,0 +1,6 @@
+query GetAppVersions($platform: String!){
+    getAppVersions(platform: $platform){
+        version
+        priority
+    }
+}
