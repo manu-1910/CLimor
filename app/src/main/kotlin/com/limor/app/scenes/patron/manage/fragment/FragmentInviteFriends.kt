@@ -143,13 +143,18 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
         binding.toolbar.btnNotification.visibility = View.GONE
 
         binding.inviteButton.setOnClickListener {
-            val numbers = selectedContacts.mapNotNull { it.phoneNumber }
-            if(numbers.size>CommonsKt.user?.availableInvitations?:0){
-                binding.root.snackbar("You can only invite ${CommonsKt.user?.availableInvitations} people")
+            if(CommonsKt.user?.availableInvitations?:0 > 0){
+                val numbers = selectedContacts.mapNotNull { it.phoneNumber }
+                if(numbers.size>CommonsKt.user?.availableInvitations?:0){
+                    binding.root.snackbar("You can only invite ${CommonsKt.user?.availableInvitations} people")
+                }else{
+                    CommonsKt.user?.availableInvitations = numbers.size
+                    model.inviteExternal(numbers)
+                }
             }else{
-                CommonsKt.user?.availableInvitations = numbers.size
-                model.inviteExternal(numbers)
+                binding.root.snackbar("No more invites left!")
             }
+
 
         }
     }
@@ -219,6 +224,9 @@ class FragmentInviteFriends : Fragment(), Injectable, LoaderManager.LoaderCallba
             data.moveToNext()
         }
         contactsAdapter?.setContacts(result)
+        if(CommonsKt.user?.availableInvitations?:0==0){
+            binding.inviteButton.isEnabled = false
+        }
         //binding.contactsListLayout.visibility = View.VISIBLE
     }
 

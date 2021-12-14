@@ -28,7 +28,6 @@ import com.limor.app.scenes.profile.DialogUserProfileActions
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.UserUIModel
-import org.jetbrains.anko.design.snackbar
 import java.time.Duration
 import javax.inject.Inject
 
@@ -216,10 +215,8 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         }
 
         binding.toolbar.btnOpenInvitations.setOnClickListener {
-            if(CommonsKt.user?.availableInvitations?:0>0){
-                startActivity(Intent(requireContext(),
-                    ManagePatronActivity::class.java).putExtra("invitations", ""))
-            }
+            startActivity(Intent(requireContext(),
+                ManagePatronActivity::class.java).putExtra("invitations", ""))
         }
     }
 
@@ -305,8 +302,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         binding.profileMainContainer.visibility = View.VISIBLE
 
         if (isSignedInUser) {
-            binding.toolbar.invitePendingTv.text = "${user.availableInvitations}"
-            if (user.isPatron == true && user.availableInvitations > 0) {
+            if (user.isPatron == true) {
                 binding.toolbar.invitePendingTv.text = "${user.availableInvitations}"
                 binding.toolbar.btnInvitations.visibility = View.VISIBLE
             }
@@ -407,10 +403,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
 
     override fun onResume() {
         super.onResume()
-        if(CommonsKt.user?.availableInvitations?:0 > 0){
-            binding.toolbar.invitePendingTv.text = "${CommonsKt.user?.availableInvitations ?: ""}"
-        }else{
-            binding.toolbar.btnInvitations.visibility = View.GONE
-        }
+        binding.toolbar.invitePendingTv.text = "${CommonsKt.user?.availableInvitations ?: "0"}"
     }
 }

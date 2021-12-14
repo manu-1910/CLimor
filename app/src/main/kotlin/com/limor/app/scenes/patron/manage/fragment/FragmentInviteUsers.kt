@@ -76,8 +76,7 @@ class FragmentInviteUsers : Fragment(), Injectable {
            onSelected = {
                //invite
                model.inviteInternalUsers(it.id)
-               CommonsKt.user?.availableInvitations = limorUsersAdapter?.inviteCount?:0
-
+               updateCountText(CommonsKt.user?.availableInvitations?:0)
            }
         )
         performSearch("")

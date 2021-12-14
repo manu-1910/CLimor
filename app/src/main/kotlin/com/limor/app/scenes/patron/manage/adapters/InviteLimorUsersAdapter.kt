@@ -21,12 +21,10 @@ class InviteLimorUsersAdapter(
     private val onSelected: (id: UserUIModel) -> Unit,
 ) : RecyclerView.Adapter<InviteLimorUsersAdapter.LimorUserViewHolder>() {
 
-    var inviteCount: Int = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LimorUserViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_limor_user, parent, false)
-        inviteCount = CommonsKt.user?.availableInvitations?:0
         return LimorUserViewHolder(view)
     }
 
@@ -96,14 +94,13 @@ class InviteLimorUsersAdapter(
                     R.color.colorAccent
                 )
                 inviteButton.setOnClickListener {
-                    if(adapter.inviteCount>0){
+                    val count = CommonsKt.user?.availableInvitations ?: 0
+                    if (count > 0) {
                         userUIModel.patronStatus = "ALREADY_INVITED"
-                        adapter.inviteCount =
-                            if (userUIModel.availableInvitations - 1 <= 0) 0 else userUIModel.availableInvitations - 1
                         adapter.updateItemAt(position, userUIModel)
-                        CommonsKt.user?.availableInvitations = adapter.inviteCount
+                        CommonsKt.user?.availableInvitations = if(count-1 < 0) 0 else count-1
                         onSelected(userUIModel)
-                    }else{
+                    } else {
                         inviteButton.snackbar("No More invites left!")
                     }
 
@@ -129,10 +126,11 @@ class InviteLimorUsersAdapter(
             inviteButton.text = accountName.context.getString(R.string.reminder)
             inviteButton.backgroundColor = ContextCompat.getColor(
                 accountName.context,
-                R.color.main_button_background
+                R.color.colorAccent
             )
             inviteButton.setOnClickListener {
                 onSelected(userUIModel)
+                inviteButton.snackbar("Reminder sent")
             }
         }
 

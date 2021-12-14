@@ -49,9 +49,7 @@ class ManagePatronFragment : BaseFragment() {
             requireActivity().finish()
         }
         binding.invitationsLayout.setOnClickListener {
-            if(CommonsKt.user?.availableInvitations?:0 > 0){
-                findNavController().navigate(R.id.action_manage_patron_fragment_to_fragment_invite_users)
-            }
+            findNavController().navigate(R.id.action_manage_patron_fragment_to_fragment_invite_users)
         }
         binding.changeCastPricesLayout.setOnClickListener {
             val intent = Intent(requireActivity(), ChangePriceActivity::class.java)
