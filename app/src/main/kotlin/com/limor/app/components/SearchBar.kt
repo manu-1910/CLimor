@@ -7,10 +7,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatEditText
 import com.limor.app.R
-import com.limor.app.extensions.hideKeyboard
-import com.limor.app.extensions.makeInVisible
-import com.limor.app.extensions.makeVisible
-import com.limor.app.extensions.viewScope
+import com.limor.app.extensions.*
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
