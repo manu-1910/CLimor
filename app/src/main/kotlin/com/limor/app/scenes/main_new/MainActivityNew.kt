@@ -1,9 +1,17 @@
 package com.limor.app.scenes.main_new
 
+import android.app.AlertDialog
+import android.content.ActivityNotFoundException
+import android.content.DialogInterface
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -25,10 +33,7 @@ import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main_new.view_model.MainViewModel
-import com.limor.app.scenes.utils.ActivityPlayerViewManager
-import com.limor.app.scenes.utils.CommonsKt
-import com.limor.app.scenes.utils.PlayerViewManager
-import com.limor.app.scenes.utils.showExtendedPlayer
+import com.limor.app.scenes.utils.*
 import com.limor.app.service.AudioService
 import com.limor.app.service.PlayBillingHandler
 import com.limor.app.service.PlayerBinder
@@ -38,6 +43,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main_new.*
+import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
 import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -93,12 +99,49 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
                 res ->
                 res?.version?.let{
                     version ->
-                    if(BuildConfig.VERSION_CODE < version.toInt()){
+                    Timber.d("VERISON -> $version")
+                    if(BuildConfig.VERSION_CODE < version.toIntOrNull()?:0){
                         //Launch Dialog by priority
+                        showUpdateDialog("",res.priority!!)
                     }
                 }
 
             }
+    }
+
+    private fun showUpdateDialog(versionName: String,priority: Int) {
+        val dialogBuilder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_force_update, null)
+        dialogBuilder.setView(dialogView)
+        dialogBuilder.setCancelable(false)
+        val dialog: AlertDialog = dialogBuilder.create()
+
+        if(priority>=1){
+            //Mark as mandatory update
+            dialogView.cancelButton.visibility = View.GONE
+        }
+
+        dialogView.cancelButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogView.okButton.setOnClickListener {
+            //Taking to play store
+            try{
+                startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(CommonsKt.APP_URI)))
+            }catch (e: ActivityNotFoundException){
+                startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(CommonsKt.APP_URL)))
+            }
+            dialog.dismiss()
+        }
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset)
+            show()
+        }
     }
 
     private fun setupDefaultValues() {
