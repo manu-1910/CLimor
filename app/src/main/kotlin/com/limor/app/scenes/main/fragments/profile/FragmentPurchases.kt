@@ -27,6 +27,7 @@ import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentPurchasesBinding
 import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.requireTag
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.casts.CastItem
 import com.limor.app.scenes.main.fragments.profile.casts.LoadMoreItem
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsViewModel
@@ -240,7 +241,7 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
     }
 
     private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?){
-        if(cast.patronDetails?.purchased == false){
+        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
             LimorDialog(layoutInflater).apply {
                 setTitle(R.string.purchase_cast_title)
                 setMessage(R.string.purchase_cast_description_for_comment)

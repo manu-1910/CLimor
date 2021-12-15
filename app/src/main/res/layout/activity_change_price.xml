@@ -50,7 +50,7 @@
         android:layout_weight="1"
         android:background="@drawable/bg_round_yellow_ripple_new"
         android:fontFamily="@font/roboto_medium"
-        android:text="@string/submit"
+        android:text="@string/btnUpdate"
         android:textAllCaps="false"
         android:textColor="@color/textPrimary"
         android:textSize="@dimen/textSize14" />

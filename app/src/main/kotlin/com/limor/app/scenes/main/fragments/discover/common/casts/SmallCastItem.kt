@@ -49,7 +49,7 @@ class SmallCastItem(
                 Glide.with(root)
                     .load(cast.imageLinks.medium)
                     .into(castImage)
-            } else {
+            } else if (cast.colorCode != null) {
                 castImage.setBackgroundColor(Color.parseColor(cast.colorCode))
             }
             Glide.with(root)

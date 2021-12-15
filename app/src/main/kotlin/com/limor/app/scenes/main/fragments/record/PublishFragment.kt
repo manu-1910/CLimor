@@ -326,10 +326,13 @@ class PublishFragment : BaseFragment() {
 
     private fun getUserinfo() {
         publishViewModel.getUserProfile().observe(viewLifecycleOwner) {
-            it?.let { user ->
-                CommonsKt.user = user
-                Timber.d("Cast patron-> ${user.isPatron}")
-                updateUIState()
+            CommonsKt.user = it
+
+            updateUIState()
+            fetchPrices()
+
+            if (BuildConfig.DEBUG) {
+                Timber.d("Cast patron-> ${it?.isPatron}")
             }
         }
     }
@@ -355,11 +358,7 @@ class PublishFragment : BaseFragment() {
         })
     }
 
-    private fun subscribeToViewModel() {
-        locationViewModel.locationData.observe(viewLifecycleOwner) {
-            onNewLocation(it)
-        }
-
+    private fun fetchPrices() {
         if (isPatronUser()) {
             val list = ArrayList<String>()
             playBillingHandler.getPrices().observe(viewLifecycleOwner, {
@@ -371,14 +370,12 @@ class PublishFragment : BaseFragment() {
                 //setPrices(list)
             })
         }
+    }
 
-
-        /*publishViewModel.inAppPricesData.observe(viewLifecycleOwner){
-            tiers ->
-            tiers?.let{ ids ->
-                loadCastTiers(ids.filterNotNull())
-            }
-        }*/
+    private fun subscribeToViewModel() {
+        locationViewModel.locationData.observe(viewLifecycleOwner) {
+            onNewLocation(it)
+        }
     }
 
     private fun onNewLocation(location: UILocations?) {

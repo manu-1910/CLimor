@@ -137,7 +137,7 @@
                 android:layout_below="@id/summary_layout"
                 android:layout_marginStart="@dimen/marginTwenty"
                 android:layout_marginTop="@dimen/margin26"
-                android:fontFamily="@font/roboto"
+                android:fontFamily="@font/roboto_bold"
                 android:text="@string/cast_earnings"
                 android:textColor="@color/grayWave"
                 android:textSize="@dimen/textSize14" />
@@ -166,7 +166,7 @@
                     android:editable="false"
                     android:inputType="none"
                     android:textColor="@color/black"
-                    android:textSize="12sp" />
+                    android:textSize="@dimen/textSize16" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -188,7 +188,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="12dp"
                     android:fontFamily="@font/roboto"
-                    android:text="Last 3 months"
+                    android:text="This week"
                     android:textColor="@color/notification_secondary_text"
                     android:textSize="@dimen/textSizeTiny" />
 

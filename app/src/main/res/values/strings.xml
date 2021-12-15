@@ -975,4 +975,7 @@
         <item>com.limor.dev.tier_60|99.99</item>
         <item>com.limor.dev.tier_65|129.99</item>
     </string-array>
+
+    <string name="preview_duration">Preview Duration</string>
+    <string name="preview_duration_hint">The preview duration must be at least 30 seconds long.</string>
 </resources>
