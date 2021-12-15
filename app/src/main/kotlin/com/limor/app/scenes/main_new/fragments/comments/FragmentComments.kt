@@ -1,22 +1,24 @@
 package com.limor.app.scenes.main_new.fragments.comments
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.core.os.bundleOf
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.limor.app.App
 import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.FragmentCommentsBinding
 import com.limor.app.extensions.dismissFragment
-import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.CommentActionType
-import com.limor.app.scenes.main.viewmodels.HandleCommentActionsViewModel
 import com.limor.app.scenes.main_new.fragments.comments.list.ParentCommentSection
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentChildItem
 import com.limor.app.scenes.main_new.fragments.comments.list.item.CommentParentItem
@@ -77,7 +79,6 @@ class FragmentComments : UserMentionFragment() {
                 PrefsHandler.saveCurrentUserId(requireContext(), it)
             }
         }
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

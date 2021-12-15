@@ -1,17 +1,22 @@
 package com.limor.app.scenes.main_new.fragments.comments
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.updateLayoutParams
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.databinding.FragmentRootCommentsBinding
+import com.limor.app.extensions.dismissFragment
 import com.limor.app.uimodels.CastUIModel
 
 class RootCommentsFragment : BottomSheetDialogFragment() {
@@ -73,8 +78,23 @@ class RootCommentsFragment : BottomSheetDialogFragment() {
             }
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        if(App.instance.playerBinder.isPlayingComment()){
+            App.instance.playerBinder.stop()
+        }
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        if(App.instance.playerBinder.isPlayingComment()){
+            App.instance.playerBinder.stop()
+        }
+    }
+
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
     }
+
 }
