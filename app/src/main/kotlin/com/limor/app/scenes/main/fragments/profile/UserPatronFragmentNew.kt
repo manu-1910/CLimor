@@ -237,6 +237,7 @@ class UserPatronFragmentNew : Fragment() {
     private fun getCastItems(casts: List<CastUIModel>): List<CastItem> {
         return casts.map {
             CastItem(
+                userId = user.id,
                 cast = it,
                 onCastClick = ::onCastClick,
                 onLikeClick = { cast, like -> viewModel.likeCast(cast, like) },

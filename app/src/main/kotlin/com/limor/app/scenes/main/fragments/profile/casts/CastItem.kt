@@ -2,6 +2,7 @@ package com.limor.app.scenes.main.fragments.profile.casts
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Handler
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -12,6 +13,7 @@ import com.limor.app.dm.ShareResult
 import com.limor.app.extensions.*
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.service.DetailsAvailableListener
 import com.limor.app.service.ProductDetails
@@ -22,6 +24,7 @@ import com.xwray.groupie.viewbinding.BindableItem
 import timber.log.Timber
 
 class CastItem(
+    val userId: Int,
     val cast: CastUIModel,
     private val onCastClick: (CastUIModel, SkuDetails?) -> Unit,
     private val onLikeClick: (CastUIModel, like: Boolean) -> Unit,
@@ -124,6 +127,24 @@ class CastItem(
                 onEditPriceClick(cast)
             }
 
+            ivPodcastAvatar.setOnClickListener {
+                if(cast.owner?.id != userId){
+                    openUserProfile(cast)
+                }
+            }
+
+            ivAvatarImageListening.setOnClickListener {
+                if(cast.owner?.id != userId){
+                    openUserProfile(cast)
+                }
+            }
+
+            tvPodcastUserName.setOnClickListener {
+                if(cast.owner?.id != userId){
+                    openUserProfile(cast)
+                }
+            }
+
             binding.btnPlayStopPreview.setOnClickListener {
                 playingPreview = !playingPreview
                 binding.btnPlayStopPreview.text = if (playingPreview) "Stop" else "Preview"
@@ -151,6 +172,13 @@ class CastItem(
 
         }
 
+    }
+
+    private fun openUserProfile(item: CastUIModel) {
+        val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+        userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, item.owner?.username)
+        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, item.owner?.id)
+        context.startActivity(userProfileIntent)
     }
 
     private fun initRecastState(binding: ItemUserCastBinding, item: CastUIModel) {
