@@ -886,7 +886,7 @@
         <item>99.99</item>
     </string-array>
     <string name="category_selection_hint">You can only select 5 categories. if you talk about sport, Select `Sport`</string>
-    <string name="preview_note">Preview must be in between 10 secs to 30 secs</string>
+    <string name="preview_note">Preview must be in between 30 secs to 3 mins</string>
     <string name="save_as_preview">Save as Preview</string>
 
     <string name="fetching_audio">Fetching audio...</string>
