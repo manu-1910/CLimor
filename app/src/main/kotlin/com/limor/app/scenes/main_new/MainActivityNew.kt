@@ -2,7 +2,6 @@ package com.limor.app.scenes.main_new
 
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -22,6 +21,9 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.android.billingclient.api.*
 import com.google.android.material.navigation.NavigationBarView
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.limor.app.BuildConfig
 import com.limor.app.R
@@ -35,7 +37,6 @@ import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragm
 import com.limor.app.scenes.main_new.view_model.MainViewModel
 import com.limor.app.scenes.utils.*
 import com.limor.app.service.AudioService
-import com.limor.app.service.PlayBillingHandler
 import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.TagUIModel
 import com.limor.app.util.AppNavigationManager
@@ -45,6 +46,7 @@ import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main_new.*
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
 import kotlinx.coroutines.*
+import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -95,21 +97,70 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     }
 
     private fun checkAppVersion() {
-            model.checkAppVersion(PLATFORM).observe(this){
-                res ->
-                res?.version?.let{
-                    version ->
-                    Timber.d("VERISON -> $version")
-                    if(BuildConfig.VERSION_CODE < version.toIntOrNull()?:0){
-                        //Launch Dialog by priority
-                        showUpdateDialog("",res.priority!!)
+        model.checkAppVersion(PLATFORM).observe(this) { res ->
+            res?.let { data ->
+                Timber.d("VERISON -> $data")
+                val versionOnBE = data.version?.toIntOrNull() ?: 9
+                if (versionOnBE > BuildConfig.VERSION_CODE) {
+
+                    //Launch Dialog by priority
+                    //showUpdateDialog("", res.priority!!)
+                    val appUpdateManager = AppUpdateManagerFactory.create(this)
+
+                    // Returns an intent object that you use to check for an update.
+                    val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+                    val priority = data.priority ?: 0
+                    // Get the priority to Define App Update Type
+                    val updateType =
+                        if (priority == 5) AppUpdateType.IMMEDIATE else AppUpdateType.FLEXIBLE
+                    // Checks that the platform will allow the specified type of update.
+                    appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+                        Timber.d("VERISON -> $appUpdateInfo")
+                        if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                            && appUpdateInfo.isUpdateTypeAllowed(updateType)
+                        ) {
+                            // Request the update.
+
+                            //Use a snackBar or the dialog
+                            appUpdateManager.startUpdateFlowForResult(
+                                // Pass the intent that is returned by 'getAppUpdateInfo()'.
+                                appUpdateInfo,
+                                // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
+                                updateType,
+                                // The current activity making the update request.
+                                this,
+                                // Include a request code to later monitor this update request.
+                                5000)
+                        } else {
+                            Timber.d("VERISON -> update not supported")
+
+                        }
+                    }.addOnFailureListener {
+                        Timber.e(it)
+                        Timber.d("VERISON -> $it  exception")
+
                     }
+
                 }
 
             }
+
+        }
     }
 
-    private fun showUpdateDialog(versionName: String,priority: Int) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 5000) {
+            if (resultCode == RESULT_OK) {
+                binding.bottomBar.snackbar("New Version Has been Installed")
+            } else {
+                Timber.e("LIMOR -> Update flow failed! Result code: $resultCode")
+            }
+        }
+
+    }
+
+    private fun showUpdateDialog(versionName: String, priority: Int) {
         val dialogBuilder = AlertDialog.Builder(this)
         val inflater = layoutInflater
         val dialogView = inflater.inflate(R.layout.dialog_force_update, null)
@@ -117,7 +168,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         dialogBuilder.setCancelable(false)
         val dialog: AlertDialog = dialogBuilder.create()
 
-        if(priority>=1){
+        if (priority >= 1) {
             //Mark as mandatory update
             dialogView.cancelButton.visibility = View.GONE
         }
