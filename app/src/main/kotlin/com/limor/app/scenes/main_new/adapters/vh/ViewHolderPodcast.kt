@@ -93,7 +93,20 @@ class ViewHolderPodcast(
             if (item.listensCount == 0) "0" else item.listensCount?.toLong()?.formatHumanReadable
     }
 
+    private fun hidePatronControls() {
+        binding.apply {
+            notCastOwnerActions.ensureGone()
+            castOwnerActions.ensureGone()
+            btnPurchasedCast.ensureGone()
+            patronCastIndicator.ensureGone()
+        }
+    }
+
     private fun setPatronPodcastStatus(item: CastUIModel) {
+        // Always hide patron controls regardless of the context, this ensures that they aren't
+        // shown incorrectly when a view holder is recycled.
+        hidePatronControls()
+
         if (item.patronCast == true) {
             val userId = PrefsHandler.getCurrentUserId(context)
             binding.patronCastIndicator.visibility = View.VISIBLE
@@ -135,10 +148,6 @@ class ViewHolderPodcast(
 
                 }
             }
-        } else {
-            binding.notCastOwnerActions.visibility = View.GONE
-            binding.castOwnerActions.visibility = View.GONE
-            binding.btnPurchasedCast.visibility = View.GONE
         }
     }
 
