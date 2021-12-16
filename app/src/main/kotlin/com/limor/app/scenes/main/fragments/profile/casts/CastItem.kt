@@ -107,10 +107,6 @@ class CastItem(
                 onCastClick(cast, skuDetails)
             }
 
-            btnPodcastMore.setOnClickListener {
-                onMoreDialogClick(cast)
-            }
-
             btnPodcastComments.throttledClick {
                 onCommentsClick(cast, skuDetails)
             }
@@ -277,7 +273,6 @@ class CastItem(
 
                     if (cast.patronDetails?.purchased == true) {
                         binding.btnPurchasedCast.visibility = View.VISIBLE
-                        binding.btnPodcastMore.visibility = View.GONE
                         binding.notCastOwnerActions.visibility = View.GONE
                         binding.castOwnerActions.visibility = View.GONE
                         binding.btnPurchasedCast.text =
@@ -309,10 +304,10 @@ class CastItem(
             }
         } else {
             binding.btnPurchasedCast.visibility = View.GONE
-            binding.btnPodcastMore.visibility = View.GONE
             binding.notCastOwnerActions.visibility = View.GONE
             binding.castOwnerActions.visibility = View.GONE
             binding.btnPurchasedCast.visibility = View.GONE
+            binding.patronCastIndicator.visibility = View.GONE
         }
     }
 

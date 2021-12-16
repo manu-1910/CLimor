@@ -70,7 +70,11 @@ class ViewHolderPodcast(
             onUserMentionClick,
             onHashTagClick
         )
-
+        if(item.patronCast == true){
+            binding.patronCastIndicator.visibility = View.VISIBLE
+        } else{
+            binding.patronCastIndicator.visibility = View.GONE
+        }
     }
 
     private fun setPodcastOwnerInfo(item: CastUIModel) {
@@ -103,7 +107,6 @@ class ViewHolderPodcast(
                 (item.owner?.id != userId) -> {
                     if(item.patronDetails?.purchased == true){
                         binding.btnPurchasedCast.visibility = View.VISIBLE
-                        binding.btnPodcastMore.visibility = View.GONE
                         binding.notCastOwnerActions.visibility = View.GONE
                         binding.castOwnerActions.visibility = View.GONE
                         binding.btnPurchasedCast.text = "Purchased at ${item.patronDetails?.castPurchasedDetails?.purchased_in_currency} ${item.patronDetails?.castPurchasedDetails?.purchased_at_price} "
@@ -158,21 +161,6 @@ class ViewHolderPodcast(
     }
 
     private fun setOnClicks(item: CastUIModel) {
-        binding.btnPodcastMore.setOnClickListener {
-            val bundle = bundleOf(DialogPodcastMoreActions.CAST_KEY to item)
-            val navController = it.findNavController()
-            it.findViewTreeLifecycleOwner()?.let { ownerLife ->
-                navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>("reload_feed")
-                    ?.observe(
-                        ownerLife
-                    ) {
-                        onReloadData.invoke(item.id, true)
-                    }
-                navController.navigate(R.id.action_navigation_home_to_dialog_report_podcast, bundle)
-
-            }
-
-        }
 
         binding.clItemPodcastFeed.setOnClickListener {
             onCastClick(item, skuDetails)

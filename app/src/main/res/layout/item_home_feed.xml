@@ -105,20 +105,6 @@
         tools:text="2 days ago - Ireland" />
 
     <ImageButton
-        android:id="@+id/btnPodcastMore"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="16dp"
-        android:background="@color/transparent"
-        android:padding="8dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_3_dots_horizontal"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@id/shadowTop"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageButton
         android:id="@+id/patronCastIndicator"
         android:layout_width="40dp"
         android:layout_height="40dp"
