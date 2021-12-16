@@ -136,6 +136,12 @@ fun View.makeGone() {
     visibility = View.GONE
 }
 
+fun View.ensureGone() {
+    if (visibility != View.GONE) {
+        visibility = View.GONE
+    }
+}
+
 val View.viewScope: CoroutineScope
     get() {
         val storedScope = getTag(R.string.view_coroutine_scope) as? CoroutineScope
