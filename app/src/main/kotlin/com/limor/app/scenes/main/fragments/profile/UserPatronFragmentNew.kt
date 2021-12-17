@@ -52,6 +52,7 @@ import com.limor.app.service.PurchaseTarget
 import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.UserUIModel
+import com.limor.app.uimodels.mapToAudioTrack
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 import dagger.android.support.AndroidSupportInjection
@@ -270,6 +271,19 @@ class UserPatronFragmentNew : Fragment() {
                     }
                 },
                 onPlayPreviewClick = { cast, play ->
+                    cast.audio?.mapToAudioTrack()?.let { it1 ->
+                        cast.patronDetails?.startsAt?.let { it2 ->
+                            cast.patronDetails.endsAt?.let { it3 ->
+                                if (play) {
+                                    (activity as? PlayerViewManager)?.playPreview(
+                                        it1, it2.toInt(), it3.toInt()
+                                    )
+                                } else {
+                                    (activity as? PlayerViewManager)?.stopPreview()
+                                }
+                            }
+                        }
+                    }
                 },
                 onEditPriceClick = { cast ->
                     Intent(requireActivity(), ChangePriceActivity::class.java).apply {
