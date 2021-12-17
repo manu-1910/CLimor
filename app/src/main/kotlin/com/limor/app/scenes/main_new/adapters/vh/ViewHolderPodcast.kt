@@ -113,8 +113,7 @@ class ViewHolderPodcast(
                     }else{
                         //Purchase a cast actions
                         binding.notCastOwnerActions.visibility = View.VISIBLE
-                        binding.btnAddPreview.visibility = View.GONE
-                        binding.btnEditPrice.visibility = View.GONE
+                        binding.castOwnerActions.visibility = View.GONE
                         binding.btnPurchasedCast.visibility = View.GONE
                         setPricingLabel()
                     }
