@@ -758,6 +758,8 @@
     <string name="patron_carousel_slide_2_title">Create premium <font fgcolor='#F9BB4B'>casts</font> for your community</string>
     <string name="patron_carousel_slide_3_title">Freedom to <font fgcolor='#F9BB4B'>monetize</font> your content</string>
     <string name="patron_carousel_slide_approved_title">Congratulations! Your request has been approved.</string>
+    <string name="patron_complete_on_boarding_title">Complete your Patron Onboarding</string>
+    <string name="patron_membership_purchased">You have purchased your patron membership</string>
     <string name="requesting">Requesting...</string>
     <string name="patron_categories">Patron Categories</string>
     <string name="patron_languages">Patron Languages</string>

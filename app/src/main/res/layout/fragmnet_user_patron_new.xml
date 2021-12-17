@@ -5,6 +5,7 @@
     android:layout_height="match_parent">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -24,10 +25,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_alignParentTop="true"
-                    android:layout_marginTop="@dimen/margin32"
-                    android:alpha="0.12"
                     android:layout_marginStart="@dimen/marginTwenty"
+                    android:layout_marginTop="@dimen/margin32"
                     android:layout_marginEnd="@dimen/marginTwenty"
+                    android:alpha="0.12"
                     android:background="@color/notification_divider"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,9 +38,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_alignParentTop="true"
-                    android:alpha="0.12"
                     android:layout_marginStart="@dimen/marginTwenty"
                     android:layout_marginEnd="@dimen/marginTwenty"
+                    android:alpha="0.12"
                     android:background="@color/notification_divider"
                     app:layout_constraintTop_toBottomOf="@id/audio_player" />
 
@@ -189,9 +190,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_alignParentTop="true"
-                    android:alpha="0.12"
                     android:layout_marginStart="@dimen/marginTwenty"
                     android:layout_marginEnd="@dimen/marginTwenty"
+                    android:alpha="0.12"
                     android:background="@color/notification_divider"
                     app:layout_constraintTop_toBottomOf="@id/mangePatronTV" />
 
@@ -255,5 +256,37 @@
 
     </androidx.core.widget.NestedScrollView>
 
+    <io.supercharge.shimmerlayout.ShimmerLayout
+        android:id="@+id/progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/nestedScrollView"
+        app:layout_constraintTop_toTopOf="@+id/nestedScrollView"
+        app:shimmer_angle="30"
+        app:shimmer_auto_start="true"
+        app:shimmer_color="#222222">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_margin="@dimen/margin24"
+                android:background="#EFEFEF" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_margin="@dimen/margin24"
+                android:background="@drawable/btn_primary_background"
+                android:backgroundTint="#efefef" />
+        </LinearLayout>
+
+
+    </io.supercharge.shimmerlayout.ShimmerLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
