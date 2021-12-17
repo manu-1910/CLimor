@@ -24,7 +24,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
-import com.android.billingclient.api.ConsumeParams
 import com.android.billingclient.api.SkuDetails
 import com.limor.app.BuildConfig
 import com.limor.app.R
@@ -430,7 +429,6 @@ class UserPatronFragmentNew : Fragment() {
                     //findNavController().navigate(R.id.action_navigateProfileFragment_to_managePatronFragment)
                 }
             } else {
-
                 // audio should be present for all patron invitation statuses
                 setupAudioPlayer(user.patronAudioURL, user.patronAudioDurationSeconds)
                 when (user.patronInvitationStatus) {
@@ -473,6 +471,7 @@ class UserPatronFragmentNew : Fragment() {
                                         getString(R.string.limorPatronSetupWallet)
                                     binding.patronButton.isEnabled = true
                                     binding.managePatronStateLayout.visibility = View.VISIBLE
+                                    binding.managePatronDescriptionTV.visibility = View.VISIBLE
                                     binding.pager.visibility = View.GONE
                                     binding.indicator.visibility = View.GONE
                                     binding.checkLayout.visibility = View.GONE
