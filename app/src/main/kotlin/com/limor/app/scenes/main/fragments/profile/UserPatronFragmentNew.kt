@@ -52,6 +52,7 @@ import com.limor.app.service.PurchaseTarget
 import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.UserUIModel
+import com.limor.app.uimodels.mapToAudioTrack
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 import dagger.android.support.AndroidSupportInjection
@@ -237,6 +238,7 @@ class UserPatronFragmentNew : Fragment() {
     private fun getCastItems(casts: List<CastUIModel>): List<CastItem> {
         return casts.map {
             CastItem(
+                userId = user.id,
                 cast = it,
                 onCastClick = ::onCastClick,
                 onLikeClick = { cast, like -> viewModel.likeCast(cast, like) },
@@ -270,6 +272,19 @@ class UserPatronFragmentNew : Fragment() {
                     }
                 },
                 onPlayPreviewClick = { cast, play ->
+                    cast.audio?.mapToAudioTrack()?.let { it1 ->
+                        cast.patronDetails?.startsAt?.let { it2 ->
+                            cast.patronDetails.endsAt?.let { it3 ->
+                                if (play) {
+                                    (activity as? PlayerViewManager)?.playPreview(
+                                        it1, it2.toInt(), it3.toInt()
+                                    )
+                                } else {
+                                    (activity as? PlayerViewManager)?.stopPreview()
+                                }
+                            }
+                        }
+                    }
                 },
                 onEditPriceClick = { cast ->
                     Intent(requireActivity(), ChangePriceActivity::class.java).apply {
@@ -319,7 +334,7 @@ class UserPatronFragmentNew : Fragment() {
 
     private fun onCastClick(cast: CastUIModel, sku: SkuDetails?) {
         Timber.d("Clicked ${activity}")
-        if (cast.patronDetails?.purchased == false) {
+        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
             LimorDialog(layoutInflater).apply {
                 setTitle(R.string.purchase_cast_title)
                 setMessage(R.string.purchase_cast_description)
@@ -431,7 +446,6 @@ class UserPatronFragmentNew : Fragment() {
                     //findNavController().navigate(R.id.action_navigateProfileFragment_to_managePatronFragment)
                 }
             } else {
-
                 // audio should be present for all patron invitation statuses
                 setupAudioPlayer(user.patronAudioURL, user.patronAudioDurationSeconds)
                 when (user.patronInvitationStatus) {
@@ -474,6 +488,7 @@ class UserPatronFragmentNew : Fragment() {
                                         getString(R.string.limorPatronSetupWallet)
                                     binding.patronButton.isEnabled = true
                                     binding.managePatronStateLayout.visibility = View.VISIBLE
+                                    binding.managePatronDescriptionTV.visibility = View.VISIBLE
                                     binding.pager.visibility = View.GONE
                                     binding.indicator.visibility = View.GONE
                                     binding.checkLayout.visibility = View.GONE

@@ -55,6 +55,7 @@ class  CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayo
             if (currentPosition.toMillis() == 0L) {
                 playListener?.invoke()
             }
+            playerBinder.setIsPlayingComment(true)
             playerBinder.playPause(
                 commentAudioTrack!!,
                 showNotification = false
@@ -131,11 +132,4 @@ class  CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayo
         binding.progressSeekbar.setOnTouchListener { v, event -> !enable }
     }
 
-    override fun onDetachedFromWindow() {
-        // only stop the audio if it is playing this comment's audio
-        if (null != commentAudioTrack && playerBinder.currentAudioTrack == commentAudioTrack) {
-            playerBinder.stop()
-        }
-        super.onDetachedFromWindow()
-    }
 }

@@ -255,6 +255,11 @@ class ExtendedPlayerFragment : UserMentionFragment(),
             },
             { hashTag -> onHashTagClick(hashTag) }
         )
+        if(cast.patronCast == true){
+            binding.patronCastIndicator.visibility = View.VISIBLE
+        } else{
+            binding.patronCastIndicator.visibility = View.GONE
+        }
     }
 
     private fun setPodcastOwnerInfo(cast: CastUIModel) {

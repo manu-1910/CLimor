@@ -29,6 +29,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextWatcher
 import android.text.style.UnderlineSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -80,6 +81,7 @@ import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.CommonsKt.Companion.dpToPx
 import com.limor.app.scenes.utils.CommonsKt.Companion.toEditable
+import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.SpecialCharactersInputFilter
 import com.limor.app.scenes.utils.location.MyLocation
 import com.limor.app.scenes.utils.waveform.KeyboardUtils
@@ -731,6 +733,14 @@ class PublishFragment : BaseFragment() {
                 "publishPatronDialogShown") == false
         ) {
             showPublishPatronCastDialog()
+            Log.d("DURATION", "${mediaPlayer.duration} is duration")
+        } else if (isPatronUser() && mediaPlayer.duration < 30000) {
+            LimorDialog(layoutInflater).apply {
+                setTitle(R.string.preview_duration)
+                setMessage(R.string.preview_duration_hint)
+                addButton(R.string.ok, true)
+            }.show()
+            return
         } else {
             publishCast()
         }

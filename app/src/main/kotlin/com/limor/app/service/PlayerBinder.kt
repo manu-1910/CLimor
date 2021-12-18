@@ -32,6 +32,8 @@ class PlayerBinder @Inject constructor(
 
     private var previewEndPosition = 0
 
+    private var isPlayingComment = false
+
     private val connection = object : ServiceConnection {
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -43,6 +45,9 @@ class PlayerBinder @Inject constructor(
                 audioService.getPlayerStatus()
                     .onEach {
                         playerStatus.value = it
+                        if(it == PlayerStatus.Ended){
+                            isPlayingComment = false
+                        }
                     }
                     .launchIn(playerBinderScope)
 
@@ -159,6 +164,7 @@ class PlayerBinder @Inject constructor(
 
     fun stop() {
         previewEndPosition = 0
+        isPlayingComment = false
         unbindAudioService()
     }
 
@@ -190,4 +196,11 @@ class PlayerBinder @Inject constructor(
             playerStatus.value = PlayerStatus.Init
         }
     }
+
+    fun setIsPlayingComment(boolean: Boolean){
+        isPlayingComment = boolean
+    }
+
+    fun isPlayingComment() = isPlayingComment
+
 }
