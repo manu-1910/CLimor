@@ -154,6 +154,12 @@ class PhoneAuthHandler @Inject constructor() :
     }
 
     fun enterCodeAndSignIn(code: String) {
+        if (code.isEmpty()) {
+            activity?.let {
+                _smsCodeValidationErrorMessage.postValue(it.getString(R.string.no_code_entered))
+            }
+            return
+        }
         scope.launch {
             // this would enable the 'Continue' button in the FragmentVerifyPhoneNumber, which we
             // don't need as it's confusing you can continue while the phone verification is

@@ -977,4 +977,6 @@
 
     <string name="preview_duration">Preview Duration</string>
     <string name="preview_duration_hint">The preview duration must be at least 30 seconds long.</string>
+
+    <string name="no_code_entered">No code entered.</string>
 </resources>
