@@ -76,6 +76,7 @@ class UserPatronFragmentNew : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: UserProfileViewModel by viewModels { viewModelFactory }
+
     @Inject
     lateinit var playBillingHandler: PlayBillingHandler
     private lateinit var user: UserUIModel
@@ -310,9 +311,11 @@ class UserPatronFragmentNew : Fragment() {
             }
         }
     }
-    
-    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?){
-        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
+
+    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?) {
+        if (cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(
+                requireContext())
+        ) {
             LimorDialog(layoutInflater).apply {
                 setTitle(R.string.purchase_cast_title)
                 setMessage(R.string.purchase_cast_description_for_comment)
@@ -322,7 +325,7 @@ class UserPatronFragmentNew : Fragment() {
                     launchPurchaseCast(cast, sku)
                 }
             }.show()
-        } else{
+        } else {
             RootCommentsFragment.newInstance(cast).also { fragment ->
                 fragment.show(parentFragmentManager, fragment.requireTag())
             }
@@ -331,7 +334,7 @@ class UserPatronFragmentNew : Fragment() {
 
     private fun onCastClick(cast: CastUIModel, sku: SkuDetails?) {
         Timber.d("Clicked ${activity}")
-        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())){
+        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
             LimorDialog(layoutInflater).apply {
                 setTitle(R.string.purchase_cast_title)
                 setMessage(R.string.purchase_cast_description)
@@ -341,7 +344,7 @@ class UserPatronFragmentNew : Fragment() {
                     launchPurchaseCast(cast, sku)
                 }
             }.show()
-        } else{
+        } else {
             (activity as? PlayerViewManager)?.showExtendedPlayer(cast.id)
         }
     }
