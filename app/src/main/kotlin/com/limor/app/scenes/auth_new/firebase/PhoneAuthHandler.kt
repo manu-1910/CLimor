@@ -176,8 +176,19 @@ class PhoneAuthHandler @Inject constructor() :
                 return@launch
             }
 
-            val credential = PhoneAuthProvider.getCredential(storedVerificationId, code)
-            // PrefsHandler.setLastVerificationId(App.instance, null)
+            val credential: PhoneAuthCredential?
+            try {
+                credential = PhoneAuthProvider.getCredential(storedVerificationId, code)
+            } catch (t: Throwable) {
+                t.printStackTrace()
+
+                val message = activity?.getString(R.string.error_getting_credentials)
+                        ?: "Error creating credential. Please try again."
+                _smsCodeValidationErrorMessage.postValue(message)
+
+                return@launch
+            }
+
             onVerificationCompleted(credential, false)
         }
     }
