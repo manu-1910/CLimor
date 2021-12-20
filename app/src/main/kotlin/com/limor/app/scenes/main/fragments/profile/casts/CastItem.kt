@@ -51,6 +51,13 @@ class CastItem(
         binding = viewBinding
         viewBinding.apply {
             context = root.context
+
+            binding.matureContentInfo.visibility = if (cast.maturedContent == true)
+                View.VISIBLE
+            else
+                View.GONE
+
+
             tvPodcastUserName.text = cast.owner?.username
             tvPodcastUserSubtitle.text = cast.getCreationDateAndPlace(root.context, true)
             ivVerifiedAvatar.visibility =
