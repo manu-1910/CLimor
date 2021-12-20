@@ -313,6 +313,7 @@
         tools:text="1.4k" />
 
     <LinearLayout
+        android:id="@+id/durationInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -342,6 +343,21 @@
             tools:text="3h 5m 30s" />
 
     </LinearLayout>
+
+    <TextView
+        android:background="@drawable/shape_semi_transparent_rounded_any_width"
+        android:id="@+id/matureContentInfo"
+        android:visibility="gone"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="12dp"
+        android:textSize="12sp"
+        android:text="@string/mature_content_info_text"
+        android:textColor="@color/white"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="@+id/durationInfo"
+        app:layout_constraintLeft_toRightOf="@+id/durationInfo"
+        app:layout_constraintTop_toTopOf="@+id/durationInfo" />
 
     <TextView
         android:id="@+id/tvPodcastTitle"

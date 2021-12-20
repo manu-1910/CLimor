@@ -75,6 +75,10 @@ class ViewHolderPodcast(
         } else{
             binding.patronCastIndicator.visibility = View.GONE
         }
+        binding.matureContentInfo.visibility = if (item.maturedContent == true)
+            View.VISIBLE
+        else
+            View.GONE
     }
 
     private fun setPodcastOwnerInfo(item: CastUIModel) {
