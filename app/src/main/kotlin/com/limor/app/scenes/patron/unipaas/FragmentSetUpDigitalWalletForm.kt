@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AutoCompleteTextView
 import androidx.activity.OnBackPressedCallback
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -25,6 +26,8 @@ import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UserUIModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.*
+import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
+import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
@@ -107,8 +110,8 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
 
     private fun setClickListeners() {
         binding.btnContinue.setOnClickListener {
-           // validateInputAndContinue()
-            findNavController().navigate(R.id.action_set_up_digital_wallet_form_fragment_to_set_up_digital_wallet_confirmation)
+            validateInputAndContinue()
+           // findNavController().navigate(R.id.action_set_up_digital_wallet_form_fragment_to_set_up_digital_wallet_confirmation)
         }
 
         binding.vCountryCode.setOnClickListener {
@@ -138,7 +141,7 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
             return
         }
 
-        if(AuthViewModelNew.isEmailValid(binding.etEnterEmailInner.text.toString())){
+        if(!AuthViewModelNew.isEmailValid(binding.etEnterEmailInner.text.toString())){
             binding.etEnterEmailInner.error = "Enter a valid email"
             binding.etEnterEmailInner.requestFocus()
             return
@@ -150,16 +153,23 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
             return
         }
 
+        if(model.countrySelected?.code == null){
+            binding.root.snackbar("Select a country code")
+            return
+        }
+
         model.createVendor(
             binding.etEnterFirstNameInner.text.toString(),
             binding.etEnterLastNameInner.text.toString(),
             binding.etEnterEmailInner.text.toString(),
-            binding.etEnterPhoneInner.text.toString(),
+            "${model.countrySelected?.code}${binding.etEnterPhoneInner.text.toString()}",
             binding.etEnterDOBInner.text.toString()
-        ).observe(viewLifecycleOwner){ url ->
-            if(url!=null){
+        ).observe(viewLifecycleOwner){ response ->
+            Timber.d("WALLET ->"+ response.toString())
+            if(response?.data?.onboardingURL!=null){
                 //Take user to success screen
-                findNavController().navigate(R.id.action_set_up_digital_wallet_form_fragment_to_set_up_digital_wallet_confirmation)
+                findNavController().navigate(R.id.action_set_up_digital_wallet_form_fragment_to_set_up_digital_wallet_confirmation,
+                bundleOf("url" to response.data.onboardingURL))
             }
 
         }

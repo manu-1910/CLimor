@@ -978,4 +978,6 @@
 
     <string name="preview_duration">Preview Duration</string>
     <string name="preview_duration_hint">The preview duration must be at least 30 seconds long.</string>
+    <string name="complete_onboarding">Complete Onboarding</string>
+    <string name="digital_wallet_processing">Digital Wallet Processing</string>
 </resources>

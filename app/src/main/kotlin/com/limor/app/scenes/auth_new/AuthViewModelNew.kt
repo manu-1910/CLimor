@@ -7,6 +7,7 @@ import android.content.res.AssetManager
 import android.os.CountDownTimer
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.*
+import com.limor.app.CreateVendorMutation
 import com.limor.app.GendersQuery
 import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.scenes.auth_new.data.*
@@ -525,8 +526,8 @@ class AuthViewModelNew @Inject constructor(
         email: String,
         phone: String,
         birthDate: String
-    ): LiveData<String?> {
-        val liveData = MutableLiveData<String?>()
+    ): LiveData<CreateVendorMutation.CreateVendor?> {
+        val liveData = MutableLiveData<CreateVendorMutation.CreateVendor?>()
         viewModelScope.launch {
            liveData.value = withContext(Dispatchers.IO){
                generalInfoRepository.createVendor(firstName,lastName,email,phone,birthDate)

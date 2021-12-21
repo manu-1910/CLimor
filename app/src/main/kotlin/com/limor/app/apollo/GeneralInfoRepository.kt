@@ -191,7 +191,7 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         email: String,
         phone: String,
         birthDate: String,
-    ): String? {
+    ): CreateVendorMutation.CreateVendor? {
         val query = CreateVendorMutation(
             firstName,
             lastName,
@@ -200,7 +200,7 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
             phone
         )
         val result = apollo.mutate(query)
-        return result?.data?.createVendor?.data?.onboardingURL ?: null
+        return result?.data?.createVendor
     }
 
 }

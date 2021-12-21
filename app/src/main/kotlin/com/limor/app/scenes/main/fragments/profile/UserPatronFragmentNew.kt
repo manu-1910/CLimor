@@ -445,7 +445,7 @@ class UserPatronFragmentNew : Fragment() {
                     //findNavController().navigate(R.id.action_navigateProfileFragment_to_managePatronFragment)
                 }
             } else {
-                user.patronOnBoardingStatus = "MEMBERSHIP_PURCHASED"
+                user.patronOnBoardingStatus = "LANGUAGES_COLLECTED"
                 // audio should be present for all patron invitation statuses
                 if(user.patronOnBoardingStatus!="MEMBERSHIP_PURCHASED"){
                     setupAudioPlayer(user.patronAudioURL, user.patronAudioDurationSeconds)
@@ -489,13 +489,13 @@ class UserPatronFragmentNew : Fragment() {
                                     binding.patronButton.isEnabled = true
                                 }
 
-                                /*"CATEGORIES_COLLECTED" -> {
+                                "CATEGORIES_COLLECTED" -> {
                                     setupViewPager(getPurchasedStateItems())
                                     binding.checkLayout.visibility = View.GONE
                                     binding.patronButton.text = getString(R.string.continue_button)
                                     binding.patronButton.isEnabled = true
                                     binding.audioPlayerView.visibility = View.GONE
-                                }*/
+                                }
 
                                 "LANGUAGES_COLLECTED" -> {
                                     //Show Limor Patron
@@ -519,7 +519,44 @@ class UserPatronFragmentNew : Fragment() {
                                     }
                                 }
                                 "VENDOR_CREATED" -> {
+                                    setupViewPager(ArrayList())
+                                    binding.audioPlayerView.visibility = View.VISIBLE
+                                    binding.termsCheckBox.isChecked = false
+                                    binding.patronButton.text =
+                                        getString(R.string.complete_onboarding)
+                                    binding.patronButton.isEnabled = true
+                                    binding.managePatronStateLayout.visibility = View.VISIBLE
+                                    binding.pager.visibility = GONE
+                                    binding.indicator.visibility = GONE
+                                    binding.checkLayout.visibility = GONE
 
+                                    binding.managePatron.setOnClickListener {
+                                        val intent = Intent(
+                                            requireActivity(),
+                                            ManagePatronActivity::class.java
+                                        )
+                                        startActivity(intent)
+                                    }
+                                }
+                                "BANK_DETAILS_PENDING" ->{
+                                    setupViewPager(ArrayList())
+                                    binding.audioPlayerView.visibility = View.VISIBLE
+                                    binding.termsCheckBox.isChecked = false
+                                    binding.patronButton.text =
+                                        getString(R.string.digital_wallet_processing)
+                                    binding.patronButton.isEnabled = true
+                                    binding.managePatronStateLayout.visibility = View.VISIBLE
+                                    binding.pager.visibility = GONE
+                                    binding.indicator.visibility = GONE
+                                    binding.checkLayout.visibility = GONE
+                                    binding.patronButton.isEnabled = false
+                                    binding.managePatron.setOnClickListener {
+                                        val intent = Intent(
+                                            requireActivity(),
+                                            ManagePatronActivity::class.java
+                                        )
+                                        startActivity(intent)
+                                    }
                                 }
                                 else -> {
                                     setupViewPager(getApprovedStateItems())
