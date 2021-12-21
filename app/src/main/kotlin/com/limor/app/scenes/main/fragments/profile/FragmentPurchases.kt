@@ -242,7 +242,7 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
                                         it1, it2.toInt(), it3.toInt()
                                     )
                                 } else {
-                                    (activity as? PlayerViewManager)?.stopPreview()
+                                    (activity as? PlayerViewManager)?.stopPreview(true)
                                 }
                             }
                         }

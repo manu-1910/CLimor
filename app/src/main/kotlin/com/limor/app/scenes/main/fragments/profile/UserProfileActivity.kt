@@ -97,6 +97,14 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector, PlayerVi
         activityPlayerViewManager?.showPlayer(args, onTransitioned)
     }
 
+    override fun isPlayingComment(audioTrack: AudioService.AudioTrack): Boolean {
+        return activityPlayerViewManager?.isPlayingComment(audioTrack) == true
+    }
+
+    override fun isPlaying(audioTrack: AudioService.AudioTrack): Boolean {
+        return activityPlayerViewManager?.isPlaying(audioTrack) == true
+    }
+
     override fun hidePlayer() {
         activityPlayerViewManager?.hidePlayer()
     }
@@ -116,8 +124,8 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector, PlayerVi
         activityPlayerViewManager?.playPreview(audio, startPosition, endPosition)
     }
 
-    override fun stopPreview() {
-        activityPlayerViewManager?.stopPreview()
+    override fun stopPreview(reset: Boolean) {
+        activityPlayerViewManager?.stopPreview(reset)
     }
 
     override fun onDestroy() {

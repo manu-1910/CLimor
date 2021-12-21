@@ -9,7 +9,9 @@ interface PlayerViewManager {
     fun hidePlayer()
     fun navigateToHashTag(hashtag: TagUIModel)
     fun playPreview(audio: AudioService.AudioTrack, startPosition: Int, endPosition: Int)
-    fun stopPreview()
+    fun stopPreview(reset: Boolean)
+    fun isPlayingComment(audioTrack: AudioService.AudioTrack): Boolean
+    fun isPlaying(audioTrack: AudioService.AudioTrack): Boolean
 
     data class PlayerArgs(
         val playerType: PlayerType,

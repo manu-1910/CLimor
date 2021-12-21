@@ -64,6 +64,14 @@ class ManagePatronActivity : AppCompatActivity(), HasSupportFragmentInjector, Pl
         activityPlayerViewManager?.showPlayer(args, onTransitioned)
     }
 
+    override fun isPlayingComment(audioTrack: AudioService.AudioTrack): Boolean {
+        return activityPlayerViewManager?.isPlayingComment(audioTrack) == true
+    }
+
+    override fun isPlaying(audioTrack: AudioService.AudioTrack): Boolean {
+        return activityPlayerViewManager?.isPlaying(audioTrack) == true
+    }
+
     override fun hidePlayer() {
         activityPlayerViewManager?.hidePlayer()
     }
@@ -74,8 +82,8 @@ class ManagePatronActivity : AppCompatActivity(), HasSupportFragmentInjector, Pl
     override fun playPreview(audio: AudioService.AudioTrack, startPosition: Int, endPosition: Int) {
     }
 
-    override fun stopPreview() {
-    }
+    override fun stopPreview(reset: Boolean) {
 
+    }
 
 }

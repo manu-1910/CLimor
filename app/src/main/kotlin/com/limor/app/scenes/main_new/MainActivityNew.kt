@@ -136,6 +136,14 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         activityPlayerViewManager?.showPlayer(args, onTransitioned)
     }
 
+    override fun isPlayingComment(audioTrack: AudioService.AudioTrack): Boolean {
+        return activityPlayerViewManager?.isPlayingComment(audioTrack) == true
+    }
+
+    override fun isPlaying(audioTrack: AudioService.AudioTrack): Boolean {
+        return activityPlayerViewManager?.isPlaying(audioTrack) == true
+    }
+
     override fun hidePlayer() {
         activityPlayerViewManager?.hidePlayer()
     }
@@ -156,8 +164,12 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         activityPlayerViewManager?.playPreview(audio, startPosition, endPosition)
     }
 
-    override fun stopPreview() {
-        activityPlayerViewManager?.stopPreview()
+    override fun stopPreview(reset: Boolean) {
+        activityPlayerViewManager?.stopPreview(reset)
+    }
+
+    fun stop(){
+        activityPlayerViewManager?.stop()
     }
 
     fun checkPodCastDynamicLink() {

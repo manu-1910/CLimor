@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,10 +28,14 @@ import com.limor.app.extensions.makeGone
 import com.limor.app.extensions.makeInVisible
 import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.viewmodels.PodcastViewModel
 import com.limor.app.scenes.profile.DialogUserProfileActions
 import com.limor.app.scenes.profile.DialogUserReport
+import com.limor.app.scenes.utils.PlayerViewManager
+import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.mapToAudioTrack
 import com.limor.app.uimodels.mapToUIModel
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.coroutines.launch
@@ -62,6 +67,9 @@ class DialogPodcastMoreActions : DialogFragment() {
     private lateinit var updatePodcastListener : UpdatePodcastListener
 
     private val cast: CastUIModel by lazy { requireArguments().getParcelable(CAST_KEY)!! }
+
+    @Inject
+    lateinit var playerBinder: PlayerBinder
 
     var launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -103,6 +111,24 @@ class DialogPodcastMoreActions : DialogFragment() {
                 }
             } else{
                 binding.btnDeleteCast.makeGone()
+            }
+            if(cast.patronCast == true && cast.owner?.id == PrefsHandler.getCurrentUserId(requireContext())){
+                binding.btnPlayPreview.makeVisible()
+                binding.btnPlayPreview.setOnClickListener {
+                    cast.audio?.mapToAudioTrack()?.let { it1 ->
+                        cast.patronDetails?.startsAt?.let { it2 ->
+                            cast.patronDetails?.endsAt?.let { it3 ->
+                                if((activity as? PlayerViewManager)?.isPlaying(it1) == true){
+                                    // Stopping the original playback(not preview) if it is same cast
+                                    (activity as? PlayerViewManager)?.stopPreview(false)
+                                }
+                                (activity as? PlayerViewManager)?.playPreview(
+                                    it1, it2, it3
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }

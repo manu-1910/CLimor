@@ -83,6 +83,10 @@ class PlayerBinder @Inject constructor(
         return currentAudioTrack != audioTrack || playerStatus.value != PlayerStatus.Playing
     }
 
+    fun audioTrackIsPlaying(audioTrack: AudioService.AudioTrack): Boolean {
+        return currentAudioTrack == audioTrack && playerStatus.value == PlayerStatus.Playing
+    }
+
     fun audioTrackIsInInitState(audioTrack: AudioService.AudioTrack): Boolean {
         return currentAudioTrack == audioTrack && playerStatus.value == PlayerStatus.Init
     }
@@ -162,9 +166,11 @@ class PlayerBinder @Inject constructor(
         }
     }
 
-    fun stop() {
+    fun stop(reset: Boolean = true) {
+        if(reset){
+            isPlayingComment = false
+        }
         previewEndPosition = 0
-        isPlayingComment = false
         unbindAudioService()
     }
 
