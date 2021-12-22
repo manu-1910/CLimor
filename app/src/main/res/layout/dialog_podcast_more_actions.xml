@@ -73,6 +73,17 @@
                 app:iconPadding="8dp"
                 app:iconSize="14dp" />
             <Button
+                android:id="@+id/btnPlayPreview"
+                style="@style/ButtonTextStyle.Icon"
+                android:layout_width="match_parent"
+                android:text="@string/play_preview"
+                android:visibility="gone"
+                android:textColor="@color/black"
+                app:icon="@drawable/ic_podcast_listening"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconSize="14dp" />
+            <Button
                 android:id="@+id/btnReportUser"
                 style="@style/ButtonTextStyle.Icon"
                 android:layout_width="match_parent"

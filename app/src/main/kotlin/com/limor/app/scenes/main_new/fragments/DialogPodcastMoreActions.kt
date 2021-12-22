@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
@@ -19,25 +18,23 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.limor.app.EditCastActivity
 import com.limor.app.R
-import com.limor.app.UpdatePodcastMutation
-import com.limor.app.apollo.CastsRepository
-import com.limor.app.apollo.UserRepository
 import com.limor.app.databinding.DialogPodcastMoreActionsBinding
 import com.limor.app.extensions.makeGone
 import com.limor.app.extensions.makeInVisible
 import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.viewmodels.PodcastViewModel
 import com.limor.app.scenes.profile.DialogUserProfileActions
 import com.limor.app.scenes.profile.DialogUserReport
+import com.limor.app.scenes.utils.PlayerViewManager
+import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.CastUIModel
-import com.limor.app.uimodels.mapToUIModel
+import com.limor.app.uimodels.mapToAudioTrack
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.coroutines.launch
 import org.jetbrains.anko.cancelButton
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.support.v4.startActivityForResult
 import javax.inject.Inject
 
 class DialogPodcastMoreActions : DialogFragment() {
@@ -62,6 +59,9 @@ class DialogPodcastMoreActions : DialogFragment() {
     private lateinit var updatePodcastListener : UpdatePodcastListener
 
     private val cast: CastUIModel by lazy { requireArguments().getParcelable(CAST_KEY)!! }
+
+    @Inject
+    lateinit var playerBinder: PlayerBinder
 
     var launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -104,7 +104,22 @@ class DialogPodcastMoreActions : DialogFragment() {
             } else{
                 binding.btnDeleteCast.makeGone()
             }
+            if(cast.patronCast == true && cast.owner?.id == PrefsHandler.getCurrentUserId(requireContext())){
+                binding.btnPlayPreview.makeVisible()
+                binding.btnPlayPreview.setOnClickListener {
+                    playPreview()
+                }
+            }
         }
+    }
+
+    private fun playPreview() {
+        val audioTrack = cast.audio?.mapToAudioTrack() ?: return
+        val startPosition = cast.patronDetails?.startsAt ?: return
+        val endPosition = cast.patronDetails?.endsAt ?: return
+        val playerManager = activity as? PlayerViewManager ?: return
+
+        playerManager.playPreview(audioTrack, startPosition, endPosition)
     }
 
     override fun onAttach(context: Context) {

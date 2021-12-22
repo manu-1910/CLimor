@@ -1,6 +1,5 @@
 package com.limor.app.scenes.utils
 
-import android.media.AudioTrack
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -105,10 +104,17 @@ class ActivityPlayerViewManager(
         playerBinder.playPreview(audioTrack, startPosition, endPosition)
     }
 
-    override fun stopPreview() {
-        playerBinder.stop()
+    override fun stopPreview(reset: Boolean) {
+        playerBinder.stop(reset)
     }
 
+    override fun isPlayingComment(audioTrack: AudioService.AudioTrack): Boolean {
+        return (playerBinder.currentAudioTrack == audioTrack && playerBinder.isPlayingComment())
+    }
+
+    override fun isPlaying(audioTrack: AudioService.AudioTrack): Boolean {
+        return playerBinder.audioTrackIsPlaying(audioTrack)
+    }
 
     private inline fun <reified T> showFragment(fragment: () -> Fragment) {
         if (currentFragment is T) {
