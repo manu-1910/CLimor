@@ -729,15 +729,20 @@ class PublishFragment : BaseFragment() {
     }
 
     private fun handlePublishButtonClick() {
+        if (BuildConfig.DEBUG) {
+            println("The duration of the podcast is ${mediaPlayer.duration}")
+        }
         if (isPatronUser() && isPriceNotSelected() && PrefsHandler.getBoolean(requireContext(),
                 "publishPatronDialogShown") == false
         ) {
             showPublishPatronCastDialog()
-            Log.d("DURATION", "${mediaPlayer.duration} is duration")
-        } else if (isPatronUser() && mediaPlayer.duration < 30000) {
+
+        } else if (isPatronUser() && isPriceSelected() && mediaPlayer.duration < 30000) {
             LimorDialog(layoutInflater).apply {
-                setTitle(R.string.preview_duration)
-                setMessage(R.string.preview_duration_hint)
+                setTitle(R.string.duration_warning_title)
+                setMessage(R.string.duration_warning_message)
+                setMessageColor(ContextCompat.getColor(requireContext(), R.color.error_stroke_color))
+                setIcon(R.drawable.ic_warning_dialog)
                 addButton(R.string.ok, true)
             }.show()
             return
@@ -748,6 +753,10 @@ class PublishFragment : BaseFragment() {
 
     private fun isPriceNotSelected(): Boolean {
         return binding.castPrices.text.toString() == getString(R.string.free_cast_selection)
+    }
+
+    private fun isPriceSelected(): Boolean {
+        return !isPriceNotSelected()
     }
 
     private fun publishCast() {
