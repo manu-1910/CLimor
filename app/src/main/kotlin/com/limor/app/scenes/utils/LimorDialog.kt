@@ -41,6 +41,14 @@ class LimorDialog(private val layoutInflater: LayoutInflater) {
         }
     }
 
+    private fun getFiller(): View {
+        return View(layoutInflater.context).apply {
+            layoutParams = LinearLayout.LayoutParams(0, 48.px).apply {
+                weight = 0.44f
+            }
+        }
+    }
+
     fun setTitle(title: String) {
         dialogView.textTitle.text = title
     }
@@ -94,12 +102,8 @@ class LimorDialog(private val layoutInflater: LayoutInflater) {
 
     private fun adjustUI() {
         if (dialogView.buttons.childCount == 1) {
-            val button = dialogView.buttons.getChildAt(0) as Button
-            button.maxWidth = 140.dp
-//            button.updateLayoutParams<LinearLayout.LayoutParams> {
-//                marginStart = 50.dp
-//                marginEnd = 50.dp
-//            }
+            dialogView.buttons.addView(getFiller(), 0)
+            dialogView.buttons.addView(getFiller(), 2)
         }
     }
 
