@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -27,6 +28,7 @@ import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.viewmodels.PodcastViewModel
 import com.limor.app.scenes.profile.DialogUserProfileActions
 import com.limor.app.scenes.profile.DialogUserReport
+import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.CastUIModel
@@ -86,25 +88,36 @@ class DialogPodcastMoreActions : DialogFragment() {
     }
 
     private fun setViewsVisibility() {
+        val currentUserId = PrefsHandler.getCurrentUserId(requireContext())
+        val isOwner = cast.owner?.id == currentUserId
+
         lifecycleScope.launchWhenCreated {
-            val currentUserId = JwtChecker.getUserIdFromJwt()
             binding.loadingBar.makeGone()
             binding.visibilityGroup.makeVisible()
-            if(cast.recaster == null){
-                if (currentUserId != cast.owner?.id) {
-                    // Not current user cast
-                    binding.btnDeleteCast.makeGone()
-                    binding.btnEditCast.makeGone()
-                }else{
+
+            if(cast.recaster == null) {
+                if (isOwner) {
                     binding.btnReportCast.makeGone()
                     binding.btnBlockUser.makeGone()
                     binding.btnReportUser.makeGone()
                     binding.btnEditCast.makeVisible()
+
+                    if (cast.maturedContent == false) {
+                        binding.delimiterMatureContent.makeVisible()
+                        binding.btnMatureContent.makeVisible()
+                    }
+
+                } else {
+                    // Not current user cast
+                    binding.btnDeleteCast.makeGone()
+                    binding.btnEditCast.makeGone()
                 }
-            } else{
+
+            } else {
                 binding.btnDeleteCast.makeGone()
             }
-            if(cast.patronCast == true && cast.owner?.id == PrefsHandler.getCurrentUserId(requireContext())){
+
+            if (cast.patronCast == true && isOwner) {
                 binding.btnPlayPreview.makeVisible()
                 binding.btnPlayPreview.setOnClickListener {
                     playPreview()
@@ -180,6 +193,27 @@ class DialogPodcastMoreActions : DialogFragment() {
                 launcher.launch(intent)
             }
         }
+
+        binding.btnMatureContent.setOnClickListener {
+            showMatureContentDialog()
+        }
+    }
+
+    private fun showMatureContentDialog() {
+        LimorDialog(layoutInflater).apply {
+            setTitle(R.string.mature_content)
+            setMessage(R.string.mature_content_description)
+            setIcon(R.drawable.ic_change_price)
+            addButton(R.string.yes_title, false) { markAsMature() }
+            addButton(R.string.no_title, true)
+        }.show()
+    }
+
+    private fun markAsMature() {
+        cast.maturedContent = true
+        binding.btnMatureContent.makeGone()
+        binding.delimiterMatureContent.makeGone()
+        podcastViewModel.markAsMature(cast.id)
     }
 
     private fun onBlockUser() {
