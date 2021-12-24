@@ -49,6 +49,7 @@ class EditCastActivity : AppCompatActivity() {
         const val CAPTION: String = "CAPTION"
         const val TAGS: String = "TAGS"
         const val ID: String = "CAST_ID"
+        const val MATURE_CONTENT: String = "MATURE_CONTENT"
     }
 
     lateinit var binding: ActivityEditCastBinding
@@ -283,8 +284,10 @@ class EditCastActivity : AppCompatActivity() {
                 val caption = etDraftCaption?.text.toString() ?: ""
                 val tags = etHashtags?.text.toString() ?: ""
                 val fullCaption = "$caption${if (caption.isEmpty()) "" else "\n\n"}$tags"
-                val response = withContext(Dispatchers.IO){
-                    publishViewModel.updatePodcast(id, title, fullCaption)
+
+                val matureContent = false
+                val response = withContext(Dispatchers.IO) {
+                    publishViewModel.updatePodcast(id, title, fullCaption, matureContent)
                 }
                 response.let {
                     setResult(Activity.RESULT_OK)
