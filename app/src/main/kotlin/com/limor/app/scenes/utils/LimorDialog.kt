@@ -10,8 +10,10 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.updateLayoutParams
 import com.limor.app.R
 import com.limor.app.databinding.DialogGenericAlertBinding
+import com.limor.app.extensions.dp
 import com.limor.app.extensions.px
 import org.jetbrains.anko.sdk23.listeners.onClick
 
@@ -35,6 +37,14 @@ class LimorDialog(private val layoutInflater: LayoutInflater) {
             setText(labelResId)
             layoutParams = LinearLayout.LayoutParams(0, 48.px).apply {
                 weight = 1.0f
+            }
+        }
+    }
+
+    private fun getFiller(): View {
+        return View(layoutInflater.context).apply {
+            layoutParams = LinearLayout.LayoutParams(0, 48.px).apply {
+                weight = 0.44f
             }
         }
     }
@@ -90,7 +100,15 @@ class LimorDialog(private val layoutInflater: LayoutInflater) {
         }
     }
 
+    private fun adjustUI() {
+        if (dialogView.buttons.childCount == 1) {
+            dialogView.buttons.addView(getFiller(), 0)
+            dialogView.buttons.addView(getFiller(), 2)
+        }
+    }
+
     fun show() {
+        adjustUI()
         val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
         dialog.apply {
             window?.setBackgroundDrawable(inset)

@@ -981,4 +981,8 @@
     <string name="no_code_entered">No code entered.</string>
     <string name="error_getting_credentials">Error getting credential. Please try again.</string>
     <string name="mature_content_info_text">18+</string>
+    <string name="patron_cast_length_hint">Please ensure your cast is longer than 30 seconds if you want to monetise the cast</string>
+
+    <string name="duration_warning_title">Publish cast</string>
+    <string name="duration_warning_message">Please ensure your cast is longer than 30 seconds if you want to monetise the cast</string>
 </resources>
