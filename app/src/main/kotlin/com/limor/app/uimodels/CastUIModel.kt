@@ -63,7 +63,7 @@ data class CastUIModel(
     val links: LinkUIModel?,
     val recaster: UserUIModel?,
     var colorCode: String? = null,
-    val maturedContent: Boolean?,
+    var maturedContent: Boolean?,
     val patronCast: Boolean?,
     val patronDetails: PatronDetails? = null,
 ) : Parcelable {
