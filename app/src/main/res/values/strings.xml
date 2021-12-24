@@ -775,7 +775,7 @@
     <string name="patron_invite_not_required">Patron Invitation wasn\'t requested</string>
 
     <string name="mature_content">Mature Content (18+)</string>
-    <string name="mature_content_description">Does your cast contain profanity, swearing, sexual, gambling references.</string>
+    <string name="mature_content_description">Does your cast contain profanity, swearing, sexual, gambling references?</string>
     <string name="edit_price">Edit Price</string>
     <string name="edit_preview">Edit Preview</string>
     <string name="buy_cast">Buy</string>
@@ -981,4 +981,7 @@
     <string name="no_code_entered">No code entered.</string>
     <string name="error_getting_credentials">Error getting credential. Please try again.</string>
     <string name="mature_content_info_text">18+</string>
+
+    <string name="yes_title">Yes</string>
+    <string name="no_title">No</string>
 </resources>
