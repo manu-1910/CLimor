@@ -46,22 +46,27 @@ import androidx.navigation.fragment.findNavController
 import com.facebook.FacebookSdk.getApplicationContext
 import com.google.android.material.textfield.TextInputEditText
 import com.limor.app.App
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
 import com.limor.app.audio.wav.waverecorder.WaveRecorder
 import com.limor.app.audio.wav.waverecorder.calculateAmplitude
 import com.limor.app.common.BaseFragment
+import com.limor.app.databinding.FragmentPublishBinding
+import com.limor.app.databinding.FragmentRecordBinding
 import com.limor.app.events.PhoneCallEvent
 import com.limor.app.extensions.throttledClick
 import com.limor.app.scenes.main.viewmodels.DraftViewModel
 import com.limor.app.scenes.main.viewmodels.LocationsViewModel
 import com.limor.app.scenes.utils.Commons
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.CommonsKt.Companion.audioFileFormat
 import com.limor.app.scenes.utils.CommonsKt.Companion.getDateTimeFormatted
 import com.limor.app.scenes.utils.SpecialCharactersInputFilter
 import com.limor.app.scenes.utils.location.MyLocation
 import com.limor.app.scenes.utils.visualizer.RecordVisualizer
 import com.limor.app.uimodels.UIDraft
+import com.limor.app.uimodels.UserUIModel
 import io.reactivex.subjects.PublishSubject
 import io.square1.limor.remote.services.user.LOG_OUT_PATH
 import kotlinx.android.synthetic.main.dialog_cancel_draft.view.*
@@ -126,6 +131,8 @@ class RecordFragment : BaseFragment() {
 
     private var existingDraftsTitles = listOf<String>()
 
+    private lateinit var binding: FragmentRecordBinding
+
     companion object {
         val TAG: String = RecordFragment::class.java.simpleName
         fun newInstance() = RecordFragment()
@@ -164,7 +171,8 @@ class RecordFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_record, container, false)
+            binding = FragmentRecordBinding.inflate(inflater, container, false)
+            rootView = binding.root
             recordVisualizer = rootView?.findViewById(R.id.graphVisualizer)
             // recordVisualizer?.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         }
@@ -196,6 +204,7 @@ class RecordFragment : BaseFragment() {
             requestPermissions(PERMISSIONS, PERMISSION_ALL)
         }
 
+        getUserinfo()
     }
 
     private fun loadDrafts() {
@@ -1532,6 +1541,23 @@ class RecordFragment : BaseFragment() {
                 draftViewModel.uiDraft = uiDraft
                 draftViewModel.filesArray.clear()
                 draftViewModel.filesArray.add(File(uiDraft?.filePath))
+            }
+        }
+    }
+
+    private fun updateUIState(userUIModel: UserUIModel?) {
+        val user = userUIModel ?: return
+        binding.patronHint.visibility = if (user.isPatron == true) View.VISIBLE else View.GONE
+    }
+
+    private fun getUserinfo() {
+        draftViewModel.getUserProfile().observe(viewLifecycleOwner) { user ->
+            CommonsKt.user = user
+
+            updateUIState(user)
+
+            if (BuildConfig.DEBUG) {
+                Timber.d("In record fragment the user is patron-> ${user?.isPatron}")
             }
         }
     }

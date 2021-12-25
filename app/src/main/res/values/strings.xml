@@ -984,4 +984,10 @@
 
     <string name="yes_title">Yes</string>
     <string name="no_title">No</string>
+
+    <string name="patron_cast_length_hint">Please ensure your cast is longer than 30 seconds if you want to monetise the cast</string>
+
+    <string name="duration_warning_title">Publish cast</string>
+    <string name="duration_warning_message">Please ensure your cast is longer than 30 seconds if you want to monetise the cast</string>
+
 </resources>
