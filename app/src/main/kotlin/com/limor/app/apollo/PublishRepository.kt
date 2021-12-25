@@ -23,8 +23,21 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
         return createPodcastResult?.status
     }
 
-    suspend fun updatePodcast(podcastId: Int, title: String, caption: String): String?{
-        val mutation = UpdatePodcastMutation(podcastId, Input.fromNullable(title), Input.fromNullable(caption))
+    suspend fun updatePodcast(podcastId: Int, title: String, caption: String, matureContent: Boolean): String? {
+        val mutation = UpdatePodcastMutation(podcastId, Input.fromNullable(title), Input.fromNullable(caption), Input.fromNullable(matureContent))
+        val result = apollo.mutate(mutation)
+        val updatePodcastResult: UpdatePodcastMutation.UpdatePodcast? =
+            result?.data?.updatePodcast
+        return updatePodcastResult?.status
+    }
+
+    suspend fun markPodcastAsMature(podcastId: Int): String? {
+        val mutation = UpdatePodcastMutation(
+            podcastId = podcastId,
+            title = Input.absent(),
+            caption = Input.absent(),
+            matureContent = Input.fromNullable(true)
+        )
         val result = apollo.mutate(mutation)
         val updatePodcastResult: UpdatePodcastMutation.UpdatePodcast? =
             result?.data?.updatePodcast

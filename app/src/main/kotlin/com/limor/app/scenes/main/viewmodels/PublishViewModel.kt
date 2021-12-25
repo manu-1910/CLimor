@@ -109,10 +109,10 @@ class PublishViewModel @Inject constructor(
         }
     }
 
-    suspend fun updatePodcast(podcastId: Int, title: String, caption: String): String? {
+    suspend fun updatePodcast(podcastId: Int, title: String, caption: String, matureContent: Boolean): String? {
         return withContext(Dispatchers.IO) {
             try {
-                val response = publishRepository.updatePodcast(podcastId, title, caption)
+                val response = publishRepository.updatePodcast(podcastId, title, caption, matureContent)
                 response
             } catch (e: Exception) {
                 null
