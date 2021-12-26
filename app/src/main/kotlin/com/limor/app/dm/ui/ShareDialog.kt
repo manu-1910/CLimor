@@ -79,6 +79,7 @@ class ShareDialog : BottomSheetDialogFragment() {
         val app = context?.applicationContext as? App
         if (app?.merlinsBeard?.isConnected == false) {
             LimorDialog(layoutInflater).apply {
+                setIcon(R.drawable.ic_alert)
                 setTitle(R.string.no_connection_title)
                 setMessage(R.string.default_no_internet)
                 addButton(android.R.string.ok, true)
