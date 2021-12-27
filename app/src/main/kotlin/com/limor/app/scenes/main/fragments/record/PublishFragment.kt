@@ -267,10 +267,25 @@ class PublishFragment : BaseFragment() {
         prices.addAll(productIds)
         val adapter =
             ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, prices)
-        binding.castPrices.setText(items[0])
+
+        if (BuildConfig.DEBUG) {
+            println("The draft price is ${uiDraft.price}, details keys -> ${details.keys}")
+        }
+        if (uiDraft.price.isNullOrEmpty()) {
+            binding.castPrices.setText(items[0])
+        } else {
+            for ((k, v) in details) {
+                if (v.sku == uiDraft.price) {
+                    binding.castPrices.setText(k)
+                    break
+                }
+            }
+        }
+
         binding.castPrices.setAdapter(adapter)
         binding.castPrices.onItemClickListener = AdapterView.OnItemClickListener { parent, arg1, pos, id ->
             selectedPriceId = details[prices[pos]]?.sku ?: ""
+            uiDraft.price = selectedPriceId
         }
     }
 
@@ -364,7 +379,8 @@ class PublishFragment : BaseFragment() {
         if (isPatronUser()) {
             val list = ArrayList<String>()
             playBillingHandler.getPrices().observe(viewLifecycleOwner, {
-                details.putAll(it.map { skuDetails -> skuDetails.originalPrice to skuDetails })
+                details.clear()
+                details.putAll(it.map { skuDetails -> skuDetails.price to skuDetails })
                 it.forEach { skuDetails ->
                     list.add(skuDetails.price)
                 }
@@ -1065,10 +1081,9 @@ class PublishFragment : BaseFragment() {
 
         var priceId = Input.absent<String>()
         var selectedCats = publishViewModel.categorySelectedNamesList.map { it.categoryId }
-        if(!isPatronUser()){
-            selectedCats = selectedCats.subList(0,1)
-        }else{
-            //TODO update with the value selected from drop down menu
+        if (!isPatronUser()) {
+            selectedCats = selectedCats.subList(0, 1)
+        } else {
             priceId = Input.fromNullable(selectedPriceId)
         }
         val podcast = CreatePodcastInput(
@@ -1136,6 +1151,12 @@ class PublishFragment : BaseFragment() {
     }
 
     private fun loadExistingData() {
+
+        selectedPriceId = uiDraft.price
+
+        if (BuildConfig.DEBUG) {
+            println("selectedPriceId -> $selectedPriceId")
+        }
 
         //recordingItem
         if (!uiDraft.title.toString().trim().isNullOrEmpty()) {
