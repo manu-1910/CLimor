@@ -24,7 +24,8 @@ open class RLMDraft(
     var location: RLMLocations? = RLMLocations(),
     var parentDraft : RLMDraft? = null,
     var isNewRecording: Boolean = false,
-    var categories: RealmList<RLMOnDeviceCategory>? = RealmList()
+    var categories: RealmList<RLMOnDeviceCategory>? = RealmList(),
+    var price: String? = null
 ):RealmObject()
 
 
