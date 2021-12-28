@@ -12,7 +12,7 @@ enum class NavigationBreakpoints(val destination: String, @IdRes val actionId: I
     DOB_PHONE_COLLECTION("DOB_PHONE_COLLECTION", R.id.fragment_new_auth_dob_picker),
     PREFERENCE_COLLECTION("PREFERENCE_COLLECTION", R.id.fragment_new_auth_gender),
     SHOW_PROFILES("SHOW_SUGGESTED_PROFILES", R.id.fragment_new_auth_suggested_people),
-    ONBOARDING_COMPLETION("ONBOARDING_COMPLETION", R.id.fragment_new_auth_onboarding),
+    ONBOARDING_COMPLETION("ONBOARDING_COMPLETION", R.id.destination_main_activity),
     HOME_FEED("HOMEFEED_DISPLAY", R.id.destination_main_activity),
     DISCOVER("DISCOVER_DISPLAY", R.id.destination_main_activity),
     NAME_COLLECTION("NAME_COLLECTION", R.id.fragment_new_auth_enter_first_name_last_name)

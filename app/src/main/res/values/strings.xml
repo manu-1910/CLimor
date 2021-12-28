@@ -990,4 +990,7 @@
     <string name="duration_warning_title">Publish cast</string>
     <string name="duration_warning_message">Please ensure your cast is longer than 30 seconds if you want to monetise the cast</string>
 
+    <string name="select_languages_description">Please select the languages you’re interested in</string>
+    <string name="select_categories_description">Please select the categories you’re interested in</string>
+
 </resources>

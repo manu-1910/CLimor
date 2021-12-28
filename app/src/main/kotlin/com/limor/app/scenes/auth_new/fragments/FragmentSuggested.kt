@@ -8,6 +8,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthActivityNew
@@ -63,17 +64,20 @@ class FragmentSuggested : FragmentWithLoading() {
                 lifecycleScope.launch {
                     delay(1000)
                     Timber.d("Navigate to Onboarding")
+                    navigateToHomeFeed()
+                    /*saveNavigationBreakPoint(NavigationBreakpoints.ONBOARDING_COMPLETION.destination)
                     AuthNavigator.navigateToFragmentByNavigationBreakpoints(
                         requireActivity(),
                         NavigationBreakpoints.ONBOARDING_COMPLETION.destination
-                    )
+                    )*/
                 }
             }
         })
 
         model.suggestedForwardNavigationLiveData.observe(viewLifecycleOwner, Observer {
             if (it) {
-                model.updateUserOnboardingStatus(NavigationBreakpoints.ONBOARDING_COMPLETION.destination)
+                model.updateUserOnboardingStatus(NavigationBreakpoints.HOME_FEED.destination)
+                //model.updateUserOnboardingStatus(NavigationBreakpoints.ONBOARDING_COMPLETION.destination)
             }
         })
     }
@@ -102,4 +106,16 @@ class FragmentSuggested : FragmentWithLoading() {
             NavigationBreakpoints.SHOW_PROFILES.destination
         )
     }
+
+    private fun saveNavigationBreakPoint(destination: String?) {
+        model.saveNavigationBreakPoint(requireContext(), destination)
+    }
+
+    private fun navigateToHomeFeed() {
+        view?.findNavController()?.navigate(R.id.go_to_main_activity)
+        Timber.d("trying to finish activity")
+        saveNavigationBreakPoint(NavigationBreakpoints.HOME_FEED.destination)
+        requireActivity().finish()
+    }
+
 }

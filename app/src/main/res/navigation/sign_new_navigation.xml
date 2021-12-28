@@ -63,7 +63,7 @@
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
-            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
     </fragment>
 
     <fragment
@@ -133,14 +133,14 @@
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
-            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
         <action
             android:id="@+id/action_fragment_new_auth_sign_in_to_fragment_sign_in"
             app:destination="@id/fragment_new_auth_sign_in"
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
-            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
     </fragment>
 
     <fragment
@@ -210,9 +210,16 @@
         android:name="com.limor.app.scenes.auth_new.fragments.FragmentGender"
         android:label="Enter Gender"
         tools:layout="@layout/fragment_new_auth_gender">
-        <action
+        <!--<action
             android:id="@+id/action_fragment_new_auth_gender_to_fragment_new_auth_categories"
             app:destination="@id/fragment_new_auth_categories"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />-->
+        <action
+            android:id="@+id/action_fragment_new_auth_gender_to_fragment_new_auth_suggested_people"
+            app:destination="@id/fragment_new_auth_suggested_people"
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
@@ -251,9 +258,16 @@
         android:name="com.limor.app.scenes.auth_new.fragments.FragmentSuggested"
         android:label="Suggested"
         tools:layout="@layout/fragment_new_auth_suggested_people">
-        <action
+        <!--<action
             android:id="@+id/action_fragment_new_auth_suggested_people_to_fragment_new_auth_onboarding"
             app:destination="@id/fragment_new_auth_onboarding"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />-->
+        <action
+            android:id="@+id/go_to_main_activity"
+            app:destination="@+id/destination_main_activity"
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
@@ -277,8 +291,7 @@
         android:id="@+id/fragment_country_code"
         android:name="com.limor.app.scenes.auth_new.fragments.FragmentCountryCode"
         android:label="CountryCode"
-        tools:layout="@layout/fragment_country_code">
-    </fragment>
+        tools:layout="@layout/fragment_country_code"></fragment>
 
     <activity
         android:id="@+id/destination_main_activity"

@@ -1,6 +1,7 @@
 package com.limor.app.scenes.main.fragments.discover.discover
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +13,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentDiscoverBinding
+import com.limor.app.scenes.auth_new.fragments.FragmentCategories
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration
 import com.limor.app.scenes.main.fragments.discover.discover.list.DiscoverAdapter
+import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
 
@@ -36,6 +40,7 @@ class DiscoverFragment : BaseFragment() {
         _binding = FragmentDiscoverBinding.inflate(inflater, container, false)
         initViews()
         subscribeForEvents()
+        showCategories()
         return binding.root
     }
 
@@ -68,6 +73,19 @@ class DiscoverFragment : BaseFragment() {
         }
         viewModel.topCasts.observe(viewLifecycleOwner) {
             discoverAdapter.updateTopCasts(it)
+        }
+    }
+
+    private fun showCategories() {
+        if (!PrefsHandler.getPreferencesSelected(requireContext()) && !PrefsHandler.getPreferencesScreenOpenedInThisSession(
+                requireContext()
+            )
+        ) {
+            PrefsHandler.setPreferencesScreenOpenedInThisSession(requireContext(), true)
+            Handler().postDelayed(Runnable {
+                val dialog = FragmentCategories.newInstance()
+                dialog.show(parentFragmentManager, FragmentCategories.TAG)
+            }, 400)
         }
     }
 

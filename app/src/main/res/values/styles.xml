@@ -36,6 +36,20 @@
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
     </style>
 
+    <style name="Theme.AppCompat.FloatingDialog" parent="AppTheme">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:layout_margin">@dimen/margin10</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:screenOrientation">portrait</item>
+    </style>
+
     <!-- ProgressBar theme. -->
     <style name="ProgressBarTheme" parent="Base.Widget.AppCompat.ProgressBar">
         <item name="colorAccent">@color/progress_bar_color</item>
