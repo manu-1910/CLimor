@@ -63,7 +63,8 @@ fun DraftEntity.asUIModel(): UIDraft {
         location?.asUIModel(),
         parentDraft?.asUIModel(),
         isNewRecording,
-        getAllUICategories(categories)
+        getAllUICategories(categories),
+        price
     )
 }
 
@@ -102,7 +103,8 @@ fun UIDraft.asDataEntity(): DraftEntity {
         location?.asDataEntity(),
         draftParent?.asDataEntity(),
         isNewRecording,
-        getAllCategories(categories)
+        getAllCategories(categories),
+        price
     )
 }
 

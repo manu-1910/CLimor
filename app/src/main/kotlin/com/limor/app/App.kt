@@ -178,8 +178,6 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
         val realmConfiguration: RealmConfiguration = RealmConfiguration.Builder()
             .schemaVersion(1)
             .migration(Migration())
-            // .deleteRealmIfMigrationNeeded()
-            //TODO: Encrypt database!!
             .build()
         Realm.setDefaultConfiguration(realmConfiguration)
         val realm = Realm.getDefaultInstance()
@@ -220,6 +218,7 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
                 }
 
                 draftSchema.addRealmListField("categories", categorySchema)
+                draftSchema.addField("price", String::class.java)
             }
             println("Realm --> $oldVersion -> $newVersion")
         }

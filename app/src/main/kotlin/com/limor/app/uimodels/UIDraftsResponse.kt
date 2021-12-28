@@ -29,9 +29,32 @@ data class UIDraft(
     var location: UILocations?,
     var draftParent : UIDraft?,
     var isNewRecording : Boolean,
-    var categories: List<UISimpleCategory>?
+    var categories: List<UISimpleCategory>?,
+    var price: String?
 ): Serializable {
-    constructor() : this( 0,"", "", "", "", "", 0, 0, false, ArrayList(), "", 0, "","","", UILocations(), null, false, null)
+    constructor() : this(
+        0,
+        "",
+        "",
+        "",
+        "",
+        "",
+        0,
+        0,
+        false,
+        ArrayList(),
+        "",
+        0,
+        "",
+        "",
+        "",
+        UILocations(),
+        null,
+        false,
+        null,
+        null
+    )
+
 }
 
 
