@@ -993,4 +993,5 @@
     <string name="select_languages_description">Please select the languages you’re interested in</string>
     <string name="select_categories_description">Please select the categories you’re interested in</string>
 
+    <string name="tos_hint">By using our app, you confirm that you accept these <a href="https://www.limor.ie/terms-and-conditions"><font color="black">Terms of Service</font></a> and agree to comply with them.</string>
 </resources>
