@@ -203,7 +203,7 @@ class DialogPodcastMoreActions : DialogFragment() {
         LimorDialog(layoutInflater).apply {
             setTitle(R.string.mature_content)
             setMessage(R.string.mature_content_description)
-            setIcon(R.drawable.ic_change_price)
+            setIcon(R.drawable.ic_18_plus)
             addButton(R.string.yes_title, false) { markAsMature() }
             addButton(R.string.no_title, true)
         }.show()
