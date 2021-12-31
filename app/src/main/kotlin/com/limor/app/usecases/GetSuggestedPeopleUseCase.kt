@@ -11,10 +11,10 @@ class GetSuggestedPeopleUseCase @Inject constructor(
     private val repository: GeneralInfoRepository,
     private val dispatcherProvider: DispatcherProvider
 ) {
-    suspend fun execute(): Result<List<UserUIModel>> {
+    suspend fun execute(limit: Int = Int.MAX_VALUE, offset: Int = 0): Result<List<UserUIModel>> {
         return runCatching {
             withContext(dispatcherProvider.io) {
-                repository.getSuggestedPeople()?.map {
+                repository.getSuggestedPeople(limit, offset)?.map {
                     it.mapToUIModel()
                 } ?: emptyList()
             }
