@@ -21,7 +21,7 @@ class DiscoverSuggestedPeopleViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getSuggestedPeopleUseCase.execute()
+            getSuggestedPeopleUseCase.execute(MAX_SUGGESTED_PEOPLE, 0)
                 .onSuccess {
                     _suggestedPeople.value = it
                 }
@@ -39,5 +39,9 @@ class DiscoverSuggestedPeopleViewModel @Inject constructor(
                 Timber.e(ex, "Error while following person")
             }
         }
+    }
+
+    companion object {
+        const val MAX_SUGGESTED_PEOPLE = 100
     }
 }
