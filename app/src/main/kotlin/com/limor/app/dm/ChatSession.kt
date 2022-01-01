@@ -29,7 +29,7 @@ data class ChatSession(
     @ColumnInfo(name = "draft_content")
     var draftContent: String = "",
 
-    @ColumnInfo(name = "unread_count")
+    @ColumnInfo(name = "unread_count", defaultValue =  "0")
     var unreadCount: Int = 0
 
 )
