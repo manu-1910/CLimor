@@ -7,6 +7,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -17,6 +18,7 @@ import com.limor.app.R
 import com.limor.app.databinding.ActivityMainNewBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
 import com.limor.app.dm.ChatManager
+import com.limor.app.dm.ChatRepository
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
@@ -51,8 +53,8 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     @Inject
     lateinit var playerBinder: PlayerBinder
 
-
-
+    @Inject
+    lateinit var chatRepository: ChatRepository
 
     private var activityPlayerViewManager: ActivityPlayerViewManager? = null
 
@@ -71,6 +73,22 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
 
         activityPlayerViewManager =
             ActivityPlayerViewManager(supportFragmentManager, playerBinding, playerBinder)
+
+        listenToChat()
+    }
+
+    private fun listenToChat() {
+        chatRepository.getSessions().asLiveData().observe(this) {
+            val unreadCount = it.map { it.session.unreadCount }.sum()
+            if (unreadCount > 0) {
+                navigation.getOrCreateBadge(R.id.navigation_direct_messenger).apply {
+                    isVisible = true
+                    number = unreadCount
+                }
+            } else {
+                navigation.removeBadge(R.id.navigation_direct_messenger)
+            }
+        }
     }
 
     private fun setupDefaultValues() {
