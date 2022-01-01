@@ -13,8 +13,12 @@ import java.util.*
     ],
 )
 data class ChatSession(
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "session_id")  var id: Int = 0,
-    @ColumnInfo(name = "chat_user_id", index = true) val chatUserId: Int,
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "session_id")
+    var id: Int = 0,
+
+    @ColumnInfo(name = "chat_user_id", index = true)
+    val chatUserId: Int,
 
     @ColumnInfo(name = "last_message_timestamp")
     var lastMessageDate: Calendar = Calendar.getInstance(),
@@ -23,5 +27,9 @@ data class ChatSession(
     var lastMessageContent: String,
 
     @ColumnInfo(name = "draft_content")
-    var draftContent: String = ""
+    var draftContent: String = "",
+
+    @ColumnInfo(name = "unread_count")
+    var unreadCount: Int = 0
+
 )
