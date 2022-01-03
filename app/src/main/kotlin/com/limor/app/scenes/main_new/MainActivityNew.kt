@@ -4,9 +4,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -17,9 +19,12 @@ import com.limor.app.R
 import com.limor.app.databinding.ActivityMainNewBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
 import com.limor.app.dm.ChatManager
+import com.limor.app.dm.SessionsViewModel
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main_new.view_model.MainActivityViewModel
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
@@ -51,8 +56,9 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     @Inject
     lateinit var playerBinder: PlayerBinder
 
-
-
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val mainModel: MainActivityViewModel by viewModels { viewModelFactory }
 
     private var activityPlayerViewManager: ActivityPlayerViewManager? = null
 
@@ -172,35 +178,53 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         activityPlayerViewManager?.stop()
     }
 
-    fun checkPodCastDynamicLink() {
+    private fun openDynamicLinkPodcast(castId: Int) {
+        println("Opening Dynamic Podcast")
+        val currentUserId = PrefsHandler.getCurrentUserId(this)
+        mainModel.loadCast(castId).observe(this) { cast ->
+            if (cast == null) {
+                return@observe
+            }
+
+            if (cast.owner?.id == currentUserId) {
+                openCast(cast.id)
+
+            } else if (cast.patronCast == true && cast.patronDetails?.purchased == false) {
+                cast.owner?.let {
+                    UserProfileActivity.show(this, it.username ?: "", it.id, 1)
+                }
+
+            } else {
+                openCast(cast.id)
+            }
+
+
+        }
+    }
+
+    private fun openCast(castId: Int) {
+        showPlayer(
+            PlayerViewManager.PlayerArgs(
+                PlayerViewManager.PlayerType.EXTENDED,
+                castId
+            )
+        )
+    }
+
+    private fun checkPodCastDynamicLink() {
         val castId = PrefsHandler.getPodCastIdOfSharedLink(this)
         if (castId != 0) {
-            castId.let {
-                showPlayer(
-                    PlayerViewManager.PlayerArgs(
-                        PlayerViewManager.PlayerType.EXTENDED,
-                        it
-                    )
-                )
-            }
             PrefsHandler.savePodCastIdOfSharedLink(this, 0)
+            openDynamicLinkPodcast(castId)
+
         } else {
             FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(intent)
                 .addOnSuccessListener(this) { pendingDynamicLinkData ->
-                    // Get deep link from result (may be null if no link is found)
-                    val deepLink: Uri?
-                    if (pendingDynamicLinkData != null) {
-                        deepLink = pendingDynamicLinkData.link
-                        val td: Int = deepLink?.getQueryParameter("id")?.toInt()!!
-                        td.let {
-                            showPlayer(
-                                PlayerViewManager.PlayerArgs(
-                                    PlayerViewManager.PlayerType.EXTENDED,
-                                    td
-                                )
-                            )
-                        }
+                    // even if the function implementation says otherwise the pendingDynamicLinkData
+                    // can be null, so do not remove the .? below
+                    pendingDynamicLinkData?.link?.getQueryParameter("id")?.toInt()?.let {
+                        openDynamicLinkPodcast(it)
                     }
                 }
                 .addOnFailureListener(this) { e ->
