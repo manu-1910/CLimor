@@ -14,9 +14,19 @@ import java.util.*
     ],
 )
 data class ChatMessage(
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "message_id") val id: Int = 0,
-    @ColumnInfo(name = "chat_session_id", index = true) val chatSessionId: Int,
-    @ColumnInfo(name = "chat_user_id", index = true) val chatUserId: Int?,
-    @ColumnInfo(name = "message_content") val messageContent: String,
-    @ColumnInfo(name = "timestamp") val date: Calendar = Calendar.getInstance()
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "message_id")
+    val id: Int = 0,
+
+    @ColumnInfo(name = "chat_session_id", index = true)
+    val chatSessionId: Int,
+
+    @ColumnInfo(name = "chat_user_id", index = true)
+    val chatUserId: Int?,
+
+    @ColumnInfo(name = "message_content")
+    val messageContent: String,
+
+    @ColumnInfo(name = "timestamp")
+    val date: Calendar = Calendar.getInstance(),
 )

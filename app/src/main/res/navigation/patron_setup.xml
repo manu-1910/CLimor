@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/patron_setup.xml"
+    app:startDestination="@id/patronPricingPlansFragment">
+
+    <fragment
+        android:id="@+id/patronPricingPlansFragment"
+        android:name="com.limor.app.scenes.patron.PatronPricingPlansFragment"
+        android:label="PatronPricingPlansFragment" >
+        <action
+            android:id="@+id/action_patronPricingPlansFragment_to_fragmentPatronCategories"
+            app:destination="@id/fragmentPatronCategories" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentPatronCategories"
+        android:name="com.limor.app.scenes.patron.setup.FragmentPatronCategories"
+        android:label="FragmentPatronCategories" >
+        <action
+            android:id="@+id/action_fragmentPatronCategories_to_fragmentPatronLanguages"
+            app:destination="@id/fragmentPatronLanguages" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentPatronLanguages"
+        android:name="com.limor.app.scenes.patron.setup.FragmentPatronLanguages"
+        android:label="FragmentPatronLanguages" >
+        <action
+            android:id="@+id/action_fragmentPatronLanguages_to_fragmentPatronOnboardingSuccess"
+            app:destination="@id/fragmentPatronOnboardingSuccess" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentPatronOnboardingSuccess"
+        android:name="com.limor.app.scenes.patron.FragmentPatronOnboardingSuccess"
+        android:label="FragmentPatronOnboardingSuccess" />
+</navigation>

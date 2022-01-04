@@ -1,55 +1,256 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/requestStateLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/indicator">
+
+                <View
+                    android:id="@+id/upperDivider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="@dimen/margin32"
+                    android:alpha="0.12"
+                    android:layout_marginStart="@dimen/marginTwenty"
+                    android:layout_marginEnd="@dimen/marginTwenty"
+                    android:background="@color/notification_divider"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <View
+                    android:id="@+id/lowerDivider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentTop="true"
+                    android:alpha="0.12"
+                    android:layout_marginStart="@dimen/marginTwenty"
+                    android:layout_marginEnd="@dimen/marginTwenty"
+                    android:background="@color/notification_divider"
+                    app:layout_constraintTop_toBottomOf="@id/audio_player" />
+
+                <com.limor.app.components.CommentAudioPlayerView
+                    android:id="@+id/audio_player"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/upperDivider" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/audio_player_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="audio_player,lowerDivider,upperDivider" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/checkLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lowerDivider"
+                    app:layout_goneMarginTop="0dp">
+
+                    <CheckBox
+                        android:id="@+id/termsCheckBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin24"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/termsTV"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_toEndOf="@+id/termsCheckBox"
+                        android:fontFamily="@font/roboto"
+                        android:gravity="center|start"
+                        android:text="I have an active UK-based Bank account. "
+                        android:textColor="@color/grayWave"
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/termsCheckBox"
+                        app:layout_constraintTop_toTopOf="@+id/termsCheckBox" />
+
+                    <!--Should set text from string plans_terms_text in respective class-->
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/patronButton"
+                    style="@android:style/Widget.Material.Button.Borderless.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin24"
+                    android:layout_marginTop="@dimen/margin24"
+                    android:layout_marginEnd="@dimen/margin24"
+                    android:background="@drawable/btn_primary_background"
+                    android:enabled="false"
+                    android:fontFamily="@font/roboto_medium"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp"
+                    android:text="@string/request_invite"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_btn_primary_color"
+                    android:textSize="@dimen/textSize14"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toBottomOf="@id/checkLayout" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/pager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/managePatron" />
+
+
+            <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
+                android:id="@+id/indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                app:dotsColor="@color/dotsColor"
+                app:dotsCornerRadius="8dp"
+                app:dotsSize="8dp"
+                app:dotsSpacing="5dp"
+                app:dotsWidthFactor="2.5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/pager"
+                app:progressMode="false"
+                app:selectedDotColor="@color/colorAccent" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/managePatron"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/mangePatronTV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@drawable/ic_rigth_arrow"
+                    android:fontFamily="@font/roboto_medium"
+                    android:gravity="start"
+                    android:padding="20dp"
+                    android:text="@string/limor_patron_manage"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/managePatronDescriptionTV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/marginTwenty"
+                    android:fontFamily="@font/roboto_medium"
+                    android:gravity="center"
+                    android:text="@string/limor_patron_manage_description"
+                    android:textColor="@color/grayWave"
+                    android:textSize="16sp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/patronDivider" />
+
+                <View
+                    android:id="@+id/patronDivider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentTop="true"
+                    android:alpha="0.12"
+                    android:layout_marginStart="@dimen/marginTwenty"
+                    android:layout_marginEnd="@dimen/marginTwenty"
+                    android:background="@color/notification_divider"
+                    app:layout_constraintTop_toBottomOf="@id/mangePatronTV" />
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/casts_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/patronDivider" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/managePatronStateLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="mangePatronTV,patronDivider" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/baseImageTextLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:constraint_referenced_ids="pager,indicator" />
+
             <ImageView
-                android:id="@+id/imageView9"
-                android:layout_width="150dp"
-                android:layout_height="118dp"
-                android:layout_marginTop="24dp"
-                android:src="@drawable/patron_carousel_slide_2_image"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                android:id="@+id/emptyStateIv"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginTop="54dp"
+                android:src="@drawable/ic_patron_empty_state"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/title"
+                android:id="@+id/emptyStateTv"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:fontFamily="@font/roboto_medium"
                 android:gravity="center"
-                android:text="@string/limor_patron"
-                android:textColor="@color/black"
+                android:text="@string/limor_patron_empty_state"
+                android:textColor="@color/grayWave"
                 android:textSize="16sp"
-                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView9" />
+                app:layout_constraintTop_toBottomOf="@+id/emptyStateIv" />
 
-            <TextView
-                android:layout_width="200dp"
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/emptyStateLayout"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/roboto_medium"
-                android:gravity="center"
-                android:text="@string/coming_soon"
-                android:textColor="@color/subtitle_text_color"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/title" />
+                android:visibility="gone"
+                app:constraint_referenced_ids="emptyStateIv,emptyStateTv" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

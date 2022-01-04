@@ -19,13 +19,19 @@ import com.limor.app.scenes.main.viewmodels.PublishCategoriesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
 import com.limor.app.scenes.utils.BACKGROUND
 import com.limor.app.scenes.utils.MAIN
+import com.limor.app.uimodels.UISimpleCategory
 import kotlinx.android.synthetic.main.fragment_publish_categories.*
 import kotlinx.android.synthetic.main.view_follow_button.*
+import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import javax.inject.Inject
 
 
 class CategoriesFragment : FragmentWithLoading(), Injectable {
+
+    private val maxSelection: Int by lazy {
+        if (arguments?.getBoolean("isPatron") == true) 5 else 1
+    }
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -35,7 +41,7 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_publish_categories, container, false)
     }
@@ -48,6 +54,7 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
     override fun load() = model.downloadCategories()
 
     var lastCheckedId = View.NO_ID
+    var lastCheckedIds = hashSetOf<Int>()
 
     override val errorLiveData: LiveData<String>
         get() = model.categoryLiveDataError
@@ -67,16 +74,19 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
     }
 
     private fun createCategoriesArray(categories: List<CategoryWrapper>) {
-        cgCategories.isSingleSelection = true
+        cgCategories.isSingleSelection = maxSelection==1
         if (categories.isNotEmpty()) cgCategories.removeAllViews()
         BACKGROUND({
             val categoriesChips =
                 categories.map { category ->
                     getVariantChip(category)
                 }
-            MAIN { categoriesChips.forEach {
-                it.id = View.generateViewId()
-                cgCategories.addView(it) } }
+            MAIN {
+                categoriesChips.forEach {
+                    it.id = View.generateViewId()
+                    cgCategories.addView(it)
+                }
+            }
         })
     }
 
@@ -84,36 +94,73 @@ class CategoriesFragment : FragmentWithLoading(), Injectable {
         val chip = layoutInflater.inflate(R.layout.item_chip_category, null) as Chip
         chip.text = category.name
         MAIN {
-            chip.isChecked = (lastCheckedId == chip.id)
+            chip.isChecked = publishViewModel.categorySelectedNamesList.any { it.name == category.name }
+             Timber.d("Chip -> ${category.name} -- ${publishViewModel.categorySelectedNamesList}")
         }
         Timber.d("Chip -> ${category.categoryId} -- ${category.name}")
+
         chip.setOnCheckedChangeListener { buttonView, isChecked ->
-
+            val ids: List<Int> = cgCategories.checkedChipIds
             if (isChecked) {
-                category.isSelected = isChecked
-                lastCheckedId = chip.id
-                publishViewModel.categorySelected = chip.text.toString()
-                category.categoryId?.let {
-                    publishViewModel.categorySelectedId = it
+                //Get all checked chips in the group
+                if (ids.size > maxSelection) {
+                    chip.isChecked = false //force to unchecked the chip
+                    chip.snackbar("You can only select $maxSelection categories")
+                } else {
+                    lastCheckedIds.add(chip.id)
+                    category.categoryId?.let {
+                        //publishViewModel.categorySelectedId = it
+                        if (!publishViewModel.categorySelectedNamesList.any { cat -> cat.name == category.name }) {
+                            publishViewModel.categorySelectedIdsList.add(it)
+                            publishViewModel.categorySelectedNamesList.add(UISimpleCategory(category.name,
+                                category.categoryId!!))
+                            publishViewModel.categorySelected = getSelectedCategoriesText()
+                        }
+                    }
                 }
-                model.updateCategoriesSelection()
+                btnContinue.isEnabled =
+                    cgCategories.checkedChipIds.isNotEmpty() && cgCategories.checkedChipIds.size <= maxSelection
 
-            }else{
+            } else {
                 lastCheckedId = View.NO_ID
-                model.updateCategoriesSelection()
+                lastCheckedIds.remove(chip.id)
+                publishViewModel.categorySelectedIdsList.remove(category.categoryId)
+                publishViewModel.categorySelectedNamesList.removeIf { category.name == it.name }
+                category.isSelected = false
+                btnContinue.isEnabled =
+                    cgCategories.checkedChipIds.isNotEmpty() && cgCategories.checkedChipIds.size <= maxSelection
+                publishViewModel.categorySelected = getSelectedCategoriesText()
             }
         }
+
         return chip
     }
 
-    private fun setOnClickListeners() {
-        btnContinue.setOnClickListener {
-            findNavController().popBackStack()
+    fun getSelectedCategoriesText(): String {
+        val selections = publishViewModel.categorySelectedNamesList
+        return when {
+            selections.isEmpty() -> {
+                ""
+            }
+            cgCategories.checkedChipIds.size > 1 -> {
+                "${selections[0].name} +${selections.size - 1}"
+            }
+            else -> {
+                selections[0].name
+            }
         }
 
-        topAppBar.setNavigationOnClickListener {
-            findNavController().popBackStack()
-        }
     }
+
+private fun setOnClickListeners() {
+    btnContinue.setOnClickListener {
+        //publishViewModel.categorySelectedNamesList.clear()
+        findNavController().popBackStack()
+    }
+
+    topAppBar.setNavigationOnClickListener {
+        findNavController().popBackStack()
+    }
+}
 }
 

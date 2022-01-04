@@ -3,29 +3,36 @@ package com.limor.app.scenes.main_new
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
-import androidx.navigation.ui.setupWithNavController
+import com.android.billingclient.api.*
 import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.limor.app.R
 import com.limor.app.databinding.ActivityMainNewBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
 import com.limor.app.dm.ChatManager
+import com.limor.app.dm.ChatRepository
+import com.limor.app.dm.SessionsViewModel
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
-import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main_new.view_model.MainActivityViewModel
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
+import com.limor.app.service.AudioService
+import com.limor.app.service.PlayBillingHandler
 import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.TagUIModel
 import com.limor.app.util.AppNavigationManager
@@ -33,6 +40,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main_new.*
+import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -49,6 +57,12 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
 
     @Inject
     lateinit var playerBinder: PlayerBinder
+
+    @Inject
+    lateinit var chatRepository: ChatRepository
+
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val mainModel: MainActivityViewModel by viewModels { viewModelFactory }
 
     private var activityPlayerViewManager: ActivityPlayerViewManager? = null
 
@@ -67,6 +81,22 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
 
         activityPlayerViewManager =
             ActivityPlayerViewManager(supportFragmentManager, playerBinding, playerBinder)
+
+        listenToChat()
+    }
+
+    private fun listenToChat() {
+        chatRepository.getSessions().asLiveData().observe(this) { chatSessions ->
+            val unreadCount = chatSessions.map { it.session.unreadCount ?: 0 }.sum()
+            if (unreadCount > 0) {
+                navigation.getOrCreateBadge(R.id.navigation_direct_messenger).apply {
+                    isVisible = true
+                    number = unreadCount
+                }
+            } else {
+                navigation.removeBadge(R.id.navigation_direct_messenger)
+            }
+        }
     }
 
     private fun setupDefaultValues() {
@@ -86,7 +116,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
 
     lateinit var navController: NavController
 
-    private fun ensureSelected( current: Int, destinationId: Int) {
+    private fun ensureSelected(current: Int, destinationId: Int) {
         if (current != destinationId) {
             return
         }
@@ -103,7 +133,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         }
 
         // This allows for more control on what happens when the bottom bar buttons are clicked.
-        navigation.setOnItemSelectedListener(object: NavigationBarView.OnItemSelectedListener {
+        navigation.setOnItemSelectedListener(object : NavigationBarView.OnItemSelectedListener {
             override fun onNavigationItemSelected(item: MenuItem): Boolean {
                 if (item.itemId == navController.currentDestination?.id) {
                     return true
@@ -132,6 +162,14 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         activityPlayerViewManager?.showPlayer(args, onTransitioned)
     }
 
+    override fun isPlayingComment(audioTrack: AudioService.AudioTrack): Boolean {
+        return activityPlayerViewManager?.isPlayingComment(audioTrack) == true
+    }
+
+    override fun isPlaying(audioTrack: AudioService.AudioTrack): Boolean {
+        return activityPlayerViewManager?.isPlaying(audioTrack) == true
+    }
+
     override fun hidePlayer() {
         activityPlayerViewManager?.hidePlayer()
     }
@@ -148,35 +186,65 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         }
     }
 
-    fun checkPodCastDynamicLink() {
+    override fun playPreview(audio: AudioService.AudioTrack, startPosition: Int, endPosition: Int) {
+        activityPlayerViewManager?.playPreview(audio, startPosition, endPosition)
+    }
+
+    override fun stopPreview(reset: Boolean) {
+        activityPlayerViewManager?.stopPreview(reset)
+    }
+
+    fun stop(){
+        activityPlayerViewManager?.stop()
+    }
+
+    private fun openDynamicLinkPodcast(castId: Int) {
+        println("Opening Dynamic Podcast")
+        val currentUserId = PrefsHandler.getCurrentUserId(this)
+        mainModel.loadCast(castId).observe(this) { cast ->
+            if (cast == null) {
+                return@observe
+            }
+
+            if (cast.owner?.id == currentUserId) {
+                openCast(cast.id)
+
+            } else if (cast.patronCast == true && cast.patronDetails?.purchased == false) {
+                cast.owner?.let {
+                    UserProfileActivity.show(this, it.username ?: "", it.id, 1)
+                }
+
+            } else {
+                openCast(cast.id)
+            }
+
+
+        }
+    }
+
+    private fun openCast(castId: Int) {
+        showPlayer(
+            PlayerViewManager.PlayerArgs(
+                PlayerViewManager.PlayerType.EXTENDED,
+                castId
+            )
+        )
+    }
+
+    private fun checkPodCastDynamicLink() {
         val castId = PrefsHandler.getPodCastIdOfSharedLink(this)
         if (castId != 0) {
-            castId.let {
-                showPlayer(
-                    PlayerViewManager.PlayerArgs(
-                        PlayerViewManager.PlayerType.EXTENDED,
-                        it
-                    )
-                )
-            }
             PrefsHandler.savePodCastIdOfSharedLink(this, 0)
+            openDynamicLinkPodcast(castId)
+
         } else {
             FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(intent)
                 .addOnSuccessListener(this) { pendingDynamicLinkData ->
-                    // Get deep link from result (may be null if no link is found)
-                    val deepLink: Uri?
-                    if (pendingDynamicLinkData != null) {
-                        deepLink = pendingDynamicLinkData.link
-                        val td: Int = deepLink?.getQueryParameter("id")?.toInt()!!
-                        td.let {
-                            showPlayer(
-                                PlayerViewManager.PlayerArgs(
-                                    PlayerViewManager.PlayerType.EXTENDED,
-                                    td
-                                )
-                            )
-                        }
+                    // even if the function implementation says otherwise the pendingDynamicLinkData
+                    // can be null, so do not remove the .? below
+                    pendingDynamicLinkData?.link?.getQueryParameter("id")?.toInt()?.let {
+                        openDynamicLinkPodcast(it)
                     }
                 }
                 .addOnFailureListener(this) { e ->

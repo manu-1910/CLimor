@@ -130,8 +130,8 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         return createUserResult
     }
 
-    suspend fun getSuggestedPeople(): List<SuggestedPeopleQuery.GetSuggestedUser>? {
-        return apollo.launchQuery(SuggestedPeopleQuery())
+    suspend fun getSuggestedPeople(limit: Int = Int.MAX_VALUE, offset: Int = 0): List<SuggestedPeopleQuery.GetSuggestedUser>? {
+        return apollo.launchQuery(SuggestedPeopleQuery(limit, offset))
             ?.data?.getSuggestedUsers?.filterNotNull()?.also {
                 Timber.d("getSuggestedPeople() -> $it")
             }

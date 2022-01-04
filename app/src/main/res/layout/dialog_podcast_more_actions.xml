@@ -73,11 +73,23 @@
                 app:iconPadding="8dp"
                 app:iconSize="14dp" />
             <Button
+                android:id="@+id/btnPlayPreview"
+                style="@style/ButtonTextStyle.Icon"
+                android:layout_width="match_parent"
+                android:text="@string/play_preview"
+                android:visibility="gone"
+                android:textColor="@color/black"
+                app:icon="@drawable/ic_podcast_listening"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconSize="14dp" />
+            <Button
                 android:id="@+id/btnReportUser"
                 style="@style/ButtonTextStyle.Icon"
                 android:layout_width="match_parent"
                 android:text="@string/report_user"
                 android:textColor="@color/black"
+                app:icon="@drawable/ic_user_exclamation"
                 app:iconGravity="textStart"
                 app:iconPadding="8dp"
                 app:iconSize="14dp" />
@@ -86,10 +98,33 @@
                 style="@style/ButtonTextStyle.Icon"
                 android:layout_width="match_parent"
                 android:text="@string/block_user"
-                android:textColor="@color/black"
+                android:textColor="@color/error_stroke_color"
+                app:icon="@drawable/ic_block_user_icon"
+                app:iconTint="@color/error_stroke_color"
                 app:iconGravity="textStart"
                 app:iconPadding="8dp"
                 app:iconSize="14dp" />
+
+            <View
+                android:id="@+id/delimiterMatureContent"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="#F0F3F8" />
+
+            <Button
+                android:id="@+id/btnMatureContent"
+                style="@style/ButtonTextStyle.Icon"
+                android:layout_width="match_parent"
+                android:text="@string/mature_content"
+                android:textColor="@color/black"
+                android:visibility="gone"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconSize="14dp" />
+
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>

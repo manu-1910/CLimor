@@ -502,6 +502,23 @@ class AuthViewModelNew @Inject constructor(
         )
     }
 
+    fun updateGenderInfo() {
+        userInfoProvider.updateGender(
+            viewModelScope,
+            currentGenderId
+        )
+    }
+
+    fun updateLanguagesAndCategories() {
+        val categoriesIds = categoriesProvider.getActiveCategoriesIds()
+        val languages = languagesProvider.getActiveLanguages();
+        userInfoProvider.updateLanguagesAndCategories(
+            viewModelScope,
+            categoriesIds,
+            languages
+        )
+    }
+
     fun updateUserOnboardingStatus(nextStep: String) =
         userInfoProvider.updateUserOnboardingStatus(viewModelScope, nextStep)
 

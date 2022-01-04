@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main.fragments.profile
 
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import com.limor.app.apollo.Apollo
 import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.scenes.auth_new.model.UserInfoProvider
 import com.limor.app.scenes.auth_new.util.PrefsHandler
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UserUIModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,10 +33,16 @@ class UserProfileViewModel @Inject constructor(
     val userProfileData: LiveData<UserUIModel?>
         get() = _userProfileData
 
+    private var _patronInviteStatus =
+        MutableLiveData<String?>()
+    val patronInviteStatus: LiveData<String?>
+        get() = _patronInviteStatus
+
     fun getUserProfile(){
         viewModelScope.launch {
             try {
                 val user = generalInfoRepository.getUserProfile()
+                CommonsKt.user = user
                 _userProfileData.postValue(user)
             } catch (e: Exception) {
                 _profileErrorLiveData.postValue(e.localizedMessage)
@@ -45,7 +53,7 @@ class UserProfileViewModel @Inject constructor(
     fun getUserById(id: Int){
         viewModelScope.launch {
             try {
-                Timber.d("User Data --> "+ id)
+                Timber.d("User Data --> $id")
                 val user = generalInfoRepository.getUserProfileById(id)
                 Timber.d("User Data --> "+ user.toString())
                 _userProfileData.postValue(user)
@@ -111,6 +119,12 @@ class UserProfileViewModel @Inject constructor(
 
     fun resetUser() {
         _userProfileData.value = null
+    }
+
+    fun requestPatronInvitation(userId: Int) {
+        viewModelScope.launch {
+            _patronInviteStatus.value =  userInfoProvider.userRepository.requestPatronInvitation(userId)
+        }
     }
 
 

@@ -30,7 +30,16 @@ data class UserUIModel(
     val isAutoplayEnabled: Boolean?,
     val sharingUrl: String?,
     var voiceBioURL: String?,
-    var durationSeconds: Double?
+    var durationSeconds: Double?,
+
+    // Patron stuff
+    var patronInvitationStatus: String? = null,
+    var patronOnBoardingStatus: String? = null,
+    var isPatron: Boolean? = false,
+    val patronAudioURL: String? = null,
+    val patronAudioDurationSeconds: Double? = null,
+    var availableInvitations: Int = 0,
+    var patronStatus: String? = null
 ) : Parcelable {
 
     fun getFullName() = if (firstName == null && lastName == null) username else String.format(
@@ -64,7 +73,11 @@ fun GetFeaturedCastsQuery.Owner.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
     )
 
 fun SuggestedPeopleQuery.GetSuggestedUser.mapToUIModel(): UserUIModel =
@@ -78,7 +91,11 @@ fun SuggestedPeopleQuery.GetSuggestedUser.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
     )
 
 fun GetTopCastsQuery.Owner.mapToUIModel(): UserUIModel =
@@ -92,7 +109,11 @@ fun GetTopCastsQuery.Owner.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
     )
 
 fun SearchUsersQuery.SearchUser.mapToUIModel(): UserUIModel =
@@ -106,7 +127,13 @@ fun SearchUsersQuery.SearchUser.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration,
+        patronStatus = patronStatus
+
     )
 
 fun GetPodcastsByCategoryQuery.Owner.mapToUIModel(): UserUIModel =
@@ -120,7 +147,11 @@ fun GetPodcastsByCategoryQuery.Owner.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
     )
 
 fun GetPodcastsByHashtagQuery.Owner.mapToUIModel(): UserUIModel =
@@ -134,7 +165,11 @@ fun GetPodcastsByHashtagQuery.Owner.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
     )
 
 
@@ -150,7 +185,13 @@ fun GetUserProfileQuery.GetUser.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration,
+        patronOnBoardingStatus = patronOnboardingStatus,
+        availableInvitations =  availableInvitations?:0
     )
 
 
@@ -166,7 +207,11 @@ fun GetUserProfileByIdQuery.GetUserById.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
     )
 
 fun GetUserPodcastsQuery.Owner.mapToUIModel(): UserUIModel =
@@ -181,7 +226,30 @@ fun GetUserPodcastsQuery.Owner.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
+    )
+
+fun GetPatronPodcastsQuery.Owner.mapToUIModel(): UserUIModel =
+    UserUIModel(
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = blocked, isFollowed = followed,
+        isBlockedBy = blocked_by, isFollowedBy = followed_by,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = website, gender = gender,
+        dateOfBirth = date_of_birth?.toLocalDate(),
+        areNotificationsEnabled = notifications_enabled, isActive = active,
+        isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
+        sharingUrl = sharing_url,
+        voiceBioURL = voice_bio_url,
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
     )
 
 fun FeedItemsQuery.Owner.mapToUIModel(): UserUIModel =
@@ -196,7 +264,11 @@ fun FeedItemsQuery.Owner.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
     )
 
 fun FeedItemsQuery.Recaster.mapToUIModel(): UserUIModel =
@@ -211,7 +283,11 @@ fun FeedItemsQuery.Recaster.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
     )
 
 fun GetCommentsByPodcastsQuery.User.mapToUIModel(): UserUIModel =
@@ -226,7 +302,11 @@ fun GetCommentsByPodcastsQuery.User.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
     )
 
 fun GetCommentsByPodcastsQuery.User1.mapToUIModel(): UserUIModel =
@@ -241,7 +321,11 @@ fun GetCommentsByPodcastsQuery.User1.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
     )
 
 fun GetCommentsByIdQuery.User.mapToUIModel(): UserUIModel =
@@ -256,7 +340,11 @@ fun GetCommentsByIdQuery.User.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
     )
 
 fun GetCommentsByIdQuery.User1.mapToUIModel(): UserUIModel =
@@ -271,7 +359,11 @@ fun GetCommentsByIdQuery.User1.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
     )
 
 fun GetPodcastByIdQuery.Owner.mapToUIModel(): UserUIModel =
@@ -286,7 +378,11 @@ fun GetPodcastByIdQuery.Owner.mapToUIModel(): UserUIModel =
         isSuspended = suspended, isVerified = verified, isAutoplayEnabled = autoplay_enabled,
         sharingUrl = sharing_url,
         voiceBioURL = voice_bio_url,
-        durationSeconds = duration
+        durationSeconds = duration,
+        patronInvitationStatus = patronInvitationStatus,
+        isPatron = isPatron,
+        patronAudioURL = patronAudioURL,
+        patronAudioDurationSeconds = patronAudioDuration
     )
 
 fun FollowersQuery.GetFollower.mapToUIModel(): UserUIModel =
@@ -335,6 +431,21 @@ fun SearchFollowersQuery.SearchFollower.mapToUIModel(): UserUIModel =
     )
 
 fun SearchFollowingQuery.SearchFollowing.mapToUIModel(): UserUIModel =
+    UserUIModel(
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = null, isFollowed = followed,
+        isBlockedBy = null, isFollowedBy = followed,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = null, gender = null,
+        dateOfBirth = null,
+        areNotificationsEnabled = null, isActive = null,
+        isSuspended = null, isVerified = null, isAutoplayEnabled = null,
+        sharingUrl = null,
+        voiceBioURL = null,
+        durationSeconds = null
+    )
+
+fun GetPurchasedCastsQuery.Owner.mapToUIModel(): UserUIModel =
     UserUIModel(
         id = id!!, username = username, firstName = first_name, lastName = last_name,
         imageLinks = images?.mapToUIModel(), isBlocked = null, isFollowed = followed,

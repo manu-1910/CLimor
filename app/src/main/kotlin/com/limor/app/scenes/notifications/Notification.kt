@@ -76,11 +76,9 @@ class Notification : Fragment() {
                 (activity as MainActivityNew).openExtendedPlayer(castId)
             }
         }
-        notificationAdapter.addUserTypeCallback { userId, username ->
-            val userProfileIntent = Intent(requireContext(), UserProfileActivity::class.java)
-            userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, username)
-            userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, userId)
-            startActivity(userProfileIntent)
+        notificationAdapter.addUserTypeCallback{
+            userId, username, tab ->
+            UserProfileActivity.show(requireContext(),username!!,userId!!,tab)
         }
         notificationAdapter.addNotificationReadListener { nId, read ->
             nId?.let {
@@ -112,7 +110,7 @@ class Notification : Fragment() {
         dialogBuilder.setCancelable(true)
         val dialog: AlertDialog = dialogBuilder.create()
 
-        dialogView.iconIV.image = resources.getDrawable(R.drawable.ic_alert)
+        dialogView.imageView.image = resources.getDrawable(R.drawable.ic_alert)
         dialogView.textTitle.text = resources.getString(R.string.no_connection_title)
         dialogView.textDescription.text = resources.getString(R.string.no_connection_description)
         dialogView.okButton.text = resources.getString(R.string.ok)

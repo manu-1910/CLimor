@@ -1,0 +1,7 @@
+mutation createPatronInvitationRequest {
+    createPatronInvitationRequest {
+        status
+        message
+        requestId
+    }
+}

@@ -123,10 +123,10 @@
                             android:layout_marginEnd="@dimen/marginTwenty"
                             app:boxStrokeColor="@color/colorAccent"
                             app:boxStrokeWidth="2dp"
-                            app:hintTextAppearance="@style/TextHintStyle"
-                            app:hintTextColor="@color/colorAccent"
                             app:counterEnabled="true"
                             app:counterMaxLength="80"
+                            app:hintTextAppearance="@style/TextHintStyle"
+                            app:hintTextColor="@color/colorAccent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/layoutCastImage">
@@ -137,8 +137,8 @@
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/roboto_medium"
                                 android:hint="@string/hint_title"
-                                android:textColor="@color/textPrimary"
                                 android:maxLength="80"
+                                android:textColor="@color/textPrimary"
                                 android:textSize="@dimen/textSizeNormal" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -159,6 +159,7 @@
                             android:layout_marginStart="@dimen/marginTwenty"
                             android:layout_marginTop="@dimen/marginTwenty"
                             android:layout_marginEnd="@dimen/marginTwenty"
+                            android:visibility="gone"
                             app:boxStrokeColor="@color/colorAccent"
                             app:boxStrokeWidth="2dp"
                             app:counterEnabled="true"
@@ -182,7 +183,6 @@
                                 android:textSize="@dimen/textSizeNormal" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/inputHashtags"
                             style="@style/TextInputLayout"
@@ -191,9 +191,14 @@
                             android:layout_marginStart="@dimen/marginTwenty"
                             android:layout_marginTop="@dimen/marginTwenty"
                             android:layout_marginEnd="@dimen/marginTwenty"
+                            android:foregroundGravity="top"
+                            android:gravity="top"
+                            android:visibility="visible"
                             app:boxStrokeColor="@color/colorAccent"
                             app:boxStrokeWidth="2dp"
-                            android:visibility="visible"
+                            app:counterEnabled="true"
+                            app:counterMaxLength="1000"
+                            app:counterTextColor="@color/textSecondary"
                             app:helperText="@string/hastag_helper_text"
                             app:hintTextAppearance="@style/TextHintStyle"
                             app:hintTextColor="@color/colorAccent">
@@ -204,22 +209,27 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/roboto_medium"
-                                android:hint="@string/hint_tags"
-                                android:inputType="textNoSuggestions"
-                                android:lines="1"
+                                android:gravity="top|start"
+                                android:hint="@string/hint_caption"
+                                android:imeOptions="actionNext"
+                                android:inputType="textMultiLine"
+                                android:lines="4"
                                 android:paddingStart="@dimen/marginMediumSmall"
                                 android:paddingTop="@dimen/marginMedium"
                                 android:paddingEnd="@dimen/marginMediumSmall"
                                 android:paddingBottom="@dimen/marginMedium"
+                                android:singleLine="false"
+                                android:textAlignment="gravity"
                                 android:textColor="@color/textPrimary"
                                 android:textSize="@dimen/textSizeNormal"
                                 app:hyperlinkColor="@color/textPrimary"
                                 app:socialFlags="hashtag" />
+
+
                         </com.google.android.material.textfield.TextInputLayout>
 
 
                         <TextView
-                            android:visibility="gone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/marginTwenty"
@@ -227,7 +237,8 @@
                             android:fontFamily="@font/roboto"
                             android:text="@string/hashtag_subtitle"
                             android:textColor="@color/textSecondary"
-                            android:textSize="@dimen/textSizeTiny" />
+                            android:textSize="@dimen/textSizeTiny"
+                            android:visibility="gone" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvHashtags"
@@ -235,11 +246,52 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/marginMediumSmall"
                             android:layout_marginEnd="@dimen/marginMediumSmall"
-                            android:visibility="gone"
-                            android:paddingBottom="@dimen/margin64"
                             android:clipToPadding="false"
+                            android:visibility="gone"
                             tools:listitem="@layout/tag_item" />
 
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/menu"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginEnd="@dimen/marginTwenty"
+                            app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeWidth="2dp"
+                            android:visibility="gone"
+                            app:counterTextColor="@color/textSecondary"
+                            app:endIconTint="@color/colorAccent"
+                            app:hintTextAppearance="@style/TextHintStyle"
+                            app:hintTextColor="@color/colorAccent">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/cast_prices"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:focusable="false"
+                                android:fontFamily="@font/roboto_medium"
+                                android:foregroundGravity="top"
+                                android:gravity="top"
+                                android:hint="@string/cast_price"
+                                android:inputType="none"
+                                android:labelFor="@+id/menu"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSizeNormal" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <TextView
+                            android:id="@+id/payment_terms"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/marginTwenty"
+                            android:layout_marginTop="-10dp"
+                            android:fontFamily="@font/roboto_bold"
+                            android:text="@string/payment_terms"
+                            android:visibility="gone"
+                            android:textColor="@color/primaryYellowColor" />
 
                     </LinearLayout>
 
@@ -371,6 +423,45 @@
 
                         </RelativeLayout>
 
+                        <RelativeLayout
+                            android:id="@+id/lytMatureContent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:paddingStart="20dp"
+                            android:paddingTop="16dp"
+                            android:paddingEnd="@dimen/marginMedium"
+                            android:paddingBottom="16dp"
+                            android:visibility="visible">
+
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/sw18Content"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentEnd="true"
+                                android:checked="false"
+                                android:fontFamily="@font/roboto_medium"
+                                android:switchMinWidth="56dp"
+                                android:text="@string/mature_content"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="@dimen/textSize16" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/sw18Content"
+                                android:layout_alignParentStart="true"
+                                android:layout_marginTop="@dimen/marginTiny"
+                                android:fontFamily="@font/roboto"
+                                android:gravity="start"
+                                android:text="@string/mature_content_description"
+                                android:textColor="@color/textSecondary"
+                                android:textSize="@dimen/textSizeTiny" />
+
+                        </RelativeLayout>
 
                         <LinearLayout
                             android:id="@+id/lytPlayer"
@@ -464,11 +555,11 @@
                                     style="@android:style/MediaButton"
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
+                                    android:layout_marginStart="@dimen/marginLarge"
                                     android:layout_toEndOf="@id/ibPlayPause"
                                     android:contentDescription="@string/ffwd"
                                     android:scaleType="fitCenter"
                                     android:src="@drawable/forward_5"
-                                    android:layout_marginStart="@dimen/marginLarge"
                                     app:layout_constraintBottom_toBottomOf="@+id/ibPlayPause"
                                     app:layout_constraintStart_toEndOf="@+id/ibPlayPause"
                                     app:layout_constraintTop_toTopOf="@+id/ibPlayPause" />
@@ -553,8 +644,8 @@
             android:orientation="vertical">
 
             <com.mikhaellopez.circularprogressbar.CircularProgressBar
-                android:layout_width="80dp"
                 android:id="@+id/progressUpload"
+                android:layout_width="80dp"
                 android:layout_height="80dp"
                 app:cpb_background_progressbar_color="@android:color/transparent"
                 app:cpb_indeterminate_mode="true"

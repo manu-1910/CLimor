@@ -49,6 +49,15 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
             ?.data?.getUserPodcasts?.filterNotNull() ?: emptyList()
     }
 
+    suspend fun getPatronCastsByUser(
+        userId: Int,
+        limit: Int = Int.MAX_VALUE,
+        offset: Int = 0
+    ): List<GetPatronPodcastsQuery.GetPatronCast> {
+        return apollo.launchQuery(GetPatronPodcastsQuery(userId, limit, offset))
+            ?.data?.getPatronCasts?.filterNotNull() ?: emptyList()
+    }
+
     suspend fun getCastById(
         castId: Int
     ): GetPodcastByIdQuery.GetPodcastById? {
@@ -74,4 +83,14 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
         }
 
     }
+
+    suspend fun getPurchasedCastsByUser(
+        userId: Int,
+        limit: Int = Int.MAX_VALUE,
+        offset: Int = 0
+    ): List<GetPurchasedCastsQuery.GetPurchasedCast>{
+        return apollo.launchQuery(GetPurchasedCastsQuery(userId, limit, offset))
+            ?.data?.getPurchasedCasts?.filterNotNull() ?: emptyList()
+    }
+
 }

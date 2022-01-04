@@ -3,16 +3,11 @@ package com.limor.app.scenes.main.fragments.profile
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.navigation.ui.setupWithNavController
-import com.facebook.BuildConfig
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.databinding.ActivityProfileBinding
@@ -20,6 +15,7 @@ import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
 import com.limor.app.scenes.utils.PlayerViewManager
+import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.TagUIModel
 import dagger.android.DispatchingAndroidInjector
@@ -53,10 +49,11 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector, PlayerVi
         val TAG: String = UserProfileActivity::class.java.simpleName
         fun newInstance() = UserProfileActivity()
 
-        fun show(context: Context, username: String, userId: Int) {
+        fun show(context: Context, username: String, userId: Int, tab: Int = 0) {
             val userProfileIntent = Intent(context, UserProfileActivity::class.java)
             userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, username)
             userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, userId)
+            userProfileIntent.putExtra(UserProfileFragment.TAB_POS, tab)
             context.startActivity(userProfileIntent)
         }
     }
@@ -100,6 +97,14 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector, PlayerVi
         activityPlayerViewManager?.showPlayer(args, onTransitioned)
     }
 
+    override fun isPlayingComment(audioTrack: AudioService.AudioTrack): Boolean {
+        return activityPlayerViewManager?.isPlayingComment(audioTrack) == true
+    }
+
+    override fun isPlaying(audioTrack: AudioService.AudioTrack): Boolean {
+        return activityPlayerViewManager?.isPlaying(audioTrack) == true
+    }
+
     override fun hidePlayer() {
         activityPlayerViewManager?.hidePlayer()
     }
@@ -113,6 +118,14 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector, PlayerVi
                 DiscoverHashtagFragment.KEY_SHOW_NOTIFICATION_ICON to false
             )
         )
+    }
+
+    override fun playPreview(audio: AudioService.AudioTrack, startPosition: Int, endPosition: Int) {
+        activityPlayerViewManager?.playPreview(audio, startPosition, endPosition)
+    }
+
+    override fun stopPreview(reset: Boolean) {
+        activityPlayerViewManager?.stopPreview(reset)
     }
 
     override fun onDestroy() {

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.limor.app.apollo.PublishRepository
 import com.limor.app.apollo.UserRepository
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.usecases.GetBlockedUsersUseCase
@@ -15,6 +16,7 @@ import javax.inject.Inject
 class PodcastViewModel @Inject constructor(
     private val getPodcastByIDUseCase: GetPodcastByIDUseCase,
     private val getUserUseCase: UserRepository,
+    private val publishRepository: PublishRepository
 ): ViewModel() {
 
     private val _cast = MutableLiveData<CastUIModel>()
@@ -49,6 +51,12 @@ class PodcastViewModel @Inject constructor(
     fun reportCast(s: String,id:Int?) {
         viewModelScope.launch {
             getPodcastByIDUseCase.reportCast(s, id)
+        }
+    }
+
+    fun markAsMature(podcastId: Int) {
+        viewModelScope.launch {
+            publishRepository.markPodcastAsMature(podcastId)
         }
     }
 

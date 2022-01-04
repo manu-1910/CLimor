@@ -10,6 +10,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.Configuration
+
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
 import com.limor.app.di.AppInjector
@@ -26,8 +27,8 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import dagger.android.HasServiceInjector
-import io.realm.Realm
-import io.realm.RealmConfiguration
+import io.realm.*
+import io.square1.limor.storage.entities.RLMOnDeviceCategory
 import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -129,7 +130,6 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
         // OneSignal Initialization
         OneSignal.initWithContext(this);
         OneSignal.setAppId(BuildConfig.ONE_SIGNAL_APP_ID);
-
     }
 
     @OnLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_STOP)
@@ -176,8 +176,8 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
     private fun initRealm(): Realm? {
         Realm.init(this)
         val realmConfiguration: RealmConfiguration = RealmConfiguration.Builder()
-            .deleteRealmIfMigrationNeeded()
-            //TODO: Encrypt database!!
+            .schemaVersion(1)
+            .migration(Migration())
             .build()
         Realm.setDefaultConfiguration(realmConfiguration)
         val realm = Realm.getDefaultInstance()
@@ -196,4 +196,32 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
                 .build()
         }
     }
+
+    open class Migration : RealmMigration {
+
+        override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
+            val schema = realm.schema
+            // This is the only known migration as of yet and it introduces a new field in the
+            // Draft object called "Categories":
+            if (oldVersion == 0L && newVersion == 1L) {
+                val draftSchema = schema.get("RLMDraft")
+                if (draftSchema == null) {
+                    println("could not get schemas...")
+                    return
+                }
+
+                val categorySchema = schema.create("RLMOnDeviceCategory",).apply {
+                    addField("name", String::class.java)
+                    setRequired("name", true)
+
+                    addField("categoryId", Int::class.java)
+                }
+
+                draftSchema.addRealmListField("categories", categorySchema)
+                draftSchema.addField("price", String::class.java)
+            }
+            println("Realm --> $oldVersion -> $newVersion")
+        }
+    }
+
 }

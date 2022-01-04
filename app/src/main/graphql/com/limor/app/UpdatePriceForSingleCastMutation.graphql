@@ -1,0 +1,6 @@
+mutation UpdatePriceForSingleCastMutation($podcastId: Int!, $priceId: String!){
+    updatePriceForSingleCast(podcastId: $podcastId, priceId: $priceId){
+        status
+        message
+    }
+}

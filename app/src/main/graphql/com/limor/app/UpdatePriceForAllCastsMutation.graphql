@@ -1,0 +1,6 @@
+mutation UpdatePriceForAllCastsMutation($priceId: String!){
+    updatePriceForAllCasts(priceId: $priceId){
+        status
+        message
+    }
+}

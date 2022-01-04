@@ -1,5 +1,6 @@
 package io.square1.limor.storage.entities
 
+import entities.response.CategoriesArrayEntity
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
@@ -22,7 +23,9 @@ open class RLMDraft(
     var category: String? = "",
     var location: RLMLocations? = RLMLocations(),
     var parentDraft : RLMDraft? = null,
-    var isNewRecording: Boolean = false
+    var isNewRecording: Boolean = false,
+    var categories: RealmList<RLMOnDeviceCategory>? = RealmList(),
+    var price: String? = null
 ):RealmObject()
 
 
@@ -44,3 +47,7 @@ open class RLMLocations(
 
 
 
+open class RLMOnDeviceCategory(
+    var name: String = "",
+    var categoryId: Int = 0
+): RealmObject()

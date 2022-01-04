@@ -1,0 +1,6 @@
+mutation UpdatePreviewMutation($podcastId: Int!, $duration: Int!, $startsAt: Int!, $endsAt: Int!) {
+    updateCastPreview(podcastId: $podcastId, previewDuration: $duration, startsAt: $startsAt, endsAt: $endsAt){
+        status
+        message
+    }
+}

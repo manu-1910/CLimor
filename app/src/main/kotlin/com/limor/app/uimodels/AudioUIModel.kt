@@ -66,6 +66,16 @@ fun GetUserPodcastsQuery.Audio.mapToUIModel() =
         originalUrl = original_audio_url
     )
 
+fun GetPatronPodcastsQuery.Audio.mapToUIModel() =
+    AudioUIModel(
+        url = audio_url!!,
+        totalLength = total_length!!.toInt(),
+        totalSamples = total_samples!!.toInt(),
+        duration = Duration.ofMillis(duration!!.toLong()),
+        sampleRate = sample_rate!!.toFloat(),
+        originalUrl = original_audio_url
+    )
+
 fun FeedItemsQuery.Audio.mapToUIModel() =
     AudioUIModel(
         url = audio_url!!,
@@ -91,4 +101,14 @@ fun AudioUIModel.mapToAudioTrack(title: String? = null) =
         url = url,
         duration = duration,
         title = title
+    )
+
+fun GetPurchasedCastsQuery.Audio.mapToUIModel() =
+    AudioUIModel(
+        url = audio_url!!,
+        totalLength = total_length!!.toInt(),
+        totalSamples = total_samples!!.toInt(),
+        duration = Duration.ofMillis(duration!!.toLong()),
+        sampleRate = sample_rate!!.toFloat(),
+        originalUrl = original_audio_url
     )

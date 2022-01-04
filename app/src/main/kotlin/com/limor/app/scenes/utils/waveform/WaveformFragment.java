@@ -125,6 +125,12 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         Copy, Paste, Delete, Dismiss, Preview, Cancel
     }
 
+    private boolean onlyShowPreview = false;
+
+    public void setOnlyShowPreview(boolean onlyShowPreview) {
+        this.onlyShowPreview = onlyShowPreview;
+    }
+
     // endregion
 
 
@@ -132,10 +138,20 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_waveform, container, false);
+            rootView = inflater.inflate(getLayoutId(), container, false);
             loadGui(rootView);
         }
 
+        if (shouldWaitForAudio()) {
+            return rootView;
+        } else {
+            loadFromFile();
+        }
+
+        return rootView;
+    }
+
+    protected void loadFromFile() {
         // if the soundFile object is not loaded yet, then let's load it
         if (soundFile == null) {
             loadFromFile(fileName); // this method also calls reloadVisualizer
@@ -144,8 +160,6 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         } else {
             handler.post(this::reloadVisualizer);
         }
-
-        return rootView;
     }
 
     @Override
@@ -384,7 +398,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
 
-    protected void addMarker(int startPos, int endPos, boolean isEditMarker, Integer color) {
+    protected MarkerSet addMarker(int startPos, int endPos, boolean isEditMarker, Integer color) {
 
         //Only 1 marker is available at same time, except when copy and paste marker is selected
         if (markerSets.size() >= 1 && !isEditMarker) {
@@ -451,6 +465,8 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         shouldReloadPreview = true;
         isEditMode = isEditMarker;
         updateDisplay();
+
+        return newMarkerSet;
     }
 
 
@@ -484,7 +500,10 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         // with the following line but it's not real. But I insist, be careful, if this fails in the future, take a look at it.
         @SuppressLint("RestrictedApi")
         CustomPopupMenuView menuView = new CustomPopupMenuView(requireContext(), R.menu.menu_popup_edit, new MenuBuilder(requireActivity()));
-        if (marker.getMarkerSet().isMiddleVisible() && marker.getMarkerSet().isEditMarker()) {
+
+        if (onlyShowPreview) {
+            menuView.setMenuItems(Arrays.asList(new OptionMenu(getString(R.string.menu_preview))));
+        } else if (marker.getMarkerSet().isMiddleVisible() && marker.getMarkerSet().isEditMarker()) {
             menuView.setMenuItems(Arrays.asList(
                     new OptionMenu(getString(R.string.menu_paste)),
                     new OptionMenu(getString(R.string.menu_cancel))
@@ -698,12 +717,19 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         progressDialog.setTitle(getString(R.string.processing_audio));
         progressDialog.setCancelable(false);
         progressDialog.setOnCancelListener((DialogInterface dialog) -> loadingKeepGoing = false);
-        progressDialog.show();
+
+        if (!useCustomProgressCallback()) {
+            progressDialog.show();
+        }
 
         final SoundFile.ProgressListener listener = (double fractionComplete) -> {
             long now = System.currentTimeMillis();
             if (now - loadingLastUpdateTime > 100) {
-                progressDialog.setProgress((int) (progressDialog.getMax() * fractionComplete));
+                if (useCustomProgressCallback()) {
+                    onProcessingProgress((float) fractionComplete);
+                } else {
+                    progressDialog.setProgress((int) (progressDialog.getMax() * fractionComplete));
+                }
                 loadingLastUpdateTime = now;
             }
             return loadingKeepGoing;
@@ -735,12 +761,16 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     soundFile = SoundFile.create(file.getAbsolutePath(), listener);
                 } catch (OutOfMemoryError e) {
                     e.printStackTrace();
-                    progressDialog.dismiss();
+                    if (!useCustomProgressCallback()) {
+                        progressDialog.dismiss();
+                    }
                     Commons.showAlertYesNo(getContext(), getContext().getString(R.string.title_error), getContext().getString(R.string.error_memory_full), null);
                     return;
                 } catch (final Exception e) {
                     e.printStackTrace();
-                    progressDialog.dismiss();
+                    if (!useCustomProgressCallback()) {
+                        progressDialog.dismiss();
+                    }
                     Commons.showAlertOkButton(getContext(), R.string.title_error, R.string.error_memory_full, null);
                     return;
                 }
@@ -761,7 +791,11 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
         touchDragging = false;
         offset = 0;
         offsetGoal = 0;
-        progressDialog.dismiss();
+        if (useCustomProgressCallback()) {
+            onProcessingProgress(1);
+        } else {
+            progressDialog.dismiss();
+        }
         updateDisplay();
         setupSeekBar();
         populateMarkers();
@@ -1448,5 +1482,20 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
     protected abstract void populateMarkers();
 
+    public boolean shouldWaitForAudio() {
+        return false;
+    }
+
+    public int getLayoutId() {
+        return R.layout.fragment_waveform;
+    }
+
+    public boolean useCustomProgressCallback() {
+        return false;
+    }
+
+    public void onProcessingProgress(float progress) {
+
+    }
 
 }

@@ -67,7 +67,7 @@ class DiscoverViewModel @Inject constructor(
 
     private fun loadSuggestedPeople() {
         viewModelScope.launch {
-            getSuggestedPeopleUseCase.execute()
+            getSuggestedPeopleUseCase.execute(20, 0)
                 .onSuccess {
                     _suggestedPeople.value = it
                 }

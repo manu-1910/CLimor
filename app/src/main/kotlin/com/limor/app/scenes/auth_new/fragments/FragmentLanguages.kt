@@ -1,29 +1,49 @@
 package com.limor.app.scenes.auth_new.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.chip.Chip
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.LanguageWrapper
-import com.limor.app.scenes.auth_new.navigation.AuthNavigator
-import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.auth_new.util.ToastMaker
 import com.limor.app.scenes.utils.MAIN
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_new_auth_languages.*
+import javax.inject.Inject
 
-class FragmentLanguages : FragmentWithLoading() {
+class FragmentLanguages : DialogFragment() {
 
-    private val model: AuthViewModelNew by activityViewModels()
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val model: AuthViewModelNew by activityViewModels { viewModelFactory }
+
+    companion object {
+        val TAG = FragmentLanguages::class.qualifiedName
+        fun newInstance(): FragmentLanguages {
+            return FragmentLanguages()
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.Theme_AppCompat_FloatingDialog)
+        load()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,25 +53,40 @@ class FragmentLanguages : FragmentWithLoading() {
         return inflater.inflate(R.layout.fragment_new_auth_languages, container, false)
     }
 
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        );
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setOnClickListeners()
         setUpSearchEditText()
+        subscribeToViewModel()
     }
 
-    override fun load() = model.downloadLanguages()
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        AndroidSupportInjection.inject(this)
+    }
 
-    override val errorLiveData: LiveData<String>
+    fun load() = model.downloadLanguages()
+
+    val errorLiveData: LiveData<String>
         get() = model.languagesLiveDataError
 
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
-            model.updatePreferredInfo()
+            model.updateLanguagesAndCategories()
         }
 
-        topAppBar.setNavigationOnClickListener {
-            AuthActivityNew.popBackStack(requireActivity())
-        }
+        /*topAppBar.setNavigationOnClickListener {
+            dismiss()
+        }*/
 
         clMain.setOnClickListener {
             clMain.requestFocus()
@@ -78,11 +113,8 @@ class FragmentLanguages : FragmentWithLoading() {
         }
     }
 
-    override fun subscribeToViewModel() {
-        super.subscribeToViewModel()
+    fun subscribeToViewModel() {
         model.languagesLiveData.observe(viewLifecycleOwner, Observer {
-            if (it.isNotEmpty())
-                switchCommonVisibility()
             createLanguagesArray(it)
         })
 
@@ -91,13 +123,10 @@ class FragmentLanguages : FragmentWithLoading() {
         })
 
         model.updatePreferredInfoLiveData.observe(viewLifecycleOwner, Observer {
-            if (it == null) return@Observer
-            AuthNavigator.navigateToFragmentByNavigationBreakpoints(
-                requireActivity(),
-                NavigationBreakpoints.SHOW_PROFILES.destination
-            )
-//            cgLanguages.findNavController()
-//                .navigate(R.id.action_fragment_new_auth_languages_to_fragment_new_auth_suggested_people)
+            if (it == null)
+                return@Observer
+            PrefsHandler.setPreferencesSelected(requireContext(), true)
+            dismiss()
         })
 
         model.userInfoProviderErrorLiveData.observe(viewLifecycleOwner, Observer {

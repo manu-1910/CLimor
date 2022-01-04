@@ -68,6 +68,14 @@ fun GetUserPodcastsQuery.Images1.mapToUIModel(): ImageLinksUIModel {
     return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
+fun GetPatronPodcastsQuery.Images.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
+}
+
+fun GetPatronPodcastsQuery.Images1.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
+}
+
 fun FeedItemsQuery.Images.mapToUIModel(): ImageLinksUIModel {
     return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
@@ -117,5 +125,13 @@ fun SearchFollowersQuery.Images.mapToUIModel(): ImageLinksUIModel {
 }
 
 fun SearchFollowingQuery.Images.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
+}
+
+fun GetPurchasedCastsQuery.Images1.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
+}
+
+fun GetPurchasedCastsQuery.Images.mapToUIModel(): ImageLinksUIModel {
     return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }

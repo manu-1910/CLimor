@@ -1,31 +1,30 @@
 package com.limor.app.scenes.main_new.fragments
 
 import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.dynamiclinks.ktx.*
-import com.google.firebase.ktx.Firebase
+import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.SkuDetails
 import com.limor.app.BuildConfig
 import com.limor.app.R
+import com.limor.app.audio.wav.waverecorder.calculateAmplitude
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentHomeNewBinding
 import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.requireTag
-import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
+import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
@@ -33,14 +32,22 @@ import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.adapters.HomeFeedAdapter
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
+import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
+import com.limor.app.scenes.patron.manage.fragment.ChangePriceActivity
+import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.PlayerViewManager
+import com.limor.app.service.PlayBillingHandler
+import com.limor.app.service.PurchaseTarget
 import com.limor.app.uimodels.CastUIModel
-import com.xwray.groupie.viewbinding.BindableItem
+import com.limor.app.uimodels.mapToAudioTrack
 import kotlinx.android.synthetic.main.fragment_home_new.*
-import org.jetbrains.anko.support.v4.toast
-import timber.log.Timber
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.jetbrains.anko.layoutInflater
+import java.io.File
 import javax.inject.Inject
 
 class FragmentHomeNew : BaseFragment() {
@@ -52,6 +59,9 @@ class FragmentHomeNew : BaseFragment() {
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
     private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
     private val podcastInteractionViewModel: PodcastInteractionViewModel by activityViewModels { viewModelFactory }
+
+    @Inject
+    lateinit var playBillingHandler: PlayBillingHandler
 
     lateinit var binding: FragmentHomeNewBinding
 
@@ -79,9 +89,21 @@ class FragmentHomeNew : BaseFragment() {
         setOnClicks()
     }
 
+    private fun launchPurchaseCast(cast: CastUIModel, skuDetails: SkuDetails?) {
+        val sku = skuDetails ?: return
+        val purchaseTarget = PurchaseTarget(sku, cast)
+        playBillingHandler.launchBillingFlowFor(purchaseTarget, requireActivity()) { success ->
+            if (success) {
+                lifecycleScope.launch {
+                    reload()
+                }
+            }
+        }
+    }
+
     private fun setOnClicks() {
         binding.btnNotification.setOnClickListener {
-           findNavController().navigate(R.id.navigation_notifications)
+            findNavController().navigate(R.id.navigation_notifications)
         }
     }
 
@@ -139,21 +161,21 @@ class FragmentHomeNew : BaseFragment() {
             binding.swipeToRefresh.isRefreshing = false
             onLoadCasts(casts)
         }
-        likePodcastViewModel.reload.observe(viewLifecycleOwner){
+        likePodcastViewModel.reload.observe(viewLifecycleOwner) {
             reloadCurrentCasts()
         }
-        recastPodcastViewModel.recastedResponse.observe(viewLifecycleOwner){
+        recastPodcastViewModel.recastedResponse.observe(viewLifecycleOwner) {
             reloadCurrentCasts()
         }
-        recastPodcastViewModel.deleteRecastResponse.observe(viewLifecycleOwner){
+        recastPodcastViewModel.deleteRecastResponse.observe(viewLifecycleOwner) {
             reloadCurrentCasts()
         }
-        sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner){
+        sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner) {
             println("Will reload...")
             reloadCurrentCasts()
         }
-        podcastInteractionViewModel.reload.observe(viewLifecycleOwner){
-            if(it == true){
+        podcastInteractionViewModel.reload.observe(viewLifecycleOwner) {
+            if (it == true) {
                 reloadCurrentCasts()
             }
         }
@@ -173,20 +195,18 @@ class FragmentHomeNew : BaseFragment() {
             onLikeClick = { castId, like ->
                 likePodcastViewModel.likeCast(castId, like)
             },
-            onCastClick = { cast ->
-                openPlayer(cast)
+            onCastClick = { cast, sku ->
+                onCastClick(cast, sku)
             },
             onReCastClick = { castId, isRecasted ->
-                if(isRecasted){
+                if (isRecasted) {
                     recastPodcastViewModel.reCast(castId)
-                } else{
+                } else {
                     recastPodcastViewModel.deleteRecast(castId)
                 }
             },
-            onCommentsClick = {cast ->
-                RootCommentsFragment.newInstance(cast).also { fragment ->
-                    fragment.show(parentFragmentManager, fragment.requireTag())
-                }
+            onCommentsClick = { cast, sku ->
+                onCommentClick(cast, sku)
             },
             onShareClick = { cast, onShared ->
                 ShareDialog.newInstance(cast).also { fragment ->
@@ -207,7 +227,38 @@ class FragmentHomeNew : BaseFragment() {
             },
             onUserMentionClick = { username, userId ->
                 context?.let { context -> UserProfileActivity.show(context, username, userId) }
-            }
+            },
+            onEditPreviewClick = {
+                EditPreviewDialog.newInstance(it).also { fragment ->
+                    fragment.show(parentFragmentManager, fragment.requireTag())
+                }
+            },
+            onPlayPreviewClick = { cast, play ->
+                cast.audio?.mapToAudioTrack()?.let { it1 ->
+                    cast.patronDetails?.startsAt?.let { it2 ->
+                        cast.patronDetails.endsAt?.let { it3 ->
+                            if (play) {
+                                (activity as? PlayerViewManager)?.playPreview(
+                                    it1, it2.toInt(), it3.toInt()
+                                )
+                            } else {
+                                (activity as? PlayerViewManager)?.stopPreview(true)
+                            }
+                        }
+                    }
+                }
+            },
+            onEditPriceClick = { cast ->
+                val intent = Intent(requireActivity(), ChangePriceActivity::class.java)
+                intent.putExtra(ChangePriceActivity.CHANGE_PRICE_FOR_ALL_CASTS, false)
+                intent.putExtra(ChangePriceActivity.CAST_ID, cast.id)
+                intent.putExtra(ChangePriceActivity.SELECTED_PRICE_ID, cast.patronDetails?.priceId)
+                editPriceLauncher.launch(intent)
+            },
+            onPurchaseCast = { cast, sku ->
+                launchPurchaseCast(cast, sku)
+            },
+            productDetailsFetcher = playBillingHandler
         )
     }
 
@@ -221,10 +272,56 @@ class FragmentHomeNew : BaseFragment() {
         rvHome.adapter = homeFeedAdapter
     }
 
-    var launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if(sharedPodcastId != -1) {
-            sharePodcastViewModel.share(sharedPodcastId)
-            sharedPodcastId = -1
+    var launcher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (sharedPodcastId != -1) {
+                sharePodcastViewModel.share(sharedPodcastId)
+                sharedPodcastId = -1
+            }
+        }
+
+    var editPriceLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                reloadCurrentCasts()
+            }
+        }
+
+    private fun onCastClick(cast: CastUIModel, sku: SkuDetails?){
+        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())){
+            LimorDialog(layoutInflater).apply {
+                setTitle(R.string.purchase_cast_title)
+                setMessage(R.string.purchase_cast_description)
+                setIcon(R.drawable.ic_purchase)
+                addButton(R.string.cancel, false)
+                addButton(R.string.buy_now, true) {
+                    launchPurchaseCast(cast, sku)
+                }
+            }.show()
+        } else{
+            openPlayer(cast)
+        }
+    }
+
+    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?) {
+        if (BuildConfig.DEBUG) {
+            println("Cast owner is ${cast.owner?.id}, current user is ${PrefsHandler.getCurrentUserId(requireContext())}");
+        }
+
+        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
+            LimorDialog(layoutInflater).apply {
+                setTitle(R.string.purchase_cast_title)
+                setMessage(R.string.purchase_cast_description_for_comment)
+                setIcon(R.drawable.ic_comment_purchase)
+                addButton(R.string.cancel, false)
+                addButton(R.string.buy_now, true) {
+                    launchPurchaseCast(cast, sku)
+                }
+            }.show()
+        } else{
+            RootCommentsFragment.newInstance(cast).also { fragment ->
+                fragment.show(parentFragmentManager, fragment.requireTag())
+            }
         }
     }
 
@@ -237,8 +334,125 @@ class FragmentHomeNew : BaseFragment() {
         )
     }
 
-    private fun scrollList(){
+    private fun scrollList() {
         binding.rvHome.scrollBy(0, 10)
     }
 
+    private fun showEditPreviewDialog() {
+        /*val bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialog)
+        val dialogView = layoutInflater.inflate(R.layout.sheet_edit_preview, null)
+        val behaviour = bottomSheetDialog.behavior
+        behaviour.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetDialog.setContentView(dialogView)
+        bottomSheetDialog.setCancelable(true)
+
+        val mediaPlayer = MediaPlayer()
+
+        dialogView.playButton.setOnClickListener {
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
+                dialogView.playButton.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_play
+                    )
+                )
+            } else {
+                lifecycleScope.launch {
+                    mediaPlayer.setDataSource("/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/1637835053364.wav")
+                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+
+                    val seekHandler: Handler = Handler(Looper.getMainLooper())
+                    val seekUpdater: Runnable = object : Runnable {
+                        override fun run() {
+                            seekHandler.postDelayed(this, 100)
+                            mediaPlayer.let {
+                                if (it.isPlaying) {
+                                    val currentPosition = it.currentPosition
+                                    dialogView.playVisualizer.updateTime(currentPosition.toLong(), true)
+                                }
+                            }
+                        }
+                    }
+
+                    val mRecorder = WaveRecorder("/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/1637835053364.wav")
+                    mRecorder.waveConfig.sampleRate = 44100
+                    mRecorder.waveConfig.channels = AudioFormat.CHANNEL_IN_STEREO
+                    mRecorder.waveConfig.audioEncoding = AudioFormat.ENCODING_PCM_16BIT
+                    val amps: List<Int> = loadAmps("/storage/emulated/0/Android/data/com.limor.app.dev/files/limorv2/1637835053364.wav", mRecorder.bufferSize)
+
+                    mediaPlayer.prepareAsync()
+                    dialogView.playVisualizer.visibility = View.VISIBLE
+
+                    mediaPlayer.setOnCompletionListener {
+                        dialogView.playVisualizer.updateTime(mediaPlayer.duration.toLong(), false)
+                        it.pause()
+                        dialogView.playButton.setImageDrawable(
+                            ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.ic_play
+                            )
+                        )
+                    }
+                    mediaPlayer.setOnPreparedListener {
+                        it.start()
+                        dialogView.playButton.setImageDrawable(
+                            ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.ic_pause
+                            )
+                        )
+                        seekHandler.post(seekUpdater)
+                    }
+
+                    dialogView.playVisualizer.apply {
+                        ampNormalizer = { sqrt(it.toFloat()).toInt() }
+                    }
+                    dialogView.playVisualizer.setWaveForm(
+                        amps,
+                        mRecorder.tickDuration
+                    )
+                }
+            }
+        }
+
+        dialogView.rewindButton.setOnClickListener{
+
+        }
+
+        dialogView.forwardButton.setOnClickListener{
+
+        }
+
+        dialogView.saveButton.setOnClickListener{
+            bottomSheetDialog.dismiss()
+        }
+
+        bottomSheetDialog.apply {
+            show()
+            window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }*/
+    }
+
+    @Suppress("BlockingMethodInNonBlockingContext")
+    suspend fun loadAmps(recordFile: String, bufferSize: Int): List<Int> =
+        withContext(Dispatchers.IO) {
+            val amps = mutableListOf<Int>()
+            val buffer = ByteArray(bufferSize)
+            File(recordFile).inputStream().use {
+                it.skip(44.toLong())
+
+                var count = it.read(buffer)
+                while (count > 0) {
+                    amps.add(buffer.calculateAmplitude())
+                    count = it.read(buffer)
+                }
+            }
+            amps
+        }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        playBillingHandler.close()
+    }
 }

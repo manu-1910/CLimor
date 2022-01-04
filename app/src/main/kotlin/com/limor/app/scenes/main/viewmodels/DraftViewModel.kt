@@ -3,15 +3,19 @@ package com.limor.app.scenes.main.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.common.ErrorMessageFactory
 import com.limor.app.common.SingleLiveEvent
 import com.limor.app.uimodels.UIDraft
+import com.limor.app.uimodels.UserUIModel
 import com.limor.app.usecases.DraftDeleteRealmUseCase
 import com.limor.app.usecases.DraftInsertRealmUseCase
 import com.limor.app.usecases.DraftLoadRealmUseCase
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
@@ -20,7 +24,8 @@ import javax.inject.Inject
 class DraftViewModel @Inject constructor(
     private val draftInsertRealmUseCase: DraftInsertRealmUseCase,
     private val draftLoadRealmUseCase: DraftLoadRealmUseCase,
-    private val draftDeleteRealmUseCase: DraftDeleteRealmUseCase
+    private val draftDeleteRealmUseCase: DraftDeleteRealmUseCase,
+    private val generalInfoRepository: GeneralInfoRepository,
 ) : ViewModel() {
 
     private val compositeDispose = CompositeDisposable()
@@ -97,5 +102,13 @@ class DraftViewModel @Inject constructor(
     override fun onCleared() {
         if (!compositeDispose.isDisposed) compositeDispose.dispose()
         super.onCleared()
+    }
+
+    fun getUserProfile(): LiveData<UserUIModel?> {
+        val liveData = MutableLiveData<UserUIModel?>()
+        viewModelScope.launch {
+            liveData.postValue(generalInfoRepository.getUserProfile())
+        }
+        return liveData
     }
 }

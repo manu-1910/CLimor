@@ -22,8 +22,10 @@ data class DraftEntity(
     val language: String?,
     val category: String?,
     val location: LocationsEntity?,
-    val parentDraft : DraftEntity?,
-    val isNewRecording : Boolean
+    val parentDraft: DraftEntity?,
+    val isNewRecording: Boolean,
+    val categories: ArrayList<OnDeviceCategoryEntity>,
+    val price: String? = null
 )
 
 
@@ -31,4 +33,9 @@ data class TimeStampEntity(
     val duration: Int?,
     val startSample: Int?,
     val endSample: Int?
+)
+
+data class OnDeviceCategoryEntity(
+    val name: String,
+    val categoryId: Int
 )

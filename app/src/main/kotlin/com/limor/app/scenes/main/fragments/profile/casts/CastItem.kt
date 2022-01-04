@@ -1,34 +1,63 @@
 package com.limor.app.scenes.main.fragments.profile.casts
 
-import android.graphics.Color
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.os.Handler
 import android.view.View
 import androidx.core.content.ContextCompat
+import com.android.billingclient.api.SkuDetails
 import com.limor.app.R
 import com.limor.app.databinding.ItemUserCastBinding
 import com.limor.app.dm.ShareResult
 import com.limor.app.extensions.*
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.utils.CommonsKt
+import com.limor.app.service.DetailsAvailableListener
+import com.limor.app.service.ProductDetails
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
-import kotlinx.android.synthetic.main.fragment_extended_player.*
 import timber.log.Timber
 
 class CastItem(
+    val userId: Int,
     val cast: CastUIModel,
-    private val onCastClick: (CastUIModel) -> Unit,
+    private val onCastClick: (CastUIModel, SkuDetails?) -> Unit,
     private val onLikeClick: (CastUIModel, like: Boolean) -> Unit,
     private val onMoreDialogClick: (CastUIModel) -> Unit,
     private val onRecastClick: (CastUIModel, isRecasted: Boolean) -> Unit,
-    private val onCommentsClick: (CastUIModel) -> Unit,
+    private val onCommentsClick: (CastUIModel, SkuDetails?) -> Unit,
     private val onShareClick: (CastUIModel, onShared: ((shareResult: ShareResult) -> Unit)?) -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
-) : BindableItem<ItemUserCastBinding>() {
+    private val isPurchased: Boolean = false,
+    private val onPurchaseCast: (cast: CastUIModel, sku: SkuDetails?) -> Unit,
+    private val onEditPreviewClick: (cast: CastUIModel) -> Unit,
+    private val onPlayPreviewClick: (cast: CastUIModel, play: Boolean) -> Unit,
+    private val onEditPriceClick: (cast: CastUIModel) -> Unit,
+    private val productDetailsFetcher: ProductDetails? = null,
+) : BindableItem<ItemUserCastBinding>(), DetailsAvailableListener {
+
+    private var skuDetails: SkuDetails? = null
+    private lateinit var context: Context
+    private lateinit var binding: ItemUserCastBinding
+
+    private var playingPreview = false
 
     override fun bind(viewBinding: ItemUserCastBinding, position: Int) {
+        binding = viewBinding
         viewBinding.apply {
+            context = root.context
+
+            binding.matureContentInfo.visibility = if (cast.maturedContent == true)
+                View.VISIBLE
+            else
+                View.GONE
+
+
             tvPodcastUserName.text = cast.owner?.username
             tvPodcastUserSubtitle.text = cast.getCreationDateAndPlace(root.context, true)
             ivVerifiedAvatar.visibility =
@@ -46,7 +75,7 @@ class CastItem(
             }
 
             //Handling the color background for podcast
-            CommonsKt.handleColorFeed(cast,colorFeedText,root.context)
+            CommonsKt.handleColorFeed(cast, colorFeedText, root.context)
 
             tvPodcastLikes.text = cast.likesCount.toString()
             tvPodcastRecast.text = cast.recastsCount.toString()
@@ -82,19 +111,55 @@ class CastItem(
             btnPodcastReply.shared = cast.isShared == true
 
             clItemPodcastFeed.setOnClickListener {
-                onCastClick(cast)
-            }
-
-            btnPodcastMore.setOnClickListener {
-                onMoreDialogClick(cast)
+                onCastClick(cast, skuDetails)
             }
 
             btnPodcastComments.throttledClick {
-                onCommentsClick(cast)
+                onCommentsClick(cast, skuDetails)
             }
 
             tvPodcastComments.throttledClick {
-                onCommentsClick(cast)
+                onCommentsClick(cast, skuDetails)
+            }
+
+            binding.btnAddPreview.setOnClickListener {
+                onEditPreviewClick(cast)
+            }
+
+            binding.btnEditPrice.setOnClickListener {
+                onEditPriceClick(cast)
+            }
+
+            ivPodcastAvatar.setOnClickListener {
+                if(cast.owner?.id != userId){
+                    openUserProfile(cast)
+                }
+            }
+
+            ivAvatarImageListening.setOnClickListener {
+                if(cast.owner?.id != userId){
+                    openUserProfile(cast)
+                }
+            }
+
+            tvPodcastUserName.setOnClickListener {
+                if(cast.owner?.id != userId){
+                    openUserProfile(cast)
+                }
+            }
+
+            binding.btnPlayStopPreview.setOnClickListener {
+                playingPreview = !playingPreview
+                binding.btnPlayStopPreview.text = if (playingPreview) "Stop" else "Preview"
+                onPlayPreviewClick(cast, playingPreview)
+                cast.patronDetails?.previewDuration.let {
+                    if (it != null) {
+                        Handler().postDelayed(Runnable {
+                            playingPreview = !playingPreview
+                            binding.btnPlayStopPreview.text = if (playingPreview) "Stop" else "Preview"
+                        }, it.toLong())
+                    }
+                }
             }
 
             sharesLayout.throttledClick {
@@ -105,8 +170,18 @@ class CastItem(
                     applyShareStyle(viewBinding, cast.isShared == true)
                 }
             }
+
+            setPatronPodcastStatus(cast, binding)
+
         }
 
+    }
+
+    private fun openUserProfile(item: CastUIModel) {
+        val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+        userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, item.owner?.username)
+        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, item.owner?.id)
+        context.startActivity(userProfileIntent)
     }
 
     private fun initRecastState(binding: ItemUserCastBinding, item: CastUIModel) {
@@ -185,4 +260,81 @@ class CastItem(
 
     override fun getLayout() = R.layout.item_user_cast
     override fun initializeViewBinding(view: View) = ItemUserCastBinding.bind(view)
+
+
+    private fun setPatronPodcastStatus(item: CastUIModel, binding: ItemUserCastBinding) {
+        if (item.patronCast == true) {
+
+            val userId = PrefsHandler.getCurrentUserId(binding.root.context)
+            binding.patronCastIndicator.visibility = View.VISIBLE
+
+            binding.btnBuyCast.setOnClickListener {
+                skuDetails?.let {
+                    onPurchaseCast(item, it)
+                }
+            }
+
+            when {
+                (item.owner?.id != userId) -> {
+                    Timber.d("Cast Item not owner -> $item")
+
+                    if (cast.patronDetails?.purchased == true) {
+                        binding.btnPurchasedCast.visibility = View.VISIBLE
+                        binding.notCastOwnerActions.visibility = View.GONE
+                        binding.castOwnerActions.visibility = View.GONE
+                        binding.btnPurchasedCast.text =
+                            "Purchased at ${cast.patronDetails?.castPurchasedDetails?.purchased_in_currency} ${cast.patronDetails?.castPurchasedDetails?.purchased_at_price} "
+                    } else {
+                        //Purchase a cast actions
+                        binding.notCastOwnerActions.visibility = View.VISIBLE
+                        binding.btnAddPreview.visibility = View.GONE
+                        binding.btnEditPrice.visibility = View.GONE
+                        binding.btnPurchasedCast.visibility = View.GONE
+                        setPricingLabel()
+                    }
+
+                }
+                item.owner.id == userId -> {
+                    //Self Patron Cast
+                    binding.btnPlayStopPreview.visibility = View.GONE
+                    binding.btnBuyCast.visibility = View.GONE
+                    binding.castOwnerActions.visibility = View.VISIBLE
+                    binding.btnPurchasedCast.visibility = View.GONE
+                    setPricingLabel()
+                }
+                else -> {
+                    binding.notCastOwnerActions.visibility = View.GONE
+                    binding.castOwnerActions.visibility = View.GONE
+                    binding.btnPurchasedCast.visibility = View.VISIBLE
+
+                }
+            }
+        } else {
+            binding.btnPurchasedCast.visibility = View.GONE
+            binding.notCastOwnerActions.visibility = View.GONE
+            binding.castOwnerActions.visibility = View.GONE
+            binding.btnPurchasedCast.visibility = View.GONE
+            binding.patronCastIndicator.visibility = View.GONE
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setPricingLabel() {
+        val priceId = cast.patronDetails?.priceId ?: return
+        val details = skuDetails
+        if (details == null || details.sku != priceId) {
+            productDetailsFetcher?.getPrice(priceId, this)
+            return
+        }
+        binding.btnBuyCast.text = "${context.getString(R.string.buy_cast)}\n${details.price}"
+        binding.btnEditPrice.text = "${context.getString(R.string.edit_price)}\n${details.price}"
+    }
+
+    override fun onDetailsAvailable(details: Map<String, SkuDetails>) {
+        val priceId = cast.patronDetails?.priceId ?: return
+        if (details.containsKey(priceId)) {
+            skuDetails = details[priceId]
+            setPricingLabel()
+        }
+    }
 }

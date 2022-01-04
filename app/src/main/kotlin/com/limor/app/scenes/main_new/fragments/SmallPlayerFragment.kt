@@ -104,7 +104,10 @@ class SmallPlayerFragment : BaseFragment() {
             openExtendedPlayer()
         }
         if (cast.imageLinks?.large == null) {
-            binding.circleImageView2.setColorFilter(Color.parseColor(cast.colorCode))
+            cast.colorCode?.let{
+                binding.circleImageView2.setColorFilter(Color.parseColor(it))
+            }
+
         }
 
     }

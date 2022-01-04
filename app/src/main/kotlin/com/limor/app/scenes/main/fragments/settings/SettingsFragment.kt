@@ -41,6 +41,7 @@ import com.limor.app.extensions.dp
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.extensions.px
 import com.limor.app.scenes.auth_new.firebase.FirebaseSessionHandler
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.settings.EditProfileFragment.Companion.TIMBER_TAG
 import com.limor.app.scenes.main.viewmodels.LogoutViewModel
 import com.limor.app.scenes.main.viewmodels.UpdateUserViewModel
@@ -202,6 +203,8 @@ class SettingsFragment : BaseFragment() {
             try {
                 FirebaseSessionHandler.logout(requireContext())
                 Toast.makeText(requireContext(), "Done!", Toast.LENGTH_LONG).show()
+                PrefsHandler.setPreferencesSelected(requireContext(), false)
+                PrefsHandler.setPreferencesScreenOpenedInThisSession(requireContext(), false)
                 (activity)?.finishAffinity()
                 startActivity(
                     Intent(requireContext(), SplashActivity::class.java)

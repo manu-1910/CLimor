@@ -66,7 +66,7 @@
     <color name="brandSecondary800">#1a1a1a</color>
     <color name="brandSecondary900">#0f0f0f</color>
 
-    <color name="brandPrimary500">#f7bb3d</color>
+    <color name="brandPrimary500">#F9BB4B</color>
     <color name="brandSecondary600withTransparency">#66333333</color>
 
     <color name="redError">#f56565</color>
@@ -142,6 +142,7 @@
         @color/textSecondary
     </color>
     <color name="grayWave">#91A2B2</color>
+    <color name="dotsColor">#4891A2B2</color>
     <color name="orangeColor">#FF9800</color>
 
     <color name="subtitle_text_color">#91A2B2</color>
@@ -151,7 +152,6 @@
     <color name="error_stroke_color">#FF5A4E</color>
     <color name="approved_green">#49BF9B</color>
     <color name="ripple_color">#33F9BB4B</color>
-
 
 
     <!--Notifications Colors-->
@@ -170,5 +170,13 @@
 
 
     <color name="background_color">#FBFCFF</color>
+    <color name="bg_grey">#E5E5E5</color>
+
+    <color name="total_earnings_background">#EDF6FF</color>
+    <color name="transaction_fee_background">#FBECEE</color>
+    <color name="total_balance_background">#E7FCF5</color>
+
+    <color name="credit_card_color">#623CEA</color>
+    <color name="credit_card_background_color">#F0ECFD</color>
 
 </resources>

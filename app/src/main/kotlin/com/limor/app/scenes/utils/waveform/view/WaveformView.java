@@ -107,9 +107,15 @@ public class WaveformView extends View {
     public static final int TEXT_SIZE_8 = 8;
     public static final int NEW_WIDTH = 20;
     public static final int LINE_WIDTH = 10;
-    public static final int ZOOM_LEVELS_COUNT = 20;
+    public static int ZOOM_LEVELS_COUNT = 80;
     public static final float ZOOM_LEVEL_INITIAL_FACTOR = 1.2f;
     public static final float ZOOM_LEVEL_ADDED_FACTOR = 0.05f;
+
+    private boolean mZoomInMax = false;
+
+    public void setZoomInMax(boolean zoomInMax) {
+        this.mZoomInMax = zoomInMax;
+    }
 
     // endregion
 
@@ -146,7 +152,7 @@ public class WaveformView extends View {
 
         lightBlueBackgroundPaint = new Paint();
         lightBlueBackgroundPaint.setAntiAlias(false);
-        lightBlueBackgroundPaint.setColor(Color.parseColor("#F0F3F8")); //green500
+        lightBlueBackgroundPaint.setColor(Color.parseColor("#f1f8ff")); //green500
 
         dividerBackgroundPaint = new Paint();
         dividerBackgroundPaint.setAntiAlias(false);
@@ -202,16 +208,21 @@ public class WaveformView extends View {
             public boolean onScale(ScaleGestureDetector d) {
                 float scaleX = Math.abs(d.getCurrentSpanX());
                 float scaleY = Math.abs(d.getCurrentSpanY());
-                if (scaleX - initialScaleSpanX > 20 || scaleY - initialScaleSpanY > 20) {
+                if (d.getScaleFactor() > 1) {
                     listener.waveformZoomIn();
-                    initialScaleSpanX = scaleX;
-                    initialScaleSpanY = scaleY;
-                }
-                if (scaleX - initialScaleSpanX < -20 || scaleY - initialScaleSpanY < -20) {
+                } else {
                     listener.waveformZoomOut();
-                    initialScaleSpanX = scaleX;
-                    initialScaleSpanY = scaleY;
                 }
+//                if (scaleX - initialScaleSpanX > 20 || scaleY - initialScaleSpanY > 20) {
+//                    listener.waveformZoomIn();
+//                    initialScaleSpanX = scaleX;
+//                    initialScaleSpanY = scaleY;
+//                }
+//                if (scaleX - initialScaleSpanX < -20 || scaleY - initialScaleSpanY < -20) {
+//                    listener.waveformZoomOut();
+//                    initialScaleSpanX = scaleX;
+//                    initialScaleSpanY = scaleY;
+//                }
                 return true;
             }
         });
@@ -256,6 +267,13 @@ public class WaveformView extends View {
         this.soundFile = soundFile;
         sampleRate = soundFile.getSampleRate();
         samplesPerFrame = soundFile.getSamplesPerFrame();
+
+        // If longer than 10 minutes add more zoom levels
+        if (soundFile.getDurationMillis() > 5 * 60 * 1000) {
+            final float durationSeconds = (soundFile.getDurationMillis() / (60f * 1000f));
+            ZOOM_LEVELS_COUNT = (int) (100 * (durationSeconds / 5.0f));
+        }
+
         computeDoublesForAllZoomLevels();
     }
 
@@ -354,12 +372,25 @@ public class WaveformView extends View {
         return (int) ((msecs * 1.0 * sampleRate * z) / (1000.0 * samplesPerFrame) + 0.5);
     }
 
+    public int adjustedMillisecsToPixels(int msecs) {
+        double z = zoomFactorByZoomLevel[zoomLevel];
+        return (int) ((NEW_WIDTH * msecs * 1.0 * sampleRate * z) / (1000.0 * samplesPerFrame) + 0.5);
+    }
+
     public int pixelsToMillisecs(int pixels) {
         if (zoomFactorByZoomLevel == null) {
             return -1;
         }
         double z = zoomFactorByZoomLevel[zoomLevel];
         return (int) (pixels * (1000.0 * samplesPerFrame) / (sampleRate * z) + 0.5);
+    }
+
+    public int adjustedPixelsToMillisecs(int pixels) {
+        if (zoomFactorByZoomLevel == null) {
+            return -1;
+        }
+        double z = zoomFactorByZoomLevel[zoomLevel];
+        return (int) ((pixels / NEW_WIDTH) * (1000.0 * samplesPerFrame) / (sampleRate * z) + 0.5);
     }
 
     public void setParameters(ArrayList<MarkerSet> markerSets, int offset) {
@@ -595,15 +626,17 @@ public class WaveformView extends View {
         }
 
         range = maxGain - minGain;
-        numZoomLevels = 20;
-        lenByZoomLevel = new int[20];
-        zoomFactorByZoomLevel = new float[20];
+        numZoomLevels = ZOOM_LEVELS_COUNT;
+        lenByZoomLevel = new int[ZOOM_LEVELS_COUNT];
+        zoomFactorByZoomLevel = new float[ZOOM_LEVELS_COUNT];
 
-        float ratio = getMeasuredWidth() / (float) numFrames;
-        if (ratio < 1) {
+        final float measuredWidth = getMeasuredWidth();
+
+        float ratio = measuredWidth / (float) numFrames;
+         if (ratio < 1) {
             //lenByZoomLevel[0] = Math.round(numFrames * ratio);
             //zoomFactorByZoomLevel[0] = ratio;
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < numZoomLevels; i++) {
 
                 lenByZoomLevel[i] = Math.round(numFrames * ratio * (ZOOM_LEVEL_INITIAL_FACTOR + ZOOM_LEVEL_ADDED_FACTOR * i));
                 zoomFactorByZoomLevel[i] = ratio * (ZOOM_LEVEL_INITIAL_FACTOR + ZOOM_LEVEL_ADDED_FACTOR * i);
@@ -617,13 +650,18 @@ public class WaveformView extends View {
                 zoomFactorByZoomLevel[i] = (ZOOM_LEVEL_INITIAL_FACTOR + ZOOM_LEVEL_ADDED_FACTOR) * i;
             }
             for (int i = 0; i < ZOOM_LEVELS_COUNT; i++) {
-                if (lenByZoomLevel[zoomLevel] - getMeasuredWidth() > 0) {
+                if (lenByZoomLevel[zoomLevel] - measuredWidth > 0) {
                     break;
                 } else {
                     zoomLevel = i;
                 }
             }
         }
+
+        if (mZoomInMax) {
+            zoomLevel = ZOOM_LEVELS_COUNT - 1;
+        }
+
         initialized = true;
     }
 

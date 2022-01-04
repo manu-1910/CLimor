@@ -28,9 +28,33 @@ data class UIDraft(
     var category: String?,
     var location: UILocations?,
     var draftParent : UIDraft?,
-    var isNewRecording : Boolean
+    var isNewRecording : Boolean,
+    var categories: List<UISimpleCategory>?,
+    var price: String?
 ): Serializable {
-    constructor() : this( 0,"", "", "", "", "", 0, 0, false, ArrayList(), "", 0, "","","", UILocations(), null, false)
+    constructor() : this(
+        0,
+        "",
+        "",
+        "",
+        "",
+        "",
+        0,
+        0,
+        false,
+        ArrayList(),
+        "",
+        0,
+        "",
+        "",
+        "",
+        UILocations(),
+        null,
+        false,
+        null,
+        null
+    )
+
 }
 
 
@@ -43,4 +67,7 @@ data class UITimeStamp(
 }
 
 
-
+data class UISimpleCategory(
+    val name: String,
+    val categoryId: Int
+)

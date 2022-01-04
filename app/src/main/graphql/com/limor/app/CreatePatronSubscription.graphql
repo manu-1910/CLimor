@@ -1,0 +1,6 @@
+mutation CreatePatronSubscription($platform: String!,$planId: String!,$purchaseData:String!) {
+    createPatronSubscription(platform: $platform, planId: $planId, purchaseData: $purchaseData){
+        message
+        status
+    }
+}

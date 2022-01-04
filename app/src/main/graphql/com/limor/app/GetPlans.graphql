@@ -1,0 +1,14 @@
+query GetPlans{
+    getPlans{
+        plans{
+            id
+            productId
+            duration
+            isActive
+            startedAt
+            endedAt
+        }
+        status
+        message
+    }
+}

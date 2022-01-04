@@ -1,0 +1,7 @@
+mutation AddPatronCategories($categories: [Int]!) {
+    addPatronCategories(categories: $categories){
+        message
+        status
+        categories
+    }
+}

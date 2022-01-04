@@ -30,6 +30,10 @@ query GetCommentsByPodcastsQuery($podcastId: Int!, $limit: Int!, $offset:Int!){
             sharing_url
             voice_bio_url
             duration
+            patronInvitationStatus
+            isPatron
+            patronAudioURL
+            patronAudioDuration
         }
         content
         created_at
@@ -98,6 +102,10 @@ query GetCommentsByPodcastsQuery($podcastId: Int!, $limit: Int!, $offset:Int!){
                 sharing_url
                 voice_bio_url
                 duration
+                patronInvitationStatus
+                isPatron
+                patronAudioURL
+                patronAudioDuration
             }
             content
             created_at

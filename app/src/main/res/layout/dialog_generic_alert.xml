@@ -42,6 +42,7 @@
         android:fontFamily="@font/roboto"
         android:lineSpacingMultiplier="1.4"
         android:textColor="@color/textSecondary"
+        android:textAlignment="center"
         android:textSize="@dimen/textSizeTiny"
         tools:text="This is some question  the dialog is asking?" />
 
@@ -55,8 +56,7 @@
         android:layout_marginEnd="@dimen/marginTwenty"
         android:layout_marginBottom="28dp"
         android:orientation="horizontal"
-        android:visibility="visible"
-        android:weightSum="2">
+        android:visibility="visible">
 
 
 

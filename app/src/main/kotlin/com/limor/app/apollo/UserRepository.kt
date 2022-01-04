@@ -26,7 +26,7 @@ class UserRepository @Inject constructor(val apollo: Apollo) {
         return updateUserNameResult
     }
 
-    suspend fun updateFirstNameAndLastName(firstName: String, lastName: String): String?{
+    suspend fun updateFirstNameAndLastName(firstName: String, lastName: String): String? {
         val query = UpdateFirstNameAndLastNameMutation(firstName, lastName)
         val queryResult = apollo.mutate(query)
         val updateResult = queryResult?.data?.updateUser?.status
@@ -91,6 +91,36 @@ class UserRepository @Inject constructor(val apollo: Apollo) {
         val updateUserOnboardingData =
             queryResult?.data?.updateUser
         Timber.d("updateUserOnboardingDataMutation -> ${updateUserOnboardingData?.status}")
+        return updateUserOnboardingData?.status
+    }
+
+    suspend fun updateUserGender(
+        gender: Int?
+    ): String? {
+        val inputGender = Input.fromNullable(gender)
+        val query = UpdateUserGenderMutation(inputGender)
+        val queryResult = apollo.mutate(query)
+        val updateUserOnboardingData =
+            queryResult?.data?.updateUser
+        Timber.d("updateUserOnboardingDataMutation -> ${updateUserOnboardingData?.status}")
+        return updateUserOnboardingData?.status
+    }
+
+    suspend fun updateLanguagesAndCategories(
+        categories: List<Int?>,
+        languages: List<String?>
+    ): String? {
+        val inputCategories = Input.fromNullable(categories)
+        val inputLanguages = Input.fromNullable(languages)
+        val query = UpdateUserOnboardingDataMutation(
+            Input.absent(),
+            inputCategories,
+            inputLanguages
+        )/*UpdateUserCategoriesAndLanguagesMutation(inputCategories, inputLanguages)*/
+        val queryResult = apollo.mutate(query)
+        val updateUserOnboardingData =
+            queryResult?.data?.updateUser
+        Timber.d("updateUserCategoriesAndLanguagesMutation -> ${updateUserOnboardingData?.status}")
         return updateUserOnboardingData?.status
     }
 
@@ -164,6 +194,14 @@ class UserRepository @Inject constructor(val apollo: Apollo) {
             PrefsHandler.saveUserDeviceToken(App.instance, token)
         }
         Timber.d("createUserDevice -> $id")
+    }
+
+    suspend fun requestPatronInvitation(userId: Int): String? {
+        val query = CreatePatronInvitationRequestMutation()
+        val result = apollo.mutate(query)
+        val status: String? = result?.data?.createPatronInvitationRequest?.status
+        Timber.d("patronInvitationRequestStatus -> $status")
+        return status
     }
 
     suspend fun reportUser(id: Int, reason: String) {

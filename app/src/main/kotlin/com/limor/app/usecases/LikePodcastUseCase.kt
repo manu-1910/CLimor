@@ -2,7 +2,6 @@ package com.limor.app.usecases
 
 import com.limor.app.apollo.PodcastInteractionsRepository
 import com.limor.app.common.dispatchers.DispatcherProvider
-import com.limor.app.uimodels.CastUIModel
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 

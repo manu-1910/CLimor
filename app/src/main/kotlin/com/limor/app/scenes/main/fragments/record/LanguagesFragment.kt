@@ -31,13 +31,13 @@ class LanguagesFragment : FragmentWithLoading(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val model: LanguagesViewModel by activityViewModels {viewModelFactory}
+    private val model: LanguagesViewModel by activityViewModels { viewModelFactory }
     private val publishViewModel: PublishViewModel by activityViewModels { viewModelFactory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_languages, container, false)
     }
@@ -70,6 +70,11 @@ class LanguagesFragment : FragmentWithLoading(), Injectable {
         }
         //clMain.onFocusChangeListener = AuthActivityNew.onFocusChangeListener()
         //cgLanguages.onFocusChangeListener = AuthActivityNew.onFocusChangeListener()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        model.onLanguageInputChanged(null)
     }
 
     private fun setUpSearchEditText() {
@@ -111,7 +116,8 @@ class LanguagesFragment : FragmentWithLoading(), Injectable {
         }
         chipsList.forEach {
             it.id = View.generateViewId()
-            cgLanguages.addView(it) }
+            cgLanguages.addView(it)
+        }
     }
 
     private fun getVariantChip(language: LanguageWrapper): Chip {
@@ -119,15 +125,17 @@ class LanguagesFragment : FragmentWithLoading(), Injectable {
         chip.apply {
             text = language.name
             MAIN {
-               isChecked = (lastCheckedId == chip.id)
+                isChecked = (publishViewModel.languageSelected == language.name)
             }
             setOnCheckedChangeListener { buttonView, isChecked ->
-                language.isSelected = isChecked
-                lastCheckedId = chip.id
+
                 if (isChecked) {
+                    language.isSelected = isChecked
+                    lastCheckedId = chip.id
                     publishViewModel.languageSelected = text.toString()
                     publishViewModel.languageCode = language.code
-                }else{
+                } else {
+                    language.isSelected = false
                     lastCheckedId = View.NO_ID
                 }
                 Timber.d("Chip -> ${language.code} -- ${language.name}")

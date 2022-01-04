@@ -2,6 +2,8 @@ package com.limor.app.di.modules.fragments
 
 import com.limor.app.dm.ui.ChatSessionsFragment
 import com.limor.app.dm.ui.ShareFragment
+import com.limor.app.scenes.auth_new.fragments.FragmentCategories
+import com.limor.app.scenes.auth_new.fragments.FragmentLanguages
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategoriesFragment
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverCategoryFragment
 import com.limor.app.scenes.main.fragments.discover.discover.DiscoverFragment
@@ -9,12 +11,17 @@ import com.limor.app.scenes.main.fragments.discover.featuredcasts.DiscoverFeatur
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.fragments.discover.search.DiscoverSearchFragment
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleFragment
+import com.limor.app.scenes.main.fragments.profile.FragmentPurchases
+import com.limor.app.scenes.main.fragments.profile.UserPatronFragmentNew
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsFragmentNew
 import com.limor.app.scenes.main_new.fragments.*
 import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.fragments.comments.FragmentCommentReplies
+import com.limor.app.scenes.main_new.view.editpreview.EditPreviewFragment
 import com.limor.app.scenes.notifications.Notification
+import com.limor.app.scenes.patron.manage.fragment.*
+import com.limor.app.scenes.patron.setup.FragmentPatronCategories
 import com.limor.app.scenes.profile.DialogCommentMoreActions
 import com.limor.app.scenes.profile.DialogUserReport
 import dagger.Module
@@ -54,6 +61,9 @@ abstract class MainActivityNewFragmentBuildersModule {
     abstract fun contributeUserPodcastsFragmentNewInjector(): UserPodcastsFragmentNew
 
     @ContributesAndroidInjector
+    abstract fun contributeUserPatronFragmentNewInjector(): UserPatronFragmentNew
+
+    @ContributesAndroidInjector
     abstract fun contributeExtendedPlayerFragmentInjector(): ExtendedPlayerFragment
 
     @ContributesAndroidInjector
@@ -85,6 +95,36 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeChatSessionsFragmentInjector(): ChatSessionsFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeManagePatronFragmentInjector(): ManagePatronFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentPatronCategories(): FragmentPatronCategories
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentCastEarnings(): FragmentCastEarnings
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentFragmentMyEarnings(): FragmentMyEarnings
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentInviteFriends(): FragmentInviteFriends
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentUpdatePatronCaregories(): FragmentUpdatePatronCategories
+
+    @ContributesAndroidInjector
+    abstract fun contributeEditPreviewFragmentInjector(): EditPreviewFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentPurchaseInjector(): FragmentPurchases
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentCategories(): FragmentCategories
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentLanguages(): FragmentLanguages
 
 }
 

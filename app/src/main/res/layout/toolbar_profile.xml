@@ -32,11 +32,48 @@
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/btn_user_settings"
         style="@style/Widget.AppCompat.Toolbar.Button.Navigation"
-        android:layout_width="@dimen/toolbar_button_size"
+        android:layout_width="48dp"
+        android:layout_marginEnd="8dp"
         android:layout_height="@dimen/toolbar_button_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_setting" />
+
+    <RelativeLayout
+        android:id="@+id/btn_invitations"
+        android:visibility="gone"
+        android:layout_width="48dp"
+        android:layout_height="56dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_user_settings">
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_open_invitations"
+            style="@style/Widget.AppCompat.Toolbar.Button.Navigation"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            app:srcCompat="@drawable/ic_open_message" />
+
+        <TextView
+            android:id="@+id/invite_pending_tv"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_circle_grey"
+            android:backgroundTint="@color/red400"
+            android:fontFamily="@font/roboto_bold"
+            android:gravity="center"
+            android:layout_alignParentEnd="true"
+            android:text="5"
+            android:textAlignment="gravity"
+            android:textColor="@color/white"
+            android:textSize="10sp" />
+
+    </RelativeLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -54,8 +54,8 @@
             android:layout_height="wrap_content"
             app:chipSpacingHorizontal="16dp"
             app:singleLine="false"
-            app:singleSelection="true"
-            app:selectionRequired="true" />
+            app:singleSelection="false"
+            app:selectionRequired="false" />
     </ScrollView>
 
     <Button

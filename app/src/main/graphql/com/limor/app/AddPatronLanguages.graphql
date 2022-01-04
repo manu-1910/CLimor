@@ -1,0 +1,7 @@
+mutation AddPatronLanguages($languages: [String]!) {
+    addPatronLanguages(languageCodes: $languages){
+        message
+        status
+        languageCode
+    }
+}

@@ -5,36 +5,44 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.limor.app.FeedItemsQuery
+import com.android.billingclient.api.Purchase
+import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.apollo.PublishRepository
 import com.limor.app.common.SingleLiveEvent
 import com.limor.app.type.CreatePodcastInput
 import com.limor.app.uimodels.*
+import com.limor.app.usecases.InAppPricesUseCase
 import com.limor.app.usecases.PublishUseCase
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.square1.limor.remote.extensions.parseSuccessResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.HttpException
 import timber.log.Timber
 import javax.inject.Inject
 
 
-class PublishViewModel @Inject constructor(private val publishUseCase: PublishUseCase,
-private val publishRepository: PublishRepository
+class PublishViewModel @Inject constructor(
+    private val publishUseCase: PublishUseCase,
+    private val publishRepository: PublishRepository,
+    private val generalInfoRepository: GeneralInfoRepository,
+    private val inAppPricesUseCase: InAppPricesUseCase,
 ) : ViewModel() {
 
+    private val _inAppPricesData = MutableLiveData<List<String?>>()
+    val inAppPricesData: LiveData<List<String?>>
+        get() = _inAppPricesData
     var uiPublishRequest = UIPublishRequest(
         podcast = null
-    );
+    )
     private val _publishResponseData = MutableLiveData<String?>()
     val publishResponseData: LiveData<String?>
-    get() = _publishResponseData
+        get() = _publishResponseData
     var categorySelected: String = ""
     var categorySelectedId: Int = -1
+    var categorySelectedIdsList: ArrayList<Int> = arrayListOf()
+    var categorySelectedNamesList: ArrayList<UISimpleCategory> = arrayListOf()
+    var languageSelectedCodesList: ArrayList<String> = arrayListOf()
     var languageSelected: String = ""
     var languageCode: String = ""
     var languageSelectedId: Int = 0
@@ -43,13 +51,13 @@ private val publishRepository: PublishRepository
     private val compositeDispose = CompositeDisposable()
 
     data class Input(
-        val publishTrigger: Observable<Unit>
+        val publishTrigger: Observable<Unit>,
     )
 
     data class Output(
         val response: LiveData<UIPublishResponse>,
         val backgroundWorkingProgress: LiveData<Boolean>,
-        val errorMessage: SingleLiveEvent<UIErrorResponse>
+        val errorMessage: SingleLiveEvent<UIErrorResponse>,
     )
 
     fun transform(input: Input): Output {
@@ -85,31 +93,90 @@ private val publishRepository: PublishRepository
         super.onCleared()
     }
 
-    suspend fun createPodcast(podcast: CreatePodcastInput):String? {
+    suspend fun createPodcast(podcast: CreatePodcastInput): String? {
 
         return withContext(Dispatchers.IO) {
             try {
                 val response = publishRepository.createPodcast(podcast)
-               // _publishResponseData.value = response
+                // _publishResponseData.value = response
                 response
             } catch (e: Exception) {
                 Timber.e(e)
-               // _publishResponseData.value = null
+                // _publishResponseData.value = null
                 null
             }
 
         }
     }
 
-    suspend fun updatePodcast(podcastId: Int, title: String, caption: String): String?{
-        return withContext(Dispatchers.IO){
-            try{
-                val response = publishRepository.updatePodcast(podcastId, title, caption)
+    suspend fun updatePodcast(podcastId: Int, title: String, caption: String, matureContent: Boolean): String? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = publishRepository.updatePodcast(podcastId, title, caption, matureContent)
                 response
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 null
             }
         }
+    }
+
+
+    fun consumePurchasedSub(purchase: Purchase): LiveData<String?> {
+        val liveData = MutableLiveData<String?>()
+        viewModelScope.launch(Dispatchers.IO) {
+            val status = publishRepository.updateSubscriptionDetails(purchase)
+            liveData.postValue(status)
+        }
+        return liveData
+    }
+
+    fun addPatronCategories(): LiveData<String?> {
+        val liveData = MutableLiveData<String?>()
+        viewModelScope.launch(Dispatchers.IO) {
+            val status = publishRepository.addPatronCategories(categorySelectedIdsList)
+            liveData.postValue(status)
+        }
+        return liveData
+    }
+
+
+    fun addPatronLanguages(): LiveData<String?> {
+        val liveData = MutableLiveData<String?>()
+        viewModelScope.launch(Dispatchers.IO) {
+            val status = publishRepository.addPatronLanguages(languageSelectedCodesList)
+            liveData.postValue(status)
+        }
+        return liveData
+    }
+
+    fun getPlanIds(): LiveData<List<String>> {
+        val liveData = MutableLiveData<List<String>>()
+        viewModelScope.launch(Dispatchers.IO) {
+            val ids = publishRepository.getPlans()?.mapNotNull { it?.productId }
+            liveData.postValue(ids ?: listOf())
+        }
+        return liveData
+    }
+
+    fun getInAppPriceTiers(){
+        viewModelScope.launch {
+            inAppPricesUseCase.executeInAppProductTiers()
+                .onSuccess {
+                    _inAppPricesData.value = it
+                }
+                .onFailure {
+                    Timber.e(it, "Error while getting in app prices")
+                }
+        }
+    }
+
+
+    fun getUserProfile(): LiveData<UserUIModel?> {
+        val liveData = MutableLiveData<UserUIModel?>()
+        viewModelScope.launch {
+            liveData.postValue(generalInfoRepository.getUserProfile())
+        }
+        return liveData
     }
 
 }

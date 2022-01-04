@@ -1,0 +1,9 @@
+mutation UpdateUserCategoriesAndLanguagesMutation($categories: [Int], $language: [String]){
+    updateUser(user:{
+        categories:$categories,
+        languages: $language
+    }){
+        status,
+        message
+    }
+}

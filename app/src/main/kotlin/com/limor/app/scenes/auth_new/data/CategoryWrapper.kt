@@ -1,6 +1,7 @@
 package com.limor.app.scenes.auth_new.data
 
 import com.limor.app.CategoriesQuery
+import com.limor.app.uimodels.PatronCategoryUIModel
 import kotlin.random.Random
 
 data class CategoryWrapper(
@@ -9,6 +10,10 @@ data class CategoryWrapper(
 ) {
     val name: String get() = queryCategory.name!!
     val categoryId: Int? get() = queryCategory.id
+}
+
+fun CategoryWrapper.transform(): PatronCategoryUIModel{
+    return PatronCategoryUIModel(id = queryCategory.id, slug = queryCategory.slug, name = queryCategory.name, priority = 0, selected = isSelected)
 }
 
 fun createMockedCategories(): List<CategoryWrapper> {

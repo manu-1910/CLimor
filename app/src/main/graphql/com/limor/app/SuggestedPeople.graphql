@@ -1,5 +1,5 @@
-query SuggestedPeople {
-    getSuggestedUsers {
+query SuggestedPeople($limit: Int!,$offset:Int!) {
+    getSuggestedUsers(limit: $limit, offset: $offset) {
         id
         username
         first_name
@@ -28,5 +28,9 @@ query SuggestedPeople {
         sharing_url
         voice_bio_url
         duration
+        patronInvitationStatus
+        isPatron
+        patronAudioURL
+        patronAudioDuration
     }
 }

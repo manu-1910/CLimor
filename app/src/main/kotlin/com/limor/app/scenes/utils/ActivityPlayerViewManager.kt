@@ -9,6 +9,7 @@ import com.limor.app.extensions.makeGone
 import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
 import com.limor.app.scenes.main_new.fragments.SmallPlayerFragment
+import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.TagUIModel
 import timber.log.Timber
@@ -97,6 +98,22 @@ class ActivityPlayerViewManager(
 
     fun stop() {
         playerBinder.stop()
+    }
+
+    override fun playPreview(audioTrack: AudioService.AudioTrack, startPosition: Int, endPosition: Int){
+        playerBinder.playPreview(audioTrack, startPosition, endPosition)
+    }
+
+    override fun stopPreview(reset: Boolean) {
+        playerBinder.stop(reset)
+    }
+
+    override fun isPlayingComment(audioTrack: AudioService.AudioTrack): Boolean {
+        return (playerBinder.currentAudioTrack == audioTrack && playerBinder.isPlayingComment())
+    }
+
+    override fun isPlaying(audioTrack: AudioService.AudioTrack): Boolean {
+        return playerBinder.audioTrackIsPlaying(audioTrack)
     }
 
     private inline fun <reified T> showFragment(fragment: () -> Fragment) {

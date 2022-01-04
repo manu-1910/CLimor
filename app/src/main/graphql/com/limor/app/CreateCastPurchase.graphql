@@ -1,0 +1,6 @@
+mutation CreateCastPurchase($platform: String!,$token: String!,$podcastId: Int!$regionCode: String!,$purchasedAtLocalPrice: String!, $purchasedInLocalCurrency: String!) {
+    createCastPurchase(platform: $platform,token: $token, podcastId: $podcastId, regionCode: $regionCode, purchasedAtLocalPrice: $purchasedAtLocalPrice, purchasedInLocalCurrency: $purchasedInLocalCurrency){
+        status
+        message
+    }
+}

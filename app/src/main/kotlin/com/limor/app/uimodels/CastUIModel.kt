@@ -13,6 +13,24 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Parcelize
+data class PatronDetails(
+    val priceId: String?,
+    var previewDuration: Int?,
+    var startsAt: Int?,
+    var endsAt: Int?,
+    val purchased: Boolean?,
+    val castPurchasedDetails: CastPurchaseDetails?
+) : Parcelable {
+
+}
+
+@Parcelize
+data class CastPurchaseDetails(
+    val purchased_at_price: Double?,
+    val purchased_in_currency: String?,
+) : Parcelable
+
+@Parcelize
 data class CastUIModel(
     val id: Int,
     val owner: UserUIModel?,
@@ -45,6 +63,9 @@ data class CastUIModel(
     val links: LinkUIModel?,
     val recaster: UserUIModel?,
     var colorCode: String? = null,
+    var maturedContent: Boolean?,
+    val patronCast: Boolean?,
+    val patronDetails: PatronDetails? = null,
 ) : Parcelable {
 
     /**
@@ -134,7 +155,21 @@ fun GetFeaturedCastsQuery.GetFeaturedCast.mapToUIModel() =
         mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(),
         recaster = null,
-        colorCode = color_code
+        colorCode = color_code,
+        maturedContent = mature_content,
+        patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
+            )
+        }
     )
 
 fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
@@ -169,7 +204,21 @@ fun GetTopCastsQuery.GetTopCast.mapToUIModel() =
         mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(),
         recaster = null,
-        colorCode = color_code
+        colorCode = color_code,
+        maturedContent = mature_content,
+        patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
+            )
+        }
     )
 
 fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
@@ -184,6 +233,7 @@ fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
         createdAt = created_at?.toLocalDateTime(),
         podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
+
         latitude = latitude?.toFloat(),
         longitude = longitude?.toFloat(),
         isLiked = liked,
@@ -204,7 +254,21 @@ fun GetPodcastsByCategoryQuery.GetPodcastsByCategory.mapToUIModel() =
         mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(),
         recaster = null,
-        colorCode = color_code
+        colorCode = color_code,
+        maturedContent = mature_content,
+        patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
+            )
+        }
     )
 
 fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
@@ -239,7 +303,21 @@ fun GetPodcastsByHashtagQuery.GetPodcastsByTag.mapToUIModel() =
         mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(),
         recaster = null,
-        colorCode = color_code
+        colorCode = color_code,
+        maturedContent = mature_content,
+        patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
+            )
+        }
     )
 
 fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
@@ -274,7 +352,53 @@ fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
         mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(),
         recaster = null,
-        colorCode = color_code
+        colorCode = color_code,
+        maturedContent = mature_content,
+        patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
+            )
+        }
+    )
+
+fun GetPatronPodcastsQuery.GetPatronCast.mapToUIModel() =
+    CastUIModel(
+        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
+        imageLinks = images?.mapToUIModel(), caption = caption!!,
+        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
+        updatedAt = updated_at?.toLocalDateTime(),
+        latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked, isShared = false,
+        isReported = reported, isRecasted = recasted, isListened = listened,
+        isBookmarked = bookmarked, listensCount = number_of_listens,
+        likesCount = number_of_likes, recastsCount = number_of_recasts,
+        commentsCount = number_of_comments, sharesCount = number_of_shares,
+        audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
+        tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
+        links = links?.mapToUIModel(), recaster = null,
+        maturedContent = mature_content,
+        colorCode = color_code,
+        patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
+            )
+        },
+
     )
 
 fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
@@ -309,7 +433,21 @@ fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
         mentions = podcast.mentions?.mapToUIModel(),
         links = podcast.links?.mapToUIModel(),
         recaster = recaster?.mapToUIModel(),
-        colorCode = podcast.color_code
+        colorCode = podcast.color_code,
+        maturedContent = podcast.mature_content, 
+        patronCast = podcast.patron_cast,
+        patronDetails = podcast.patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
+            )
+        }
     )
 
 fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
@@ -344,5 +482,49 @@ fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
         mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(),
         recaster = null,
-        colorCode = color_code
+        colorCode = color_code,
+        maturedContent = mature_content,
+        patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
+            )
+        }
+    )
+
+fun GetPurchasedCastsQuery.GetPurchasedCast.mapToUIModel() =
+    CastUIModel(
+        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
+        imageLinks = images?.mapToUIModel(), caption = caption!!,
+        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
+        updatedAt = updated_at?.toLocalDateTime(),
+        latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked,
+        isReported = reported, isRecasted = recasted, isListened = listened, isShared = false,
+        isBookmarked = bookmarked, listensCount = number_of_listens,
+        likesCount = number_of_likes, recastsCount = number_of_recasts,
+        commentsCount = number_of_comments, sharesCount = number_of_shares,
+        audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
+        tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
+        links = links?.mapToUIModel(), recaster = null,
+        colorCode = color_code,
+        maturedContent = mature_content, patronCast = patron_cast,
+        patronDetails = patron_details?.let {
+            PatronDetails(
+                priceId = it.price_id,
+                previewDuration = it.preview_duration,
+                startsAt = it.starts_at,
+                endsAt = it.ends_at,
+                purchased = it.purchased,
+                castPurchasedDetails = it.cast_purchased_info?.let { cpi ->
+                    CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
+                }
+            )
+        }
     )
