@@ -78,8 +78,8 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     }
 
     private fun listenToChat() {
-        chatRepository.getSessions().asLiveData().observe(this) {
-            val unreadCount = it.map { it.session.unreadCount }.sum()
+        chatRepository.getSessions().asLiveData().observe(this) { chatSessions ->
+            val unreadCount = chatSessions.map { it.session.unreadCount ?: 0 }.sum()
             if (unreadCount > 0) {
                 navigation.getOrCreateBadge(R.id.navigation_direct_messenger).apply {
                     isVisible = true

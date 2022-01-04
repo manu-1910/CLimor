@@ -29,7 +29,10 @@ data class ChatSession(
     @ColumnInfo(name = "draft_content")
     var draftContent: String = "",
 
-    @ColumnInfo(name = "unread_count", defaultValue =  "0")
-    var unreadCount: Int = 0
+    @ColumnInfo(name = "unread_count")
+    var unreadCount: Int?,
+
+    @ColumnInfo(name = "last_read_message_id")
+    val lastReadMessageId: Int?
 
 )

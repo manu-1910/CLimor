@@ -48,6 +48,8 @@ class SessionsViewModel @Inject constructor(
                 id = 0,
                 chatUserId = chatUser.id,
                 lastMessageContent = message,
+                unreadCount =  0,
+                lastReadMessageId = 0,
             )
             val id = chatRepository.insertSession(session)
             session.id = id.toInt()
@@ -172,6 +174,14 @@ class SessionsViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(dispatcherProvider.io) {
                 chatRepository.setDraft(session, text)
+            }
+        }
+    }
+
+    fun updateSession(session: ChatSession) {
+        viewModelScope.launch {
+            withContext(dispatcherProvider.io) {
+                chatRepository.updateSession(session)
             }
         }
     }

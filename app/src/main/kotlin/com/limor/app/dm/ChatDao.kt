@@ -49,6 +49,12 @@ interface ChatDao {
         """)
     suspend fun searchSession(term: String): List<ChatSessionWithUser>
 
+    @Query("""
+        SELECT count(*) from chat_message 
+        WHERE chat_session_id = :sessionId and message_id > :lastReadMessageId
+        """)
+    fun getUnreadCount(sessionId: Int, lastReadMessageId: Int): Int
+
     @Insert
     fun insertMessage(chatMessage: ChatMessage): Long
 
