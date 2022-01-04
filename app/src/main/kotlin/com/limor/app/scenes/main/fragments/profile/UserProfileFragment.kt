@@ -52,7 +52,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         mapOf(
             Tab.CASTS to getString(R.string.casts),
             Tab.PATRON to getString(R.string.limor_patron),
-            Tab.PURCHASES to getString(R.string.my_purchases)
+            Tab.PURCHASES to getString(R.string.label_playlists)
         )
     }
     private var selectedTab: Tab = Tab.CASTS
