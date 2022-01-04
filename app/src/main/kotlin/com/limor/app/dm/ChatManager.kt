@@ -229,7 +229,9 @@ class ChatManager @Inject constructor(
             session = ChatSession(
                 id = 0,
                 chatUserId = chatUser.id,
-                lastMessageContent = text
+                lastMessageContent = text,
+                unreadCount = 0,
+                lastReadMessageId = 0
             )
             val id = chatRepository.insertSession(session)
             session.id = id.toInt()

@@ -141,6 +141,17 @@ class ChatActivity : AppCompatActivity() {
             hasSetHeader = true;
             setHeader(chatData)
         }
+
+        markAsRead(chatData)
+    }
+
+    private fun markAsRead(chatData: ChatWithData) {
+        chatData.messages.lastOrNull()?.let { lastChatMessage ->
+            chatData.sessionWithUser.session.copy(
+                lastReadMessageId = lastChatMessage.id,
+                unreadCount = 0
+            )
+        }
     }
 
     private fun setHeader(chatData: ChatWithData) {
