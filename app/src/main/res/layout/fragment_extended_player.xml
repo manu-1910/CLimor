@@ -495,6 +495,19 @@
                 app:not_shared_color="@color/subtitle_text_color"
                 app:shared_color="@color/textAccent" />
 
+
+            <ImageView
+                android:id="@+id/ivAddToPlaylist"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:padding="2dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_plus_square"
+                app:layout_constraintBottom_toBottomOf="@+id/btnPodcastLikes"
+                app:layout_constraintEnd_toStartOf="@+id/btnPodcastReply"
+                app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes"
+                app:tint="@color/subtitle_text_color" />
+
             <LinearLayout
                 android:id="@+id/llDividerAfterCounters"
                 android:layout_width="match_parent"
