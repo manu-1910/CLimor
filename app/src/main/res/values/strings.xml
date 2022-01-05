@@ -999,4 +999,5 @@
     <string name="label_create_playlist">Create Playlist</string>
     <string name="label_playlist_name">Playlist Name</string>
     <string name="label_create">Create</string>
+    <string name="label_playlist_error">Name already exists</string>
 </resources>

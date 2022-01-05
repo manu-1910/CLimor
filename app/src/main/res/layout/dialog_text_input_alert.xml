@@ -65,6 +65,16 @@
             android:textSize="@dimen/textSizeNormal" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        android:id="@+id/errorTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin28"
+        android:layout_marginEnd="@dimen/marginMedium"
+        android:textColor="@color/redError"
+        android:text="@string/label_playlist_error"
+        android:textSize="@dimen/textSizeTiny"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/buttons"
