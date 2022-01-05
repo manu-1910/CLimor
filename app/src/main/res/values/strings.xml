@@ -996,4 +996,7 @@
     <string name="tos_hint">By using our app, you confirm that you accept these <a href="https://www.limor.ie/terms-and-conditions"><font color="black">Terms of Service</font></a> and agree to comply with them.</string>
 
     <string name="label_playlists">Playlists</string>
+    <string name="label_create_playlist">Create Playlist</string>
+    <string name="label_playlist_name">Playlist Name</string>
+    <string name="label_create">Create</string>
 </resources>

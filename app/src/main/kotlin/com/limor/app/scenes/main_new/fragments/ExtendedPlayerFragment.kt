@@ -491,6 +491,15 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         binding.ivProxyAvatar.setOnClickListener {
             openUserProfile(cast)
         }
+
+        binding.ivAddToPlaylist.setOnClickListener {
+            LimorTextInputDialog(layoutInflater).apply {
+                setTitle(R.string.label_create_playlist)
+                addButton(R.string.cancel, false)
+                addButton(R.string.label_create, true) {
+                }
+            }.show()
+        }
     }
 
     private fun openUserProfile(item: CastUIModel) {
