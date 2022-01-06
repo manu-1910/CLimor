@@ -2,6 +2,7 @@ package com.limor.app.di.modules.fragments
 
 import com.limor.app.dm.ui.ChatSessionsFragment
 import com.limor.app.dm.ui.ShareFragment
+import com.limor.app.playlists.PlaylistsFragment
 import com.limor.app.scenes.auth_new.fragments.FragmentCategories
 import com.limor.app.scenes.auth_new.fragments.FragmentLanguages
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategoriesFragment
@@ -125,6 +126,9 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeFragmentLanguages(): FragmentLanguages
+
+    @ContributesAndroidInjector
+    abstract fun contributePlaylistsFragment(): PlaylistsFragment
 
 }
 

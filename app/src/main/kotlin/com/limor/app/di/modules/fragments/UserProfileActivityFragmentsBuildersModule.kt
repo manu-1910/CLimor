@@ -2,6 +2,7 @@ package com.limor.app.di.modules.fragments
 
 import com.limor.app.scenes.main.fragments.profile.FragmentPurchases
 import com.limor.app.dm.ui.ShareFragment
+import com.limor.app.playlists.PlaylistsFragment
 import com.limor.app.scenes.main.fragments.ProfileFragment
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.fragments.profile.*
@@ -82,4 +83,6 @@ abstract class UserProfileActivityFragmentsBuildersModule {
     @ContributesAndroidInjector
     abstract fun contributeFragmentPurchaseInjector(): FragmentPurchases
 
+    @ContributesAndroidInjector
+    abstract fun contributePlaylistsFragment(): PlaylistsFragment
 }
