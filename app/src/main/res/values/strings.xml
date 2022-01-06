@@ -1000,4 +1000,14 @@
     <string name="label_playlist_name">Playlist Name</string>
     <string name="label_create">Create</string>
     <string name="label_playlist_error">Name already exists</string>
+    <string name="added_by_me">Added by me</string>
+    <string name="no_playlists_placeholder_text">Uh-oh! Looks like you haven\'t made any playlists yet. To add casts to a playlist, go to the cast player and click on the add to playlist button.</string>
+
+    <plurals name="casts_count">
+        <item quantity="one">%d Cast</item>
+        <item quantity="other">%d Casts</item>
+    </plurals>
+
+    <string name="delete_playlist_title">Delete Playlist</string>
+    <string name="delete_playlist_message">Are you sure you want to delete this playlist?</string>
 </resources>
