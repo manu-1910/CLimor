@@ -24,6 +24,7 @@
         android:layout_height="wrap_content"
         android:text="@string/added_by_me"
         android:layout_marginTop="16dp"
+        android:fontFamily="@font/roboto_medium"
         android:textColor="@color/textSecondary"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/delimiter"
