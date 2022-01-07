@@ -74,7 +74,8 @@
         android:background="@color/white"
         android:layout_marginTop="@dimen/marginSmall"
         android:paddingStart="@dimen/marginTwenty"
-        android:paddingEnd="@dimen/marginTwenty">
+        android:paddingEnd="@dimen/marginTwenty"
+        android:visibility="visible">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/preview_image_layout"
@@ -210,15 +211,44 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/search_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         android:background="@color/white"
         android:layout_marginTop="@dimen/marginSmall"
         android:paddingStart="@dimen/marginTwenty"
         android:paddingEnd="@dimen/marginTwenty"
         android:visibility="gone">
+
+        <TextView
+            android:id="@+id/no_results_found"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_results_found"
+            android:textSize="@dimen/textSize16"
+            android:textColor="@color/black"
+            android:fontFamily="@font/roboto_bold"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <TextView
+            android:id="@+id/no_results_found_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_results_found_desc"
+            android:textSize="@dimen/textSize14"
+            android:textColor="@color/notification_divider"
+            android:fontFamily="@font/roboto"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/no_results_found"/>
 
         <com.limor.app.components.SearchBar
             android:id="@+id/search_bar"
@@ -241,6 +271,7 @@
             android:clipToPadding="false"
             app:layout_constraintTop_toBottomOf="@id/search_bar"
             tools:itemCount="15"
+            android:visibility="gone"
             tools:layout_editor_absoluteX="-86dp"
             tools:listitem="@layout/layout_playlist_cast" />
 

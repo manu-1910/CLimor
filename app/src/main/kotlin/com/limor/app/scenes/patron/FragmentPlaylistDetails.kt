@@ -17,6 +17,7 @@ import com.limor.app.R
 import com.limor.app.databinding.FragmentPlaylistDetailsBinding
 import com.limor.app.di.Injectable
 import com.limor.app.extensions.loadImage
+import com.limor.app.extensions.makeGone
 import com.limor.app.playlists.PlaylistCastsAdapter
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
@@ -111,6 +112,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
 
     private fun showSearchLayout(){
         mode = LayoutMode.SEARCH_MODE
+        binding.searchBar.hideSearchIcon()
         binding.mainLayout.visibility = View.GONE
         binding.searchLayout.visibility = View.VISIBLE
         binding.btnSearch.visibility = View.GONE
@@ -124,6 +126,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
                     performSearch(it)
                 },
                 onQueryTextBlank = {
+                    binding.searchBar.hideSearchIcon()
                     searchPlaylistAdapter?.clear()
                 }
             )
@@ -135,11 +138,21 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     private fun performSearch(query: String){
         val results = mutableListOf<CastUIModel>()
         playList.forEach { cast ->
-            if(cast.title?.contains(query) == true){
+            if(cast.title?.contains(query) == true && query.trim() != ""){
                 results.add(cast)
             }
         }
-        searchPlaylistAdapter?.setData(results)
+        if(results.size == 0){
+            binding.noResultsFound.visibility = View.VISIBLE
+            binding.noResultsFoundDesc.visibility = View.VISIBLE
+            binding.noResultsFoundDesc.text = getString(R.string.no_results_found_desc, query)
+            binding.searchRecyclerView.visibility = View.GONE
+        } else {
+            binding.noResultsFound.visibility = View.GONE
+            binding.noResultsFoundDesc.visibility = View.GONE
+            binding.searchRecyclerView.visibility = View.VISIBLE
+            searchPlaylistAdapter?.setData(results)
+        }
     }
 
     private fun hideSearchLayout(){
