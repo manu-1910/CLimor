@@ -126,7 +126,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/etFilter"
             style="@style/TextInputLayoutOutlineDropdownWithError"
-            android:layout_width="134dp"
+            android:layout_width="184dp"
             android:layout_height="@dimen/margin38"
             android:layout_below="@id/preview_image_layout"
             android:layout_alignParentEnd="true"
@@ -155,8 +155,8 @@
 
         <RelativeLayout
             android:id="@+id/filterLayout"
-            android:layout_width="134dp"
-            android:layout_height="@dimen/margin38"
+            android:layout_width="184dp"
+            android:layout_height="@dimen/margin40"
             android:layout_below="@id/preview_image_layout"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="@dimen/marginMedium"
@@ -171,13 +171,14 @@
             <TextView
                 android:id="@+id/selected_filter_text_view"
                 android:layout_width="134dp"
-                android:layout_height="16dp"
+                android:layout_height="@dimen/margin22"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="12dp"
                 android:fontFamily="@font/roboto"
                 android:text="Newest to Oldest"
+                android:textAlignment="center"
                 android:textColor="@color/notification_secondary_text"
-                android:textSize="@dimen/textSizeTiny" />
+                android:textSize="@dimen/textSize16" />
 
             <ImageView
                 android:layout_width="14dp"

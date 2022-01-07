@@ -1,16 +1,19 @@
 package com.limor.app.playlists
 
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
-import android.widget.PopupMenu
+import android.widget.PopupWindow
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.R
+import com.limor.app.databinding.ItemDeletePlaylistBinding
 import com.limor.app.extensions.loadImage
+import com.limor.app.extensions.precisePx
+import com.limor.app.extensions.px
 import com.limor.app.uimodels.CastUIModel
+import org.jetbrains.anko.layoutInflater
+import org.jetbrains.anko.wrapContent
 
 class PlaylistCastsAdapter(
     private var casts: List<CastUIModel>,
@@ -31,23 +34,32 @@ class PlaylistCastsAdapter(
         }
         holder.name.text = casts[position].title
         holder.details.text = casts[position].createdAt.toString()
-        holder.optionsIV.setOnClickListener {
-            val popup = PopupMenu(holder.image.context, holder.optionsIV)
-            popup.inflate(R.menu.play_list_menu)
-            popup.setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener,
-                PopupMenu.OnMenuItemClickListener {
-                override fun onMenuItemClick(item: MenuItem?): Boolean {
-                    return when (item?.itemId) {
-                        R.id.remove ->{
-                            removeFromPlaylist.invoke()
-                            true
-                        }
-                        else -> false
-                    }
-                }
 
-            })
-            popup.show()
+        val menuBinding = ItemDeletePlaylistBinding.inflate(holder.details.context.layoutInflater, null, false)
+        menuBinding.textDelete.text = holder.details.context.getText(R.string.label_remove_from_playlist)
+        val popupWindow = PopupWindow(
+            menuBinding.root,
+            wrapContent,
+            48.px,
+            true
+        ).apply {
+            contentView.setOnClickListener { dismiss() }
+            elevation = 10.precisePx
+            setBackgroundDrawable(AppCompatResources.getDrawable(holder.details.context, R.drawable.popup_menu_background))
+        }
+
+        menuBinding.root.setOnClickListener {
+            removeFromPlaylist()
+            popupWindow.dismiss()
+        }
+
+        holder.optionsIV.setOnClickListener {
+            popupWindow.showAsDropDown(
+                it,
+                (-8).px,
+                (-2).px,
+                Gravity.BOTTOM or Gravity.RIGHT,
+            )
         }
     }
 

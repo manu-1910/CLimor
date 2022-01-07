@@ -8,12 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentShareDialogBinding
 import com.limor.app.databinding.PlaylistsFragmentBinding
 import com.limor.app.playlists.adapter.PlaylistsAdapter
 import com.limor.app.playlists.models.PlaylistUIModel
+import com.limor.app.scenes.patron.FragmentPlaylistDetails
 import com.limor.app.uimodels.UserUIModel
 import javax.inject.Inject
 
@@ -45,7 +47,10 @@ class PlaylistsFragment : BaseFragment() {
     private fun showPlaylists(playlists: List<PlaylistUIModel>) {
         PlaylistsAdapter(
             onPlaylistClick = { playlist ->
-
+                val args = Bundle()
+                args.putBoolean(FragmentPlaylistDetails.IS_PLAYLIST, playlist?.isCustom ?: false)
+                args.putString(FragmentPlaylistDetails.LIST_NAME, playlist?.title)
+                findNavController().navigate(R.id.action_navigateProfileFragment_to_fragmentPlaylistDetails, args)
             },
             onDeleteClick = { playlist ->
 

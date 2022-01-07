@@ -194,11 +194,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             )
 
         }
-        binding.profileName.setOnClickListener {
-            var args = Bundle()
-            args.putBoolean(FragmentPlaylistDetails.IS_PLAYLIST, true)
-            findNavController().navigate(R.id.action_navigateProfileFragment_to_fragmentPlaylistDetails, args)
-        }
         binding.btnFollow.setOnClickListener {
 
             if (user.isFollowed == true) {

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -29,6 +30,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
 
     companion object {
         const val IS_PLAYLIST = "IS_PLAYLIST"
+        const val LIST_NAME = "LIST_NAME"
         fun newInstance() = FragmentPlaylistDetails()
     }
 
@@ -52,6 +54,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     private var playList: List<CastUIModel> = mutableListOf()
 
     private val isPlayList: Boolean by lazy { requireArguments().getBoolean(IS_PLAYLIST, false)}
+    private val playListName: String by lazy { requireArguments().getString(LIST_NAME, "") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,7 +80,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     }
 
     private fun initialiseViews() {
-        binding.title.text = "Top Trending Now"
+        binding.title.text = playListName
         binding.btnEditPlaylist.setImageDrawable(resources.getDrawable(R.drawable.ic_edit_small))
         if(!isPlayList){
             binding.btnEditPlaylist.visibility = View.GONE
@@ -111,6 +114,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         binding.mainLayout.visibility = View.GONE
         binding.searchLayout.visibility = View.VISIBLE
         binding.btnSearch.visibility = View.GONE
+        binding.btnEditPlaylist.visibility = View.GONE
         binding.searchBar.apply {
             setOnQueryTextListener(
                 onQueryTextChange = {
@@ -143,6 +147,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         binding.mainLayout.visibility = View.VISIBLE
         binding.searchLayout.visibility = View.GONE
         binding.btnSearch.visibility = View.VISIBLE
+        binding.btnEditPlaylist.visibility = View.VISIBLE
     }
 
     private fun setUpRecyclerView() {
@@ -172,6 +177,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
                 LimorDialog(layoutInflater).apply {
                     setTitle(R.string.label_remove_from_playlist)
                     setMessage(R.string.label_remove_from_playlist_description)
+                    setMessageColor(ContextCompat.getColor(requireContext(), R.color.error_stroke_color))
                     setIcon(R.drawable.ic_delete_cast)
                     addButton(R.string.yes_title, false) { dismiss() }
                     addButton(R.string.btn_cancel, true)
