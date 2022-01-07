@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.limor.app.GetPodcastByIdQuery
 import com.limor.app.R
 import com.limor.app.databinding.DialogGenericAlertBinding
 import com.limor.app.databinding.DialogTextInputAlertBinding
@@ -54,6 +55,10 @@ class LimorTextInputDialog(private val layoutInflater: LayoutInflater) {
 
     fun setTitle(titleResId: Int) {
         dialogView.textTitle.setText(titleResId)
+    }
+
+    fun setHint(hintResId: Int){
+        dialogView.inputCastTitle.setHint(hintResId)
     }
 
     fun setTitle(spannable: Spannable) {

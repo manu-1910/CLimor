@@ -23,6 +23,7 @@ import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.main.fragments.profile.adapters.ProfileViewPagerAdapter
 import com.limor.app.scenes.main.fragments.settings.OpenSettings
+import com.limor.app.scenes.patron.FragmentPlaylistDetails
 import com.limor.app.scenes.patron.manage.ManagePatronActivity
 import com.limor.app.scenes.profile.DialogUserProfileActions
 import com.limor.app.scenes.utils.CommonsKt
@@ -193,7 +194,11 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             )
 
         }
-
+        binding.profileName.setOnClickListener {
+            var args = Bundle()
+            args.putBoolean(FragmentPlaylistDetails.IS_PLAYLIST, true)
+            findNavController().navigate(R.id.action_navigateProfileFragment_to_fragmentPlaylistDetails, args)
+        }
         binding.btnFollow.setOnClickListener {
 
             if (user.isFollowed == true) {

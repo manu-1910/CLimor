@@ -21,6 +21,7 @@ import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.fragments.comments.FragmentCommentReplies
 import com.limor.app.scenes.main_new.view.editpreview.EditPreviewFragment
 import com.limor.app.scenes.notifications.Notification
+import com.limor.app.scenes.patron.FragmentPlaylistDetails
 import com.limor.app.scenes.patron.manage.fragment.*
 import com.limor.app.scenes.patron.setup.FragmentPatronCategories
 import com.limor.app.scenes.profile.DialogCommentMoreActions
@@ -127,6 +128,9 @@ abstract class MainActivityNewFragmentBuildersModule {
     @ContributesAndroidInjector
     abstract fun contributeFragmentLanguages(): FragmentLanguages
 
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentPlaylistDetails(): FragmentPlaylistDetails
+  
     @ContributesAndroidInjector
     abstract fun contributePlaylistsFragment(): PlaylistsFragment
 

@@ -495,6 +495,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         binding.ivAddToPlaylist.setOnClickListener {
             LimorTextInputDialog(layoutInflater).apply {
                 setTitle(R.string.label_create_playlist)
+                setHint(R.string.label_playlist_name)
                 addButton(R.string.cancel, false)
                 addButton(R.string.label_create, true) {
                 }

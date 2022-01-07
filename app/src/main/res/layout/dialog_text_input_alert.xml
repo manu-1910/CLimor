@@ -59,7 +59,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_medium"
-            android:hint="@string/label_playlist_name"
             android:textColor="@color/textPrimary"
             android:maxLength="80"
             android:textSize="@dimen/textSizeNormal" />
