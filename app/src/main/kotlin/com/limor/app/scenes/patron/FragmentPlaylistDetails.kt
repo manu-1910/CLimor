@@ -138,7 +138,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     private fun performSearch(query: String){
         val results = mutableListOf<CastUIModel>()
         playList.forEach { cast ->
-            if(cast.title?.contains(query) == true && query.trim() != ""){
+            if(cast.title?.contains(query, true) == true && query.trim() != ""){
                 results.add(cast)
             }
         }
