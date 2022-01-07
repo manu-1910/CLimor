@@ -97,6 +97,9 @@ val Int.dp: Int
 val Int.px: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
+val Int.precisePx: Float
+    get() = this * Resources.getSystem().displayMetrics.density
+
 fun <T : RecyclerView.ViewHolder> T.listen(event: (position: Int, type: Int) -> Unit): T {
     itemView.setOnClickListener {
         event.invoke(adapterPosition, itemViewType)
@@ -177,4 +180,8 @@ fun ViewGroup.allChildren(onView: (View) -> Unit) {
             (this as? ViewGroup)?.apply { allChildren(onView) }
         }
     }
+}
+
+fun View.visibleIf(condition: Boolean) {
+    this.visibility = if (condition) View.VISIBLE else View.GONE
 }
