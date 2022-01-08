@@ -128,4 +128,9 @@ class SearchBar(context: Context, attrs: AttributeSet) : FrameLayout(context, at
     fun requestFocusOnText() {
         editText.requestFocusFromTouch()
     }
+
+    fun hideSearchIcon(){
+        searchIcon.makeGone()
+    }
+
 }

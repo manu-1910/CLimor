@@ -24,8 +24,8 @@ import com.limor.app.uimodels.CastUIModel
 import org.jetbrains.anko.layoutInflater
 
 class PlaylistsAdapter(
-    private val onPlaylistClick: (playlist: PlaylistUIModel?) -> Unit,
-    private val onDeleteClick: (playlist: PlaylistUIModel?) -> Unit
+    private val onPlaylistClick: (playlist: PlaylistUIModel) -> Unit,
+    private val onDeleteClick: (playlist: PlaylistUIModel) -> Unit
 ) : ListAdapter<PlaylistUIModel, RecyclerView.ViewHolder>(
     PlaylistsDiffCallback()
 ) {
@@ -106,8 +106,8 @@ class PlaylistsDiffCallback : DiffUtil.ItemCallback<PlaylistUIModel>() {
 
 class ViewHolderPlaylist(
     val binding: ItemPlaylistBinding,
-    private val onPlaylistClick: (playlist: PlaylistUIModel?) -> Unit,
-    private val onDeleteClick: (playlist: PlaylistUIModel?) -> Unit
+    private val onPlaylistClick: (playlist: PlaylistUIModel) -> Unit,
+    private val onDeleteClick: (playlist: PlaylistUIModel) -> Unit
 ) : ViewHolderBindable<PlaylistUIModel>(binding) {
     private var playlistModel: PlaylistUIModel? = null
 
@@ -170,7 +170,9 @@ class ViewHolderPlaylist(
             setIcon(R.drawable.ic_delete_cast)
 
             // Actions
-            addButton(R.string.dialog_yes_button, false) { onDeleteClick(playlistModel) }
+            addButton(R.string.dialog_yes_button, false) {
+                playlistModel?.let { onDeleteClick(it) }
+            }
             addButton(R.string.cancel, true)
         }.show()
     }
@@ -202,7 +204,7 @@ class ViewHolderPlaylist(
             )
         }
         itemView.setOnClickListener {
-            onPlaylistClick(playlistModel)
+            playlistModel?.let { onPlaylistClick(it) }
         }
     }
 
