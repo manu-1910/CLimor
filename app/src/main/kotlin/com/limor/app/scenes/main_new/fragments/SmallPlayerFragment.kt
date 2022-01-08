@@ -30,9 +30,14 @@ class SmallPlayerFragment : BaseFragment() {
 
     companion object {
         private const val CAST_ID_KEY = "CAST_ID_KEY"
-        fun newInstance(castId: Int): SmallPlayerFragment {
+        private const val KEY_CAST_IDS = "KEY_CAST_IDS"
+
+        fun newInstance(castId: Int, castIds: List<Int>?): SmallPlayerFragment {
             return SmallPlayerFragment().apply {
-                arguments = bundleOf(CAST_ID_KEY to castId)
+                arguments = bundleOf(
+                    CAST_ID_KEY to castId,
+                    KEY_CAST_IDS to castIds?.toIntArray()
+                )
             }
         }
     }
@@ -45,13 +50,25 @@ class SmallPlayerFragment : BaseFragment() {
     private val podcastViewModel: PodcastViewModel by viewModels { viewModelFactory }
     private val listenPodcastViewModel: ListenPodcastViewModel by viewModels { viewModelFactory }
 
-    private val castId: Int by lazy { requireArguments()[CAST_ID_KEY] as Int }
+    private var castId: Int = 0
+    private val castIds: List<Int>? by lazy {
+        (requireArguments()[KEY_CAST_IDS] as? IntArray)?.asList()
+    }
+    private val isInPlaylist by lazy {
+        (castIds?.size ?: 0) > 1
+    }
+
     private var restarted = false
 
     private var playerUpdatesJob: Job? = null
 
     @Inject
     lateinit var playerBinder: PlayerBinder
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        castId = requireArguments()[CAST_ID_KEY] as Int
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -181,6 +198,7 @@ class SmallPlayerFragment : BaseFragment() {
         (activity as? PlayerViewManager)?.showPlayer(
             PlayerViewManager.PlayerArgs(
                 castId = castId,
+                castIds = castIds,
                 playerType = PlayerViewManager.PlayerType.EXTENDED,
                 maximizedFromMiniPlayer = true,
                 restarted = restarted
