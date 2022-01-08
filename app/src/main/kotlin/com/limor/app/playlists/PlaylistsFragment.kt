@@ -48,8 +48,8 @@ class PlaylistsFragment : BaseFragment() {
         PlaylistsAdapter(
             onPlaylistClick = { playlist ->
                 val args = Bundle()
-                args.putBoolean(FragmentPlaylistDetails.IS_PLAYLIST, playlist?.isCustom ?: false)
-                args.putString(FragmentPlaylistDetails.LIST_NAME, playlist?.title)
+                args.putBoolean(FragmentPlaylistDetails.IS_PLAYLIST, playlist.isCustom)
+                args.putString(FragmentPlaylistDetails.LIST_NAME, playlist.title)
                 findNavController().navigate(R.id.action_navigateProfileFragment_to_fragmentPlaylistDetails, args)
             },
             onDeleteClick = { playlist ->
