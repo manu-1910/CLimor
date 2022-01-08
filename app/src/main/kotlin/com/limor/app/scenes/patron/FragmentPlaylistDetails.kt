@@ -23,6 +23,7 @@ import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.LimorTextInputDialog
+import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.uimodels.CastUIModel
 import kotlinx.android.synthetic.main.fragment_my_earnings.*
 import javax.inject.Inject
@@ -163,9 +164,22 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         binding.btnEditPlaylist.visibility = View.VISIBLE
     }
 
+    private fun playPodcast(podcast: CastUIModel, podcasts: List<CastUIModel>) {
+        (activity as? PlayerViewManager)?.showPlayer(
+            PlayerViewManager.PlayerArgs(
+                PlayerViewManager.PlayerType.EXTENDED,
+                podcast.id,
+                podcasts.map { it.id }
+            )
+        )
+    }
+
     private fun setUpRecyclerView() {
         playlistAdapter = PlaylistCastsAdapter(
             mutableListOf(),
+            onPlayPodcast = { podcast, podcasts ->
+                playPodcast(podcast, podcasts)
+            },
             removeFromPlaylist = {
                 LimorDialog(layoutInflater).apply {
                     setTitle(R.string.label_remove_from_playlist)
@@ -186,6 +200,9 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     private fun setUpSearchRecyclerView() {
         searchPlaylistAdapter = PlaylistCastsAdapter(
             mutableListOf(),
+            onPlayPodcast = { podcast, podcasts ->
+                playPodcast(podcast, podcasts)
+            },
             removeFromPlaylist = {
                 LimorDialog(layoutInflater).apply {
                     setTitle(R.string.label_remove_from_playlist)
@@ -230,9 +247,10 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
 
     private fun subscribeViewModels() {
         model.homeFeedData.observe(viewLifecycleOwner) {
-            playList = it
-            binding.castCountTextView.text = getString(R.string.label_cast_count, it.size)
-            loadPlaylist(it)
+            val podcasts = it.filter { it.recasted != true }
+            playList = podcasts
+            binding.castCountTextView.text = getString(R.string.label_cast_count, podcasts.size)
+            loadPlaylist(podcasts)
         }
     }
 
