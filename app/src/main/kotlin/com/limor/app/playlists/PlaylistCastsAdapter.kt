@@ -17,7 +17,8 @@ import org.jetbrains.anko.wrapContent
 
 class PlaylistCastsAdapter(
     private var casts: List<CastUIModel>,
-    private val removeFromPlaylist: () -> Unit
+    private val removeFromPlaylist: (podcast: CastUIModel) -> Unit,
+    private val onPlayPodcast: (podcast: CastUIModel, podcasts: List<CastUIModel>) -> Unit,
 ): RecyclerView.Adapter<PlaylistCastsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistCastsAdapter.ViewHolder {
@@ -29,11 +30,15 @@ class PlaylistCastsAdapter(
     }
 
     override fun onBindViewHolder(holder: PlaylistCastsAdapter.ViewHolder, position: Int) {
-        casts[position].imageLinks?.medium?.let {
+        val podcast = casts[position]
+        holder.itemView.setOnClickListener {
+            onPlayPodcast(podcast, casts)
+        }
+        podcast.imageLinks?.medium?.let {
             holder.image.loadImage(it)
         }
-        holder.name.text = casts[position].title
-        holder.details.text = casts[position].createdAt.toString()
+        holder.name.text = podcast.title
+        holder.details.text = podcast.createdAt.toString()
 
         val menuBinding = ItemDeletePlaylistBinding.inflate(holder.details.context.layoutInflater, null, false)
         menuBinding.textDelete.text = holder.details.context.getText(R.string.label_remove_from_playlist)
@@ -49,7 +54,7 @@ class PlaylistCastsAdapter(
         }
 
         menuBinding.root.setOnClickListener {
-            removeFromPlaylist()
+            removeFromPlaylist(podcast)
             popupWindow.dismiss()
         }
 
