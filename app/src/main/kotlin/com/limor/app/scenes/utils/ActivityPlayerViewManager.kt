@@ -100,8 +100,8 @@ class ActivityPlayerViewManager(
         playerBinder.stop()
     }
 
-    override fun playPreview(audioTrack: AudioService.AudioTrack, startPosition: Int, endPosition: Int){
-        playerBinder.playPreview(audioTrack, startPosition, endPosition)
+    override fun playPreview(audio: AudioService.AudioTrack, startPosition: Int, endPosition: Int){
+        playerBinder.playPreview(audio, startPosition, endPosition)
     }
 
     override fun stopPreview(reset: Boolean) {
@@ -132,13 +132,19 @@ class ActivityPlayerViewManager(
     private fun showExtendedPlayer() {
         val args = currentArgs!!
         showFragment<ExtendedPlayerFragment> {
-            ExtendedPlayerFragment.newInstance(args.castId, !args.maximizedFromMiniPlayer, args.restarted)
+            ExtendedPlayerFragment.newInstance(
+                args.castId,
+                args.castIds,
+                !args.maximizedFromMiniPlayer,
+                args.restarted
+            )
         }
     }
 
-    private fun showMiniPlayer(){
+    private fun showMiniPlayer() {
+        val args = currentArgs ?: return
         showFragment<SmallPlayerFragment> {
-            SmallPlayerFragment.newInstance(currentArgs!!.castId)
+            SmallPlayerFragment.newInstance(args.castId, args.castIds)
         }
     }
 
