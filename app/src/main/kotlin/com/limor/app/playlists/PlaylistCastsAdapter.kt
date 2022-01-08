@@ -39,7 +39,7 @@ class PlaylistCastsAdapter(
         menuBinding.textDelete.text = holder.details.context.getText(R.string.label_remove_from_playlist)
         val popupWindow = PopupWindow(
             menuBinding.root,
-            wrapContent,
+            200.px,
             48.px,
             true
         ).apply {
@@ -58,7 +58,7 @@ class PlaylistCastsAdapter(
                 it,
                 (-8).px,
                 (-2).px,
-                Gravity.BOTTOM or Gravity.RIGHT,
+                Gravity.BOTTOM or Gravity.END,
             )
         }
     }
