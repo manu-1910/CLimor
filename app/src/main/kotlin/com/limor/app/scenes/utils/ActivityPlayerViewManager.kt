@@ -3,11 +3,13 @@ package com.limor.app.scenes.utils
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.google.android.exoplayer2.Player
 import com.limor.app.R
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
 import com.limor.app.extensions.makeGone
 import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
+import com.limor.app.scenes.main_new.fragments.PlayerFragment
 import com.limor.app.scenes.main_new.fragments.SmallPlayerFragment
 import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerBinder
@@ -121,7 +123,7 @@ class ActivityPlayerViewManager(
             return
         }
         val targetFragment = fragment()
-        currentFragment = fragment()
+        currentFragment = targetFragment
         fragmentManager.beginTransaction().also {
             it.setCustomAnimations(R.animator.show, 0)
             it.replace(playerBinding.playerContainer.id, targetFragment)
@@ -141,16 +143,23 @@ class ActivityPlayerViewManager(
         }
     }
 
-    private fun showMiniPlayer() {
+    private fun showMiniPlayer(useExtendedCastId: Boolean = false) {
         val args = currentArgs ?: return
+        val castId = if (useExtendedCastId && currentFragment != null)
+            (currentFragment as? PlayerFragment)?.getCastId() ?: args.castId
+        else
+            args.castId
         showFragment<SmallPlayerFragment> {
-            SmallPlayerFragment.newInstance(args.castId, args.castIds)
+            SmallPlayerFragment.newInstance(
+                castId,
+                args.castIds
+            )
         }
     }
 
     private fun toggleFragments(shouldShowMiniPlayer: Boolean) {
         if (shouldShowMiniPlayer) {
-            showMiniPlayer()
+            showMiniPlayer(true)
         } else {
             showExtendedPlayer()
         }
