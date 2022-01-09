@@ -144,6 +144,14 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         button.alpha = if (enable) 1.0f else 0.4f
     }
 
+    private fun playNextPodcast() {
+        if (!isInPlaylist) {
+            return
+        }
+
+        onPlaylistNavigation(1)
+    }
+
     private fun setPlaylistButtons() {
         val ids = castIds ?: return
         val index = ids.indexOf(castId)
@@ -162,6 +170,9 @@ class ExtendedPlayerFragment : UserMentionFragment(),
     }
 
     private fun onPlaylistNavigation(direction: Int) {
+        if (!isInPlaylist) {
+            return
+        }
         val ids = castIds ?: return
         val index = ids.indexOf(castId)
         val next = index + direction
@@ -436,6 +447,8 @@ class ExtendedPlayerFragment : UserMentionFragment(),
                                 updateListenCount()
                                 restarted = false
                             }
+
+                            playNextPodcast()
                         }
                         is PlayerStatus.Error -> binding.audioBufferingView.visibility = View.GONE
                         is PlayerStatus.Buffering -> binding.audioBufferingView.visibility =
