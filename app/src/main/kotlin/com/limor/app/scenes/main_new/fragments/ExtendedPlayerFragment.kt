@@ -37,15 +37,18 @@ import com.limor.app.uimodels.*
 import com.limor.app.util.requestRecordPermissions
 import kotlinx.android.synthetic.main.fragment_extended_player.*
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.Integer.max
 import java.lang.Math.min
+import java.time.Duration
 import javax.inject.Inject
 
 class ExtendedPlayerFragment : UserMentionFragment(),
-    DialogPodcastMoreActions.UpdatePodcastListener {
+    DialogPodcastMoreActions.UpdatePodcastListener, PlayerFragment {
 
     companion object {
         private const val CAST_ID_KEY = "CAST_ID_KEY"
@@ -127,12 +130,10 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentExtendedPlayerBinding.inflate(inflater, container, false)
-        podcastViewModel.loadCast(castId)
 
         subscribeToCastUpdates()
         subscribeToCommentUpdates()
         subscribeToShareUpdate()
-        loadFirstComment()
 
         setPlaylistUI()
 
@@ -205,6 +206,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
     }
 
     private fun setSeekbar() {
+        binding.lpiPodcastProgress.progress = 0
         binding.lpiPodcastProgress.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(
@@ -225,6 +227,9 @@ class ExtendedPlayerFragment : UserMentionFragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        podcastViewModel.loadCast(castId)
+        loadFirstComment()
 
         setUpPopup(binding.taviVoice.editText, binding.taviVoice)
     }
@@ -418,56 +423,61 @@ class ExtendedPlayerFragment : UserMentionFragment(),
 
     private fun subscribeToPlayerUpdates(cast: CastUIModel) {
         playerUpdatesJob?.cancel()
-        playerUpdatesJob = lifecycleScope.launchWhenCreated {
-            val audioModel = cast.audio!!.mapToAudioTrack()
-            playerBinder.getCurrentPlayingPosition(audioModel)
-                .onEach { duration ->
-                    if (audioModel.duration.seconds > 0) {
-                        binding.lpiPodcastProgress.progress = duration.seconds.toInt()
-                        // ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
-                        binding.tvRecastPlayCurrentPosition.text =
-                            duration.toReadableStringFormat(DURATION_READABLE_FORMAT_3)
-                    }
+        playerUpdatesJob = lifecycleScope.launch {
 
+            val audioModel = cast.audio?.mapToAudioTrack() ?: return@launch
+
+            playerBinder.apply {
+                getCurrentPlayingPosition(audioModel)
+                    .onEach { handlePlayPosition(it) }
+                    .launchIn(this@launch)
+
+                getPlayerStatus(audioModel)
+                    .onEach { handlePlayerStatus(it) }
+                    .launchIn(this@launch)
+            }
+        }
+    }
+
+    private fun handlePlayPosition(position: Duration) {
+        binding.lpiPodcastProgress.progress = position.seconds.toInt()
+        // ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
+        binding.tvRecastPlayCurrentPosition.text =
+            position.toReadableStringFormat(DURATION_READABLE_FORMAT_3)
+    }
+
+    private fun handlePlayerStatus(status: PlayerStatus) {
+        when (status) {
+            is PlayerStatus.Ended -> {
+                binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
+                binding.audioBufferingView.visibility = View.GONE
+
+                val autoPlay = requireArguments().getBoolean(
+                    AUTO_PLAY_KEY,
+                    false
+                )
+
+                if (isStartedPlayingInThisObject || autoPlay || restarted) {
+                    updateListenCount()
+                    restarted = false
                 }
-                .launchIn(this)
 
-            playerBinder.getPlayerStatus(audioModel)
-                .onEach {
-                    when (it) {
-                        is PlayerStatus.Ended -> {
-                            binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
-                            binding.audioBufferingView.visibility = View.GONE
-
-                            val autoPlay = requireArguments().getBoolean(
-                                AUTO_PLAY_KEY,
-                                false
-                            )
-
-                            if (isStartedPlayingInThisObject || autoPlay || restarted) {
-                                updateListenCount()
-                                restarted = false
-                            }
-
-                            playNextPodcast()
-                        }
-                        is PlayerStatus.Error -> binding.audioBufferingView.visibility = View.GONE
-                        is PlayerStatus.Buffering -> binding.audioBufferingView.visibility =
-                            View.VISIBLE
-                        is PlayerStatus.Paused -> {
-                            binding.audioBufferingView.visibility = View.GONE
-                            binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
-                        }
-                        is PlayerStatus.Playing -> {
-                            binding.audioBufferingView.visibility = View.GONE
-                            binding.btnPodcastPlayExtended.setImageResource(R.drawable.pause)
-                        }
-                        is PlayerStatus.Cancelled -> Timber.d("Player Canceled")
-                        is PlayerStatus.Init -> Timber.d("Player Init")
-                        is PlayerStatus.Other -> Timber.d("Player Other")
-                    }
-                }
-                .launchIn(this)
+                playNextPodcast()
+            }
+            is PlayerStatus.Error -> binding.audioBufferingView.visibility = View.GONE
+            is PlayerStatus.Buffering -> binding.audioBufferingView.visibility =
+                View.VISIBLE
+            is PlayerStatus.Paused -> {
+                binding.audioBufferingView.visibility = View.GONE
+                binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
+            }
+            is PlayerStatus.Playing -> {
+                binding.audioBufferingView.visibility = View.GONE
+                binding.btnPodcastPlayExtended.setImageResource(R.drawable.pause)
+            }
+            is PlayerStatus.Cancelled -> Timber.d("Player Canceled")
+            is PlayerStatus.Init -> Timber.d("Player Init")
+            is PlayerStatus.Other -> Timber.d("Player Other")
         }
     }
 
@@ -695,5 +705,9 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         requireArguments().putBoolean(RESTARTED, false)
         requireArguments().putBoolean(AUTO_PLAY_KEY, false)
         podcastViewModel.loadCast(castId)
+    }
+
+    override fun getCastId(): Int {
+        return castId
     }
 }

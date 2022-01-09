@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 import javax.inject.Inject
 
-class SmallPlayerFragment : BaseFragment() {
+class SmallPlayerFragment : BaseFragment(), PlayerFragment {
 
     companion object {
         private const val CAST_ID_KEY = "CAST_ID_KEY"
@@ -258,5 +258,9 @@ class SmallPlayerFragment : BaseFragment() {
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
+    }
+
+    override fun getCastId(): Int {
+        return castId
     }
 }
