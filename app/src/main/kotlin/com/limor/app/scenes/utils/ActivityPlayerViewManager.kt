@@ -143,23 +143,19 @@ class ActivityPlayerViewManager(
         }
     }
 
-    private fun showMiniPlayer(useExtendedCastId: Boolean = false) {
+    private fun showMiniPlayer() {
         val args = currentArgs ?: return
-        val castId = if (useExtendedCastId && currentFragment != null)
-            (currentFragment as? PlayerFragment)?.getCastId() ?: args.castId
-        else
-            args.castId
         showFragment<SmallPlayerFragment> {
             SmallPlayerFragment.newInstance(
-                castId,
-                args.castIds
+                castId = (currentFragment as? PlayerFragment)?.getCastId() ?: args.castId,
+                castIds = args.castIds
             )
         }
     }
 
     private fun toggleFragments(shouldShowMiniPlayer: Boolean) {
         if (shouldShowMiniPlayer) {
-            showMiniPlayer(true)
+            showMiniPlayer()
         } else {
             showExtendedPlayer()
         }
