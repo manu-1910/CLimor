@@ -45,6 +45,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import android.content.res.XmlResourceParser
 import android.util.SparseArray
+import java.time.LocalDate
 import kotlin.collections.HashMap
 
 
@@ -67,6 +68,11 @@ class CommonsKt {
                 val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm")
                 formatter.format(date)
             }
+        }
+
+        fun getFormattedLocalDate(localDate: LocalDate?): String {
+            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH)
+            return formatter.format(localDate)?:""
         }
 
 

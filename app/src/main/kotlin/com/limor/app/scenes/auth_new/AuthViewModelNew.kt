@@ -7,7 +7,9 @@ import android.content.res.AssetManager
 import android.os.CountDownTimer
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.*
+import com.limor.app.CreateVendorMutation
 import com.limor.app.GendersQuery
+import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.scenes.auth_new.data.*
 import com.limor.app.scenes.auth_new.firebase.EmailAuthHandler
 import com.limor.app.scenes.auth_new.firebase.FacebookAuthHandler
@@ -16,7 +18,9 @@ import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
 import com.limor.app.scenes.auth_new.model.*
 import com.limor.app.scenes.auth_new.model.UserInfoProvider.Companion.userNameRegExCheck
 import com.limor.app.scenes.auth_new.util.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -29,7 +33,8 @@ class AuthViewModelNew @Inject constructor(
     val suggestedProvider: SuggestedProvider,
     val userInfoProvider: UserInfoProvider,
     val phoneAuthHandler: PhoneAuthHandler,
-    val emailAuthHandler: EmailAuthHandler
+    val emailAuthHandler: EmailAuthHandler,
+    val generalInfoRepository: GeneralInfoRepository,
 ) : ViewModel() {
 
     /* Date picking */
@@ -529,5 +534,22 @@ class AuthViewModelNew @Inject constructor(
 
     fun cancelTimers() {
         countDownTimer?.cancel()
+    }
+
+
+    fun createVendor(
+        firstName: String,
+        lastName: String,
+        email: String,
+        phone: String,
+        birthDate: String
+    ): LiveData<CreateVendorMutation.CreateVendor?> {
+        val liveData = MutableLiveData<CreateVendorMutation.CreateVendor?>()
+        viewModelScope.launch {
+           liveData.value = withContext(Dispatchers.IO){
+               generalInfoRepository.createVendor(firstName,lastName,email,phone,birthDate)
+           }
+        }
+        return liveData
     }
 }
