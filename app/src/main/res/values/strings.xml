@@ -4,7 +4,7 @@
     <string name="exception_message_generic">There was an error</string>
     <string name="image_content_description_default">image description</string>
     <string name="default_no_internet">Check your internet connection and try again.</string>
-    <string name="no_connection_title">No Connection!</string>
+    <string name="no_connection_title">No Connection</string>
     <string name="no_connection_description">Unfortunately, your internet connection has been lost. Please try again</string>
 
 
@@ -687,7 +687,7 @@
     <string name="requested">Requested</string>
     <string name="dummy_plan_text">Choose the best plan that works for you</string>
     <string name="limor_patron_empty_state">Record your first Limor Patron cast and start earning money from your voice</string>
-    <string name="plans_terms_text"><![CDATA[ <html>. <br>Please visit our <a href="http://google.com"> <font color="black"><strong>Terms and Conditions</strong></font> </a> </html]]></string>
+    <string name="plans_terms_text"><![CDATA[ <html>. <br>Please visit our <a href="https://www.limor.ie/terms-and-conditions"> <font color="black"><strong>Terms and Conditions</strong></font> </a> </html]]></string>
     <string name="limor_patron_complete">Your Limor Patron onboarding is complete</string>
     <string name="limor_patron_manage_description">In order to begin receiving payment via your Limor Patron account please set up your digital wallet</string>
     <string name="limor_patron_manage">Manage Limor Patron</string>
@@ -766,7 +766,7 @@
 
     <string name="limorPatronSetupWallet">Setup My Digital Wallet</string>
     <string name="text_uk_account">I have an active UK based Bank account</string>
-    <string name="patron_uk_account_learn_more"><![CDATA[I have an active UK based Bank account \n <br><a href=\'https://google.com\'><font color="black"><strong>Learn More</strong></font></a>]]></string>
+    <string name="patron_uk_account_learn_more"><![CDATA[I have an active UK based Bank account \n <br><a href=\'https://www.limor.ie/terms-and-conditions\'><font color="black"><strong>Learn More</strong></font></a>]]></string>
 
     <string name="spot_secured_title">Spot Secured</string>
     <string name="sport_secured_description">You have secured your spot. You\'re going to have your digital wallet soon</string>
@@ -777,7 +777,7 @@
     <string name="patron_invite_not_required">Patron Invitation wasn\'t requested</string>
 
     <string name="mature_content">Mature Content (18+)</string>
-    <string name="mature_content_description">Does your cast contain profanity, swearing, sexual, gambling references.</string>
+    <string name="mature_content_description">Does your cast contain profanity, swearing, sexual, gambling references?</string>
     <string name="edit_price">Edit Price</string>
     <string name="edit_preview">Edit Preview</string>
     <string name="buy_cast">Buy</string>
@@ -911,6 +911,7 @@
     <string name="purchase_cast_description_for_comment">You have to purchase this cast to listen and leave a comment</string>
 
     <string name="my_purchases">My Purchases</string>
+    <string name="reminder">Reminder</string>
 
     <string-array name="cast_tiers">
         <item>com.limor.dev.tier_1|0.99</item>
@@ -978,6 +979,25 @@
 
     <string name="preview_duration">Preview Duration</string>
     <string name="preview_duration_hint">The preview duration must be at least 30 seconds long.</string>
+
     <string name="complete_onboarding">Complete Onboarding</string>
     <string name="digital_wallet_processing">Digital Wallet Processing</string>
+
+    <string name="no_code_entered">No code entered.</string>
+    <string name="error_getting_credentials">Error getting credential. Please try again.</string>
+    <string name="mature_content_info_text">18+</string>
+
+    <string name="yes_title">Yes</string>
+    <string name="no_title">No</string>
+
+    <string name="patron_cast_length_hint">Please ensure your cast is longer than 30 seconds if you want to monetise the cast</string>
+
+    <string name="duration_warning_title">Publish cast</string>
+    <string name="duration_warning_message">Please ensure your cast is longer than 30 seconds if you want to monetise the cast</string>
+
+    <string name="select_languages_description">Please select the languages you’re interested in</string>
+    <string name="select_categories_description">Please select the categories you’re interested in</string>
+
+    <string name="tos_hint">By using our app, you confirm that you accept these <a href="https://www.limor.ie/terms-and-conditions"><font color="black">Terms of Service</font></a> and agree to comply with them.</string>
+
 </resources>

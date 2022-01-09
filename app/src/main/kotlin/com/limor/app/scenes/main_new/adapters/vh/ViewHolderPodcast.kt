@@ -75,6 +75,10 @@ class ViewHolderPodcast(
         } else{
             binding.patronCastIndicator.visibility = View.GONE
         }
+        binding.matureContentInfo.visibility = if (item.maturedContent == true)
+            View.VISIBLE
+        else
+            View.GONE
     }
 
     private fun setPodcastOwnerInfo(item: CastUIModel) {
@@ -93,7 +97,20 @@ class ViewHolderPodcast(
             if (item.listensCount == 0) "0" else item.listensCount?.toLong()?.formatHumanReadable
     }
 
+    private fun hidePatronControls() {
+        binding.apply {
+            notCastOwnerActions.ensureGone()
+            castOwnerActions.ensureGone()
+            btnPurchasedCast.ensureGone()
+            patronCastIndicator.ensureGone()
+        }
+    }
+
     private fun setPatronPodcastStatus(item: CastUIModel) {
+        // Always hide patron controls regardless of the context, this ensures that they aren't
+        // shown incorrectly when a view holder is recycled.
+        hidePatronControls()
+
         if (item.patronCast == true) {
             val userId = PrefsHandler.getCurrentUserId(context)
             binding.patronCastIndicator.visibility = View.VISIBLE
@@ -113,8 +130,7 @@ class ViewHolderPodcast(
                     }else{
                         //Purchase a cast actions
                         binding.notCastOwnerActions.visibility = View.VISIBLE
-                        binding.btnAddPreview.visibility = View.GONE
-                        binding.btnEditPrice.visibility = View.GONE
+                        binding.castOwnerActions.visibility = View.GONE
                         binding.btnPurchasedCast.visibility = View.GONE
                         setPricingLabel()
                     }
@@ -135,10 +151,6 @@ class ViewHolderPodcast(
 
                 }
             }
-        } else {
-            binding.notCastOwnerActions.visibility = View.GONE
-            binding.castOwnerActions.visibility = View.GONE
-            binding.btnPurchasedCast.visibility = View.GONE
         }
     }
 

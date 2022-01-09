@@ -26,6 +26,8 @@ object PrefsHandler {
     private const val KEY_PHONE_VERIFICATION_ID = "phone_verification_id"
     private const val LABEL_LAST_PLAYED_CAST_ID = "last_played_cast_id"
     private const val LABEL_RECENT_LOCATION = "recent_locations"
+    private const val PREFERENCES_SELECTED = "preferences_selected"
+    private const val SELECTED_GENDER_ID = "gender_id"
 
     private fun sp(context: Context) = sharedPreferences(context)
 
@@ -58,48 +60,60 @@ object PrefsHandler {
     private fun sharedPreferences(context: Context) =
         context.getSharedPreferences(LABEL_AUTH_NEW_PREFS, Context.MODE_PRIVATE)
 
-    fun saveCurrentUserId(context: Context,id: Int){
+    fun saveCurrentUserId(context: Context, id: Int) {
         sharedPreferences(context).edit(true) {
             putInt(LABEL_USER_ID, id)
         }
     }
 
     fun getCurrentUserId(context: Context) = sharedPreferences(context).getInt(LABEL_USER_ID, 0)
-    fun savePodCastIdOfSharedLink(context: Context,id: Int){
+    fun savePodCastIdOfSharedLink(context: Context, id: Int) {
         sharedPreferences(context).edit(true) {
             putInt(LABEL_CAST_ID, id)
         }
     }
 
-    fun getPodCastIdOfSharedLink(context: Context) = sharedPreferences(context).getInt(LABEL_CAST_ID, 0)
+    fun getPodCastIdOfSharedLink(context: Context) =
+        sharedPreferences(context).getInt(LABEL_CAST_ID, 0)
 
     fun saveUserDeviceToken(context: Context, token: String) {
         sharedPreferences(context).edit(true) {
             putString(LABEL_USER_DEVICE_TOKEN, token)
         }
     }
-    fun getCurrentUserDeviceToken(context: Context) = sharedPreferences(context).getString(LABEL_USER_DEVICE_TOKEN, null)
 
-    fun setAppState(context: Context, appState: AppState){
-        setAppLastState(context, if(appState.state == AppState.BACKGROUND.state) AppState.BACKGROUND.state else getAppState(context))
+    fun getCurrentUserDeviceToken(context: Context) =
+        sharedPreferences(context).getString(LABEL_USER_DEVICE_TOKEN, null)
+
+    fun setAppState(context: Context, appState: AppState) {
+        setAppLastState(
+            context,
+            if (appState.state == AppState.BACKGROUND.state) AppState.BACKGROUND.state else getAppState(
+                context
+            )
+        )
         sharedPreferences(context).edit(true) {
             putInt(LABEL_APP_STATE, appState.state)
         }
     }
 
     fun getAppState(context: Context): Int = sharedPreferences(context).getInt(
-        LABEL_APP_STATE, -1)
+        LABEL_APP_STATE, -1
+    )
 
-    fun setAppLastState(context: Context, state: Int){
+    fun setAppLastState(context: Context, state: Int) {
         sharedPreferences(context).edit(true) {
             putInt(LABEL_APP_LAST_STATE, state)
         }
     }
 
     fun getAppLastState(context: Context): Int = sharedPreferences(context).getInt(
-        LABEL_APP_LAST_STATE, -1)
+        LABEL_APP_LAST_STATE, -1
+    )
 
-    fun getLastVerificationId(context: Context) = sp(context).getString(KEY_PHONE_VERIFICATION_ID, null)
+    fun getLastVerificationId(context: Context) =
+        sp(context).getString(KEY_PHONE_VERIFICATION_ID, null)
+
     fun setLastVerificationId(context: Context, id: String?) = sp(context).edit(true) {
         if (id.isNullOrEmpty()) {
             remove(KEY_PHONE_VERIFICATION_ID)
@@ -123,23 +137,40 @@ object PrefsHandler {
         return gson.fromJson(json, type) ?: ArrayList()
     }
 
-    fun saveBoolean(context: Context,s: String, value: Boolean) {
-        sharedPreferences(context).edit().putBoolean(s,value).apply()
+    fun saveBoolean(context: Context, s: String, value: Boolean) {
+        sharedPreferences(context).edit().putBoolean(s, value).apply()
     }
 
     fun getBoolean(context: Context, s: String): Any {
-        return sharedPreferences(context).getBoolean(s,false)
+        return sharedPreferences(context).getBoolean(s, false)
     }
 
-    fun getSkuDetails(context: Context,s: String): SkuDetails? {
-        val skuDetails = Gson().fromJson(sharedPreferences(context).getString(s,""), SkuDetails::class.java)
+    fun getSkuDetails(context: Context, s: String): SkuDetails? {
+        val skuDetails =
+            Gson().fromJson(sharedPreferences(context).getString(s, ""), SkuDetails::class.java)
         Timber.d("Saved get cast $s ---- $skuDetails")
         return skuDetails
     }
 
-    fun saveSkuDetails(context: Context,s: String,v:SkuDetails) {
+    fun saveSkuDetails(context: Context, s: String, v: SkuDetails) {
         Timber.d("Saved Cast product $s --- $v")
-        sharedPreferences(context).edit().putString(s,Gson().toJson(v)).apply()
+        sharedPreferences(context).edit().putString(s, Gson().toJson(v)).apply()
+    }
+
+    fun setPreferencesSelected(context: Context, selected: Boolean) {
+        sharedPreferences(context).edit().putBoolean(PREFERENCES_SELECTED, selected).apply()
+    }
+
+    fun getPreferencesSelected(context: Context): Boolean {
+        return sharedPreferences(context).getBoolean(PREFERENCES_SELECTED, false)
+    }
+
+    fun setPreferencesScreenOpenedInThisSession(context: Context, selected: Boolean) {
+        sharedPreferences(context).edit().putBoolean("PREFERENCES_OPENED", selected).apply()
+    }
+
+    fun getPreferencesScreenOpenedInThisSession(context: Context): Boolean {
+        return sharedPreferences(context).getBoolean("PREFERENCES_OPENED", false)
     }
 
 }

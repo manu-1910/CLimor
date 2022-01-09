@@ -19,7 +19,7 @@ apollo {
 android {
     def globalConfiguration = rootProject.ext
 
-    compileSdkVersion build_versions.target_sdk
+    compileSdkVersion build_versions.compile_sdk
     buildToolsVersion build_versions.build_tools
 
     lintOptions {
@@ -531,7 +531,7 @@ dependencies {
     // =============================================================================================
     // ROOM
     // =============================================================================================
-    def room_version = "2.3.0"
+    def room_version = "2.4.0"
 
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor "androidx.room:room-compiler:$room_version"
@@ -540,6 +540,4 @@ dependencies {
 
     // OneSignal is a marketing tool, here's more info: https://onesignal.com/
     implementation 'com.onesignal:OneSignal:[4.0.0, 4.99.99]'
-
-    implementation 'com.bugfender.sdk:android:3.+'
 }

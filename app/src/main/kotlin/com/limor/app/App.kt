@@ -10,7 +10,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.Configuration
-import com.bugfender.sdk.Bugfender
+
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
 import com.limor.app.di.AppInjector
@@ -130,14 +130,6 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
         // OneSignal Initialization
         OneSignal.initWithContext(this);
         OneSignal.setAppId(BuildConfig.ONE_SIGNAL_APP_ID);
-
-
-        Bugfender.init(this, "f3uD19EuFhTDd4XaMHCflDlMW5Bo18AZ", BuildConfig.DEBUG)
-        Bugfender.enableCrashReporting()
-        Bugfender.enableUIEventLogging(this)
-        Bugfender.enableLogcatLogging() // optional, if you want logs automatically collected from logcat
-
-        Timber.plant(BugfenderTree())
     }
 
     @OnLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_STOP)
@@ -186,8 +178,6 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
         val realmConfiguration: RealmConfiguration = RealmConfiguration.Builder()
             .schemaVersion(1)
             .migration(Migration())
-            // .deleteRealmIfMigrationNeeded()
-            //TODO: Encrypt database!!
             .build()
         Realm.setDefaultConfiguration(realmConfiguration)
         val realm = Realm.getDefaultInstance()
@@ -228,6 +218,7 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
                 }
 
                 draftSchema.addRealmListField("categories", categorySchema)
+                draftSchema.addField("price", String::class.java)
             }
             println("Realm --> $oldVersion -> $newVersion")
         }

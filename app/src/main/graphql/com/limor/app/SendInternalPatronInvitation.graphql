@@ -1,0 +1,6 @@
+mutation SendInternalPatronInvitation($userId: Int!){
+    sendInternalPatronInvitation(invitedForUser: $userId){
+        status
+        message
+    }
+}

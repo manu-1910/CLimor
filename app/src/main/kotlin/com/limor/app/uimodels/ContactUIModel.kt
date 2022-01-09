@@ -9,4 +9,5 @@ data class ContactUIModel(
     val contactName: String?,
     val profilePhoto: String?,
     var checked: Boolean? = false,
+    var phoneNumber: String?
 ): Parcelable

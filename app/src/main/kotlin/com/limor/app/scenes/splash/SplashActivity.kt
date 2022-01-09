@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -72,7 +73,7 @@ class SplashActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
-
+        PrefsHandler.setPreferencesScreenOpenedInThisSession(this, false)
         if (isEmailSignIn(intent)) {
             // Forward this to the AuthActivity
             val authIntent = Intent(applicationContext, AuthActivityNew::class.java)

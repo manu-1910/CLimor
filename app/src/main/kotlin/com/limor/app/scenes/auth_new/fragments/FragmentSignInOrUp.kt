@@ -3,6 +3,7 @@ package com.limor.app.scenes.auth_new.fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.SpannableString
+import android.text.method.LinkMovementMethod
 import android.text.style.ForegroundColorSpan
 import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
@@ -51,6 +52,9 @@ class FragmentSignInOrUp : Fragment() {
             view.findNavController()
                 .navigate(destinationId)
         }
+
+        tosHint.movementMethod = LinkMovementMethod.getInstance()
+
         //addVersionInfo()
     }
 

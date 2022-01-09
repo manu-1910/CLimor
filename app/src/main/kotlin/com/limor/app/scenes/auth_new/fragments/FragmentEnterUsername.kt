@@ -1,6 +1,7 @@
 package com.limor.app.scenes.auth_new.fragments
 
 import android.os.Bundle
+import android.text.InputFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,7 +37,7 @@ class FragmentEnterUsername : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setOnClickListeners()
-        setTextChangedListener()
+        setEditTexts()
         subscribeToViewModel()
         saveNavigationBreakPoint()
     }
@@ -56,9 +57,16 @@ class FragmentEnterUsername : Fragment() {
         clMain.onFocusChangeListener = AuthActivityNew.onFocusChangeListener()
     }
 
-    private fun setTextChangedListener() {
+    private fun setEditTexts() {
         etEnterUsername.editText?.setText(model.currentUsername)
         etEnterUsername.editText?.doAfterTextChanged { model.changeCurrentUserName(it?.toString()) }
+
+        val spacesFilter = InputFilter { charSequence, _, _, _, _, _ ->
+            charSequence.toString().trim().replace("\\s+".toRegex(), replacement = "")
+        }
+        etDobPickerInner.apply {
+            filters = filters.plus(spacesFilter)
+        }
     }
 
     private fun subscribeToViewModel() {

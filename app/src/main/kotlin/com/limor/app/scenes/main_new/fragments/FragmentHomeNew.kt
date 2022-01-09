@@ -242,7 +242,7 @@ class FragmentHomeNew : BaseFragment() {
                                     it1, it2.toInt(), it3.toInt()
                                 )
                             } else {
-                                (activity as? PlayerViewManager)?.stopPreview()
+                                (activity as? PlayerViewManager)?.stopPreview(true)
                             }
                         }
                     }

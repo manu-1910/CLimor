@@ -1,0 +1,222 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "40f823e7b7eb6bf6efdba6ae78871211",
+    "entities": [
+      {
+        "tableName": "chat_users",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `limor_user_id` INTEGER NOT NULL, `limor_profile_url` TEXT, `limor_user_name` TEXT, `limor_display_name` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "user_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "limorUserId",
+            "columnName": "limor_user_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "limorProfileUrl",
+            "columnName": "limor_profile_url",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "limorUserName",
+            "columnName": "limor_user_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "limorDisplayName",
+            "columnName": "limor_display_name",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "user_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "chat_message",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`message_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `chat_session_id` INTEGER NOT NULL, `chat_user_id` INTEGER, `message_content` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, FOREIGN KEY(`chat_session_id`) REFERENCES `chat_session`(`session_id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`chat_user_id`) REFERENCES `chat_users`(`user_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "message_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chatSessionId",
+            "columnName": "chat_session_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chatUserId",
+            "columnName": "chat_user_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "messageContent",
+            "columnName": "message_content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "message_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_chat_message_chat_session_id",
+            "unique": false,
+            "columnNames": [
+              "chat_session_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_chat_message_chat_session_id` ON `${TABLE_NAME}` (`chat_session_id`)"
+          },
+          {
+            "name": "index_chat_message_chat_user_id",
+            "unique": false,
+            "columnNames": [
+              "chat_user_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_chat_message_chat_user_id` ON `${TABLE_NAME}` (`chat_user_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "chat_session",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "chat_session_id"
+            ],
+            "referencedColumns": [
+              "session_id"
+            ]
+          },
+          {
+            "table": "chat_users",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "chat_user_id"
+            ],
+            "referencedColumns": [
+              "user_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "chat_session",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`session_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `chat_user_id` INTEGER NOT NULL, `last_message_timestamp` INTEGER NOT NULL, `last_message_content` TEXT NOT NULL, `draft_content` TEXT NOT NULL, `unread_count` INTEGER, `last_read_message_id` INTEGER, FOREIGN KEY(`chat_user_id`) REFERENCES `chat_users`(`user_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "session_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chatUserId",
+            "columnName": "chat_user_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastMessageDate",
+            "columnName": "last_message_timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastMessageContent",
+            "columnName": "last_message_content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "draftContent",
+            "columnName": "draft_content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "unreadCount",
+            "columnName": "unread_count",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastReadMessageId",
+            "columnName": "last_read_message_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "session_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_chat_session_chat_user_id",
+            "unique": false,
+            "columnNames": [
+              "chat_user_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_chat_session_chat_user_id` ON `${TABLE_NAME}` (`chat_user_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "chat_users",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "chat_user_id"
+            ],
+            "referencedColumns": [
+              "user_id"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '40f823e7b7eb6bf6efdba6ae78871211')"
+    ]
+  }
+}

@@ -21,6 +21,7 @@ class ChatRepository @Inject constructor(
         session.lastMessageDate = Calendar.getInstance()
         session.lastMessageContent = chatMessage.messageContent
         session.draftContent = ""
+        session.unreadCount = chatDao.getUnreadCount(session.id, session.lastReadMessageId ?: 0)
 
         chatDao.updateSession(session)
     }
@@ -71,4 +72,6 @@ class ChatRepository @Inject constructor(
     suspend fun clearAllData(context: Context) {
         DirectMessagingDatabase.getInstance(context).clearAllTables()
     }
+
+    fun updateSession(session: ChatSession) = chatDao.updateSession(session)
 }

@@ -59,6 +59,7 @@ class RootCommentsFragment : BottomSheetDialogFragment() {
             if (dialog is BottomSheetDialog) {
                 val behavior: BottomSheetBehavior<*> = dialog.behavior
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                behavior.skipCollapsed = true
             }
         }
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)

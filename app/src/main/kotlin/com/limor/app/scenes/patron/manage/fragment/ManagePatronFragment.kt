@@ -1,5 +1,6 @@
 package com.limor.app.scenes.patron.manage.fragment
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentManagePatronBinding
 import com.limor.app.scenes.patron.manage.viewmodels.ManagePatronViewModel
+import com.limor.app.scenes.utils.CommonsKt
 import javax.inject.Inject
 
 class ManagePatronFragment : BaseFragment() {
@@ -36,6 +38,7 @@ class ManagePatronFragment : BaseFragment() {
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initViews() {
         binding.toolbar.title.text = resources.getString(R.string.manage_limor_patron_title)
         binding.toolbar.btnNotification.visibility = View.GONE
@@ -46,7 +49,7 @@ class ManagePatronFragment : BaseFragment() {
             requireActivity().finish()
         }
         binding.invitationsLayout.setOnClickListener {
-            findNavController().navigate(R.id.action_manage_patron_fragment_to_fragment_invite_friends)
+            findNavController().navigate(R.id.action_manage_patron_fragment_to_fragment_invite_users)
         }
         binding.changeCastPricesLayout.setOnClickListener {
             val intent = Intent(requireActivity(), ChangePriceActivity::class.java)
@@ -64,4 +67,8 @@ class ManagePatronFragment : BaseFragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.invitationsCountTextView.text  = "${CommonsKt.user?.availableInvitations?:0} Left"
+    }
 }

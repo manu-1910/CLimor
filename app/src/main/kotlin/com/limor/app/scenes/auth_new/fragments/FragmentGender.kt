@@ -8,10 +8,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.limor.app.GendersQuery
 import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import kotlinx.android.synthetic.main.fragment_new_auth_gender.*
 
 class FragmentGender : FragmentWithLoading() {
@@ -53,18 +55,23 @@ class FragmentGender : FragmentWithLoading() {
                 setUpToggleButton(it)
             }
         })
+        model.updatePreferredInfoLiveData.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            /*findNavController()
+                .navigate(R.id.action_fragment_new_auth_gender_to_fragment_new_auth_categories)*/
+            findNavController().navigate(R.id.action_fragment_new_auth_gender_to_fragment_new_auth_suggested_people)
+        })
     }
 
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
-            it.findNavController()
-                .navigate(R.id.action_fragment_new_auth_gender_to_fragment_new_auth_categories)
+            model.updateGenderInfo()
         }
 
         btnSkip.setOnClickListener {
             model.selectGender(0)
             it.findNavController()
-                .navigate(R.id.action_fragment_new_auth_gender_to_fragment_new_auth_categories)
+                .navigate(R.id.action_fragment_new_auth_gender_to_fragment_new_auth_suggested_people)
         }
     }
 
@@ -101,6 +108,9 @@ class FragmentGender : FragmentWithLoading() {
     }
 
     private fun saveNavigationBreakPoint() {
-        model.saveNavigationBreakPoint(requireContext(), NavigationBreakpoints.PREFERENCE_COLLECTION.destination)
+        model.saveNavigationBreakPoint(
+            requireContext(),
+            NavigationBreakpoints.PREFERENCE_COLLECTION.destination
+        )
     }
 }

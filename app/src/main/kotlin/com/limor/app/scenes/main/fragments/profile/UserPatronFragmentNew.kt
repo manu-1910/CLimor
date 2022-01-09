@@ -27,7 +27,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
-import com.android.billingclient.api.ConsumeParams
 import com.android.billingclient.api.SkuDetails
 import com.limor.app.BuildConfig
 import com.limor.app.R
@@ -57,6 +56,7 @@ import com.limor.app.service.PurchaseTarget
 import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.UserUIModel
+import com.limor.app.uimodels.mapToAudioTrack
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 import dagger.android.support.AndroidSupportInjection
@@ -80,6 +80,7 @@ class UserPatronFragmentNew : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: UserProfileViewModel by viewModels { viewModelFactory }
+
     @Inject
     lateinit var playBillingHandler: PlayBillingHandler
     private lateinit var user: UserUIModel
@@ -285,6 +286,19 @@ class UserPatronFragmentNew : Fragment() {
                     }
                 },
                 onPlayPreviewClick = { cast, play ->
+                    cast.audio?.mapToAudioTrack()?.let { it1 ->
+                        cast.patronDetails?.startsAt?.let { it2 ->
+                            cast.patronDetails.endsAt?.let { it3 ->
+                                if (play) {
+                                    (activity as? PlayerViewManager)?.playPreview(
+                                        it1, it2.toInt(), it3.toInt()
+                                    )
+                                } else {
+                                    (activity as? PlayerViewManager)?.stopPreview(true)
+                                }
+                            }
+                        }
+                    }
                 },
                 onEditPriceClick = { cast ->
                     Intent(requireActivity(), ChangePriceActivity::class.java).apply {
@@ -311,9 +325,11 @@ class UserPatronFragmentNew : Fragment() {
             }
         }
     }
-    
-    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?){
-        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
+
+    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?) {
+        if (cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(
+                requireContext())
+        ) {
             LimorDialog(layoutInflater).apply {
                 setTitle(R.string.purchase_cast_title)
                 setMessage(R.string.purchase_cast_description_for_comment)
@@ -323,7 +339,7 @@ class UserPatronFragmentNew : Fragment() {
                     launchPurchaseCast(cast, sku)
                 }
             }.show()
-        } else{
+        } else {
             RootCommentsFragment.newInstance(cast).also { fragment ->
                 fragment.show(parentFragmentManager, fragment.requireTag())
             }
@@ -332,7 +348,7 @@ class UserPatronFragmentNew : Fragment() {
 
     private fun onCastClick(cast: CastUIModel, sku: SkuDetails?) {
         Timber.d("Clicked ${activity}")
-        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())){
+        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
             LimorDialog(layoutInflater).apply {
                 setTitle(R.string.purchase_cast_title)
                 setMessage(R.string.purchase_cast_description)
@@ -342,7 +358,7 @@ class UserPatronFragmentNew : Fragment() {
                     launchPurchaseCast(cast, sku)
                 }
             }.show()
-        } else{
+        } else {
             (activity as? PlayerViewManager)?.showExtendedPlayer(cast.id)
         }
     }
@@ -496,7 +512,6 @@ class UserPatronFragmentNew : Fragment() {
                                     binding.patronButton.isEnabled = true
                                     binding.audioPlayerView.visibility = View.GONE
                                 }
-
                                 "LANGUAGES_COLLECTED" -> {
                                     //Show Limor Patron
                                     setupViewPager(ArrayList())

@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
+import com.limor.app.App
 import com.limor.app.BuildConfig
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
@@ -38,6 +39,7 @@ import com.limor.app.dm.ShareResult
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.extensions.showKeyboard
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
+import com.limor.app.scenes.utils.LimorDialog
 import kotlinx.android.synthetic.main.fragment_share_dialog.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -280,6 +282,17 @@ class ShareFragment : BaseFragment() {
     }
 
     private fun shareSelected() {
+        val app = context?.applicationContext as? App
+        if (app?.merlinsBeard?.isConnected == false) {
+            LimorDialog(layoutInflater).apply {
+                setIcon(R.drawable.ic_alert)
+                setTitle(R.string.no_connection_title)
+                setMessage(R.string.default_no_internet)
+                addButton(android.R.string.ok, true)
+            }.show()
+            return
+        }
+
         val selected = shareableUsers.filter { it.selected }
         lifecycleScope.launch {
             val start = System.currentTimeMillis()

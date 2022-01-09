@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.ServiceConnection
 import android.os.IBinder
+import com.limor.app.BuildConfig
 import com.limor.app.common.dispatchers.DispatcherProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -83,6 +84,10 @@ class PlayerBinder @Inject constructor(
         return currentAudioTrack != audioTrack || playerStatus.value != PlayerStatus.Playing
     }
 
+    fun audioTrackIsPlaying(audioTrack: AudioService.AudioTrack): Boolean {
+        return currentAudioTrack == audioTrack && playerStatus.value == PlayerStatus.Playing
+    }
+
     fun audioTrackIsInInitState(audioTrack: AudioService.AudioTrack): Boolean {
         return currentAudioTrack == audioTrack && playerStatus.value == PlayerStatus.Init
     }
@@ -114,6 +119,10 @@ class PlayerBinder @Inject constructor(
     }
 
     fun playPreview(audioTrack: AudioService.AudioTrack, startPosition: Int, endPosition: Int) {
+        if (BuildConfig.DEBUG) {
+            println("Playing audio track from $startPosition to $endPosition")
+        }
+
         currentAudioTrack = audioTrack
         previewEndPosition = endPosition
         if (audioService == null) {
@@ -128,43 +137,64 @@ class PlayerBinder @Inject constructor(
     }
 
     private fun internalPlayPause(audioTrack: AudioService.AudioTrack, showNotification: Boolean, startPosition: Int = 0, endPosition: Int = 0) {
-        audioService?.let { audioService ->
-            if (audioService.audioTrack != audioTrack) {
-                // Use different track
-                audioService.stop()
-                audioService.play(
-                    audioTrack,
-                    withNotification = showNotification,
-                    startPosition = startPosition.toLong()
-                )
-            } else {
-                when (playerStatus.value) {
-                    is PlayerStatus.Playing -> {
-                        if(endPosition == 0){
-                            audioService.pause()
-                        } else{
-                            previewEndPosition = 0
-                            audioService.stop()
-                        }
+        val audioService = audioService ?: return
+
+        val currentPosition = audioService.getCurrentPlayingPosition().value
+        val isPlayingPreview = endPosition != startPosition
+        val isOutsidePreview = currentPosition < startPosition || currentPosition > endPosition;
+
+        if (audioService.audioTrack != audioTrack) {
+            // Use different track
+            audioService.stop()
+            audioService.play(
+                audioTrack,
+                withNotification = showNotification,
+                startPosition = startPosition.toLong()
+            )
+        } else {
+            if (BuildConfig.DEBUG) {
+                println("Current player status is ${playerStatus.value}")
+            }
+            when (playerStatus.value) {
+                is PlayerStatus.Playing -> {
+
+                    // If an audio is currently playing a preview and we tap the "Play Preview"
+                    // again then we stop the preview, in all other cases we pause it.
+
+                    if (isPlayingPreview) {
+                        previewEndPosition = 0
+                        audioService.stop()
+                    } else {
+                        audioService.pause()
                     }
-                    is PlayerStatus.Paused -> {
-                        audioService.resume()
+                }
+                is PlayerStatus.Paused -> {
+                    // If this is playing a preview and the current position of a paused track
+                    // is outside of the preview then we seek to the beginning of the preview
+
+                    if (isPlayingPreview && isOutsidePreview) {
+                        audioService.seekTo(startPosition)
                     }
-                    else -> {
-                        audioService.play(
-                            audioTrack,
-                            withNotification = showNotification,
-                            startPosition = startPosition.toLong()
-                        )
-                    }
+
+                    audioService.resume()
+                }
+                else -> {
+                    audioService.play(
+                        audioTrack,
+                        withNotification = showNotification,
+                        startPosition = startPosition.toLong()
+                    )
                 }
             }
         }
+
     }
 
-    fun stop() {
+    fun stop(reset: Boolean = true) {
+        if(reset){
+            isPlayingComment = false
+        }
         previewEndPosition = 0
-        isPlayingComment = false
         unbindAudioService()
     }
 

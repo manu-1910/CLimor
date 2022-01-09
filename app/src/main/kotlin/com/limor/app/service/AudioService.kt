@@ -111,17 +111,17 @@ class AudioService : Service() {
             DefaultDataSourceFactory(applicationContext, userAgent)
         ).createMediaSource(MediaItem.fromUri(audioTrack.url))
 
-        val haveStartPosition = startPosition != C.POSITION_UNSET.toLong()
-        if (haveStartPosition) {
-            exoPlayer.seekTo(startPosition)
-        }
-
         if (withNotification) {
             showNotification()
         }
 
         exoPlayer.setMediaSource(mediaSource)
         exoPlayer.prepare()
+
+        val haveStartPosition = startPosition != C.POSITION_UNSET.toLong()
+        if (haveStartPosition) {
+            exoPlayer.seekTo(startPosition)
+        }
 
         resume()
     }

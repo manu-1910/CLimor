@@ -10,9 +10,11 @@ import androidx.core.view.updateLayoutParams
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.limor.app.App
 import com.limor.app.R
 import com.limor.app.databinding.BottomDialogWrapperBinding
 import com.limor.app.dm.ShareResult
+import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.uimodels.CastUIModel
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -68,13 +70,28 @@ class ShareDialog : BottomSheetDialogFragment() {
     ): View {
         _binding = BottomDialogWrapperBinding.inflate(inflater, container, false)
 
-        childFragmentManager.beginTransaction()
-            .replace(R.id.content_container, ShareFragment.newInstance(cast).also {
-                it.setOnSharedListener(onShared)
-            })
-            .commitNow()
+        loadShareFragment()
 
         return binding.root
+    }
+
+    private fun loadShareFragment() {
+        val app = context?.applicationContext as? App
+        if (app?.merlinsBeard?.isConnected == false) {
+            LimorDialog(layoutInflater).apply {
+                setIcon(R.drawable.ic_alert)
+                setTitle(R.string.no_connection_title)
+                setMessage(R.string.default_no_internet)
+                addButton(android.R.string.ok, true)
+            }.show()
+            dismiss()
+        } else {
+            childFragmentManager.beginTransaction()
+                .replace(R.id.content_container, ShareFragment.newInstance(cast).also {
+                    it.setOnSharedListener(onShared)
+                })
+                .commitNow()
+        }
     }
 
     override fun onDestroyView() {
