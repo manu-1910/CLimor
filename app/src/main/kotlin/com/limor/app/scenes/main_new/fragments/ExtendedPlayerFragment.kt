@@ -185,6 +185,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         setPlaylistButtons()
 
         podcastViewModel.loadCast(castId)
+        loadFirstComment()
     }
 
     private fun setPlaylistButton(button: View, direction: Int) {
