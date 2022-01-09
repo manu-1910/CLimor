@@ -62,6 +62,8 @@ class SmallPlayerFragment : BaseFragment() {
 
     private var playerUpdatesJob: Job? = null
 
+    private var currentCast: CastUIModel? = null
+
     @Inject
     lateinit var playerBinder: PlayerBinder
 
@@ -84,8 +86,22 @@ class SmallPlayerFragment : BaseFragment() {
 
     private fun subscribeToCastUpdates() {
         podcastViewModel.cast.observe(viewLifecycleOwner) { cast ->
+            currentCast = cast
             initPlayerViews(cast)
             subscribeToPlayerUpdates(cast)
+            playPlaylistPodcast()
+        }
+    }
+
+    private fun playPlaylistPodcast() {
+        if (!isInPlaylist) {
+            return
+        }
+        val cast = currentCast ?: return
+        val audio = cast.audio ?: return
+        val track = audio.mapToAudioTrack()
+        if (playerBinder.audioTrackIsNotPlaying(track)) {
+            playerBinder.playPause(track, showNotification = true)
         }
     }
 
@@ -129,6 +145,30 @@ class SmallPlayerFragment : BaseFragment() {
 
     }
 
+    private fun playNextPodcast() {
+        if (!isInPlaylist) {
+            return
+        }
+
+        onPlaylistNavigation(1)
+    }
+
+    private fun onPlaylistNavigation(direction: Int) {
+        if (!isInPlaylist) {
+            return
+        }
+        val ids = castIds ?: return
+        val index = ids.indexOf(castId)
+        val next = index + direction
+
+        if (next < 0 || next == ids.size) {
+            return
+        }
+
+        castId = ids[next]
+        podcastViewModel.loadCast(castId)
+    }
+
     private fun subscribeToPlayerUpdates(cast: CastUIModel) {
         playerUpdatesJob?.cancel()
         playerUpdatesJob = lifecycleScope.launchWhenCreated {
@@ -158,6 +198,8 @@ class SmallPlayerFragment : BaseFragment() {
                             )
                             listenPodcastViewModel.listenPodcast(castId)
                             restarted = false
+
+                            playNextPodcast()
                         }
                         is PlayerStatus.Error -> {
                             showLoading(false)
