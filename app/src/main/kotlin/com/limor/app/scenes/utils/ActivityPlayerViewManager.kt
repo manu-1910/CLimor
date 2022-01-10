@@ -3,11 +3,13 @@ package com.limor.app.scenes.utils
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.google.android.exoplayer2.Player
 import com.limor.app.R
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
 import com.limor.app.extensions.makeGone
 import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
+import com.limor.app.scenes.main_new.fragments.PlayerFragment
 import com.limor.app.scenes.main_new.fragments.SmallPlayerFragment
 import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerBinder
@@ -100,8 +102,8 @@ class ActivityPlayerViewManager(
         playerBinder.stop()
     }
 
-    override fun playPreview(audioTrack: AudioService.AudioTrack, startPosition: Int, endPosition: Int){
-        playerBinder.playPreview(audioTrack, startPosition, endPosition)
+    override fun playPreview(audio: AudioService.AudioTrack, startPosition: Int, endPosition: Int){
+        playerBinder.playPreview(audio, startPosition, endPosition)
     }
 
     override fun stopPreview(reset: Boolean) {
@@ -121,7 +123,7 @@ class ActivityPlayerViewManager(
             return
         }
         val targetFragment = fragment()
-        currentFragment = fragment()
+        currentFragment = targetFragment
         fragmentManager.beginTransaction().also {
             it.setCustomAnimations(R.animator.show, 0)
             it.replace(playerBinding.playerContainer.id, targetFragment)
@@ -132,13 +134,22 @@ class ActivityPlayerViewManager(
     private fun showExtendedPlayer() {
         val args = currentArgs!!
         showFragment<ExtendedPlayerFragment> {
-            ExtendedPlayerFragment.newInstance(args.castId, !args.maximizedFromMiniPlayer, args.restarted)
+            ExtendedPlayerFragment.newInstance(
+                args.castId,
+                args.castIds,
+                !args.maximizedFromMiniPlayer,
+                args.restarted
+            )
         }
     }
 
-    private fun showMiniPlayer(){
+    private fun showMiniPlayer() {
+        val args = currentArgs ?: return
         showFragment<SmallPlayerFragment> {
-            SmallPlayerFragment.newInstance(currentArgs!!.castId)
+            SmallPlayerFragment.newInstance(
+                castId = (currentFragment as? PlayerFragment)?.getCastId() ?: args.castId,
+                castIds = args.castIds
+            )
         }
     }
 

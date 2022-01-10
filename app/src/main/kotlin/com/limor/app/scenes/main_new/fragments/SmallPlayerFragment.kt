@@ -26,13 +26,18 @@ import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 import javax.inject.Inject
 
-class SmallPlayerFragment : BaseFragment() {
+class SmallPlayerFragment : BaseFragment(), PlayerFragment {
 
     companion object {
         private const val CAST_ID_KEY = "CAST_ID_KEY"
-        fun newInstance(castId: Int): SmallPlayerFragment {
+        private const val KEY_CAST_IDS = "KEY_CAST_IDS"
+
+        fun newInstance(castId: Int, castIds: List<Int>?): SmallPlayerFragment {
             return SmallPlayerFragment().apply {
-                arguments = bundleOf(CAST_ID_KEY to castId)
+                arguments = bundleOf(
+                    CAST_ID_KEY to castId,
+                    KEY_CAST_IDS to castIds?.toIntArray()
+                )
             }
         }
     }
@@ -45,13 +50,27 @@ class SmallPlayerFragment : BaseFragment() {
     private val podcastViewModel: PodcastViewModel by viewModels { viewModelFactory }
     private val listenPodcastViewModel: ListenPodcastViewModel by viewModels { viewModelFactory }
 
-    private val castId: Int by lazy { requireArguments()[CAST_ID_KEY] as Int }
+    private var castId: Int = 0
+    private val castIds: List<Int>? by lazy {
+        (requireArguments()[KEY_CAST_IDS] as? IntArray)?.asList()
+    }
+    private val isInPlaylist by lazy {
+        (castIds?.size ?: 0) > 1
+    }
+
     private var restarted = false
 
     private var playerUpdatesJob: Job? = null
 
+    private var currentCast: CastUIModel? = null
+
     @Inject
     lateinit var playerBinder: PlayerBinder
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        castId = requireArguments()[CAST_ID_KEY] as Int
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,8 +86,22 @@ class SmallPlayerFragment : BaseFragment() {
 
     private fun subscribeToCastUpdates() {
         podcastViewModel.cast.observe(viewLifecycleOwner) { cast ->
+            currentCast = cast
             initPlayerViews(cast)
             subscribeToPlayerUpdates(cast)
+            playPlaylistPodcast()
+        }
+    }
+
+    private fun playPlaylistPodcast() {
+        if (!isInPlaylist) {
+            return
+        }
+        val cast = currentCast ?: return
+        val audio = cast.audio ?: return
+        val track = audio.mapToAudioTrack()
+        if (playerBinder.audioTrackIsNotPlaying(track)) {
+            playerBinder.playPause(track, showNotification = true)
         }
     }
 
@@ -112,6 +145,30 @@ class SmallPlayerFragment : BaseFragment() {
 
     }
 
+    private fun playNextPodcast() {
+        if (!isInPlaylist) {
+            return
+        }
+
+        onPlaylistNavigation(1)
+    }
+
+    private fun onPlaylistNavigation(direction: Int) {
+        if (!isInPlaylist) {
+            return
+        }
+        val ids = castIds ?: return
+        val index = ids.indexOf(castId)
+        val next = index + direction
+
+        if (next < 0 || next == ids.size) {
+            return
+        }
+
+        castId = ids[next]
+        podcastViewModel.loadCast(castId)
+    }
+
     private fun subscribeToPlayerUpdates(cast: CastUIModel) {
         playerUpdatesJob?.cancel()
         playerUpdatesJob = lifecycleScope.launchWhenCreated {
@@ -141,6 +198,8 @@ class SmallPlayerFragment : BaseFragment() {
                             )
                             listenPodcastViewModel.listenPodcast(castId)
                             restarted = false
+
+                            playNextPodcast()
                         }
                         is PlayerStatus.Error -> {
                             showLoading(false)
@@ -181,6 +240,7 @@ class SmallPlayerFragment : BaseFragment() {
         (activity as? PlayerViewManager)?.showPlayer(
             PlayerViewManager.PlayerArgs(
                 castId = castId,
+                castIds = castIds,
                 playerType = PlayerViewManager.PlayerType.EXTENDED,
                 maximizedFromMiniPlayer = true,
                 restarted = restarted
@@ -198,5 +258,9 @@ class SmallPlayerFragment : BaseFragment() {
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
+    }
+
+    override fun getCastId(): Int {
+        return castId
     }
 }

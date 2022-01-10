@@ -38,26 +38,34 @@ import com.limor.app.uimodels.*
 import com.limor.app.util.requestRecordPermissions
 import kotlinx.android.synthetic.main.fragment_extended_player.*
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.lang.Integer.max
+import java.lang.Math.min
+import java.time.Duration
 import javax.inject.Inject
 
 class ExtendedPlayerFragment : UserMentionFragment(),
-    DialogPodcastMoreActions.UpdatePodcastListener {
+    DialogPodcastMoreActions.UpdatePodcastListener, PlayerFragment {
 
     companion object {
         private const val CAST_ID_KEY = "CAST_ID_KEY"
+        private const val KEY_CAST_IDS = "KEY_CAST_IDS"
         private const val AUTO_PLAY_KEY = "AUTO_PLAY_KEY"
         private const val RESTARTED = "RESTARTED"
         fun newInstance(
             castId: Int,
+            castIds: List<Int>?,
             autoPlay: Boolean = false,
             restarted: Boolean = false,
         ): ExtendedPlayerFragment {
             return ExtendedPlayerFragment().apply {
                 arguments = bundleOf(
                     CAST_ID_KEY to castId,
+                    KEY_CAST_IDS to castIds?.toIntArray(),
                     AUTO_PLAY_KEY to autoPlay,
                     RESTARTED to restarted
                 )
@@ -72,7 +80,13 @@ class ExtendedPlayerFragment : UserMentionFragment(),
 
     private val podcastViewModel: PodcastViewModel by viewModels { viewModelFactory }
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
-    private val castId: Int by lazy { requireArguments()[CAST_ID_KEY] as Int }
+    private var castId: Int = 0
+    private val castIds: List<Int>? by lazy {
+        (requireArguments()[KEY_CAST_IDS] as? IntArray)?.asList()
+    }
+    private val isInPlaylist by lazy {
+        (castIds?.size ?: 0) > 1
+    }
     private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
     private val podcastInteractionViewModel: PodcastInteractionViewModel by activityViewModels { viewModelFactory }
     private val listenPodcastViewModel: ListenPodcastViewModel by viewModels { viewModelFactory }
@@ -84,6 +98,8 @@ class ExtendedPlayerFragment : UserMentionFragment(),
     private var restarted: Boolean = false
     private var sharedPodcastId = -1
 
+    private var currentCast: CastUIModel? = null
+
     @Inject
     lateinit var playerBinder: PlayerBinder
 
@@ -94,12 +110,15 @@ class ExtendedPlayerFragment : UserMentionFragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        castId = requireArguments()[CAST_ID_KEY] as Int
+
         requireActivity().onBackPressedDispatcher.addCallback(owner = this) {
             podcastInteractionViewModel.reload.postValue(true)
             (activity as? PlayerViewManager)?.showPlayer(
                 PlayerViewManager.PlayerArgs(
                     PlayerViewManager.PlayerType.SMALL,
-                    castId
+                    castId,
+                    castIds
                 )
             )
             isEnabled = false
@@ -112,15 +131,83 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentExtendedPlayerBinding.inflate(inflater, container, false)
-        podcastViewModel.loadCast(castId)
+
         subscribeToCastUpdates()
         subscribeToCommentUpdates()
         subscribeToShareUpdate()
-        loadFirstComment()
+
+        setPlaylistUI()
+
         return binding.root
     }
 
+    private fun togglePlaylistButton(button: View, enable: Boolean) {
+        button.isEnabled = enable
+        button.alpha = if (enable) 1.0f else 0.4f
+    }
+
+    private fun playNextPodcast() {
+        if (!isInPlaylist) {
+            return
+        }
+
+        onPlaylistNavigation(1)
+    }
+
+    private fun setPlaylistButtons() {
+        val ids = castIds ?: return
+        val index = ids.indexOf(castId)
+
+        var enablePrevious = true
+        var enableNext = true
+
+        if (index == 0) {
+            enablePrevious = false
+        } else if (index == ids.size - 1) {
+            enableNext = false
+        }
+
+        togglePlaylistButton(binding.btnPodcastPlayPrevious, enablePrevious)
+        togglePlaylistButton(binding.btnPodcastPlayNext, enableNext)
+    }
+
+    private fun onPlaylistNavigation(direction: Int) {
+        if (!isInPlaylist) {
+            return
+        }
+        val ids = castIds ?: return
+        val index = ids.indexOf(castId)
+        val next = index + direction
+
+        if (next < 0 || next == ids.size) {
+            return
+        }
+
+        castId = ids[next]
+        setPlaylistButtons()
+
+        podcastViewModel.loadCast(castId)
+        loadFirstComment()
+    }
+
+    private fun setPlaylistButton(button: View, direction: Int) {
+        button.apply {
+            visibleIf(isInPlaylist)
+            setOnClickListener {
+                onPlaylistNavigation(direction)
+            }
+        }
+    }
+
+    private fun setPlaylistUI() {
+        setPlaylistButton(binding.btnPodcastPlayNext, 1)
+        setPlaylistButton(binding.btnPodcastPlayPrevious, -1)
+
+        setPlaylistButtons()
+    }
+
     private fun setSeekbar() {
+        binding.lpiPodcastProgress.progress = 0
         binding.lpiPodcastProgress.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(
@@ -142,6 +229,9 @@ class ExtendedPlayerFragment : UserMentionFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        podcastViewModel.loadCast(castId)
+        loadFirstComment()
+
         setUpPopup(binding.taviVoice.editText, binding.taviVoice)
     }
 
@@ -151,6 +241,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
 
     private fun subscribeToCastUpdates() {
         podcastViewModel.cast.observe(viewLifecycleOwner) { cast ->
+            currentCast = cast
             bindViews(cast)
             subscribeToPlayerUpdates(cast)
 
@@ -333,54 +424,61 @@ class ExtendedPlayerFragment : UserMentionFragment(),
 
     private fun subscribeToPlayerUpdates(cast: CastUIModel) {
         playerUpdatesJob?.cancel()
-        playerUpdatesJob = lifecycleScope.launchWhenCreated {
-            val audioModel = cast.audio!!.mapToAudioTrack()
-            playerBinder.getCurrentPlayingPosition(audioModel)
-                .onEach { duration ->
-                    if (audioModel.duration.seconds > 0) {
-                        binding.lpiPodcastProgress.progress = duration.seconds.toInt()
-                        // ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
-                        binding.tvRecastPlayCurrentPosition.text =
-                            duration.toReadableStringFormat(DURATION_READABLE_FORMAT_3)
-                    }
+        playerUpdatesJob = lifecycleScope.launch {
 
+            val audioModel = cast.audio?.mapToAudioTrack() ?: return@launch
+
+            playerBinder.apply {
+                getCurrentPlayingPosition(audioModel)
+                    .onEach { handlePlayPosition(it) }
+                    .launchIn(this@launch)
+
+                getPlayerStatus(audioModel)
+                    .onEach { handlePlayerStatus(it) }
+                    .launchIn(this@launch)
+            }
+        }
+    }
+
+    private fun handlePlayPosition(position: Duration) {
+        binding.lpiPodcastProgress.progress = position.seconds.toInt()
+        // ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
+        binding.tvRecastPlayCurrentPosition.text =
+            position.toReadableStringFormat(DURATION_READABLE_FORMAT_3)
+    }
+
+    private fun handlePlayerStatus(status: PlayerStatus) {
+        when (status) {
+            is PlayerStatus.Ended -> {
+                binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
+                binding.audioBufferingView.visibility = View.GONE
+
+                val autoPlay = requireArguments().getBoolean(
+                    AUTO_PLAY_KEY,
+                    false
+                )
+
+                if (isStartedPlayingInThisObject || autoPlay || restarted) {
+                    updateListenCount()
+                    restarted = false
                 }
-                .launchIn(this)
 
-            playerBinder.getPlayerStatus(audioModel)
-                .onEach {
-                    when (it) {
-                        is PlayerStatus.Ended -> {
-                            binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
-                            binding.audioBufferingView.visibility = View.GONE
-
-                            val autoPlay = requireArguments().getBoolean(
-                                AUTO_PLAY_KEY,
-                                false
-                            )
-
-                            if (isStartedPlayingInThisObject || autoPlay || restarted) {
-                                updateListenCount()
-                                restarted = false
-                            }
-                        }
-                        is PlayerStatus.Error -> binding.audioBufferingView.visibility = View.GONE
-                        is PlayerStatus.Buffering -> binding.audioBufferingView.visibility =
-                            View.VISIBLE
-                        is PlayerStatus.Paused -> {
-                            binding.audioBufferingView.visibility = View.GONE
-                            binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
-                        }
-                        is PlayerStatus.Playing -> {
-                            binding.audioBufferingView.visibility = View.GONE
-                            binding.btnPodcastPlayExtended.setImageResource(R.drawable.pause)
-                        }
-                        is PlayerStatus.Cancelled -> Timber.d("Player Canceled")
-                        is PlayerStatus.Init -> Timber.d("Player Init")
-                        is PlayerStatus.Other -> Timber.d("Player Other")
-                    }
-                }
-                .launchIn(this)
+                playNextPodcast()
+            }
+            is PlayerStatus.Error -> binding.audioBufferingView.visibility = View.GONE
+            is PlayerStatus.Buffering -> binding.audioBufferingView.visibility =
+                View.VISIBLE
+            is PlayerStatus.Paused -> {
+                binding.audioBufferingView.visibility = View.GONE
+                binding.btnPodcastPlayExtended.setImageResource(R.drawable.ic_play)
+            }
+            is PlayerStatus.Playing -> {
+                binding.audioBufferingView.visibility = View.GONE
+                binding.btnPodcastPlayExtended.setImageResource(R.drawable.pause)
+            }
+            is PlayerStatus.Cancelled -> Timber.d("Player Canceled")
+            is PlayerStatus.Init -> Timber.d("Player Init")
+            is PlayerStatus.Other -> Timber.d("Player Other")
         }
     }
 
@@ -555,7 +653,8 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         activity.showPlayer(
             PlayerViewManager.PlayerArgs(
                 PlayerViewManager.PlayerType.SMALL,
-                castId
+                castId,
+                castIds
             )
         ) {
             // 2. navigate to hash tag fragment
@@ -602,5 +701,9 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         requireArguments().putBoolean(RESTARTED, false)
         requireArguments().putBoolean(AUTO_PLAY_KEY, false)
         podcastViewModel.loadCast(castId)
+    }
+
+    override fun getCastId(): Int {
+        return castId
     }
 }
