@@ -56,7 +56,8 @@ data class PlaylistUIModel(
     val images: PlaylistImages? = null,
     val colorCode: String? = null,
     val isCustom: Boolean,
-    val count: Int
+    val count: Int,
+    var selected: Boolean
 ) {
     companion object {
         fun dummyList(ownCount: Int): List<PlaylistUIModel> {
@@ -69,7 +70,8 @@ data class PlaylistUIModel(
                     title = "Purchased casts",
                     images = purchasedImages,
                     isCustom = false,
-                    count = if (purchasedImages == null) 0 else 10
+                    count = if (purchasedImages == null) 0 else 10,
+                    selected = false
                 )
             )
 
@@ -80,7 +82,8 @@ data class PlaylistUIModel(
                     title = "Liked casts",
                     images = likedImages,
                     isCustom = false,
-                    count = if (likedImages == null) 0 else 10
+                    count = if (likedImages == null) 0 else 10,
+                    selected = false
                 )
             )
 
@@ -94,7 +97,8 @@ data class PlaylistUIModel(
                         images = images,
                         colorCode = colorCode,
                         isCustom = true,
-                        count = if (images == null && colorCode == null) 0 else 15
+                        count = if (images == null && colorCode == null) 0 else 15,
+                        selected = false
                     )
                 )
             }

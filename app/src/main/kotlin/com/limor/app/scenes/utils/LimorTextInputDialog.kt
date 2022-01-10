@@ -10,9 +10,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.limor.app.GetPodcastByIdQuery
 import com.limor.app.R
-import com.limor.app.databinding.DialogGenericAlertBinding
 import com.limor.app.databinding.DialogTextInputAlertBinding
 import com.limor.app.extensions.px
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -70,6 +68,10 @@ class LimorTextInputDialog(private val layoutInflater: LayoutInflater) {
             setImageResource(iconResId)
             visibility = View.VISIBLE
         }
+    }
+
+    fun getText(): String{
+        return dialogView.etTitle.text.toString()
     }
 
     /**

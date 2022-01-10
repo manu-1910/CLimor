@@ -20,6 +20,7 @@ import com.limor.app.R
 import com.limor.app.databinding.FragmentExtendedPlayerBinding
 import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.*
+import com.limor.app.playlists.SaveToPlaylistFragment
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
@@ -255,9 +256,9 @@ class ExtendedPlayerFragment : UserMentionFragment(),
             },
             { hashTag -> onHashTagClick(hashTag) }
         )
-        if(cast.patronCast == true){
+        if (cast.patronCast == true) {
             binding.patronCastIndicator.visibility = View.VISIBLE
-        } else{
+        } else {
             binding.patronCastIndicator.visibility = View.GONE
         }
     }
@@ -493,13 +494,8 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         }
 
         binding.ivAddToPlaylist.setOnClickListener {
-            LimorTextInputDialog(layoutInflater).apply {
-                setTitle(R.string.label_create_playlist)
-                setHint(R.string.label_playlist_name)
-                addButton(R.string.cancel, false)
-                addButton(R.string.label_create, true) {
-                }
-            }.show()
+            SaveToPlaylistFragment.newInstance()
+                .show(parentFragmentManager, SaveToPlaylistFragment.TAG)
         }
     }
 

@@ -10,10 +10,19 @@ class PlaylistsViewModel @Inject constructor(
 
 ): ViewModel() {
 
+    private var customPlaylists = mutableListOf<PlaylistUIModel>()
+
     fun getPlaylists(): LiveData<List<PlaylistUIModel>> {
         val liveData = MutableLiveData<List<PlaylistUIModel>>()
-        liveData.postValue(PlaylistUIModel.dummyList(10))
+        val list = ArrayList<PlaylistUIModel>()
+        list.addAll(customPlaylists)
+        list.addAll(PlaylistUIModel.dummyList(10))
+        liveData.postValue(list)
         return liveData
+    }
+
+    fun addToCustomPlaylist(model: PlaylistUIModel){
+        customPlaylists.add(model)
     }
 
 }
