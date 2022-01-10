@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
+import android.text.InputFilter
 import android.text.Spannable
 import android.view.LayoutInflater
 import android.view.View
@@ -56,7 +57,7 @@ class LimorTextInputDialog(private val layoutInflater: LayoutInflater) {
     }
 
     fun setHint(hintResId: Int){
-        dialogView.inputCastTitle.setHint(hintResId)
+        dialogView.textInputLayout.setHint(hintResId)
     }
 
     fun setTitle(spannable: Spannable) {
@@ -70,6 +71,14 @@ class LimorTextInputDialog(private val layoutInflater: LayoutInflater) {
         }
     }
 
+    fun setCharacterMaxLength(length: Int){
+        dialogView.textInputLayout.counterMaxLength = length
+        dialogView.textInputLayout.isCounterEnabled = true
+        val filters: Array<InputFilter?> = arrayOfNulls<InputFilter>(1)
+        filters[0] = InputFilter.LengthFilter(length)
+        dialogView.etTitle.filters = filters
+    }
+    
     fun getText(): String{
         return dialogView.etTitle.text.toString()
     }

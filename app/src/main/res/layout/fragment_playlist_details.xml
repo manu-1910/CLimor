@@ -64,6 +64,17 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <ProgressBar
+        android:id="@+id/loaderPB"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="visible"
+        android:translationZ="10dp"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
@@ -75,7 +86,7 @@
         android:layout_marginTop="@dimen/marginSmall"
         android:paddingStart="@dimen/marginTwenty"
         android:paddingEnd="@dimen/marginTwenty"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/preview_image_layout"
@@ -92,7 +103,6 @@
                 android:id="@+id/playlist_preview_image"
                 android:layout_width="match_parent"
                 android:layout_height="144dp"
-                android:src="@drawable/icons_custom_undraw_interact"
                 android:scaleType="fitXY"/>
 
         </androidx.cardview.widget.CardView>

@@ -12,7 +12,6 @@
         android:id="@+id/cast_image"
         android:layout_width="68dp"
         android:layout_height="68dp"
-        android:src="@drawable/pic_five"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

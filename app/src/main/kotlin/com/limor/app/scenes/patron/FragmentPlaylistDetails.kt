@@ -1,5 +1,6 @@
 package com.limor.app.scenes.patron
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,8 +20,10 @@ import com.limor.app.di.Injectable
 import com.limor.app.extensions.loadImage
 import com.limor.app.extensions.makeGone
 import com.limor.app.playlists.PlaylistCastsAdapter
+import com.limor.app.playlists.models.PlaylistUIModel
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.LimorTextInputDialog
 import com.limor.app.scenes.utils.PlayerViewManager
@@ -36,11 +39,11 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         fun newInstance() = FragmentPlaylistDetails()
     }
 
-    enum class SortOrder{
+    enum class SortOrder {
         ASC, DESC
     }
 
-    enum class LayoutMode{
+    enum class LayoutMode {
         SEARCH_MODE, NORMAL_MODE
     }
 
@@ -55,7 +58,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     private var mode: LayoutMode = LayoutMode.NORMAL_MODE
     private var playList: List<CastUIModel> = mutableListOf()
 
-    private val isPlayList: Boolean by lazy { requireArguments().getBoolean(IS_PLAYLIST, false)}
+    private val isPlayList: Boolean by lazy { requireArguments().getBoolean(IS_PLAYLIST, false) }
     private val playListName: String by lazy { requireArguments().getString(LIST_NAME, "") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,18 +85,19 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     }
 
     private fun initialiseViews() {
+        binding.loaderPB.visibility = View.VISIBLE
         binding.title.text = playListName
         binding.btnEditPlaylist.setImageDrawable(resources.getDrawable(R.drawable.ic_edit_small))
-        if(!isPlayList){
+        if (!isPlayList) {
             binding.btnEditPlaylist.visibility = View.GONE
         }
     }
 
     private fun setClickListeners() {
         binding.btnBack.setOnClickListener {
-            if(mode == LayoutMode.NORMAL_MODE){
+            if (mode == LayoutMode.NORMAL_MODE) {
                 findNavController().navigateUp()
-            } else{
+            } else {
                 hideSearchLayout()
             }
         }
@@ -104,6 +108,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
             LimorTextInputDialog(layoutInflater).apply {
                 setTitle(R.string.label_rename_playlist)
                 setHint(R.string.label_rename_playlist)
+                setCharacterMaxLength(50)
                 addButton(R.string.cancel, false)
                 addButton(R.string.btn_save, true) {
                 }
@@ -111,7 +116,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         }
     }
 
-    private fun showSearchLayout(){
+    private fun showSearchLayout() {
         mode = LayoutMode.SEARCH_MODE
         binding.searchBar.hideSearchIcon()
         binding.mainLayout.visibility = View.GONE
@@ -136,14 +141,14 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         }
     }
 
-    private fun performSearch(query: String){
+    private fun performSearch(query: String) {
         val results = mutableListOf<CastUIModel>()
         playList.forEach { cast ->
-            if(cast.title?.contains(query, true) == true && query.trim() != ""){
+            if (cast.title?.contains(query, true) == true && query.trim() != "") {
                 results.add(cast)
             }
         }
-        if(results.size == 0){
+        if (results.size == 0) {
             binding.noResultsFound.visibility = View.VISIBLE
             binding.noResultsFoundDesc.visibility = View.VISIBLE
             binding.noResultsFoundDesc.text = getString(R.string.no_results_found_desc, query)
@@ -156,7 +161,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         }
     }
 
-    private fun hideSearchLayout(){
+    private fun hideSearchLayout() {
         mode = LayoutMode.NORMAL_MODE
         binding.mainLayout.visibility = View.VISIBLE
         binding.searchLayout.visibility = View.GONE
@@ -207,7 +212,12 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
                 LimorDialog(layoutInflater).apply {
                     setTitle(R.string.label_remove_from_playlist)
                     setMessage(R.string.label_remove_from_playlist_description)
-                    setMessageColor(ContextCompat.getColor(requireContext(), R.color.error_stroke_color))
+                    setMessageColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.error_stroke_color
+                        )
+                    )
                     setIcon(R.drawable.ic_delete_cast)
                     addButton(R.string.yes_title, false) { dismiss() }
                     addButton(R.string.btn_cancel, true)
@@ -236,7 +246,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         editText.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, id ->
                 binding.selectedFilterTextView.text = adapter.getItem(position)
-                if(position == 0){
+                if (position == 0) {
                     sortOrder = SortOrder.DESC
                 } else {
                     sortOrder = SortOrder.ASC
@@ -247,6 +257,9 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
 
     private fun subscribeViewModels() {
         model.homeFeedData.observe(viewLifecycleOwner) {
+            binding.loaderPB.visibility = View.GONE
+            binding.mainLayout.visibility = View.VISIBLE
+            mode = LayoutMode.NORMAL_MODE
             val podcasts = it.filter { it.recasted != true }
             playList = podcasts
             binding.castCountTextView.text = getString(R.string.label_cast_count, podcasts.size)
@@ -255,19 +268,27 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     }
 
     private fun loadPlaylist(playlist: List<CastUIModel>) {
-        if(mode == LayoutMode.NORMAL_MODE){
-            //playlist[0].imageLinks?.large?.let { binding.playlistPreviewImage.loadImage(it) }
-            binding.playlistPreviewImage.loadImage("https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg")
-        }
-        val list = if(sortOrder == SortOrder.ASC){
+        val list = if (sortOrder == SortOrder.ASC) {
             playlist.sortedBy { it.createdAt }
         } else {
             playlist.sortedByDescending { it.createdAt }
+        }
+        if (mode == LayoutMode.NORMAL_MODE) {
+            loadPlaylistPreviewImage(list[0])
         }
         playlistAdapter?.setData(list)
         val recyclerViewState =
             binding.castRecyclerView.layoutManager?.onSaveInstanceState()
         binding.castRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+    }
+
+    private fun loadPlaylistPreviewImage(playlist: CastUIModel) {
+        if (playlist.imageLinks?.large != null) {
+            binding.playlistPreviewImage.loadImage(playlist.imageLinks.large)
+        } else {
+            binding.playlistPreviewImage.setImageResource(R.drawable.ic_transparent_image)
+            binding.playlistPreviewImage.setBackgroundColor(Color.parseColor(playlist.colorCode))
+        }
     }
 
 }
