@@ -85,24 +85,28 @@ class FragmentCreatePlaylist : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initialiseViews()
-        subscribeToViewModels()
         binding.btnCreate.setOnClickListener {
-            model.createPlaylist(binding.etTitle.text.toString(), podcastId)
+            createPlaylist()
         }
         binding.btnCancel.setOnClickListener {
             dismiss()
         }
     }
 
-
-    fun subscribeToViewModels() {
-        model.createPlaylistResponse.observe(viewLifecycleOwner) { playlists ->
-            dismiss()
-        }
-        model.errorLiveData.observe(viewLifecycleOwner) {
-            binding.errorTV.text = it
-            binding.errorTV.visibility = View.VISIBLE
-        }
+    fun createPlaylist(){
+        model.createPlaylist(binding.etTitle.text.toString(), podcastId).observe(viewLifecycleOwner, {
+            if(!it.success){
+                val error = it.error?.split("-> ")
+                if(error?.size != null && error.size >= 2){
+                    binding.errorTV.text = error[1]
+                } else {
+                    binding.errorTV.text = it.error
+                }
+                binding.errorTV.visibility = View.VISIBLE
+            } else{
+                dismiss()
+            }
+        })
     }
 
     fun initialiseViews() {

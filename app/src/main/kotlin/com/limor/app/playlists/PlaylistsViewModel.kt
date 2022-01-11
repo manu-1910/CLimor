@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.apollo.CastsRepository
+import com.limor.app.playlists.models.CreatePlaylistResponse
 import com.limor.app.playlists.models.PlaylistUIModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -13,15 +14,10 @@ class PlaylistsViewModel @Inject constructor(
     val castsRepository: CastsRepository
 ): ViewModel() {
 
-    private var _errorLiveData =
-        MutableLiveData<String>()
-    val errorLiveData: LiveData<String>
-        get() = _errorLiveData
-
-    private var _createPlayListResponse =
-        MutableLiveData<String?>()
-    val createPlaylistResponse: LiveData<String?>
-        get() = _createPlayListResponse
+    private var _playlistsResponse =
+        MutableLiveData<PlaylistUIModel>()
+    val playlistResponse: LiveData<PlaylistUIModel>
+        get() = _playlistsResponse
 
     private var customPlaylists = mutableListOf<PlaylistUIModel>()
 
@@ -38,14 +34,26 @@ class PlaylistsViewModel @Inject constructor(
         customPlaylists.add(model)
     }
 
-    fun createPlaylist(title: String, podcastId: Int){
+    fun createPlaylist(title: String, podcastId: Int): LiveData<CreatePlaylistResponse>{
+        val result = MutableLiveData<CreatePlaylistResponse>()
         viewModelScope.launch {
-            try {
+             try{
                 val response = castsRepository.createPlaylist(title, podcastId)
-                _createPlayListResponse.postValue(response)
-            } catch (e: Exception) {
-                _errorLiveData.postValue(e.localizedMessage)
+                result.postValue(CreatePlaylistResponse(true, null))
+            } catch (e: Exception){
+                result.postValue(CreatePlaylistResponse(false, e.localizedMessage))
             }
+        }
+        return result
+    }
+
+    fun getAllPlaylists(){
+        viewModelScope.launch {
+            /*try {
+
+            } catch (e: Exception){
+                _playlistsResponse.postValue()
+            }*/
         }
     }
 
