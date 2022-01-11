@@ -1,0 +1,7 @@
+mutation CreatePlaylistMutation($title: String!, $podcastId: Int!){
+    createPlaylist(title: $title, podcastId: $podcastId){
+        status
+        message
+        playlistId
+    }
+}
