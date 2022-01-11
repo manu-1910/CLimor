@@ -42,7 +42,7 @@ class PlaylistsAdapter(
     }
 
     private fun getAdjustedPosition(position: Int): Int {
-        if (position > 3) {
+        if (position > 2) {
             // -1 for the section header
             return position - 1
         } else {

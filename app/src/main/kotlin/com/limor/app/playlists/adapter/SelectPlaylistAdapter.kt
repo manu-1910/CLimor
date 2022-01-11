@@ -48,12 +48,12 @@ class ViewHolderSelectPlaylist(
         val playlist = playlistModel ?: return
         binding.playlistNameTextView.text = playlist.title
         binding.root.setOnClickListener {
-            if(playlist.selected){
+            if(playlist.isAdded){
                 binding.selectContactCheckbox.setImageDrawable(binding.root.context.getDrawable(R.drawable.ic_unselected_checkbox))
             } else{
                 binding.selectContactCheckbox.setImageDrawable(binding.root.context.getDrawable(R.drawable.ic_selected_checkbox))
             }
-            playlist.selected = !playlist.selected
+            playlist.isAdded = !playlist.isAdded
         }
     }
 

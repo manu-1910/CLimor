@@ -60,7 +60,7 @@ class SaveToPlaylistFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        playlistsViewModel.getPlaylists().observe(viewLifecycleOwner) { playlists ->
+        playlistsViewModel.getDummyPlaylists().observe(viewLifecycleOwner) { playlists ->
             showPlaylists(playlists)
         }
         binding.btnCreatePlaylist.setOnClickListener {
@@ -69,16 +69,17 @@ class SaveToPlaylistFragment : DialogFragment() {
                 setHint(R.string.label_playlist_name)
                 addButton(R.string.cancel, false)
                 addButton(R.string.label_create, true) {
-                    playlistsViewModel.addToCustomPlaylist(
+                    /*playlistsViewModel.addToCustomPlaylist(
                         PlaylistUIModel(
                             id = 0,
                             title = getText(),
                             images = null,
                             isCustom = false,
                             count = 0,
-                            selected = false
+                            isAdded = false,
+                            isPublic = false
                         )
-                    )
+                    )*/
                     dismiss()
                 }
             }.show()
@@ -91,13 +92,12 @@ class SaveToPlaylistFragment : DialogFragment() {
         }
     }
 
-    private fun showPlaylists(playlists: List<PlaylistUIModel>) {
+    private fun showPlaylists(playlists: List<PlaylistUIModel?>?) {
         SelectPlaylistAdapter().also {
             val layoutManager = LinearLayoutManager(requireContext())
             binding.playlistsRv.layoutManager = layoutManager
-            var list = mutableListOf<PlaylistUIModel>()
-            list.addAll(playlists)
-            list.addAll(playlists)
+            var list = mutableListOf<PlaylistUIModel?>()
+            playlists?.let { it1 -> list.addAll(it1) }
             it.submitList(list)
             binding.playlistsRv.adapter = it
         }

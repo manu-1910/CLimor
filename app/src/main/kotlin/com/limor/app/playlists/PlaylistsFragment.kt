@@ -44,11 +44,14 @@ class PlaylistsFragment : BaseFragment() {
         }
     }
 
-    private fun showPlaylists(playlists: List<PlaylistUIModel>) {
+    private fun showPlaylists(playlists: List<PlaylistUIModel?>?) {
+        val result = playlists?.groupBy({it?.isCustom}, {it})
+        val sortedResult = mutableListOf<PlaylistUIModel?>()
+        result?.values?.forEach { sortedResult.addAll(it) }
         PlaylistsAdapter(
             onPlaylistClick = { playlist ->
                 val args = Bundle()
-                args.putBoolean(FragmentPlaylistDetails.IS_PLAYLIST, playlist.isCustom)
+                args.putBoolean(FragmentPlaylistDetails.IS_PLAYLIST, playlist.isCustom ?: false)
                 args.putString(FragmentPlaylistDetails.LIST_NAME, playlist.title)
                 findNavController().navigate(R.id.action_navigateProfileFragment_to_fragmentPlaylistDetails, args)
             },
@@ -56,7 +59,7 @@ class PlaylistsFragment : BaseFragment() {
 
             }
         ).also {
-            it.submitList(playlists)
+            it.submitList(sortedResult.reversed())
             binding.recyclerPlaylists.adapter = it
         }
     }

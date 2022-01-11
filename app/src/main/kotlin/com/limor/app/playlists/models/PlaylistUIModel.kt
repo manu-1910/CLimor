@@ -1,10 +1,12 @@
 package com.limor.app.playlists.models
 
+import com.limor.app.PlaylistsQuery
+
 data class PlaylistImages(
-    val smallUrl: String,
-    val mediumUrl: String,
-    val largeUrl: String,
-    val originalUrl: String
+    val smallUrl: String?,
+    val mediumUrl: String?,
+    val largeUrl: String?,
+    val originalUrl: String?
 ) {
     companion object {
         private val dummyImages = listOf(
@@ -57,7 +59,8 @@ data class PlaylistUIModel(
     val colorCode: String? = null,
     val isCustom: Boolean,
     val count: Int,
-    var selected: Boolean
+    var isAdded: Boolean,
+    var isPublic: Boolean
 ) {
     companion object {
         fun dummyList(ownCount: Int): List<PlaylistUIModel> {
@@ -71,7 +74,8 @@ data class PlaylistUIModel(
                     images = purchasedImages,
                     isCustom = false,
                     count = if (purchasedImages == null) 0 else 10,
-                    selected = false
+                    isAdded = false,
+                    isPublic = false
                 )
             )
 
@@ -83,7 +87,8 @@ data class PlaylistUIModel(
                     images = likedImages,
                     isCustom = false,
                     count = if (likedImages == null) 0 else 10,
-                    selected = false
+                    isAdded = false,
+                    isPublic = false
                 )
             )
 
@@ -98,7 +103,8 @@ data class PlaylistUIModel(
                         colorCode = colorCode,
                         isCustom = true,
                         count = if (images == null && colorCode == null) 0 else 15,
-                        selected = false
+                        isAdded = false,
+                        isPublic = false
                     )
                 )
             }
@@ -106,3 +112,23 @@ data class PlaylistUIModel(
         }
     }
 }
+
+fun PlaylistsQuery.Data1.mapToUIModel() =
+    PlaylistUIModel(
+        id = playlistId ?: -1,
+        title = title ?: "",
+        images = images?.mapToUIModel(),
+        colorCode = colorCode,
+        isCustom = isCustom ?: false,
+        count = count ?: 0,
+        isAdded = isAdded ?: false,
+        isPublic = isPublic ?: false
+    )
+
+fun PlaylistsQuery.Images.mapToUIModel() =
+    PlaylistImages(
+        smallUrl = small_url,
+        mediumUrl = medium_url,
+        largeUrl = large_url,
+        originalUrl = original_url
+    )
