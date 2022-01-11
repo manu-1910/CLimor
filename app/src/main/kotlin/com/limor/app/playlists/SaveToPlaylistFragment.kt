@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -14,7 +15,7 @@ import com.limor.app.R
 import com.limor.app.databinding.*
 import com.limor.app.playlists.adapter.SelectPlaylistAdapter
 import com.limor.app.playlists.models.PlaylistUIModel
-import com.limor.app.scenes.utils.LimorTextInputDialog
+import com.limor.app.scenes.utils.FragmentCreatePlaylist
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
@@ -26,9 +27,18 @@ class SaveToPlaylistFragment : DialogFragment() {
 
     private lateinit var binding: FragmentSaveToPlaylistBinding
 
+    private val podcastId: Int by lazy { requireArguments().getInt(
+        FragmentCreatePlaylist.PODCAST_ID_KEY
+    ) }
+
     companion object {
+        const val PODCAST_ID_KEY = "PODCAST_ID"
         val TAG = SaveToPlaylistFragment::class.qualifiedName
-        fun newInstance() = SaveToPlaylistFragment()
+        fun newInstance(podcastId: Int): SaveToPlaylistFragment {
+            return SaveToPlaylistFragment().apply {
+                arguments = bundleOf(SaveToPlaylistFragment.PODCAST_ID_KEY to podcastId)
+            }
+        }
     }
 
     override fun getTheme() = R.style.RoundedCornersDialog
@@ -64,24 +74,9 @@ class SaveToPlaylistFragment : DialogFragment() {
             showPlaylists(playlists)
         }
         binding.btnCreatePlaylist.setOnClickListener {
-            LimorTextInputDialog(layoutInflater).apply {
-                setTitle(R.string.label_create_playlist)
-                setHint(R.string.label_playlist_name)
-                addButton(R.string.cancel, false)
-                addButton(R.string.label_create, true) {
-                    playlistsViewModel.addToCustomPlaylist(
-                        PlaylistUIModel(
-                            id = 0,
-                            title = getText(),
-                            images = null,
-                            isCustom = false,
-                            count = 0,
-                            selected = false
-                        )
-                    )
-                    dismiss()
-                }
-            }.show()
+            FragmentCreatePlaylist.newInstance(podcastId, true)
+                .show(parentFragmentManager, SaveToPlaylistFragment.TAG)
+            dismiss()
         }
         binding.btnCancel.setOnClickListener {
             dismiss()
