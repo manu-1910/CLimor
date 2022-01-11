@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/alert_background"
-    android:paddingTop="24dp"
+    android:padding="24dp"
     android:orientation="vertical">
 
 
@@ -23,8 +23,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginStart="@dimen/marginAlmostLarge"
-        android:layout_marginEnd="@dimen/marginAlmostLarge"
         android:fontFamily="@font/roboto_medium"
         android:includeFontPadding="false"
         android:textColor="@color/textPrimary"
@@ -37,9 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginStart="@dimen/marginAlmostLarge"
         android:layout_marginTop="@dimen/margin32"
-        android:layout_marginEnd="@dimen/marginMedium"
         android:fontFamily="@font/roboto"
         android:lineSpacingMultiplier="1.4"
         android:textColor="@color/textSecondary"
@@ -60,7 +56,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_medium"
             android:textColor="@color/textPrimary"
-            android:maxLength="50"
+            android:maxLength="80"
             android:textSize="@dimen/textSizeNormal" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -68,23 +64,46 @@
         android:id="@+id/errorTV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/marginMedium"
         android:textColor="@color/redError"
         android:text="@string/label_playlist_error"
         android:textSize="@dimen/textSizeTiny"
         android:visibility="gone"/>
 
     <LinearLayout
-        android:id="@+id/buttons"
+        android:id="@+id/buttons_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/marginTwenty"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="@dimen/marginTwenty"
-        android:layout_marginBottom="28dp"
-        android:orientation="horizontal"
-        android:visibility="visible">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="@dimen/marginTwenty"
+        android:background="@color/white">
 
+        <Button
+            android:id="@+id/btnCancel"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/roboto_bold"
+            android:text="@string/cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/textPrimary"
+            android:textSize="@dimen/textSize14"/>
 
+        <Button
+            android:id="@+id/btnCreate"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_round_yellow_ripple_new"
+            android:fontFamily="@font/roboto_bold"
+            android:text="@string/label_create"
+            android:textAllCaps="false"
+            android:textColor="@color/textPrimary"
+            android:textSize="@dimen/textSize14"/>
 
     </LinearLayout>
 
