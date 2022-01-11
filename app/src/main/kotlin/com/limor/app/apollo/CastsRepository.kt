@@ -93,4 +93,8 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
             ?.data?.getPurchasedCasts?.filterNotNull() ?: emptyList()
     }
 
+    suspend fun getPlaylists(): List<PlaylistsQuery.Data1?>?{
+        return apollo.launchQuery(PlaylistsQuery())?.data?.getPlaylists?.data
+    }
+
 }
