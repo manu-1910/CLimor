@@ -9,9 +9,10 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="#FBFCFF"
             android:orientation="vertical">
 
@@ -86,7 +87,6 @@
                 tools:itemCount="3"
                 tools:listitem="@layout/item_patron_plan" />
 
-
             <LinearLayout
                 android:id="@+id/checkLayout"
                 android:layout_width="match_parent"
@@ -142,7 +142,6 @@
                         android:layout_toEndOf="@+id/termsCheckBox"
                         android:fontFamily="@font/roboto"
                         android:gravity="start"
-                        android:text="@string/plans_terms_text"
                         android:textColor="@color/grayWave"
                         android:textColorLink="@color/black"
                         android:textSize="14sp" />
