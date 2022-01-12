@@ -431,7 +431,9 @@ class UserPatronFragmentNew : Fragment() {
         binding.termsTV.text = result
         binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
         binding.termsCheckBox.isChecked = false
-        Timber.d("Current User state -> ${user.patronInvitationStatus} ---")
+        if (BuildConfig.DEBUG) {
+            Timber.d("Current User state -> ${user.patronInvitationStatus} ---> ${user.patronOnBoardingStatus}. Is Patron -> ${user.isPatron}")
+        }
         // user.isPatron = false
         if (currentUser()) {
             if (user.isPatron == true) {
@@ -461,11 +463,12 @@ class UserPatronFragmentNew : Fragment() {
                     //findNavController().navigate(R.id.action_navigateProfileFragment_to_managePatronFragment)
                 }
             } else {
-                user.patronOnBoardingStatus = "LANGUAGES_COLLECTED"
+                user.patronOnBoardingStatus = "NOT_INITIATED"
                 // audio should be present for all patron invitation statuses
                 if(user.patronOnBoardingStatus!="MEMBERSHIP_PURCHASED"){
                     setupAudioPlayer(user.patronAudioURL, user.patronAudioDurationSeconds)
                 }
+                // user.patronInvitationStatus = "APPROVED"
                 when (user.patronInvitationStatus) {
                     null -> {
                         //Considering this as NOT_REQUESTED STATE
@@ -512,13 +515,16 @@ class UserPatronFragmentNew : Fragment() {
                                     binding.patronButton.isEnabled = true
                                     binding.audioPlayerView.visibility = View.GONE
                                 }
-                                "LANGUAGES_COLLECTED" -> {
+                                "COMPLETED" -> {
                                     //Show Limor Patron
                                     setupViewPager(ArrayList())
                                     binding.audioPlayerView.visibility = View.VISIBLE
                                     binding.termsCheckBox.isChecked = false
                                     binding.patronButton.text =
-                                        getString(R.string.limorPatronSetupWallet)
+                                        if (PrefsHandler.hasOnboardingUrl(requireContext()))
+                                            getString(R.string.complete_onboarding) else
+                                            getString(R.string.limorPatronSetupWallet)
+
                                     binding.patronButton.isEnabled = true
                                     binding.managePatronStateLayout.visibility = View.VISIBLE
                                     binding.pager.visibility = GONE
@@ -712,7 +718,7 @@ class UserPatronFragmentNew : Fragment() {
     }
 
     private fun checkPatronState() {
-         //user.patronOnBoardingStatus = "VENDOR_CREATED"
+        // user.patronOnBoardingStatus = "NOT_INITIATED"
         when (user.patronOnBoardingStatus) {
             "NOT_INITIATED" -> {
                 val intent = Intent(requireContext(), PatronSetupActivity::class.java)
@@ -734,14 +740,21 @@ class UserPatronFragmentNew : Fragment() {
                 intent.putExtra("page", "languages")
                 startActivity(intent)
             }
-            "LANGUAGES_COLLECTED" -> {
-                // Open uni pass form
-                val intent = Intent(requireContext(), UniPaasActivity::class.java)
-                intent.putExtra("user", user)
-                startActivity(intent)
+            "COMPLETED" -> {
+                if (PrefsHandler.hasOnboardingUrl(requireContext())) {
+                    Uri.parse(PrefsHandler.getOnboardingUrl(requireContext())).also { uri ->
+                        startActivity(Intent(Intent.ACTION_VIEW, uri))
+                    }
+                } else {
+                    // Open uni pass form
+                    val intent = Intent(requireContext(), UniPaasActivity::class.java)
+                    intent.putExtra("user", user)
+                    startActivity(intent)
+                }
             }
             "VENDOR_CREATED" -> {
                 // Fetch web url for further steps and open in browser
+                // TODO - get url from
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com"))
                 startActivity(browserIntent)
             }
