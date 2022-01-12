@@ -17,11 +17,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.facebook.common.Common
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.FragmentSetUpDigitalWalletFormBinding
 import com.limor.app.di.Injectable
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.Country
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UserUIModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
@@ -165,11 +167,15 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
             "${model.countrySelected?.code}${binding.etEnterPhoneInner.text.toString()}",
             binding.etEnterDOBInner.text.toString()
         ).observe(viewLifecycleOwner){ response ->
-            Timber.d("WALLET ->"+ response.toString())
-            if(response?.data?.onboardingURL!=null){
-                //Take user to success screen
+            if (BuildConfig.DEBUG) {
+                Timber.d("WALLET -> $response")
+            }
+            response?.data?.onboardingURL?.let { url ->
+                PrefsHandler.setOnboardingUrl(requireContext(), url)
+
+                // Take user to success screen
                 findNavController().navigate(R.id.action_set_up_digital_wallet_form_fragment_to_set_up_digital_wallet_confirmation,
-                bundleOf("url" to response.data.onboardingURL))
+                bundleOf("url" to url))
             }
 
         }
