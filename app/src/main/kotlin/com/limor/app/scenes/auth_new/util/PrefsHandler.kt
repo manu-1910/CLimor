@@ -28,6 +28,7 @@ object PrefsHandler {
     private const val LABEL_RECENT_LOCATION = "recent_locations"
     private const val PREFERENCES_SELECTED = "preferences_selected"
     private const val SELECTED_GENDER_ID = "gender_id"
+    private const val KEY_ONBOARDING_URL = "unipaas_onboarding_url"
 
     private fun sp(context: Context) = sharedPreferences(context)
 
@@ -171,6 +172,14 @@ object PrefsHandler {
 
     fun getPreferencesScreenOpenedInThisSession(context: Context): Boolean {
         return sharedPreferences(context).getBoolean("PREFERENCES_OPENED", false)
+    }
+
+    fun hasOnboardingUrl(context: Context) = !getOnboardingUrl(context).isNullOrEmpty()
+    fun getOnboardingUrl(context: Context) = sharedPreferences(context).getString(KEY_ONBOARDING_URL, null)
+    fun setOnboardingUrl(context: Context, url: String) {
+        sharedPreferences(context).edit(true) {
+            putString(KEY_ONBOARDING_URL, url)
+        }
     }
 
 }
