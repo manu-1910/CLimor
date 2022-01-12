@@ -463,7 +463,7 @@ class UserPatronFragmentNew : Fragment() {
                     //findNavController().navigate(R.id.action_navigateProfileFragment_to_managePatronFragment)
                 }
             } else {
-                user.patronOnBoardingStatus = "NOT_INITIATED"
+                // user.patronOnBoardingStatus = "NOT_INITIATED"
                 // audio should be present for all patron invitation statuses
                 if(user.patronOnBoardingStatus!="MEMBERSHIP_PURCHASED"){
                     setupAudioPlayer(user.patronAudioURL, user.patronAudioDurationSeconds)
