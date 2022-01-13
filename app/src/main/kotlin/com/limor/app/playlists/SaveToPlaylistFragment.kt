@@ -27,9 +27,11 @@ class SaveToPlaylistFragment : DialogFragment() {
 
     private lateinit var binding: FragmentSaveToPlaylistBinding
 
-    private val podcastId: Int by lazy { requireArguments().getInt(
-        FragmentCreatePlaylist.PODCAST_ID_KEY
-    ) }
+    private val podcastId: Int by lazy {
+        requireArguments().getInt(
+            FragmentCreatePlaylist.PODCAST_ID_KEY
+        )
+    }
 
     companion object {
         const val PODCAST_ID_KEY = "PODCAST_ID"
@@ -78,22 +80,43 @@ class SaveToPlaylistFragment : DialogFragment() {
                 .show(parentFragmentManager, SaveToPlaylistFragment.TAG)
             dismiss()
         }
-        binding.btnCancel.setOnClickListener {
-            dismiss()
+        binding.btnDone.setOnClickListener {
+            binding.btnDone.isEnabled = false
+            addCast()
         }
         binding.closeImageView.setOnClickListener {
             dismiss()
         }
     }
 
+    private fun addCast(){
+        playlistsViewModel.addCastToPlaylists(podcastId).observe(viewLifecycleOwner, {
+            if(it.success){
+                dismiss()
+            } else{
+                binding.btnDone.isEnabled = true
+            }
+        })
+    }
+
     private fun showPlaylists(playlists: List<PlaylistUIModel?>?) {
-        SelectPlaylistAdapter().also {
+        SelectPlaylistAdapter(onPlaylistSelected = { playlistId, selected ->
+            onPlaylistSelected(playlistId, selected)
+        }).also {
             val layoutManager = LinearLayoutManager(requireContext())
             binding.playlistsRv.layoutManager = layoutManager
             var list = mutableListOf<PlaylistUIModel?>()
             playlists?.let { it1 -> list.addAll(it1) }
             it.submitList(list)
             binding.playlistsRv.adapter = it
+        }
+    }
+
+    private fun onPlaylistSelected(playlistId: Int, selected: Boolean) {
+        if (selected) {
+            playlistsViewModel.playlistSelectedIdsList.add(playlistId)
+        } else {
+            playlistsViewModel.playlistSelectedIdsList.remove(playlistId)
         }
     }
 

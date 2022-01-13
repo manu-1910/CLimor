@@ -9,7 +9,9 @@ import com.limor.app.databinding.LayoutSelectPlaylistBinding
 import com.limor.app.playlists.models.PlaylistUIModel
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderBindable
 
-class SelectPlaylistAdapter() : ListAdapter<PlaylistUIModel, RecyclerView.ViewHolder>(
+class SelectPlaylistAdapter(
+    private val onPlaylistSelected: (playlistId: Int, selected: Boolean) -> Unit
+) : ListAdapter<PlaylistUIModel, RecyclerView.ViewHolder>(
     PlaylistsDiffCallback()
 ) {
 
@@ -25,7 +27,7 @@ class SelectPlaylistAdapter() : ListAdapter<PlaylistUIModel, RecyclerView.ViewHo
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = LayoutSelectPlaylistBinding.inflate(inflater, parent, false)
-        return ViewHolderSelectPlaylist(binding)
+        return ViewHolderSelectPlaylist(binding, onPlaylistSelected = onPlaylistSelected)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -35,7 +37,8 @@ class SelectPlaylistAdapter() : ListAdapter<PlaylistUIModel, RecyclerView.ViewHo
 }
 
 class ViewHolderSelectPlaylist(
-    val binding: LayoutSelectPlaylistBinding
+    val binding: LayoutSelectPlaylistBinding,
+    val onPlaylistSelected: (playlistId: Int, selected: Boolean) -> Unit
 ) : ViewHolderBindable<PlaylistUIModel>(binding) {
     private var playlistModel: PlaylistUIModel? = null
 
@@ -52,6 +55,7 @@ class ViewHolderSelectPlaylist(
         } else{
             binding.selectContactCheckbox.setImageDrawable(binding.root.context.getDrawable(R.drawable.ic_unselected_checkbox))
         }
+        onPlaylistSelected(playlist.id, playlist.isAdded)
         binding.root.setOnClickListener {
             if(playlist.isAdded){
                 binding.selectContactCheckbox.setImageDrawable(binding.root.context.getDrawable(R.drawable.ic_unselected_checkbox))
@@ -59,6 +63,7 @@ class ViewHolderSelectPlaylist(
                 binding.selectContactCheckbox.setImageDrawable(binding.root.context.getDrawable(R.drawable.ic_selected_checkbox))
             }
             playlist.isAdded = !playlist.isAdded
+            onPlaylistSelected(playlist.id, playlist.isAdded)
         }
     }
 

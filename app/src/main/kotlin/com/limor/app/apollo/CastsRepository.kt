@@ -107,4 +107,11 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
         return apollo.launchQuery(GetPlaylistsOfCastsQuery(podcastId))?.data?.getPlaylists?.data
     }
 
+    suspend fun addCastToPlaylist(
+        podcastId: Int,
+        playlistIds: ArrayList<Int>
+    ): String? {
+        return apollo.mutate(AddCastToPlaylistsMutation(podcastId, playlistIds))?.data?.addCastToPlaylists?.status
+    }
+
 }
