@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -30,6 +31,7 @@ import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.*
 import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
 import org.jetbrains.anko.design.snackbar
+import org.jetbrains.anko.toast
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
@@ -164,13 +166,21 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
             binding.etEnterFirstNameInner.text.toString(),
             binding.etEnterLastNameInner.text.toString(),
             binding.etEnterEmailInner.text.toString(),
-            "${model.countrySelected?.code}${binding.etEnterPhoneInner.text.toString()}",
+            "+${model.countrySelected?.code}${binding.etEnterPhoneInner.text.toString()}",
             binding.etEnterDOBInner.text.toString()
-        ).observe(viewLifecycleOwner){ response ->
+        ).observe(viewLifecycleOwner) { response ->
             if (BuildConfig.DEBUG) {
                 Timber.d("WALLET -> $response")
             }
-            response?.data?.onboardingURL?.let { url ->
+            if (!response.callWasSuccessful) {
+                Toast.makeText(
+                    binding.root.context,
+                    "Error: ${response.errorMessage}",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@observe
+            }
+            response.result?.let { url ->
                 PrefsHandler.setOnboardingUrl(requireContext(), url)
 
                 // Take user to success screen
