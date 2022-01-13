@@ -282,9 +282,9 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     private fun loadPlaylist(playlist: List<PlaylistCastUIModel>) {
         if(playlist.isNotEmpty()){
             val list = if (sortOrder == SortOrder.ASC) {
-                playlist.sortedBy { it.createdAt.toLocalDateTime() }
+                playlist.sortedBy { it.addedAt.toLocalDateTime() }
             } else {
-                playlist.sortedByDescending { it.createdAt.toLocalDateTime() }
+                playlist.sortedByDescending { it.addedAt.toLocalDateTime() }
             }
             if (mode == LayoutMode.NORMAL_MODE) {
                 loadPlaylistPreviewImage(list[0])
