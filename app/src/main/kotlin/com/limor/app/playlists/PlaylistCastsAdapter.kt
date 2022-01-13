@@ -9,21 +9,18 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.R
 import com.limor.app.databinding.ItemDeletePlaylistBinding
-import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.loadImage
 import com.limor.app.extensions.precisePx
 import com.limor.app.extensions.px
-import com.limor.app.uimodels.CastUIModel
+import com.limor.app.playlists.models.PlaylistCastUIModel
 import de.hdodenhof.circleimageview.CircleImageView
-import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.layoutInflater
-import org.jetbrains.anko.wrapContent
 
 class PlaylistCastsAdapter(
-    private var casts: List<CastUIModel>,
-    private val removeFromPlaylist: (podcast: CastUIModel) -> Unit,
-    private val onPlayPodcast: (podcast: CastUIModel, podcasts: List<CastUIModel>) -> Unit,
-): RecyclerView.Adapter<PlaylistCastsAdapter.ViewHolder>() {
+    private var casts: List<PlaylistCastUIModel?>,
+    private val removeFromPlaylist: (podcast: PlaylistCastUIModel?) -> Unit,
+    private val onPlayPodcast: (podcast: PlaylistCastUIModel?, podcasts: List<PlaylistCastUIModel?>) -> Unit,
+) : RecyclerView.Adapter<PlaylistCastsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -38,22 +35,22 @@ class PlaylistCastsAdapter(
 
     override fun onBindViewHolder(holder: PlaylistCastsAdapter.ViewHolder, position: Int) {
         val podcast = casts[position]
-      
-        if (podcast.imageLinks?.medium != null) {
-            holder.image.loadImage(podcast.imageLinks.medium)
+
+        if (podcast?.images?.mediumUrl != null) {
+            holder.image.loadImage(podcast.images.mediumUrl)
         } else {
             holder.image.setImageResource(R.drawable.ic_transparent_image)
-            holder.image.circleBackgroundColor = Color.parseColor(podcast.colorCode)
+            holder.image.circleBackgroundColor = Color.parseColor(podcast?.colorCode)
         }
-      
+
         holder.itemView.setOnClickListener {
             onPlayPodcast(podcast, casts)
         }
-        podcast.imageLinks?.medium?.let {
+        podcast?.images?.mediumUrl?.let {
             holder.image.loadImage(it)
         }
-        holder.name.text = podcast.title
-        holder.details.text = podcast.createdAt.toString()
+        holder.name.text = podcast?.title
+        holder.details.text = podcast?.createdAt
 
         val menuBinding =
             ItemDeletePlaylistBinding.inflate(holder.details.context.layoutInflater, null, false)
@@ -94,7 +91,7 @@ class PlaylistCastsAdapter(
         return casts.size
     }
 
-    public fun setData(casts: List<CastUIModel>) {
+    public fun setData(casts: List<PlaylistCastUIModel?>) {
         this.casts = casts
         notifyDataSetChanged()
     }
