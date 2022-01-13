@@ -7,6 +7,7 @@ import android.content.res.AssetManager
 import android.os.CountDownTimer
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.*
+import com.limor.app.BuildConfig
 import com.limor.app.CreateVendorMutation
 import com.limor.app.GendersQuery
 import com.limor.app.apollo.GeneralInfoRepository
@@ -536,20 +537,42 @@ class AuthViewModelNew @Inject constructor(
         countDownTimer?.cancel()
     }
 
-
     fun createVendor(
         firstName: String,
         lastName: String,
         email: String,
         phone: String,
         birthDate: String
-    ): LiveData<CreateVendorMutation.CreateVendor?> {
-        val liveData = MutableLiveData<CreateVendorMutation.CreateVendor?>()
-        viewModelScope.launch {
-           liveData.value = withContext(Dispatchers.IO){
-               generalInfoRepository.createVendor(firstName,lastName,email,phone,birthDate)
-           }
+    ): LiveData<ApiResult<String?>> {
+        val callResult = MutableLiveData<ApiResult<String?>>()
+
+        if (BuildConfig.DEBUG) {
+            println("Will create vendor for $firstName $lastName, $email, $phone, $birthDate")
         }
-        return liveData
+
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                generalInfoRepository.createVendor(
+                    firstName,
+                    lastName,
+                    email,
+                    phone,
+                    birthDate
+                )
+            }.onSuccess { result ->
+                callResult.postValue(
+                    ApiResult(
+                        result = result?.data?.onboardingURL,
+                        callWasSuccessful = true,
+                        errorMessage = null
+                    )
+                )
+            }.onFailure { throwable ->
+                throwable.printStackTrace()
+                callResult.postValue(ApiResult.errored<String?>(throwable.localizedMessage))
+            }
+        }
+
+        return callResult
     }
 }
