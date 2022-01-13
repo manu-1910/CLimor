@@ -101,4 +101,10 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
             ?.data?.createPlaylist?.status
     }
 
+    suspend fun getCastsOfPlaylist(
+        podcastId: Int
+    ): List<GetPlaylistsOfCastsQuery.Data1?>?{
+        return apollo.launchQuery(GetPlaylistsOfCastsQuery(podcastId))?.data?.getPlaylists?.data
+    }
+
 }

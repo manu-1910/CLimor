@@ -70,7 +70,7 @@ class SaveToPlaylistFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        playlistsViewModel.getPlaylists().observe(viewLifecycleOwner) { playlists ->
+        playlistsViewModel.getPlaylistsOfCasts(podcastId).observe(viewLifecycleOwner) { playlists ->
             showPlaylists(playlists)
         }
         binding.btnCreatePlaylist.setOnClickListener {
@@ -86,13 +86,12 @@ class SaveToPlaylistFragment : DialogFragment() {
         }
     }
 
-    private fun showPlaylists(playlists: List<PlaylistUIModel>) {
+    private fun showPlaylists(playlists: List<PlaylistUIModel?>?) {
         SelectPlaylistAdapter().also {
             val layoutManager = LinearLayoutManager(requireContext())
             binding.playlistsRv.layoutManager = layoutManager
-            var list = mutableListOf<PlaylistUIModel>()
-            list.addAll(playlists)
-            list.addAll(playlists)
+            var list = mutableListOf<PlaylistUIModel?>()
+            playlists?.let { it1 -> list.addAll(it1) }
             it.submitList(list)
             binding.playlistsRv.adapter = it
         }

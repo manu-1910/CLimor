@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.limor.app.apollo.CastsRepository
 import com.limor.app.playlists.models.CreatePlaylistResponse
 import com.limor.app.playlists.models.PlaylistUIModel
+import com.limor.app.playlists.models.mapToUIModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -47,14 +48,13 @@ class PlaylistsViewModel @Inject constructor(
         return result
     }
 
-    fun getAllPlaylists(){
+    fun getPlaylistsOfCasts(podcastId: Int): LiveData<List<PlaylistUIModel?>?>{
+        val liveData = MutableLiveData<List<PlaylistUIModel?>?>()
         viewModelScope.launch {
-            /*try {
-
-            } catch (e: Exception){
-                _playlistsResponse.postValue()
-            }*/
+            liveData.postValue(
+                castsRepository.getCastsOfPlaylist(podcastId)?.map { it -> it?.mapToUIModel() })
         }
+        return liveData
     }
 
 }
