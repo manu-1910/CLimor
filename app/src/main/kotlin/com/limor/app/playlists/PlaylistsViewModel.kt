@@ -5,10 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.apollo.CastsRepository
-import com.limor.app.playlists.models.DeleteCastInPlaylistResponse
-import com.limor.app.playlists.models.PlaylistCastUIModel
-import com.limor.app.playlists.models.PlaylistUIModel
-import com.limor.app.playlists.models.mapToUIModel
+import com.limor.app.playlists.models.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -51,6 +48,19 @@ class PlaylistsViewModel @Inject constructor(
                 result.postValue(DeleteCastInPlaylistResponse(true, null))
             } catch (e: Exception){
                 result.postValue(DeleteCastInPlaylistResponse(false, e.localizedMessage))
+            }
+        }
+        return result
+    }
+
+    fun deletePlaylist(playlistId: Int): LiveData<DeletePlaylistResponse>{
+        val result = MutableLiveData<DeletePlaylistResponse>()
+        viewModelScope.launch {
+            try{
+                val response = castsRepository.deletePlaylist(playlistId)
+                result.postValue(DeletePlaylistResponse(true, null))
+            } catch (e: Exception){
+                result.postValue(DeletePlaylistResponse(false, e.localizedMessage))
             }
         }
         return result

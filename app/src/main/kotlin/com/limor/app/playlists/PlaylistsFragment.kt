@@ -28,6 +28,8 @@ class PlaylistsFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val playlistsViewModel: PlaylistsViewModel by viewModels { viewModelFactory }
 
+    private lateinit var playlistAdapter: PlaylistsAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,6 +41,10 @@ class PlaylistsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadPlaylists()
+    }
+
+    fun loadPlaylists(){
         playlistsViewModel.getPlaylists().observe(viewLifecycleOwner) { playlists ->
             showPlaylists(playlists)
         }
@@ -49,7 +55,7 @@ class PlaylistsFragment : BaseFragment() {
         val sortedResult = mutableListOf<PlaylistUIModel?>()
         result?.get(false)?.let { sortedResult.addAll(it) }
         result?.get(true)?.let { sortedResult.addAll(it) }
-        PlaylistsAdapter(
+        playlistAdapter = PlaylistsAdapter(
             onPlaylistClick = { playlist ->
                 val args = Bundle()
                 args.putBoolean(FragmentPlaylistDetails.IS_PLAYLIST, playlist.isCustom)
@@ -58,12 +64,20 @@ class PlaylistsFragment : BaseFragment() {
                 findNavController().navigate(R.id.action_navigateProfileFragment_to_fragmentPlaylistDetails, args)
             },
             onDeleteClick = { playlist ->
-
+                deletePlaylist(playlist.id)
             }
         ).also {
             it.submitList(sortedResult)
             binding.recyclerPlaylists.adapter = it
         }
+    }
+
+    private fun deletePlaylist(playlistId: Int){
+        playlistsViewModel.deletePlaylist(playlistId).observe(viewLifecycleOwner, {
+            if(it.success){
+                loadPlaylists()
+            }
+        })
     }
 
     companion object {
