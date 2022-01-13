@@ -19,8 +19,9 @@ import org.jetbrains.anko.layoutInflater
 import java.time.Duration
 
 class PlaylistCastsAdapter(
+    private var playlistId: Int,
     private var casts: List<PlaylistCastUIModel?>,
-    private val removeFromPlaylist: (podcast: PlaylistCastUIModel?) -> Unit,
+    private val removeFromPlaylist: (playlistId: Int, podcastId: Int, positionInList: Int) -> Unit,
     private val onPlayPodcast: (podcast: PlaylistCastUIModel?, podcasts: List<PlaylistCastUIModel?>) -> Unit,
 ) : RecyclerView.Adapter<PlaylistCastsAdapter.ViewHolder>() {
 
@@ -65,7 +66,9 @@ class PlaylistCastsAdapter(
             48.px,
             true
         ).apply {
-            contentView.setOnClickListener { dismiss() }
+            contentView.setOnClickListener {
+                dismiss()
+            }
             elevation = 10.precisePx
             setBackgroundDrawable(
                 AppCompatResources.getDrawable(
@@ -76,7 +79,7 @@ class PlaylistCastsAdapter(
         }
 
         menuBinding.root.setOnClickListener {
-            removeFromPlaylist(podcast)
+            removeFromPlaylist(playlistId, podcast?.id ?: -1, position)
             popupWindow.dismiss()
         }
 

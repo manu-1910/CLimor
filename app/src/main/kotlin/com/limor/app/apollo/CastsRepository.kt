@@ -104,4 +104,12 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
             ?: emptyList()
     }
 
+    suspend fun deleteCastInPlaylist(
+        playlistId: Int,
+        castId: Int
+    ):String? {
+        return apollo.mutate(DeleteCastInPlaylistMutation(playlistId, castId))
+            ?.data?.deleteCastInPlaylist?.status
+    }
+
 }

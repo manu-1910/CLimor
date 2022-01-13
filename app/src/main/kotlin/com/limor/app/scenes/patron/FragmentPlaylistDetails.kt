@@ -80,8 +80,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         setClickListeners()
         setUpRecyclerView()
         setUpSearchRecyclerView()
-        //subscribeViewModels()
-        loadEarnings()
+        loadCasts()
     }
 
     private fun initialiseViews() {
@@ -189,16 +188,20 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
 
     private fun setUpRecyclerView() {
         playlistAdapter = PlaylistCastsAdapter(
+            playlistId,
             mutableListOf(),
             onPlayPodcast = { podcast, podcasts ->
                 playPodcast(podcast, podcasts)
             },
-            removeFromPlaylist = {
+            removeFromPlaylist = { playlistId, podcastId, positionInList ->
                 LimorDialog(layoutInflater).apply {
                     setTitle(R.string.label_remove_from_playlist)
                     setMessage(R.string.label_remove_from_playlist_description)
                     setIcon(R.drawable.ic_delete_cast)
-                    addButton(R.string.yes_title, false) { dismiss() }
+                    addButton(R.string.yes_title, false) {
+                        removeFromPlaylist(playlistId, podcastId, positionInList)
+                        dismiss()
+                    }
                     addButton(R.string.btn_cancel, true)
                 }.show()
             }
@@ -212,11 +215,12 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
 
     private fun setUpSearchRecyclerView() {
         searchPlaylistAdapter = PlaylistCastsAdapter(
+            playlistId,
             mutableListOf(),
             onPlayPodcast = { podcast, podcasts ->
                 playPodcast(podcast, podcasts)
             },
-            removeFromPlaylist = {
+            removeFromPlaylist = { playlistId, podcastId, positionInList ->
                 LimorDialog(layoutInflater).apply {
                     setTitle(R.string.label_remove_from_playlist)
                     setMessage(R.string.label_remove_from_playlist_description)
@@ -227,7 +231,10 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
                         )
                     )
                     setIcon(R.drawable.ic_delete_cast)
-                    addButton(R.string.yes_title, false) { dismiss() }
+                    addButton(R.string.yes_title, false) {
+                        removeFromPlaylist(playlistId, podcastId, positionInList)
+                        dismiss()
+                    }
                     addButton(R.string.btn_cancel, true)
                 }.show()
             }
@@ -239,7 +246,15 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         binding.searchRecyclerView.adapter = searchPlaylistAdapter
     }
 
-    private fun loadEarnings() {
+    private fun removeFromPlaylist(playlistId: Int, podcastId: Int, positionInList: Int){
+        model.deleteCastInPlaylist(playlistId, podcastId).observe(viewLifecycleOwner, {
+            if(it.success){
+                loadCasts()
+            }
+        })
+    }
+
+    private fun loadCasts() {
         model.getCastsInPlaylist(playlistId).observe(viewLifecycleOwner, {
             binding.loaderPB.visibility = View.GONE
             binding.mainLayout.visibility = View.VISIBLE
@@ -267,18 +282,6 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
             }
     }
 
-    /*private fun subscribeViewModels() {
-        model.homeFeedData.observe(viewLifecycleOwner) {
-            binding.loaderPB.visibility = View.GONE
-            binding.mainLayout.visibility = View.VISIBLE
-            mode = LayoutMode.NORMAL_MODE
-            val podcasts = it.filter { it.recasted != true }
-            playList = podcasts
-            binding.castCountTextView.text = getString(R.string.label_cast_count, podcasts.size)
-            loadPlaylist(podcasts)
-        }
-    }*/
-
     private fun loadPlaylist(playlist: List<PlaylistCastUIModel>) {
         if(playlist.isNotEmpty()){
             val list = if (sortOrder == SortOrder.ASC) {
@@ -293,6 +296,12 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
             val recyclerViewState =
                 binding.castRecyclerView.layoutManager?.onSaveInstanceState()
             binding.castRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+        } else{
+            binding.castRecyclerView.removeAllViews()
+            binding.searchRecyclerView.removeAllViews()
+            binding.mainLayout.visibility = View.GONE
+            binding.searchLayout.visibility = View.GONE
+            playList = mutableListOf()
         }
     }
 
