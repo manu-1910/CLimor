@@ -13,8 +13,10 @@ import com.limor.app.extensions.loadImage
 import com.limor.app.extensions.precisePx
 import com.limor.app.extensions.px
 import com.limor.app.playlists.models.PlaylistCastUIModel
+import com.limor.app.scenes.utils.CommonsKt
 import de.hdodenhof.circleimageview.CircleImageView
 import org.jetbrains.anko.layoutInflater
+import java.time.Duration
 
 class PlaylistCastsAdapter(
     private var casts: List<PlaylistCastUIModel?>,
@@ -50,12 +52,13 @@ class PlaylistCastsAdapter(
             holder.image.loadImage(it)
         }
         holder.name.text = podcast?.title
-        holder.details.text = podcast?.createdAt
+        holder.userName.text = podcast?.userName
+        holder.duration.text = CommonsKt.getFeedDuration(Duration.ofMillis(podcast?.totalLength?.toLong() ?: 0))
 
         val menuBinding =
-            ItemDeletePlaylistBinding.inflate(holder.details.context.layoutInflater, null, false)
+            ItemDeletePlaylistBinding.inflate(holder.userName.context.layoutInflater, null, false)
         menuBinding.textDelete.text =
-            holder.details.context.getText(R.string.label_remove_from_playlist)
+            holder.userName.context.getText(R.string.label_remove_from_playlist)
         val popupWindow = PopupWindow(
             menuBinding.root,
             200.px,
@@ -66,7 +69,7 @@ class PlaylistCastsAdapter(
             elevation = 10.precisePx
             setBackgroundDrawable(
                 AppCompatResources.getDrawable(
-                    holder.details.context,
+                    holder.userName.context,
                     R.drawable.popup_menu_background
                 )
             )
@@ -104,7 +107,8 @@ class PlaylistCastsAdapter(
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val image = view.findViewById(R.id.cast_image) as CircleImageView
         val name = view.findViewById(R.id.cast_name) as TextView
-        val details = view.findViewById<View>(R.id.detail_text_view) as TextView
+        val userName = view.findViewById<View>(R.id.user_name_text_view) as TextView
+        val duration = view.findViewById<View>(R.id.duration_text_view) as TextView
         val optionsIV = view.findViewById<ImageView>(R.id.options_image_view) as ImageView
     }
 
