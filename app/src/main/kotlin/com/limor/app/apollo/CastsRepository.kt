@@ -93,6 +93,31 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
             ?.data?.getPurchasedCasts?.filterNotNull() ?: emptyList()
     }
 
+    suspend fun getPlaylists(): List<PlaylistsQuery.Data1?>? {
+        return apollo.launchQuery(PlaylistsQuery())?.data?.getPlaylists?.data
+    }
+
+    suspend fun getCastsInPlaylist(
+        playlistId: Int
+    ): List<GetCastsInPlaylistsQuery.Data1?> {
+        return apollo.launchQuery(GetCastsInPlaylistsQuery(playlistId))?.data?.getCastsInPlaylist?.data
+            ?: emptyList()
+    }
+
+    suspend fun deleteCastInPlaylist(
+        playlistId: Int,
+        castId: Int
+    ): String? {
+        return apollo.mutate(DeleteCastInPlaylistMutation(playlistId, castId))
+            ?.data?.deleteCastInPlaylist?.status
+    }
+
+    suspend fun deletePlaylist(
+        playlistId: Int
+    ): String? {
+        return apollo.mutate(DeletePlaylistMutation(playlistId))
+            ?.data?.deletePlaylist?.status
+
     suspend fun createPlaylist(
         title: String,
         podcastId: Int

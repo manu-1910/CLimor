@@ -1,0 +1,21 @@
+query PlaylistsQuery{
+    getPlaylists {
+        status
+        message
+        data {
+            playlistId
+            title
+            images {
+                small_url
+                medium_url
+                large_url
+                original_url
+            }
+            colorCode
+            isCustom
+            count
+            isAdded
+            isPublic
+        }
+    }
+}

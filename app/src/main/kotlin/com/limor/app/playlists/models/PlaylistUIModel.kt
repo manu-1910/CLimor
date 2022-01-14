@@ -1,12 +1,13 @@
 package com.limor.app.playlists.models
 
+import com.limor.app.PlaylistsQuery
 import com.limor.app.GetPlaylistsOfCastsQuery
 
 data class PlaylistImages(
-    val smallUrl: String,
-    val mediumUrl: String,
-    val largeUrl: String,
-    val originalUrl: String
+    val smallUrl: String?,
+    val mediumUrl: String?,
+    val largeUrl: String?,
+    val originalUrl: String?
 ) {
     companion object {
         private val dummyImages = listOf(

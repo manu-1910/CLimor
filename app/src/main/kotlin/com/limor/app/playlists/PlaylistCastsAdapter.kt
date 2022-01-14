@@ -9,21 +9,21 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.R
 import com.limor.app.databinding.ItemDeletePlaylistBinding
-import com.limor.app.extensions.loadCircleImage
 import com.limor.app.extensions.loadImage
 import com.limor.app.extensions.precisePx
 import com.limor.app.extensions.px
-import com.limor.app.uimodels.CastUIModel
+import com.limor.app.playlists.models.PlaylistCastUIModel
+import com.limor.app.scenes.utils.CommonsKt
 import de.hdodenhof.circleimageview.CircleImageView
-import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.layoutInflater
-import org.jetbrains.anko.wrapContent
+import java.time.Duration
 
 class PlaylistCastsAdapter(
-    private var casts: List<CastUIModel>,
-    private val removeFromPlaylist: (podcast: CastUIModel) -> Unit,
-    private val onPlayPodcast: (podcast: CastUIModel, podcasts: List<CastUIModel>) -> Unit,
-): RecyclerView.Adapter<PlaylistCastsAdapter.ViewHolder>() {
+    private var playlistId: Int,
+    private var casts: List<PlaylistCastUIModel?>,
+    private val removeFromPlaylist: (playlistId: Int, podcastId: Int, positionInList: Int) -> Unit,
+    private val onPlayPodcast: (podcast: PlaylistCastUIModel?, podcasts: List<PlaylistCastUIModel?>) -> Unit,
+) : RecyclerView.Adapter<PlaylistCastsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -38,45 +38,48 @@ class PlaylistCastsAdapter(
 
     override fun onBindViewHolder(holder: PlaylistCastsAdapter.ViewHolder, position: Int) {
         val podcast = casts[position]
-      
-        if (podcast.imageLinks?.medium != null) {
-            holder.image.loadImage(podcast.imageLinks.medium)
+
+        if (podcast?.images?.mediumUrl != null) {
+            holder.image.loadImage(podcast.images.mediumUrl)
         } else {
             holder.image.setImageResource(R.drawable.ic_transparent_image)
-            holder.image.circleBackgroundColor = Color.parseColor(podcast.colorCode)
+            holder.image.circleBackgroundColor = Color.parseColor(podcast?.colorCode)
         }
-      
+
         holder.itemView.setOnClickListener {
             onPlayPodcast(podcast, casts)
         }
-        podcast.imageLinks?.medium?.let {
+        podcast?.images?.mediumUrl?.let {
             holder.image.loadImage(it)
         }
-        holder.name.text = podcast.title
-        holder.details.text = podcast.createdAt.toString()
+        holder.name.text = podcast?.title
+        holder.userName.text = podcast?.userName
+        holder.duration.text = CommonsKt.getFeedDuration(Duration.ofMillis(podcast?.totalLength?.toLong() ?: 0))
 
         val menuBinding =
-            ItemDeletePlaylistBinding.inflate(holder.details.context.layoutInflater, null, false)
+            ItemDeletePlaylistBinding.inflate(holder.userName.context.layoutInflater, null, false)
         menuBinding.textDelete.text =
-            holder.details.context.getText(R.string.label_remove_from_playlist)
+            holder.userName.context.getText(R.string.label_remove_from_playlist)
         val popupWindow = PopupWindow(
             menuBinding.root,
             200.px,
             48.px,
             true
         ).apply {
-            contentView.setOnClickListener { dismiss() }
+            contentView.setOnClickListener {
+                dismiss()
+            }
             elevation = 10.precisePx
             setBackgroundDrawable(
                 AppCompatResources.getDrawable(
-                    holder.details.context,
+                    holder.userName.context,
                     R.drawable.popup_menu_background
                 )
             )
         }
 
         menuBinding.root.setOnClickListener {
-            removeFromPlaylist(podcast)
+            removeFromPlaylist(playlistId, podcast?.id ?: -1, position)
             popupWindow.dismiss()
         }
 
@@ -94,7 +97,7 @@ class PlaylistCastsAdapter(
         return casts.size
     }
 
-    public fun setData(casts: List<CastUIModel>) {
+    public fun setData(casts: List<PlaylistCastUIModel?>) {
         this.casts = casts
         notifyDataSetChanged()
     }
@@ -107,7 +110,8 @@ class PlaylistCastsAdapter(
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val image = view.findViewById(R.id.cast_image) as CircleImageView
         val name = view.findViewById(R.id.cast_name) as TextView
-        val details = view.findViewById<View>(R.id.detail_text_view) as TextView
+        val userName = view.findViewById<View>(R.id.user_name_text_view) as TextView
+        val duration = view.findViewById<View>(R.id.duration_text_view) as TextView
         val optionsIV = view.findViewById<ImageView>(R.id.options_image_view) as ImageView
     }
 

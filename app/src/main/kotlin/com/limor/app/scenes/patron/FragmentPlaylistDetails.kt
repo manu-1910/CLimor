@@ -18,14 +18,21 @@ import com.limor.app.R
 import com.limor.app.databinding.FragmentPlaylistDetailsBinding
 import com.limor.app.di.Injectable
 import com.limor.app.extensions.loadImage
+
+import com.limor.app.extensions.toLocalDateTime
+import com.limor.app.playlists.PlaylistCastsAdapter
+import com.limor.app.playlists.PlaylistsViewModel
+import com.limor.app.playlists.models.PlaylistCastUIModel
+import com.limor.app.scenes.main_new.view.MarginItemDecoration
+
 import com.limor.app.playlists.PlaylistCastsAdapter
 import com.limor.app.playlists.SaveToPlaylistFragment
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.utils.FragmentCreatePlaylist
+
 import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.PlayerViewManager
-import com.limor.app.uimodels.CastUIModel
 import kotlinx.android.synthetic.main.fragment_my_earnings.*
 import javax.inject.Inject
 
@@ -34,6 +41,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     companion object {
         const val IS_PLAYLIST = "IS_PLAYLIST"
         const val LIST_NAME = "LIST_NAME"
+        const val PLAYLIST_ID = "PLAYLIST_ID"
         fun newInstance() = FragmentPlaylistDetails()
     }
 
@@ -47,17 +55,18 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val model: HomeFeedViewModel by viewModels { viewModelFactory }
+    private val model: PlaylistsViewModel by viewModels { viewModelFactory }
     private lateinit var binding: FragmentPlaylistDetailsBinding
 
     private var playlistAdapter: PlaylistCastsAdapter? = null
     private var searchPlaylistAdapter: PlaylistCastsAdapter? = null
     private var sortOrder: SortOrder = SortOrder.DESC
     private var mode: LayoutMode = LayoutMode.NORMAL_MODE
-    private var playList: List<CastUIModel> = mutableListOf()
+    private var playList: List<PlaylistCastUIModel> = mutableListOf()
 
     private val isPlayList: Boolean by lazy { requireArguments().getBoolean(IS_PLAYLIST, false) }
     private val playListName: String by lazy { requireArguments().getString(LIST_NAME, "") }
+    private val playlistId: Int by lazy { requireArguments().getInt(PLAYLIST_ID, -1) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,8 +87,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         setClickListeners()
         setUpRecyclerView()
         setUpSearchRecyclerView()
-        subscribeViewModels()
-        loadEarnings()
+        loadCasts()
     }
 
     private fun initialiseViews() {
@@ -134,9 +142,9 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     }
 
     private fun performSearch(query: String) {
-        val results = mutableListOf<CastUIModel>()
+        val results = mutableListOf<PlaylistCastUIModel>()
         playList.forEach { cast ->
-            if (cast.title?.contains(query, true) == true && query.trim() != "") {
+            if (cast.title.contains(query, true) && query.trim() != "") {
                 results.add(cast)
             }
         }
@@ -161,28 +169,40 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         binding.btnEditPlaylist.visibility = View.VISIBLE
     }
 
-    private fun playPodcast(podcast: CastUIModel, podcasts: List<CastUIModel>) {
-        (activity as? PlayerViewManager)?.showPlayer(
-            PlayerViewManager.PlayerArgs(
-                PlayerViewManager.PlayerType.EXTENDED,
-                podcast.id,
-                podcasts.map { it.id }
+    private fun playPodcast(podcast: PlaylistCastUIModel?, podcasts: List<PlaylistCastUIModel?>) {
+        if (podcast != null) {
+            val result = arrayListOf<PlaylistCastUIModel>()
+            podcasts.forEach {
+                it?.let {
+                    result.add(it)
+                }
+            }
+            (activity as? PlayerViewManager)?.showPlayer(
+                PlayerViewManager.PlayerArgs(
+                    PlayerViewManager.PlayerType.EXTENDED,
+                    podcast.id,
+                    result.map { it.id }
+                )
             )
-        )
+        }
     }
 
     private fun setUpRecyclerView() {
         playlistAdapter = PlaylistCastsAdapter(
+            playlistId,
             mutableListOf(),
             onPlayPodcast = { podcast, podcasts ->
                 playPodcast(podcast, podcasts)
             },
-            removeFromPlaylist = {
+            removeFromPlaylist = { playlistId, podcastId, positionInList ->
                 LimorDialog(layoutInflater).apply {
                     setTitle(R.string.label_remove_from_playlist)
                     setMessage(R.string.label_remove_from_playlist_description)
                     setIcon(R.drawable.ic_delete_cast)
-                    addButton(R.string.yes_title, false) { dismiss() }
+                    addButton(R.string.yes_title, false) {
+                        removeFromPlaylist(playlistId, podcastId, positionInList)
+                        dismiss()
+                    }
                     addButton(R.string.btn_cancel, true)
                 }.show()
             }
@@ -196,11 +216,12 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
 
     private fun setUpSearchRecyclerView() {
         searchPlaylistAdapter = PlaylistCastsAdapter(
+            playlistId,
             mutableListOf(),
             onPlayPodcast = { podcast, podcasts ->
                 playPodcast(podcast, podcasts)
             },
-            removeFromPlaylist = {
+            removeFromPlaylist = { playlistId, podcastId, positionInList ->
                 LimorDialog(layoutInflater).apply {
                     setTitle(R.string.label_remove_from_playlist)
                     setMessage(R.string.label_remove_from_playlist_description)
@@ -211,7 +232,10 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
                         )
                     )
                     setIcon(R.drawable.ic_delete_cast)
-                    addButton(R.string.yes_title, false) { dismiss() }
+                    addButton(R.string.yes_title, false) {
+                        removeFromPlaylist(playlistId, podcastId, positionInList)
+                        dismiss()
+                    }
                     addButton(R.string.btn_cancel, true)
                 }.show()
             }
@@ -223,11 +247,23 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         binding.searchRecyclerView.adapter = searchPlaylistAdapter
     }
 
-    private fun loadEarnings() {
-        model.loadHomeFeed(
-            offset = 0,
-            limit = 40
-        )
+    private fun removeFromPlaylist(playlistId: Int, podcastId: Int, positionInList: Int){
+        model.deleteCastInPlaylist(playlistId, podcastId).observe(viewLifecycleOwner, {
+            if(it.success){
+                loadCasts()
+            }
+        })
+    }
+
+    private fun loadCasts() {
+        model.getCastsInPlaylist(playlistId).observe(viewLifecycleOwner, {
+            binding.loaderPB.visibility = View.GONE
+            binding.mainLayout.visibility = View.VISIBLE
+            mode = LayoutMode.NORMAL_MODE
+            playList = it
+            binding.castCountTextView.text = getString(R.string.label_cast_count, it?.size)
+            loadPlaylist(it)
+        })
     }
 
     private fun setAdapter() {
@@ -238,48 +274,44 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         editText.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, id ->
                 binding.selectedFilterTextView.text = adapter.getItem(position)
-                if (position == 0) {
-                    sortOrder = SortOrder.DESC
+                sortOrder = if (position == 0) {
+                    SortOrder.DESC
                 } else {
-                    sortOrder = SortOrder.ASC
+                    SortOrder.ASC
                 }
                 loadPlaylist(playList)
             }
     }
 
-    private fun subscribeViewModels() {
-        model.homeFeedData.observe(viewLifecycleOwner) {
-            binding.loaderPB.visibility = View.GONE
-            binding.mainLayout.visibility = View.VISIBLE
-            mode = LayoutMode.NORMAL_MODE
-            val podcasts = it.filter { it.recasted != true }
-            playList = podcasts
-            binding.castCountTextView.text = getString(R.string.label_cast_count, podcasts.size)
-            loadPlaylist(podcasts)
+    private fun loadPlaylist(playlist: List<PlaylistCastUIModel>) {
+        if(playlist.isNotEmpty()){
+            val list = if (sortOrder == SortOrder.ASC) {
+                playlist.sortedBy { it.addedAt.toLocalDateTime() }
+            } else {
+                playlist.sortedByDescending { it.addedAt.toLocalDateTime() }
+            }
+            if (mode == LayoutMode.NORMAL_MODE) {
+                loadPlaylistPreviewImage(list[0])
+            }
+            playlistAdapter?.setData(list)
+            val recyclerViewState =
+                binding.castRecyclerView.layoutManager?.onSaveInstanceState()
+            binding.castRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+        } else{
+            binding.castRecyclerView.removeAllViews()
+            binding.searchRecyclerView.removeAllViews()
+            binding.mainLayout.visibility = View.GONE
+            binding.searchLayout.visibility = View.GONE
+            playList = mutableListOf()
         }
     }
 
-    private fun loadPlaylist(playlist: List<CastUIModel>) {
-        val list = if (sortOrder == SortOrder.ASC) {
-            playlist.sortedBy { it.createdAt }
-        } else {
-            playlist.sortedByDescending { it.createdAt }
-        }
-        if (mode == LayoutMode.NORMAL_MODE) {
-            loadPlaylistPreviewImage(list[0])
-        }
-        playlistAdapter?.setData(list)
-        val recyclerViewState =
-            binding.castRecyclerView.layoutManager?.onSaveInstanceState()
-        binding.castRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
-    }
-
-    private fun loadPlaylistPreviewImage(playlist: CastUIModel) {
-        if (playlist.imageLinks?.large != null) {
-            binding.playlistPreviewImage.loadImage(playlist.imageLinks.large)
+    private fun loadPlaylistPreviewImage(playlist: PlaylistCastUIModel?) {
+        if (playlist?.images?.largeUrl != null) {
+            binding.playlistPreviewImage.loadImage(playlist.images.largeUrl)
         } else {
             binding.playlistPreviewImage.setImageResource(R.drawable.ic_transparent_image)
-            binding.playlistPreviewImage.setBackgroundColor(Color.parseColor(playlist.colorCode))
+            binding.playlistPreviewImage.setBackgroundColor(Color.parseColor(playlist?.colorCode))
         }
     }
 

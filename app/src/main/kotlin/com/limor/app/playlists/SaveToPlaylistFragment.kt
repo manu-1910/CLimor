@@ -72,6 +72,9 @@ class SaveToPlaylistFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.btnCancel.setOnClickListener {
+            dismiss()
+        }
         playlistsViewModel.getPlaylistsOfCasts(podcastId).observe(viewLifecycleOwner) { playlists ->
             showPlaylists(playlists)
         }
@@ -89,16 +92,6 @@ class SaveToPlaylistFragment : DialogFragment() {
         }
     }
 
-    private fun addCast(){
-        playlistsViewModel.addCastToPlaylists(podcastId).observe(viewLifecycleOwner, {
-            if(it.success){
-                dismiss()
-            } else{
-                binding.btnDone.isEnabled = true
-            }
-        })
-    }
-
     private fun showPlaylists(playlists: List<PlaylistUIModel?>?) {
         SelectPlaylistAdapter(onPlaylistSelected = { playlistId, selected ->
             onPlaylistSelected(playlistId, selected)
@@ -110,6 +103,16 @@ class SaveToPlaylistFragment : DialogFragment() {
             it.submitList(list)
             binding.playlistsRv.adapter = it
         }
+    }
+    
+    private fun addCast() {
+        playlistsViewModel.addCastToPlaylists(podcastId).observe(viewLifecycleOwner, {
+            if(it.success){
+                dismiss()
+            } else{
+                binding.btnDone.isEnabled = true
+            }
+        })
     }
 
     private fun onPlaylistSelected(playlistId: Int, selected: Boolean) {

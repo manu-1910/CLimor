@@ -28,6 +28,8 @@ class PlaylistsFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val playlistsViewModel: PlaylistsViewModel by viewModels { viewModelFactory }
 
+    private lateinit var playlistAdapter: PlaylistsAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,26 +41,43 @@ class PlaylistsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadPlaylists()
+    }
+
+    fun loadPlaylists(){
         playlistsViewModel.getPlaylists().observe(viewLifecycleOwner) { playlists ->
             showPlaylists(playlists)
         }
     }
 
-    private fun showPlaylists(playlists: List<PlaylistUIModel>) {
-        PlaylistsAdapter(
+    private fun showPlaylists(playlists: List<PlaylistUIModel?>?) {
+        val result = playlists?.groupBy({it?.isCustom}, {it})
+        val sortedResult = mutableListOf<PlaylistUIModel?>()
+        result?.get(false)?.let { sortedResult.addAll(it) }
+        result?.get(true)?.let { sortedResult.addAll(it) }
+        playlistAdapter = PlaylistsAdapter(
             onPlaylistClick = { playlist ->
                 val args = Bundle()
                 args.putBoolean(FragmentPlaylistDetails.IS_PLAYLIST, playlist.isCustom)
                 args.putString(FragmentPlaylistDetails.LIST_NAME, playlist.title)
+                args.putInt(FragmentPlaylistDetails.PLAYLIST_ID, playlist.id)
                 findNavController().navigate(R.id.action_navigateProfileFragment_to_fragmentPlaylistDetails, args)
             },
             onDeleteClick = { playlist ->
-
+                deletePlaylist(playlist.id)
             }
         ).also {
-            it.submitList(playlists)
+            it.submitList(sortedResult)
             binding.recyclerPlaylists.adapter = it
         }
+    }
+
+    private fun deletePlaylist(playlistId: Int){
+        playlistsViewModel.deletePlaylist(playlistId).observe(viewLifecycleOwner, {
+            if(it.success){
+                loadPlaylists()
+            }
+        })
     }
 
     companion object {
