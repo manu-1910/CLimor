@@ -592,7 +592,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         }
 
         binding.ivAddToPlaylist.setOnClickListener {
-            SaveToPlaylistFragment.newInstance()
+            SaveToPlaylistFragment.newInstance(cast.id)
                 .show(parentFragmentManager, SaveToPlaylistFragment.TAG)
         }
     }

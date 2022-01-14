@@ -1,0 +1,6 @@
+mutation AddCastToPlaylistsMutation($podcastId: Int!, $playlistIds: [Int!]!){
+    addCastToPlaylists(podcastId: $podcastId, playlistIds: $playlistIds){
+        status
+        message
+    }
+}

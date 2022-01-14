@@ -1,6 +1,7 @@
 package com.limor.app.playlists.models
 
 import com.limor.app.PlaylistsQuery
+import com.limor.app.GetPlaylistsOfCastsQuery
 
 data class PlaylistImages(
     val smallUrl: String?,
@@ -113,7 +114,7 @@ data class PlaylistUIModel(
     }
 }
 
-fun PlaylistsQuery.Data1.mapToUIModel() =
+fun GetPlaylistsOfCastsQuery.Data1.mapToUIModel() =
     PlaylistUIModel(
         id = playlistId ?: -1,
         title = title ?: "",
@@ -125,10 +126,10 @@ fun PlaylistsQuery.Data1.mapToUIModel() =
         isPublic = isPublic ?: false
     )
 
-fun PlaylistsQuery.Images.mapToUIModel() =
+fun GetPlaylistsOfCastsQuery.Images.mapToUIModel() =
     PlaylistImages(
-        smallUrl = small_url,
-        mediumUrl = medium_url,
-        largeUrl = large_url,
-        originalUrl = original_url
+        smallUrl = small_url ?: "",
+        mediumUrl = medium_url ?: "",
+        largeUrl = large_url ?: "",
+        originalUrl = original_url ?: ""
     )
