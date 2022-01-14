@@ -18,14 +18,12 @@ import com.limor.app.R
 import com.limor.app.databinding.FragmentPlaylistDetailsBinding
 import com.limor.app.di.Injectable
 import com.limor.app.extensions.loadImage
-import com.limor.app.extensions.makeGone
 import com.limor.app.playlists.PlaylistCastsAdapter
-import com.limor.app.playlists.models.PlaylistUIModel
+import com.limor.app.playlists.SaveToPlaylistFragment
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
-import com.limor.app.scenes.utils.CommonsKt
+import com.limor.app.scenes.utils.FragmentCreatePlaylist
 import com.limor.app.scenes.utils.LimorDialog
-import com.limor.app.scenes.utils.LimorTextInputDialog
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.uimodels.CastUIModel
 import kotlinx.android.synthetic.main.fragment_my_earnings.*
@@ -105,14 +103,8 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
             showSearchLayout()
         }
         binding.btnEditPlaylist.setOnClickListener {
-            LimorTextInputDialog(layoutInflater).apply {
-                setTitle(R.string.label_rename_playlist)
-                setHint(R.string.label_rename_playlist)
-                setCharacterMaxLength(50)
-                addButton(R.string.cancel, false)
-                addButton(R.string.btn_save, true) {
-                }
-            }.show()
+            FragmentCreatePlaylist.newInstance(-1, false)
+                .show(parentFragmentManager, SaveToPlaylistFragment.TAG)
         }
     }
 

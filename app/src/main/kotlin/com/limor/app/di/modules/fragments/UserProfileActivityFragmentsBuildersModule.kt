@@ -19,6 +19,7 @@ import com.limor.app.scenes.patron.FragmentPlaylistDetails
 import com.limor.app.scenes.profile.DialogCommentMoreActions
 import com.limor.app.scenes.profile.DialogUserProfileActions
 import com.limor.app.scenes.profile.DialogUserReport
+import com.limor.app.scenes.utils.FragmentCreatePlaylist
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -93,5 +94,8 @@ abstract class UserProfileActivityFragmentsBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeSaveToPlaylistFragmentInjector(): SaveToPlaylistFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentCreatePlaylistInjector(): FragmentCreatePlaylist
 
 }

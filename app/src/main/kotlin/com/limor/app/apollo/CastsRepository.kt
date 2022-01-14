@@ -67,16 +67,16 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
 
     suspend fun deleteCastById(id: Int) {
 
-            val query = DeletePodcastMutation(id)
-            val result = apollo.mutate(query)
-            val reported = result?.data?.deletePodcast?.destroyed
-            Timber.d("Delete podcast  -> $reported")
+        val query = DeletePodcastMutation(id)
+        val result = apollo.mutate(query)
+        val reported = result?.data?.deletePodcast?.destroyed
+        Timber.d("Delete podcast  -> $reported")
 
     }
 
     suspend fun reportCast(s: String, id: Int?) {
-        id?.let{
-            val query = CreateReportsMutation(s,"Podcast",id)
+        id?.let {
+            val query = CreateReportsMutation(s, "Podcast", id)
             val result = apollo.mutate(query)
             val reported = result?.data?.createReports?.reported
             Timber.d("Report Podcast  -> $reported")
@@ -88,9 +88,30 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
         userId: Int,
         limit: Int = Int.MAX_VALUE,
         offset: Int = 0
-    ): List<GetPurchasedCastsQuery.GetPurchasedCast>{
+    ): List<GetPurchasedCastsQuery.GetPurchasedCast> {
         return apollo.launchQuery(GetPurchasedCastsQuery(userId, limit, offset))
             ?.data?.getPurchasedCasts?.filterNotNull() ?: emptyList()
+    }
+
+    suspend fun createPlaylist(
+        title: String,
+        podcastId: Int
+    ): String? {
+        return apollo.mutate(CreatePlaylistMutation(title, podcastId))
+            ?.data?.createPlaylist?.status
+    }
+
+    suspend fun getCastsOfPlaylist(
+        podcastId: Int
+    ): List<GetPlaylistsOfCastsQuery.Data1?>?{
+        return apollo.launchQuery(GetPlaylistsOfCastsQuery(podcastId))?.data?.getPlaylists?.data
+    }
+
+    suspend fun addCastToPlaylist(
+        podcastId: Int,
+        playlistIds: ArrayList<Int>
+    ): String? {
+        return apollo.mutate(AddCastToPlaylistsMutation(podcastId, playlistIds))?.data?.addCastToPlaylists?.status
     }
 
 }
