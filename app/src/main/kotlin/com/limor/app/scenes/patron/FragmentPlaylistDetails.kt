@@ -20,10 +20,8 @@ import com.limor.app.di.Injectable
 import com.limor.app.extensions.loadImage
 
 import com.limor.app.extensions.toLocalDateTime
-import com.limor.app.playlists.PlaylistCastsAdapter
 import com.limor.app.playlists.PlaylistsViewModel
 import com.limor.app.playlists.models.PlaylistCastUIModel
-import com.limor.app.scenes.main_new.view.MarginItemDecoration
 
 import com.limor.app.playlists.PlaylistCastsAdapter
 import com.limor.app.playlists.SaveToPlaylistFragment

@@ -114,6 +114,18 @@ data class PlaylistUIModel(
     }
 }
 
+fun PlaylistsQuery.Data1.mapToUIModel() =
+    PlaylistUIModel(
+        id = playlistId ?: -1,
+        title = title ?: "",
+        images = images?.mapToUIModel(),
+        colorCode = colorCode,
+        isCustom = isCustom ?: false,
+        count = count ?: 0,
+        isAdded = isAdded ?: false,
+        isPublic = isPublic ?: false
+    )
+
 fun GetPlaylistsOfCastsQuery.Data1.mapToUIModel() =
     PlaylistUIModel(
         id = playlistId ?: -1,
@@ -124,6 +136,14 @@ fun GetPlaylistsOfCastsQuery.Data1.mapToUIModel() =
         count = count ?: 0,
         isAdded = isAdded ?: false,
         isPublic = isPublic ?: false
+    )
+
+fun PlaylistsQuery.Images.mapToUIModel() =
+    PlaylistImages(
+        smallUrl = small_url ?: "",
+        mediumUrl = medium_url ?: "",
+        largeUrl = large_url ?: "",
+        originalUrl = original_url ?: ""
     )
 
 fun GetPlaylistsOfCastsQuery.Images.mapToUIModel() =
