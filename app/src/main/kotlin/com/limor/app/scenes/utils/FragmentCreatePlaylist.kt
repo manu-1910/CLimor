@@ -25,9 +25,11 @@ class FragmentCreatePlaylist : DialogFragment() {
     private lateinit var binding: FragmentCreatePlaylistBinding
 
     private val podcastId: Int by lazy {
-        requireArguments().getInt(
-            FragmentCreatePlaylist.PODCAST_ID_KEY
-        )
+        requireArguments().getInt(PODCAST_ID_KEY)
+    }
+
+    private val playlistId: Int by lazy {
+        requireArguments().getInt(PLAYLIST_ID_KEY)
     }
 
     private var mode = EditMode.CREATE
@@ -64,16 +66,15 @@ class FragmentCreatePlaylist : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentCreatePlaylistBinding.inflate(inflater, container, false)
-        mode = if (requireArguments().getBoolean(
-                FragmentCreatePlaylist.MODE, false
-            )
-        ) {
+
+        mode = if (requireArguments().getBoolean(USE_CREATE_MODE, false)) {
             EditMode.CREATE
         } else {
             EditMode.RENAME
         }
+
         return binding.root
     }
 
@@ -94,25 +95,45 @@ class FragmentCreatePlaylist : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         initialiseViews()
         binding.btnCreate.setOnClickListener {
-            createPlaylist()
+            onMainAction()
         }
         binding.btnCancel.setOnClickListener {
             dismiss()
         }
     }
 
-    fun createPlaylist(){
-        model.createPlaylist(binding.etTitle.text.toString(), podcastId).observe(viewLifecycleOwner, {
-            if(!it.success){
-                val error = it.error?.split("-> ")
-                if(error?.size != null && error.size >= 2){
-                    binding.errorTV.text = error[1]
-                } else {
-                    binding.errorTV.text = it.error
-                }
-                binding.errorTV.visibility = View.VISIBLE
-            } else{
+    private fun onMainAction() {
+        if (mode == EditMode.CREATE) {
+            createPlaylist()
+        } else {
+            editPlaylist()
+        }
+    }
+
+    private fun displayError(errorMessage: String?) {
+        val error = errorMessage?.split("-> ")?.lastOrNull() ?: errorMessage
+        binding.errorTV.apply {
+            text = error
+            visibility = View.VISIBLE
+        }
+    }
+
+    private fun editPlaylist() {
+        model.editPlaylist(binding.etTitle.text.toString(), playlistId).observe(viewLifecycleOwner, {
+            if (it.success) {
                 dismiss()
+            } else {
+                displayError(it.error)
+            }
+        })
+    }
+
+    fun createPlaylist() {
+        model.createPlaylist(binding.etTitle.text.toString(), podcastId).observe(viewLifecycleOwner, {
+            if (it.success) {
+                dismiss()
+            } else {
+                displayError(it.error)
             }
         })
     }
