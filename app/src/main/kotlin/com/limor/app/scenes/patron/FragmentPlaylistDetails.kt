@@ -31,6 +31,7 @@ import com.limor.app.scenes.utils.FragmentCreatePlaylist
 
 import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.PlayerViewManager
+import com.limor.app.scenes.utils.PlaylistResult
 import kotlinx.android.synthetic.main.fragment_my_earnings.*
 import javax.inject.Inject
 
@@ -109,9 +110,14 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
             showSearchLayout()
         }
         binding.btnEditPlaylist.setOnClickListener {
-            FragmentCreatePlaylist
-                .editPlaylist(playlistId = playlistId)
-                .show(parentFragmentManager, SaveToPlaylistFragment.TAG)
+            editPlaylist()
+        }
+    }
+
+    private fun editPlaylist() {
+        FragmentCreatePlaylist.editPlaylist(playlistId = playlistId).also {
+            it.onResult = { result ->  binding.title.text = result.title }
+            it.show(parentFragmentManager, SaveToPlaylistFragment.TAG)
         }
     }
 

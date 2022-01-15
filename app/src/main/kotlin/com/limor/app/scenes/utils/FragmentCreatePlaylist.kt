@@ -16,6 +16,16 @@ import com.limor.app.playlists.PlaylistsViewModel
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
+
+enum class EditMode {
+    CREATE, RENAME
+}
+data class PlaylistResult(
+    val editMode: EditMode,
+    val success: Boolean,
+    val title: String
+)
+
 class FragmentCreatePlaylist : DialogFragment() {
 
     @Inject
@@ -23,6 +33,8 @@ class FragmentCreatePlaylist : DialogFragment() {
     private val model: PlaylistsViewModel by viewModels { viewModelFactory }
 
     private lateinit var binding: FragmentCreatePlaylistBinding
+
+    var onResult: ((result: PlaylistResult) -> Unit)? = null
 
     private val podcastId: Int by lazy {
         requireArguments().getInt(PODCAST_ID_KEY)
@@ -33,10 +45,6 @@ class FragmentCreatePlaylist : DialogFragment() {
     }
 
     private var mode = EditMode.CREATE
-
-    enum class EditMode {
-        CREATE, RENAME
-    }
 
     companion object {
         val TAG = FragmentCreatePlaylist::class.qualifiedName
@@ -119,8 +127,14 @@ class FragmentCreatePlaylist : DialogFragment() {
     }
 
     private fun editPlaylist() {
-        model.editPlaylist(binding.etTitle.text.toString(), playlistId).observe(viewLifecycleOwner, {
+        val title = binding.etTitle.text.toString()
+        model.editPlaylist(title, playlistId).observe(viewLifecycleOwner, {
             if (it.success) {
+                onResult?.invoke(PlaylistResult(
+                    editMode = mode,
+                    success = true,
+                    title = title
+                ))
                 dismiss()
             } else {
                 displayError(it.error)
