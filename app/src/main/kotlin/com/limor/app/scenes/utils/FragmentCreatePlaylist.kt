@@ -39,10 +39,18 @@ class FragmentCreatePlaylist : DialogFragment() {
     companion object {
         val TAG = FragmentCreatePlaylist::class.qualifiedName
         const val PODCAST_ID_KEY = "PODCAST_ID"
-        const val MODE = "MODE"
-        fun newInstance(podcastId: Int, create: Boolean): FragmentCreatePlaylist {
+        const val PLAYLIST_ID_KEY = "PLAYLIST_ID"
+        const val USE_CREATE_MODE = "MODE"
+
+        fun editPlaylist(playlistId: Int): FragmentCreatePlaylist {
             return FragmentCreatePlaylist().apply {
-                arguments = bundleOf(PODCAST_ID_KEY to podcastId, MODE to create)
+                arguments = bundleOf(PLAYLIST_ID_KEY to playlistId, USE_CREATE_MODE to false)
+            }
+        }
+
+        fun createPlaylist(podcastId: Int): FragmentCreatePlaylist {
+            return FragmentCreatePlaylist().apply {
+                arguments = bundleOf(PODCAST_ID_KEY to podcastId, USE_CREATE_MODE to true)
             }
         }
     }

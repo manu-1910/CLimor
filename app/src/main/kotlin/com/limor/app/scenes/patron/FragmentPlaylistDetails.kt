@@ -109,7 +109,8 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
             showSearchLayout()
         }
         binding.btnEditPlaylist.setOnClickListener {
-            FragmentCreatePlaylist.newInstance(-1, false)
+            FragmentCreatePlaylist
+                .editPlaylist(playlistId = playlistId)
                 .show(parentFragmentManager, SaveToPlaylistFragment.TAG)
         }
     }
