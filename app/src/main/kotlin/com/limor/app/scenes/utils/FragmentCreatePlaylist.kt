@@ -111,6 +111,11 @@ class FragmentCreatePlaylist : DialogFragment() {
     }
 
     private fun onMainAction() {
+        if (binding.etTitle.text.isNullOrEmpty()) {
+            displayError(getString(R.string.plalyst_title_length_error))
+            return
+        }
+
         if (mode == EditMode.CREATE) {
             createPlaylist()
         } else {
