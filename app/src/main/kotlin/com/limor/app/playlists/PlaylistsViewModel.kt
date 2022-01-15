@@ -91,6 +91,19 @@ class PlaylistsViewModel @Inject constructor(
         return result
     }
 
+    fun editPlaylist(title: String, playlistId: Int): LiveData<EditPlaylistResponse>{
+        val result = MutableLiveData<EditPlaylistResponse>()
+        viewModelScope.launch {
+            try{
+                val response = castsRepository.editPlaylist(title, playlistId)
+                result.postValue(EditPlaylistResponse(true, null))
+            } catch (e: Exception){
+                result.postValue(EditPlaylistResponse(false, e.localizedMessage))
+            }
+        }
+        return result
+    }
+
     fun getPlaylistsOfCasts(podcastId: Int): LiveData<List<PlaylistUIModel?>?>{
         val liveData = MutableLiveData<List<PlaylistUIModel?>?>()
         viewModelScope.launch {
