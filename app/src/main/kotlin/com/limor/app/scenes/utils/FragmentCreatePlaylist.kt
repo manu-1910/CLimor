@@ -113,7 +113,7 @@ class FragmentCreatePlaylist : DialogFragment() {
         if (mode == EditMode.CREATE) {
             binding.textTitle.text = resources.getString(R.string.label_create_playlist)
             binding.btnCreate.text = resources.getString(R.string.label_create)
-            binding.textInputLayout.hint = resources.getString(R.string.label_create_playlist)
+            binding.textInputLayout.hint = resources.getString(R.string.label_playlist_name)
         } else {
             binding.textTitle.text = resources.getString(R.string.label_rename_playlist)
             binding.btnCreate.text = resources.getString(R.string.save)
