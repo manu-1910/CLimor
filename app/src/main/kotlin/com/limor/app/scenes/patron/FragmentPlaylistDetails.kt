@@ -164,7 +164,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         binding.mainLayout.visibility = View.VISIBLE
         binding.searchLayout.visibility = View.GONE
         binding.btnSearch.visibility = View.VISIBLE
-        binding.btnEditPlaylist.visibility = View.VISIBLE
+        binding.btnEditPlaylist.visibleIf(playlist.isCustom)
     }
 
     private fun playPodcast(podcast: PlaylistCastUIModel?, podcasts: List<PlaylistCastUIModel?>) {
