@@ -20,13 +20,14 @@ import com.limor.app.di.Injectable
 import com.limor.app.extensions.loadImage
 
 import com.limor.app.extensions.toLocalDateTime
+import com.limor.app.extensions.visibleIf
 import com.limor.app.playlists.PlaylistsViewModel
 import com.limor.app.playlists.models.PlaylistCastUIModel
 
 import com.limor.app.playlists.PlaylistCastsAdapter
 import com.limor.app.playlists.SaveToPlaylistFragment
+import com.limor.app.playlists.models.PlaylistUIModel
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
-import com.limor.app.scenes.main_new.view_model.HomeFeedViewModel
 import com.limor.app.scenes.utils.FragmentCreatePlaylist
 
 import com.limor.app.scenes.utils.LimorDialog
@@ -37,9 +38,7 @@ import javax.inject.Inject
 class FragmentPlaylistDetails : Fragment(), Injectable {
 
     companion object {
-        const val IS_PLAYLIST = "IS_PLAYLIST"
-        const val LIST_NAME = "LIST_NAME"
-        const val PLAYLIST_ID = "PLAYLIST_ID"
+        const val KEY_PLAYLIST = "KEY_PLAYLIST"
         fun newInstance() = FragmentPlaylistDetails()
     }
 
@@ -60,11 +59,11 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     private var searchPlaylistAdapter: PlaylistCastsAdapter? = null
     private var sortOrder: SortOrder = SortOrder.DESC
     private var mode: LayoutMode = LayoutMode.NORMAL_MODE
-    private var playList: List<PlaylistCastUIModel> = mutableListOf()
+    private var playlistCasts: List<PlaylistCastUIModel> = mutableListOf()
 
-    private val isPlayList: Boolean by lazy { requireArguments().getBoolean(IS_PLAYLIST, false) }
-    private val playListName: String by lazy { requireArguments().getString(LIST_NAME, "") }
-    private val playlistId: Int by lazy { requireArguments().getInt(PLAYLIST_ID, -1) }
+    private val playlist: PlaylistUIModel by lazy {
+        requireArguments().getParcelable(KEY_PLAYLIST)!!
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,7 +72,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentPlaylistDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -90,11 +89,12 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
 
     private fun initialiseViews() {
         binding.loaderPB.visibility = View.VISIBLE
-        binding.title.text = playListName
+        binding.title.text = playlist.title
         binding.btnEditPlaylist.setImageDrawable(resources.getDrawable(R.drawable.ic_edit_small))
-        if (!isPlayList) {
-            binding.btnEditPlaylist.visibility = View.GONE
-        }
+
+        binding.btnEditPlaylist.visibleIf(playlist.isCustom)
+
+        loadPlaylistPreviewImage()
     }
 
     private fun setClickListeners() {
@@ -141,7 +141,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
 
     private fun performSearch(query: String) {
         val results = mutableListOf<PlaylistCastUIModel>()
-        playList.forEach { cast ->
+        playlistCasts.forEach { cast ->
             if (cast.title.contains(query, true) && query.trim() != "") {
                 results.add(cast)
             }
@@ -187,7 +187,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
 
     private fun setUpRecyclerView() {
         playlistAdapter = PlaylistCastsAdapter(
-            playlistId,
+            playlist.id,
             mutableListOf(),
             onPlayPodcast = { podcast, podcasts ->
                 playPodcast(podcast, podcasts)
@@ -214,7 +214,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
 
     private fun setUpSearchRecyclerView() {
         searchPlaylistAdapter = PlaylistCastsAdapter(
-            playlistId,
+            playlist.id,
             mutableListOf(),
             onPlayPodcast = { podcast, podcasts ->
                 playPodcast(podcast, podcasts)
@@ -254,11 +254,11 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     }
 
     private fun loadCasts() {
-        model.getCastsInPlaylist(playlistId).observe(viewLifecycleOwner, {
+        model.getCastsInPlaylist(playlist.id).observe(viewLifecycleOwner, {
             binding.loaderPB.visibility = View.GONE
             binding.mainLayout.visibility = View.VISIBLE
             mode = LayoutMode.NORMAL_MODE
-            playList = it
+            playlistCasts = it
             binding.castCountTextView.text = getString(R.string.label_cast_count, it?.size)
             loadPlaylist(it)
         })
@@ -277,7 +277,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
                 } else {
                     SortOrder.ASC
                 }
-                loadPlaylist(playList)
+                loadPlaylist(playlistCasts)
             }
     }
 
@@ -288,9 +288,6 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
             } else {
                 playlist.sortedByDescending { it.addedAt.toLocalDateTime() }
             }
-            if (mode == LayoutMode.NORMAL_MODE) {
-                loadPlaylistPreviewImage(list[0])
-            }
             playlistAdapter?.setData(list)
             val recyclerViewState =
                 binding.castRecyclerView.layoutManager?.onSaveInstanceState()
@@ -300,16 +297,21 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
             binding.searchRecyclerView.removeAllViews()
             binding.mainLayout.visibility = View.GONE
             binding.searchLayout.visibility = View.GONE
-            playList = mutableListOf()
+            playlistCasts = mutableListOf()
         }
     }
 
-    private fun loadPlaylistPreviewImage(playlist: PlaylistCastUIModel?) {
-        if (playlist?.images?.largeUrl != null) {
-            binding.playlistPreviewImage.loadImage(playlist.images.largeUrl)
-        } else {
+    private fun loadPlaylistPreviewImage() {
+        val url = playlist.images?.largeUrl?.takeIf { it.isNotEmpty() }
+
+        if (url == null) {
             binding.playlistPreviewImage.setImageResource(R.drawable.ic_transparent_image)
-            binding.playlistPreviewImage.setBackgroundColor(Color.parseColor(playlist?.colorCode))
+
+            val hexColor = playlist.colorCode ?: PlaylistUIModel.defaultColorString
+            val color = Color.parseColor(hexColor)
+            binding.playlistPreviewImage.setBackgroundColor(color)
+        } else {
+            binding.playlistPreviewImage.loadImage(playlist.images?.largeUrl!!)
         }
     }
 
