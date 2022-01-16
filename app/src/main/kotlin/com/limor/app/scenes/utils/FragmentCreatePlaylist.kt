@@ -7,6 +7,7 @@ import android.text.InputFilter
 import android.text.TextWatcher
 import android.view.*
 import androidx.core.os.bundleOf
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -109,40 +110,31 @@ class FragmentCreatePlaylist : DialogFragment() {
         })
     }
 
-    fun initialiseViews() {
+    private fun initialiseViews() {
         if (mode == EditMode.CREATE) {
-            binding.textTitle.text = resources.getString(R.string.label_create_playlist)
-            binding.btnCreate.text = resources.getString(R.string.label_create)
-            binding.textInputLayout.hint = resources.getString(R.string.label_playlist_name)
+            binding.textTitle.text = getString(R.string.label_create_playlist)
+            binding.btnCreate.text = getString(R.string.label_create)
+            binding.textInputLayout.hint = getString(R.string.label_playlist_name)
         } else {
-            binding.textTitle.text = resources.getString(R.string.label_rename_playlist)
-            binding.btnCreate.text = resources.getString(R.string.save)
-            binding.textInputLayout.hint = resources.getString(R.string.label_rename_playlist)
+            binding.textTitle.text = getString(R.string.label_rename_playlist)
+            binding.btnCreate.text = getString(R.string.save)
+            binding.textInputLayout.hint = getString(R.string.label_rename_playlist)
         }
         setCharacterMaxLength()
-        binding.etTitle.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
+        binding.etTitle.doAfterTextChanged {
+            if (binding.errorTV.visibility == View.VISIBLE) {
+                binding.errorTV.visibility = View.GONE
             }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-                if (binding.errorTV.visibility == View.VISIBLE) {
-                    binding.errorTV.visibility = View.GONE
-                }
-            }
-
-        })
+        }
     }
 
-    fun setCharacterMaxLength() {
-        binding.textInputLayout.counterMaxLength = 50
-        binding.textInputLayout.isCounterEnabled = true
-        val filters: Array<InputFilter?> = arrayOfNulls<InputFilter>(1)
-        filters[0] = InputFilter.LengthFilter(50)
-        binding.etTitle.filters = filters
+    private fun setCharacterMaxLength() {
+        binding.textInputLayout.apply {
+            counterMaxLength = 50
+            isCounterEnabled = true
+        }
+
+        binding.etTitle.filters = arrayOf(InputFilter.LengthFilter(50))
     }
 
 }
