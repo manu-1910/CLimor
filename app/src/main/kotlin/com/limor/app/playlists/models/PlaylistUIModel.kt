@@ -1,14 +1,17 @@
 package com.limor.app.playlists.models
 
+import android.os.Parcelable
 import com.limor.app.PlaylistsQuery
 import com.limor.app.GetPlaylistsOfCastsQuery
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class PlaylistImages(
     val smallUrl: String?,
     val mediumUrl: String?,
     val largeUrl: String?,
     val originalUrl: String?
-) {
+) : Parcelable {
     companion object {
         private val dummyImages = listOf(
             PlaylistImages(
@@ -53,6 +56,7 @@ data class PlaylistImages(
     }
 }
 
+@Parcelize
 data class PlaylistUIModel(
     val id: Int,
     val title: String,
@@ -62,8 +66,11 @@ data class PlaylistUIModel(
     val count: Int,
     var isAdded: Boolean,
     var isPublic: Boolean
-) {
+) : Parcelable {
     companion object {
+        const val defaultColorInt = 0xFF91A2B2.toInt()
+        const val defaultColorString = "#91A2B2"
+
         fun dummyList(ownCount: Int): List<PlaylistUIModel> {
             val list = mutableListOf<PlaylistUIModel>()
 

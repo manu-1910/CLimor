@@ -135,11 +135,10 @@ class ViewHolderPlaylist(
         binding.textPlaylistPodcastCount.text = count
 
         val url = playlist.images?.smallUrl
-        val defaultColor = 0xFF91A2B2.toInt()
-        println(playlist)
+
         when {
             playlist.count == 0 -> {
-                setBackgroundColor(defaultColor)
+                setBackgroundColor(PlaylistUIModel.defaultColorInt)
 
             }
             !url.isNullOrEmpty() -> {
@@ -156,7 +155,7 @@ class ViewHolderPlaylist(
                 setBackgroundColor(Color.parseColor(playlist.colorCode))
             }
             else -> {
-                setBackgroundColor(defaultColor)
+                setBackgroundColor(PlaylistUIModel.defaultColorInt)
             }
         }
     }
