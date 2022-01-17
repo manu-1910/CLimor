@@ -127,6 +127,13 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
             ?.data?.createPlaylist?.status
     }
 
+    suspend fun editPlaylist(
+        title: String,
+        playlistId: Int
+    ): String? {
+        return apollo.mutate(UpdatePlaylistMutation(playlistId, title))?.data?.updatePlaylist?.status
+    }
+
     suspend fun getCastsOfPlaylist(
         podcastId: Int
     ): List<GetPlaylistsOfCastsQuery.Data1?>?{

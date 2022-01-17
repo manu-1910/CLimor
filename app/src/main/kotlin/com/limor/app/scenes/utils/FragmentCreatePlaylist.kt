@@ -16,6 +16,16 @@ import com.limor.app.playlists.PlaylistsViewModel
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
+
+enum class EditMode {
+    CREATE, RENAME
+}
+data class PlaylistResult(
+    val editMode: EditMode,
+    val success: Boolean,
+    val title: String
+)
+
 class FragmentCreatePlaylist : DialogFragment() {
 
     @Inject
@@ -24,25 +34,33 @@ class FragmentCreatePlaylist : DialogFragment() {
 
     private lateinit var binding: FragmentCreatePlaylistBinding
 
+    var onResult: ((result: PlaylistResult) -> Unit)? = null
+
     private val podcastId: Int by lazy {
-        requireArguments().getInt(
-            FragmentCreatePlaylist.PODCAST_ID_KEY
-        )
+        requireArguments().getInt(PODCAST_ID_KEY)
+    }
+
+    private val playlistId: Int by lazy {
+        requireArguments().getInt(PLAYLIST_ID_KEY)
     }
 
     private var mode = EditMode.CREATE
 
-    enum class EditMode {
-        CREATE, RENAME
-    }
-
     companion object {
         val TAG = FragmentCreatePlaylist::class.qualifiedName
         const val PODCAST_ID_KEY = "PODCAST_ID"
-        const val MODE = "MODE"
-        fun newInstance(podcastId: Int, create: Boolean): FragmentCreatePlaylist {
+        const val PLAYLIST_ID_KEY = "PLAYLIST_ID"
+        const val USE_CREATE_MODE = "MODE"
+
+        fun editPlaylist(playlistId: Int): FragmentCreatePlaylist {
             return FragmentCreatePlaylist().apply {
-                arguments = bundleOf(PODCAST_ID_KEY to podcastId, MODE to create)
+                arguments = bundleOf(PLAYLIST_ID_KEY to playlistId, USE_CREATE_MODE to false)
+            }
+        }
+
+        fun createPlaylist(podcastId: Int): FragmentCreatePlaylist {
+            return FragmentCreatePlaylist().apply {
+                arguments = bundleOf(PODCAST_ID_KEY to podcastId, USE_CREATE_MODE to true)
             }
         }
     }
@@ -56,16 +74,15 @@ class FragmentCreatePlaylist : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentCreatePlaylistBinding.inflate(inflater, container, false)
-        mode = if (requireArguments().getBoolean(
-                FragmentCreatePlaylist.MODE, false
-            )
-        ) {
+
+        mode = if (requireArguments().getBoolean(USE_CREATE_MODE, false)) {
             EditMode.CREATE
         } else {
             EditMode.RENAME
         }
+
         return binding.root
     }
 
@@ -86,25 +103,56 @@ class FragmentCreatePlaylist : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         initialiseViews()
         binding.btnCreate.setOnClickListener {
-            createPlaylist()
+            onMainAction()
         }
         binding.btnCancel.setOnClickListener {
             dismiss()
         }
     }
 
-    fun createPlaylist(){
-        model.createPlaylist(binding.etTitle.text.toString(), podcastId).observe(viewLifecycleOwner, {
-            if(!it.success){
-                val error = it.error?.split("-> ")
-                if(error?.size != null && error.size >= 2){
-                    binding.errorTV.text = error[1]
-                } else {
-                    binding.errorTV.text = it.error
-                }
-                binding.errorTV.visibility = View.VISIBLE
-            } else{
+    private fun onMainAction() {
+        if (binding.etTitle.text.isNullOrEmpty()) {
+            displayError(getString(R.string.plalyst_title_length_error))
+            return
+        }
+
+        if (mode == EditMode.CREATE) {
+            createPlaylist()
+        } else {
+            editPlaylist()
+        }
+    }
+
+    private fun displayError(errorMessage: String?) {
+        val error = errorMessage?.split("-> ")?.lastOrNull() ?: errorMessage
+        binding.errorTV.apply {
+            text = error
+            visibility = View.VISIBLE
+        }
+    }
+
+    private fun editPlaylist() {
+        val title = binding.etTitle.text.toString()
+        model.editPlaylist(title, playlistId).observe(viewLifecycleOwner, {
+            if (it.success) {
+                onResult?.invoke(PlaylistResult(
+                    editMode = mode,
+                    success = true,
+                    title = title
+                ))
                 dismiss()
+            } else {
+                displayError(it.error)
+            }
+        })
+    }
+
+    fun createPlaylist() {
+        model.createPlaylist(binding.etTitle.text.toString(), podcastId).observe(viewLifecycleOwner, {
+            if (it.success) {
+                dismiss()
+            } else {
+                displayError(it.error)
             }
         })
     }

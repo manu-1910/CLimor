@@ -76,7 +76,7 @@ class SaveToPlaylistFragment : DialogFragment() {
             showPlaylists(playlists)
         }
         binding.btnCreatePlaylist.setOnClickListener {
-            FragmentCreatePlaylist.newInstance(podcastId, true)
+            FragmentCreatePlaylist.createPlaylist(podcastId)
                 .show(parentFragmentManager, SaveToPlaylistFragment.TAG)
             dismiss()
         }
