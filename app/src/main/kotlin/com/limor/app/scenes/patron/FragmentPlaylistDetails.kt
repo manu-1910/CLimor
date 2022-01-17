@@ -115,7 +115,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     }
 
     private fun editPlaylist() {
-        FragmentCreatePlaylist.editPlaylist(playlistId = playlistId).also {
+        FragmentCreatePlaylist.editPlaylist(playlistId = playlist.id).also {
             it.onResult = { result ->  binding.title.text = result.title }
             it.show(parentFragmentManager, SaveToPlaylistFragment.TAG)
         }
