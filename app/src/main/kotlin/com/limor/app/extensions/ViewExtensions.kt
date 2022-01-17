@@ -182,6 +182,9 @@ fun ViewGroup.allChildren(onView: (View) -> Unit) {
     }
 }
 
+/**
+ * Makes a view .VISIBLE if the condition is true else sets the visibility to .GONE
+ */
 fun View.visibleIf(condition: Boolean) {
     this.visibility = if (condition) View.VISIBLE else View.GONE
 }

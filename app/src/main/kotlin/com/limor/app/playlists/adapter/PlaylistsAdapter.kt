@@ -135,14 +135,13 @@ class ViewHolderPlaylist(
         binding.textPlaylistPodcastCount.text = count
 
         val url = playlist.images?.smallUrl
-        val defaultColor = 0xFF91A2B2.toInt()
 
         when {
             playlist.count == 0 -> {
-                setBackgroundColor(defaultColor)
+                setBackgroundColor(PlaylistUIModel.defaultColorInt)
 
             }
-            url != null -> {
+            !url.isNullOrEmpty() -> {
                 Glide.with(binding.imagePlaylist)
                     .load(url)
                     .signature(ObjectKey(url))
@@ -152,11 +151,11 @@ class ViewHolderPlaylist(
                     .into(binding.imagePlaylist)
 
             }
-            playlist.colorCode != null -> {
+            !playlist.colorCode.isNullOrEmpty() -> {
                 setBackgroundColor(Color.parseColor(playlist.colorCode))
             }
             else -> {
-                setBackgroundColor(defaultColor)
+                setBackgroundColor(PlaylistUIModel.defaultColorInt)
             }
         }
     }

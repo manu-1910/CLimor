@@ -57,11 +57,10 @@ class PlaylistsFragment : BaseFragment() {
         result?.get(true)?.let { sortedResult.addAll(it) }
         playlistAdapter = PlaylistsAdapter(
             onPlaylistClick = { playlist ->
-                val args = Bundle()
-                args.putBoolean(FragmentPlaylistDetails.IS_PLAYLIST, playlist.isCustom)
-                args.putString(FragmentPlaylistDetails.LIST_NAME, playlist.title)
-                args.putInt(FragmentPlaylistDetails.PLAYLIST_ID, playlist.id)
-                findNavController().navigate(R.id.action_navigateProfileFragment_to_fragmentPlaylistDetails, args)
+                findNavController().navigate(
+                    R.id.action_navigateProfileFragment_to_fragmentPlaylistDetails,
+                    bundleOf(FragmentPlaylistDetails.KEY_PLAYLIST to playlist)
+                )
             },
             onDeleteClick = { playlist ->
                 deletePlaylist(playlist.id)

@@ -96,6 +96,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:cardCornerRadius="@dimen/marginSmall"
+            android:layout_marginTop="20dp"
             app:cardElevation="0dp"
             android:elevation="0dp">
 
