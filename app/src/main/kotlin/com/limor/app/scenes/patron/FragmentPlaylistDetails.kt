@@ -92,6 +92,10 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
 
         binding.btnEditPlaylist.visibleIf(playlist.isCustom)
 
+        if(!playlist.isCustom){
+
+        }
+
         loadPlaylistPreviewImage()
     }
 
@@ -208,7 +212,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
                     addButton(R.string.btn_cancel, true)
                 }.show()
             },
-            resultType = PlaylistCastsAdapter.PlaylistResultType.NORMAL_RESULT
+            resultType = if(!playlist.isCustom) PlaylistCastsAdapter.PlaylistResultType.NOT_A_PLAYLIST else PlaylistCastsAdapter.PlaylistResultType.NORMAL_RESULT
         )
         val layoutManager = LinearLayoutManager(requireContext())
         binding.castRecyclerView.layoutManager = layoutManager

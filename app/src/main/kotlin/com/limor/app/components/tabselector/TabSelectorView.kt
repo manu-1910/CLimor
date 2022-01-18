@@ -47,7 +47,7 @@ class TabSelectorView(context: Context, attrs: AttributeSet) : FrameLayout(conte
         this.mode = mode
     }
 
-    fun setTabs(tabs: List<String>) {
+    fun setTabs(tabs: List<String>, initialTab: Int = 0) {
         applyMode(tabs.size)
         tabsAdapter.clear()
         tabsAdapter.addAll(
@@ -59,7 +59,7 @@ class TabSelectorView(context: Context, attrs: AttributeSet) : FrameLayout(conte
                 )
             }
         )
-        tabSelectionListener(tabs[0], 0)
+        tabSelectionListener(tabs[0], initialTab)
     }
 
     fun setOnTabSelectedListener(onTabSelected: (tabName: String, position: Int) -> Unit) {

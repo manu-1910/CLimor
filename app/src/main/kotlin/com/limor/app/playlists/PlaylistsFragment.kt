@@ -1,17 +1,15 @@
 package com.limor.app.playlists
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
-import com.limor.app.databinding.FragmentShareDialogBinding
 import com.limor.app.databinding.PlaylistsFragmentBinding
 import com.limor.app.playlists.adapter.PlaylistsAdapter
 import com.limor.app.playlists.models.PlaylistUIModel
@@ -44,7 +42,7 @@ class PlaylistsFragment : BaseFragment() {
         loadPlaylists()
     }
 
-    fun loadPlaylists(){
+    private fun loadPlaylists(){
         playlistsViewModel.getPlaylists().observe(viewLifecycleOwner) { playlists ->
             showPlaylists(playlists)
         }

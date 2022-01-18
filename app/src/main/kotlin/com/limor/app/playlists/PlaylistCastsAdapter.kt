@@ -28,7 +28,8 @@ class PlaylistCastsAdapter(
 
     enum class PlaylistResultType{
         SEARCH_RESULT,
-        NORMAL_RESULT
+        NORMAL_RESULT,
+        NOT_A_PLAYLIST
     }
 
     var playlistResultType: PlaylistResultType = resultType
@@ -64,7 +65,7 @@ class PlaylistCastsAdapter(
         holder.userName.text = podcast?.userName
         holder.duration.text = CommonsKt.getFeedDuration(Duration.ofMillis(podcast?.totalLength?.toLong() ?: 0))
 
-        holder.optionsIV.visibility = if(resultType == PlaylistResultType.SEARCH_RESULT) View.GONE else View.VISIBLE
+        holder.optionsIV.visibility = if(resultType == PlaylistResultType.SEARCH_RESULT || resultType == PlaylistResultType.NOT_A_PLAYLIST) View.GONE else View.VISIBLE
 
         val menuBinding =
             ItemDeletePlaylistBinding.inflate(holder.userName.context.layoutInflater, null, false)
