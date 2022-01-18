@@ -23,7 +23,15 @@ class PlaylistCastsAdapter(
     private var casts: List<PlaylistCastUIModel?>,
     private val removeFromPlaylist: (playlistId: Int, podcastId: Int, positionInList: Int) -> Unit,
     private val onPlayPodcast: (podcast: PlaylistCastUIModel?, podcasts: List<PlaylistCastUIModel?>) -> Unit,
+    private val resultType: PlaylistResultType
 ) : RecyclerView.Adapter<PlaylistCastsAdapter.ViewHolder>() {
+
+    enum class PlaylistResultType{
+        SEARCH_RESULT,
+        NORMAL_RESULT
+    }
+
+    var playlistResultType: PlaylistResultType = resultType
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -55,6 +63,8 @@ class PlaylistCastsAdapter(
         holder.name.text = podcast?.title
         holder.userName.text = podcast?.userName
         holder.duration.text = CommonsKt.getFeedDuration(Duration.ofMillis(podcast?.totalLength?.toLong() ?: 0))
+
+        holder.optionsIV.visibility = if(resultType == PlaylistResultType.SEARCH_RESULT) View.GONE else View.VISIBLE
 
         val menuBinding =
             ItemDeletePlaylistBinding.inflate(holder.userName.context.layoutInflater, null, false)

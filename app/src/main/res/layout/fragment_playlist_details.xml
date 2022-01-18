@@ -72,7 +72,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:visibility="visible"
+        android:visibility="gone"
         android:translationZ="10dp"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -86,7 +86,7 @@
         android:layout_marginTop="@dimen/marginSmall"
         android:paddingStart="@dimen/marginTwenty"
         android:paddingEnd="@dimen/marginTwenty"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/preview_image_layout"
@@ -123,86 +123,26 @@
             android:gravity="center_vertical"
             app:layout_constraintHorizontal_bias="0"/>
 
-        <!--<TextView
-            android:id="@+id/filterSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_marginTop="@dimen/iconSizeSmall"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/playlist_preview_image"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:text="Newest to Oldest"
-            android:gravity="center_vertical"
-            app:layout_constraintHorizontal_bias="0"/>-->
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/etFilter"
-            style="@style/TextInputLayoutOutlineDropdownWithError"
-            android:layout_width="184dp"
-            android:layout_height="@dimen/margin38"
-            android:layout_below="@id/preview_image_layout"
+        <TextView
+            android:id="@+id/filterTV"
+            android:layout_width="154dp"
+            android:layout_height="@dimen/margin40"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="@dimen/marginMedium"
             android:layout_marginEnd="@dimen/margin26"
-            android:background="@color/lightBlueColor"
-            android:visibility="visible"
+            android:background="@drawable/light_blue_cornered_background"
+            android:drawableRight="@drawable/chevron_down"
+            android:text="Newest to Oldest"
+            android:paddingStart="@dimen/marginMediumSmall"
+            android:paddingEnd="@dimen/marginMediumSmall"
+            android:textColor="@color/notification_secondary_text"
+            android:drawableTint="@color/notification_secondary_text"
+            android:gravity="center_vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/preview_image_layout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:boxStrokeColor="@color/lightBlueColor"
-            app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
-            app:layout_constraintHorizontal_bias="0.0">
-
-            <AutoCompleteTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:editable="false"
-                android:inputType="none"
-                android:textColor="@color/black"
-                android:textSize="@dimen/textSize16" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <RelativeLayout
-            android:id="@+id/filterLayout"
-            android:layout_width="184dp"
-            android:layout_height="@dimen/margin40"
-            android:layout_below="@id/preview_image_layout"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="@dimen/marginMedium"
-            android:layout_marginEnd="@dimen/marginTwenty"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/preview_image_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:background="@color/lightBlueColor"
-            android:visibility="visible">
-
-            <TextView
-                android:id="@+id/selected_filter_text_view"
-                android:layout_width="134dp"
-                android:layout_height="@dimen/margin22"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="12dp"
-                android:fontFamily="@font/roboto"
-                android:text="Newest to Oldest"
-                android:textAlignment="center"
-                android:textColor="@color/notification_secondary_text"
-                android:textSize="@dimen/textSize16" />
-
-            <ImageView
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="14dp"
-                android:rotation="270"
-                android:src="@drawable/arrow_left"
-                app:tint="@color/notification_secondary_text" />
-
-        </RelativeLayout>
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/cast_recycler_view"
@@ -212,7 +152,7 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/imageSizeHuge"
             android:clipToPadding="false"
-            app:layout_constraintTop_toBottomOf="@id/etFilter"
+            app:layout_constraintTop_toBottomOf="@id/filterTV"
             tools:itemCount="15"
             tools:layout_editor_absoluteX="-86dp"
             tools:listitem="@layout/layout_playlist_cast" />

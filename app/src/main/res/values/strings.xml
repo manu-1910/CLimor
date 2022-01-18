@@ -1020,5 +1020,7 @@
     <string name="no_results_found_desc">Can’t find any result with %s</string>
     <string name="save_cast_to">Save Cast to</string>
     <string name="plalyst_title_length_error">Title must be at least 1 character long.</string>
+    <string name="newest_to_oldest">Newest to Oldest</string>
+    <string name="oldest_to_newest">Oldest to Newest</string>
 
 </resources>

@@ -2,13 +2,13 @@ package com.limor.app.scenes.patron
 
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
+import android.widget.PopupWindow
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -16,11 +16,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.limor.app.R
 import com.limor.app.databinding.FragmentPlaylistDetailsBinding
+import com.limor.app.databinding.LayoutFilterBinding
 import com.limor.app.di.Injectable
-import com.limor.app.extensions.loadImage
+import com.limor.app.extensions.*
 
-import com.limor.app.extensions.toLocalDateTime
-import com.limor.app.extensions.visibleIf
 import com.limor.app.playlists.PlaylistsViewModel
 import com.limor.app.playlists.models.PlaylistCastUIModel
 
@@ -32,8 +31,6 @@ import com.limor.app.scenes.utils.FragmentCreatePlaylist
 
 import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.PlayerViewManager
-import com.limor.app.scenes.utils.PlaylistResult
-import kotlinx.android.synthetic.main.fragment_my_earnings.*
 import javax.inject.Inject
 
 class FragmentPlaylistDetails : Fragment(), Injectable {
@@ -81,7 +78,7 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initialiseViews()
-        setAdapter()
+        setFilterPopUp()
         setClickListeners()
         setUpRecyclerView()
         setUpSearchRecyclerView()
@@ -210,7 +207,8 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
                     }
                     addButton(R.string.btn_cancel, true)
                 }.show()
-            }
+            },
+            resultType = PlaylistCastsAdapter.PlaylistResultType.NORMAL_RESULT
         )
         val layoutManager = LinearLayoutManager(requireContext())
         binding.castRecyclerView.layoutManager = layoutManager
@@ -243,7 +241,8 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
                     }
                     addButton(R.string.btn_cancel, true)
                 }.show()
-            }
+            },
+            resultType = PlaylistCastsAdapter.PlaylistResultType.SEARCH_RESULT
         )
         val layoutManager = LinearLayoutManager(requireContext())
         binding.searchRecyclerView.layoutManager = layoutManager
@@ -271,21 +270,49 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         })
     }
 
-    private fun setAdapter() {
-        val items = mutableListOf("Newest to Oldest", "Oldest to Newest")
-        val adapter = ArrayAdapter(requireContext(), R.layout.item_phone_code_country_code, items)
-        val editText = etFilter.editText as AutoCompleteTextView
-        editText.setAdapter(adapter)
-        editText.onItemClickListener =
-            AdapterView.OnItemClickListener { parent, view, position, id ->
-                binding.selectedFilterTextView.text = adapter.getItem(position)
-                sortOrder = if (position == 0) {
-                    SortOrder.DESC
-                } else {
-                    SortOrder.ASC
-                }
-                loadPlaylist(playlistCasts)
+    private fun setFilterPopUp() {
+        val menuBinding =
+            LayoutFilterBinding.inflate(layoutInflater, null, false)
+        val popupWindow = PopupWindow(
+            menuBinding.root,
+            172.px,
+            96.px,
+            true
+        ).apply {
+            contentView.setOnClickListener {
+                dismiss()
             }
+            elevation = 10.precisePx
+            setBackgroundDrawable(
+                AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.popup_menu_background
+                )
+            )
+        }
+
+        menuBinding.textNewToOld.setOnClickListener {
+            binding.filterTV.text = menuBinding.textNewToOld.text
+            sortOrder = SortOrder.DESC
+            loadPlaylist(playlistCasts)
+            popupWindow.dismiss()
+        }
+
+        menuBinding.textOldToNew.setOnClickListener {
+            binding.filterTV.text = menuBinding.textOldToNew.text
+            sortOrder = SortOrder.ASC
+            loadPlaylist(playlistCasts)
+            popupWindow.dismiss()
+        }
+
+        binding.filterTV.setOnClickListener {
+            popupWindow.showAsDropDown(
+                it,
+                (0).px,
+                (8).px,
+                Gravity.BOTTOM or Gravity.START,
+            )
+        }
     }
 
     private fun loadPlaylist(playlist: List<PlaylistCastUIModel>) {
