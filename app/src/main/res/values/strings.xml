@@ -750,11 +750,11 @@
         <item name="feed_purple">#623CEA</item>
         <item name="feed_orange">#FE721C</item>
     </string-array>
-    <string name="patron_carousel_slide_1_sub_title">Gain the tools to help your fans help you.</string>
-    <string name="patron_carousel_slide_2_sub_title">Give your Patrons exclusive content, access and conversation</string>
-    <string name="patron_carousel_slide_3_sub_title">Monetise, analize and convert your voice into income.</string>
+    <string name="patron_carousel_slide_1_sub_title">Limor Patron lets you put your money where your mouth is.</string>
+    <string name="patron_carousel_slide_2_sub_title">Create high-quality and exclusive premium content to share with your community.</string>
+    <string name="patron_carousel_slide_3_sub_title">Use the self monetisation features of Limor Patron to generate income through your audio content.</string>
 
-    <string name="patron_carousel_slide_1_title">Create AMA <font fgcolor='#F9BB4B'>DM’s</font> and more with your fans</string>
+    <string name="patron_carousel_slide_1_title">Share exclusive audio and spark dedicated <font fgcolor='#F9BB4B'>Social Audio</font> Conversations</string>
     <string name="patron_carousel_slide_2_title">Create premium <font fgcolor='#F9BB4B'>casts</font> for your community</string>
     <string name="patron_carousel_slide_3_title">Freedom to <font fgcolor='#F9BB4B'>monetize</font> your content</string>
     <string name="patron_carousel_slide_approved_title">Congratulations! Your request has been approved.</string>
