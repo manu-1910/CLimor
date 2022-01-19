@@ -204,14 +204,19 @@ class UserPatronFragmentNew : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         subscribeToViewModel()
         setOnClicks()
-        //handleUIStates()
 
+        if (user.id != PrefsHandler.getCurrentUserId(requireContext())) {
+            handleUIStates()
+        }
     }
 
     private fun subscribeToViewModel() {
         model.userProfileData.observe(viewLifecycleOwner, Observer {
             it?.let {
                 user = it
+                if (BuildConfig.DEBUG) {
+                    println("Got user -> $it")
+                }
                 handleUIStates()
             }
         })
@@ -432,7 +437,7 @@ class UserPatronFragmentNew : Fragment() {
         binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
         binding.termsCheckBox.isChecked = false
         if (BuildConfig.DEBUG) {
-            Timber.d("Current User state -> ${user.patronInvitationStatus} ---> ${user.patronOnBoardingStatus}. Is Patron -> ${user.isPatron}")
+            Timber.d("Current User (${user.username}) state -> ${user.patronInvitationStatus} ---> ${user.patronOnBoardingStatus}. Is Patron -> ${user.isPatron}")
         }
         // user.isPatron = false
         if (currentUser()) {
@@ -599,6 +604,9 @@ class UserPatronFragmentNew : Fragment() {
                 }
             }
         } else {
+            if (BuildConfig.DEBUG) {
+                println("Current user (${user.username} is not me and isPatron -> ${user.isPatron}")
+            }
             if (user.isPatron == true) {
                 setupViewPager(ArrayList())
                 binding.audioPlayerView.visibility = GONE
