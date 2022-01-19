@@ -61,6 +61,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     @Inject
     lateinit var chatRepository: ChatRepository
 
+    @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val mainModel: MainActivityViewModel by viewModels { viewModelFactory }
 
