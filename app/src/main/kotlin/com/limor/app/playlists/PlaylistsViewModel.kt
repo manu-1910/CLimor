@@ -20,9 +20,12 @@ class PlaylistsViewModel @Inject constructor(
     fun getPlaylists(): LiveData<List<PlaylistUIModel?>?> {
         val liveData = MutableLiveData<List<PlaylistUIModel?>?>()
         viewModelScope.launch {
-            liveData.postValue(castsRepository.getPlaylists()?.map { it ->
-                it?.mapToUIModel()
-            })
+            try {
+                val playlists = castsRepository.getPlaylists()?.map { it?.mapToUIModel() }
+                liveData.postValue(playlists)
+            } catch (throwable: Throwable) {
+                liveData.postValue(listOf())
+            }
         }
         return liveData
     }
