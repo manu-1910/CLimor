@@ -15,6 +15,7 @@ import androidx.navigation.findNavController
 import com.google.firebase.FirebaseApp
 import com.limor.app.BuildConfig
 import com.limor.app.R
+import com.limor.app.extensions.throttledClick
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.*
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in_or_up.*
 import timber.log.Timber
@@ -28,29 +29,35 @@ class FragmentSignInOrUp : Fragment() {
         return inflater.inflate(R.layout.fragment_new_auth_sign_in_or_up, container, false)
     }
 
+    private fun navigateToSignIn() {
+        val navigateTo = R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_in
+        Bundle().apply {
+            putBoolean(FragmentSignIn.IS_MIGRATION_FLOW, false)
+        }.also { args ->
+            requireView().findNavController().navigate(navigateTo, args)
+        }
+    }
+
+    private fun navigateToSignUp() {
+        val navigateTo = R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_up
+        requireView().findNavController().navigate(navigateTo)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        btnSignInNew.setOnClickListener {
-            val args = Bundle()
-            args.putBoolean(FragmentSignIn.IS_MIGRATION_FLOW, false)
-            Timber.d("SignIn Clicked")
-            view.findNavController()
-                .navigate(
-                    R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_in,
-                    args
-                )
+        btnSignInNew.throttledClick {
+            if (BuildConfig.DEBUG) {
+                Timber.d("Sign IN Clicked")
+            }
+            navigateToSignIn()
         }
 
-        btnSignUpNew.setOnClickListener {
-            Timber.d("SignUp Clicked")
-            val destinationId =
-//                if (BuildConfig.DEBUG)
-//                    R.id.debugAction
-//                else
-                R.id.action_fragment_new_auth_sign_in_or_up_to_fragment_new_auth_sign_up
-            view.findNavController()
-                .navigate(destinationId)
+        btnSignUpNew.throttledClick {
+            if (BuildConfig.DEBUG) {
+                Timber.d("Sign UP Clicked")
+            }
+            navigateToSignUp()
         }
 
         tosHint.movementMethod = LinkMovementMethod.getInstance()
