@@ -30,7 +30,7 @@ versions.customtabs = "1.3.0"
 versions.percent = "1.0.0"
 versions.swiperefreshlayout = "1.1.0"
 versions.transition = "1.4.1"
-versions.navigation = '2.4.0-alpha03'
+versions.navigation = '2.4.0-rc01'
 
 versions.lifecycle = "2.3.1"
 versions.arch = "2.1.0"
