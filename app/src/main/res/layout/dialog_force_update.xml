@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/alert_background"
+    android:orientation="vertical">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/marginAlmostLarge"
+        app:srcCompat="@drawable/ic_alert" />
+
+    <TextView
+        android:id="@+id/textTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/marginAlmostLarge"
+        android:layout_marginTop="@dimen/marginMediumSmall"
+        android:layout_marginEnd="@dimen/marginAlmostLarge"
+        android:fontFamily="@font/roboto_bold"
+        android:includeFontPadding="false"
+        android:text="@string/new_version_available"
+        android:textColor="@color/textPrimary"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/textDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin24"
+        android:fontFamily="@font/roboto"
+        android:gravity="center"
+        android:text="@string/update_description"
+        android:textColor="@color/textSecondary"
+        android:textAlignment="gravity"
+        android:textSize="@dimen/textSizeNormal" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/marginTwenty"
+        android:layout_marginEnd="@dimen/marginTwenty"
+        android:layout_marginBottom="@dimen/marginAlmostLarge"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        android:weightSum="2">
+
+        <Button
+            android:id="@+id/cancelButton"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/roboto_medium"
+            android:text="@string/cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/textPrimary"
+            android:textSize="@dimen/textSize14"
+            android:visibility="visible" />
+
+        <Button
+            android:id="@+id/okButton"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_round_yellow_ripple_new"
+            android:fontFamily="@font/roboto_bold"
+            android:text="@string/btnUpdate"
+            android:textAllCaps="false"
+            android:textColor="@color/textPrimary"
+            android:textSize="@dimen/textSize14" />
+
+
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

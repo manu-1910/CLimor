@@ -911,6 +911,8 @@
     <string name="purchase_cast_description_for_comment">You have to purchase this cast to listen and leave a comment</string>
 
     <string name="my_purchases">My Purchases</string>
+    <string name="new_version_available">New Version Available</string>
+    <string name="update_description">Please update Limor for latest features</string>
     <string name="reminder">Reminder</string>
 
     <string-array name="cast_tiers">
@@ -1002,4 +1004,5 @@
 
     <string name="sub_tier_monthly">3 Months Free trial + 1 Month at</string>
     <string name="sub_tier_yearly">3 Months Free trial + 1 Year at</string>
+    <string name="updated_app_toast">New Version Has been Installed</string>
 </resources>

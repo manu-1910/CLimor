@@ -184,6 +184,11 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         return result?.data?.searchFollowing ?: return emptyList()
     }
 
+    suspend fun checkAppVersion(platform: String): GetAppVersionsQuery.GetAppVersions? {
+        val query = GetAppVersionsQuery(platform)
+        val result = apollo.launchQuery(query)
+        return result?.data?.getAppVersions
+    }
 
     suspend fun createVendor(
         firstName: String,
