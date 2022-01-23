@@ -1004,4 +1004,5 @@
 
     <string name="sub_tier_monthly">3 Months Free trial + 1 Month at</string>
     <string name="sub_tier_yearly">3 Months Free trial + 1 Year at</string>
+    <string name="updated_app_toast">New Version Has been Installed</string>
 </resources>
