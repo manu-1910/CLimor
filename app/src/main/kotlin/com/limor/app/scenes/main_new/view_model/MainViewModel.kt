@@ -20,9 +20,12 @@ class MainViewModel @Inject constructor(
 
     fun checkAppVersion(platform:String): LiveData<GetAppVersionsQuery.GetAppVersions?> {
         val liveData = MutableLiveData<GetAppVersionsQuery.GetAppVersions?>()
-        viewModelScope.launch {
-            liveData.value = withContext(Dispatchers.IO){
-                generalInfoRepository.checkAppVersion(platform)
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = generalInfoRepository.checkAppVersion(platform)
+                liveData.postValue(response)
+            } catch (throwable: Throwable) {
+                liveData.postValue(null)
             }
         }
         return liveData

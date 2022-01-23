@@ -22,6 +22,8 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.android.billingclient.api.*
 import com.google.android.material.navigation.NavigationBarView
+import com.google.android.play.core.appupdate.AppUpdateInfo
+import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
@@ -122,71 +124,106 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         }
     }
 
-    private fun checkAppVersion() {
-        model.checkAppVersion(PLATFORM).observe(this) { res ->
-            res?.let { data ->
-                Timber.d("VERISON -> $data")
-                val versionOnBE = data.version?.toIntOrNull() ?: 9
-                if (versionOnBE > BuildConfig.VERSION_CODE) {
+    private fun onAppVersion(versionCode: Int, priority: Int) {
+        if (versionCode <= BuildConfig.VERSION_CODE) {
+            return
+        }
 
-                    //Launch Dialog by priority
-                    //showUpdateDialog("", res.priority!!)
-                    val appUpdateManager = AppUpdateManagerFactory.create(this)
+        //Launch Dialog by priority
+        //showUpdateDialog("", res.priority!!)
+        val appUpdateManager = AppUpdateManagerFactory.create(this)
 
-                    // Returns an intent object that you use to check for an update.
-                    val appUpdateInfoTask = appUpdateManager.appUpdateInfo
-                    val priority = data.priority ?: 0
-                    // Get the priority to Define App Update Type
-                    val updateType =
-                        if (priority == 5) AppUpdateType.IMMEDIATE else AppUpdateType.FLEXIBLE
-                    // Checks that the platform will allow the specified type of update.
-                    appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
-                        Timber.d("VERISON -> $appUpdateInfo")
-                        if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                            && appUpdateInfo.isUpdateTypeAllowed(updateType)
-                        ) {
-                            // Request the update.
+        // Get the priority to Define App Update Type
+        val updateType = if (priority == 5)
+            AppUpdateType.IMMEDIATE
+        else
+            AppUpdateType.FLEXIBLE
 
-                            //Use a snackBar or the dialog
-                            appUpdateManager.startUpdateFlowForResult(
-                                // Pass the intent that is returned by 'getAppUpdateInfo()'.
-                                appUpdateInfo,
-                                // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
-                                updateType,
-                                // The current activity making the update request.
-                                this,
-                                // Include a request code to later monitor this update request.
-                                5000)
-                        } else {
-                            Timber.d("VERISON -> update not supported")
+        // Checks that the platform will allow the specified type of update.
+        appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
 
-                        }
-                    }.addOnFailureListener {
-                        Timber.e(it)
-                        Timber.d("VERISON -> $it  exception")
+            if (BuildConfig.DEBUG) {
+                Timber.d("appUpdateInfoTask -> $appUpdateInfo")
+            }
+            onUpdateInfo(appUpdateInfo, updateType, appUpdateManager)
 
-                    }
+        }.addOnFailureListener {
+            Timber.e(it)
 
-                }
+            if (BuildConfig.DEBUG) {
+                Timber.d("Getting app update info failed -> $it exception")
+            }
+        }
 
+    }
+
+    private fun onUpdateInfo(appUpdateInfo: AppUpdateInfo, updateType: Int, manager: AppUpdateManager) {
+        val isAvailable = appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+        val isAllowed = appUpdateInfo.isUpdateTypeAllowed(updateType)
+
+        if (isAvailable && isAllowed) {
+            // Request the update.
+
+            try {
+                manager.startUpdateFlowForResult(
+                    appUpdateInfo,
+                    updateType,
+                    this,
+                    UPDATE_REQUEST_CODE
+                )
+            } catch (throwable: Throwable) {
+                throwable.printStackTrace()
             }
 
+        } else if (BuildConfig.DEBUG) {
+            Timber.d("App update: update not supported.")
+        }
+    }
+
+    private fun checkAppVersion() {
+        model.checkAppVersion(PLATFORM).observe(this) { res ->
+            if (BuildConfig.DEBUG) {
+                Timber.d("Got app version $res")
+            }
+            res?.let { data ->
+                if (BuildConfig.DEBUG) {
+                    Timber.d("App VERSION -> $data")
+                }
+
+                onAppVersion(data.buildNumber, data.priority)
+            }
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 5000) {
+        if (requestCode == UPDATE_REQUEST_CODE) {
+
+            if (BuildConfig.DEBUG) {
+                Timber.d("Got result from update task: $data")
+            }
+
             if (resultCode == RESULT_OK) {
-                binding.bottomBar.snackbar("New Version Has been Installed")
-            } else {
-                Timber.e("LIMOR -> Update flow failed! Result code: $resultCode")
+                // binding.bottomBar.snackbar(getString(R.string.updated_app_toast))
+
+            } else if (BuildConfig.DEBUG) {
+                Timber.e("LIMOR -> Update flow cancelled! Result code: $resultCode")
+
             }
         }
-
     }
 
     private fun showUpdateDialog(versionName: String, priority: Int) {
+        LimorDialog(layoutInflater).apply {
+            setTitle(R.string.purchase_cast_title)
+            setMessage(R.string.purchase_cast_description_for_comment)
+            setIcon(R.drawable.ic_comment_purchase)
+            addButton(R.string.cancel, false)
+            addButton(R.string.buy_now, true) {
+
+            }
+        }.show()
+
         val dialogBuilder = AlertDialog.Builder(this)
         val inflater = layoutInflater
         val dialogView = inflater.inflate(R.layout.dialog_force_update, null)
@@ -194,8 +231,8 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         dialogBuilder.setCancelable(false)
         val dialog: AlertDialog = dialogBuilder.create()
 
-        if (priority >= 1) {
-            //Mark as mandatory update
+        if (priority == 5) {
+            // Mark as mandatory update
             dialogView.cancelButton.visibility = View.GONE
         }
 
@@ -204,11 +241,11 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         }
 
         dialogView.okButton.setOnClickListener {
-            //Taking to play store
-            try{
-                startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(CommonsKt.APP_URI)))
-            }catch (e: ActivityNotFoundException){
-                startActivity(Intent(Intent.ACTION_VIEW,Uri.parse(CommonsKt.APP_URL)))
+            // Taking to play store
+            try {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CommonsKt.APP_URI)))
+            } catch (e: ActivityNotFoundException) {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CommonsKt.APP_URL)))
             }
             dialog.dismiss()
         }
@@ -401,6 +438,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
 
     companion object{
         val PLATFORM = "and"
+        val UPDATE_REQUEST_CODE = 5000
     }
 
 }
