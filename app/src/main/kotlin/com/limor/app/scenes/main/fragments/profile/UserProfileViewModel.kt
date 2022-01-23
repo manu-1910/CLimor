@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main.fragments.profile
 
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

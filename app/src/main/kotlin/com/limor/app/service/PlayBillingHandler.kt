@@ -366,7 +366,18 @@ class PlayBillingHandler @Inject constructor(
     override fun getPrices(): LiveData<List<SkuDetails>> {
         val liveData = MutableLiveData<List<SkuDetails>>()
         fetchProductIDs {
-            liveData.postValue(it)
+            liveData.postValue(it.sortedBy { skuDetails ->
+                // Here are some sample IDs:
+                //
+                // com.limor.dev.tier_1
+                // com.limor.staging.tier_15
+                // com.limor.prod.tier_23
+                //
+                // That is, they always end in tier_[number] and the number part is what we want to
+                // sort by.
+
+                skuDetails.sku.split("tier_").lastOrNull()?.toInt() ?: 0
+            })
         }
         return liveData
     }

@@ -45,7 +45,8 @@ object GoogleAuthHandler {
             val googleServicesAreAvailable = checkPlayServices(activity)
             if (!googleServicesAreAvailable) return@BACKGROUND
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(activity.getString(R.string.default_web_client_id))
+                // commenting this out because default_web_client_id doesn't exist
+                // .requestIdToken(activity.getString(R.string.default_web_client_id))
                 .requestEmail()
                 .requestId()
                 .build()
@@ -104,7 +105,7 @@ object GoogleAuthHandler {
         if (resultCode != ConnectionResult.SUCCESS) {
             if (gApi.isUserResolvableError(resultCode)) {
                 MAIN {
-                    gApi.getErrorDialog(activity, resultCode, -10001).show()
+                    gApi.getErrorDialog(activity, resultCode, -10001)?.show()
                 }
             } else {
                 MAIN {

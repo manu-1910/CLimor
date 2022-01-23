@@ -46,10 +46,12 @@ class SmallCastItem(
             }
             Timber.d("${cast.title}  ${cast.imageLinks?.medium}")
             if (cast.imageLinks?.medium != null) {
+                castImage.setBackgroundColor(Color.TRANSPARENT)
                 Glide.with(root)
                     .load(cast.imageLinks.medium)
                     .into(castImage)
             } else if (cast.colorCode != null) {
+                castImage.setImageDrawable(null)
                 castImage.setBackgroundColor(Color.parseColor(cast.colorCode))
             }
             Glide.with(root)

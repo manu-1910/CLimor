@@ -25,6 +25,7 @@ data class DraftEntity(
     val parentDraft: DraftEntity?,
     val isNewRecording: Boolean,
     val categories: ArrayList<OnDeviceCategoryEntity>,
+    val price: String? = null
 )
 
 

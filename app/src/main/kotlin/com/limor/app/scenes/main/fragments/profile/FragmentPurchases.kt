@@ -203,6 +203,7 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
     private fun getCastItems(casts: List<CastUIModel>): List<CastItem> {
         return casts.map {
             CastItem(
+                userId = user.id,
                 cast = it,
                 onCastClick = ::onCastClick,
                 onLikeClick = { cast, like -> model.likeCast(cast, like) },
@@ -233,6 +234,19 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
                 onEditPreviewClick = {
                 },
                 onPlayPreviewClick = { cast, play ->
+                    cast.audio?.mapToAudioTrack()?.let { it1 ->
+                        cast.patronDetails?.startsAt?.let { it2 ->
+                            cast.patronDetails.endsAt?.let { it3 ->
+                                if (play) {
+                                    (activity as? PlayerViewManager)?.playPreview(
+                                        it1, it2.toInt(), it3.toInt()
+                                    )
+                                } else {
+                                    (activity as? PlayerViewManager)?.stopPreview(true)
+                                }
+                            }
+                        }
+                    }
                 },
                 onEditPriceClick = { cast ->
                 }

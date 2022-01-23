@@ -8,6 +8,7 @@ ext.addRepos = this.&addRepos
 
 def build_versions = [:]
 build_versions.min_sdk = 24
+build_versions.compile_sdk = 31
 build_versions.target_sdk = 30
 build_versions.build_tools = "29.0.0"
 ext.build_versions = build_versions
@@ -51,11 +52,11 @@ versions.map_utils = "2.2.3"
 versions.coordinator = "1.1.0"
 
 //Firebase
-versions.firebase_bom = "29.0.0"
-versions.firebase_crashlytics_plugin = "2.8.0"
+versions.firebase_bom = "29.0.3"
+versions.firebase_crashlytics_plugin = "2.8.1"
 
 //Kotlin
-versions.kotlin = "1.5.10"
+versions.kotlin = "1.6.10"
 versions.rx_kotlin = "2.3.0"
 versions.anko = "0.10.8"
 versions.serialization_runtime = "1.2.1"

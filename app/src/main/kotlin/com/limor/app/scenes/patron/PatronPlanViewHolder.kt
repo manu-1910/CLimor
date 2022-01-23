@@ -3,6 +3,7 @@ package com.limor.app.scenes.patron
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.android.billingclient.api.SkuDetails
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.ItemPatronPlanBinding
 import org.jetbrains.anko.imageResource
@@ -12,14 +13,31 @@ class PatronPlanViewHolder(
     val binding: ItemPatronPlanBinding, val listener: PricingPlansAdapter.OnPlanClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
 
+    fun getTitle(skuDetails: SkuDetails): String {
+        // Sample SKU IDs:
+        // com.limor.prod.monthly_plan
+        // com.limor.prod.annual_plan
+
+        if (skuDetails.sku.contains("monthly")) {
+            return binding.root.context.getString(R.string.sub_tier_monthly)
+        } else if (skuDetails.sku.contains("annual")) {
+            return binding.root.context.getString(R.string.sub_tier_yearly)
+        } else {
+            return skuDetails.title
+        }
+    }
+
     fun bind(skuDetails: SkuDetails, position: Int, selectedSku: String?) {
         setPlanState(selectedSku, skuDetails.sku)
         binding.apply {
-            price.text = skuDetails.title
+            price.text = getTitle(skuDetails)
             description.text = skuDetails.originalPrice
-            Timber.d("SUBS TRIAL PERIOD ${skuDetails.freeTrialPeriod}")
-            Timber.d("SUBS INTRO PRICE ${skuDetails.introductoryPrice}")
-            Timber.d("SUBS SUB PERIOD ${skuDetails.subscriptionPeriod}")
+
+            if (BuildConfig.DEBUG) {
+                Timber.d("SUBS TRIAL PERIOD ${skuDetails.freeTrialPeriod}")
+                Timber.d("SUBS INTRO PRICE ${skuDetails.introductoryPrice}")
+                Timber.d("SUBS SUB PERIOD ${skuDetails.subscriptionPeriod}")
+            }
 
             root.setOnClickListener {
                 listener.onUserClicked(skuDetails, position)

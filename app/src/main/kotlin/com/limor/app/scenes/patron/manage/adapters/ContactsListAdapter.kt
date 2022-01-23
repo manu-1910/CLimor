@@ -6,18 +6,16 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.limor.app.R
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.ContactUIModel
 import de.hdodenhof.circleimageview.CircleImageView
-import kotlinx.android.synthetic.main.item_contact_list.view.*
 
 class ContactsListAdapter(
     private val contacts: ArrayList<ContactUIModel>,
-    private val onSelected: (id: Int) -> Unit
+    private val onSelected: (id: List<ContactUIModel>) -> Unit
 ) : RecyclerView.Adapter<ContactsListAdapter.ContactViewHolder>() {
 
     val selectedContacts = ArrayList<ContactUIModel>()
@@ -39,20 +37,23 @@ class ContactsListAdapter(
                 R.drawable.ic_selected_checkbox
             ) else holder.rootView.context.getDrawable(R.drawable.ic_unselected_checkbox)
         )
-        holder.rootView.setOnClickListener {
-            if (contacts[position].checked == false) {
-                if (selectedContacts.size < 5) {
-                    selectedContacts.add(contacts[position])
-                    holder.selector.setImageDrawable(holder.rootView.context.getDrawable(R.drawable.ic_selected_checkbox))
-                    contacts[position].checked = true
+        if (CommonsKt.user?.availableInvitations ?: 0 > 0){
+            holder.rootView.setOnClickListener {
+                if (contacts[position].checked == false) {
+                    if (selectedContacts.size < CommonsKt.user?.availableInvitations ?: 0) {
+                        selectedContacts.add(contacts[position])
+                        holder.selector.setImageDrawable(holder.rootView.context.getDrawable(R.drawable.ic_selected_checkbox))
+                        contacts[position].checked = true
+                    }
+                } else {
+                    selectedContacts.removeIf { it.id == contacts[position].id }
+                    holder.selector.setImageDrawable(holder.rootView.context.getDrawable(R.drawable.ic_unselected_checkbox))
+                    contacts[position].checked = false
                 }
-            } else {
-                selectedContacts.removeIf { it.id == contacts[position].id }
-                holder.selector.setImageDrawable(holder.rootView.context.getDrawable(R.drawable.ic_unselected_checkbox))
-                contacts[position].checked = false
+                onSelected(selectedContacts)
             }
-            onSelected(selectedContacts.size)
         }
+
     }
 
     override fun getItemCount(): Int {

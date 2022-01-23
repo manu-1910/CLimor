@@ -7,7 +7,10 @@ import android.content.res.AssetManager
 import android.os.CountDownTimer
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.*
+import com.limor.app.BuildConfig
+import com.limor.app.CreateVendorMutation
 import com.limor.app.GendersQuery
+import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.scenes.auth_new.data.*
 import com.limor.app.scenes.auth_new.firebase.EmailAuthHandler
 import com.limor.app.scenes.auth_new.firebase.FacebookAuthHandler
@@ -16,7 +19,9 @@ import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
 import com.limor.app.scenes.auth_new.model.*
 import com.limor.app.scenes.auth_new.model.UserInfoProvider.Companion.userNameRegExCheck
 import com.limor.app.scenes.auth_new.util.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -29,7 +34,8 @@ class AuthViewModelNew @Inject constructor(
     val suggestedProvider: SuggestedProvider,
     val userInfoProvider: UserInfoProvider,
     val phoneAuthHandler: PhoneAuthHandler,
-    val emailAuthHandler: EmailAuthHandler
+    val emailAuthHandler: EmailAuthHandler,
+    val generalInfoRepository: GeneralInfoRepository,
 ) : ViewModel() {
 
     /* Date picking */
@@ -502,6 +508,23 @@ class AuthViewModelNew @Inject constructor(
         )
     }
 
+    fun updateGenderInfo() {
+        userInfoProvider.updateGender(
+            viewModelScope,
+            currentGenderId
+        )
+    }
+
+    fun updateLanguagesAndCategories() {
+        val categoriesIds = categoriesProvider.getActiveCategoriesIds()
+        val languages = languagesProvider.getActiveLanguages();
+        userInfoProvider.updateLanguagesAndCategories(
+            viewModelScope,
+            categoriesIds,
+            languages
+        )
+    }
+
     fun updateUserOnboardingStatus(nextStep: String) =
         userInfoProvider.updateUserOnboardingStatus(viewModelScope, nextStep)
 
@@ -512,5 +535,44 @@ class AuthViewModelNew @Inject constructor(
 
     fun cancelTimers() {
         countDownTimer?.cancel()
+    }
+
+    fun createVendor(
+        firstName: String,
+        lastName: String,
+        email: String,
+        phone: String,
+        birthDate: String
+    ): LiveData<ApiResult<String?>> {
+        val callResult = MutableLiveData<ApiResult<String?>>()
+
+        if (BuildConfig.DEBUG) {
+            println("Will create vendor for $firstName $lastName, $email, $phone, $birthDate")
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                generalInfoRepository.createVendor(
+                    firstName,
+                    lastName,
+                    email,
+                    phone,
+                    birthDate
+                )
+            }.onSuccess { result ->
+                callResult.postValue(
+                    ApiResult(
+                        result = result?.data?.onboardingURL,
+                        callWasSuccessful = true,
+                        errorMessage = null
+                    )
+                )
+            }.onFailure { throwable ->
+                throwable.printStackTrace()
+                callResult.postValue(ApiResult.errored<String?>(throwable.localizedMessage))
+            }
+        }
+
+        return callResult
     }
 }

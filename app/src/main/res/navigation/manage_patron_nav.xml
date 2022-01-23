@@ -11,9 +11,6 @@
         android:label="ManagePatronFragment"
         tools:layout="@layout/fragment_manage_patron">
         <action
-            android:id="@+id/action_manage_patron_fragment_to_fragment_invite_friends"
-            app:destination="@id/fragment_invite_friends" />
-        <action
             android:id="@+id/action_manage_patron_fragment_to_dialog_cancel_patron_membership"
             app:destination="@id/dialog_cancel_patron_membership" />
         <action
@@ -22,6 +19,9 @@
         <action
             android:id="@+id/action_manage_patron_fragment_to_fragment_my_earnings"
             app:destination="@id/fragment_my_earnings" />
+        <action
+            android:id="@+id/action_manage_patron_fragment_to_fragment_invite_users"
+            app:destination="@id/fragment_invite_users" />
     </fragment>
 
     <dialog
@@ -42,13 +42,13 @@
         android:id="@+id/cancel_patron_membership_success_fragment"
         android:name="com.limor.app.scenes.patron.manage.fragment.CancelPatronMembershipFragment"
         android:label="CancelPatronMembershipFragment"
-        tools:layout="@layout/view_cast_published"></fragment>
+        tools:layout="@layout/view_cast_published"/>
 
     <fragment
         android:id="@+id/fragment_patron_categories"
         android:name="com.limor.app.scenes.patron.manage.fragment.FragmentUpdatePatronCategories"
         android:label="FragmentPatronCategories"
-        tools:layout="@layout/fragment_patron_categories"></fragment>
+        tools:layout="@layout/fragment_patron_categories"/>
 
     <fragment
         android:id="@+id/fragment_my_earnings"
@@ -64,18 +64,23 @@
         android:id="@+id/fragment_cast_earnings"
         android:name="com.limor.app.scenes.patron.manage.fragment.FragmentCastEarnings"
         android:label="FragmentCastEarnings"
-        tools:layout="@layout/fragment_cast_earnings"></fragment>
+        tools:layout="@layout/fragment_cast_earnings"/>
 
     <fragment
         android:id="@+id/fragment_invite_friends"
         android:name="com.limor.app.scenes.patron.manage.fragment.FragmentInviteFriends"
         android:label="FragmentInviteFriends"
-        tools:layout="@layout/fragment_invite_friends"></fragment>
+        tools:layout="@layout/fragment_invite_friends">
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_invite_users"
+        android:name="com.limor.app.scenes.patron.manage.fragment.FragmentInviteUsers"
+        android:label="FragmentInviteUsers"
+        tools:layout="@layout/fragment_invite_users">
+        <action
+            android:id="@+id/action_fragmentInviteUsers_to_fragment_invite_friends"
+            app:destination="@id/fragment_invite_friends" />
+    </fragment>
 
-    <activity
-        android:id="@+id/change_price"
-        android:name="com.limor.app.scenes.patron.manage.ChangePriceActivity"
-        android:label="ChangePriceActivity"
-        tools:layout="@layout/activity_change_price" />
 
 </navigation>

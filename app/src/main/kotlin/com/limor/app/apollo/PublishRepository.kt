@@ -23,8 +23,21 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
         return createPodcastResult?.status
     }
 
-    suspend fun updatePodcast(podcastId: Int, title: String, caption: String): String?{
-        val mutation = UpdatePodcastMutation(podcastId, Input.fromNullable(title), Input.fromNullable(caption))
+    suspend fun updatePodcast(podcastId: Int, title: String, caption: String, matureContent: Boolean): String? {
+        val mutation = UpdatePodcastMutation(podcastId, Input.fromNullable(title), Input.fromNullable(caption), Input.fromNullable(matureContent))
+        val result = apollo.mutate(mutation)
+        val updatePodcastResult: UpdatePodcastMutation.UpdatePodcast? =
+            result?.data?.updatePodcast
+        return updatePodcastResult?.status
+    }
+
+    suspend fun markPodcastAsMature(podcastId: Int): String? {
+        val mutation = UpdatePodcastMutation(
+            podcastId = podcastId,
+            title = Input.absent(),
+            caption = Input.absent(),
+            matureContent = Input.fromNullable(true)
+        )
         val result = apollo.mutate(mutation)
         val updatePodcastResult: UpdatePodcastMutation.UpdatePodcast? =
             result?.data?.updatePodcast
@@ -125,6 +138,18 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
         //  acknowledging
         val result = apollo.mutate(mutation)
         return result?.data?.createCastPurchase?.status ?: ""
+    }
+
+    suspend fun inviteInternalUser(userId: Int): String {
+        val mutation = SendInternalPatronInvitationMutation(userId)
+        val result = apollo.mutate(mutation)
+        return result?.data?.sendInternalPatronInvitation?.status ?: ""
+    }
+
+    suspend fun inviteExternal(numbers: List<String>): String {
+        val mutation = SendExternalPatronInvitationMutation(numbers)
+        val result = apollo.mutate(mutation)
+        return result?.data?.sendExternalPatronInvitation?.status ?: ""
     }
 
 }

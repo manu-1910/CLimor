@@ -394,4 +394,9 @@ abstract class ViewModelsModule {
     @ViewModelKey(CastPriceViewModel::class)
     abstract fun bindCastPriceViewModel(viewModel: CastPriceViewModel): ViewModel
 
+    @Binds
+    @IntoMap
+    @ViewModelKey(MainActivityViewModel::class)
+    abstract fun bindMainActivityViewModel(viewModel: MainActivityViewModel): ViewModel
+
 }

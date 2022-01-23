@@ -242,7 +242,7 @@ class FragmentHomeNew : BaseFragment() {
                                     it1, it2.toInt(), it3.toInt()
                                 )
                             } else {
-                                (activity as? PlayerViewManager)?.stopPreview()
+                                (activity as? PlayerViewManager)?.stopPreview(true)
                             }
                         }
                     }
@@ -288,16 +288,27 @@ class FragmentHomeNew : BaseFragment() {
         }
 
     private fun onCastClick(cast: CastUIModel, sku: SkuDetails?){
-        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())){
-            LimorDialog(layoutInflater).apply {
-                setTitle(R.string.purchase_cast_title)
-                setMessage(R.string.purchase_cast_description)
-                setIcon(R.drawable.ic_purchase)
-                addButton(R.string.cancel, false)
-                addButton(R.string.buy_now, true) {
-                    launchPurchaseCast(cast, sku)
-                }
-            }.show()
+        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
+
+            if (sku == null) {
+                LimorDialog(layoutInflater).apply {
+                    setTitle(R.string.purchase_cast_title)
+                    setMessage(R.string.purchase_cast_description)
+                    setIcon(R.drawable.ic_purchase)
+                    addButton(R.string.ok, false)
+                }.show()
+
+            } else {
+                LimorDialog(layoutInflater).apply {
+                    setTitle(R.string.purchase_cast_title)
+                    setMessage(R.string.purchase_cast_description)
+                    setIcon(R.drawable.ic_purchase)
+                    addButton(R.string.cancel, false)
+                    addButton(R.string.buy_now, true) {
+                        launchPurchaseCast(cast, sku)
+                    }
+                }.show()
+            }
         } else{
             openPlayer(cast)
         }

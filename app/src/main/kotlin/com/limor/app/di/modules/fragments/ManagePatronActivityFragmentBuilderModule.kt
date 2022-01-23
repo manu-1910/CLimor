@@ -29,6 +29,9 @@ abstract class ManagePatronActivityFragmentBuilderModule {
     abstract fun contributeFragmentUpdatePatronCategories(): FragmentUpdatePatronCategories
 
     @ContributesAndroidInjector
+    abstract fun contributeFragmentInviteUsers(): FragmentInviteUsers
+
+    @ContributesAndroidInjector
     abstract fun contributeExtendedPlayerFragmentInjector(): ExtendedPlayerFragment
 
     @ContributesAndroidInjector

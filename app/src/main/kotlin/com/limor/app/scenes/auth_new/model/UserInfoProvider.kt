@@ -268,6 +268,43 @@ class UserInfoProvider @Inject constructor(
         }
     }
 
+    fun updateGender(
+        scope: CoroutineScope,
+        gender: Int
+    ) {
+        scope.launch(Dispatchers.Default) {
+            try {
+                val result = userRepository.updateUserGender(gender)
+                _updatePreferredInfoLiveData.postValue(result)
+                delay(500)
+                _updatePreferredInfoLiveData.postValue(null)
+            } catch (e: Exception) {
+                _userInfoProviderErrorLiveData.postValue(e.cause?.message ?: e.message)
+                delay(500)
+                _userInfoProviderErrorLiveData.postValue(null)
+            }
+        }
+    }
+
+    fun updateLanguagesAndCategories(
+        scope: CoroutineScope,
+        categories: List<Int?>,
+        languages: List<String?>
+    ) {
+        scope.launch(Dispatchers.Default) {
+            try {
+                val result = userRepository.updateLanguagesAndCategories(categories, languages)
+                _updatePreferredInfoLiveData.postValue(result)
+                delay(500)
+                _updatePreferredInfoLiveData.postValue(null)
+            } catch (e: java.lang.Exception) {
+                _userInfoProviderErrorLiveData.postValue(e.cause?.message ?: e.message)
+                delay(500)
+                _userInfoProviderErrorLiveData.postValue(null)
+            }
+        }
+    }
+
     fun updateUserOnboardingStatus(scope: CoroutineScope, nextStep: String) {
         scope.launch(Dispatchers.Default) {
             try {

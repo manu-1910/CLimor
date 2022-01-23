@@ -32,5 +32,6 @@ query SearchUsers($term: String!, $limit: Int!, $offset: Int!) {
         isPatron
         patronAudioURL
         patronAudioDuration
+        patronStatus
     }
 }

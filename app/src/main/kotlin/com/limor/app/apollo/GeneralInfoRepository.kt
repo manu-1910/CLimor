@@ -130,8 +130,8 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         return createUserResult
     }
 
-    suspend fun getSuggestedPeople(): List<SuggestedPeopleQuery.GetSuggestedUser>? {
-        return apollo.launchQuery(SuggestedPeopleQuery())
+    suspend fun getSuggestedPeople(limit: Int = Int.MAX_VALUE, offset: Int = 0): List<SuggestedPeopleQuery.GetSuggestedUser>? {
+        return apollo.launchQuery(SuggestedPeopleQuery(limit, offset))
             ?.data?.getSuggestedUsers?.filterNotNull()?.also {
                 Timber.d("getSuggestedPeople() -> $it")
             }
@@ -176,7 +176,7 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
     suspend fun searchFollowing(
         term: String,
         limit: Int,
-        offset: Int
+        offset: Int,
     ): List<SearchFollowingQuery.SearchFollowing?> {
         val query = SearchFollowingQuery(term, limit, offset)
         val result = apollo.launchQuery(query)
@@ -188,6 +188,24 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         val query = GetAppVersionsQuery(platform)
         val result = apollo.launchQuery(query)
         return result?.data?.getAppVersions
+    }
+
+    suspend fun createVendor(
+        firstName: String,
+        lastName: String,
+        email: String,
+        phone: String,
+        birthDate: String,
+    ): CreateVendorMutation.CreateVendor? {
+        val query = CreateVendorMutation(
+            firstName,
+            lastName,
+            email,
+            birthDate,
+            phone
+        )
+        val result = apollo.mutate(query)
+        return result?.data?.createVendor
     }
 
 }

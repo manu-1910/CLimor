@@ -32,7 +32,8 @@ fun RLMDraft.asDataEntity(): DraftEntity {
         location?.asDataEntity(),
         parentDraft?.asDataEntity(),
         isNewRecording,
-        getOnDeviceCategoryEntities(categories)
+        getOnDeviceCategoryEntities(categories),
+        price
     )
 }
 
@@ -60,7 +61,8 @@ fun DraftEntity.asStorageEntity(): RLMDraft {
         location?.asStorageEntity(),
         parentDraft?.asStorageEntity(),
         isNewRecording,
-        getRLMCategories(categories)
+        getRLMCategories(categories),
+        price
     )
 }
 

@@ -82,11 +82,13 @@ class HomeFeedAdapter(
                 ViewHolderRecast(
                     binding,
                     onLikeClick,
+                    onCastClick,
                     onReCastClick,
                     onCommentsClick,
                     onShareClick,
                     onHashTagClick,
-                    onUserMentionClick
+                    onUserMentionClick,
+                    productDetailsFetcher
                 )
             }
             ITEM_TYPE_PODCAST -> {

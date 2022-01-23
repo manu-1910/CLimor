@@ -1,0 +1,8 @@
+mutation UpdateUserGenderMutation($genderId: Int){
+    updateUser(user:{
+        gender:$genderId
+    }){
+        status,
+        message
+    }
+}

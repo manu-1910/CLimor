@@ -151,6 +151,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     private fun getCastItems(casts: List<CastUIModel>): List<CastItem> {
         return casts.map {
             CastItem(
+                userId = user.id,
                 cast = it,
                 onCastClick = ::onCastClick,
                 onLikeClick = { cast, like -> viewModel.likeCast(cast, like) },
@@ -204,7 +205,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                                         it1, it2.toInt(), it3.toInt()
                                     )
                                 } else {
-                                    (activity as? PlayerViewManager)?.stopPreview()
+                                    (activity as? PlayerViewManager)?.stopPreview(true)
                                 }
                             }
                         }

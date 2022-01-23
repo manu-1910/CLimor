@@ -63,7 +63,7 @@ data class CastUIModel(
     val links: LinkUIModel?,
     val recaster: UserUIModel?,
     var colorCode: String? = null,
-    val maturedContent: Boolean?,
+    var maturedContent: Boolean?,
     val patronCast: Boolean?,
     val patronDetails: PatronDetails? = null,
 ) : Parcelable {
@@ -383,7 +383,7 @@ fun GetPatronPodcastsQuery.GetPatronCast.mapToUIModel() =
         audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
         tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
         links = links?.mapToUIModel(), recaster = null,
-        maturedContent = false,
+        maturedContent = mature_content,
         colorCode = color_code,
         patronCast = patron_cast,
         patronDetails = patron_details?.let {
@@ -483,7 +483,7 @@ fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
         links = links?.mapToUIModel(),
         recaster = null,
         colorCode = color_code,
-        maturedContent = false,
+        maturedContent = mature_content,
         patronCast = patron_cast,
         patronDetails = patron_details?.let {
             PatronDetails(

@@ -29,6 +29,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextWatcher
 import android.text.style.UnderlineSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -80,6 +81,7 @@ import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.CommonsKt.Companion.dpToPx
 import com.limor.app.scenes.utils.CommonsKt.Companion.toEditable
+import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.SpecialCharactersInputFilter
 import com.limor.app.scenes.utils.location.MyLocation
 import com.limor.app.scenes.utils.waveform.KeyboardUtils
@@ -265,10 +267,25 @@ class PublishFragment : BaseFragment() {
         prices.addAll(productIds)
         val adapter =
             ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, prices)
-        binding.castPrices.setText(items[0])
+
+        if (BuildConfig.DEBUG) {
+            println("The draft price is ${uiDraft.price}, details keys -> ${details.keys}")
+        }
+        if (uiDraft.price.isNullOrEmpty()) {
+            binding.castPrices.setText(items[0])
+        } else {
+            for ((k, v) in details) {
+                if (v.sku == uiDraft.price) {
+                    binding.castPrices.setText(k)
+                    break
+                }
+            }
+        }
+
         binding.castPrices.setAdapter(adapter)
         binding.castPrices.onItemClickListener = AdapterView.OnItemClickListener { parent, arg1, pos, id ->
             selectedPriceId = details[prices[pos]]?.sku ?: ""
+            uiDraft.price = selectedPriceId
         }
     }
 
@@ -362,7 +379,8 @@ class PublishFragment : BaseFragment() {
         if (isPatronUser()) {
             val list = ArrayList<String>()
             playBillingHandler.getPrices().observe(viewLifecycleOwner, {
-                details.putAll(it.map { skuDetails -> skuDetails.originalPrice to skuDetails })
+                details.clear()
+                details.putAll(it.map { skuDetails -> skuDetails.price to skuDetails })
                 it.forEach { skuDetails ->
                     list.add(skuDetails.price)
                 }
@@ -727,10 +745,23 @@ class PublishFragment : BaseFragment() {
     }
 
     private fun handlePublishButtonClick() {
+        if (BuildConfig.DEBUG) {
+            println("The duration of the podcast is ${mediaPlayer.duration}")
+        }
         if (isPatronUser() && isPriceNotSelected() && PrefsHandler.getBoolean(requireContext(),
                 "publishPatronDialogShown") == false
         ) {
             showPublishPatronCastDialog()
+
+        } else if (isPatronUser() && isPriceSelected() && mediaPlayer.duration < 30000) {
+            LimorDialog(layoutInflater).apply {
+                setTitle(R.string.duration_warning_title)
+                setMessage(R.string.duration_warning_message)
+                setMessageColor(ContextCompat.getColor(requireContext(), R.color.error_stroke_color))
+                setIcon(R.drawable.ic_warning_dialog)
+                addButton(R.string.ok, true)
+            }.show()
+            return
         } else {
             publishCast()
         }
@@ -738,6 +769,10 @@ class PublishFragment : BaseFragment() {
 
     private fun isPriceNotSelected(): Boolean {
         return binding.castPrices.text.toString() == getString(R.string.free_cast_selection)
+    }
+
+    private fun isPriceSelected(): Boolean {
+        return !isPriceNotSelected()
     }
 
     private fun publishCast() {
@@ -1046,10 +1081,9 @@ class PublishFragment : BaseFragment() {
 
         var priceId = Input.absent<String>()
         var selectedCats = publishViewModel.categorySelectedNamesList.map { it.categoryId }
-        if(!isPatronUser()){
-            selectedCats = selectedCats.subList(0,1)
-        }else{
-            //TODO update with the value selected from drop down menu
+        if (!isPatronUser()) {
+            selectedCats = selectedCats.subList(0, 1)
+        } else {
             priceId = Input.fromNullable(selectedPriceId)
         }
         val podcast = CreatePodcastInput(
@@ -1117,6 +1151,12 @@ class PublishFragment : BaseFragment() {
     }
 
     private fun loadExistingData() {
+
+        selectedPriceId = uiDraft.price
+
+        if (BuildConfig.DEBUG) {
+            println("selectedPriceId -> $selectedPriceId")
+        }
 
         //recordingItem
         if (!uiDraft.title.toString().trim().isNullOrEmpty()) {

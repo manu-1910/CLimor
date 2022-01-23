@@ -3,14 +3,12 @@ package com.limor.app
 import android.app.Activity
 import android.app.Application
 import android.app.Service
-import android.media.MediaPlayer
 import android.provider.Settings
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
-import androidx.work.Configuration
-import com.bugfender.sdk.Bugfender
+
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
 import com.limor.app.di.AppInjector
@@ -28,8 +26,6 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import dagger.android.HasServiceInjector
 import io.realm.*
-import io.square1.limor.storage.entities.RLMOnDeviceCategory
-import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -37,7 +33,7 @@ interface MediaPlayerHandler {
     fun interruptPlaying()
 }
 
-class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObserver, Configuration.Provider {
+class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObserver {
     @Inject
     lateinit var activityInjector: DispatchingAndroidInjector<Activity>
     @Inject
@@ -130,14 +126,6 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
         // OneSignal Initialization
         OneSignal.initWithContext(this);
         OneSignal.setAppId(BuildConfig.ONE_SIGNAL_APP_ID);
-
-
-        Bugfender.init(this, "f3uD19EuFhTDd4XaMHCflDlMW5Bo18AZ", BuildConfig.DEBUG)
-        Bugfender.enableCrashReporting()
-        Bugfender.enableUIEventLogging(this)
-        Bugfender.enableLogcatLogging() // optional, if you want logs automatically collected from logcat
-
-        Timber.plant(BugfenderTree())
     }
 
     @OnLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_STOP)
@@ -186,25 +174,11 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
         val realmConfiguration: RealmConfiguration = RealmConfiguration.Builder()
             .schemaVersion(1)
             .migration(Migration())
-            // .deleteRealmIfMigrationNeeded()
-            //TODO: Encrypt database!!
             .build()
         Realm.setDefaultConfiguration(realmConfiguration)
         val realm = Realm.getDefaultInstance()
 
         return realm
-    }
-
-    override fun getWorkManagerConfiguration(): Configuration {
-        return if (BuildConfig.DEBUG) {
-            Configuration.Builder()
-                .setMinimumLoggingLevel(android.util.Log.DEBUG)
-                .build()
-        } else {
-            Configuration.Builder()
-                .setMinimumLoggingLevel(android.util.Log.ERROR)
-                .build()
-        }
     }
 
     open class Migration : RealmMigration {
@@ -228,6 +202,7 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
                 }
 
                 draftSchema.addRealmListField("categories", categorySchema)
+                draftSchema.addField("price", String::class.java)
             }
             println("Realm --> $oldVersion -> $newVersion")
         }

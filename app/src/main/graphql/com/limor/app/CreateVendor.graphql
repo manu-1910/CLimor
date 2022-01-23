@@ -1,0 +1,24 @@
+mutation CreateVendor(
+    $firstName: String!,
+    $lastName: String!,
+    $email: String!,
+    $birthDate: String!,
+    $phone: String!){
+
+    createVendor(
+        firstName:$firstName,
+        lastName:$lastName,
+        email:$email,
+        phone:$phone,
+        country:"GB",
+        birthDate :$birthDate,
+        type:"individual",
+        category:"DIGITAL_GOODS") {
+        status
+        message
+        data {
+            onboardingURL
+        }
+    }
+
+}

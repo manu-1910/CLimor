@@ -105,20 +105,6 @@
         tools:text="2 days ago - Ireland" />
 
     <ImageButton
-        android:id="@+id/btnPodcastMore"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="16dp"
-        android:background="@color/transparent"
-        android:padding="8dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_3_dots_horizontal"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@id/shadowTop"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageButton
         android:id="@+id/patronCastIndicator"
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -327,6 +313,7 @@
         tools:text="1.4k" />
 
     <LinearLayout
+        android:id="@+id/durationInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -356,6 +343,21 @@
             tools:text="3h 5m 30s" />
 
     </LinearLayout>
+
+    <TextView
+        android:background="@drawable/shape_semi_transparent_rounded_any_width"
+        android:id="@+id/matureContentInfo"
+        android:visibility="gone"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="12dp"
+        android:textSize="12sp"
+        android:text="@string/mature_content_info_text"
+        android:textColor="@color/white"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="@+id/durationInfo"
+        app:layout_constraintLeft_toRightOf="@+id/durationInfo"
+        app:layout_constraintTop_toTopOf="@+id/durationInfo" />
 
     <TextView
         android:id="@+id/tvPodcastTitle"
@@ -389,11 +391,13 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnAddPreview"
-        style="@style/ButtonTextStyle"
+        style="@android:style/Widget.Material.Button.Borderless.Colored"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_margin="@dimen/margin28"
-        android:background="@color/transparent"
+        android:layout_marginRight="8dp"
+        android:backgroundTint="#ffff"
+        android:padding="0dp"
+        android:background="@color/white"
         android:fontFamily="@font/roboto_bold"
         android:text="@string/edit_preview"
         android:textAllCaps="false"
@@ -409,7 +413,8 @@
         style="@android:style/Widget.Material.Button.Borderless.Colored"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginEnd="@dimen/margin24"
+        android:layout_marginEnd="20dp"
+        android:layout_marginLeft="8dp"
         android:background="@drawable/btn_primary_background"
         android:fontFamily="@font/roboto_bold"
         android:text="@string/edit_price"
