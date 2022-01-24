@@ -113,10 +113,14 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     private fun listenToChat() {
         chatRepository.getSessions().asLiveData().observe(this) { chatSessions ->
             val unreadCount = chatSessions.map { it.session.unreadCount ?: 0 }.sum()
+            if (BuildConfig.DEBUG) {
+                println("Unread count in total -> $unreadCount")
+            }
             if (unreadCount > 0) {
                 navigation.getOrCreateBadge(R.id.navigation_direct_messenger).apply {
                     isVisible = true
                     number = unreadCount
+                    backgroundColor = 0xFFFB3E32.toInt()
                 }
             } else {
                 navigation.removeBadge(R.id.navigation_direct_messenger)
