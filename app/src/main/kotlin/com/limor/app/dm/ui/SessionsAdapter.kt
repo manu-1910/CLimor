@@ -13,6 +13,7 @@ import com.limor.app.dm.ChatSessionWithUser
 import com.limor.app.dm.ChatTarget
 import com.limor.app.extensions.isToday
 import com.limor.app.extensions.loadCircleImage
+import com.limor.app.extensions.visibleIf
 import java.text.SimpleDateFormat
 
 class SessionsAdapter(
@@ -27,6 +28,7 @@ class SessionsAdapter(
         val name = view.findViewById(R.id.full_name) as TextView
         val userName = view.findViewById(R.id.description) as TextView
         val textTime = view.findViewById(R.id.textTime) as TextView
+        val textUnread = view.findViewById(R.id.textUnread) as TextView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -44,6 +46,13 @@ class SessionsAdapter(
         holder.name.text = session.user.limorDisplayName
         holder.userName.text = session.session.lastMessageContent
         holder.image.loadCircleImage(session.user.limorProfileUrl)
+
+        val unread = session.session.unreadCount ?: 0
+        holder.textUnread.apply {
+            visibleIf(unread > 0)
+            text = "$unread"
+        }
+
 
         session.session.lastMessageDate.let {
             holder.textTime.text = (if (it.isToday()) hourFormat else dateFormat).format(it.time)

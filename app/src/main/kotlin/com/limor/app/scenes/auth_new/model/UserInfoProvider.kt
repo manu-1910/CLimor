@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.messaging.FirebaseMessaging
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.apollo.UserRepository
 import com.limor.app.apollo.interceptors.AuthInterceptor
@@ -159,10 +160,14 @@ class UserInfoProvider @Inject constructor(
             }
             try {
                 val response = userRepository.getUserByPhoneNumber(phoneNumber)
+                if (BuildConfig.DEBUG) {
+                    println("Checking if $phoneNumber exists -> $response")
+                }
                 _userExistsLiveData.postValue(response)
                 delay(500)
                 _userExistsLiveData.postValue(null)
             } catch (exception: Exception) {
+                exception.printStackTrace()
                 _userExistsLiveData.postValue(false)
                 delay(500)
                 _userExistsLiveData.postValue(null)
@@ -203,6 +208,7 @@ class UserInfoProvider @Inject constructor(
                 delay(500)
                 _updateUserFirstNameAndLastNameLiveData.postValue(null)
             } catch (e: Exception) {
+                e.printStackTrace()
                 _userInfoProviderErrorLiveData.postValue(e.message)
                 delay(500)
                 _userInfoProviderErrorLiveData.postValue(null)

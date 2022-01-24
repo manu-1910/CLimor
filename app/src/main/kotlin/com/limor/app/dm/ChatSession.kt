@@ -33,6 +33,6 @@ data class ChatSession(
     var unreadCount: Int?,
 
     @ColumnInfo(name = "last_read_message_id")
-    val lastReadMessageId: Int?
+    var lastReadMessageId: Int?
 
 )

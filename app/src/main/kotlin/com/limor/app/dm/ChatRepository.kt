@@ -23,6 +23,10 @@ class ChatRepository @Inject constructor(
         session.draftContent = ""
         session.unreadCount = chatDao.getUnreadCount(session.id, session.lastReadMessageId ?: 0)
 
+        if (BuildConfig.DEBUG) {
+            println("Session ${session.id} session.lastReadMessageId -> ${session.lastReadMessageId}, unread: ${session.unreadCount}")
+        }
+
         chatDao.updateSession(session)
     }
 
