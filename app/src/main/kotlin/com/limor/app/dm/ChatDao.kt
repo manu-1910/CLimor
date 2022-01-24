@@ -51,7 +51,12 @@ interface ChatDao {
 
     @Query("""
         SELECT count(*) from chat_message 
-        WHERE chat_session_id = :sessionId and message_id > :lastReadMessageId
+        WHERE 
+            chat_session_id = :sessionId 
+            and 
+            message_id > :lastReadMessageId
+            and 
+            chat_user_id is not null
         """)
     fun getUnreadCount(sessionId: Int, lastReadMessageId: Int): Int
 
