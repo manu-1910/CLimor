@@ -180,5 +180,10 @@
         <item name="android:textColor">@color/notification_secondary_text</item>
         <item name="android:textSize">@dimen/textSize16</item>
     </style>
+
+    <style name="RoundedCornersDialog" parent="@style/Theme.AppCompat.Light.Dialog.Alert">
+        <item name="dialogCornerRadius">16dp</item>
+    </style>
+
 </resources>
 

@@ -16,6 +16,7 @@ interface PlayerViewManager {
     data class PlayerArgs(
         val playerType: PlayerType,
         val castId: Int,
+        val castIds: List<Int>? = null,
         val maximizedFromMiniPlayer: Boolean = false,
         val restarted: Boolean = false
     )
@@ -25,11 +26,12 @@ interface PlayerViewManager {
     }
 }
 
-fun PlayerViewManager.showExtendedPlayer(castId: Int) {
+fun PlayerViewManager.showExtendedPlayer(castId: Int, castIds: List<Int>? = null) {
     showPlayer(
         PlayerViewManager.PlayerArgs(
             PlayerViewManager.PlayerType.EXTENDED,
-            castId
+            castId,
+            castIds,
         )
     )
 }

@@ -2,6 +2,8 @@ package com.limor.app.di.modules.fragments
 
 import com.limor.app.dm.ui.ChatSessionsFragment
 import com.limor.app.dm.ui.ShareFragment
+import com.limor.app.playlists.PlaylistsFragment
+import com.limor.app.playlists.SaveToPlaylistFragment
 import com.limor.app.scenes.auth_new.fragments.FragmentCategories
 import com.limor.app.scenes.auth_new.fragments.FragmentLanguages
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategoriesFragment
@@ -20,10 +22,12 @@ import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.fragments.comments.FragmentCommentReplies
 import com.limor.app.scenes.main_new.view.editpreview.EditPreviewFragment
 import com.limor.app.scenes.notifications.Notification
+import com.limor.app.scenes.patron.FragmentPlaylistDetails
 import com.limor.app.scenes.patron.manage.fragment.*
 import com.limor.app.scenes.patron.setup.FragmentPatronCategories
 import com.limor.app.scenes.profile.DialogCommentMoreActions
 import com.limor.app.scenes.profile.DialogUserReport
+import com.limor.app.scenes.utils.FragmentCreatePlaylist
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -125,6 +129,18 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeFragmentLanguages(): FragmentLanguages
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentPlaylistDetails(): FragmentPlaylistDetails
+  
+    @ContributesAndroidInjector
+    abstract fun contributePlaylistsFragment(): PlaylistsFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeSaveToPlaylistFragmentInjector(): SaveToPlaylistFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentCreatePlaylistInjector(): FragmentCreatePlaylist
 
 }
 

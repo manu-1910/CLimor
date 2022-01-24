@@ -1,0 +1,6 @@
+mutation DeleteCastInPlaylistMutation($playlistId: Int!, $podcastId: Int!){
+    deleteCastInPlaylist(playlistId: $playlistId, podcastId: $podcastId){
+        status
+        message
+    }
+}

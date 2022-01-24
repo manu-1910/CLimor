@@ -219,8 +219,8 @@
         android:background="@color/transparent"
         android:padding="8dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_player_play_previous"
-        android:visibility="invisible"
+        android:src="@drawable/ic_previous_podcast"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/shadowBottom"
         app:layout_constraintEnd_toStartOf="@+id/btnPodcastRewindBack"
         app:layout_constraintHorizontal_bias="0.5"
@@ -303,8 +303,8 @@
         android:background="@color/transparent"
         android:padding="8dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_player_play_next"
-        android:visibility="invisible"
+        android:src="@drawable/ic_next_podcast"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/shadowBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -494,6 +494,19 @@
                 app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes"
                 app:not_shared_color="@color/subtitle_text_color"
                 app:shared_color="@color/textAccent" />
+
+
+            <ImageView
+                android:id="@+id/ivAddToPlaylist"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:padding="2dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_plus_square"
+                app:layout_constraintBottom_toBottomOf="@+id/btnPodcastLikes"
+                app:layout_constraintEnd_toStartOf="@+id/btnPodcastReply"
+                app:layout_constraintTop_toTopOf="@+id/btnPodcastLikes"
+                app:tint="@color/subtitle_text_color" />
 
             <LinearLayout
                 android:id="@+id/llDividerAfterCounters"

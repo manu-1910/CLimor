@@ -1,0 +1,6 @@
+mutation DeletePlaylistMutation($playlistId: Int!){
+    deletePlaylist(playlistId: $playlistId){
+        status
+        message
+    }
+}

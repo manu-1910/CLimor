@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingLeft="@dimen/marginTwenty"
+    android:paddingBottom="@dimen/marginTwenty"
+    tools:context=".playlists.SaveToPlaylistFragment">
+
+    <TextView
+        android:id="@+id/title_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save_cast_to"
+        android:textSize="@dimen/textSize16"
+        android:fontFamily="@font/roboto_bold"
+        android:textColor="@color/black"
+        android:paddingBottom="@dimen/marginTwenty"
+        android:paddingTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ImageView
+        android:id="@+id/close_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_close_with_round_corners"
+        android:padding="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="1.0" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/playlist_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@id/title_text_view"
+        app:layout_constraintBottom_toTopOf="@id/buttons_layout"
+        android:layout_marginBottom="20dp"
+        android:scrollbars="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/playlists_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            tools:itemCount="1"
+            tools:listitem="@layout/layout_select_playlist">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/buttons_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/white">
+
+        <Button
+            android:id="@+id/btnCreatePlaylist"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/roboto_bold"
+            android:text="@string/label_create_playlist"
+            android:textAllCaps="false"
+            android:textColor="@color/textPrimary"
+            android:textSize="@dimen/textSize14"/>
+
+        <Button
+            android:id="@+id/btnDone"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_round_yellow_ripple_new"
+            android:fontFamily="@font/roboto_bold"
+            android:text="@string/btnDone"
+            android:textAllCaps="false"
+            android:textColor="@color/textPrimary"
+            android:textSize="@dimen/textSize14"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+<!--
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="@dimen/marginTwenty"
+    tools:context=".playlists.SaveToPlaylistFragment">
+
+    <TextView
+        android:id="@+id/title_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save_cast_to"
+        android:textSize="@dimen/textSize16"
+        android:fontFamily="@font/roboto_bold"
+        android:textColor="@color/black"
+        android:paddingBottom="@dimen/marginTwenty"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
+
+    <ImageView
+        android:id="@+id/close_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_close_with_round_corners"
+        android:paddingBottom="@dimen/marginTwenty"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"/>
+
+    <LinearLayout
+        android:id="@+id/buttons_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/playlist_scroll_view"
+        android:layout_marginTop="@dimen/marginTwenty">
+
+        <Button
+            android:id="@+id/btnCreatePlaylist"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/roboto_bold"
+            android:text="@string/label_create_playlist"
+            android:textAllCaps="false"
+            android:textColor="@color/textPrimary"
+            android:textSize="@dimen/textSize14"/>
+
+        <Button
+            android:id="@+id/btnCancel"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_round_yellow_ripple_new"
+            android:fontFamily="@font/roboto_bold"
+            android:text="@string/btn_cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/textPrimary"
+            android:textSize="@dimen/textSize14"/>
+
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/playlist_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title_text_view">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/playlists_rv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            tools:itemCount="5"
+            tools:listitem="@layout/layout_select_playlist">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>-->

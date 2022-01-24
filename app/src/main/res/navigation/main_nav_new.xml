@@ -133,6 +133,10 @@
             android:id="@+id/action_navigateProfileFragment_to_managePatronFragment"
             app:destination="@id/manage_patron_fragment" />
 
+        <action
+            android:id="@+id/action_navigateProfileFragment_to_fragmentPlaylistDetails"
+            app:destination="@id/fragmentPlaylistDetails"/>
+
     </fragment>
 
     <fragment
@@ -162,6 +166,10 @@
         android:id="@+id/dialogCommentMoreActions"
         android:name="com.limor.app.scenes.profile.DialogCommentMoreActions"
         android:label="DialogCommentMoreActions" />
+    <fragment
+        android:id="@+id/fragmentPlaylistDetails"
+        android:name="com.limor.app.scenes.patron.FragmentPlaylistDetails"
+        android:label="FragmentPlaylistDetails" />
 
     <!--<fragment
         android:id="@+id/manage_patron_fragment"

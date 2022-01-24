@@ -2,6 +2,8 @@ package com.limor.app.di.modules.fragments
 
 import com.limor.app.scenes.main.fragments.profile.FragmentPurchases
 import com.limor.app.dm.ui.ShareFragment
+import com.limor.app.playlists.PlaylistsFragment
+import com.limor.app.playlists.SaveToPlaylistFragment
 import com.limor.app.scenes.main.fragments.ProfileFragment
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main.fragments.profile.*
@@ -13,9 +15,11 @@ import com.limor.app.scenes.main_new.fragments.SmallPlayerFragment
 import com.limor.app.scenes.main_new.fragments.comments.FragmentCommentReplies
 import com.limor.app.scenes.main_new.fragments.comments.FragmentComments
 import com.limor.app.scenes.main_new.view.editpreview.EditPreviewFragment
+import com.limor.app.scenes.patron.FragmentPlaylistDetails
 import com.limor.app.scenes.profile.DialogCommentMoreActions
 import com.limor.app.scenes.profile.DialogUserProfileActions
 import com.limor.app.scenes.profile.DialogUserReport
+import com.limor.app.scenes.utils.FragmentCreatePlaylist
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -81,5 +85,17 @@ abstract class UserProfileActivityFragmentsBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeFragmentPurchaseInjector(): FragmentPurchases
+
+    @ContributesAndroidInjector
+    abstract fun contributePlaylistsFragment(): PlaylistsFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentPlaylistDetails(): FragmentPlaylistDetails
+
+    @ContributesAndroidInjector
+    abstract fun contributeSaveToPlaylistFragmentInjector(): SaveToPlaylistFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentCreatePlaylistInjector(): FragmentCreatePlaylist
 
 }

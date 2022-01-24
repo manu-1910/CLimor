@@ -1,0 +1,24 @@
+query GetCastsInPlaylistsQuery($playlistId: Int!) {
+    getCastsInPlaylist(playlistId: $playlistId) {
+        status
+        message
+        data{
+            podcastId
+            title
+            username
+            userId
+            totalLength
+            images{
+                small_url
+                medium_url
+                large_url
+                original_url
+            }
+            colorCode
+            isPatronCast
+            isPurchased
+            createdAt
+            addedAt
+        }
+    }
+}

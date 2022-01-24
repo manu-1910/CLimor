@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/m_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightBlueColor">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_back"
+            style="@style/Widget.AppCompat.Toolbar.Button.Navigation"
+            android:layout_width="@dimen/toolbar_button_size"
+            android:layout_height="@dimen/toolbar_button_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_navigate_before_black" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="@color/textPrimary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_back"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_edit_playlist"
+            style="@style/Widget.AppCompat.Toolbar.Button.Navigation"
+            android:layout_width="48dp"
+            android:layout_height="@dimen/toolbar_button_size"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_setting" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_search"
+            style="@style/Widget.AppCompat.Toolbar.Button.Navigation"
+            android:layout_width="48dp"
+            android:layout_height="@dimen/toolbar_button_size"
+            android:layout_alignParentEnd="true"
+            android:tint="@color/black"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_edit_playlist"
+            app:srcCompat="@drawable/discover_search" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ProgressBar
+        android:id="@+id/loaderPB"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone"
+        android:translationZ="10dp"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        android:background="@color/white"
+        android:layout_marginTop="@dimen/marginSmall"
+        android:paddingStart="@dimen/marginTwenty"
+        android:paddingEnd="@dimen/marginTwenty"
+        android:visibility="visible">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/preview_image_layout"
+            android:layout_width="match_parent"
+            android:layout_height="144dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:cardCornerRadius="@dimen/marginSmall"
+            android:layout_marginTop="20dp"
+            app:cardElevation="0dp"
+            android:elevation="0dp">
+
+            <ImageView
+                android:id="@+id/playlist_preview_image"
+                android:layout_width="match_parent"
+                android:layout_height="144dp"
+                android:scaleType="centerCrop"/>
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/cast_count_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            app:layout_constraintStart_toStartOf="@id/preview_image_layout"
+            app:layout_constraintTop_toTopOf="@id/preview_image_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="@dimen/marginMediumSmall"
+            android:layout_marginTop="@dimen/marginMedium"
+            android:text="99 Casts"
+            android:textSize="@dimen/textSize16"
+            android:textColor="@color/white"
+            android:gravity="center_vertical"
+            app:layout_constraintHorizontal_bias="0"/>
+
+        <TextView
+            android:id="@+id/filterTV"
+            android:layout_width="154dp"
+            android:layout_height="@dimen/margin40"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="@dimen/marginMedium"
+            android:layout_marginEnd="@dimen/margin26"
+            android:background="@drawable/light_blue_cornered_background"
+            android:drawableRight="@drawable/chevron_down"
+            android:text="Newest to Oldest"
+            android:paddingStart="@dimen/marginMediumSmall"
+            android:paddingEnd="@dimen/marginMediumSmall"
+            android:textColor="@color/notification_secondary_text"
+            android:drawableTint="@color/notification_secondary_text"
+            android:gravity="center_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/preview_image_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/cast_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/imageSizeHuge"
+            android:clipToPadding="false"
+            app:layout_constraintTop_toBottomOf="@id/filterTV"
+            tools:itemCount="15"
+            tools:layout_editor_absoluteX="-86dp"
+            tools:listitem="@layout/layout_playlist_cast" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/search_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        android:background="@color/white"
+        android:layout_marginTop="@dimen/marginSmall"
+        android:paddingStart="@dimen/marginTwenty"
+        android:paddingEnd="@dimen/marginTwenty"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/no_results_found"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_results_found"
+            android:textSize="@dimen/textSize16"
+            android:textColor="@color/black"
+            android:fontFamily="@font/roboto_bold"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <TextView
+            android:id="@+id/no_results_found_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_results_found_desc"
+            android:textSize="@dimen/textSize14"
+            android:textColor="@color/notification_divider"
+            android:fontFamily="@font/roboto"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/no_results_found"/>
+
+        <com.limor.app.components.SearchBar
+            android:id="@+id/search_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_goneMarginStart="16dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/search_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/imageSizeHuge"
+            android:clipToPadding="false"
+            app:layout_constraintTop_toBottomOf="@id/search_bar"
+            tools:itemCount="15"
+            android:visibility="gone"
+            tools:layout_editor_absoluteX="-86dp"
+            tools:listitem="@layout/layout_playlist_cast" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

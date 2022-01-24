@@ -2,6 +2,7 @@ package com.limor.app.scenes.main.fragments.profile
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,7 +53,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         mapOf(
             Tab.CASTS to getString(R.string.casts),
             Tab.PATRON to getString(R.string.limor_patron),
-            Tab.PURCHASES to getString(R.string.my_purchases)
+            Tab.PURCHASES to getString(R.string.label_playlists)
         )
     }
     private var selectedTab: Tab = Tab.CASTS
@@ -162,9 +163,15 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
                 binding.profileViewpager.currentItem = position
             }
             setMode(TabSelectorView.Mode.FIXED)
-            setTabs(if(currentUserId == user.id) tabs.values.toList() else tabs.values.toList().take(2))
+            var initialTab = when(selectedTab){
+                Tab.CASTS -> 0
+                Tab.PATRON -> 1
+                Tab.PURCHASES -> 2
+            }
+            setTabs(
+                if (currentUserId == user.id) tabs.values.toList() else tabs.values.toList().take(2), initialTab
+            )
         }
-
 
         binding.profileViewpager.isUserInputEnabled = false
         /*binding.profileViewpager.registerOnPageChangeCallback(object :
@@ -193,7 +200,6 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
             )
 
         }
-
         binding.btnFollow.setOnClickListener {
 
             if (user.isFollowed == true) {
@@ -221,7 +227,14 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     }
 
     private fun setupDefaultTab() {
-        val tabPos = activity?.intent?.extras?.getInt(TAB_POS)?:0
+        var tabPos: Int?  = activity?.intent?.extras?.getInt(TAB_POS)
+        if(tabPos == null){
+            tabPos = when(selectedTab){
+                Tab.CASTS -> 0
+                Tab.PATRON -> 1
+                Tab.PURCHASES -> 2
+            }
+        }
         binding.profileViewpager.post {
             binding.tabSelectorView.selectTabAt(tabPos)
         }
