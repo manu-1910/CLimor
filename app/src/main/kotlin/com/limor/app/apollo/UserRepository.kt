@@ -44,6 +44,9 @@ class UserRepository @Inject constructor(val apollo: Apollo) {
     suspend fun getUserByPhoneNumber(phoneNumber: String): Boolean {
         val query = GetUserByPhoneNumberQuery(phoneNumber)
         val queryResult = apollo.launchQuery(query)
+        if (BuildConfig.DEBUG) {
+            println("getUserByPhoneNumber -> ${queryResult?.data}")
+        }
         return queryResult?.data?.getUserByPhoneNumber?.isFound ?: false
     }
 
