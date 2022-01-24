@@ -2,9 +2,7 @@ package com.limor.app.scenes.utils
 
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
 import android.text.InputFilter
-import android.text.TextWatcher
 import android.view.*
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
@@ -174,6 +172,12 @@ class FragmentCreatePlaylist : DialogFragment() {
                 binding.errorTV.visibility = View.GONE
             }
         }
+        binding.etTitle.filters = arrayOf(
+            InputFilter { src, start, end, dst, dstart, dend ->
+                if (src.toString().matches(Regex("[a-zA-Z0-9]+"))) {
+                    src
+                } else ""
+            })
     }
 
     private fun setCharacterMaxLength() {
