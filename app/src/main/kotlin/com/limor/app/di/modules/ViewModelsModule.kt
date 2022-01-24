@@ -316,6 +316,11 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(MainViewModel::class)
+    abstract fun bindMainViewModel(viewModel: MainViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(UserPodcastsViewModel::class)
     abstract fun bindUserPodcastsViewModel(viewModel: UserPodcastsViewModel): ViewModel
 

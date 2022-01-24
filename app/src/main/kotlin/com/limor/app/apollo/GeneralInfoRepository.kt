@@ -176,12 +176,36 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
     suspend fun searchFollowing(
         term: String,
         limit: Int,
-        offset: Int
+        offset: Int,
     ): List<SearchFollowingQuery.SearchFollowing?> {
         val query = SearchFollowingQuery(term, limit, offset)
         val result = apollo.launchQuery(query)
         Timber.d("Search Followers -> ${result?.data?.searchFollowing?.size}")
         return result?.data?.searchFollowing ?: return emptyList()
+    }
+
+    suspend fun checkAppVersion(platform: String): GetAppVersionsQuery.GetAppVersions? {
+        val query = GetAppVersionsQuery(platform)
+        val result = apollo.launchQuery(query)
+        return result?.data?.getAppVersions
+    }
+
+    suspend fun createVendor(
+        firstName: String,
+        lastName: String,
+        email: String,
+        phone: String,
+        birthDate: String,
+    ): CreateVendorMutation.CreateVendor? {
+        val query = CreateVendorMutation(
+            firstName,
+            lastName,
+            email,
+            birthDate,
+            phone
+        )
+        val result = apollo.mutate(query)
+        return result?.data?.createVendor
     }
 
 }

@@ -750,14 +750,16 @@
         <item name="feed_purple">#623CEA</item>
         <item name="feed_orange">#FE721C</item>
     </string-array>
-    <string name="patron_carousel_slide_1_sub_title">Gain the tools to help your fans help you.</string>
-    <string name="patron_carousel_slide_2_sub_title">Give your Patrons exclusive content, access and conversation</string>
-    <string name="patron_carousel_slide_3_sub_title">Monetise, analize and convert your voice into income.</string>
+    <string name="patron_carousel_slide_1_sub_title">Limor Patron lets you put your money where your mouth is.</string>
+    <string name="patron_carousel_slide_2_sub_title">Create high-quality and exclusive premium content to share with your community.</string>
+    <string name="patron_carousel_slide_3_sub_title">Use the self monetisation features of Limor Patron to generate income through your audio content.</string>
 
-    <string name="patron_carousel_slide_1_title">Create AMA <font fgcolor='#F9BB4B'>DM’s</font> and more with your fans</string>
+    <string name="patron_carousel_slide_1_title">Share exclusive audio and spark dedicated <font fgcolor='#F9BB4B'>Social Audio</font> Conversations</string>
     <string name="patron_carousel_slide_2_title">Create premium <font fgcolor='#F9BB4B'>casts</font> for your community</string>
     <string name="patron_carousel_slide_3_title">Freedom to <font fgcolor='#F9BB4B'>monetize</font> your content</string>
     <string name="patron_carousel_slide_approved_title">Congratulations! Your request has been approved.</string>
+    <string name="patron_complete_on_boarding_title">Complete your Patron Onboarding</string>
+    <string name="patron_membership_purchased">You have purchased your patron membership</string>
     <string name="requesting">Requesting...</string>
     <string name="patron_categories">Patron Categories</string>
     <string name="patron_languages">Patron Languages</string>
@@ -909,6 +911,8 @@
     <string name="purchase_cast_description_for_comment">You have to purchase this cast to listen and leave a comment</string>
 
     <string name="my_purchases">My Purchases</string>
+    <string name="new_version_available">New Version Available</string>
+    <string name="update_description">Please update Limor for latest features</string>
     <string name="reminder">Reminder</string>
 
     <string-array name="cast_tiers">
@@ -978,6 +982,9 @@
     <string name="preview_duration">Preview Duration</string>
     <string name="preview_duration_hint">The preview duration must be at least 30 seconds long.</string>
 
+    <string name="complete_onboarding">Complete Onboarding</string>
+    <string name="digital_wallet_processing">Digital Wallet Processing</string>
+
     <string name="no_code_entered">No code entered.</string>
     <string name="error_getting_credentials">Error getting credential. Please try again.</string>
     <string name="mature_content_info_text">18+</string>
@@ -1022,5 +1029,9 @@
     <string name="plalyst_title_length_error">Title must be at least 1 character long.</string>
     <string name="newest_to_oldest">Newest to Oldest</string>
     <string name="oldest_to_newest">Oldest to Newest</string>
+
+    <string name="sub_tier_monthly">3 Months Free trial + 1 Month at</string>
+    <string name="sub_tier_yearly">3 Months Free trial + 1 Year at</string>
+    <string name="updated_app_toast">New Version Has been Installed</string>
 
 </resources>

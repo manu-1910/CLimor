@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.os.Looper
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -58,10 +59,12 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
     }
 
     private fun showProgressBar() {
-        binding.progressBar.visibility = View.VISIBLE
-        binding.checkLayout.visibility = View.GONE
-        binding.continueButton.visibility = View.GONE
-        binding.patronPlansRV.visibility = View.GONE
+        lifecycleScope.launch(Dispatchers.Main) {
+            binding.progressBar.visibility = View.VISIBLE
+            binding.checkLayout.visibility = View.GONE
+            binding.continueButton.visibility = View.GONE
+            binding.patronPlansRV.visibility = View.INVISIBLE
+        }
     }
 
     private fun hideProgressBar() {
@@ -73,13 +76,23 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         }
     }
 
+    private fun navigateToCategories() {
+        lifecycleScope.launch(Dispatchers.Main) {
+            findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
+        }
+    }
+
     private fun handlePurchase(purchase: Purchase) {
         // Verify the purchase.
         Timber.d("PURCHASE ${purchase.purchaseToken}")
         Timber.d("PURCHASE ${purchase.packageName}")
         model.consumePurchasedSub(purchase).observe(viewLifecycleOwner, {
+            if (BuildConfig.DEBUG) {
+                println("Successfully consumed purchase? -> $it, is on main -> ${Looper.getMainLooper().isCurrentThread}")
+            }
+
             if (it == "Success") {
-                findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
+                navigateToCategories()
             } else {
                 hideProgressBar()
             }
@@ -135,11 +148,11 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
                 val flowParams = BillingFlowParams.newBuilder()
                     .setSkuDetails(it)
                     .build()
-                Timber.d("In App Purchases Details ->  $it")
-                val responseCode = billingClient.launchBillingFlow(requireContext() as Activity,
-                    flowParams).responseCode
 
-                Timber.d("In App Purchases Details ->  $responseCode")
+                if (BuildConfig.DEBUG) {
+                    Timber.d("In App Purchases Details ->  $it")
+                }
+                billingClient.launchBillingFlow(requireContext() as Activity, flowParams)
             }
 
         }
@@ -205,7 +218,10 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
             params.setSkusList(skuIdList)
             params.setType(BillingClient.SkuType.SUBS)
 
-            billingClient.querySkuDetailsAsync(params.build()) { _, skuDetails ->
+            billingClient.querySkuDetailsAsync(params.build()) { result, skuDetails ->
+                if (BuildConfig.DEBUG) {
+                    println("Billing result code -> ${result.responseCode} (${result.debugMessage}")
+                }
                 runOnUiThread {  onSkuDetails(skuDetails) }
             }
         }

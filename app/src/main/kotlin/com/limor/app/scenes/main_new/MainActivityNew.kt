@@ -1,9 +1,16 @@
 package com.limor.app.scenes.main_new
 
+import android.app.AlertDialog
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -15,8 +22,15 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.android.billingclient.api.*
 import com.google.android.material.navigation.NavigationBarView
+import com.google.android.play.core.appupdate.AppUpdateInfo
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import com.limor.app.BuildConfig
 import com.limor.app.R
+import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.databinding.ActivityMainNewBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
 import com.limor.app.dm.ChatManager
@@ -25,6 +39,8 @@ import com.limor.app.dm.SessionsViewModel
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
+import com.limor.app.scenes.main_new.view_model.MainViewModel
+import com.limor.app.scenes.utils.*
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main_new.view_model.MainActivityViewModel
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
@@ -32,7 +48,6 @@ import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.service.AudioService
-import com.limor.app.service.PlayBillingHandler
 import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.TagUIModel
 import com.limor.app.util.AppNavigationManager
@@ -40,7 +55,9 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main_new.*
+import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
 import kotlinx.coroutines.*
+import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -56,12 +73,18 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     lateinit var chatManager: ChatManager
 
     @Inject
+    lateinit var infoRepository: GeneralInfoRepository
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    val model: MainViewModel by viewModels { viewModelFactory }
+
+    @Inject
     lateinit var playerBinder: PlayerBinder
 
     @Inject
     lateinit var chatRepository: ChatRepository
 
-    lateinit var viewModelFactory: ViewModelProvider.Factory
     private val mainModel: MainActivityViewModel by viewModels { viewModelFactory }
 
     private var activityPlayerViewManager: ActivityPlayerViewManager? = null
@@ -78,6 +101,8 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         setupFabClickListener()
         setUpBottomNavigation()
         setupDefaultValues()
+
+        checkAppVersion()
 
         activityPlayerViewManager =
             ActivityPlayerViewManager(supportFragmentManager, playerBinding, playerBinder)
@@ -96,6 +121,140 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
             } else {
                 navigation.removeBadge(R.id.navigation_direct_messenger)
             }
+        }
+    }
+
+    private fun onAppVersion(versionCode: Int, priority: Int) {
+        if (versionCode <= BuildConfig.VERSION_CODE) {
+            return
+        }
+
+        //Launch Dialog by priority
+        //showUpdateDialog("", res.priority!!)
+        val appUpdateManager = AppUpdateManagerFactory.create(this)
+
+        // Get the priority to Define App Update Type
+        val updateType = if (priority == 5)
+            AppUpdateType.IMMEDIATE
+        else
+            AppUpdateType.FLEXIBLE
+
+        // Checks that the platform will allow the specified type of update.
+        appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
+
+            if (BuildConfig.DEBUG) {
+                Timber.d("appUpdateInfoTask -> $appUpdateInfo")
+            }
+            onUpdateInfo(appUpdateInfo, updateType, appUpdateManager)
+
+        }.addOnFailureListener {
+            Timber.e(it)
+
+            if (BuildConfig.DEBUG) {
+                Timber.d("Getting app update info failed -> $it exception")
+            }
+        }
+
+    }
+
+    private fun onUpdateInfo(appUpdateInfo: AppUpdateInfo, updateType: Int, manager: AppUpdateManager) {
+        val isAvailable = appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+        val isAllowed = appUpdateInfo.isUpdateTypeAllowed(updateType)
+
+        if (isAvailable && isAllowed) {
+            // Request the update.
+
+            try {
+                manager.startUpdateFlowForResult(
+                    appUpdateInfo,
+                    updateType,
+                    this,
+                    UPDATE_REQUEST_CODE
+                )
+            } catch (throwable: Throwable) {
+                throwable.printStackTrace()
+            }
+
+        } else if (BuildConfig.DEBUG) {
+            Timber.d("App update: update not supported.")
+        }
+    }
+
+    private fun checkAppVersion() {
+        model.checkAppVersion(PLATFORM).observe(this) { res ->
+            if (BuildConfig.DEBUG) {
+                Timber.d("Got app version $res")
+            }
+            res?.let { data ->
+                if (BuildConfig.DEBUG) {
+                    Timber.d("App VERSION -> $data")
+                }
+
+                onAppVersion(data.buildNumber, data.priority)
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == UPDATE_REQUEST_CODE) {
+
+            if (BuildConfig.DEBUG) {
+                Timber.d("Got result from update task: $data")
+            }
+
+            if (resultCode == RESULT_OK) {
+                // binding.bottomBar.snackbar(getString(R.string.updated_app_toast))
+
+            } else if (BuildConfig.DEBUG) {
+                Timber.e("LIMOR -> Update flow cancelled! Result code: $resultCode")
+
+            }
+        }
+    }
+
+    private fun showUpdateDialog(versionName: String, priority: Int) {
+        LimorDialog(layoutInflater).apply {
+            setTitle(R.string.purchase_cast_title)
+            setMessage(R.string.purchase_cast_description_for_comment)
+            setIcon(R.drawable.ic_comment_purchase)
+            addButton(R.string.cancel, false)
+            addButton(R.string.buy_now, true) {
+
+            }
+        }.show()
+
+        val dialogBuilder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_force_update, null)
+        dialogBuilder.setView(dialogView)
+        dialogBuilder.setCancelable(false)
+        val dialog: AlertDialog = dialogBuilder.create()
+
+        if (priority == 5) {
+            // Mark as mandatory update
+            dialogView.cancelButton.visibility = View.GONE
+        }
+
+        dialogView.cancelButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogView.okButton.setOnClickListener {
+            // Taking to play store
+            try {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CommonsKt.APP_URI)))
+            } catch (e: ActivityNotFoundException) {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CommonsKt.APP_URL)))
+            }
+            dialog.dismiss()
+        }
+
+        val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
+
+        dialog.apply {
+            window?.setBackgroundDrawable(inset)
+            show()
         }
     }
 
@@ -275,6 +434,11 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
             }
         }
         checkPodCastDynamicLink()
+    }
+
+    companion object{
+        val PLATFORM = "and"
+        val UPDATE_REQUEST_CODE = 5000
     }
 
 }

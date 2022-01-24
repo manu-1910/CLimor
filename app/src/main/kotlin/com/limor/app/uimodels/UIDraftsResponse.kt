@@ -70,4 +70,4 @@ data class UITimeStamp(
 data class UISimpleCategory(
     val name: String,
     val categoryId: Int
-)
+): Serializable

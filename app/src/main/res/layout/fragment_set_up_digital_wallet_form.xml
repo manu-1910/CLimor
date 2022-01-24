@@ -56,7 +56,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionDone"
-                android:inputType="phone"
+                android:inputType="textPersonName"
                 android:maxLines="1" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -80,7 +80,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionDone"
-                android:inputType="phone"
+                android:inputType="textPersonName"
                 android:maxLines="1" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -95,6 +95,7 @@
             android:layout_marginTop="@dimen/marginTwenty"
             android:hint="@string/date_of_birth"
             android:visibility="visible"
+            android:enabled="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etEnterLastName">
@@ -130,7 +131,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionDone"
-                android:inputType="phone"
+                android:inputType="textEmailAddress"
                 android:maxLines="1" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -214,7 +215,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionDone"
-                android:editable="false"
+                android:enabled="false"
                 android:text="Great Britain"
                 android:inputType="phone"
                 android:maxLines="1" />
@@ -233,7 +234,7 @@
             android:text="@string/submit"
             android:textColor="@color/black"
             android:textAllCaps="false"
-            android:fontFamily="@font/roboto"
+            android:fontFamily="@font/roboto_bold"
             app:layout_constraintTop_toBottomOf="@id/etEnterCountry"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

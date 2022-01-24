@@ -17,19 +17,28 @@ import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
+import com.limor.app.service.DetailsAvailableListener
+import com.limor.app.service.ProductDetails
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
 
 class ViewHolderRecast(
     val binding: ItemHomeFeedRecastedBinding,
     private val onLikeClick: (castId: Int, like: Boolean) -> Unit,
+    private val onCastClick: (cast: CastUIModel, sku: SkuDetails?) -> Unit,
     private val onRecastClick: (castId: Int, isRecasted: Boolean) -> Unit,
     private val onCommentsClick: (CastUIModel, SkuDetails?) -> Unit,
     private val onShareClick: (CastUIModel, onShared: ((shareResult: ShareResult) -> Unit)?) -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val onUserMentionClick: (username: String, userId: Int) -> Unit,
-) : ViewHolderBindable<CastUIModel>(binding) {
+    private val productDetailsFetcher: ProductDetails
+) : ViewHolderBindable<CastUIModel>(binding), DetailsAvailableListener {
+
+    private var skuDetails: SkuDetails? = null
+    private var cast: CastUIModel? = null
+
     override fun bind(item: CastUIModel) {
+        cast = item
 
         binding.tvRecastUserName.text = item.recaster?.username
         binding.tvRecastUserSubtitle.text = item.getCreationDateAndPlace(context, false)
@@ -109,7 +118,7 @@ class ViewHolderRecast(
         }
 
         binding.castCard.setOnClickListener {
-            onCastClick(item)
+            onCastClicked(item)
         }
 
         binding.btnPodcastComments.throttledClick {
@@ -121,6 +130,12 @@ class ViewHolderRecast(
                 item.updateShares(shareResult)
                 binding.btnPodcastReply.shared = item.isShared ?: false
             }
+        }
+
+        skuDetails = null
+
+        if (item.patronCast == true) {
+            fetchDetails()
         }
     }
 
@@ -202,8 +217,18 @@ class ViewHolderRecast(
         binding.btnPodcastReply.shared = item.isShared ?: false
     }
 
-    private fun onCastClick(item: CastUIModel) {
-        (binding.root.context.getActivity() as? PlayerViewManager)?.showExtendedPlayer(item.id)
+    private fun fetchDetails() {
+        val priceId = cast?.patronDetails?.priceId ?: return
+        val details = skuDetails
+        if (details == null || details.sku != priceId) {
+            productDetailsFetcher.getPrice(priceId, this)
+            return
+        }
+    }
+
+    private fun onCastClicked(item: CastUIModel) {
+        onCastClick(item, skuDetails)
+        // (binding.root.context.getActivity() as? PlayerViewManager)?.showExtendedPlayer(item.id)
     }
 
     private fun openUserProfile(item: CastUIModel) {
@@ -218,6 +243,13 @@ class ViewHolderRecast(
         userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, item.recaster?.username)
         userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, item.recaster?.id)
         context.startActivity(userProfileIntent)
+    }
+
+    override fun onDetailsAvailable(details: Map<String, SkuDetails>) {
+        val priceId = cast?.patronDetails?.priceId ?: return
+        if (details.containsKey(priceId)) {
+            skuDetails = details[priceId]
+        }
     }
 
 }

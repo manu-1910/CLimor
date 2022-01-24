@@ -45,12 +45,17 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import android.content.res.XmlResourceParser
 import android.util.SparseArray
+import com.limor.app.BuildConfig
+import java.time.LocalDate
 import kotlin.collections.HashMap
 
 
 class CommonsKt {
 
     companion object {
+
+        val APP_URL: String = "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"
+        val APP_URI: String = "market://details?id=${BuildConfig.APPLICATION_ID}"
 
         //val audioFileFormat: String = ".amr"
         val audioFileFormat: String = ".wav"
@@ -67,6 +72,11 @@ class CommonsKt {
                 val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm")
                 formatter.format(date)
             }
+        }
+
+        fun getFormattedLocalDate(localDate: LocalDate?): String {
+            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH)
+            return formatter.format(localDate)?:""
         }
 
 
