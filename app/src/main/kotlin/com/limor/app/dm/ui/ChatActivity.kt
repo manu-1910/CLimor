@@ -146,12 +146,28 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun markAsRead(chatData: ChatWithData) {
-        chatData.messages.lastOrNull()?.let { lastChatMessage ->
-            chatData.sessionWithUser.session.copy(
-                lastReadMessageId = lastChatMessage.id,
-                unreadCount = 0
-            )
+        if (BuildConfig.DEBUG) {
+            println("Messages: ${chatData.messages}")
         }
+        val lastChatMessage = chatData.messages.lastOrNull() ?: return
+
+        if (chatData.sessionWithUser.session.lastReadMessageId == lastChatMessage.id) {
+            return
+        }
+
+        // update in-memory object just in case of delayed synchronization
+        chatData.sessionWithUser.session.apply {
+            lastReadMessageId = lastChatMessage.id
+            unreadCount = 0
+        }
+
+        chatData.sessionWithUser.session.copy(
+            lastReadMessageId = lastChatMessage.id,
+            unreadCount = 0
+        ).also {
+            chat.updateSession(it)
+        }
+
     }
 
     private fun setHeader(chatData: ChatWithData) {
