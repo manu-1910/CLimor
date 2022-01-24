@@ -30,12 +30,34 @@
         android:textColor="@color/textPrimary"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:lines="1"
+        android:ellipsize="end"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/description"
         app:layout_constraintStart_toEndOf="@+id/person_image"
+        app:layout_constraintEnd_toStartOf="@+id/textUnread"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        tools:text="John Mendy John Mendy John Mendy" />
+        tools:text="John Mendy John Mendy John Mendy Handy" />
+
+    <TextView
+        android:id="@+id/textUnread"
+        android:layout_width="wrap_content"
+        android:layout_height="21dp"
+        android:maxWidth="50dp"
+        tools:text="100"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:textSize="14sp"
+        android:textColor="#fff"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@+id/full_name"
+        app:layout_constraintBottom_toBottomOf="@+id/full_name"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:fontFamily="@font/roboto_bold"
+        android:background="@drawable/bg_unread_count_blue"
+        app:layout_constraintRight_toRightOf="parent"/>
 
     <TextView
         android:id="@+id/textTime"
