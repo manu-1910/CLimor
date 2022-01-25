@@ -78,10 +78,12 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.0"
         android:background="@color/white"
         android:layout_marginTop="@dimen/marginSmall"
         android:paddingStart="@dimen/marginTwenty"
@@ -153,8 +155,7 @@
             android:paddingBottom="@dimen/imageSizeHuge"
             android:clipToPadding="false"
             app:layout_constraintTop_toBottomOf="@id/filterTV"
-            tools:itemCount="15"
-            tools:layout_editor_absoluteX="-86dp"
+            tools:itemCount="1"
             tools:listitem="@layout/layout_playlist_cast" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
