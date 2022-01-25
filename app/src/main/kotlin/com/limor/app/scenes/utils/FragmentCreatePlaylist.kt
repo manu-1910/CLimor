@@ -6,6 +6,7 @@ import android.text.InputFilter
 import android.view.*
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doBeforeTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -168,17 +169,15 @@ class FragmentCreatePlaylist : DialogFragment() {
         }
         setCharacterMaxLength()
         binding.etTitle.doAfterTextChanged {
-            if (binding.errorTV.visibility == View.VISIBLE) {
+            if (it.toString().matches(Regex("[a-zA-Z0-9]*[\"/@#$%^&_+=()`~!*\':;/,.<>?'|{}-]+[a-zA-Z0-9]*"))) {
+                binding.errorTV.text = getString(R.string.special_characters_not_allowed)
+                binding.errorTV.visibility = View.VISIBLE
+                binding.btnCreate.isEnabled = false
+            } else {
                 binding.errorTV.visibility = View.GONE
+                binding.btnCreate.isEnabled = (it?.length ?: 0) > 0
             }
-            binding.btnCreate.isEnabled = (it?.length ?: 0) > 0
         }
-        binding.etTitle.filters = arrayOf(
-            InputFilter { src, start, end, dst, dstart, dend ->
-                if (src.toString().matches(Regex("[a-zA-Z0-9]+"))) {
-                    src
-                } else ""
-            })
     }
 
     private fun setCharacterMaxLength() {
