@@ -171,6 +171,7 @@ class FragmentCreatePlaylist : DialogFragment() {
             if (binding.errorTV.visibility == View.VISIBLE) {
                 binding.errorTV.visibility = View.GONE
             }
+            binding.btnCreate.isEnabled = (it?.length ?: 0) > 0
         }
         binding.etTitle.filters = arrayOf(
             InputFilter { src, start, end, dst, dstart, dend ->
