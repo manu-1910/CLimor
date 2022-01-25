@@ -101,6 +101,7 @@
             android:background="@drawable/bg_round_yellow_ripple_new"
             android:fontFamily="@font/roboto_bold"
             android:text="@string/label_create"
+            android:enabled="false"
             android:textAllCaps="false"
             android:textColor="@color/textPrimary"
             android:textSize="@dimen/textSize14"/>
