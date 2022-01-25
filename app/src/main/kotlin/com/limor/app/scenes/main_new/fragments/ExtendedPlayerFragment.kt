@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.dynamiclinks.ktx.*
@@ -20,6 +21,7 @@ import com.limor.app.R
 import com.limor.app.databinding.FragmentExtendedPlayerBinding
 import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.*
+import com.limor.app.playlists.PlaylistsViewModel
 import com.limor.app.playlists.SaveToPlaylistFragment
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
@@ -80,6 +82,8 @@ class ExtendedPlayerFragment : UserMentionFragment(),
 
     private val podcastViewModel: PodcastViewModel by viewModels { viewModelFactory }
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
+    private val playlistsViewModel: PlaylistsViewModel by viewModels { viewModelFactory }
+
     private var castId: Int = 0
     private val castIds: List<Int>? by lazy {
         (requireArguments()[KEY_CAST_IDS] as? IntArray)?.asList()
@@ -591,9 +595,17 @@ class ExtendedPlayerFragment : UserMentionFragment(),
             openUserProfile(cast)
         }
 
-        binding.ivAddToPlaylist.setOnClickListener {
-            SaveToPlaylistFragment.newInstance(cast.id)
-                .show(parentFragmentManager, SaveToPlaylistFragment.TAG)
+        binding.ivAddToPlaylist.throttledClick {
+            playlistsViewModel.getPlaylistsOfCasts(cast.id).observe(viewLifecycleOwner){
+                val playlistSize = it?.size ?: 0
+                if(playlistSize == 0){
+                    FragmentCreatePlaylist.createPlaylist(cast.id)
+                        .show(parentFragmentManager, SaveToPlaylistFragment.TAG)
+                } else{
+                    SaveToPlaylistFragment.newInstance(cast.id)
+                        .show(parentFragmentManager, SaveToPlaylistFragment.TAG)
+                }
+            }
         }
     }
 
