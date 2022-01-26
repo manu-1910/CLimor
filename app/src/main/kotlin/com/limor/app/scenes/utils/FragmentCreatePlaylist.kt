@@ -168,8 +168,10 @@ class FragmentCreatePlaylist : DialogFragment() {
             binding.textInputLayout.hint = getString(R.string.label_rename_playlist)
         }
         setCharacterMaxLength()
+
+        val disallowedRegex = Regex(".*[^a-zA-Z0-9 ]+.*")
         binding.etTitle.doAfterTextChanged {
-            if (it.toString().matches(Regex("[a-zA-Z0-9]*[\"/@#$%^&_+=()`~!*\':;/,.<>?'|{}-]+[a-zA-Z0-9]*"))) {
+            if (binding.etTitle.text.toString().matches(disallowedRegex)) {
                 binding.errorTV.text = getString(R.string.special_characters_not_allowed)
                 binding.errorTV.visibility = View.VISIBLE
                 binding.btnCreate.isEnabled = false
