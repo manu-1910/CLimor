@@ -26,6 +26,7 @@ import com.limor.app.playlists.models.PlaylistCastUIModel
 import com.limor.app.playlists.PlaylistCastsAdapter
 import com.limor.app.playlists.SaveToPlaylistFragment
 import com.limor.app.playlists.models.PlaylistUIModel
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.utils.FragmentCreatePlaylist
 
@@ -175,22 +176,38 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
         binding.btnEditPlaylist.visibleIf(playlist.isCustom)
     }
 
-    private fun playPodcast(podcast: PlaylistCastUIModel?, podcasts: List<PlaylistCastUIModel?>) {
-        if (podcast != null) {
-            val result = arrayListOf<PlaylistCastUIModel>()
-            podcasts.forEach {
-                it?.let {
-                    result.add(it)
-                }
-            }
-            (activity as? PlayerViewManager)?.showPlayer(
-                PlayerViewManager.PlayerArgs(
-                    PlayerViewManager.PlayerType.EXTENDED,
-                    podcast.id,
-                    result.map { it.id }
-                )
-            )
+    private fun playPodcast(
+        playlistCastUIModel: PlaylistCastUIModel?,
+        podcasts: List<PlaylistCastUIModel?>
+    ) {
+        val podcast = playlistCastUIModel ?: return
+
+        if (podcast.isPatronCast && !podcast.isPurchased) {
+
+            LimorDialog(layoutInflater).apply {
+                setTitle(R.string.purchase_cast_title)
+                setMessage(R.string.purchase_cast_description)
+                setIcon(R.drawable.ic_purchase)
+                addButton(R.string.ok, false)
+            }.show()
+
+            return;
         }
+
+        val result = arrayListOf<PlaylistCastUIModel>()
+        podcasts.forEach {
+            it?.let {
+                result.add(it)
+            }
+        }
+        (activity as? PlayerViewManager)?.showPlayer(
+            PlayerViewManager.PlayerArgs(
+                PlayerViewManager.PlayerType.EXTENDED,
+                podcast.id,
+                result.map { it.id }
+            )
+        )
+
     }
 
     private fun setUpRecyclerView() {
