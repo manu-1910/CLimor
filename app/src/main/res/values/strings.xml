@@ -1034,4 +1034,6 @@
     <string name="sub_tier_yearly">3 Months Free trial + 1 Year at</string>
     <string name="updated_app_toast">New Version Has been Installed</string>
 
+    <string name="special_characters_not_allowed">Special characters are not allowed</string>
+
 </resources>
