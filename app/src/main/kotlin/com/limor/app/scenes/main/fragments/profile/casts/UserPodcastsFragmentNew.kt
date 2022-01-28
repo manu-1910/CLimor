@@ -24,6 +24,7 @@ import com.limor.app.databinding.FragmentUserCastsBinding
 import com.limor.app.di.Injectable
 import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.requireTag
+import com.limor.app.extensions.visibleIf
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
@@ -252,25 +253,21 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     private fun onLoadCasts(casts: List<CastUIModel>) {
         if (castOffset == 0) {
             currentCasts.clear()
-            lifecycleScope.launch {
-                JwtChecker.getUserIdFromJwt(false)?.let {
-                    if (user.id == it) {
-                        if (casts.isEmpty()) {
-                            binding.noPodcastsLayout.visibility = View.VISIBLE
-                        }
 
-                    } else {
-                        if (casts.isEmpty()) {
-                            binding.noPodcastsLayout.visibility = View.VISIBLE
-                            binding.castsTitleTV.visibility = View.VISIBLE
-                            binding.errorTV.text = resources.getString(R.string.empty_scenario_others_casts_description)
-                            binding.errorTV.visibility = View.VISIBLE
-                            binding.recordEmptyIV.visibility = View.VISIBLE
-                            binding.btnRecordPodcast.visibility = View.GONE
-                        } else{
-                            binding.noPodcastsLayout.visibility = View.GONE
-                        }
-                    }
+            if (user.id == PrefsHandler.getCurrentUserId(requireContext())) {
+
+                binding.noPodcastsLayout.visibleIf(casts.isEmpty())
+
+            } else {
+                if (casts.isEmpty()) {
+                    binding.noPodcastsLayout.visibility = View.VISIBLE
+                    binding.castsTitleTV.visibility = View.VISIBLE
+                    binding.errorTV.text = resources.getString(R.string.empty_scenario_others_casts_description)
+                    binding.errorTV.visibility = View.VISIBLE
+                    binding.recordEmptyIV.visibility = View.VISIBLE
+                    binding.btnRecordPodcast.visibility = View.GONE
+                } else{
+                    binding.noPodcastsLayout.visibility = View.GONE
                 }
             }
 
