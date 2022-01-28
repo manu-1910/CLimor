@@ -1,6 +1,7 @@
 package com.limor.app.dm.ui
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ import android.net.Uri
 import android.webkit.URLUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.limor.app.dm.ChatMessage
 import com.limor.app.dm.ChatSessionWithUser
 import com.limor.app.dm.ChatTarget
@@ -88,9 +90,9 @@ class ChatAdapter(
         }
     }
 
-    private fun openUrl(url: String) {
+    private fun openUrlInBrowser(url: String) {
         try {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+            val intent = Intent(ACTION_VIEW, Uri.parse(url)).apply {
                 addCategory(Intent.CATEGORY_BROWSABLE)
             }
             context.startActivity(intent)
@@ -98,6 +100,37 @@ class ChatAdapter(
             e.printStackTrace()
             // ignored for now
         }
+    }
+
+    private fun openPodcast(podcastId: Int) {
+        val activity = context as? Activity ?: return
+
+        Intent().apply {
+            putExtra(ChatActivity.EXTRA_CHAT_ACTION, ChatActivity.ACTION_OPEN_PODCAST)
+            putExtra(ChatActivity.EXTRA_PODCAST_ID, podcastId)
+        }.also {
+            activity.apply {
+                setResult(Activity.RESULT_OK, it)
+                finish()
+            }
+        }
+    }
+
+    private fun openUrl(url: String) {
+        val uri =  Uri.parse(url)
+        FirebaseDynamicLinks
+            .getInstance()
+            .getDynamicLink(uri)
+            .addOnSuccessListener { pendingDynamicLinkData ->
+                // even if the function implementation says otherwise the pendingDynamicLinkData
+                // can be null, so do not remove the .? below
+                pendingDynamicLinkData?.link?.getQueryParameter("id")?.toInt()?.let {
+                    openPodcast(it)
+                }
+            }
+            .addOnFailureListener {
+                openUrlInBrowser(url)
+            }
     }
 
     override fun getItemCount() = currentList.size
