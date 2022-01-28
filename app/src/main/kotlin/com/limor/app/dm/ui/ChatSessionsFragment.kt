@@ -1,11 +1,13 @@
 package com.limor.app.dm.ui
 
+import android.app.Activity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.limor.app.BuildConfig
@@ -32,6 +34,17 @@ class ChatSessionsFragment : BaseFragment() {
     private lateinit var sessionsAdapter: SessionsAdapter
 
     private var searchText = ""
+
+    var chatLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            println(result)
+            if (result.resultCode == Activity.RESULT_OK && result.data?.hasExtra(ChatActivity.EXTRA_CHAT_ACTION) == true) {
+                val podcastId = result.data!!.getIntExtra(ChatActivity.EXTRA_PODCAST_ID, 0)
+                if (podcastId > 0) {
+                    openPodcast(podcastId)
+                }
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,8 +85,12 @@ class ChatSessionsFragment : BaseFragment() {
         startChat(session.user.limorUserId)
     }
 
+    private fun openPodcast(podcastId: Int) {
+
+    }
+
     private fun startChat(limorUserId: Int) {
-        ChatActivity.start(requireContext(), limorUserId)
+        chatLauncher.launch(ChatActivity.getStartIntent(requireContext(), limorUserId))
     }
 
     private fun setViews() {
