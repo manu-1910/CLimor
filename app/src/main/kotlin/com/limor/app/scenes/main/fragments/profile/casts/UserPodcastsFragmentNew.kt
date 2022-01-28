@@ -260,7 +260,16 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                         }
 
                     } else {
-                        binding.noPodcastsLayout.visibility = View.GONE
+                        if (casts.isEmpty()) {
+                            binding.noPodcastsLayout.visibility = View.VISIBLE
+                            binding.castsTitleTV.visibility = View.VISIBLE
+                            binding.errorTV.text = resources.getString(R.string.empty_scenario_others_casts_description)
+                            binding.errorTV.visibility = View.VISIBLE
+                            binding.recordEmptyIV.visibility = View.VISIBLE
+                            binding.btnRecordPodcast.visibility = View.GONE
+                        } else{
+                            binding.noPodcastsLayout.visibility = View.GONE
+                        }
                     }
                 }
             }

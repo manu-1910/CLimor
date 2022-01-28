@@ -21,11 +21,29 @@
         android:layout_height="0dp"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="@+id/casts_list">
 
+        <ImageView
+            android:id="@+id/recordEmptyIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/record_icon_empty_scenario"
+            android:visibility="gone"/>
+
         <TextView
+            android:id="@+id/castsTitleTV"
+            android:fontFamily="@font/roboto_bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/casts"
+            android:textSize="@dimen/textSizeLarge"
+            android:layout_marginTop="@dimen/margin10"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/errorTV"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -38,6 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Record"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
