@@ -126,7 +126,7 @@ class ChatAdapter(
                 // can be null, so do not remove the .? below
                 pendingDynamicLinkData?.link?.getQueryParameter("id")?.toInt()?.let {
                     openPodcast(it)
-                }
+                } ?: openUrlInBrowser(url)
             }
             .addOnFailureListener {
                 openUrlInBrowser(url)
