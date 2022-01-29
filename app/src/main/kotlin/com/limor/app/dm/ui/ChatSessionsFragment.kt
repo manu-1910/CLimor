@@ -17,6 +17,7 @@ import com.limor.app.dm.ChatSessionWithUser
 import com.limor.app.dm.ChatTarget
 import com.limor.app.dm.SessionsViewModel
 import com.limor.app.extensions.hideKeyboard
+import com.limor.app.scenes.utils.PlayerViewManager
 import org.jetbrains.anko.sdk23.listeners.onFocusChange
 import javax.inject.Inject
 
@@ -35,9 +36,11 @@ class ChatSessionsFragment : BaseFragment() {
 
     private var searchText = ""
 
-    var chatLauncher =
+    private var chatLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            println(result)
+            if (BuildConfig.DEBUG) {
+                println("chatLauncher.onActivityResult -> ${result.data}")
+            }
             if (result.resultCode == Activity.RESULT_OK && result.data?.hasExtra(ChatActivity.EXTRA_CHAT_ACTION) == true) {
                 val podcastId = result.data!!.getIntExtra(ChatActivity.EXTRA_PODCAST_ID, 0)
                 if (podcastId > 0) {
@@ -86,7 +89,16 @@ class ChatSessionsFragment : BaseFragment() {
     }
 
     private fun openPodcast(podcastId: Int) {
-
+        if (BuildConfig.DEBUG) {
+            println("Will open podcast $podcastId")
+        }
+        (activity as? PlayerViewManager)?.showPlayer(
+            PlayerViewManager.PlayerArgs(
+                PlayerViewManager.PlayerType.EXTENDED,
+                podcastId,
+                listOf()
+            )
+        )
     }
 
     private fun startChat(limorUserId: Int) {
