@@ -247,14 +247,16 @@ class ChatActivity : AppCompatActivity() {
     companion object {
         const val KEY_LIMOR_USER_ID = "KEY_LIMOR_USER_ID"
 
+        const val EXTRA_CHAT_ACTION = "EXTRA_CHAT_ACTION"
+        const val EXTRA_PODCAST_ID = "EXTRA_PODCAST_ID"
+        const val ACTION_OPEN_PODCAST = "ACTION_OPEN_PODCAST"
+
         const val draftDebounceTimeMillis = 500L
 
-        fun start(context: Context, limorUserId: Int) {
+        fun getStartIntent(context: Context, limorUserId: Int) =
             Intent(context, ChatActivity::class.java).apply {
                 putExtra(KEY_LIMOR_USER_ID, limorUserId)
-            }.also {
-                context.startActivity(it)
             }
-        }
+
     }
 }

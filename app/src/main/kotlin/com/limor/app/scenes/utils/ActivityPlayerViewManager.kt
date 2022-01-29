@@ -4,6 +4,7 @@ import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.exoplayer2.Player
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
 import com.limor.app.extensions.makeGone
@@ -65,7 +66,10 @@ class ActivityPlayerViewManager(
 
     override fun showPlayer(args: PlayerViewManager.PlayerArgs, onTransitioned: (() -> Unit)?) {
         currentArgs = args
-        Timber.d("Clicked inside ${currentArgs}")
+
+        if (BuildConfig.DEBUG) {
+            Timber.d("Clicked inside $currentArgs")
+        }
 
         setTransitionCallback(onTransitioned)
 
@@ -73,7 +77,11 @@ class ActivityPlayerViewManager(
             PlayerViewManager.PlayerType.SMALL -> {
                 playerBinding.playerContainer.makeVisible()
                 playerBinding.motionLayout.apply {
-                    transitionToStart()
+                    if (playerBinding.motionLayout.currentState == R.id.start) {
+                        toggleFragments(true)
+                    } else {
+                        transitionToStart()
+                    }
                 }
             }
             PlayerViewManager.PlayerType.EXTENDED -> {
@@ -162,6 +170,9 @@ class ActivityPlayerViewManager(
     }
 
     override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int) {
+        if (BuildConfig.DEBUG) {
+            println("onTransitionCompleted -> $currentId, is start -> ${currentId == R.id.start}")
+        }
         val isAtStart = currentId == R.id.start
         // "at start" means the bottom mini player, check R.xml.container_transition_player_scene
         // where the @+id/start ConstraintSet has the mini player height and position, so when the
@@ -170,6 +181,9 @@ class ActivityPlayerViewManager(
     }
 
     override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int) {
+        if (BuildConfig.DEBUG) {
+            println("onTransitionStarted -> $startId to $endId")
+        }
         // All transitions should always start with the extended player, there are these 2 cases:
         // 1. from mini player -> extended player
         // 2. from extended player -> mini player
@@ -187,6 +201,14 @@ class ActivityPlayerViewManager(
         toggleFragments(false)
     }
 
-    override fun onTransitionChange(motionLayout: MotionLayout, startId: Int, endId: Int, progress: Float) = Unit
-    override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) = Unit
+    override fun onTransitionChange(motionLayout: MotionLayout, startId: Int, endId: Int, progress: Float) {
+        if (BuildConfig.DEBUG) {
+            println("onTransitionChange from $startId to $endId at progress of $progress.")
+        }
+    }
+    override fun onTransitionTrigger(p0: MotionLayout?, triggerId: Int, positive: Boolean, progress: Float) {
+        if (BuildConfig.DEBUG) {
+            println("onTransitionTrigger from $triggerId. Is positive -> $positive, at progress of $progress. ")
+        }
+    }
 }

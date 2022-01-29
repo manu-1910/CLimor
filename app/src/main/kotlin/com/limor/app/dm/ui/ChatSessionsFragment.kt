@@ -1,11 +1,13 @@
 package com.limor.app.dm.ui
 
+import android.app.Activity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.limor.app.BuildConfig
@@ -15,6 +17,7 @@ import com.limor.app.dm.ChatSessionWithUser
 import com.limor.app.dm.ChatTarget
 import com.limor.app.dm.SessionsViewModel
 import com.limor.app.extensions.hideKeyboard
+import com.limor.app.scenes.utils.PlayerViewManager
 import org.jetbrains.anko.sdk23.listeners.onFocusChange
 import javax.inject.Inject
 
@@ -32,6 +35,19 @@ class ChatSessionsFragment : BaseFragment() {
     private lateinit var sessionsAdapter: SessionsAdapter
 
     private var searchText = ""
+
+    private var chatLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (BuildConfig.DEBUG) {
+                println("chatLauncher.onActivityResult -> ${result.data}")
+            }
+            if (result.resultCode == Activity.RESULT_OK && result.data?.hasExtra(ChatActivity.EXTRA_CHAT_ACTION) == true) {
+                val podcastId = result.data!!.getIntExtra(ChatActivity.EXTRA_PODCAST_ID, 0)
+                if (podcastId > 0) {
+                    openPodcast(podcastId)
+                }
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,8 +88,21 @@ class ChatSessionsFragment : BaseFragment() {
         startChat(session.user.limorUserId)
     }
 
+    private fun openPodcast(podcastId: Int) {
+        if (BuildConfig.DEBUG) {
+            println("Will open podcast $podcastId")
+        }
+        (activity as? PlayerViewManager)?.showPlayer(
+            PlayerViewManager.PlayerArgs(
+                PlayerViewManager.PlayerType.EXTENDED,
+                podcastId,
+                listOf()
+            )
+        )
+    }
+
     private fun startChat(limorUserId: Int) {
-        ChatActivity.start(requireContext(), limorUserId)
+        chatLauncher.launch(ChatActivity.getStartIntent(requireContext(), limorUserId))
     }
 
     private fun setViews() {
