@@ -36,6 +36,7 @@ import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
 import com.limor.app.dm.ChatManager
 import com.limor.app.dm.ChatRepository
 import com.limor.app.dm.SessionsViewModel
+import com.limor.app.events.OpenSharedPodcastEvent
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
@@ -57,6 +58,7 @@ import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main_new.*
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import javax.inject.Inject
@@ -386,6 +388,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     }
 
     private fun openCast(castId: Int) {
+        EventBus.getDefault().post(OpenSharedPodcastEvent(podcastId = castId))
         showPlayer(
             PlayerViewManager.PlayerArgs(
                 PlayerViewManager.PlayerType.EXTENDED,
