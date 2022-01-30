@@ -13,6 +13,8 @@ import androidx.navigation.fragment.findNavController
 import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.FragmentCommentRepliesBinding
+import com.limor.app.dm.ui.ShareDialog
+import com.limor.app.events.OpenSharedPodcastEvent
 import com.limor.app.extensions.dismissFragment
 import com.limor.app.extensions.highlight
 import com.limor.app.extensions.showKeyboard
@@ -33,6 +35,9 @@ import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.util.requestRecordPermissions
 import com.xwray.groupie.GroupieAdapter
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import timber.log.Timber
 
 class FragmentCommentReplies : UserMentionFragment() {
@@ -77,6 +82,11 @@ class FragmentCommentReplies : UserMentionFragment() {
 
     override fun reload() {
         commentsViewModel.loadCommentById(parentCommentId)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOpenSharedPodcastEvent(event: OpenSharedPodcastEvent) {
+        parentFragment?.dismissFragment()
     }
 
     override fun onCreateView(
