@@ -16,8 +16,10 @@ import com.limor.app.databinding.FragmentChatSessionsBinding
 import com.limor.app.dm.ChatSessionWithUser
 import com.limor.app.dm.ChatTarget
 import com.limor.app.dm.SessionsViewModel
+import com.limor.app.events.OpenSharedPodcastEvent
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.utils.PlayerViewManager
+import org.greenrobot.eventbus.EventBus
 import org.jetbrains.anko.sdk23.listeners.onFocusChange
 import javax.inject.Inject
 
@@ -92,6 +94,7 @@ class ChatSessionsFragment : BaseFragment() {
         if (BuildConfig.DEBUG) {
             println("Will open podcast $podcastId")
         }
+        EventBus.getDefault().post(OpenSharedPodcastEvent(podcastId = podcastId))
         (activity as? PlayerViewManager)?.showPlayer(
             PlayerViewManager.PlayerArgs(
                 PlayerViewManager.PlayerType.EXTENDED,

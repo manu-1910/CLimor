@@ -14,6 +14,7 @@ import com.limor.app.App
 import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.FragmentCommentsBinding
+import com.limor.app.events.OpenSharedPodcastEvent
 import com.limor.app.extensions.dismissFragment
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
@@ -29,6 +30,9 @@ import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.util.requestRecordPermissions
 import com.xwray.groupie.GroupieAdapter
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import timber.log.Timber
 
 class FragmentComments : UserMentionFragment() {
@@ -86,6 +90,12 @@ class FragmentComments : UserMentionFragment() {
 
         setUpPopup(binding.taviVoice.editText, binding.taviVoice)
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOpenSharedPodcastEvent(event: OpenSharedPodcastEvent) {
+        parentFragment?.dismissFragment()
+    }
+
 
     private fun initViews() {
         binding.commentsList.adapter = adapter
