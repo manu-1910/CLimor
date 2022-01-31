@@ -128,6 +128,7 @@ class FragmentSignEnterPhone : Fragment() {
                 etEnterPhone.setError(description)
                 tvSignInHereMsg.visibility = View.VISIBLE
             } else {
+                model.setCurrentSignInMethod(SignInMethod.NONE)
                 model.submitPhoneNumber()
                 findNavController()
                     .navigate(R.id.action_fragment_new_auth_phone_enter_to_fragment_new_auth_phone_code)

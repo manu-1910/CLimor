@@ -427,6 +427,9 @@ class AuthViewModelNew @Inject constructor(
 
     fun setCurrentSignInMethod(signInMethod: SignInMethod) {
         _signInMethodLiveData.postValue(signInMethod)
+        if(signInMethod == SignInMethod.NONE){
+            signInCase = false
+        }
     }
 
     fun sendFirebaseDynamicLinkToEmail(context: Context) =
