@@ -434,6 +434,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     override fun onResume() {
         super.onResume()
         intent.extras?.getInt(AppNavigationManager.CAST_KEY)?.let { castId ->
+            intent.removeExtra(AppNavigationManager.CAST_KEY)
             if (castId != 0) {
                 Handler().postDelayed({
                     openExtendedPlayer(castId)
