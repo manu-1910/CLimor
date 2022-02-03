@@ -18,6 +18,8 @@ import com.limor.app.dm.ChatSessionWithUser
 import com.limor.app.dm.ChatWithData
 import com.limor.app.dm.SessionsViewModel
 import com.limor.app.extensions.loadCircleImage
+import com.limor.app.util.SoundType
+import com.limor.app.util.Sounds
 import dagger.android.AndroidInjection
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.debounce
@@ -43,6 +45,7 @@ class ChatActivity : AppCompatActivity() {
     private var chatSession: ChatSessionWithUser? = null
 
     private var shouldScrollToBottom = false;
+    private var lastMessageId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,6 +146,16 @@ class ChatActivity : AppCompatActivity() {
         }
 
         markAsRead(chatData)
+        playSound(chatData)
+    }
+
+    private fun playSound(chatData: ChatWithData) {
+        chatData.messages.firstOrNull()?.let { message ->
+            if (message.id != lastMessageId) {
+                Sounds.playSound(this, SoundType.MESSAGE)
+            }
+            lastMessageId = message.id
+        }
     }
 
     private fun markAsRead(chatData: ChatWithData) {

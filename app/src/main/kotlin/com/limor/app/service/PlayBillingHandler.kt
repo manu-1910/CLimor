@@ -10,6 +10,8 @@ import com.limor.app.BuildConfig
 import com.limor.app.apollo.PublishRepository
 import com.limor.app.common.Constants
 import com.limor.app.uimodels.CastUIModel
+import com.limor.app.util.SoundType
+import com.limor.app.util.Sounds
 import kotlinx.coroutines.*
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -60,7 +62,7 @@ class PlayBillingHandler @Inject constructor(
                 billingScope.launch {
                     consumeOldPurchases()
                     currentTarget = null
-                    onPurchaseDone?.invoke(false)
+                    this@PlayBillingHandler.notifySuccess(false)
                 }
 
                 return@PurchasesUpdatedListener
@@ -71,7 +73,7 @@ class PlayBillingHandler @Inject constructor(
                     println("No purchases and code = ${billingResult.responseCode}")
                 }
                 currentTarget = null
-                onPurchaseDone?.invoke(false)
+                this@PlayBillingHandler.notifySuccess(false)
                 return@PurchasesUpdatedListener
             }
 
@@ -84,7 +86,7 @@ class PlayBillingHandler @Inject constructor(
                 }
             } else {
                 currentTarget = null
-                onPurchaseDone?.invoke(false)
+                this@PlayBillingHandler.notifySuccess(false)
             }
         }
 
@@ -107,6 +109,9 @@ class PlayBillingHandler @Inject constructor(
     private fun notifySuccess(success: Boolean) {
         uiScope.launch {
             onPurchaseDone?.invoke(success)
+            if (success) {
+                Sounds.playSound(context, SoundType.PAYMENT)
+            }
         }
     }
 

@@ -42,6 +42,8 @@ import com.limor.app.service.PlayBillingHandler
 import com.limor.app.service.PurchaseTarget
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.mapToAudioTrack
+import com.limor.app.util.SoundType
+import com.limor.app.util.Sounds
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -193,6 +195,9 @@ class FragmentHomeNew : BaseFragment() {
     private fun createAdapter() {
         homeFeedAdapter = HomeFeedAdapter(
             onLikeClick = { castId, like ->
+                if (like) {
+                    Sounds.playSound(requireContext(), SoundType.HEART)
+                }
                 likePodcastViewModel.likeCast(castId, like)
             },
             onCastClick = { cast, sku ->
@@ -200,6 +205,7 @@ class FragmentHomeNew : BaseFragment() {
             },
             onReCastClick = { castId, isRecasted ->
                 if (isRecasted) {
+                    Sounds.playSound(requireContext(), SoundType.RECAST)
                     recastPodcastViewModel.reCast(castId)
                 } else {
                     recastPodcastViewModel.deleteRecast(castId)

@@ -42,6 +42,8 @@ import com.limor.app.service.PurchaseTarget
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.UserUIModel
 import com.limor.app.uimodels.mapToAudioTrack
+import com.limor.app.util.SoundType
+import com.limor.app.util.Sounds
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 import kotlinx.coroutines.launch
@@ -155,10 +157,16 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                 userId = user.id,
                 cast = it,
                 onCastClick = ::onCastClick,
-                onLikeClick = { cast, like -> viewModel.likeCast(cast, like) },
+                onLikeClick = { cast, like ->
+                    if (like) {
+                        Sounds.playSound(requireContext(), SoundType.HEART)
+                    }
+                    viewModel.likeCast(cast, like)
+                },
                 onMoreDialogClick = ::onMoreDialogClick,
                 onRecastClick = { cast, isRecasted ->
                     if (isRecasted) {
+                        Sounds.playSound(requireContext(), SoundType.RECAST)
                         recastPodcastViewModel.reCast(cast.id)
                     } else {
                         recastPodcastViewModel.deleteRecast(cast.id)

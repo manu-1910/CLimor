@@ -28,6 +28,8 @@ import com.limor.app.scenes.utils.MissingPermissions
 import com.limor.app.scenes.utils.SendData
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
+import com.limor.app.util.SoundType
+import com.limor.app.util.Sounds
 import com.limor.app.util.requestRecordPermissions
 import com.xwray.groupie.GroupieAdapter
 import org.greenrobot.eventbus.EventBus
@@ -154,6 +156,9 @@ class FragmentComments : UserMentionFragment() {
                             goToReplies(comment)
                         },
                         onLikeClick = { comment, liked ->
+                            if (liked) {
+                                Sounds.playSound(requireContext(), SoundType.HEART)
+                            }
                             commentsViewModel.likeComment(comment, liked)
                         },
                         onThreeDotsClick = { comment, item, section ->
