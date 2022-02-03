@@ -33,6 +33,8 @@ import com.limor.app.scenes.utils.MissingPermissions
 import com.limor.app.scenes.utils.SendData
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.CommentUIModel
+import com.limor.app.util.SoundType
+import com.limor.app.util.Sounds
 import com.limor.app.util.requestRecordPermissions
 import com.xwray.groupie.GroupieAdapter
 import org.greenrobot.eventbus.EventBus
@@ -171,6 +173,9 @@ class FragmentCommentReplies : UserMentionFragment() {
                 parentComment,
                 onReplyClick = ::onReplyClick,
                 onLikeClick = { comment, liked ->
+                    if (liked) {
+                        Sounds.playSound(requireContext(), SoundType.HEART)
+                    }
                     viewModel.likeComment(comment, liked)
                 },
                 onThreeDotsClick = { comment, item ->
@@ -193,6 +198,9 @@ class FragmentCommentReplies : UserMentionFragment() {
                     onReplyClick = { _, replyChildComment -> onReplyClick(replyChildComment) },
                     isSimplified = false,
                     onLikeClick = { comment, liked ->
+                        if (liked) {
+                            Sounds.playSound(requireContext(), SoundType.HEART)
+                        }
                         viewModel.likeComment(comment, liked)
                     },
                     onThreeDotsClick = { child, item, position ->

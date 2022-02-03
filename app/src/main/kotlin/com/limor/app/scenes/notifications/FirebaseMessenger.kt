@@ -19,6 +19,8 @@ import com.limor.app.apollo.UserRepository
 import com.limor.app.common.Constants
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.util.AppNavigationManager
+import com.limor.app.util.SoundType
+import com.limor.app.util.Sounds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -64,6 +66,8 @@ class FirebaseMessenger : FirebaseMessagingService() {
     }
 
     private fun sendNotification(title: String, message: String, intent: Intent) {
+        Sounds.playSound(this, SoundType.NOTIFICATION)
+
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val mChannel = NotificationChannel(

@@ -37,6 +37,8 @@ import com.limor.app.scenes.utils.*
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
 import com.limor.app.uimodels.*
+import com.limor.app.util.SoundType
+import com.limor.app.util.Sounds
 import com.limor.app.util.requestRecordPermissions
 import kotlinx.android.synthetic.main.fragment_extended_player.*
 import kotlinx.coroutines.Job
@@ -530,6 +532,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         }
 
         binding.btnPodcastRecast.setOnClickListener {
+            Sounds.playSound(requireContext(), SoundType.RECAST)
             recastPodcastViewModel.reCast(castId = cast.id)
         }
 
@@ -649,6 +652,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
                 updatePodcasts = true
 
                 if (isRecasted) {
+                    Sounds.playSound(requireContext(), SoundType.RECAST)
                     recastPodcastViewModel.reCast(castId = item.id)
                 } else {
                     recastPodcastViewModel.deleteRecast(castId = item.id)
@@ -699,6 +703,9 @@ class ExtendedPlayerFragment : UserMentionFragment(),
                 binding.tvPodcastLikes.text =
                     (if (isLiked) likesCount + 1 else likesCount - 1).toString()
 
+                if (isLiked) {
+                    Sounds.playSound(requireContext(), SoundType.HEART)
+                }
                 likePodcastViewModel.likeCast(cast.id, isLiked)
             }
         }
