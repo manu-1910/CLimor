@@ -7,17 +7,30 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.limor.app.App
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.scenes.utils.DateUiUtil.getTimeElapsedFromDateString
 import com.limor.app.uimodels.NotiUIMode
 import de.hdodenhof.circleimageview.CircleImageView
 import timber.log.Timber
 
-class NotificationAdapter(val context: Context, val notificationsList: ArrayList<NotiUIMode>) :
-    RecyclerView.Adapter<NotificationAdapter.ViewHolder>() {
+class DiffUtilCallBack : DiffUtil.ItemCallback<NotiUIMode>() {
+    override fun areItemsTheSame(oldItem: NotiUIMode, newItem: NotiUIMode): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: NotiUIMode, newItem: NotiUIMode): Boolean {
+        return oldItem == newItem && oldItem.read == newItem.read
+    }
+}
+
+class NotificationAdapter(val context: Context) :
+    PagingDataAdapter<NotiUIMode, NotificationAdapter.ViewHolder>(DiffUtilCallBack()) {
 
     private lateinit var castCallback: (castId: Int?) -> Unit
     private lateinit var userCallback: (userId: Int?, username: String?, tab: Int) -> Unit
@@ -37,69 +50,55 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val notification = getItem(position) ?: return
 
-        if (notificationsList.isNotEmpty() && notificationsList.size > position) {
-            val noti = notificationsList[position]
+        Glide.with(context).load(notification.initiator?.imageUrl)
+            .error(R.drawable.ic_podcast_listening).into(holder.profilePic)
+        when (notification.notificationType) {
+            "newFollower" -> holder.profileIcon.setImageResource(imageicon[0])
+            "podcastComment" -> holder.profileIcon.setImageResource(imageicon[1])
+            "replyComment" -> holder.profileIcon.setImageResource(imageicon[1])
+            "podcastLike" -> holder.profileIcon.setImageResource(imageicon[3])
+            "commentLike" -> holder.profileIcon.setImageResource(imageicon[3])
+            "recast" -> holder.profileIcon.setImageResource(imageicon[2])
+            "mention" -> holder.profileIcon.setImageResource(imageicon[1])
+            "friendJoined" -> holder.profileIcon.setImageResource(imageicon[0])
+            "followSuggestion" -> holder.profileIcon.setImageResource(imageicon[0])
+            "engagement" -> holder.profileIcon.setImageResource(imageicon[0])
+        }
 
-            noti.let { notification ->
-                Glide.with(context).load(notification.initiator?.imageUrl)
-                    .error(R.drawable.ic_podcast_listening).into(holder.profilePic)
-                when (notification.notificationType) {
-                    "newFollower" -> holder.profileIcon.setImageResource(imageicon[0])
-                    "podcastComment" -> holder.profileIcon.setImageResource(imageicon[1])
-                    "replyComment" -> holder.profileIcon.setImageResource(imageicon[1])
-                    "podcastLike" -> holder.profileIcon.setImageResource(imageicon[3])
-                    "commentLike" -> holder.profileIcon.setImageResource(imageicon[3])
-                    "recast" -> holder.profileIcon.setImageResource(imageicon[2])
-                    "mention" -> holder.profileIcon.setImageResource(imageicon[1])
-                    "friendJoined" -> holder.profileIcon.setImageResource(imageicon[0])
-                    "followSuggestion" -> holder.profileIcon.setImageResource(imageicon[0])
-                    "engagement" -> holder.profileIcon.setImageResource(imageicon[0])
-                }
-                holder.title.text = notification.message
-                holder.subTitle.text = getTimeElapsedFromDateString(notification.createdAt)
+        if (BuildConfig.DEBUG) {
+            holder.title.text = "$position - ${notification.message}"
+        } else {
+            holder.title.text = notification.message
+        }
 
-                notification.read?.let {
-                    if (it) {
-                        holder.mainBg.setBackgroundColor(
-                            ContextCompat.getColor(
-                                context,
-                                R.color.read_background
-                            )
-                        )
-                    } else {
-                        holder.mainBg.setBackgroundColor(
-                            ContextCompat.getColor(
-                                context,
-                                R.color.un_read_background
-                            )
-                        )
-                    }
-                }
+        holder.subTitle.text = getTimeElapsedFromDateString(notification.createdAt)
 
-
-                holder.bind(this, position, notificationsList, noti)
+        notification.read?.let {
+            if (it) {
+                holder.mainBg.setBackgroundColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.read_background
+                    )
+                )
+            } else {
+                holder.mainBg.setBackgroundColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.un_read_background
+                    )
+                )
             }
         }
 
-
+        holder.bind(this, position, notification)
     }
 
-    override fun getItemCount(): Int {
-        return notificationsList.size
-    }
-
-
-    private fun updateRead(position: Int) {
-        notificationsList[position] = notificationsList[position].copy(read = true)
+    private fun updateRead(notification: NotiUIMode, position: Int) {
+        notification.read = true
         notifyItemChanged(position)
-    }
-
-    fun addItems(it: List<NotiUIMode>) {
-        notificationsList.clear()
-        notificationsList.addAll(it)
-        Timber.d("Notification List $it")
-        notifyDataSetChanged()
     }
 
     fun openCastCallback(callback: (castId: Int?) -> Unit) {
@@ -129,7 +128,6 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
         fun bind(
             notificationAdapter: NotificationAdapter,
             position: Int,
-            notificationsList: java.util.ArrayList<NotiUIMode>,
             noti: NotiUIMode,
         ) {
             itemView.setOnClickListener {
@@ -163,7 +161,7 @@ class NotificationAdapter(val context: Context, val notificationsList: ArrayList
                         )
                         else -> Timber.d("Unable to handle this type")
                     }
-                    notificationAdapter.updateRead(position)
+                    notificationAdapter.updateRead(noti, position)
 
                 }
             }
