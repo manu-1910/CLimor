@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +27,8 @@ import com.limor.app.uimodels.NotiUIMode
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
 import kotlinx.android.synthetic.main.toolbar_discover.view.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.image
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.sdk23.listeners.onClick
@@ -56,20 +59,24 @@ class Notification : Fragment() {
         AndroidSupportInjection.inject(this)
     }
 
+    fun getData() {
+        lifecycleScope.launch {
+            notificationViewModel.getNotifications().collectLatest {
+                notificationAdapter.submitData(it)
+            }
+        }
+    }
+
     override fun onViewCreated(itemView: View, savedInstanceState: Bundle?) {
         super.onViewCreated(itemView, savedInstanceState)
         setupClickListeners()
-        notificationAdapter = NotificationAdapter(requireContext(), notificationsList)
+        notificationAdapter = NotificationAdapter(requireContext())
         binding.notificationList.apply {
             layoutManager = LinearLayoutManager(activity)
             adapter = notificationAdapter
         }
 
-        notificationViewModel.noti.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                notificationAdapter.addItems(it)
-            }
-        })
+        getData()
 
         notificationAdapter.openCastCallback {
             it?.let { castId ->
