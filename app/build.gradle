@@ -539,4 +539,8 @@ dependencies {
 
     // OneSignal is a marketing tool, here's more info: https://onesignal.com/
     implementation 'com.onesignal:OneSignal:[4.0.0, 4.99.99]'
+
+    def paging_version = "3.1.0"
+
+    implementation "androidx.paging:paging-runtime:$paging_version"
 }
