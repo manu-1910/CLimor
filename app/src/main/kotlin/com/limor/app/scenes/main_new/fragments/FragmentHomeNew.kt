@@ -13,17 +13,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.billingclient.api.ConsumeParams
 import com.android.billingclient.api.SkuDetails
 import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.calculateAmplitude
 import com.limor.app.common.BaseFragment
-import com.limor.app.common.Constants
 import com.limor.app.databinding.FragmentHomeNewBinding
 import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.requireTag
-import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.limor.app.extensions.visibleIf
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
@@ -46,9 +44,9 @@ import com.limor.app.util.SoundType
 import com.limor.app.util.Sounds
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.anko.layoutInflater
 import java.io.File
 import javax.inject.Inject
 
@@ -68,8 +66,6 @@ class FragmentHomeNew : BaseFragment() {
     lateinit var binding: FragmentHomeNewBinding
 
     private var homeFeedAdapter: HomeFeedAdapter? = null
-    private var castOffset = 0
-    private val currentCasts = mutableListOf<CastUIModel>()
 
     private var sharedPodcastId = -1
 
@@ -97,7 +93,7 @@ class FragmentHomeNew : BaseFragment() {
         playBillingHandler.launchBillingFlowFor(purchaseTarget, requireActivity()) { success ->
             if (success) {
                 lifecycleScope.launch {
-                    reload()
+                    reloadCurrentCasts()
                 }
             }
         }
@@ -110,59 +106,27 @@ class FragmentHomeNew : BaseFragment() {
     }
 
     private fun loadFeeds() {
-        homeFeedViewModel.loadHomeFeed(
-            offset = castOffset,
-            limit = Constants.HOME_FEED_ITEM_BATCH_SIZE
-        )
+        lifecycleScope.launch {
+            homeFeedViewModel.getHomeFeed().collectLatest {
+                binding.swipeToRefresh.isRefreshing = false
+                homeFeedAdapter?.submitData(it)
+                this@FragmentHomeNew.toggleNoFeedLayout()
+            }
+        }
     }
 
-    private fun reload() {
-        castOffset = 0
-        homeFeedViewModel.loadHomeFeed()
+    private fun toggleNoFeedLayout() {
+        binding.noFeedLayout.visibleIf(homeFeedAdapter?.itemCount == 0)
     }
 
     private fun initSwipeToRefresh() {
         binding.swipeToRefresh.setColorSchemeResources(R.color.colorAccent)
         binding.swipeToRefresh.setOnRefreshListener {
-            reload()
+            reloadCurrentCasts()
         }
-    }
-
-    private fun onLoadCasts(casts: List<CastUIModel>) {
-        if (castOffset == 0) {
-            currentCasts.clear()
-            when {
-                casts.isEmpty() -> {
-                    binding.noFeedLayout.visibility = View.VISIBLE
-                }
-                else -> {
-                    binding.noFeedLayout.visibility = View.GONE
-                }
-            }
-        }
-
-        currentCasts.addAll(casts)
-
-        val all = mutableListOf<CastUIModel>()
-        all.addAll(currentCasts)
-
-
-        val recyclerViewState = binding.rvHome.layoutManager?.onSaveInstanceState()
-        homeFeedAdapter?.apply {
-            loadMore =
-                currentCasts.size >= Constants.HOME_FEED_ITEM_BATCH_SIZE &&
-                        casts.size >= Constants.HOME_FEED_ITEM_BATCH_SIZE
-            submitList(all)
-            isLoading = false
-        }
-        binding.rvHome.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 
     private fun subscribeToViewModel() {
-        homeFeedViewModel.homeFeedData.observe(viewLifecycleOwner) { casts ->
-            binding.swipeToRefresh.isRefreshing = false
-            onLoadCasts(casts)
-        }
         likePodcastViewModel.reload.observe(viewLifecycleOwner) {
             reloadCurrentCasts()
         }
@@ -184,12 +148,7 @@ class FragmentHomeNew : BaseFragment() {
     }
 
     private fun reloadCurrentCasts() {
-        val loadedCount = currentCasts.size
-        castOffset = 0
-        homeFeedViewModel.loadHomeFeed(
-            offset = castOffset,
-            limit = loadedCount
-        )
+        homeFeedViewModel.invalidate()
     }
 
     private fun createAdapter() {
@@ -225,11 +184,6 @@ class FragmentHomeNew : BaseFragment() {
             },
             onHashTagClick = { hashtag ->
                 (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)
-            },
-            onLoadMore = {
-                castOffset = currentCasts.size
-                homeFeedAdapter?.isLoading = true
-                loadFeeds()
             },
             onUserMentionClick = { username, userId ->
                 context?.let { context -> UserProfileActivity.show(context, username, userId) }
