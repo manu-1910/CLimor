@@ -7,7 +7,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class NotiUIMode(
     val id: Int?,
-    val read: Boolean?,
+    var read: Boolean?,
     val createdAt: String?,
     val notificationType:String?,
     val redirectTarget: TargetUIModel?,
