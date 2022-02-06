@@ -4,34 +4,43 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.common.Constants
+import com.limor.app.scenes.main_new.pagingsources.HomeFeedPagingSource
+import com.limor.app.scenes.main_new.pagingsources.NotificationsPagingSource
 import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.NotiUIMode
 import com.limor.app.usecases.GetHomeFeedCastsUseCase
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
 class HomeFeedViewModel @Inject constructor(
-   private val getHomeFeedCastsUseCase: GetHomeFeedCastsUseCase
+    private val getHomeFeedCastsUseCase: GetHomeFeedCastsUseCase,
+    private val repository: GeneralInfoRepository,
 ) : ViewModel() {
 
-    private val _homeFeedData = MutableLiveData<List<CastUIModel>>()
-    val homeFeedData: LiveData<List<CastUIModel>> get() = _homeFeedData
+    private var lastPagingSourceFactory: HomeFeedPagingSource? = null
 
-    init {
-        loadHomeFeed()
+    fun getHomeFeed(): Flow<PagingData<CastUIModel>> {
+        return Pager(
+            config = PagingConfig(pageSize = NotificationsPagingSource.NETWORK_PAGE_SIZE),
+            pagingSourceFactory = { getSource() }
+        ).flow.cachedIn(viewModelScope)
     }
 
-    fun loadHomeFeed(offset: Int = 0, limit: Int = Constants.HOME_FEED_ITEM_BATCH_SIZE) {
-        viewModelScope.launch {
-            getHomeFeedCastsUseCase.execute(limit = limit, offset = offset)
-                .onSuccess {
-                    Timber.d("${it.size} home feed items")
-                    _homeFeedData.value = it
-                }
-                .onFailure {
-                    Timber.e(it, "Error while fetching home feed")
-                }
+    private fun getSource(): HomeFeedPagingSource {
+        return HomeFeedPagingSource(repository = repository).also {
+            lastPagingSourceFactory = it
         }
+    }
+
+    fun invalidate() {
+        lastPagingSourceFactory?.invalidate()
     }
 }
