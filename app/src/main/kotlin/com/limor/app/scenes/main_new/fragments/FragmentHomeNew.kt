@@ -82,6 +82,7 @@ class FragmentHomeNew : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         initSwipeToRefresh()
         createAdapter()
+        loadFeeds()
         setUpRecyclerView()
         subscribeToViewModel()
         setOnClicks()
