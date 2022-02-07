@@ -1,0 +1,6 @@
+mutation HandleCastInPlaylistsMutation($podcastId: Int!, $addedTo: [Int!]!, $deletedFrom: [Int!]!){
+    handleCastInPlaylists(podcastId: $podcastId, addedTo: $addedTo, deletedFrom: $deletedFrom){
+        status
+        message
+    }
+}

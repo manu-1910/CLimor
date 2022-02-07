@@ -125,6 +125,13 @@ class SaveToPlaylistFragment : DialogFragment() {
     }
 
     private fun showPlaylists(playlists: List<PlaylistUIModel?>?) {
+        playlists?.let {
+            it.forEach { playlistUIModel ->
+              if(playlistUIModel?.isAdded == true){
+                  playlistsViewModel.previouslySelectedPlaylistIds.add(playlistUIModel.id)
+              }
+            }
+        }
         SelectPlaylistAdapter(onPlaylistSelected = { playlistId, selected ->
             onPlaylistSelected(playlistId, selected)
         }).also { adapter ->
@@ -149,8 +156,11 @@ class SaveToPlaylistFragment : DialogFragment() {
     }
     
     private fun addCast() {
-        playlistsViewModel.addCastToPlaylists(podcastId).observe(viewLifecycleOwner, {
+        playlistsViewModel.handleCastInPlaylists(podcastId).observe(viewLifecycleOwner, {
             if(it.success){
+                playlistsViewModel.playlistUnSelectedIdsList.clear()
+                playlistsViewModel.playlistNewlySelectedIdsList.clear()
+                playlistsViewModel.previouslySelectedPlaylistIds.clear()
                 dismiss()
             } else{
                 binding.btnDone.isEnabled = true
@@ -160,9 +170,17 @@ class SaveToPlaylistFragment : DialogFragment() {
 
     private fun onPlaylistSelected(playlistId: Int, selected: Boolean) {
         if (selected) {
-            playlistsViewModel.playlistSelectedIdsList.add(playlistId)
+            if(!playlistsViewModel.previouslySelectedPlaylistIds.contains(playlistId)){
+                playlistsViewModel.playlistNewlySelectedIdsList.add(playlistId)
+            }
+            if(playlistsViewModel.playlistUnSelectedIdsList.contains(playlistId)){
+                playlistsViewModel.playlistUnSelectedIdsList.remove(playlistId)
+            }
         } else {
-            playlistsViewModel.playlistSelectedIdsList.remove(playlistId)
+            playlistsViewModel.playlistNewlySelectedIdsList.remove(playlistId)
+            if(playlistsViewModel.previouslySelectedPlaylistIds.contains(playlistId)){
+                playlistsViewModel.playlistUnSelectedIdsList.add(playlistId)
+            }
         }
     }
 

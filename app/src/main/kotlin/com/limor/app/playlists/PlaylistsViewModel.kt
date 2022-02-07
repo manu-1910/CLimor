@@ -116,13 +116,28 @@ class PlaylistsViewModel @Inject constructor(
         return liveData
     }
 
-    var playlistSelectedIdsList: ArrayList<Int> = arrayListOf()
+    var playlistNewlySelectedIdsList: ArrayList<Int> = arrayListOf()
+    var previouslySelectedPlaylistIds: ArrayList<Int> = arrayListOf()
+    var playlistUnSelectedIdsList: ArrayList<Int> = arrayListOf()
 
     fun addCastToPlaylists(podcastId: Int): LiveData<AddCastToPlaylistResponse>{
         val liveData = MutableLiveData<AddCastToPlaylistResponse>()
         viewModelScope.launch {
             try{
-                val response = castsRepository.addCastToPlaylist(podcastId, playlistSelectedIdsList)
+                val response = castsRepository.addCastToPlaylist(podcastId, playlistNewlySelectedIdsList)
+                liveData.postValue(AddCastToPlaylistResponse(true, null))
+            } catch (e: Exception){
+                liveData.postValue(AddCastToPlaylistResponse(false, e.localizedMessage))
+            }
+        }
+        return liveData
+    }
+
+    fun handleCastInPlaylists(podcastId: Int): LiveData<AddCastToPlaylistResponse>{
+        val liveData = MutableLiveData<AddCastToPlaylistResponse>()
+        viewModelScope.launch {
+            try{
+                val response = castsRepository.handleCastInPlaylists(podcastId, playlistNewlySelectedIdsList, playlistUnSelectedIdsList)
                 liveData.postValue(AddCastToPlaylistResponse(true, null))
             } catch (e: Exception){
                 liveData.postValue(AddCastToPlaylistResponse(false, e.localizedMessage))

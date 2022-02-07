@@ -55,7 +55,7 @@ class ViewHolderSelectPlaylist(
         } else{
             binding.selectContactCheckbox.setImageDrawable(binding.root.context.getDrawable(R.drawable.ic_unselected_checkbox))
         }
-        onPlaylistSelected(playlist.id, playlist.isAdded)
+        //onPlaylistSelected(playlist.id, playlist.isAdded)
         binding.root.setOnClickListener {
             if(playlist.isAdded){
                 binding.selectContactCheckbox.setImageDrawable(binding.root.context.getDrawable(R.drawable.ic_unselected_checkbox))
