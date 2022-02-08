@@ -10,6 +10,8 @@ import com.limor.app.scenes.utils.SendData
 import com.limor.app.service.VoiceCommentUploadService
 import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.usecases.*
+import com.limor.app.util.SoundType
+import com.limor.app.util.Sounds
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -86,6 +88,8 @@ class CommentsViewModel @Inject constructor(
         audioURI: String? = null,
         duration: Int? = null
     ) {
+        Sounds.playSound(application, SoundType.COMMENT)
+
         viewModelScope.launch {
             addCommentUseCase.execute(podcastId, content, ownerId, ownerType, audioURI, duration)
                 .onFailure {
