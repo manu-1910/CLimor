@@ -1,9 +1,12 @@
 package com.limor.app.scenes.main_new.fragments.comments.list.item
 
 import android.graphics.Color
+import android.os.Handler
+import android.os.Looper
 import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
+import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.TextView
@@ -26,7 +29,7 @@ class CommentChildItem(
     val castOwnerId: Int,
     val parentComment: CommentUIModel,
     val comment: CommentUIModel,
-    val isSimplified: Boolean,
+    var isSimplified: Boolean,
     val onReplyClick: (parentComment: CommentUIModel, replyToComment: CommentUIModel) -> Unit,
     val onLikeClick: (comment: CommentUIModel, liked: Boolean) -> Unit,
     val onThreeDotsClick: (parentComment: CommentUIModel, item: CommentChildItem, position: Int) -> Unit,
@@ -114,6 +117,9 @@ class CommentChildItem(
         val maxLines = if(isSimplified) 2 else Int.MAX_VALUE
         if(isSimplified)
             makeTextViewResizable(tvCommentContent, maxLines, "..See More", true)
+        else{
+            tvCommentContent.text = spannable
+        }
     }
 
     private fun initAudioPlayer(binding: ItemChildCommentBinding) {
@@ -178,43 +184,46 @@ class CommentChildItem(
         if (tv.tag == null) {
             tv.tag = tv.text
         }
-        val vto = tv.viewTreeObserver
+        Handler(Looper.getMainLooper()).post(Runnable {
+            if (maxLine == 0) {
+                val lineEndIndex = tv.layout.getLineEnd(0)
+                val text = tv.text.subSequence(0, lineEndIndex - expandText.length + 1)
+                    .toString() + " " + expandText
+                tv.text = text
+                tv.setText(
+                    addClickablePartTextViewResizable(
+                        Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
+                        viewMore
+                    ), TextView.BufferType.SPANNABLE
+                )
+            } else if (maxLine > 0 && tv.lineCount >= maxLine) {
+                val lineEndIndex = tv.layout.getLineEnd(maxLine - 1) - 10
+                val text = tv.text.subSequence(0, lineEndIndex - expandText.length + 1)
+                    .toString() + " " + expandText
+                tv.text = text
+                tv.setText(
+                    addClickablePartTextViewResizable(
+                        Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
+                        viewMore
+                    ), TextView.BufferType.SPANNABLE
+                )
+            } else {
+                tv.setText(
+                    addClickablePartTextViewResizable(
+                        Html.fromHtml(tv.text.toString()), tv, maxLine, expandText,
+                        viewMore
+                    ), TextView.BufferType.SPANNABLE
+                )
+            }
+        })
+        /*val vto = tv.viewTreeObserver
         vto.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 val obs = tv.viewTreeObserver
                 obs.removeGlobalOnLayoutListener(this)
-                if (maxLine == 0) {
-                    val lineEndIndex = tv.layout.getLineEnd(0)
-                    val text = tv.text.subSequence(0, lineEndIndex - expandText.length + 1)
-                        .toString() + " " + expandText
-                    tv.text = text
-                    tv.setText(
-                        addClickablePartTextViewResizable(
-                            Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
-                            viewMore
-                        ), TextView.BufferType.SPANNABLE
-                    )
-                } else if (maxLine > 0 && tv.lineCount >= maxLine) {
-                    val lineEndIndex = tv.layout.getLineEnd(maxLine - 1) - 10
-                    val text = tv.text.subSequence(0, lineEndIndex - expandText.length + 1)
-                        .toString() + " " + expandText
-                    tv.text = text
-                    tv.setText(
-                        addClickablePartTextViewResizable(
-                            Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
-                            viewMore
-                        ), TextView.BufferType.SPANNABLE
-                    )
-                } else {
-                    tv.setText(
-                        addClickablePartTextViewResizable(
-                            Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
-                            viewMore
-                        ), TextView.BufferType.SPANNABLE
-                    )
-                }
+
             }
-        })
+        })*/
     }
 
     private fun addClickablePartTextViewResizable(
@@ -232,6 +241,7 @@ class CommentChildItem(
                         tv.layoutParams = tv.layoutParams
                         tv.setText(tv.tag.toString(), TextView.BufferType.SPANNABLE)
                         tv.invalidate()
+                        isSimplified = false
                         makeTextViewResizable(tv, Int.MAX_VALUE, "See Less", false)
                     } else {
                         tv.maxLines = 2
