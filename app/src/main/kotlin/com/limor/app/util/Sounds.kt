@@ -9,6 +9,7 @@ enum class SoundType(val file: String) {
     NOTIFICATION("notification.wav"),
     PAYMENT("payment.wav"),
     RECAST("recast.wav"),
+    COMMENT("comment.wav"),
 }
 
 object Sounds {
