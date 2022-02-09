@@ -198,8 +198,9 @@ class CommentChildItem(
                 )
             } else if (maxLine > 0 && tv.lineCount >= maxLine) {
                 val lineEndIndex = tv.layout.getLineEnd(maxLine - 1) - 10
-                val text = tv.text.subSequence(0, lineEndIndex - expandText.length + 1)
-                    .toString() + " " + expandText
+                val lastIndex = lineEndIndex - expandText.length + 1
+                val text = if(lastIndex > 0 ) tv.text.subSequence(0, lastIndex)
+                    .toString() + " " + expandText else tv.text.subSequence(0, lineEndIndex).toString() + " " + expandText
                 tv.text = text
                 tv.setText(
                     addClickablePartTextViewResizable(
@@ -216,14 +217,6 @@ class CommentChildItem(
                 )
             }
         })
-        /*val vto = tv.viewTreeObserver
-        vto.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                val obs = tv.viewTreeObserver
-                obs.removeGlobalOnLayoutListener(this)
-
-            }
-        })*/
     }
 
     private fun addClickablePartTextViewResizable(
@@ -240,14 +233,13 @@ class CommentChildItem(
                         tv.maxLines = Int.MAX_VALUE
                         tv.layoutParams = tv.layoutParams
                         tv.setText(tv.tag.toString(), TextView.BufferType.SPANNABLE)
-                        tv.invalidate()
                         isSimplified = false
-                        makeTextViewResizable(tv, Int.MAX_VALUE, "See Less", false)
+                        //makeTextViewResizable(tv, Int.MAX_VALUE, "See Less", false)
+                        setTextWithTagging(tv)
                     } else {
                         tv.maxLines = 2
                         tv.layoutParams = tv.layoutParams
                         tv.setText(tv.tag.toString(), TextView.BufferType.SPANNABLE)
-                        tv.invalidate()
                         makeTextViewResizable(tv, 3, "..See More", true)
                     }
                 }
