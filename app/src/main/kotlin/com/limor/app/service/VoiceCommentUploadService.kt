@@ -18,6 +18,8 @@ import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.SendData
 import com.limor.app.uimodels.CommentUIModel
 import com.limor.app.usecases.AddCommentUseCase
+import com.limor.app.util.SoundType
+import com.limor.app.util.Sounds
 import dagger.android.AndroidInjection
 import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
@@ -91,11 +93,17 @@ class VoiceCommentUploadService: Service() {
                 if (!started) {
                     startInForeground()
                 }
-                uploadVoiceCommentAudio(intent)
+                playSoundAndUpload(intent)
             }
             ACTION_STOP_UPLOAD_SERVICE -> stopForegroundService()
         }
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun playSoundAndUpload(intent: Intent) {
+        Sounds.playSound(this, SoundType.COMMENT) {
+            uploadVoiceCommentAudio(intent)
+        }
     }
 
     private fun uploadVoiceCommentAudio(intent: Intent) {
