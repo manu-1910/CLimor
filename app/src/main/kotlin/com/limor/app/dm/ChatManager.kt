@@ -269,7 +269,7 @@ class ChatManager @Inject constructor(
             println("Agora1: Received Chat Message from $peerId -> ${rtmMessage.text}. Is on main -> ${Looper.getMainLooper().isCurrentThread}")
         }
 
-        Sounds.playSound(this, SoundType.MESSAGE)
+        Sounds.playSound(context, SoundType.MESSAGE)
 
         synchronized(this) {
             messageQueue.add(AddMessageJob(text = rtmMessage.text, peerId = peerId))
