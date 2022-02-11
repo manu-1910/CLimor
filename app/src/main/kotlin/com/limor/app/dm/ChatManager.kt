@@ -7,6 +7,8 @@ import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.scenes.auth_new.util.PrefsHandler
+import com.limor.app.util.SoundType
+import com.limor.app.util.Sounds
 import io.agora.rtm.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -266,6 +268,8 @@ class ChatManager @Inject constructor(
         if (BuildConfig.DEBUG) {
             println("Agora1: Received Chat Message from $peerId -> ${rtmMessage.text}. Is on main -> ${Looper.getMainLooper().isCurrentThread}")
         }
+
+        Sounds.playSound(this, SoundType.MESSAGE)
 
         synchronized(this) {
             messageQueue.add(AddMessageJob(text = rtmMessage.text, peerId = peerId))
