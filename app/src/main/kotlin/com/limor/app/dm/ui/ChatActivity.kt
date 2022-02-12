@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.ActivityChatBinding
+import com.limor.app.dm.ChatManager
 import com.limor.app.dm.ChatSessionWithUser
 import com.limor.app.dm.ChatWithData
 import com.limor.app.dm.SessionsViewModel
@@ -38,6 +39,9 @@ class ChatActivity : AppCompatActivity() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val chat: SessionsViewModel by viewModels { viewModelFactory }
 
+    @Inject
+    lateinit var chatManager: ChatManager
+
     private lateinit var binding: ActivityChatBinding
     private var hasSetHeader = false;
 
@@ -45,7 +49,7 @@ class ChatActivity : AppCompatActivity() {
     private var chatSession: ChatSessionWithUser? = null
 
     private var shouldScrollToBottom = false;
-    private var lastMessageId: Int = 0
+    private var lastMessageId: Int = Int.MIN_VALUE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +75,8 @@ class ChatActivity : AppCompatActivity() {
             finish()
             return
         }
+
+        chatManager.chattingUserId = limorUserId
 
         scope.launch {
             getChat(limorUserId)
@@ -150,8 +156,8 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun playSound(chatData: ChatWithData) {
-        chatData.messages.firstOrNull()?.let { message ->
-            if (message.id != lastMessageId) {
+        chatData.messages.lastOrNull()?.let { message ->
+            if (Int.MIN_VALUE != lastMessageId && message.id != lastMessageId) {
                 Sounds.playSound(this, SoundType.MESSAGE)
             }
             lastMessageId = message.id
@@ -255,6 +261,7 @@ class ChatActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         coroutineJob.cancel()
+        chatManager.clearChattingUserId()
     }
 
     companion object {
