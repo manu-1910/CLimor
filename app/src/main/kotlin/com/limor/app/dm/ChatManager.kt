@@ -7,6 +7,8 @@ import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.scenes.auth_new.util.PrefsHandler
+import com.limor.app.util.SoundType
+import com.limor.app.util.Sounds
 import io.agora.rtm.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +30,8 @@ class ChatManager @Inject constructor(
     private val generalInfoRepository: GeneralInfoRepository
 ) : RtmClientListener {
 
+    var chattingUserId: Int = NO_CHATTING_USER_ID
+
     private val chatJob = SupervisorJob()
     private val chatScope = CoroutineScope(Dispatchers.IO + chatJob)
 
@@ -43,6 +47,10 @@ class ChatManager @Inject constructor(
 
     private val messageQueue = mutableListOf<AddMessageJob>()
     private val processing = AtomicBoolean(false)
+
+    fun clearChattingUserId() {
+        chattingUserId = NO_CHATTING_USER_ID
+    }
 
     init {
         val appID = BuildConfig.AGORA_APP_ID
@@ -186,11 +194,13 @@ class ChatManager @Inject constructor(
         // TODO
     }
 
+    private fun limorIdFromPeerId(peerId: String) = peerId.split('_').last().toInt()
+
     private suspend fun getLeanUser(peerId: String): LeanUser? {
         cachedLeanUsers[peerId]?.let {
             return it
         } ?: run {
-            val id = peerId.split('_').last().toInt()
+            val id = limorIdFromPeerId(peerId)
             val user = generalInfoRepository.getUserProfileById(id)
             if (user == null) {
                 return null;
@@ -235,6 +245,10 @@ class ChatManager @Inject constructor(
             )
             val id = chatRepository.insertSession(session)
             session.id = id.toInt()
+        }
+
+        if (chattingUserId != limorIdFromPeerId(peerId)) {
+            Sounds.playSound(context, SoundType.MESSAGE)
         }
 
         chatRepository.addOtherMessage(text, session);
@@ -298,4 +312,7 @@ class ChatManager @Inject constructor(
         // Not used in DM 1.1
     }
 
+    companion object {
+        private const val NO_CHATTING_USER_ID = Int.MIN_VALUE
+    }
 }
