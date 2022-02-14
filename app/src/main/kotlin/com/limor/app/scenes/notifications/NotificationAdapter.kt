@@ -67,11 +67,7 @@ class NotificationAdapter(val context: Context) :
             "engagement" -> holder.profileIcon.setImageResource(imageicon[0])
         }
 
-        if (BuildConfig.DEBUG) {
-            holder.title.text = "$position - ${notification.message}"
-        } else {
-            holder.title.text = notification.message
-        }
+        holder.title.text = notification.message
 
         holder.subTitle.text = getTimeElapsedFromDateString(notification.createdAt)
 
