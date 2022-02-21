@@ -26,6 +26,9 @@ import javax.inject.Inject
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.extensions.dp
+import com.limor.app.scenes.utils.Commons
+import com.limor.app.scenes.utils.CommonsKt
+
 
 /**
  * A simple item decoration which doesn't draw after the last child
@@ -127,9 +130,9 @@ class SaveToPlaylistFragment : DialogFragment() {
     private fun showPlaylists(playlists: List<PlaylistUIModel?>?) {
         playlists?.let {
             it.forEach { playlistUIModel ->
-              if(playlistUIModel?.isAdded == true){
-                  playlistsViewModel.previouslySelectedPlaylistIds.add(playlistUIModel.id)
-              }
+                if (playlistUIModel?.isAdded == true) {
+                    playlistsViewModel.previouslySelectedPlaylistIds.add(playlistUIModel.id)
+                }
             }
         }
         SelectPlaylistAdapter(onPlaylistSelected = { playlistId, selected ->
@@ -143,8 +146,14 @@ class SaveToPlaylistFragment : DialogFragment() {
                 paint.color = backgroundColor
                 this.bounds = Rect(0, 0, 1.dp, 1.dp)
             }
-            val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.divider_item_light_recyclerview)!!
-            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL).also { decoration ->
+            val drawable = ContextCompat.getDrawable(
+                requireContext(),
+                R.drawable.divider_item_light_recyclerview
+            )!!
+            DividerItemDecoration(
+                requireContext(),
+                DividerItemDecoration.VERTICAL
+            ).also { decoration ->
                 decoration.setDrawable(drawable)
 
             }
@@ -153,16 +162,27 @@ class SaveToPlaylistFragment : DialogFragment() {
             adapter.submitList(playlists?.filterNotNull() ?: mutableListOf())
             binding.playlistsRv.adapter = adapter
         }
+        context?.let {
+            if (haveMoreItemToScroll(playlists?.size ?: 0)) {
+                binding.playlistsRv.setPadding(0, 0, 0, CommonsKt.dpToPx(120f, it))
+            } else {
+                binding.playlistsRv.setPadding(0, 0, 0, 0)
+            }
+        }
     }
-    
+
+    private fun haveMoreItemToScroll(size: Int): Boolean {
+        return Commons.getInstance().getScreenHeightInDp(context) - 220 < (40 * size)
+    }
+
     private fun addCast() {
         playlistsViewModel.handleCastInPlaylists(podcastId).observe(viewLifecycleOwner, {
-            if(it.success){
+            if (it.success) {
                 playlistsViewModel.playlistUnSelectedIdsList.clear()
                 playlistsViewModel.playlistNewlySelectedIdsList.clear()
                 playlistsViewModel.previouslySelectedPlaylistIds.clear()
                 dismiss()
-            } else{
+            } else {
                 binding.btnDone.isEnabled = true
             }
         })
@@ -170,15 +190,15 @@ class SaveToPlaylistFragment : DialogFragment() {
 
     private fun onPlaylistSelected(playlistId: Int, selected: Boolean) {
         if (selected) {
-            if(!playlistsViewModel.previouslySelectedPlaylistIds.contains(playlistId)){
+            if (!playlistsViewModel.previouslySelectedPlaylistIds.contains(playlistId)) {
                 playlistsViewModel.playlistNewlySelectedIdsList.add(playlistId)
             }
-            if(playlistsViewModel.playlistUnSelectedIdsList.contains(playlistId)){
+            if (playlistsViewModel.playlistUnSelectedIdsList.contains(playlistId)) {
                 playlistsViewModel.playlistUnSelectedIdsList.remove(playlistId)
             }
         } else {
             playlistsViewModel.playlistNewlySelectedIdsList.remove(playlistId)
-            if(playlistsViewModel.previouslySelectedPlaylistIds.contains(playlistId)){
+            if (playlistsViewModel.previouslySelectedPlaylistIds.contains(playlistId)) {
                 playlistsViewModel.playlistUnSelectedIdsList.add(playlistId)
             }
         }

@@ -1,5 +1,9 @@
 package com.limor.app.scenes.utils;
 
+import static android.content.Context.MODE_PRIVATE;
+import static com.arthenica.mobileffmpeg.FFmpeg.RETURN_CODE_CANCEL;
+import static com.arthenica.mobileffmpeg.FFmpeg.RETURN_CODE_SUCCESS;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -8,8 +12,7 @@ import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.net.Uri;
-import android.provider.Settings;
-import android.text.format.DateUtils;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
@@ -29,8 +32,6 @@ import com.coremedia.iso.boxes.Container;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.ktx.Firebase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -62,10 +63,6 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -81,10 +78,6 @@ import it.sauronsoftware.jave.Encoder;
 import it.sauronsoftware.jave.EncoderException;
 import it.sauronsoftware.jave.EncodingAttributes;
 import timber.log.Timber;
-
-import static android.content.Context.MODE_PRIVATE;
-import static com.arthenica.mobileffmpeg.FFmpeg.RETURN_CODE_CANCEL;
-import static com.arthenica.mobileffmpeg.FFmpeg.RETURN_CODE_SUCCESS;
 
 public class Commons {
 
@@ -153,6 +146,11 @@ public class Commons {
 
     public static int dpToPx(Context context, int dps) {
         return (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dps, context.getResources().getDisplayMetrics()));
+    }
+
+    public float getScreenHeightInDp(Context context){
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return displayMetrics.heightPixels / displayMetrics.density;
     }
 
     @SuppressLint("DefaultLocale")
