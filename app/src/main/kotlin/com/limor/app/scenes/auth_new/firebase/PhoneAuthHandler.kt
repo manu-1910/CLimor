@@ -12,6 +12,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.limor.app.App
 import com.limor.app.R
+import com.limor.app.scenes.auth_new.model.SmsCodeValidationResponse
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import kotlinx.coroutines.CoroutineScope
@@ -32,8 +33,8 @@ class PhoneAuthHandler @Inject constructor() :
     private var isSignInCase = false
 
     private val _smsCodeValidationErrorMessage =
-        MutableLiveData<String>().apply { value = "" }
-    val smsCodeValidationErrorMessage: LiveData<String>
+        MutableLiveData<SmsCodeValidationResponse?>().apply { value = null }
+    val smsCodeValidationErrorMessage: LiveData<SmsCodeValidationResponse?>
         get() = _smsCodeValidationErrorMessage
 
     private val _smsCodeValidationPassed =
@@ -127,7 +128,7 @@ class PhoneAuthHandler @Inject constructor() :
         } else if (e is FirebaseTooManyRequestsException) {
             // The SMS quota for the project has been exceeded
         }
-        _smsCodeValidationErrorMessage.postValue(e.localizedMessage)
+        _smsCodeValidationErrorMessage.postValue(SmsCodeValidationResponse(e))
 
     }
 
@@ -156,7 +157,7 @@ class PhoneAuthHandler @Inject constructor() :
     fun enterCodeAndSignIn(code: String) {
         if (code.isEmpty()) {
             activity?.let {
-                _smsCodeValidationErrorMessage.postValue(it.getString(R.string.no_code_entered))
+                _smsCodeValidationErrorMessage.postValue(SmsCodeValidationResponse(SmsCodeValidationResponse.ErrorType.NO_CODE_ENTERED))
             }
             return
         }
@@ -172,7 +173,7 @@ class PhoneAuthHandler @Inject constructor() :
                 // we should always send an error message regardless of acitivty's availability
                 // otherwise sending an empty message means "no error"
                 val message = activity?.getString(R.string.code_hasnt_been_sent) ?: "Code has not been sent."
-                _smsCodeValidationErrorMessage.postValue(message)
+                _smsCodeValidationErrorMessage.postValue(SmsCodeValidationResponse(SmsCodeValidationResponse.ErrorType.CODE_HAS_NOT_BEEN_SENT))
                 return@launch
             }
 
@@ -184,7 +185,7 @@ class PhoneAuthHandler @Inject constructor() :
 
                 val message = activity?.getString(R.string.error_getting_credentials)
                         ?: "Error creating credential. Please try again."
-                _smsCodeValidationErrorMessage.postValue(message)
+                _smsCodeValidationErrorMessage.postValue(SmsCodeValidationResponse(SmsCodeValidationResponse.ErrorType.CREDENTIAL_ERROR))
 
                 return@launch
             }
@@ -223,7 +224,7 @@ class PhoneAuthHandler @Inject constructor() :
 
                     // We should always notify about an error even if an exception isn't available
                     val message = task.exception?.localizedMessage ?: "Could not sign in. Generic error."
-                    _smsCodeValidationErrorMessage.postValue(message)
+                    _smsCodeValidationErrorMessage.postValue(if(task.exception != null) SmsCodeValidationResponse(task.exception) else SmsCodeValidationResponse(SmsCodeValidationResponse.ErrorType.GENERIC_ERROR))
                 }
                 if (successful) {
                     onPhoneAuthSuccess()
@@ -253,11 +254,11 @@ class PhoneAuthHandler @Inject constructor() :
     private fun onPhoneAuthSuccessNegative() {
         //This is possible if user Signing in, but did not create Limor account before (doesn't have "luid" in JWT)
         val message = activity?.getString(R.string.no_user_found_offer_to_sign_up) ?: ""
-        _smsCodeValidationErrorMessage.postValue(message)
+        _smsCodeValidationErrorMessage.postValue(SmsCodeValidationResponse(SmsCodeValidationResponse.ErrorType.USER_NOT_FOUND))
     }
 
     fun clearError() {
-        _smsCodeValidationErrorMessage.postValue("")
+        _smsCodeValidationErrorMessage.postValue(null)
     }
 
     private lateinit var activityRef: WeakReference<Activity>

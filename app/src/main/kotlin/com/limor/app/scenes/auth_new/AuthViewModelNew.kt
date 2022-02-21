@@ -160,14 +160,14 @@ class AuthViewModelNew @Inject constructor(
 
     private val _smsCodeIsFullLiveData = MutableLiveData<Boolean>().apply { value = false }
 
-    val smsCodeValidationErrorMessage: LiveData<String>
+    val smsCodeValidationErrorMessage: LiveData<SmsCodeValidationResponse?>
         get() = phoneAuthHandler.smsCodeValidationErrorMessage
 
     val smsCodeValidationPassed: LiveData<Boolean>
         get() = phoneAuthHandler.smsCodeValidationPassed
     val smsContinueButtonEnabled: LiveData<Boolean> =
         _smsCodeIsFullLiveData.combineWith(smsCodeValidationErrorMessage) { full, error ->
-            full!! && (error?.isEmpty() ?: false)
+            full!! && (error == null)
         }
 
     fun setSmsCodeForCheck(codes: List<String?>) {

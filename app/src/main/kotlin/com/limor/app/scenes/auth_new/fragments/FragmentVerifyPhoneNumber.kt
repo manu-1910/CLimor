@@ -141,9 +141,13 @@ class FragmentVerifyPhoneNumber : Fragment() {
         })
 
         model.smsCodeValidationErrorMessage.observe(viewLifecycleOwner, Observer {
-            val hasError = it.isNotBlank()
+            val hasError = it?.hasError() ?: false
             tvWrongCode.visibility = if (hasError) View.VISIBLE else View.GONE
-            if (hasError) tvWrongCode.text = it
+            if (hasError) tvWrongCode.text = it?.getLocalisedErrorMessage()
+            if (hasError && it?.canResend() == true) {
+                fabResendCode.isEnabled = true
+                model.cancelTimers()
+            }
             smsCodeEtList.forEach { et ->
                 et.error = if (hasError) " " else null
                 et.editText!!.setTextColor(
