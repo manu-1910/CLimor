@@ -16,6 +16,7 @@ import com.limor.app.R
 import com.limor.app.databinding.ItemParentCommentBinding
 import com.limor.app.extensions.*
 import com.limor.app.scenes.auth_new.util.PrefsHandler
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.DateUiUtil
 import com.limor.app.uimodels.CommentUIModel
 import com.xwray.groupie.viewbinding.BindableItem
@@ -73,14 +74,17 @@ class CommentParentItem(
         val commentContent = comment.content ?: ""
         tvCommentContent.text = commentContent
 
-        if (comment.mentions == null) {
-            return
+        val mentions = comment.mentions?.content ?: listOf()
+        val links = comment.links?.content ?: listOf()
+
+        if (BuildConfig.DEBUG) {
+            println("parent.comment.links -> ${comment.links}")
         }
 
         val color = ContextCompat.getColor(tvCommentContent.context, R.color.primaryYellowColor)
         val spannable = SpannableString(commentContent)
 
-        for (mention in comment.mentions.content) {
+        for (mention in mentions) {
             val clickableSpan: ClickableSpan = object : ClickableSpan() {
                 override fun updateDrawState(ds: TextPaint) {
                     super.updateDrawState(ds)
@@ -100,6 +104,28 @@ class CommentParentItem(
                 }
             }
         }
+
+        for (link in links) {
+            val clickableSpan: ClickableSpan = object : ClickableSpan() {
+                override fun updateDrawState(ds: TextPaint) {
+                    super.updateDrawState(ds)
+                    ds.color = color
+                    ds.isUnderlineText = true
+                }
+
+                override fun onClick(widget: View) {
+                    CommonsKt.openUrlInBrowser(widget.context, link.link)
+                }
+            }
+            try {
+                spannable.setSpan(clickableSpan, link.startIndex, link.endIndex, 0)
+            } catch (throwable: Throwable) {
+                if (BuildConfig.DEBUG) {
+                    throwable.printStackTrace()
+                }
+            }
+        }
+
         tvCommentContent.text = spannable
         tvCommentContent.movementMethod = LinkMovementMethod.getInstance();
     }
