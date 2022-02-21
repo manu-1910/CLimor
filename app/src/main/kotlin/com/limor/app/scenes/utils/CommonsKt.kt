@@ -1,5 +1,6 @@
 package com.limor.app.scenes.utils
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
@@ -44,6 +45,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.TimeUnit
 import android.content.res.XmlResourceParser
+import android.net.Uri
 import android.util.SparseArray
 import com.limor.app.BuildConfig
 import java.time.LocalDate
@@ -444,6 +446,18 @@ class CommonsKt {
                 }
             } else {
                 colorFeedText.visibility = View.GONE
+            }
+        }
+
+        fun openUrlInBrowser(context: Context, url: String) {
+            try {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                    addCategory(Intent.CATEGORY_BROWSABLE)
+                }
+                context.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                e.printStackTrace()
+                // ignored for now
             }
         }
 
