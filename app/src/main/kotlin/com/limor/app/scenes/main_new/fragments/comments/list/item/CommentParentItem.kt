@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.text.SpannableString
+import android.text.Spanned
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
@@ -114,11 +115,14 @@ class CommentParentItem(
                 }
 
                 override fun onClick(widget: View) {
+                    if (BuildConfig.DEBUG) {
+                        print("Link is -> $link")
+                    }
                     CommonsKt.openUrlInBrowser(widget.context, link.link)
                 }
             }
             try {
-                spannable.setSpan(clickableSpan, link.startIndex, link.endIndex, 0)
+                spannable.setSpan(clickableSpan, link.startIndex, link.endIndex + 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
             } catch (throwable: Throwable) {
                 if (BuildConfig.DEBUG) {
                     throwable.printStackTrace()

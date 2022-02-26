@@ -130,7 +130,7 @@ class CommentChildItem(
                 }
             }
             try {
-                spannable.setSpan(clickableSpan, link.startIndex, link.endIndex, 0)
+                spannable.setSpan(clickableSpan, link.startIndex, link.endIndex + 1,  Spanned.SPAN_INCLUSIVE_INCLUSIVE)
             } catch (throwable: Throwable) {
                 if (BuildConfig.DEBUG) {
                     throwable.printStackTrace()
