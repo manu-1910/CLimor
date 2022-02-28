@@ -21,7 +21,6 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class HomeFeedViewModel @Inject constructor(
-    private val getHomeFeedCastsUseCase: GetHomeFeedCastsUseCase,
     private val repository: GeneralInfoRepository,
 ) : ViewModel() {
 
