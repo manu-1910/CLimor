@@ -129,17 +129,17 @@ class FragmentHomeNew : BaseFragment() {
 
     private fun subscribeToViewModel() {
         likePodcastViewModel.reload.observe(viewLifecycleOwner) {
-            reloadCurrentCasts()
+            // reloadCurrentCasts()
         }
         recastPodcastViewModel.recastedResponse.observe(viewLifecycleOwner) {
-            reloadCurrentCasts()
+            // reloadCurrentCasts()
         }
         recastPodcastViewModel.deleteRecastResponse.observe(viewLifecycleOwner) {
             reloadCurrentCasts()
         }
         sharePodcastViewModel.sharedResponse.observe(viewLifecycleOwner) {
             println("Will reload...")
-            reloadCurrentCasts()
+            // reloadCurrentCasts()
         }
         podcastInteractionViewModel.reload.observe(viewLifecycleOwner) {
             if (it == true) {
