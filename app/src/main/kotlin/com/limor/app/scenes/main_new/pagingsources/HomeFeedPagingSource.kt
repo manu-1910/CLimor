@@ -32,9 +32,15 @@ class HomeFeedPagingSource(
             else
                 position + (params.loadSize / NETWORK_PAGE_SIZE)
 
+            if (BuildConfig.DEBUG) {
+                println("Home feed loading with prev key ${params.key} and next $nextKey")
+            }
+
             LoadResult.Page(
                 data = result,
-                prevKey = params.key,
+                // Only paging forward.
+                // https://android-developers.googleblog.com/2020/07/getting-on-same-page-with-paging-3.html
+                prevKey = null,
                 nextKey = nextKey
             )
 
@@ -49,9 +55,18 @@ class HomeFeedPagingSource(
     }
 
     override fun getRefreshKey(state: PagingState<Int, CastUIModel>): Int? {
-        return state.anchorPosition?.let { anchorPosition ->
-            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
-                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+        if (BuildConfig.DEBUG) {
+            val closest = state.closestPageToPosition(0)
+            println("getRefreshKey.state.anchorPosition -> ${state.anchorPosition}, closest prev ${ closest?.prevKey }, next ${ closest?.nextKey }")
+        }
+        val next = state.anchorPosition?.let { anchorPosition ->
+            state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+        }
+
+        return if (next != null && next < 4) {
+            null
+        } else {
+            next
         }
     }
 }
