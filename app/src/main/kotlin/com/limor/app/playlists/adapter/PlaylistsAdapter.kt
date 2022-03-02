@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.signature.ObjectKey
 import com.limor.app.R
@@ -145,9 +146,7 @@ class ViewHolderPlaylist(
                 Glide.with(binding.imagePlaylist)
                     .load(url)
                     .signature(ObjectKey(url))
-                    .centerCrop()
-                    .override(48.px, 48.px)
-                    .transform(RoundedCorners(8.px))
+                    .transform(CenterCrop(), RoundedCorners(8.px))
                     .into(binding.imagePlaylist)
 
             }
