@@ -134,7 +134,7 @@ class ViewHolderPlaylist(
         val count = context.resources.getQuantityString(R.plurals.casts_count, playlist.count,  playlist.count)
         binding.textPlaylistPodcastCount.text = count
 
-        val url = playlist.images?.smallUrl
+        val url = playlist.images?.mediumUrl
 
         when {
             playlist.count == 0 -> {
