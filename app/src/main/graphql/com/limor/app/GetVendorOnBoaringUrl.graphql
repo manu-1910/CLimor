@@ -1,0 +1,9 @@
+query getVendorOnBoardingUrl{
+    getVendorOnboardingUrl{
+        status,
+        message,
+        data{
+            onboardingURL
+        }
+    }
+}

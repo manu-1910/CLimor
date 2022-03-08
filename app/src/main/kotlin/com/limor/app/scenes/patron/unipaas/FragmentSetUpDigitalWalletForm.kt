@@ -122,13 +122,13 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
             findNavController().navigate(R.id.action_set_up_digital_wallet_form_fragment_to_country_code_selection)
         }
 
-        /*binding.etEnterDOBInner.setOnClickListener {
+        binding.dateOfBirthView.setOnClickListener {
             DatePickerDialog(
                 requireContext(), date, myCalendar
                     .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                 myCalendar.get(Calendar.DAY_OF_MONTH)
             ).show()
-        }*/
+        }
     }
 
     private fun validateInputAndContinue() {
@@ -166,8 +166,8 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
             binding.etEnterFirstNameInner.text.toString(),
             binding.etEnterLastNameInner.text.toString(),
             binding.etEnterEmailInner.text.toString(),
-            "+${model.countrySelected?.code}${binding.etEnterPhoneInner.text.toString()}",
-            binding.etEnterDOBInner.text.toString()
+            "+441122334455"/*"+${model.countrySelected?.code}${binding.etEnterPhoneInner.text.toString()}"*/,
+            "1995-01-01"/*binding.etEnterDOBInner.text.toString()*/
         ).observe(viewLifecycleOwner) { response ->
             if (BuildConfig.DEBUG) {
                 Timber.d("WALLET -> $response")

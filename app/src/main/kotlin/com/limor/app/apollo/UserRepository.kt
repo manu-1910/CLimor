@@ -227,4 +227,13 @@ class UserRepository @Inject constructor(val apollo: Apollo) {
         val status = result?.data?.updateUser?.status
         Timber.d("updateUserNotificationStatus -> $status")
     }
+
+    suspend fun getVendorOnBoardingUrl(): String?{
+        val query = GetVendorOnBoardingUrlQuery()
+        val result = apollo.launchQuery(query)
+        val onboardingURL : String? = result?.data?.getVendorOnboardingUrl?.data?.onboardingURL
+        Timber.d("getUserOnboardingStatus -> $onboardingURL")
+        return onboardingURL
+    }
+
 }

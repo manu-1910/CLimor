@@ -105,12 +105,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionDone"
-                android:inputType="phone"
+                android:inputType="text"
                 android:maxLines="1"
                 android:cursorVisible="false"
                 android:editable="false"/>
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:id="@+id/dateOfBirthView"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:translationZ="4dp"
+            android:visibility="gone"
+            android:layout_marginStart="@dimen/marginTwenty"
+            android:layout_marginEnd="@dimen/marginTwenty"
+            android:layout_marginTop="@dimen/marginTwenty"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etEnterLastName"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/etEnterEmail"

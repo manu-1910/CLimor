@@ -450,30 +450,57 @@ class UserPatronFragmentNew : Fragment() {
         // user.isPatron = false
         if (currentUser()) {
             if (user.isPatron == true) {
-                //is already a patron
-                //load patron feed
-                /*binding.emptyStateLayout.visibility = View.VISIBLE
-                binding.baseImageTextLayout.visibility = View.GONE
-                binding.managePatronStateLayout.visibility = View.GONE
-                binding.requestStateLayout.visibility = View.GONE*/
-                setupViewPager(ArrayList())
-                binding.audioPlayerView.visibility = GONE
-                binding.termsCheckBox.isChecked = false
-                binding.patronButton.text = getString(R.string.limorPatronSetupWallet)
-                binding.patronButton.isEnabled = false
-                binding.patronButton.visibility = GONE
-                binding.managePatronStateLayout.visibility = View.VISIBLE
-                binding.managePatronDescriptionTV.visibility = GONE
-                binding.pager.visibility = GONE
-                binding.indicator.visibility = View.INVISIBLE
-                binding.checkLayout.visibility = View.INVISIBLE
+                //user.patronOnBoardingStatus = "ACTION_REQUIRED"
+                if(user.patronOnBoardingStatus == "ACTION_REQUIRED"){
+                    setupAudioPlayer(user.patronAudioURL, user.patronAudioDurationSeconds)
+                    setupViewPager(ArrayList())
+                    binding.audioPlayerView.visibility = View.VISIBLE
+                    binding.termsCheckBox.isChecked = false
+                    binding.patronButton.text =
+                        if (PrefsHandler.hasOnboardingUrl(requireContext()))
+                            getString(R.string.complete_onboarding) else
+                            getString(R.string.limorPatronSetupWallet)
 
-                loadCasts()
+                    binding.patronButton.isEnabled = true
+                    binding.managePatronStateLayout.visibility = View.VISIBLE
+                    binding.managePatronDescriptionTV.visibility = View.VISIBLE
+                    binding.pager.visibility = GONE
+                    binding.indicator.visibility = GONE
+                    binding.checkLayout.visibility = GONE
 
-                binding.managePatron.setOnClickListener {
-                    val intent = Intent(requireActivity(), ManagePatronActivity::class.java)
-                    startActivity(intent)
-                    //findNavController().navigate(R.id.action_navigateProfileFragment_to_managePatronFragment)
+                    binding.managePatron.setOnClickListener {
+                        val intent = Intent(
+                            requireActivity(),
+                            ManagePatronActivity::class.java
+                        )
+                        startActivity(intent)
+                    }
+                } else{
+                    //is already a patron
+                    //load patron feed
+                    /*binding.emptyStateLayout.visibility = View.VISIBLE
+                    binding.baseImageTextLayout.visibility = View.GONE
+                    binding.managePatronStateLayout.visibility = View.GONE
+                    binding.requestStateLayout.visibility = View.GONE*/
+                    setupViewPager(ArrayList())
+                    binding.audioPlayerView.visibility = GONE
+                    binding.termsCheckBox.isChecked = false
+                    binding.patronButton.text = getString(R.string.limorPatronSetupWallet)
+                    binding.patronButton.isEnabled = false
+                    binding.patronButton.visibility = GONE
+                    binding.managePatronStateLayout.visibility = View.VISIBLE
+                    binding.managePatronDescriptionTV.visibility = GONE
+                    binding.pager.visibility = GONE
+                    binding.indicator.visibility = View.INVISIBLE
+                    binding.checkLayout.visibility = View.INVISIBLE
+
+                    loadCasts()
+
+                    binding.managePatron.setOnClickListener {
+                        val intent = Intent(requireActivity(), ManagePatronActivity::class.java)
+                        startActivity(intent)
+                        //findNavController().navigate(R.id.action_navigateProfileFragment_to_managePatronFragment)
+                    }
                 }
             } else {
                 // user.patronOnBoardingStatus = "NOT_INITIATED"
@@ -528,18 +555,15 @@ class UserPatronFragmentNew : Fragment() {
                                     binding.patronButton.isEnabled = true
                                     binding.audioPlayerView.visibility = View.GONE
                                 }
-                                "COMPLETED" -> {
-                                    //Show Limor Patron
+                                "LANGUAGES_COLLECTED" -> {
                                     setupViewPager(ArrayList())
                                     binding.audioPlayerView.visibility = View.VISIBLE
                                     binding.termsCheckBox.isChecked = false
-                                    binding.patronButton.text =
-                                        if (PrefsHandler.hasOnboardingUrl(requireContext()))
-                                            getString(R.string.complete_onboarding) else
-                                            getString(R.string.limorPatronSetupWallet)
+                                    binding.patronButton.text = getString(R.string.limorPatronSetupWallet)
 
                                     binding.patronButton.isEnabled = true
                                     binding.managePatronStateLayout.visibility = View.VISIBLE
+                                    binding.managePatronDescriptionTV.visibility = View.VISIBLE
                                     binding.pager.visibility = GONE
                                     binding.indicator.visibility = GONE
                                     binding.checkLayout.visibility = GONE
@@ -551,6 +575,8 @@ class UserPatronFragmentNew : Fragment() {
                                         )
                                         startActivity(intent)
                                     }
+                                }
+                                "COMPLETED" -> {
                                 }
                                 "VENDOR_CREATED" -> {
                                     setupViewPager(ArrayList())
@@ -571,6 +597,12 @@ class UserPatronFragmentNew : Fragment() {
                                         )
                                         startActivity(intent)
                                     }
+                                }
+                                "ACCEPT_PAYMENTS" -> {
+
+                                }
+                                "ACTION_REQUIRED" -> {
+
                                 }
                                 "BANK_DETAILS_PENDING" ->{
                                     setupViewPager(ArrayList())
@@ -734,7 +766,7 @@ class UserPatronFragmentNew : Fragment() {
     }
 
     private fun checkPatronState() {
-        // user.patronOnBoardingStatus = "NOT_INITIATED"
+        //user.patronOnBoardingStatus = "NOT_INITIATED"
         when (user.patronOnBoardingStatus) {
             "NOT_INITIATED" -> {
                 val intent = Intent(requireContext(), PatronSetupActivity::class.java)
@@ -756,25 +788,38 @@ class UserPatronFragmentNew : Fragment() {
                 intent.putExtra("page", "languages")
                 startActivity(intent)
             }
+            "LANGUAGES_COLLECTED" -> {
+                val intent = Intent(requireContext(), UniPaasActivity::class.java)
+                intent.putExtra("user", user)
+                startActivity(intent)
+            }
             "COMPLETED" -> {
-                if (PrefsHandler.hasOnboardingUrl(requireContext())) {
-                    Uri.parse(PrefsHandler.getOnboardingUrl(requireContext())).also { uri ->
-                        startActivity(Intent(Intent.ACTION_VIEW, uri))
-                    }
-                } else {
-                    // Open uni pass form
-                    val intent = Intent(requireContext(), UniPaasActivity::class.java)
-                    intent.putExtra("user", user)
-                    startActivity(intent)
-                }
             }
             "VENDOR_CREATED" -> {
-                // Fetch web url for further steps and open in browser
-                // TODO - get url from
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com"))
-                startActivity(browserIntent)
+                model.getVendorOnBoardingUrl().observe(viewLifecycleOwner) {
+                    it?.let {
+                        PrefsHandler.setOnboardingUrl(requireContext(), it)
+                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                        startActivity(browserIntent)
+                    }
+                }
             }
+            "ACCEPT_PAYMENTS" -> {
 
+            }
+            "ACTION_REQUIRED" -> {
+                if(user.isPatron == true){
+                    model.getVendorOnBoardingUrl().observe(viewLifecycleOwner) {
+                        it?.let {
+                            PrefsHandler.setOnboardingUrl(requireContext(), it)
+                            val intent = Intent(requireContext(), UniPaasActivity::class.java)
+                            intent.putExtra("user", user)
+                            intent.putExtra("show_confirmation", true)
+                            startActivity(intent)
+                        }
+                    }
+                }
+            }
         }
 
     }

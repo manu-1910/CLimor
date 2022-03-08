@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.limor.app.*
 import com.limor.app.apollo.Apollo
 import com.limor.app.apollo.GeneralInfoRepository
+import com.limor.app.playlists.models.PlaylistUIModel
 import com.limor.app.scenes.auth_new.model.UserInfoProvider
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.utils.CommonsKt
@@ -37,6 +38,11 @@ class UserProfileViewModel @Inject constructor(
         MutableLiveData<String?>()
     val patronInviteStatus: LiveData<String?>
         get() = _patronInviteStatus
+
+    private var _onBoardingUrl =
+        MutableLiveData<String?>()
+    val onBoardingUrl: LiveData<String?>
+        get() = _onBoardingUrl
 
     fun getUserProfile(){
         viewModelScope.launch {
@@ -127,5 +133,12 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
+    fun getVendorOnBoardingUrl(): LiveData<String?>{
+        val liveData = MutableLiveData<String?>()
+        viewModelScope.launch {
+            liveData.postValue(userInfoProvider.userRepository.getVendorOnBoardingUrl())
+        }
+        return liveData
+    }
 
 }
