@@ -335,6 +335,7 @@
     <string name="settings_change_password">Change Password</string>
     <string name="settings_request_verification">Request Verification</string>
     <string name="settings_push_notifications">Push Notifications</string>
+    <string name="settings_sounds">Sounds</string>
     <string name="settings_autoplay">Autoplay</string>
     <string name="settings_title_about">About</string>
     <string name="settings_privacy_policy">Privacy Policy</string>
