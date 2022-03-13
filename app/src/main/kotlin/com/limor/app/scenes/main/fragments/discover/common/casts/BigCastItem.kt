@@ -6,6 +6,7 @@ import android.view.View
 import androidx.core.view.updateLayoutParams
 import com.bumptech.glide.Glide
 import com.bumptech.glide.signature.ObjectKey
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.ItemDiscoverBigCastBinding
 import com.limor.app.extensions.getActivity
@@ -47,9 +48,13 @@ class BigCastItem(
                 castDuration.text = CommonsKt.getFeedDuration(cast.audio.duration)
             }
 
+            if (BuildConfig.DEBUG) {
+                println(cast.imageLinks)
+            }
+
             if (cast.imageLinks?.medium != null) {
                 Glide.with(root)
-                    .load(cast.imageLinks.medium)
+                    .load(cast.imageLinks.large)
                     .into(castImage)
             } else {
                 castImage.setBackgroundColor(Color.parseColor(cast.colorCode))
