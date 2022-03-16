@@ -4,22 +4,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
-import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.SkuDetails
 import com.limor.app.databinding.ItemHomeFeedBinding
 import com.limor.app.databinding.ItemHomeFeedRecastedBinding
-import com.limor.app.databinding.ItemLoadMoreBinding
 import com.limor.app.dm.ShareResult
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderBindable
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderPodcast
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderRecast
-import com.limor.app.scenes.notifications.DiffUtilCallBack
-import com.limor.app.scenes.notifications.NotificationAdapter
 import com.limor.app.service.ProductDetails
 import com.limor.app.uimodels.CastUIModel
-import com.limor.app.uimodels.NotiUIMode
 import com.limor.app.uimodels.TagUIModel
 
 class HomeFeedAdapter(
@@ -67,6 +60,10 @@ class HomeFeedAdapter(
                 onShareClick,
                 onHashTagClick,
                 onUserMentionClick,
+                onEditPreviewClick,
+                onPlayPreviewClick,
+                onEditPriceClick,
+                onPurchaseCast,
                 productDetailsFetcher
             )
         } else {

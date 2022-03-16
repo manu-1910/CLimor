@@ -1,5 +1,6 @@
 package com.limor.app.di.modules.fragments
 
+import com.limor.app.scenes.main_new.fragments.FragmentRecastUsers
 import com.limor.app.dm.ui.ChatSessionsFragment
 import com.limor.app.dm.ui.ShareFragment
 import com.limor.app.playlists.PlaylistsFragment
@@ -141,6 +142,9 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeFragmentCreatePlaylistInjector(): FragmentCreatePlaylist
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentRecastUsers(): FragmentRecastUsers
 
 }
 

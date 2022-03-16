@@ -55,6 +55,18 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         return feedItems
     }
 
+    suspend fun getRecastedUsers(
+        podcastId: Int
+    ): List<GetPodcastRecastedUsersQuery.GetPodcastRecastUsersList>{
+        val query = GetPodcastRecastedUsersQuery(podcastId)
+        val result = apollo.launchQuery(query)
+        var recastedUsers: List<GetPodcastRecastedUsersQuery.GetPodcastRecastUsersList?> =
+            result?.data?.getPodcastRecastUsersList ?: return emptyList()
+        recastedUsers = recastedUsers.filterNotNull()
+        logList(recastedUsers)
+        return recastedUsers
+    }
+
     private fun logList(list: List<Any>) {
         if (!BuildConfig.DEBUG) return
         list.forEach {

@@ -18,6 +18,9 @@
         <action
             android:id="@+id/action_navigation_home_to_discoverHashtagFragment"
             app:destination="@id/discoverHashtagFragment" />
+        <action
+            android:id="@+id/action_navigate_home_to_fragment_recasted_users"
+            app:destination="@+id/fragmentRecastedUsers"/>
     </fragment>
 
     <fragment
@@ -170,6 +173,9 @@
         android:id="@+id/fragmentPlaylistDetails"
         android:name="com.limor.app.scenes.patron.FragmentPlaylistDetails"
         android:label="FragmentPlaylistDetails" />
+    <fragment
+        android:id="@+id/fragmentRecastedUsers"
+        android:name="com.limor.app.scenes.main_new.fragments.FragmentRecastUsers"/>
 
     <!--<fragment
         android:id="@+id/manage_patron_fragment"

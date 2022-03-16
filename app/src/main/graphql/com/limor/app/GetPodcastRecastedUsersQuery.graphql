@@ -1,0 +1,36 @@
+query GetPodcastRecastedUsersQuery($podcastId: Int!){
+    getPodcastRecastUsersList(podcastId:$podcastId){
+        id
+        username
+        first_name
+        last_name
+        images {
+            small_url
+            medium_url
+            large_url
+            original_url
+        }
+        blocked
+        followed
+        blocked_by
+        followed_by
+        following_count
+        followers_count
+        description
+        website
+        gender
+        date_of_birth
+        notifications_enabled
+        active
+        suspended
+        verified
+        autoplay_enabled
+        sharing_url
+        voice_bio_url
+        duration
+        patronInvitationStatus
+        isPatron
+        patronAudioURL
+        patronAudioDuration
+    }
+}
