@@ -57,6 +57,7 @@ import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.toolbar_default.tvToolbarTitle
 import kotlinx.android.synthetic.main.toolbar_with_back_arrow_icon.*
 import kotlinx.coroutines.*
+import org.jetbrains.anko.sdk23.listeners.onCheckedChange
 import org.jetbrains.anko.sdk23.listeners.onClick
 import timber.log.Timber
 import javax.inject.Inject
@@ -127,6 +128,7 @@ class SettingsFragment : BaseFragment() {
     private fun setupUserRelated() {
         val user = currentUser ?: return
         binding.swPushNotifications.isChecked = user.hasNotificationsEnabled()
+        binding.swSounds.isChecked = PrefsHandler.areSoundsEnabled(requireContext())
     }
 
     private fun hideLoading() {
@@ -169,6 +171,10 @@ class SettingsFragment : BaseFragment() {
             val currentStatus = swPushNotifications.isChecked
             model.setNotificationsEnabled(currentStatus)
             // callToUpdateUser(userItem)
+        }
+
+        binding.swSounds.onCheckedChange { _, isChecked ->
+            PrefsHandler.setSoundsEnabled(requireContext(), isChecked)
         }
 
         lytReportProblem.onClick {
