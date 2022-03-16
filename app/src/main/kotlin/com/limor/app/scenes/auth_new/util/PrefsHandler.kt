@@ -29,6 +29,7 @@ object PrefsHandler {
     private const val PREFERENCES_SELECTED = "preferences_selected"
     private const val SELECTED_GENDER_ID = "gender_id"
     private const val KEY_ONBOARDING_URL = "unipaas_onboarding_url"
+    private const val KEY_ENABLE_SOUNDS = "key_enable_sounds"
 
     private fun sp(context: Context) = sharedPreferences(context)
 
@@ -146,6 +147,10 @@ object PrefsHandler {
         return sharedPreferences(context).getBoolean(s, false)
     }
 
+    fun getBoolean(context: Context, s: String, defaultValue: Boolean): Boolean {
+        return sharedPreferences(context).getBoolean(s, defaultValue)
+    }
+
     fun getSkuDetails(context: Context, s: String): SkuDetails? {
         val skuDetails =
             Gson().fromJson(sharedPreferences(context).getString(s, ""), SkuDetails::class.java)
@@ -181,5 +186,8 @@ object PrefsHandler {
             putString(KEY_ONBOARDING_URL, url)
         }
     }
+
+    fun areSoundsEnabled(context: Context) = getBoolean(context, KEY_ENABLE_SOUNDS, true)
+    fun setSoundsEnabled(context: Context, enabled: Boolean) = saveBoolean(context, KEY_ENABLE_SOUNDS, enabled)
 
 }
