@@ -2,6 +2,7 @@ package com.limor.app.util
 
 import android.content.Context
 import android.media.MediaPlayer
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 
 enum class SoundType(val file: String) {
     HEART("heart.wav"),
@@ -14,6 +15,10 @@ enum class SoundType(val file: String) {
 
 object Sounds {
     fun playSound(context: Context, soundType: SoundType, onDone: (() -> Unit)? = null) {
+        if (!PrefsHandler.areSoundsEnabled(context)) {
+            return;
+        }
+
         val mediaPlayer = MediaPlayer()
 
         try {
