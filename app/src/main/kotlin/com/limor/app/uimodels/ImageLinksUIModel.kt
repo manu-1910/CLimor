@@ -136,6 +136,14 @@ fun GetPurchasedCastsQuery.Images.mapToUIModel(): ImageLinksUIModel {
     return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }
 
+fun GetFeaturedPodcastsByGroupIdQuery.Images.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
+}
+
+fun GetFeaturedPodcastsByGroupIdQuery.Images1.mapToUIModel(): ImageLinksUIModel {
+    return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
+}
+
 fun GetPodcastRecastedUsersQuery.Images.mapToUIModel(): ImageLinksUIModel{
     return ImageLinksUIModel(small_url, medium_url, large_url, original_url)
 }

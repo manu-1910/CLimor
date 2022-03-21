@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
+    android:paddingTop="@dimen/marginMedium">
+
+    <TextView
+        android:id="@+id/recommended_casts_description_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/textSize16"
+        android:fontFamily="@font/roboto_bold"
+        android:text="@string/recommended_casts_description"
+        android:textColor="@color/black"
+        android:layout_marginStart="@dimen/marginTwenty"
+        android:layout_marginEnd="@dimen/marginTwenty"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"/>
+
+    <TextView
+        android:id="@+id/recommended_casts_title_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Masterclass audio"
+        android:textSize="@dimen/textSize14"
+        android:fontFamily="@font/roboto_bold"
+        android:layout_marginStart="@dimen/marginTwenty"
+        android:layout_marginEnd="@dimen/marginTwenty"
+        app:layout_constraintTop_toBottomOf="@id/recommended_casts_description_text_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/suggested_casts_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/marginMedium"
+        android:layout_marginStart="@dimen/marginMediumSmall"
+        android:layout_marginEnd="@dimen/marginMediumSmall"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/recommended_casts_title_text_view"
+        tools:itemCount="3"
+        tools:listitem="@layout/item_discover_suggested_person" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

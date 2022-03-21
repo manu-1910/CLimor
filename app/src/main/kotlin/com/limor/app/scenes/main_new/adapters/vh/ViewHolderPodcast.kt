@@ -5,9 +5,6 @@ import android.content.Intent
 import android.os.Handler
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
-import androidx.lifecycle.findViewTreeLifecycleOwner
-import androidx.navigation.findNavController
 import com.android.billingclient.api.SkuDetails
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedBinding
@@ -16,7 +13,7 @@ import com.limor.app.extensions.*
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
-import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
+import com.limor.app.scenes.main_new.fragments.DataItem
 import com.limor.app.scenes.patron.unipaas.UniPaasActivity
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.service.DetailsAvailableListener
@@ -37,16 +34,16 @@ class ViewHolderPodcast(
     private val onEditPreviewClick: (cast: CastUIModel) -> Unit,
     private val onPlayPreviewClick: (cast: CastUIModel, play: Boolean) -> Unit,
     private val onEditPriceClick: (cast: CastUIModel) -> Unit,
-    private val onPurchaseCast:  (cast: CastUIModel, sku: SkuDetails?) -> Unit,
+    private val onPurchaseCast: (cast: CastUIModel, sku: SkuDetails?) -> Unit,
     private val productDetailsFetcher: ProductDetails
-) : ViewHolderBindable<CastUIModel>(binding), DetailsAvailableListener {
+) : ViewHolderBindable<DataItem>(binding), DetailsAvailableListener {
 
     private var playingPreview = false
     private var skuDetails: SkuDetails? = null
     private var cast: CastUIModel? = null
 
-    override fun bind(item: CastUIModel) {
-        cast = item
+    override fun bind(item: DataItem) {
+        cast = item as CastUIModel
 
         setPodcastGeneralInfo(item)
         setPodcastOwnerInfo(item)
@@ -70,9 +67,9 @@ class ViewHolderPodcast(
             onUserMentionClick,
             onHashTagClick
         )
-        if(item.patronCast == true){
+        if (item.patronCast == true) {
             binding.patronCastIndicator.visibility = View.VISIBLE
-        } else{
+        } else {
             binding.patronCastIndicator.visibility = View.GONE
         }
         binding.matureContentInfo.visibility = if (item.maturedContent == true)
@@ -122,12 +119,13 @@ class ViewHolderPodcast(
 
             when {
                 (item.owner?.id != userId) -> {
-                    if(item.patronDetails?.purchased == true){
+                    if (item.patronDetails?.purchased == true) {
                         binding.btnPurchasedCast.visibility = View.VISIBLE
                         binding.notCastOwnerActions.visibility = View.GONE
                         binding.castOwnerActions.visibility = View.GONE
-                        binding.btnPurchasedCast.text = "Purchased at ${item.patronDetails?.castPurchasedDetails?.purchased_in_currency} ${item.patronDetails?.castPurchasedDetails?.purchased_at_price} "
-                    }else{
+                        binding.btnPurchasedCast.text =
+                            "Purchased at ${item.patronDetails?.castPurchasedDetails?.purchased_in_currency} ${item.patronDetails?.castPurchasedDetails?.purchased_at_price} "
+                    } else {
                         //Purchase a cast actions
                         binding.notCastOwnerActions.visibility = View.VISIBLE
                         binding.castOwnerActions.visibility = View.GONE

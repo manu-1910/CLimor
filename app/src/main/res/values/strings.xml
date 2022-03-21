@@ -1037,5 +1037,6 @@
     <string name="updated_app_toast">New Version Has been Installed</string>
 
     <string name="special_characters_not_allowed">Special characters are not allowed</string>
+    <string name="recommended_casts_description">Get the most from your content</string>
 
 </resources>

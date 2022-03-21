@@ -1,5 +1,6 @@
 package com.limor.app.apollo
 
+import android.util.Log
 import com.limor.app.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -63,6 +64,21 @@ class CastsRepository @Inject constructor(private val apollo: Apollo) {
     ): GetPodcastByIdQuery.GetPodcastById? {
         return apollo.launchQuery(GetPodcastByIdQuery(castId))
             ?.data?.getPodcastById
+    }
+
+    suspend fun getFeaturedPodCastsGroups(
+        type: String
+    ): FeaturedPodcastsGroupsQuery.Data1? {
+        return apollo.launchQuery(FeaturedPodcastsGroupsQuery(type))
+            ?.data?.getFeaturedPodcastGroups?.data
+    }
+
+    suspend fun getFeaturedPodcastsByGroupId(
+        groupId: Int
+    ): GetFeaturedPodcastsByGroupIdQuery.Data1?{
+        Log.d("svsdv","dvverve")
+        val result = apollo.launchQuery(GetFeaturedPodcastsByGroupIdQuery(groupId))
+        return result?.data?.getFeaturedPodcastsByGroupId?.data
     }
 
     suspend fun deleteCastById(id: Int) {

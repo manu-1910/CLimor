@@ -1,0 +1,14 @@
+query FeaturedPodcastsGroups($type: String!){
+    getFeaturedPodcastGroups(type: $type){
+        status
+        message
+        data{
+            count
+            featuredPodcastGroups{
+                id
+                position
+                title
+            }
+        }
+    }
+}

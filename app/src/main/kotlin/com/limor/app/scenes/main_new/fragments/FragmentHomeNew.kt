@@ -44,11 +44,11 @@ import com.limor.app.util.SoundType
 import com.limor.app.util.Sounds
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
+import kotlinx.coroutines.flow.collectLatest as collectLatest1
 
 class FragmentHomeNew : BaseFragment() {
 
@@ -82,7 +82,7 @@ class FragmentHomeNew : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         initSwipeToRefresh()
         createAdapter()
-        loadFeeds()
+        loadSuggestedPodcastGroups()
         setUpRecyclerView()
         subscribeToViewModel()
         setOnClicks()
@@ -106,11 +106,19 @@ class FragmentHomeNew : BaseFragment() {
         }
     }
 
-    private fun loadFeeds() {
+    private fun loadSuggestedPodcastGroups() {
         lifecycleScope.launch {
-            homeFeedViewModel.getHomeFeed().collectLatest {
+            homeFeedViewModel.getFeaturedPodcastsGroups().observe(viewLifecycleOwner, {
+                loadFeeds()
+            })
+        }
+    }
+
+    private fun loadFeeds(){
+        lifecycleScope.launch {
+            homeFeedViewModel.getHomeFeed().collectLatest1 { data ->
                 binding.swipeToRefresh.isRefreshing = false
-                homeFeedAdapter?.submitData(it)
+                homeFeedAdapter?.submitData(data)
                 this@FragmentHomeNew.toggleNoFeedLayout()
             }
         }
@@ -248,8 +256,11 @@ class FragmentHomeNew : BaseFragment() {
             }
         }
 
-    private fun onCastClick(cast: CastUIModel, sku: SkuDetails?){
-        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
+    private fun onCastClick(cast: CastUIModel, sku: SkuDetails?) {
+        if (cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(
+                requireContext()
+            )
+        ) {
 
             if (sku == null) {
                 LimorDialog(layoutInflater).apply {
@@ -270,17 +281,26 @@ class FragmentHomeNew : BaseFragment() {
                     }
                 }.show()
             }
-        } else{
+        } else {
             openPlayer(cast)
         }
     }
 
     private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?) {
         if (BuildConfig.DEBUG) {
-            println("Cast owner is ${cast.owner?.id}, current user is ${PrefsHandler.getCurrentUserId(requireContext())}");
+            println(
+                "Cast owner is ${cast.owner?.id}, current user is ${
+                    PrefsHandler.getCurrentUserId(
+                        requireContext()
+                    )
+                }"
+            );
         }
 
-        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
+        if (cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(
+                requireContext()
+            )
+        ) {
             LimorDialog(layoutInflater).apply {
                 setTitle(R.string.purchase_cast_title)
                 setMessage(R.string.purchase_cast_description_for_comment)
@@ -290,7 +310,7 @@ class FragmentHomeNew : BaseFragment() {
                     launchPurchaseCast(cast, sku)
                 }
             }.show()
-        } else{
+        } else {
             RootCommentsFragment.newInstance(cast).also { fragment ->
                 fragment.show(parentFragmentManager, fragment.requireTag())
             }

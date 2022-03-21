@@ -22,6 +22,7 @@ import java.time.Duration
 class SmallCastItem(
     val cast: CastUIModel,
     private val spanSize: Int = 1,
+    private val hideDuration: Boolean = false
 ) : BindableItem<ItemDiscoverSmallCastBinding>() {
 
     init {
@@ -73,7 +74,10 @@ class SmallCastItem(
             ownerIcon.setOnClickListener {
                 openUserProfile(this)
             }
-
+            if(hideDuration) {
+                castDuration.visibility = View.GONE
+                imageView8.visibility = View.GONE
+            }
         }
     }
 

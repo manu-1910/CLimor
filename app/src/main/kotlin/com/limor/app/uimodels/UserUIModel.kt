@@ -3,6 +3,7 @@ package com.limor.app.uimodels
 import android.os.Parcelable
 import com.limor.app.*
 import com.limor.app.extensions.toLocalDate
+import com.limor.app.scenes.main_new.fragments.DataItem
 import kotlinx.android.parcel.Parcelize
 import java.time.LocalDate
 
@@ -39,8 +40,9 @@ data class UserUIModel(
     val patronAudioURL: String? = null,
     val patronAudioDurationSeconds: Double? = null,
     var availableInvitations: Int = 0,
-    var patronStatus: String? = null
-) : Parcelable {
+    var patronStatus: String? = null,
+    override var itemType: DataItem.ItemType = DataItem.ItemType.NONE
+) : Parcelable, DataItem {
 
     fun getFullName() = if (firstName == null && lastName == null) username else String.format(
         "%s %s",
@@ -191,7 +193,7 @@ fun GetUserProfileQuery.GetUser.mapToUIModel(): UserUIModel =
         patronAudioURL = patronAudioURL,
         patronAudioDurationSeconds = patronAudioDuration,
         patronOnBoardingStatus = patronOnboardingStatus,
-        availableInvitations =  availableInvitations?:0
+        availableInvitations = availableInvitations ?: 0
     )
 
 
@@ -446,6 +448,21 @@ fun SearchFollowingQuery.SearchFollowing.mapToUIModel(): UserUIModel =
     )
 
 fun GetPurchasedCastsQuery.Owner.mapToUIModel(): UserUIModel =
+    UserUIModel(
+        id = id!!, username = username, firstName = first_name, lastName = last_name,
+        imageLinks = images?.mapToUIModel(), isBlocked = null, isFollowed = followed,
+        isBlockedBy = null, isFollowedBy = followed,
+        followingCount = following_count, followersCount = followers_count,
+        description = description, website = null, gender = null,
+        dateOfBirth = null,
+        areNotificationsEnabled = null, isActive = null,
+        isSuspended = null, isVerified = null, isAutoplayEnabled = null,
+        sharingUrl = null,
+        voiceBioURL = null,
+        durationSeconds = null
+    )
+
+fun GetFeaturedPodcastsByGroupIdQuery.User.mapToUIModel(): UserUIModel =
     UserUIModel(
         id = id!!, username = username, firstName = first_name, lastName = last_name,
         imageLinks = images?.mapToUIModel(), isBlocked = null, isFollowed = followed,

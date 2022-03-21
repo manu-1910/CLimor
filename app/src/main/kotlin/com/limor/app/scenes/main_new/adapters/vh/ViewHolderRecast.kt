@@ -23,15 +23,18 @@ import com.android.billingclient.api.SkuDetails
 import com.limor.app.R
 import com.limor.app.databinding.ItemHomeFeedRecastedBinding
 import com.limor.app.dm.ShareResult
+import com.limor.app.extensions.loadCircleImage
+import com.limor.app.extensions.loadImage
+import com.limor.app.extensions.setTextWithTagging
+import com.limor.app.extensions.throttledClick
 import com.limor.app.extensions.*
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
+import com.limor.app.scenes.main_new.fragments.DataItem
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.fragments.FragmentRecastUsers
 import com.limor.app.scenes.utils.CommonsKt
-import com.limor.app.scenes.utils.PlayerViewManager
-import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.service.DetailsAvailableListener
 import com.limor.app.service.ProductDetails
 import com.limor.app.uimodels.CastUIModel
@@ -51,14 +54,14 @@ class ViewHolderRecast(
     private val onEditPriceClick: (cast: CastUIModel) -> Unit,
     private val onPurchaseCast: (cast: CastUIModel, sku: SkuDetails?) -> Unit,
     private val productDetailsFetcher: ProductDetails
-) : ViewHolderBindable<CastUIModel>(binding), DetailsAvailableListener {
+) : ViewHolderBindable<DataItem>(binding), DetailsAvailableListener {
 
     private var playingPreview = false
     private var skuDetails: SkuDetails? = null
     private var cast: CastUIModel? = null
 
-    override fun bind(item: CastUIModel) {
-        cast = item
+    override fun bind(item: DataItem) {
+        cast = item as CastUIModel
 
         binding.tvRecastUserName.text = getCastersDescriptionText(item)
         binding.tvRecastUserSubtitle.text = item.getCreationDateAndPlace(context, false)

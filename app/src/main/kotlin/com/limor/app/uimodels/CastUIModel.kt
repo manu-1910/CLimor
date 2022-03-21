@@ -7,6 +7,7 @@ import android.os.Parcelable
 import com.limor.app.*
 import com.limor.app.dm.ShareResult
 import com.limor.app.extensions.toLocalDateTime
+import com.limor.app.scenes.main_new.fragments.DataItem
 import com.limor.app.scenes.utils.DateUiUtil
 import kotlinx.android.parcel.Parcelize
 import java.time.LocalDateTime
@@ -66,7 +67,8 @@ data class CastUIModel(
     var maturedContent: Boolean?,
     val patronCast: Boolean?,
     val patronDetails: PatronDetails? = null,
-) : Parcelable {
+    override var itemType: DataItem.ItemType = DataItem.ItemType.NONE
+) : Parcelable, DataItem {
 
     /**
      * X days ago - Berlin
@@ -371,18 +373,36 @@ fun GetUserPodcastsQuery.GetUserPodcast.mapToUIModel() =
 
 fun GetPatronPodcastsQuery.GetPatronCast.mapToUIModel() =
     CastUIModel(
-        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
-        imageLinks = images?.mapToUIModel(), caption = caption!!,
-        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
+        id = id!!,
+        owner = owner?.mapToUIModel(),
+        title = title,
+        address = address,
+        recasted = false,
+        imageLinks = images?.mapToUIModel(),
+        caption = caption!!,
+        createdAt = created_at?.toLocalDateTime(),
+        podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
-        latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked, isShared = false,
-        isReported = reported, isRecasted = recasted, isListened = listened,
-        isBookmarked = bookmarked, listensCount = number_of_listens,
-        likesCount = number_of_likes, recastsCount = number_of_recasts,
-        commentsCount = number_of_comments, sharesCount = number_of_shares,
-        audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
-        tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(), recaster = null,
+        latitude = latitude?.toFloat(),
+        longitude = longitude?.toFloat(),
+        isLiked = liked,
+        isShared = false,
+        isReported = reported,
+        isRecasted = recasted,
+        isListened = listened,
+        isBookmarked = bookmarked,
+        listensCount = number_of_listens,
+        likesCount = number_of_likes,
+        recastsCount = number_of_recasts,
+        commentsCount = number_of_comments,
+        sharesCount = number_of_shares,
+        audio = audio?.mapToUIModel(),
+        isActive = active,
+        sharingUrl = sharing_url,
+        tags = tags?.caption?.map { it!!.mapToUIModel() },
+        mentions = mentions?.mapToUIModel(),
+        links = links?.mapToUIModel(),
+        recaster = null,
         maturedContent = mature_content,
         colorCode = color_code,
         patronCast = patron_cast,
@@ -399,7 +419,7 @@ fun GetPatronPodcastsQuery.GetPatronCast.mapToUIModel() =
             )
         },
 
-    )
+        )
 
 fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
     CastUIModel(
@@ -434,7 +454,7 @@ fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
         links = podcast.links?.mapToUIModel(),
         recaster = recaster?.mapToUIModel(),
         colorCode = podcast.color_code,
-        maturedContent = podcast.mature_content, 
+        maturedContent = podcast.mature_content,
         patronCast = podcast.patron_cast,
         patronDetails = podcast.patron_details?.let {
             PatronDetails(
@@ -447,7 +467,8 @@ fun FeedItemsQuery.GetFeedItem.mapToUIModel() =
                     CastPurchaseDetails(cpi.purchased_at_price, cpi.purchased_in_currency)
                 }
             )
-        }
+        },
+        itemType = if (recasted == true) DataItem.ItemType.FEED_RECASTED_ITEM else DataItem.ItemType.FEED_ITEM
     )
 
 fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
@@ -501,20 +522,39 @@ fun GetPodcastByIdQuery.GetPodcastById.mapToUIModel() =
 
 fun GetPurchasedCastsQuery.GetPurchasedCast.mapToUIModel() =
     CastUIModel(
-        id = id!!, owner = owner?.mapToUIModel(), title = title, address = address, recasted = false,
-        imageLinks = images?.mapToUIModel(), caption = caption!!,
-        createdAt = created_at?.toLocalDateTime(), podcastCreatedAt = created_at?.toLocalDateTime(),
+        id = id!!,
+        owner = owner?.mapToUIModel(),
+        title = title,
+        address = address,
+        recasted = false,
+        imageLinks = images?.mapToUIModel(),
+        caption = caption!!,
+        createdAt = created_at?.toLocalDateTime(),
+        podcastCreatedAt = created_at?.toLocalDateTime(),
         updatedAt = updated_at?.toLocalDateTime(),
-        latitude = latitude?.toFloat(), longitude = longitude?.toFloat(), isLiked = liked,
-        isReported = reported, isRecasted = recasted, isListened = listened, isShared = false,
-        isBookmarked = bookmarked, listensCount = number_of_listens,
-        likesCount = number_of_likes, recastsCount = number_of_recasts,
-        commentsCount = number_of_comments, sharesCount = number_of_shares,
-        audio = audio?.mapToUIModel(), isActive = active, sharingUrl = sharing_url,
-        tags = tags?.caption?.map { it!!.mapToUIModel() }, mentions = mentions?.mapToUIModel(),
-        links = links?.mapToUIModel(), recaster = null,
+        latitude = latitude?.toFloat(),
+        longitude = longitude?.toFloat(),
+        isLiked = liked,
+        isReported = reported,
+        isRecasted = recasted,
+        isListened = listened,
+        isShared = false,
+        isBookmarked = bookmarked,
+        listensCount = number_of_listens,
+        likesCount = number_of_likes,
+        recastsCount = number_of_recasts,
+        commentsCount = number_of_comments,
+        sharesCount = number_of_shares,
+        audio = audio?.mapToUIModel(),
+        isActive = active,
+        sharingUrl = sharing_url,
+        tags = tags?.caption?.map { it!!.mapToUIModel() },
+        mentions = mentions?.mapToUIModel(),
+        links = links?.mapToUIModel(),
+        recaster = null,
         colorCode = color_code,
-        maturedContent = mature_content, patronCast = patron_cast,
+        maturedContent = mature_content,
+        patronCast = patron_cast,
         patronDetails = patron_details?.let {
             PatronDetails(
                 priceId = it.price_id,
