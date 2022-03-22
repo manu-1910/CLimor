@@ -48,7 +48,7 @@ class ViewHolderSuggestedPeople(
     private fun setClicks() {
         binding.seeAllTextView.setOnClickListener {
             it.findNavController()
-                .navigate(R.id.action_navigation_home_to_discoverSuggestedPeopleFragment)
+                .navigate(R.id.action_navigation_home_to_feedSuggestedPeopleFragment)
         }
     }
 

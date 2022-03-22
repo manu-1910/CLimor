@@ -146,5 +146,8 @@ abstract class MainActivityNewFragmentBuildersModule {
     @ContributesAndroidInjector
     abstract fun contributeFragmentRecastUsers(): FragmentRecastUsers
 
+    @ContributesAndroidInjector
+    abstract fun contributeFeedSuggestedPeople(): FeedSuggestedPeople
+
 }
 
