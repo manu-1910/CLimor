@@ -16,6 +16,7 @@ import androidx.paging.PagingData
 import com.limor.app.apollo.FollowRepository
 import com.limor.app.scenes.main_new.pagingsources.HomeFeedPagingSource
 import com.limor.app.uimodels.UserUIModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -45,11 +46,11 @@ class HomeFeedViewModel @Inject constructor(
         return podcastGroups
     }
 
-    fun getHomeFeed(): Flow<PagingData<DataItem>> {
+    fun getHomeFeed(scope: CoroutineScope): Flow<PagingData<DataItem>> {
         return Pager(
             config = PagingConfig(pageSize = 20, initialLoadSize = 20),
             pagingSourceFactory = { getSource() }
-        ).flow.cachedIn(viewModelScope).map { pagingData -> pagingData.map { it as DataItem } }
+        ).flow.cachedIn(scope).map { pagingData -> pagingData.map { it as DataItem } }
     }
 
     private fun getSource(): HomeFeedPagingSource {

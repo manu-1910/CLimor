@@ -34,31 +34,34 @@ class HomeFeedPagingSource(
                 cast.mapToUIModel()
             }
             finalResult.addAll(result)
-            if (lastAppendedItem == RECOMMENDED_CASTS) {
-                val suggestedPeopleResult =
-                    repository.getSuggestedPeople(10, 0)?.map { user -> user.mapToUIModel() }
-                suggestedPeopleResult?.let {
-                    if (it.isNotEmpty()) {
-                        finalResult.add(FeedSuggestedPeople(it))
-                    }
-                }
-                lastAppendedItem = SUGGESTED_PEOPLE
-            } else {
-                featuredPodcastGroups?.let {
-                    var index = lastGroupPosition + 1
-                    if(index >= it.count)
-                        index = 0
-                    lastGroupPosition = index
-                    val recommendedCastsResult =
-                        castsRepository.getFeaturedPodcastsByGroupId(featuredPodcastGroups.podcastGroups[index].position)?.mapToUIModel()
-                    recommendedCastsResult?.let {
-                        if(featuredPodcastGroups.podcastGroups.isNotEmpty()){
-                            finalResult.add(FeedRecommendedCasts(featuredPodcastGroups.podcastGroups[index].title, recommendedCastsResult))
+            if(result.isNotEmpty()){
+                if (lastAppendedItem == RECOMMENDED_CASTS) {
+                    val suggestedPeopleResult =
+                        repository.getSuggestedPeople(10, 0)?.map { user -> user.mapToUIModel() }
+                    suggestedPeopleResult?.let {
+                        if (it.isNotEmpty()) {
+                            finalResult.add(FeedSuggestedPeople(it))
                         }
                     }
+                    lastAppendedItem = SUGGESTED_PEOPLE
+                } else {
+                    featuredPodcastGroups?.let {
+                        var index = lastGroupPosition + 1
+                        if(index >= it.count)
+                            index = 0
+                        lastGroupPosition = index
+                        val recommendedCastsResult =
+                            castsRepository.getFeaturedPodcastsByGroupId(featuredPodcastGroups.podcastGroups[index].position)?.mapToUIModel()
+                        recommendedCastsResult?.let {
+                            if(featuredPodcastGroups.podcastGroups.isNotEmpty()){
+                                finalResult.add(FeedRecommendedCasts(featuredPodcastGroups.podcastGroups[index].title, recommendedCastsResult))
+                            }
+                        }
+                    }
+                    lastAppendedItem = RECOMMENDED_CASTS
                 }
-                lastAppendedItem = RECOMMENDED_CASTS
             }
+
             val delta = System.currentTimeMillis() - startTime;
 
             if (BuildConfig.DEBUG) {

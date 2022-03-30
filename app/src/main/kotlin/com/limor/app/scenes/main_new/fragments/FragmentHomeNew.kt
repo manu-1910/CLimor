@@ -116,7 +116,7 @@ class FragmentHomeNew : BaseFragment() {
 
     private fun loadFeeds(){
         lifecycleScope.launch {
-            homeFeedViewModel.getHomeFeed().collectLatest1 { data ->
+            homeFeedViewModel.getHomeFeed(this).collectLatest1 { data ->
                 binding.swipeToRefresh.isRefreshing = false
                 homeFeedAdapter?.submitData(data)
                 this@FragmentHomeNew.toggleNoFeedLayout()
@@ -125,7 +125,7 @@ class FragmentHomeNew : BaseFragment() {
     }
 
     private fun toggleNoFeedLayout() {
-        binding.noFeedLayout.visibleIf(homeFeedAdapter?.itemCount == 0)
+        binding.noFeedLayout.visibleIf(homeFeedAdapter?.snapshot()?.isEmpty() ?: true)
     }
 
     private fun initSwipeToRefresh() {
