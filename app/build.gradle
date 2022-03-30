@@ -448,7 +448,8 @@ dependencies {
     implementation deps.merlin
 
     // Facebook
-    implementation 'com.facebook.android:facebook-android-sdk:4.42.0'
+    implementation 'com.facebook.android:facebook-core:5.+'
+    implementation 'com.facebook.android:facebook-share:5.+'
 
     // AWS
     implementation 'com.amazonaws:aws-android-sdk-core:2.7.6'

@@ -42,12 +42,12 @@ class FragmentSignUp : Fragment() {
         }
 
         btnSignUpNewFacebook.setOnClickListener {
-            facebookLoginButton.setReadPermissions("email", "public_profile")
+            /*facebookLoginButton.setReadPermissions("email", "public_profile")
             facebookLoginButton.registerCallback(
                 FacebookAuthHandler.callbackManager,
                 FacebookAuthHandler
             )
-            facebookLoginButton.performClick()
+            facebookLoginButton.performClick()*/
         }
 
         tvSignUpNewSignIn.setOnClickListener {

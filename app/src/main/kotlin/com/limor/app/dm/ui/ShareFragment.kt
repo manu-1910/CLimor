@@ -27,6 +27,11 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.share.Sharer
+import com.facebook.share.model.ShareLinkContent
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.App
@@ -403,14 +408,38 @@ class ShareFragment : BaseFragment() {
         val a = getActivities(getShareIntent(shortLink, true), true)
         val b = getActivities(getShareIntent(shortLink, true), false)
 
-        val apps = listOf(a, b,).first { a.isNotEmpty() }
-
+        val apps = listOf(a, b,).first { a.isNotEmpty() }.filter { it.activityInfo.name != "com.facebook.composer.shareintent.ShareToGroupsAlias" }
+        val fbApps = arrayListOf<String>("com.facebook.katana", "com.facebook.lite", "com.facebook.orca", "com.facebook.mlite")
         // binding.shareViaLabel.text = "a ${a.size}, b ${b.size}, c ${c.size}, d ${d.size}"
         binding.recyclerExternal.adapter = AppsAdapter(
             requireContext(),
             apps,
             onTap = { ri ->
-                openShareIntent(ri)
+                if(ri.activityInfo.packageName in fbApps){
+                    val content = ShareLinkContent.Builder()
+                        .setContentUrl(Uri.parse(shortLink))
+                        .build()
+                    val dialog = com.facebook.share.widget.ShareDialog(requireActivity())
+                    dialog.registerCallback(CallbackManager.Factory.create(), object:
+                        FacebookCallback<Sharer.Result> {
+                        override fun onSuccess(result: Sharer.Result?) {
+                        }
+
+                        override fun onCancel() {
+                        }
+
+                        override fun onError(error: FacebookException?) {
+                            if(error != null && error.message.equals("null")) {
+                                // Don't use the app for sharing in case of null-error
+                                dialog.show(content, com.facebook.share.widget.ShareDialog.Mode.WEB);
+                            }
+                        }
+                    })
+                    dialog.show(content)
+                    markAsShared(1)
+                } else{
+                    openShareIntent(ri)
+                }
             }
         )
     }
