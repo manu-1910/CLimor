@@ -1,7 +1,6 @@
 package com.limor.app.scenes.main.fragments.profile.casts
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
-import com.android.billingclient.api.ConsumeParams
 import com.android.billingclient.api.SkuDetails
 import com.limor.app.R
 import com.limor.app.common.Constants
@@ -25,15 +23,14 @@ import com.limor.app.di.Injectable
 import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.requireTag
 import com.limor.app.extensions.visibleIf
-import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
+import com.limor.app.scenes.main_new.adapters.CastsAdapter
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
-import com.limor.app.scenes.patron.manage.fragment.ChangePriceActivity
 import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
@@ -44,8 +41,8 @@ import com.limor.app.uimodels.UserUIModel
 import com.limor.app.uimodels.mapToAudioTrack
 import com.limor.app.util.SoundType
 import com.limor.app.util.Sounds
-import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -68,6 +65,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     private val recastPodcastViewModel: RecastPodcastViewModel by viewModels { viewModelFactory }
     private val sharePodcastViewModel: SharePodcastViewModel by viewModels { viewModelFactory }
     private val podcastInteractionViewModel: PodcastInteractionViewModel by activityViewModels { viewModelFactory }
+
     @Inject
     lateinit var playBillingHandler: PlayBillingHandler
     private val user: UserUIModel by lazy { requireArguments().getParcelable(USER_ID_KEY)!! }
@@ -75,7 +73,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
     private var castOffset = 0
     private var sharedPodcastId = -1
 
-    private val castsAdapter = GroupieAdapter()
+    private var castsAdapter: CastsAdapter? = null
 
     private val currentCasts = mutableListOf<CastUIModel>()
     private val loadMoreItem = LoadMoreItem() {
@@ -109,6 +107,77 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
 
     private fun initViews() {
         binding.castsList.layoutManager = LinearLayoutManager(context)
+        castsAdapter = CastsAdapter(
+            userId = user.id,
+            onCastClick = ::onCastClick,
+            onLikeClick = { cast, like ->
+                if (like) {
+                    Sounds.playSound(requireContext(), SoundType.HEART)
+                }
+                viewModel.likeCast(cast, like)
+            },
+            onMoreDialogClick = ::onMoreDialogClick,
+            onRecastClick = { cast, isRecasted ->
+                if (isRecasted) {
+                    Sounds.playSound(requireContext(), SoundType.RECAST)
+                    recastPodcastViewModel.reCast(cast.id)
+                } else {
+                    recastPodcastViewModel.deleteRecast(cast.id)
+                }
+            },
+            onCommentsClick = { cast, skuDetails ->
+                onCommentClick(cast, skuDetails)
+            },
+            onShareClick = { cast, onShared ->
+                ShareDialog.newInstance(cast).also { fragment ->
+                    fragment.setOnSharedListener(onShared)
+                    fragment.show(parentFragmentManager, fragment.requireTag())
+                }
+            },
+            onHashTagClick = { hashtag ->
+                (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)
+            },
+            onPurchaseCast = { cast, sku ->
+                //NOT REQUIRED TO HANDLE THIS IN USER NORMAL CASTS LIST
+                /*sku?.let { skuDetails ->
+                playBillingHandler.launchBillingFlowFor(skuDetails, requireActivity()){ purchase ->
+                    lifecycleScope.launch {
+                        playBillingHandler.consumePurchase(ConsumeParams.newBuilder()
+                            .setPurchaseToken(purchase.purchaseToken).build())
+                        val response  = playBillingHandler.publishRepository.createCastPurchase(cast,purchase,skuDetails)
+                        if(response == "Success"){
+                            //reload cast item for now reloading all items
+                            loadCasts()
+                        }
+                    }
+                }
+            }*/
+            },
+            onEditPreviewClick = {
+                EditPreviewDialog.newInstance(it).also { fragment ->
+                    fragment.show(parentFragmentManager, fragment.requireTag())
+                }
+            },
+            onPlayPreviewClick = { cast, play ->
+                cast.audio?.mapToAudioTrack()?.let { it1 ->
+                    cast.patronDetails?.startsAt?.let { it2 ->
+                        cast.patronDetails.endsAt?.let { it3 ->
+                            if (play) {
+                                (activity as? PlayerViewManager)?.playPreview(
+                                    it1, it2.toInt(), it3.toInt()
+                                )
+                            } else {
+                                (activity as? PlayerViewManager)?.stopPreview(true)
+                            }
+                        }
+                    }
+                }
+            },
+            productDetailsFetcher = null,
+            onEditPriceClick = {
+
+            }
+        )
         binding.castsList.adapter = castsAdapter
         binding.btnRecordPodcast.setOnClickListener {
             findNavController().navigate(R.id.navigation_record)
@@ -151,85 +220,11 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
             }
         }
 
-    private fun getCastItems(casts: List<CastUIModel>): List<CastItem> {
-        return casts.map {
-            CastItem(
-                userId = user.id,
-                cast = it,
-                onCastClick = ::onCastClick,
-                onLikeClick = { cast, like ->
-                    if (like) {
-                        Sounds.playSound(requireContext(), SoundType.HEART)
-                    }
-                    viewModel.likeCast(cast, like)
-                },
-                onMoreDialogClick = ::onMoreDialogClick,
-                onRecastClick = { cast, isRecasted ->
-                    if (isRecasted) {
-                        Sounds.playSound(requireContext(), SoundType.RECAST)
-                        recastPodcastViewModel.reCast(cast.id)
-                    } else {
-                        recastPodcastViewModel.deleteRecast(cast.id)
-                    }
-                },
-                onCommentsClick = { cast, skuDetails ->
-                    onCommentClick(cast, skuDetails)
-                },
-                onShareClick = { cast, onShared ->
-                    ShareDialog.newInstance(cast).also { fragment ->
-                        fragment.setOnSharedListener(onShared)
-                        fragment.show(parentFragmentManager, fragment.requireTag())
-                    }
-                },
-                onHashTagClick = { hashtag ->
-                    (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)
-                },
-                onPurchaseCast = {cast, sku ->
-                    //NOT REQUIRED TO HANDLE THIS IN USER NORMAL CASTS LIST
-                    /*sku?.let { skuDetails ->
-                        playBillingHandler.launchBillingFlowFor(skuDetails, requireActivity()){ purchase ->
-                            lifecycleScope.launch {
-                                playBillingHandler.consumePurchase(ConsumeParams.newBuilder()
-                                    .setPurchaseToken(purchase.purchaseToken).build())
-                                val response  = playBillingHandler.publishRepository.createCastPurchase(cast,purchase,skuDetails)
-                                if(response == "Success"){
-                                    //reload cast item for now reloading all items
-                                    loadCasts()
-                                }
-                            }
-                        }
-                    }*/
-                },
-                onEditPreviewClick = {
-                    EditPreviewDialog.newInstance(it).also { fragment ->
-                        fragment.show(parentFragmentManager, fragment.requireTag())
-                    }
-                },
-                onPlayPreviewClick = { cast, play ->
-                    cast.audio?.mapToAudioTrack()?.let { it1 ->
-                        cast.patronDetails?.startsAt?.let { it2 ->
-                            cast.patronDetails.endsAt?.let { it3 ->
-                                if (play) {
-                                    (activity as? PlayerViewManager)?.playPreview(
-                                        it1, it2.toInt(), it3.toInt()
-                                    )
-                                } else {
-                                    (activity as? PlayerViewManager)?.stopPreview(true)
-                                }
-                            }
-                        }
-                    }
-                },
-                productDetailsFetcher = null,
-                onEditPriceClick = {
-
-                }
-            )
-        }
-    }
-
     private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?) {
-        if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
+        if (cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(
+                requireContext()
+            )
+        ) {
             LimorDialog(layoutInflater).apply {
                 setTitle(R.string.purchase_cast_title)
                 setMessage(R.string.purchase_cast_description_for_comment)
@@ -239,7 +234,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                     launchPurchaseCast(cast, sku)
                 }
             }.show()
-        } else{
+        } else {
             RootCommentsFragment.newInstance(cast).also { fragment ->
                 fragment.show(parentFragmentManager, fragment.requireTag())
             }
@@ -270,30 +265,30 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
                 if (casts.isEmpty()) {
                     binding.noPodcastsLayout.visibility = View.VISIBLE
                     binding.castsTitleTV.visibility = View.VISIBLE
-                    binding.errorTV.text = resources.getString(R.string.empty_scenario_others_casts_description)
+                    binding.errorTV.text =
+                        resources.getString(R.string.empty_scenario_others_casts_description)
                     binding.errorTV.visibility = View.VISIBLE
                     binding.recordEmptyIV.visibility = View.VISIBLE
                     binding.btnRecordPodcast.visibility = View.GONE
-                } else{
+                } else {
                     binding.noPodcastsLayout.visibility = View.GONE
                 }
             }
-
 
 
         }
 
         currentCasts.addAll(casts)
 
-        val items = getCastItems(currentCasts)
+        //val items = getCastItems(currentCasts)
         val all = mutableListOf<BindableItem<out ViewBinding>>()
-        all.addAll(items)
+        //all.addAll(items)
         if (currentCasts.size >= Constants.CAST_BATCH_SIZE && casts.size >= Constants.CAST_BATCH_SIZE) {
             all.add(loadMoreItem)
         }
 
         val recyclerViewState = binding.castsList.layoutManager?.onSaveInstanceState()
-        castsAdapter.update(all)
+        //castsAdapter.update(all)
         updateLoadMore(true)
         binding.castsList.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
@@ -303,7 +298,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         loadMoreItem.isEnabled = isEnabled
         if (needNotification) {
             // notify the last item (i.e. the LoadMoreItem) has changes so its style is updated.
-            castsAdapter.notifyItemChanged(currentCasts.size)
+            castsAdapter?.notifyItemChanged(currentCasts.size)
         }
     }
 
@@ -314,7 +309,14 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
 
     private fun loadCasts() {
         Timber.d("Profile Casts Loading for ${user.id}")
-        viewModel.loadCasts(user.id, Constants.CAST_BATCH_SIZE, castOffset)
+        lifecycleScope.launch {
+            viewModel.getUserCasts(user.id).collectLatest { data ->
+                castsAdapter?.submitData(data)
+                /*if (castsAdapter?.snapshot()?.size == 0) {
+                    binding.emptyStateLayout.visibility = View.VISIBLE
+                }*/
+            }
+        }
     }
 
     private fun onCastClick(cast: CastUIModel, sku: SkuDetails?) {
@@ -334,7 +336,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         navController.navigate(R.id.dialog_report_podcast, bundle)
     }
 
-    private fun scrollList(){
+    private fun scrollList() {
         binding.castsList.scrollBy(0, 10)
     }
 

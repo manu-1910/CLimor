@@ -14,6 +14,7 @@ import com.limor.app.extensions.*
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
+import com.limor.app.scenes.main_new.adapters.vh.ViewHolderBindable
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.service.DetailsAvailableListener
 import com.limor.app.service.ProductDetails
@@ -25,7 +26,7 @@ import timber.log.Timber
 
 class CastItem(
     val userId: Int,
-    val cast: CastUIModel,
+    val binding: ItemUserCastBinding,
     private val onCastClick: (CastUIModel, SkuDetails?) -> Unit,
     private val onLikeClick: (CastUIModel, like: Boolean) -> Unit,
     private val onMoreDialogClick: (CastUIModel) -> Unit,
@@ -39,19 +40,15 @@ class CastItem(
     private val onPlayPreviewClick: (cast: CastUIModel, play: Boolean) -> Unit,
     private val onEditPriceClick: (cast: CastUIModel) -> Unit,
     private val productDetailsFetcher: ProductDetails? = null,
-) : BindableItem<ItemUserCastBinding>(), DetailsAvailableListener {
+) : ViewHolderBindable<CastUIModel>(binding), DetailsAvailableListener {
 
     private var skuDetails: SkuDetails? = null
-    private lateinit var context: Context
-    private lateinit var binding: ItemUserCastBinding
-
+    private lateinit var cast: CastUIModel
     private var playingPreview = false
 
-    override fun bind(viewBinding: ItemUserCastBinding, position: Int) {
-        binding = viewBinding
-        viewBinding.apply {
-            context = root.context
-
+    override fun bind(item: CastUIModel) {
+        binding.apply {
+            cast = item
             binding.matureContentInfo.visibility = if (cast.maturedContent == true)
                 View.VISIBLE
             else
@@ -84,7 +81,7 @@ class CastItem(
             tvPodcastNumberOfListeners.text =
                 if (cast.listensCount == 0) "0" else cast.listensCount?.toLong()?.formatHumanReadable
 
-            initRecastState(viewBinding, cast)
+            initRecastState(binding, cast)
 
             cpiPodcastListeningProgress.progress = 50 // TODO change to the real value
 
@@ -106,7 +103,7 @@ class CastItem(
                 onHashTagClick
             )
 
-            initLikeState(viewBinding, cast)
+            initLikeState(binding, cast)
 
             btnPodcastReply.shared = cast.isShared == true
 
@@ -167,7 +164,7 @@ class CastItem(
                     cast.updateShares(shareResult)
                     tvPodcastReply.text = cast.sharesCount.toString()
                     btnPodcastReply.shared = cast.isShared == true
-                    applyShareStyle(viewBinding, cast.isShared == true)
+                    applyShareStyle(binding, cast.isShared == true)
                 }
             }
 
@@ -248,7 +245,7 @@ class CastItem(
         }
     }
 
-    override fun isSameAs(other: Item<*>): Boolean {
+    /*override fun isSameAs(other: Item<*>): Boolean {
         if (other !is CastItem) return false
         return cast.id == other.cast.id
     }
@@ -259,7 +256,7 @@ class CastItem(
     }
 
     override fun getLayout() = R.layout.item_user_cast
-    override fun initializeViewBinding(view: View) = ItemUserCastBinding.bind(view)
+    override fun initializeViewBinding(view: View) = ItemUserCastBinding.bind(view)*/
 
 
     private fun setPatronPodcastStatus(item: CastUIModel, binding: ItemUserCastBinding) {
@@ -337,4 +334,5 @@ class CastItem(
             setPricingLabel()
         }
     }
+
 }

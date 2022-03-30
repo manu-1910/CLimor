@@ -33,6 +33,7 @@ import com.limor.app.scenes.main.fragments.profile.casts.LoadMoreItem
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
+import com.limor.app.scenes.main_new.adapters.CastsAdapter
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
@@ -50,6 +51,7 @@ import com.limor.app.util.Sounds
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -70,7 +72,7 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
     private var castOffset = 0
     private var sharedPodcastId = -1
 
-    private val castsAdapter = GroupieAdapter()
+    private var castsAdapter: CastsAdapter? = null
 
     private val currentCasts = mutableListOf<CastUIModel>()
     private val loadMoreItem = LoadMoreItem {
@@ -137,7 +139,7 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
         loadMoreItem.isEnabled = isEnabled
         if (needNotification) {
             // notify the last item (i.e. the LoadMoreItem) has changes so its style is updated.
-            castsAdapter.notifyItemChanged(currentCasts.size)
+            castsAdapter?.notifyItemChanged(currentCasts.size)
         }
     }
 
@@ -165,101 +167,82 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPurchasesBinding.inflate(inflater, container, false)
-        subscribeToViewModel()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setAdapter()
+        subscribeToViewModel()
         loadCasts()
     }
 
     private fun subscribeToViewModel() {
-        model.purchasedCasts.observe(viewLifecycleOwner) { casts ->
-            onLoadCasts(casts)
+        lifecycleScope.launch {
+            model.getPatronCasts(user.id).collectLatest { data ->
+                castsAdapter?.submitData(data)
+                /*if (castsAdapter?.snapshot().size == 0) {
+                    binding.emptyStateLayout.visibility = View.VISIBLE
+                }*/
+            }
         }
     }
 
-    private fun onLoadCasts(casts: List<CastUIModel>) {
-        if (castOffset == 0) {
-            binding.castsList.layoutManager = LinearLayoutManager(context)
-            binding.castsList.adapter = castsAdapter
-            currentCasts.clear()
-        }
+    private fun setAdapter(){
+        castsAdapter = CastsAdapter(
+            userId = user.id,
+            onCastClick = ::onCastClick,
+            onLikeClick = { cast, like ->
+                if (like) {
+                    Sounds.playSound(requireContext(), SoundType.HEART)
+                }
+                model.likeCast(cast, like)
+            },
+            onMoreDialogClick = ::onMoreDialogClick,
+            onRecastClick = { cast, isRecasted ->
+                if (isRecasted) {
+                    Sounds.playSound(requireContext(), SoundType.RECAST)
+                    recastPodcastViewModel.reCast(cast.id)
+                } else {
+                    recastPodcastViewModel.deleteRecast(cast.id)
+                }
+            },
+            onCommentsClick = { cast, skuDetails ->
+                onCommentClick(cast, skuDetails)
+            },
+            onShareClick = { cast, onShared ->
+                ShareDialog.newInstance(cast).also { fragment ->
+                    fragment.setOnSharedListener(onShared)
+                    fragment.show(parentFragmentManager, fragment.requireTag())
+                }
+            },
+            onHashTagClick = { hashtag ->
+                (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)
+            },
+            isPurchased = true,
+            onPurchaseCast = { cast, sku ->
 
-        currentCasts.addAll(casts)
-
-        val items = getCastItems(currentCasts)
-        val all = mutableListOf<BindableItem<out ViewBinding>>()
-        all.addAll(items)
-        if (currentCasts.size >= Constants.CAST_BATCH_SIZE && casts.size >= Constants.CAST_BATCH_SIZE) {
-            all.add(loadMoreItem)
-        }
-
-        val recyclerViewState = binding.castsList.layoutManager?.onSaveInstanceState()
-        castsAdapter.update(all)
-        updateLoadMore(true)
-        binding.castsList.layoutManager?.onRestoreInstanceState(recyclerViewState)
-    }
-
-    private fun getCastItems(casts: List<CastUIModel>): List<CastItem> {
-        return casts.map {
-            CastItem(
-                userId = user.id,
-                cast = it,
-                onCastClick = ::onCastClick,
-                onLikeClick = { cast, like ->
-                    if (like) {
-                        Sounds.playSound(requireContext(), SoundType.HEART)
-                    }
-                    model.likeCast(cast, like)
-                },
-                onMoreDialogClick = ::onMoreDialogClick,
-                onRecastClick = { cast, isRecasted ->
-                    if (isRecasted) {
-                        Sounds.playSound(requireContext(), SoundType.RECAST)
-                        recastPodcastViewModel.reCast(cast.id)
-                    } else {
-                        recastPodcastViewModel.deleteRecast(cast.id)
-                    }
-                },
-                onCommentsClick = { cast, skuDetails ->
-                    onCommentClick(cast, skuDetails)
-                },
-                onShareClick = { cast, onShared ->
-                    ShareDialog.newInstance(it).also { fragment ->
-                        fragment.setOnSharedListener(onShared)
-                        fragment.show(parentFragmentManager, fragment.requireTag())
-                    }
-                },
-                onHashTagClick = { hashtag ->
-                    (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)
-                },
-                isPurchased = true,
-                onPurchaseCast = { cast, sku ->
-
-                },
-                onEditPreviewClick = {
-                },
-                onPlayPreviewClick = { cast, play ->
-                    cast.audio?.mapToAudioTrack()?.let { it1 ->
-                        cast.patronDetails?.startsAt?.let { it2 ->
-                            cast.patronDetails.endsAt?.let { it3 ->
-                                if (play) {
-                                    (activity as? PlayerViewManager)?.playPreview(
-                                        it1, it2.toInt(), it3.toInt()
-                                    )
-                                } else {
-                                    (activity as? PlayerViewManager)?.stopPreview(true)
-                                }
+            },
+            onEditPreviewClick = {
+            },
+            onPlayPreviewClick = { cast, play ->
+                cast.audio?.mapToAudioTrack()?.let { it1 ->
+                    cast.patronDetails?.startsAt?.let { it2 ->
+                        cast.patronDetails.endsAt?.let { it3 ->
+                            if (play) {
+                                (activity as? PlayerViewManager)?.playPreview(
+                                    it1, it2.toInt(), it3.toInt()
+                                )
+                            } else {
+                                (activity as? PlayerViewManager)?.stopPreview(true)
                             }
                         }
                     }
-                },
-                onEditPriceClick = { cast ->
                 }
-            )
-        }
+            },
+            onEditPriceClick = { cast ->
+            }
+        )
     }
 
     private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?){

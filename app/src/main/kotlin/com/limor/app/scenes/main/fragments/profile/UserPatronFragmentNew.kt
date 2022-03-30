@@ -9,6 +9,8 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -36,10 +38,10 @@ import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.isOnline
 import com.limor.app.extensions.requireTag
 import com.limor.app.scenes.auth_new.util.PrefsHandler
-import com.limor.app.scenes.main.fragments.profile.casts.CastItem
 import com.limor.app.scenes.main.fragments.profile.casts.LoadMoreItem
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
+import com.limor.app.scenes.main_new.adapters.CastsAdapter
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
@@ -59,10 +61,10 @@ import com.limor.app.uimodels.UserUIModel
 import com.limor.app.uimodels.mapToAudioTrack
 import com.limor.app.util.SoundType
 import com.limor.app.util.Sounds
-import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.viewbinding.BindableItem
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
@@ -95,7 +97,7 @@ class UserPatronFragmentNew : Fragment() {
     private var castOffset = 0
     private var sharedPodcastId = -1
 
-    private val castsAdapter = GroupieAdapter()
+    private var castsAdapter: CastsAdapter? = null
 
     var editPriceLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -115,7 +117,7 @@ class UserPatronFragmentNew : Fragment() {
         loadMoreItem.isEnabled = isEnabled
         if (needNotification) {
             // notify the last item (i.e. the LoadMoreItem) has changes so its style is updated.
-            castsAdapter.notifyItemChanged(currentCasts.size)
+            castsAdapter?.notifyItemChanged(currentCasts.size)
         }
     }
 
@@ -128,7 +130,18 @@ class UserPatronFragmentNew : Fragment() {
         if (BuildConfig.DEBUG) {
             Timber.d("Patron Casts Loading for ${user.id}")
         }
-        viewModel.loadPatronCasts(user.id, Constants.CAST_BATCH_SIZE, castOffset)
+        lifecycleScope.launch {
+            viewModel.getPatronCasts(user.id).collectLatest { data ->
+                Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                    if (castsAdapter?.snapshot()?.isNullOrEmpty() == true) {
+                        binding.emptyStateLayout.visibility = View.VISIBLE
+                    } else{
+                        binding.emptyStateLayout.visibility = View.GONE
+                    }
+                }, 1000)
+                castsAdapter?.submitData(data)
+            }
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -204,6 +217,7 @@ class UserPatronFragmentNew : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setAdapter()
         subscribeToViewModel()
         setOnClicks()
 
@@ -233,8 +247,6 @@ class UserPatronFragmentNew : Fragment() {
             Timber.d("Got ${casts.size} patron casts.")
         }
         if (castOffset == 0) {
-            binding.castsList.layoutManager = LinearLayoutManager(context)
-            binding.castsList.adapter = castsAdapter
             currentCasts.clear()
             if (casts.isEmpty()) {
                 binding.emptyStateLayout.visibility = View.VISIBLE
@@ -243,90 +255,89 @@ class UserPatronFragmentNew : Fragment() {
 
         currentCasts.addAll(casts)
 
-        val items = getCastItems(currentCasts)
+        //val items = getCastItems(currentCasts)
         val all = mutableListOf<BindableItem<out ViewBinding>>()
-        all.addAll(items)
+        //all.addAll(items)
         if (currentCasts.size >= Constants.CAST_BATCH_SIZE && casts.size >= Constants.CAST_BATCH_SIZE) {
             all.add(loadMoreItem)
         }
 
         val recyclerViewState = binding.castsList.layoutManager?.onSaveInstanceState()
-        castsAdapter.update(all)
-        updateLoadMore(true)
+        //castsAdapter.update(all)
+        //updateLoadMore(true)
         binding.castsList.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 
-    private fun getCastItems(casts: List<CastUIModel>): List<CastItem> {
-        return casts.map {
-            CastItem(
-                userId = user.id,
-                cast = it,
-                onCastClick = ::onCastClick,
-                onLikeClick = { cast, like ->
-                    if (like) {
-                        Sounds.playSound(requireContext(), SoundType.HEART)
-                    }
-                    viewModel.likeCast(cast, like)
-                },
-                onMoreDialogClick = ::onMoreDialogClick,
-                onRecastClick = { cast, isRecasted ->
-                    if (isRecasted) {
-                        Sounds.playSound(requireContext(), SoundType.RECAST)
-                        recastPodcastViewModel.reCast(cast.id)
-                    } else {
-                        recastPodcastViewModel.deleteRecast(cast.id)
-                    }
-                },
-                onCommentsClick = { cast, skuDetails ->
-                    onCommentClick(cast, skuDetails)
-                },
-                onShareClick = { cast, onShared ->
-                    ShareDialog.newInstance(cast).also { fragment ->
-                        fragment.setOnSharedListener(onShared)
-                        fragment.show(parentFragmentManager, fragment.requireTag())
-                    }
-                },
-                onHashTagClick = { hashtag ->
-                    (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)
-                },
-                onPurchaseCast = { cast, sku ->
-                    onPurchaseRequested(sku, cast)
-                },
-                productDetailsFetcher = playBillingHandler,
-                onEditPreviewClick = { cast ->
-                    EditPreviewDialog.newInstance(cast).also { fragment ->
-                        fragment.show(parentFragmentManager, fragment.requireTag())
-                    }
-                },
-                onPlayPreviewClick = { cast, play ->
-                    cast.audio?.mapToAudioTrack()?.let { it1 ->
-                        cast.patronDetails?.startsAt?.let { it2 ->
-                            cast.patronDetails.endsAt?.let { it3 ->
-                                if (play) {
-                                    (activity as? PlayerViewManager)?.playPreview(
-                                        it1, it2.toInt(), it3.toInt()
-                                    )
-                                } else {
-                                    (activity as? PlayerViewManager)?.stopPreview(true)
-                                }
+    private fun setAdapter(){
+        castsAdapter = CastsAdapter(
+            userId = user.id,
+            onCastClick = ::onCastClick,
+            onLikeClick = { cast, like ->
+                if (like) {
+                    Sounds.playSound(requireContext(), SoundType.HEART)
+                }
+                viewModel.likeCast(cast, like)
+            },
+            onMoreDialogClick = ::onMoreDialogClick,
+            onRecastClick = { cast, isRecasted ->
+                if (isRecasted) {
+                    Sounds.playSound(requireContext(), SoundType.RECAST)
+                    recastPodcastViewModel.reCast(cast.id)
+                } else {
+                    recastPodcastViewModel.deleteRecast(cast.id)
+                }
+            },
+            onCommentsClick = { cast, skuDetails ->
+                onCommentClick(cast, skuDetails)
+            },
+            onShareClick = { cast, onShared ->
+                ShareDialog.newInstance(cast).also { fragment ->
+                    fragment.setOnSharedListener(onShared)
+                    fragment.show(parentFragmentManager, fragment.requireTag())
+                }
+            },
+            onHashTagClick = { hashtag ->
+                (activity as? PlayerViewManager)?.navigateToHashTag(hashtag)
+            },
+            onPurchaseCast = { cast, sku ->
+                onPurchaseRequested(sku, cast)
+            },
+            productDetailsFetcher = playBillingHandler,
+            onEditPreviewClick = { cast ->
+                EditPreviewDialog.newInstance(cast).also { fragment ->
+                    fragment.show(parentFragmentManager, fragment.requireTag())
+                }
+            },
+            onPlayPreviewClick = { cast, play ->
+                cast.audio?.mapToAudioTrack()?.let { it1 ->
+                    cast.patronDetails?.startsAt?.let { it2 ->
+                        cast.patronDetails.endsAt?.let { it3 ->
+                            if (play) {
+                                (activity as? PlayerViewManager)?.playPreview(
+                                    it1, it2.toInt(), it3.toInt()
+                                )
+                            } else {
+                                (activity as? PlayerViewManager)?.stopPreview(true)
                             }
                         }
                     }
-                },
-                onEditPriceClick = { cast ->
-                    Intent(requireActivity(), ChangePriceActivity::class.java).apply {
-                        putExtra(ChangePriceActivity.CHANGE_PRICE_FOR_ALL_CASTS, false)
-                        putExtra(ChangePriceActivity.CAST_ID, cast.id)
-                        putExtra(ChangePriceActivity.SELECTED_PRICE_ID, cast.patronDetails?.priceId)
-                    }.also {
-                        editPriceLauncher.launch(it)
-                    }
-
                 }
-            )
-        }
-    }
+            },
+            onEditPriceClick = { cast ->
+                Intent(requireActivity(), ChangePriceActivity::class.java).apply {
+                    putExtra(ChangePriceActivity.CHANGE_PRICE_FOR_ALL_CASTS, false)
+                    putExtra(ChangePriceActivity.CAST_ID, cast.id)
+                    putExtra(ChangePriceActivity.SELECTED_PRICE_ID, cast.patronDetails?.priceId)
+                }.also {
+                    editPriceLauncher.launch(it)
+                }
 
+            }
+        )
+        binding.castsList.layoutManager = LinearLayoutManager(context)
+        binding.castsList.adapter = castsAdapter
+    }
+    
     private fun onPurchaseRequested(skuDetails: SkuDetails?, cast: CastUIModel) {
         val sku = skuDetails ?: return
         val purchaseTarget = PurchaseTarget(sku, cast)
