@@ -2,6 +2,8 @@ package com.limor.app.scenes.main.fragments.profile.casts
 
 import android.app.Activity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -312,9 +314,15 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         lifecycleScope.launch {
             viewModel.getUserCasts(user.id).collectLatest { data ->
                 castsAdapter?.submitData(data)
-                /*if (castsAdapter?.snapshot()?.size == 0) {
-                    binding.emptyStateLayout.visibility = View.VISIBLE
-                }*/
+            }
+        }
+        castsAdapter?.addLoadStateListener { it ->
+            if (it.source.append.endOfPaginationReached) {
+                if (castsAdapter?.snapshot()?.size == 0) {
+                    binding.noPodcastsLayout.visibility = View.VISIBLE
+                } else{
+                    binding.noPodcastsLayout.visibility = View.GONE
+                }
             }
         }
     }

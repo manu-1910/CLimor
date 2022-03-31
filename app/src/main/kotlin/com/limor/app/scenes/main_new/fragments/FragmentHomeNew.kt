@@ -3,6 +3,9 @@ package com.limor.app.scenes.main_new.fragments
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.billingclient.api.SkuDetails
 import com.limor.app.BuildConfig
@@ -44,11 +48,14 @@ import com.limor.app.util.SoundType
 import com.limor.app.util.Sounds
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
-import kotlinx.coroutines.flow.collectLatest as collectLatest1
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 class FragmentHomeNew : BaseFragment() {
 
@@ -68,6 +75,11 @@ class FragmentHomeNew : BaseFragment() {
     private var homeFeedAdapter: HomeFeedAdapter? = null
 
     private var sharedPodcastId = -1
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        homeFeedViewModel.getFeaturedPodcastsGroups()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -108,23 +120,28 @@ class FragmentHomeNew : BaseFragment() {
 
     private fun loadSuggestedPodcastGroups() {
         lifecycleScope.launch {
-            homeFeedViewModel.getFeaturedPodcastsGroups().observe(viewLifecycleOwner, {
+            homeFeedViewModel.podcastGroups.observe(viewLifecycleOwner, {
                 loadFeeds()
             })
         }
     }
 
-    private fun loadFeeds(){
+    private fun loadFeeds() {
         lifecycleScope.launch {
-            homeFeedViewModel.getHomeFeed(this).collectLatest1 { data ->
+            homeFeedViewModel.getHomeFeed().collectLatest { data ->
                 binding.swipeToRefresh.isRefreshing = false
                 homeFeedAdapter?.submitData(data)
-                this@FragmentHomeNew.toggleNoFeedLayout()
+            }
+        }
+        homeFeedAdapter?.addLoadStateListener { it ->
+            if (it.source.append.endOfPaginationReached) {
+                toggleNoFeedLayout()
             }
         }
     }
 
     private fun toggleNoFeedLayout() {
+        Log.d("CAPTION_CAPTION", homeFeedAdapter?.snapshot()?.items?.size.toString())
         binding.noFeedLayout.visibleIf(homeFeedAdapter?.snapshot()?.isEmpty() ?: true)
     }
 

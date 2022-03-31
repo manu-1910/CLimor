@@ -46,11 +46,11 @@ class HomeFeedViewModel @Inject constructor(
         return podcastGroups
     }
 
-    fun getHomeFeed(scope: CoroutineScope): Flow<PagingData<DataItem>> {
+    fun getHomeFeed(): Flow<PagingData<DataItem>> {
         return Pager(
             config = PagingConfig(pageSize = 20, initialLoadSize = 20),
             pagingSourceFactory = { getSource() }
-        ).flow.cachedIn(scope).map { pagingData -> pagingData.map { it as DataItem } }
+        ).flow.cachedIn(viewModelScope).map { pagingData -> pagingData.map { it as DataItem } }
     }
 
     private fun getSource(): HomeFeedPagingSource {
