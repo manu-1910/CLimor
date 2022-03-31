@@ -279,6 +279,12 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun deleteUserDevice(){
+        viewModelScope.launch {
+            userInfoProvider.deleteUserDevice()
+        }
+    }
+
     companion object {
         const val USER_UPDATE_SUCCESS = "Success"
         const val USER_UPDATE_FAILURE = "Failure"

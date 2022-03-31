@@ -7,6 +7,8 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -205,6 +207,7 @@ class SettingsFragment : BaseFragment() {
         lifecycleScope.launch {
             scope.launch {
                 App.instance.chatManager.logout()
+                model.deleteUserDevice()
             }
             try {
                 FirebaseSessionHandler.logout(requireContext())

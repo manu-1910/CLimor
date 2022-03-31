@@ -1,0 +1,6 @@
+mutation SaveOneSignalPlayerIdMutation($deviceId: String!, $playerId: String!){
+    saveOneSignalPlayerId(deviceId: $deviceId, playerId: $playerId){
+        status
+        message
+    }
+}

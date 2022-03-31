@@ -1,9 +1,11 @@
 package com.limor.app.apollo
 
+import android.util.Log
 import com.apollographql.apollo.api.Input
 import com.limor.app.*
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import timber.log.Timber
+import java.lang.Exception
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(val apollo: Apollo) {
@@ -189,14 +191,19 @@ class UserRepository @Inject constructor(val apollo: Apollo) {
         return status
     }
 
-    suspend fun createUserDevice(token: String) {
+    suspend fun createUserDevice(token: String): Boolean {
         val query = CreateUserDevicesMutation(App.getDeviceId(), token)
-        val result = apollo.mutate(query)
-        val id = result?.data?.createUserDevices?.id
-        id?.let {
-            PrefsHandler.saveUserDeviceToken(App.instance, token)
+        try{
+            val result = apollo.mutate(query)
+            val id = result?.data?.createUserDevices?.id
+            id?.let {
+                PrefsHandler.saveUserDeviceToken(App.instance, token)
+            }
+            Timber.d("createUserDevice -> $id")
+        } catch (e: Exception){
+            Log.d("sdvsdv",e.toString())
         }
-        Timber.d("createUserDevice -> $id")
+        return true
     }
 
     suspend fun requestPatronInvitation(userId: Int): String? {
@@ -234,6 +241,20 @@ class UserRepository @Inject constructor(val apollo: Apollo) {
         val onboardingURL : String? = result?.data?.getVendorOnboardingUrl?.data?.onboardingURL
         Timber.d("getUserOnboardingStatus -> $onboardingURL")
         return onboardingURL
+    }
+
+    suspend fun deleteUserDevice(): Boolean{
+        val query = DeleteUserDeviceMutation(App.getDeviceId())
+        val result = apollo.mutate(query)
+        Timber.d("deleteUserDevice -> ${result?.data?.deleteUserDevice?.deleted}")
+        return result?.data?.deleteUserDevice?.deleted ?: false
+    }
+
+    suspend fun saveOneSignalId(playerId: String): String{
+        val query = SaveOneSignalPlayerIdMutation(App.getDeviceId(), playerId)
+        val result = apollo.mutate(query)
+        Timber.d("saveOneSignalId-> $result?.data?.saveOneSignalPlayerId?.status")
+        return result?.data?.saveOneSignalPlayerId?.status.toString() ?: "FAILURE"
     }
 
 }

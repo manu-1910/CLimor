@@ -1,5 +1,6 @@
 package com.limor.app.scenes.auth_new.model
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Tasks
@@ -15,6 +16,7 @@ import com.limor.app.scenes.auth_new.data.DobInfo.Companion.parseForUserCreation
 import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.onesignal.OneSignal
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -73,12 +75,17 @@ class UserInfoProvider @Inject constructor(
     fun getUserOnboardingStatus(scope: CoroutineScope) {
         scope.launch(Dispatchers.Default) {
             try {
+                createDeviceToken().collect {
+                    userRepository.createUserDevice(it)
+                    OneSignal.getDeviceState()?.let { deviceState ->
+                        if(deviceState.areNotificationsEnabled()){
+                            userRepository.saveOneSignalId(deviceState.userId)
+                        }
+                    }
+                }
                 val response = userRepository.getUserOnboardingStatus() ?: ""
                 val breakpoint = getBreakpointAccordingToEmailPresence(response)
                 _breakPointLiveData.postValue(breakpoint)
-                createDeviceToken().collect {
-                    userRepository.createUserDevice(it)
-                }
                 delay(500)
                 _breakPointLiveData.postValue(null)
             } catch (e: Exception) {
@@ -135,6 +142,11 @@ class UserInfoProvider @Inject constructor(
                 if (response == "Success") {
                     createDeviceToken().collect {
                         userRepository.createUserDevice(it)
+                        OneSignal.getDeviceState()?.let { deviceState ->
+                            if(deviceState.areNotificationsEnabled()){
+                                userRepository.saveOneSignalId(deviceState.userId)
+                            }
+                        }
                     }
                 }
 
@@ -411,4 +423,14 @@ class UserInfoProvider @Inject constructor(
             null
         }
     }
+
+    suspend fun deleteUserDevice(){
+        try{
+            val result = userRepository.deleteUserDevice()
+        } catch (e: Exception){
+            Timber.e(e)
+            null
+        }
+    }
+
 }
