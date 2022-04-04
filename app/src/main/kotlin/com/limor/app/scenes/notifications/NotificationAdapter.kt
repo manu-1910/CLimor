@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.paging.PagingDataAdapter
@@ -12,7 +13,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.limor.app.App
-import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.scenes.utils.DateUiUtil.getTimeElapsedFromDateString
 import com.limor.app.uimodels.NotiUIMode
@@ -36,12 +36,6 @@ class NotificationAdapter(val context: Context) :
     private lateinit var userCallback: (userId: Int?, username: String?, tab: Int) -> Unit
     private lateinit var notiReadCallback: (nId: Int?, read: Boolean) -> Unit
     lateinit var noInternetAlertCallback: () -> Unit
-    private val imageicon = arrayOf(
-        R.drawable.ic_icon_follower,
-        R.drawable.ic_icon_comment,
-        R.drawable.ic_icon_recast,
-        R.drawable.ic_group_902,
-    )
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(parent.context)
@@ -55,16 +49,50 @@ class NotificationAdapter(val context: Context) :
         Glide.with(context).load(notification.initiator?.imageUrl)
             .error(R.drawable.ic_podcast_listening).into(holder.profilePic)
         when (notification.notificationType) {
-            "newFollower" -> holder.profileIcon.setImageResource(imageicon[0])
-            "podcastComment" -> holder.profileIcon.setImageResource(imageicon[1])
-            "replyComment" -> holder.profileIcon.setImageResource(imageicon[1])
-            "podcastLike" -> holder.profileIcon.setImageResource(imageicon[3])
-            "commentLike" -> holder.profileIcon.setImageResource(imageicon[3])
-            "recast" -> holder.profileIcon.setImageResource(imageicon[2])
-            "mention" -> holder.profileIcon.setImageResource(imageicon[1])
-            "friendJoined" -> holder.profileIcon.setImageResource(imageicon[0])
-            "followSuggestion" -> holder.profileIcon.setImageResource(imageicon[0])
-            "engagement" -> holder.profileIcon.setImageResource(imageicon[0])
+            "newFollower" -> {
+                holder.emojiTv.text = String(Character.toChars(0X1F601))
+                holder.profileIcon.visibility = View.GONE
+            }
+            "podcastComment" -> {
+                holder.emojiTv.text = String(Character.toChars(0X1F4AC))
+                holder.profileIcon.visibility = View.GONE
+            }
+            "replyComment" -> {
+                holder.emojiTv.text = String(Character.toChars(0X1F4AC))
+                holder.profileIcon.visibility = View.GONE
+            }
+            "podcastLike" -> {
+                holder.emojiTv.text = String(Character.toChars(0X1F44D))
+                holder.profileIcon.visibility = View.GONE
+            }
+            "commentLike" -> {
+                holder.emojiTv.text = String(Character.toChars(0X1F44D))
+                holder.profileIcon.visibility = View.GONE
+            }
+            "recast" -> {
+                holder.emojiTv.text = String(Character.toChars(0X1F973))
+                holder.profileIcon.visibility = View.GONE
+            }
+            "mention" -> {
+                holder.emojiTv.text = String(Character.toChars(0X1F4AD))
+                holder.profileIcon.visibility = View.GONE
+            }
+            "friendJoined" -> {
+                holder.emojiTv.text = String(Character.toChars(0X1F44B))
+                holder.profileIcon.visibility = View.GONE
+            }
+            "followSuggestion" -> {
+                holder.emojiTv.text = String(Character.toChars(0X1F929))
+                holder.profileIcon.visibility = View.GONE
+            }
+            "engagement" -> {
+                holder.emojiTv.text = String(Character.toChars(0X1F525))
+                holder.profileIcon.visibility = View.GONE
+            }
+            "patronRequest" -> {
+                holder.emojiTv.text = String(Character.toChars(0X1F929))
+                holder.profileIcon.visibility = View.GONE
+            }
         }
 
         holder.title.text = notification.message
@@ -120,6 +148,7 @@ class NotificationAdapter(val context: Context) :
         var title: TextView = itemView.findViewById(R.id.tv_title)
         var subTitle: TextView = itemView.findViewById(R.id.tv_subtitle)
         var mainBg: ConstraintLayout = itemView.findViewById(R.id.main_notification_bg)
+        var emojiTv: TextView = itemView.findViewById(R.id.emoji_text)
 
         fun bind(
             notificationAdapter: NotificationAdapter,

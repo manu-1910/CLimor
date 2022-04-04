@@ -37,8 +37,20 @@
             android:outlineSpotShadowColor="@color/black"
             android:src="@drawable/ic_comment"
             app:layout_constraintBottom_toBottomOf="@+id/iv_user"
-            app:layout_constraintEnd_toEndOf="@+id/iv_user" />
+            app:layout_constraintEnd_toEndOf="@+id/iv_user"
+            android:visibility="visible"/>
 
+        <TextView
+            android:id="@+id/emoji_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewEnd"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="@color/textPrimary"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_user"
+            app:layout_constraintEnd_toEndOf="@+id/iv_user"/>
 
         <TextView
             android:id="@+id/tv_title"
