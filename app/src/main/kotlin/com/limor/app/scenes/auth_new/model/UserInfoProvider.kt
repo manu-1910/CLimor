@@ -77,6 +77,9 @@ class UserInfoProvider @Inject constructor(
             try {
                 createDeviceToken().collect {
                     userRepository.createUserDevice(it)
+                    FirebaseAuth.getInstance().uid?.let {
+                        it1 -> OneSignal.setExternalUserId(it1)
+                    }
                     OneSignal.getDeviceState()?.let { deviceState ->
                         if(deviceState.areNotificationsEnabled()){
                             userRepository.saveOneSignalId(deviceState.userId)
@@ -142,6 +145,9 @@ class UserInfoProvider @Inject constructor(
                 if (response == "Success") {
                     createDeviceToken().collect {
                         userRepository.createUserDevice(it)
+                        FirebaseAuth.getInstance().uid?.let {
+                            it1 -> OneSignal.setExternalUserId(it1)
+                        }
                         OneSignal.getDeviceState()?.let { deviceState ->
                             if(deviceState.areNotificationsEnabled()){
                                 userRepository.saveOneSignalId(deviceState.userId)

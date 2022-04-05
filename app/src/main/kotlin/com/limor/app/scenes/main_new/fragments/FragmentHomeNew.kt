@@ -18,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.billingclient.api.SkuDetails
+import com.google.firebase.auth.FirebaseAuth
 import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.audio.wav.waverecorder.calculateAmplitude
@@ -92,6 +93,7 @@ class FragmentHomeNew : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        FirebaseAuth.getInstance().uid?.let { Log.d("Fire_base_u_i_d", it) }
         initSwipeToRefresh()
         createAdapter()
         loadSuggestedPodcastGroups()

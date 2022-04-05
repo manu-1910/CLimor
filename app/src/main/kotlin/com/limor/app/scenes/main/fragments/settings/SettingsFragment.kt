@@ -52,6 +52,7 @@ import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.CommonsKt.Companion.handleOnApiError
 import com.limor.app.uimodels.UIUser
 import com.limor.app.uimodels.UserUIModel
+import com.onesignal.OneSignal
 import kotlinx.android.synthetic.main.dialog_cancel_draft.view.*
 import kotlinx.android.synthetic.main.dialog_save_draft.view.*
 import kotlinx.android.synthetic.main.dialog_save_draft.view.saveButton
@@ -208,6 +209,7 @@ class SettingsFragment : BaseFragment() {
             scope.launch {
                 App.instance.chatManager.logout()
                 model.deleteUserDevice()
+                OneSignal.removeExternalUserId()
             }
             try {
                 FirebaseSessionHandler.logout(requireContext())
