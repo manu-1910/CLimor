@@ -90,7 +90,7 @@ class ViewHolderRecast(
             onHashTagClick
         )
 
-        if(item.recasted == true){
+        if(item.patronCast == true){
             binding.patronCastIndicator.visibility = View.VISIBLE
         }
 
