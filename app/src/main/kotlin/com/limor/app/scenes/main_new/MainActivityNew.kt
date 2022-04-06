@@ -9,6 +9,7 @@ import android.graphics.drawable.InsetDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
@@ -52,6 +53,7 @@ import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.TagUIModel
 import com.limor.app.util.AppNavigationManager
+import com.onesignal.OneSignal
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
@@ -402,7 +404,6 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         if (castId != 0) {
             PrefsHandler.savePodCastIdOfSharedLink(this, 0)
             openDynamicLinkPodcast(castId)
-
         } else {
             FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(intent)
@@ -416,6 +417,29 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
                 .addOnFailureListener(this) { e ->
                     Timber.e(e)
                 }
+        }
+    }
+
+    private fun checkUserIdFromOneSignalNotification(){
+        val userId = PrefsHandler.getUserIdFromOneSignalNotification(this)
+        val userName = PrefsHandler.getUserNameFromOneSignalNotification(this) ?: ""
+        if(userId != 0){
+            UserProfileActivity.show(this, userName, userId,0)
+            PrefsHandler.saveUserIdFromOneSignalNotification(this, 0)
+            PrefsHandler.saveUserNameFromOneSignalNotification(this, "")
+        } else{
+            OneSignal.setNotificationOpenedHandler { result ->
+                val id: Int? = result.notification.additionalData.getString("targetId").toInt()
+                if(result.notification.additionalData.getString("targetType").equals("user")){
+                    id?.let {
+                        UserProfileActivity.show(this,result.notification.additionalData.getString("initiatorUsername"),it,0)
+                    }
+                } else{
+                    id?.let {
+                        openDynamicLinkPodcast(it)
+                    }
+                }
+            }
         }
     }
 
@@ -442,6 +466,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
             }
         }
         checkPodCastDynamicLink()
+        checkUserIdFromOneSignalNotification()
     }
 
     companion object{

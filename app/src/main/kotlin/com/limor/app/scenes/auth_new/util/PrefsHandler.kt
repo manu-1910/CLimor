@@ -30,6 +30,8 @@ object PrefsHandler {
     private const val SELECTED_GENDER_ID = "gender_id"
     private const val KEY_ONBOARDING_URL = "unipaas_onboarding_url"
     private const val KEY_ENABLE_SOUNDS = "key_enable_sounds"
+    private const val KEY_USER_ID = "one_signal_notification_user_id"
+    private const val KEY_USER_NAME = "one_signal_notification_user_name"
 
     private fun sp(context: Context) = sharedPreferences(context)
 
@@ -189,5 +191,23 @@ object PrefsHandler {
 
     fun areSoundsEnabled(context: Context) = getBoolean(context, KEY_ENABLE_SOUNDS, true)
     fun setSoundsEnabled(context: Context, enabled: Boolean) = saveBoolean(context, KEY_ENABLE_SOUNDS, enabled)
+
+    fun saveUserIdFromOneSignalNotification(context: Context, id: Int) {
+        sharedPreferences(context).edit(true) {
+            putInt(KEY_USER_ID, id)
+        }
+    }
+
+    fun getUserIdFromOneSignalNotification(context: Context) =
+        sharedPreferences(context).getInt(KEY_USER_ID, 0)
+
+    fun saveUserNameFromOneSignalNotification(context: Context, name: String){
+        sharedPreferences(context).edit(true) {
+            putString(KEY_USER_NAME, name)
+        }
+    }
+
+    fun getUserNameFromOneSignalNotification(context: Context) =
+        sharedPreferences(context).getString(KEY_USER_NAME, "")
 
 }

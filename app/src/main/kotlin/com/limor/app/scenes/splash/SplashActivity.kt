@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
@@ -19,9 +20,14 @@ import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main_new.MainActivityNew
 import com.limor.app.util.AppState
+import com.onesignal.OSNotificationAction
+import com.onesignal.OneSignal
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
+import com.onesignal.OSNotificationOpenedResult
+import com.onesignal.OneSignal.OSNotificationOpenedHandler
+
 
 class SplashActivity : BaseActivity() {
     private var mDelayHandler: Handler? = null
@@ -82,6 +88,20 @@ class SplashActivity : BaseActivity() {
             startActivity(authIntent)
             finish()
             return
+        }
+
+        OneSignal.setNotificationOpenedHandler { result ->
+            val id: Int? = result.notification.additionalData.getString("targetId").toInt()
+            if(result.notification.additionalData.getString("targetType").equals("user")){
+                id?.let {
+                    PrefsHandler.saveUserIdFromOneSignalNotification(this, it)
+                    PrefsHandler.saveUserNameFromOneSignalNotification(this, result.notification.additionalData.getString("initiatorUsername"))
+                }
+            } else{
+                id?.let {
+                    PrefsHandler.savePodCastIdOfSharedLink(this, it)
+                }
+            }
         }
 
         FirebaseDynamicLinks.getInstance()
