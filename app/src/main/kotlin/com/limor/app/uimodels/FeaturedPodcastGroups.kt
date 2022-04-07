@@ -14,7 +14,7 @@ data class FeaturedPodcastGroups(
 data class PodcastGroup(
     val id: Int,
     val position: Int,
-    val title: String
+    val title: String?
 ): Parcelable
 
 fun FeaturedPodcastsGroupsQuery.Data1.mapToUIModel(): FeaturedPodcastGroups{

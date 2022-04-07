@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main_new.adapters.vh
 
+import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import com.limor.app.databinding.ItemFeedRecommendedCastsBinding
 import com.limor.app.extensions.px
@@ -23,7 +24,10 @@ class ViewHolderRecommendedCasts(
 
     override fun bind(item: DataItem) {
         val recommendedCasts = item as FeedRecommendedCasts
-        binding.recommendedCastsTitleTextView.text = recommendedCasts.name
+        if(recommendedCasts.name.isNotBlank()){
+            binding.recommendedCastsTitleTextView.visibility = View.VISIBLE
+            binding.recommendedCastsTitleTextView.text = recommendedCasts.name
+        }
         setAdapter()
         updateUsers(recommendedCasts.recommendedCasts)
     }

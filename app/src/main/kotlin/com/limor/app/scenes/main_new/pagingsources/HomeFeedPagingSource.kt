@@ -54,7 +54,7 @@ class HomeFeedPagingSource(
                             castsRepository.getFeaturedPodcastsByGroupId(featuredPodcastGroups.podcastGroups[index].position)?.mapToUIModel()
                         recommendedCastsResult?.let {
                             if(featuredPodcastGroups.podcastGroups.isNotEmpty()){
-                                finalResult.add(FeedRecommendedCasts(featuredPodcastGroups.podcastGroups[index].title, recommendedCastsResult))
+                                finalResult.add(FeedRecommendedCasts(featuredPodcastGroups.podcastGroups[index].title ?: "", recommendedCastsResult))
                             }
                         }
                     }
