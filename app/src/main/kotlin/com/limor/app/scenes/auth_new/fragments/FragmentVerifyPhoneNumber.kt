@@ -22,6 +22,7 @@ import com.limor.app.scenes.auth_new.AuthActivityNew
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.navigation.AuthNavigator.navigateToFragmentByNavigationBreakpoints
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.auth_new.util.ToastMaker
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_code.*
 
@@ -228,6 +229,9 @@ class FragmentVerifyPhoneNumber : Fragment() {
 
     private fun navigateToBreakPoint(breakPointDestination: String) {
         model.saveNavigationBreakPoint(requireContext(), breakPointDestination)
+        if(breakPointDestination == NavigationBreakpoints.HOME_FEED.destination) {
+            PrefsHandler.saveJustLoggedIn(requireContext(), true)
+        }
         navigateToFragmentByNavigationBreakpoints(requireActivity(), breakPointDestination)
     }
 

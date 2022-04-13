@@ -2,6 +2,7 @@ package com.limor.app.scenes.main.fragments.discover.discover
 
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,6 +39,8 @@ class DiscoverFragment : BaseFragment() {
         initViews()
         subscribeForEvents()
         showCategories()
+        if(PrefsHandler.getJustLoggedIn(requireContext()))
+            PrefsHandler.saveJustLoggedIn(requireContext(), false)
         return binding.root
     }
 
@@ -51,7 +54,11 @@ class DiscoverFragment : BaseFragment() {
         }
 
         binding.toolbar.btnBack.setOnClickListener {
-            findNavController().popBackStack()
+            if(findNavController().previousBackStackEntry?.destination?.id == null){
+                findNavController().navigate(R.id.navigation_home)
+            } else{
+                findNavController().popBackStack()
+            }
         }
         binding.toolbar.btnNotification.setOnClickListener {
             findNavController().navigate(R.id.navigation_notifications)

@@ -32,6 +32,7 @@ object PrefsHandler {
     private const val KEY_ENABLE_SOUNDS = "key_enable_sounds"
     private const val KEY_USER_ID = "one_signal_notification_user_id"
     private const val KEY_USER_NAME = "one_signal_notification_user_name"
+    private const val KEY_JUST_LOGGED_IN = "just_logged_in"
 
     private fun sp(context: Context) = sharedPreferences(context)
 
@@ -209,5 +210,14 @@ object PrefsHandler {
 
     fun getUserNameFromOneSignalNotification(context: Context) =
         sharedPreferences(context).getString(KEY_USER_NAME, "")
+
+    fun saveJustLoggedIn(context: Context, justLoggedIn: Boolean){
+        sharedPreferences(context).edit(true) {
+            putBoolean(KEY_JUST_LOGGED_IN, justLoggedIn)
+        }
+    }
+
+    fun getJustLoggedIn(context: Context) =
+        sharedPreferences(context).getBoolean(KEY_JUST_LOGGED_IN, false)
 
 }

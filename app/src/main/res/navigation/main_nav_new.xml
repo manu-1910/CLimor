@@ -78,6 +78,9 @@
         <action
             android:id="@+id/action_navigation_discover_to_discoverHashtagFragment"
             app:destination="@id/discoverHashtagFragment" />
+        <action
+            android:id="@+id/action_navigate_discover_to_navigate_home"
+            app:destination="@id/navigation_home"/>
     </fragment>
 
     <fragment

@@ -16,6 +16,7 @@ import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.SuggestedUser
 import com.limor.app.scenes.auth_new.navigation.AuthNavigator
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.auth_new.view.SuggestedPeopleAdapter
 import kotlinx.android.synthetic.main.fragment_new_auth_suggested_people.*
 import kotlinx.coroutines.delay
@@ -112,6 +113,7 @@ class FragmentSuggested : FragmentWithLoading() {
     }
 
     private fun navigateToHomeFeed() {
+        PrefsHandler.saveJustLoggedIn(requireContext(), true)
         view?.findNavController()?.navigate(R.id.go_to_main_activity)
         Timber.d("trying to finish activity")
         saveNavigationBreakPoint(NavigationBreakpoints.HOME_FEED.destination)

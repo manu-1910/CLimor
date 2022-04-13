@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
 import com.android.billingclient.api.*
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.play.core.appupdate.AppUpdateInfo
@@ -95,13 +96,15 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         // Attach main activity binding into player container
         playerBinding = ContainerWithSwipeablePlayerBinding.inflate(layoutInflater)
         binding =
             ActivityMainNewBinding.inflate(layoutInflater, playerBinding.contentContainer, true)
 
         setContentView(playerBinding.root)
+
+        setNavigationGraph()
+
         setupFabClickListener()
         setUpBottomNavigation()
         setupDefaultValues()
@@ -112,6 +115,20 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
             ActivityPlayerViewManager(supportFragmentManager, playerBinding, playerBinder)
 
         listenToChat()
+    }
+
+    private fun setNavigationGraph() {
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        val navGraph = navController.navInflater.inflate(R.navigation.main_nav_new)
+        if(PrefsHandler.getJustLoggedIn(this)){
+            navGraph.setStartDestination(R.id.navigation_discover)
+        } else{
+            navGraph.setStartDestination(R.id.navigation_home)
+        }
+        navController.graph = navGraph
     }
 
     private fun listenToChat() {
