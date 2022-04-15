@@ -52,9 +52,9 @@ class BigCastItem(
                 println(cast.imageLinks)
             }
 
-            if (cast.imageLinks?.medium != null) {
+            if (cast.imageLinks?.original != null) {
                 Glide.with(root)
-                    .load(cast.imageLinks.large)
+                    .load(cast.imageLinks.original)
                     .into(castImage)
             } else {
                 castImage.setBackgroundColor(Color.parseColor(cast.colorCode))
