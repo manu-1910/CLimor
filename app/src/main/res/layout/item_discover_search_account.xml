@@ -36,10 +36,11 @@
         app:layout_constraintBottom_toTopOf="@+id/account_nickname"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/account_image"
+        app:layout_constraintEnd_toStartOf="@id/follow_btn"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constrainedWidth="true"
-        tools:text="Jane Shane Jane Shane Jane Shane Jane" />
+        tools:text="Jane Shane Jane Shane Jane Shane Jane Shane Jane Shane Jane" />
 
     <TextView
         android:id="@+id/account_nickname"
