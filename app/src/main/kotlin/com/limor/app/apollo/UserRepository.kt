@@ -117,11 +117,7 @@ class UserRepository @Inject constructor(val apollo: Apollo) {
     ): String? {
         val inputCategories = Input.fromNullable(categories)
         val inputLanguages = Input.fromNullable(languages)
-        val query = UpdateUserOnboardingDataMutation(
-            Input.absent(),
-            inputCategories,
-            inputLanguages
-        )/*UpdateUserCategoriesAndLanguagesMutation(inputCategories, inputLanguages)*/
+        val query = UpdateUserCategoriesAndLanguagesMutation(inputCategories, inputLanguages)
         val queryResult = apollo.mutate(query)
         val updateUserOnboardingData =
             queryResult?.data?.updateUser

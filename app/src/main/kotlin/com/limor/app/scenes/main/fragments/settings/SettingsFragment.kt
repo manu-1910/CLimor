@@ -214,6 +214,7 @@ class SettingsFragment : BaseFragment() {
             try {
                 FirebaseSessionHandler.logout(requireContext())
                 Toast.makeText(requireContext(), "Done!", Toast.LENGTH_LONG).show()
+                PrefsHandler.setCanShowCategorySelection(requireContext(), false)
                 PrefsHandler.setPreferencesSelected(requireContext(), false)
                 PrefsHandler.setPreferencesScreenOpenedInThisSession(requireContext(), false)
                 (activity)?.finishAffinity()

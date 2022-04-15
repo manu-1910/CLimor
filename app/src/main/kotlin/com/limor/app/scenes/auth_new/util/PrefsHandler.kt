@@ -33,6 +33,7 @@ object PrefsHandler {
     private const val KEY_USER_ID = "one_signal_notification_user_id"
     private const val KEY_USER_NAME = "one_signal_notification_user_name"
     private const val KEY_JUST_LOGGED_IN = "just_logged_in"
+    private const val KEY_CAN_SHOW_CATEGORY_SELECTION = "can_show_category_selection"
 
     private fun sp(context: Context) = sharedPreferences(context)
 
@@ -219,5 +220,14 @@ object PrefsHandler {
 
     fun getJustLoggedIn(context: Context) =
         sharedPreferences(context).getBoolean(KEY_JUST_LOGGED_IN, false)
+
+    fun setCanShowCategorySelection(context: Context, show: Boolean){
+        sharedPreferences(context).edit(true){
+            putBoolean(KEY_CAN_SHOW_CATEGORY_SELECTION, show)
+        }
+    }
+
+    fun canShowCategorySelection(context: Context) =
+        sharedPreferences(context).getBoolean(KEY_CAN_SHOW_CATEGORY_SELECTION, false)
 
 }

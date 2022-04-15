@@ -2,6 +2,7 @@ package com.limor.app.scenes.main.fragments.discover.discover
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -39,7 +40,8 @@ class DiscoverFragment : BaseFragment() {
         initViews()
         subscribeForEvents()
         showCategories()
-        if(PrefsHandler.getJustLoggedIn(requireContext()))
+        PrefsHandler.setCanShowCategorySelection(requireContext(), true)
+        if (PrefsHandler.getJustLoggedIn(requireContext()))
             PrefsHandler.saveJustLoggedIn(requireContext(), false)
         return binding.root
     }
@@ -54,9 +56,9 @@ class DiscoverFragment : BaseFragment() {
         }
 
         binding.toolbar.btnBack.setOnClickListener {
-            if(findNavController().previousBackStackEntry?.destination?.id == null){
+            if (findNavController().previousBackStackEntry?.destination?.id == null) {
                 findNavController().navigate(R.id.navigation_home)
-            } else{
+            } else {
                 findNavController().popBackStack()
             }
         }
@@ -81,16 +83,14 @@ class DiscoverFragment : BaseFragment() {
     }
 
     private fun showCategories() {
-        val disablePreferenceCollection = true
-        if (disablePreferenceCollection) {
-            return
-        }
-        if (!PrefsHandler.getPreferencesSelected(requireContext()) && !PrefsHandler.getPreferencesScreenOpenedInThisSession(
+        if (PrefsHandler.canShowCategorySelection(requireContext()) &&
+            !PrefsHandler.getPreferencesSelected(requireContext()) &&
+            !PrefsHandler.getPreferencesScreenOpenedInThisSession(
                 requireContext()
             )
         ) {
             PrefsHandler.setPreferencesScreenOpenedInThisSession(requireContext(), true)
-            Handler().postDelayed(Runnable {
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
                 val dialog = FragmentCategories.newInstance()
                 dialog.show(parentFragmentManager, FragmentCategories.TAG)
             }, 400)
