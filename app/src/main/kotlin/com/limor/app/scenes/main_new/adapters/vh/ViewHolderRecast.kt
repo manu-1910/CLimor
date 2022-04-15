@@ -4,15 +4,14 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.os.Handler
-import android.text.Html
+import android.os.Looper
+import android.text.*
 import android.text.Html.FROM_HTML_MODE_LEGACY
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.SpannableStringBuilder
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.ImageSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -34,6 +33,7 @@ import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.fragments.DataItem
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.fragments.FragmentRecastUsers
+import com.limor.app.scenes.main_new.fragments.comments.list.item.MySpannable
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.service.DetailsAvailableListener
 import com.limor.app.service.ProductDetails
@@ -89,6 +89,8 @@ class ViewHolderRecast(
             onUserMentionClick,
             onHashTagClick
         )
+
+        makeTextViewResizable(binding.tvPodcastSubtitle, 2, "..See More", true, item)
 
         if(item.patronCast == true){
             binding.patronCastIndicator.visibility = View.VISIBLE
@@ -233,6 +235,78 @@ class ViewHolderRecast(
         if (item.patronCast == true) {
             fetchDetails()
         }
+    }
+
+    fun makeTextViewResizable(tv: TextView, maxLine: Int, expandText: String, viewMore: Boolean, item: CastUIModel) {
+        if (tv.tag == null) {
+            tv.tag = tv.text
+        }
+        Handler(Looper.getMainLooper()).post(Runnable {
+            if (maxLine == 0) {
+                val lineEndIndex = tv.layout.getLineEnd(0)
+                val text = tv.text.subSequence(0, lineEndIndex - expandText.length + 1)
+                    .toString() + " " + expandText
+                tv.text = text
+                tv.setText(
+                    addClickablePartTextViewResizable(
+                        Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
+                        viewMore, item
+                    ), TextView.BufferType.SPANNABLE
+                )
+            } else if (maxLine > 0 && tv.lineCount > maxLine) {
+                Log.d("line_count", tv.lineCount.toString())
+                val lineEndIndex = tv.layout.getLineEnd(maxLine - 1) - 10
+                val lastIndex = lineEndIndex - expandText.length + 1
+                val text = if(lastIndex > 0 ) tv.text.subSequence(0, lastIndex)
+                    .toString() + " " + expandText else tv.text.subSequence(0, lineEndIndex).toString() + " " + expandText
+                tv.text = text
+                tv.setText(
+                    addClickablePartTextViewResizable(
+                        Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
+                        viewMore, item
+                    ), TextView.BufferType.SPANNABLE
+                )
+            } else {
+                tv.setText(
+                    addClickablePartTextViewResizable(
+                        Html.fromHtml(tv.text.toString()), tv, maxLine, expandText,
+                        viewMore, item
+                    ), TextView.BufferType.SPANNABLE
+                )
+            }
+        })
+    }
+
+    private fun addClickablePartTextViewResizable(
+        strSpanned: Spanned, tv: TextView,
+        maxLine: Int, spanableText: String, viewMore: Boolean,
+        item: CastUIModel
+    ): SpannableStringBuilder {
+        val str = strSpanned.toString()
+        val ssb = SpannableStringBuilder(strSpanned)
+        if (str.contains(spanableText)) {
+            ssb.setSpan(object : MySpannable(false) {
+                override fun onClick(widget: View) {
+                    if (viewMore) {
+                        tv.movementMethod = null
+                        tv.maxLines = Int.MAX_VALUE
+                        tv.layoutParams = tv.layoutParams
+                        tv.setText(tv.tag.toString(), TextView.BufferType.SPANNABLE)
+                        binding.tvPodcastSubtitle.setTextWithTagging(item.caption,
+                            item.mentions,
+                            item.tags,
+                            onUserMentionClick,
+                            onHashTagClick)
+                    } else {
+                        tv.maxLines = 2
+                        tv.layoutParams = tv.layoutParams
+                        tv.setText(tv.tag.toString(), TextView.BufferType.SPANNABLE)
+                        makeTextViewResizable(tv, 3, "..See More", true, item)
+                    }
+                }
+            }, str.indexOf(spanableText), str.indexOf(spanableText) + spanableText.length, 0)
+        }
+        return ssb
     }
 
     private fun getCastersDescriptionText(item: CastUIModel): SpannableString {
