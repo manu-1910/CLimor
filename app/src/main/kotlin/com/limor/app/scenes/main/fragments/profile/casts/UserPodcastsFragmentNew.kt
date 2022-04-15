@@ -318,10 +318,22 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         }
         castsAdapter?.addLoadStateListener { it ->
             if (it.source.append.endOfPaginationReached) {
-                if (castsAdapter?.snapshot()?.size == 0) {
-                    binding.noPodcastsLayout.visibility = View.VISIBLE
-                } else{
-                    binding.noPodcastsLayout.visibility = View.GONE
+                if (user.id == PrefsHandler.getCurrentUserId(requireContext())) {
+
+                    binding.noPodcastsLayout.visibleIf(castsAdapter?.snapshot()?.isEmpty() ?: true)
+
+                } else {
+                    if (castsAdapter?.snapshot()?.isEmpty() == true) {
+                        binding.noPodcastsLayout.visibility = View.VISIBLE
+                        binding.castsTitleTV.visibility = View.VISIBLE
+                        binding.errorTV.text =
+                            resources.getString(R.string.empty_scenario_others_casts_description)
+                        binding.errorTV.visibility = View.VISIBLE
+                        binding.recordEmptyIV.visibility = View.VISIBLE
+                        binding.btnRecordPodcast.visibility = View.GONE
+                    } else {
+                        binding.noPodcastsLayout.visibility = View.GONE
+                    }
                 }
             }
         }
