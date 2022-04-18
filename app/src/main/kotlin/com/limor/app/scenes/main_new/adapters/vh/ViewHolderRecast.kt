@@ -257,8 +257,14 @@ class ViewHolderRecast(
                 Log.d("line_count", tv.lineCount.toString())
                 val lineEndIndex = tv.layout.getLineEnd(maxLine - 1) - 10
                 val lastIndex = lineEndIndex - expandText.length + 1
-                val text = if(lastIndex > 0 ) tv.text.subSequence(0, lastIndex)
-                    .toString() + " " + expandText else tv.text.subSequence(0, lineEndIndex).toString() + " " + expandText
+                val text = if(lastIndex > 0 ){
+                    tv.text.subSequence(0, lastIndex)
+                        .toString() + " " + expandText
+                } else if(lineEndIndex > 0){
+                    tv.text.subSequence(0, lineEndIndex).toString() + " " + expandText
+                } else {
+                    tv.text
+                }
                 tv.text = text
                 tv.setText(
                     addClickablePartTextViewResizable(
