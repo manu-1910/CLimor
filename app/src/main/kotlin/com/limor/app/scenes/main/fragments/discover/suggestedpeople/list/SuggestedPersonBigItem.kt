@@ -19,9 +19,12 @@ class SuggestedPersonBigItem(
 
     override fun bind(viewBinding: ItemDiscoverSuggestedPersonBigBinding, position: Int) {
         viewBinding.fullName.text = person.getFullName()
-        if(person.isVerified == true){
-            viewBinding.fullName.setRightDrawable(R.drawable.ic_verified_badge, R.dimen.chip_close_icon_size)
-        } else{
+        if (person.isVerified == true) {
+            viewBinding.fullName.setRightDrawable(
+                R.drawable.ic_verified_badge,
+                R.dimen.chip_close_icon_size
+            )
+        } else {
             viewBinding.fullName.setRightDrawable(0, R.dimen.chip_close_icon_size)
         }
         person.getAvatarUrl()?.let {
@@ -37,24 +40,8 @@ class SuggestedPersonBigItem(
                 }
             }
         }
-
-        viewBinding.fullName.setOnClickListener {
-            openUserProfile(viewBinding)
-        }
-        viewBinding.personImage.setOnClickListener {
-            openUserProfile(viewBinding)
-        }
-        viewBinding.root.setOnClickListener {
-            ToastMaker.showToast(it.context, "Not implemented")
-        }
     }
 
-    private fun openUserProfile(viewBinding: ItemDiscoverSuggestedPersonBigBinding){
-        val userProfileIntent = Intent(viewBinding.root.context, UserProfileActivity::class.java)
-        userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, person.username)
-        userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, person.id)
-        viewBinding.root.context.startActivity(userProfileIntent)
-    }
     override fun getLayout() = R.layout.item_discover_suggested_person_big
     override fun initializeViewBinding(view: View) =
         ItemDiscoverSuggestedPersonBigBinding.bind(view)

@@ -2,6 +2,7 @@ package com.limor.app.scenes.main_new.fragments
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,11 +15,13 @@ import com.limor.app.R
 import com.limor.app.databinding.FragmentDiscoverSuggestedPeopleBinding
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.DiscoverSuggestedPeopleViewModel
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.list.SuggestedPersonBigItem
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.xwray.groupie.GroupieAdapter
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
-class FeedSuggestedPeople: DialogFragment() {
+class FeedSuggestedPeople : DialogFragment() {
     private var _binding: FragmentDiscoverSuggestedPeopleBinding? = null
     private val binding get() = _binding!!
 
@@ -28,7 +31,7 @@ class FeedSuggestedPeople: DialogFragment() {
 
     private val suggestedPeopleAdapter = GroupieAdapter()
 
-    override fun onCreate(savedInstanceState: Bundle?){
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
@@ -58,7 +61,10 @@ class FeedSuggestedPeople: DialogFragment() {
         super.onStart()
         val dialog: Dialog? = dialog
         if (dialog != null) {
-            dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            dialog.window?.setLayout(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
         }
     }
 
@@ -70,7 +76,11 @@ class FeedSuggestedPeople: DialogFragment() {
         binding.list.adapter = suggestedPeopleAdapter
         suggestedPeopleAdapter.setOnItemClickListener { item, view ->
             val person = (item as SuggestedPersonBigItem).person
-            // TODO
+            val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+            userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, person.username)
+            userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, person.id)
+            context?.startActivity(userProfileIntent)
+            dismiss()
         }
 
         binding.toolbar.btnNotification.visibility = View.GONE

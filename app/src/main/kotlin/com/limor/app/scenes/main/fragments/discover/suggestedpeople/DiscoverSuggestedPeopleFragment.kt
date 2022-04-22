@@ -1,5 +1,6 @@
 package com.limor.app.scenes.main.fragments.discover.suggestedpeople
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,8 @@ import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentDiscoverSuggestedPeopleBinding
 import com.limor.app.scenes.main.fragments.discover.suggestedpeople.list.SuggestedPersonBigItem
+import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.xwray.groupie.GroupieAdapter
 import javax.inject.Inject
 
@@ -50,7 +53,10 @@ class DiscoverSuggestedPeopleFragment : BaseFragment() {
         binding.list.adapter = suggestedPeopleAdapter
         suggestedPeopleAdapter.setOnItemClickListener { item, view ->
             val person = (item as SuggestedPersonBigItem).person
-            // TODO
+            val userProfileIntent = Intent(context, UserProfileActivity::class.java)
+            userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY, person.username)
+            userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY, person.id)
+            context?.startActivity(userProfileIntent)
         }
 
         binding.toolbar.btnNotification.setOnClickListener {
