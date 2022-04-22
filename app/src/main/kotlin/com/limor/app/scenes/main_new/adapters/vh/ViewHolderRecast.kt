@@ -368,6 +368,8 @@ class ViewHolderRecast(
         binding.tvPodcastRecast.text = item.recastsCount?.toString()
         binding.tvPodcastComments.text = item.commentsCount?.toString()
         binding.tvPodcastReply.text = item.sharesCount?.toString() ?: "0"
+        binding.tvPodcastNumberOfListeners.text =
+            if (item.listensCount == 0) "0" else item.listensCount?.toLong()?.formatHumanReadable
     }
 
     private fun initLikeState(item: CastUIModel) {
@@ -375,7 +377,7 @@ class ViewHolderRecast(
             binding.tvPodcastLikes.setTextColor(
                 ContextCompat.getColor(
                     binding.root.context,
-                    if (isLiked) R.color.textAccent else R.color.subtitle_text_color
+                    if (isLiked) R.color.textAccent else R.color.white
                 )
             )
         }
