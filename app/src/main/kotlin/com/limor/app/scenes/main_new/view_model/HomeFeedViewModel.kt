@@ -48,7 +48,7 @@ class HomeFeedViewModel @Inject constructor(
 
     fun getHomeFeed(): Flow<PagingData<DataItem>> {
         return Pager(
-            config = PagingConfig(pageSize = 20, initialLoadSize = 20),
+            config = PagingConfig(pageSize = 10, initialLoadSize = 10),
             pagingSourceFactory = { getSource() }
         ).flow.cachedIn(viewModelScope).map { pagingData -> pagingData.map { it as DataItem } }
     }
