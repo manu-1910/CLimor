@@ -3,7 +3,12 @@ package com.limor.app.scenes.main_new.adapters.vh
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Handler
+import android.os.Looper
+import android.text.Html
+import android.text.SpannableStringBuilder
+import android.text.Spanned
 import android.view.View
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.android.billingclient.api.SkuDetails
 import com.limor.app.R
@@ -14,6 +19,7 @@ import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.fragments.DataItem
+import com.limor.app.scenes.main_new.fragments.comments.list.item.MySpannable
 import com.limor.app.scenes.patron.unipaas.UniPaasActivity
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.service.DetailsAvailableListener
@@ -67,6 +73,7 @@ class ViewHolderPodcast(
             onUserMentionClick,
             onHashTagClick
         )
+        makeTextViewResizable(binding.tvPodcastSubtitle, 60, "..See More", true, item)
         if (item.patronCast == true) {
             binding.patronCastIndicator.visibility = View.VISIBLE
         } else {
@@ -333,6 +340,82 @@ class ViewHolderPodcast(
             skuDetails = details[priceId]
             setPricingLabel()
         }
+    }
+
+    fun makeTextViewResizable(
+        tv: TextView,
+        maxCharacters: Int,
+        expandText: String,
+        viewMore: Boolean,
+        item: CastUIModel
+    ) {
+        if (tv.tag == null) {
+            tv.tag = tv.text
+        }
+        Handler(Looper.getMainLooper()).post(Runnable {
+            if (maxCharacters == 0) {
+                val lineEndIndex = tv.layout.getLineEnd(0)
+                val text = tv.text.subSequence(0, lineEndIndex - expandText.length + 1)
+                    .toString() + " " + expandText
+                tv.text = text
+                tv.setText(
+                    addClickablePartTextViewResizable(
+                        Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
+                        viewMore, item
+                    ), TextView.BufferType.SPANNABLE
+                )
+            } else if (maxCharacters > 0 && tv.text.length > maxCharacters) {
+                tv.text = tv.text.subSequence(0, 60)
+                    .toString() + " " + expandText
+                tv.setText(
+                    addClickablePartTextViewResizable(
+                        Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
+                        viewMore, item
+                    ), TextView.BufferType.SPANNABLE
+                )
+            } else {
+                tv.setText(
+                    addClickablePartTextViewResizable(
+                        Html.fromHtml(tv.text.toString()), tv, maxCharacters, expandText,
+                        viewMore, item
+                    ), TextView.BufferType.SPANNABLE
+                )
+            }
+        })
+    }
+
+    private fun addClickablePartTextViewResizable(
+        strSpanned: Spanned, tv: TextView,
+        maxLine: Int, spanableText: String, viewMore: Boolean,
+        item: CastUIModel
+    ): SpannableStringBuilder {
+        val str = strSpanned.toString()
+        val ssb = SpannableStringBuilder(strSpanned)
+        if (str.contains(spanableText)) {
+            ssb.setSpan(object : MySpannable(false) {
+                override fun onClick(widget: View) {
+                    if (viewMore) {
+                        tv.movementMethod = null
+                        tv.maxLines = Int.MAX_VALUE
+                        tv.layoutParams = tv.layoutParams
+                        tv.setText(tv.tag.toString(), TextView.BufferType.SPANNABLE)
+                        binding.tvPodcastSubtitle.setTextWithTagging(
+                            item.caption,
+                            item.mentions,
+                            item.tags,
+                            onUserMentionClick,
+                            onHashTagClick
+                        )
+                    } else {
+                        tv.maxLines = 2
+                        tv.layoutParams = tv.layoutParams
+                        tv.setText(tv.tag.toString(), TextView.BufferType.SPANNABLE)
+                        makeTextViewResizable(tv, 3, "..See More", true, item)
+                    }
+                }
+            }, str.indexOf(spanableText), str.indexOf(spanableText) + spanableText.length, 0)
+        }
+        return ssb
     }
 
 }

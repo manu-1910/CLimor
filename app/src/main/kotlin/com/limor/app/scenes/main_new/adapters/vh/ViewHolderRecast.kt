@@ -90,9 +90,9 @@ class ViewHolderRecast(
             onHashTagClick
         )
 
-        makeTextViewResizable(binding.tvPodcastSubtitle, 2, "..See More", true, item)
+        makeTextViewResizable(binding.tvPodcastSubtitle, 60, "..See More", true, item)
 
-        if(item.patronCast == true){
+        if (item.patronCast == true) {
             binding.patronCastIndicator.visibility = View.VISIBLE
         }
 
@@ -157,7 +157,10 @@ class ViewHolderRecast(
         }
 
         binding.tvRecastUserName.setOnClickListener {
-            it?.findNavController()?.navigate(R.id.action_navigate_home_to_fragment_recasted_users, bundleOf(FragmentRecastUsers.PODCAST_ID_KEY to item.id))
+            it?.findNavController()?.navigate(
+                R.id.action_navigate_home_to_fragment_recasted_users,
+                bundleOf(FragmentRecastUsers.PODCAST_ID_KEY to item.id)
+            )
         }
 
         if (item.patronCast == true) {
@@ -199,7 +202,7 @@ class ViewHolderRecast(
                     binding.btnPurchasedCast.visibility = View.VISIBLE
                 }
             }
-        } else{
+        } else {
             binding.notCastOwnerActions.visibility = View.GONE
             binding.castOwnerActions.visibility = View.GONE
             binding.btnPurchasedCast.visibility = View.GONE
@@ -237,12 +240,18 @@ class ViewHolderRecast(
         }
     }
 
-    fun makeTextViewResizable(tv: TextView, maxLine: Int, expandText: String, viewMore: Boolean, item: CastUIModel) {
+    fun makeTextViewResizable(
+        tv: TextView,
+        maxCharacters: Int,
+        expandText: String,
+        viewMore: Boolean,
+        item: CastUIModel
+    ) {
         if (tv.tag == null) {
             tv.tag = tv.text
         }
         Handler(Looper.getMainLooper()).post(Runnable {
-            if (maxLine == 0) {
+            if (maxCharacters == 0) {
                 val lineEndIndex = tv.layout.getLineEnd(0)
                 val text = tv.text.subSequence(0, lineEndIndex - expandText.length + 1)
                     .toString() + " " + expandText
@@ -253,19 +262,9 @@ class ViewHolderRecast(
                         viewMore, item
                     ), TextView.BufferType.SPANNABLE
                 )
-            } else if (maxLine > 0 && tv.lineCount > maxLine) {
-                Log.d("line_count", tv.lineCount.toString())
-                val lineEndIndex = tv.layout.getLineEnd(maxLine - 1) - 10
-                val lastIndex = lineEndIndex - expandText.length + 1
-                val text = if(lastIndex > 0 ){
-                    tv.text.subSequence(0, lastIndex)
-                        .toString() + " " + expandText
-                } else if(lineEndIndex > 0){
-                    tv.text.subSequence(0, lineEndIndex).toString() + " " + expandText
-                } else {
-                    tv.text
-                }
-                tv.text = text
+            } else if (maxCharacters > 0 && tv.text.length > maxCharacters) {
+                tv.text = tv.text.subSequence(0, 60)
+                    .toString() + " " + expandText
                 tv.setText(
                     addClickablePartTextViewResizable(
                         Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
@@ -275,7 +274,7 @@ class ViewHolderRecast(
             } else {
                 tv.setText(
                     addClickablePartTextViewResizable(
-                        Html.fromHtml(tv.text.toString()), tv, maxLine, expandText,
+                        Html.fromHtml(tv.text.toString()), tv, maxCharacters, expandText,
                         viewMore, item
                     ), TextView.BufferType.SPANNABLE
                 )
@@ -298,11 +297,13 @@ class ViewHolderRecast(
                         tv.maxLines = Int.MAX_VALUE
                         tv.layoutParams = tv.layoutParams
                         tv.setText(tv.tag.toString(), TextView.BufferType.SPANNABLE)
-                        binding.tvPodcastSubtitle.setTextWithTagging(item.caption,
+                        binding.tvPodcastSubtitle.setTextWithTagging(
+                            item.caption,
                             item.mentions,
                             item.tags,
                             onUserMentionClick,
-                            onHashTagClick)
+                            onHashTagClick
+                        )
                     } else {
                         tv.maxLines = 2
                         tv.layoutParams = tv.layoutParams
@@ -317,22 +318,43 @@ class ViewHolderRecast(
 
     private fun getCastersDescriptionText(item: CastUIModel): SpannableString {
         val username = item.recaster?.username ?: ""
-        val text = when(item.recastsCount){
+        val text = when (item.recastsCount) {
             1 -> "recasted this cast"
             2 -> "and 1 other recasted this cast"
             else -> "and ${item.recastsCount?.minus(1)} others recasted this cast"
         }
-        var spannableString = SpannableString(username + (if(item.recaster?.isVerified == true) "" else " ") + text)
-        spannableString.setSpan(StyleSpan(android.graphics.Typeface.BOLD), 0, username.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        spannableString.setSpan(AbsoluteSizeSpan(16, true), 0, username.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        spannableString.setSpan(ForegroundColorSpan(context.resources.getColor(R.color.black)), 0, username.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        spannableString.setSpan(AbsoluteSizeSpan(14, true), username.length, spannableString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        if(item.recaster?.isVerified == true){
+        var spannableString =
+            SpannableString(username + (if (item.recaster?.isVerified == true) "" else " ") + text)
+        spannableString.setSpan(
+            StyleSpan(android.graphics.Typeface.BOLD),
+            0,
+            username.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        spannableString.setSpan(
+            AbsoluteSizeSpan(16, true),
+            0,
+            username.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        spannableString.setSpan(
+            ForegroundColorSpan(context.resources.getColor(R.color.black)),
+            0,
+            username.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        spannableString.setSpan(
+            AbsoluteSizeSpan(14, true),
+            username.length,
+            spannableString.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        if (item.recaster?.isVerified == true) {
             val start = username.length
             val end = username.length + 1
             val flag = 0
             val drawable = context.resources.getDrawable(R.drawable.ic_verified_badge)
-            drawable.setBounds(4,0,drawable.intrinsicWidth,drawable.intrinsicHeight)
+            drawable.setBounds(4, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
             spannableString.setSpan(ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM), start, end, flag)
             SpannableStringBuilder()
                 .append(spannableString.subSequence(0, username.length + 1))
@@ -340,7 +362,7 @@ class ViewHolderRecast(
                 .append(spannableString.subSequence(username.length, spannableString.length))
                 .append(" ")
                 .also { spannableString = SpannableString.valueOf(it) }
-        }else{
+        } else {
             SpannableStringBuilder()
                 .append(spannableString.subSequence(0, username.length + 1))
                 .append(" ")
