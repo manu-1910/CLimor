@@ -1039,4 +1039,7 @@
     <string name="special_characters_not_allowed">Special characters are not allowed</string>
     <string name="recommended_casts_description">Get the most from your content</string>
 
+    <string name="categories_hint_description">Please select the categories that best describes the topic of your cast.</string>
+    <string name="languages_hint">Please select the language of your cast</string>
+
 </resources>

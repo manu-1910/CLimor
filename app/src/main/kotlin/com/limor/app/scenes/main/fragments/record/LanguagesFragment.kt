@@ -21,8 +21,14 @@ import com.limor.app.scenes.auth_new.data.LanguageWrapper
 import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.main.viewmodels.LanguagesViewModel
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.MAIN
+import com.skydoves.balloon.showAlignBottom
 import kotlinx.android.synthetic.main.fragment_languages.*
+import kotlinx.android.synthetic.main.fragment_languages.btnContinue
+import kotlinx.android.synthetic.main.fragment_languages.clMain
+import kotlinx.android.synthetic.main.fragment_languages.topAppBar
+import kotlinx.android.synthetic.main.fragment_publish_categories.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -70,6 +76,18 @@ class LanguagesFragment : FragmentWithLoading(), Injectable {
         }
         //clMain.onFocusChangeListener = AuthActivityNew.onFocusChangeListener()
         //cgLanguages.onFocusChangeListener = AuthActivityNew.onFocusChangeListener()
+        val balloon = CommonsKt.createPopupBalloon(
+            requireContext(),
+            getString(R.string.languages_hint)
+        )
+        languagesInfoBtn.setOnClickListener {
+            balloon.showAlignBottom(it)
+            if (!balloon.isShowing) {
+                it.showAlignBottom(balloon, 0, 0)
+            } else {
+                balloon.dismiss()
+            }
+        }
     }
 
     override fun onResume() {
