@@ -1037,6 +1037,7 @@ class RecordFragment : BaseFragment() {
     private fun initGui() {
 
         val oneHour = 3600000L
+        c_meter.onChronometerTickListener = null
         c_meter.apply {
             format = "00:00:00"
             base = 0
