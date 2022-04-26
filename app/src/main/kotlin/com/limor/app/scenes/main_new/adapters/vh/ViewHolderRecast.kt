@@ -108,6 +108,11 @@ class ViewHolderRecast(
             binding.ivPodcastBackground.loadImage(it)
         }
 
+        binding.matureContentInfo.visibility = if (item.maturedContent == true)
+            View.VISIBLE
+        else
+            View.GONE
+
         //Handling the color background for podcast
         CommonsKt.handleColorFeed(item, binding.colorFeedText, context)
 
@@ -426,7 +431,7 @@ class ViewHolderRecast(
             binding.tvPodcastRecast.setTextColor(
                 ContextCompat.getColor(
                     binding.root.context,
-                    if (isRecasted) R.color.textAccent else R.color.subtitle_text_color
+                    if (isRecasted) R.color.textAccent else R.color.white
                 )
             )
         }
