@@ -38,6 +38,8 @@ class UserPodcastsViewModel @Inject constructor(
     val purchasedCasts: LiveData<List<CastUIModel>> get() = _purchasedCasts
 
     private var userPatronCastsPagingSource: UserCastsPagingSource? = null
+    private var userCastsPagingSource: UserCastsPagingSource? = null
+    private var purchasedCastsPagingSource: UserCastsPagingSource? = null
 
     fun loadCasts(
         userId: Int,
@@ -130,8 +132,24 @@ class UserPodcastsViewModel @Inject constructor(
             castsRepository = castsRepository,
             castsType = castType
         ).also {
-            userPatronCastsPagingSource = it
+            when(castType){
+                PATRON_CASTS -> userPatronCastsPagingSource = it
+                PURCHASED_CASTS -> purchasedCastsPagingSource = it
+                else -> userCastsPagingSource = it
+            }
         }
+    }
+
+    fun invalidateUserCasts() {
+        userCastsPagingSource?.invalidate()
+    }
+
+    fun invalidatePatronCasts(){
+        userPatronCastsPagingSource?.invalidate()
+    }
+
+    fun invalidatePurchasedCasts(){
+        purchasedCastsPagingSource?.invalidate()
     }
 
 }
