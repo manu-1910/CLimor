@@ -43,7 +43,7 @@ class DiscoverViewModel @Inject constructor(
 
     private fun loadTopCasts() {
         viewModelScope.launch {
-            getTopCastsUseCase.execute(limit = 10)
+            getTopCastsUseCase.execute(limit = 50)
                 .onSuccess {
                     _topCasts.value = it
                 }
