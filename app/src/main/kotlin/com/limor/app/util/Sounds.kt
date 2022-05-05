@@ -16,6 +16,7 @@ enum class SoundType(val file: String) {
 object Sounds {
     fun playSound(context: Context, soundType: SoundType, onDone: (() -> Unit)? = null) {
         if (!PrefsHandler.areSoundsEnabled(context)) {
+            onDone?.invoke()
             return;
         }
 
@@ -33,6 +34,7 @@ object Sounds {
             mediaPlayer.start()
 
         } catch (throwable: Throwable) {
+            onDone?.invoke()
             throwable.printStackTrace()
         }
     }

@@ -110,8 +110,15 @@ class VoiceCommentUploadService: Service() {
         scope.launch {
             var newCommentID: Int? = null
 
-            uploadAudio(intent)?.let {
-                newCommentID = addComment(it, intent)
+            for (i in 1..3) {
+                val url = uploadAudio(intent)
+                if (url != null) {
+                    newCommentID = addComment(url, intent)
+                    break
+                }
+                if (BuildConfig.DEBUG) {
+                    println("Could not upload audio at try # $i")
+                }
             }
 
             stopForegroundService()
@@ -126,6 +133,9 @@ class VoiceCommentUploadService: Service() {
     private suspend fun uploadAudio(inputData: Intent): String? = suspendCoroutine { cont ->
         val audioFilePath = inputData.getStringExtra(KEY_LOCAL_AUDIO_FILE)
         if (audioFilePath == null) {
+            if (BuildConfig.DEBUG) {
+                println("Audio file path is $audioFilePath")
+            }
             cont.resume(null)
             return@suspendCoroutine
         }
@@ -147,6 +157,9 @@ class VoiceCommentUploadService: Service() {
                     bytesCurrent: Long,
                     bytesTotal: Long
                 ) {
+                    if (BuildConfig.DEBUG) {
+                        println("Progress uploading audio: $bytesCurrent / $bytesTotal")
+                    }
                     val progress = ((bytesCurrent.toDouble() / bytesTotal.toDouble()) * 100).toInt()
                     EventBus.getDefault().post(VoiceUploadProgress(
                         progress = progress,
@@ -155,7 +168,10 @@ class VoiceCommentUploadService: Service() {
                 }
 
                 override fun onError(error: String?) {
-                    EventBus.getDefault().post(VoiceUploadCompletion(false))
+                    if (BuildConfig.DEBUG) {
+                        println("Error uploading audio file: $error")
+                    }
+                    cont.resume(null)
                 }
             })
     }
@@ -175,6 +191,10 @@ class VoiceCommentUploadService: Service() {
             remoteAudioFileURL,
             duration
         )
+
+        if (BuildConfig.DEBUG) {
+            println("Creating comment result: $result")
+        }
 
         return result.getOrNull()
     }
