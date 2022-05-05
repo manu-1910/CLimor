@@ -151,10 +151,11 @@ object CompressedAudioRecorder : Recorder {
         val recorder = recorder ?: return
         try {
             recorder.stop()
+            recorder.reset()
+            recorder.release()
         } catch (e: RuntimeException) {
             e.printStackTrace()
         }
-        recorder.release()
     }
 
     override fun stopRecording(context: Context) {
