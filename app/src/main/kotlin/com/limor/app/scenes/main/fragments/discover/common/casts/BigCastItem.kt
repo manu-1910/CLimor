@@ -21,6 +21,7 @@ import com.limor.app.scenes.utils.showExtendedPlayer
 import com.limor.app.uimodels.CastUIModel
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
+import org.jetbrains.anko.image
 import java.time.Duration
 
 class BigCastItem(
@@ -51,7 +52,7 @@ class BigCastItem(
             if (BuildConfig.DEBUG) {
                 println(cast.imageLinks)
             }
-
+            castImage.setImageDrawable(null)
             if (cast.imageLinks?.original != null) {
                 Glide.with(root)
                     .load(cast.imageLinks.original)
