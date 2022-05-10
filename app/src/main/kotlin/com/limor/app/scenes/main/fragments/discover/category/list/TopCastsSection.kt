@@ -13,8 +13,9 @@ import com.xwray.groupie.Section
  */
 class TopCastsSection(
     private val context: Context,
-    private val bigCastItemPattern: (itemIndex: Int) -> Boolean = { index -> (index + 1) % 5 == 0 } // by default every fifth item is [BigCastItem]
-): Section() {
+    private val bigCastItemPattern: (itemIndex: Int) -> Boolean = { index -> (index + 1) % 5 == 0 }, // by default every fifth item is [BigCastItem],
+    private val showTitle: Boolean = true
+) : Section() {
 
     private val castsInnerSection = Section()
 
@@ -32,13 +33,15 @@ class TopCastsSection(
         )
     }
 
-    fun setHeaderIfNeeded() {
+    private fun setHeaderIfNeeded() {
         if (groupCount == 0) {
-            setHeader(
-                HeaderItem(
-                    context.getString(R.string.top_casts)
+            if (showTitle) {
+                setHeader(
+                    HeaderItem(
+                        context.getString(R.string.top_casts)
+                    )
                 )
-            )
+            }
             add(castsInnerSection)
         }
     }
