@@ -55,10 +55,12 @@ class PlaylistsFragment : BaseFragment() {
         result?.get(true)?.let { sortedResult.addAll(it) }
         playlistAdapter = PlaylistsAdapter(
             onPlaylistClick = { playlist ->
-                findNavController().navigate(
-                    R.id.action_navigateProfileFragment_to_fragmentPlaylistDetails,
-                    bundleOf(FragmentPlaylistDetails.KEY_PLAYLIST to playlist)
-                )
+                if(playlist.count > 0){
+                    findNavController().navigate(
+                        R.id.action_navigateProfileFragment_to_fragmentPlaylistDetails,
+                        bundleOf(FragmentPlaylistDetails.KEY_PLAYLIST to playlist)
+                    )
+                }
             },
             onDeleteClick = { playlist ->
                 deletePlaylist(playlist.id)

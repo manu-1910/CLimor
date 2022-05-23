@@ -88,7 +88,7 @@
         android:layout_marginTop="@dimen/marginSmall"
         android:paddingStart="@dimen/marginTwenty"
         android:paddingEnd="@dimen/marginTwenty"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/preview_image_layout"
@@ -119,10 +119,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginStart="@dimen/marginMediumSmall"
             android:layout_marginTop="@dimen/marginMedium"
-            android:text="99 Casts"
             android:textSize="@dimen/textSize16"
             android:textColor="@color/white"
             android:gravity="center_vertical"
+            tools:text="99 Casts"
             app:layout_constraintHorizontal_bias="0"/>
 
         <TextView
