@@ -13,6 +13,10 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.text.InputFilter
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,6 +44,7 @@ import com.limor.app.extensions.drawSimpleSelectorDialog
 import com.limor.app.scenes.main.fragments.record.PublishFragment
 import com.limor.app.scenes.main.fragments.record.RecordFragment
 import com.limor.app.scenes.main.viewmodels.UpdateUserViewModel
+import com.limor.app.scenes.utils.AlphabetsInputFilter
 import com.limor.app.scenes.utils.Commons
 import com.limor.app.scenes.utils.VoiceBioEvent
 import com.limor.app.scenes.utils.VoiceBioInfo
@@ -48,6 +53,8 @@ import com.limor.app.uimodels.UserUIModel
 import com.limor.app.util.*
 import com.yalantis.ucrop.UCrop
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.dialog_with_edittext.view.*
+import kotlinx.android.synthetic.main.fragment_first_and_last_name.*
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import java.io.File
@@ -165,6 +172,9 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         binding.btnChoosePhoto.setOnClickListener {
             showImageOptions()
         }
+
+        binding.etFirstName.editText?.filters = arrayOf(AlphabetsInputFilter())
+        binding.etLastName.editText?.filters = arrayOf(AlphabetsInputFilter())
     }
 
     private fun showImageOptions() {
