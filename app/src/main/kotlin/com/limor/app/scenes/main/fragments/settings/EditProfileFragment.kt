@@ -306,7 +306,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
             binding.etFirstNameInner.text.toString(),
             binding.etLastNameInner.text.toString(),
             binding.etBioInner.text.toString(),
-            binding.etWebUrlInner.text.toString(),
+            binding.etWebUrlInner.text.toString().replace(" ", ""),
             currentUser.imageURL,
             currentUser.voiceBioURL,
             currentUser.durationSeconds
