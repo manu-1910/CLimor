@@ -6,14 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentDiscoverCategoryBinding
 import com.limor.app.scenes.main.fragments.discover.category.list.DiscoverCategoryAdapter
 import com.limor.app.scenes.main.fragments.discover.common.casts.GridCastItemDecoration
 import com.limor.app.uimodels.CategoryUIModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class DiscoverCategoryFragment : BaseFragment() {
@@ -28,8 +33,7 @@ class DiscoverCategoryFragment : BaseFragment() {
     private val category: CategoryUIModel by lazy { requireArguments().getParcelable(CATEGORY_KEY)!! }
     private val discoverCategoryAdapter by lazy {
         DiscoverCategoryAdapter(
-            requireContext(),
-            findNavController()
+            requireContext()
         )
     }
 
@@ -44,19 +48,16 @@ class DiscoverCategoryFragment : BaseFragment() {
     ): View {
         _binding = FragmentDiscoverCategoryBinding.inflate(inflater)
 
-        viewModel.loadCasts(category.id)
+        loadCastsInACategory()
 
         initViews()
-        subscribeForEvents()
         return binding.root
     }
 
     private fun initViews() {
         binding.list.apply {
-            layoutManager = GridLayoutManager(context, discoverCategoryAdapter.spanCount).apply {
-                spanSizeLookup = discoverCategoryAdapter.spanSizeLookup
+            layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false).apply {
                 adapter = discoverCategoryAdapter
-                addItemDecoration(GridCastItemDecoration())
             }
         }
 
@@ -66,12 +67,11 @@ class DiscoverCategoryFragment : BaseFragment() {
         }
     }
 
-    private fun subscribeForEvents() {
-        viewModel.featuredCasts.observe(viewLifecycleOwner) {
-            discoverCategoryAdapter.updateFeaturedCasts(it)
-        }
-        viewModel.topCasts.observe(viewLifecycleOwner) {
-            discoverCategoryAdapter.updateTopCasts(it)
+    private fun loadCastsInACategory() {
+        lifecycleScope.launch {
+            viewModel.getCastsOfCategory(category.id).collectLatest { data ->
+                discoverCategoryAdapter.submitData(data)
+            }
         }
     }
 
