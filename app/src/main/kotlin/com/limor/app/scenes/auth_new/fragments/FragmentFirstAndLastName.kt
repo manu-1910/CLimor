@@ -1,6 +1,7 @@
 package com.limor.app.scenes.auth_new.fragments
 
 import android.os.Bundle
+import android.text.InputFilter
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.navigation.AuthNavigator
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import com.limor.app.scenes.auth_new.util.ToastMaker
+import com.limor.app.scenes.utils.AlphabetsInputFilter
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_first_and_last_name.*
 
@@ -40,8 +42,8 @@ class FragmentFirstAndLastName : Fragment() {
         saveNavigationBreakPoint()
     }
 
-    private fun subscribeToViewModel(){
-        model.updateUserFirstNameAndLastNameLiveData.observe(viewLifecycleOwner, Observer{
+    private fun subscribeToViewModel() {
+        model.updateUserFirstNameAndLastNameLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
             AuthNavigator.navigateToFragmentByNavigationBreakpoints(
                 requireActivity(),
@@ -53,24 +55,31 @@ class FragmentFirstAndLastName : Fragment() {
             ToastMaker.showToast(requireContext(), it)
         })
         model.currentUserFullNameIsValid.observe(viewLifecycleOwner, Observer {
-            if(it == null) return@Observer
+            if (it == null) return@Observer
             btnNamesPickerContinue.isEnabled = it
         })
     }
 
     private fun setTextChangedListener() {
         etEnterFirstName.editText?.setText(model.firstName)
-        etEnterFirstName.editText?.doAfterTextChanged { model.changeFirstName(it?.toString() ?: "") }
+        etEnterFirstName.editText?.doAfterTextChanged {
+            model.changeFirstName(
+                it?.toString() ?: ""
+            )
+        }
         etEnterLastName.editText?.setText(model.lastName)
         etEnterLastName.editText?.doAfterTextChanged { model.changeLastName(it?.toString() ?: "") }
+
+        etEnterFirstName.editText?.filters = arrayOf(AlphabetsInputFilter())
+        etEnterLastName.editText?.filters = arrayOf(AlphabetsInputFilter())
     }
 
-    private fun setOnClickListeners(){
+    private fun setOnClickListeners() {
         btnNamesPickerContinue.setOnClickListener {
-            if(etEnterFirstName.editText?.text.isNullOrEmpty()){
+            if (etEnterFirstName.editText?.text.isNullOrEmpty()) {
                 etEnterFirstName.error = "Required"
                 etEnterFirstName.requestFocus()
-            } else if(etEnterLastName.editText?.text.isNullOrEmpty()){
+            } else if (etEnterLastName.editText?.text.isNullOrEmpty()) {
                 etEnterLastName.error = "Required"
                 etEnterLastName.requestFocus()
             } else {

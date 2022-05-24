@@ -125,7 +125,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_bold"
                         android:imeOptions="actionNext"
-                        android:inputType="text"
+                        android:inputType="textPersonName"
                         android:maxLines="1"
                         android:textColor="@color/black" />
 
@@ -163,7 +163,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_bold"
                         android:imeOptions="actionNext"
-                        android:inputType="text"
+                        android:inputType="textPersonName"
                         android:maxLines="1"
                         android:textColor="@color/black" />
 
