@@ -19,17 +19,18 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 interface DetailsAvailableListener {
-    fun onDetailsAvailable(details: Map<String, SkuDetails>)
+    fun onDetailsAvailable(details: Map<String, ProductDetails>)
 }
 
-interface ProductDetails {
+interface ProductDetailsFetcher {
     fun getPrice(productId: String, listener: DetailsAvailableListener)
     fun getPrices(listener: DetailsAvailableListener)
-    fun getPrices(): LiveData<List<SkuDetails>>
+    fun getPrices(): LiveData<List<ProductDetails>>
+    fun getSubscriptionPrice(subscriptionId: String, listener: DetailsAvailableListener)
 }
 
 data class PurchaseTarget(
-    val sku: SkuDetails,
+    val product: ProductDetails,
     val cast: CastUIModel
 )
 
@@ -37,7 +38,9 @@ data class PurchaseTarget(
 class PlayBillingHandler @Inject constructor(
     private val context: Context,
     val publishRepository: PublishRepository,
-) : ProductDetails {
+) : ProductDetailsFetcher {
+
+    private val subscriptionIds = mutableListOf<String>();
 
     private var currentTarget: PurchaseTarget? = null
     private var onPurchaseDone: ((success: Boolean) -> Unit)? = null
@@ -48,7 +51,7 @@ class PlayBillingHandler @Inject constructor(
     private val billingJob = SupervisorJob()
     private val billingScope = CoroutineScope(Dispatchers.IO + billingJob)
 
-    private val productSkuDetails = mutableMapOf<String, SkuDetails>()
+    private val productSkuDetails = mutableMapOf<String, ProductDetails>()
 
     private var lastFetchTime = 0L
 
@@ -131,7 +134,7 @@ class PlayBillingHandler @Inject constructor(
         billingScope.launch {
 
             // First we verify the purchase with the backend
-            val response = publishRepository.createCastPurchase(target.cast, purchase, target.sku)
+            val response = publishRepository.createCastPurchase(target.cast, purchase, target.product)
 
             // If and only if the backend says the purchase is valid then we consume it
             if (response == Constants.API_SUCCESS) {
@@ -154,7 +157,10 @@ class PlayBillingHandler @Inject constructor(
             .build()
     }
 
-    private suspend fun queryInAppSKUDetails(skuIds: List<String>): List<SkuDetails> {
+    private suspend fun queryInAppSKUDetails(skuIds: List<String>): List<ProductDetails> {
+        if (skuIds.isEmpty()) {
+            return listOf()
+        }
 
         // unfortunately, Android has an undocumented limit on the size of the list in this request.
         // 20 is a number used in one of the Google samples, namely "Trivial Drive", source code of which
@@ -166,9 +172,13 @@ class PlayBillingHandler @Inject constructor(
         return skuIds
             .chunked(20)
             .map {
-                SkuDetailsParams.newBuilder()
-                    .setSkusList(skuIds)
-                    .setType(BillingClient.SkuType.INAPP)
+                QueryProductDetailsParams.newBuilder()
+                    .setProductList(skuIds.map { productId ->
+                        QueryProductDetailsParams.Product.newBuilder()
+                            .setProductId(productId)
+                            .setProductType(BillingClient.ProductType.INAPP)
+                            .build()
+                    })
             }
             .map {
                 getSkusFromParams(it)
@@ -176,12 +186,27 @@ class PlayBillingHandler @Inject constructor(
             .flatten()
     }
 
-    private suspend fun getSkusFromParams(params: SkuDetailsParams.Builder): List<SkuDetails> {
-        val result = billingClient.querySkuDetails(params.build())
-        if (BuildConfig.DEBUG) {
-            Timber.d("getSkusFromParams result is ${result.billingResult.responseCode} (${result.billingResult.debugMessage}), SKUs-> ${result.skuDetailsList}")
+    private suspend fun querySubSKUDetails(subIds: List<String>): List<ProductDetails> {
+        if (subIds.isEmpty()) {
+            return listOf()
         }
-        return result.skuDetailsList ?: listOf()
+
+        val params = QueryProductDetailsParams.newBuilder()
+            .setProductList(subIds.map { productId ->
+                QueryProductDetailsParams.Product.newBuilder()
+                    .setProductId(productId)
+                    .setProductType(BillingClient.ProductType.SUBS)
+                    .build()
+            })
+        return getSkusFromParams(params)
+    }
+
+    private suspend fun getSkusFromParams(params: QueryProductDetailsParams.Builder): List<ProductDetails> {
+        val result = billingClient.queryProductDetails(params.build())
+        if (BuildConfig.DEBUG) {
+            Timber.d("getSkusFromParams result is ${result.billingResult.responseCode} (${result.billingResult.debugMessage}), SKUs-> ${result.productDetailsList}")
+        }
+        return result.productDetailsList ?: listOf()
     }
 
     fun close() {
@@ -201,7 +226,10 @@ class PlayBillingHandler @Inject constructor(
         currentTarget = target
         onPurchaseDone = onDone
         val flowParams = BillingFlowParams.newBuilder()
-            .setSkuDetails(target.sku)
+            .setProductDetailsParamsList(listOf(
+                BillingFlowParams.ProductDetailsParams.newBuilder()
+                .setProductDetails(target.product)
+                .build()))
             .build()
         billingClient.launchBillingFlow(requireActivity, flowParams)
     }
@@ -235,7 +263,7 @@ class PlayBillingHandler @Inject constructor(
         })
     }
 
-    private suspend fun fetchProducts(): List<SkuDetails> {
+    private suspend fun fetchProducts(): List<ProductDetails> {
         // TODO use a constant for the type
         val productIds = publishRepository.getInAppPricesTiers("castPriceTiers")
         if (BuildConfig.DEBUG) {
@@ -246,14 +274,19 @@ class PlayBillingHandler @Inject constructor(
             Timber.d("Got SKU Details -> $details")
         }
 
-        return details
+        val subDetails = querySubSKUDetails(subscriptionIds)
+        if (BuildConfig.DEBUG) {
+            Timber.d("Got Sub SKU Details -> $subDetails for $subscriptionIds")
+        }
+
+        return subDetails + details
     }
 
-    private fun onDetails(details: List<SkuDetails>, notifyListeners: Boolean = true) {
+    private fun onDetails(details: List<ProductDetails>, notifyListeners: Boolean = true) {
         lastFetchTime = System.currentTimeMillis()
         productSkuDetails.apply {
             clear()
-            putAll(details.map { it.sku to it })
+            putAll(details.map { it.productId to it })
         }
         if (notifyListeners) {
             notifyListeners()
@@ -264,7 +297,7 @@ class PlayBillingHandler @Inject constructor(
     /**
      * This connects to the billing client if not connected and fetches the product IDs.
      */
-    private fun fetchProductIDs(onDone: ((details: List<SkuDetails>) -> Unit)? = null) {
+    private fun fetchProductIDs(onDone: ((details: List<ProductDetails>) -> Unit)? = null) {
         // This simple flag works because all product fetch requests are done on the main thread
         if (mFetching) {
             return
@@ -298,7 +331,7 @@ class PlayBillingHandler @Inject constructor(
         detailsListeners.add(WeakReference(detailsAvailableListener))
     }
 
-    private fun removeListener(detailsAvailableListener: DetailsAvailableListener) {
+    public fun removeListener(detailsAvailableListener: DetailsAvailableListener) {
         for (listener in detailsListeners) {
             if (listener.get() == detailsAvailableListener) {
                 detailsListeners.remove(listener)
@@ -311,6 +344,16 @@ class PlayBillingHandler @Inject constructor(
         for (listener in detailsListeners) {
             listener.get()?.onDetailsAvailable(productSkuDetails)
         }
+    }
+
+    override fun getSubscriptionPrice(subscriptionId: String, listener: DetailsAvailableListener) {
+        if (!subscriptionIds.contains(subscriptionId)) {
+            subscriptionIds.add(subscriptionId)
+        }
+        if (BuildConfig.DEBUG) {
+            println("Subscription IDs to lookup -> $subscriptionIds")
+        }
+        getPrice(subscriptionId, listener)
     }
 
     /**
@@ -368,21 +411,23 @@ class PlayBillingHandler @Inject constructor(
     /**
      * Util function to get the prices
      */
-    override fun getPrices(): LiveData<List<SkuDetails>> {
-        val liveData = MutableLiveData<List<SkuDetails>>()
-        fetchProductIDs {
-            liveData.postValue(it.sortedBy { skuDetails ->
-                // Here are some sample IDs:
-                //
-                // com.limor.dev.tier_1
-                // com.limor.staging.tier_15
-                // com.limor.prod.tier_23
-                //
-                // That is, they always end in tier_[number] and the number part is what we want to
-                // sort by.
+    override fun getPrices(): LiveData<List<ProductDetails>> {
+        val liveData = MutableLiveData<List<ProductDetails>>()
+        fetchProductIDs { productDetailsList ->
+            liveData.postValue(productDetailsList
+                .filter { it.productId.contains("tier_") }
+                .sortedBy { productDetails ->
+                    // Here are some sample IDs:
+                    //
+                    // com.limor.dev.tier_1
+                    // com.limor.staging.tier_15
+                    // com.limor.prod.tier_23
+                    //
+                    // That is, they always end in tier_[number] and the number part is what we want to
+                    // sort by.
 
-                skuDetails.sku.split("tier_").lastOrNull()?.toInt() ?: 0
-            })
+                    productDetails.productId.split("tier_").lastOrNull()?.toIntOrNull() ?: 0
+                })
         }
         return liveData
     }

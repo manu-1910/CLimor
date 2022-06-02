@@ -23,6 +23,10 @@ import com.limor.app.R
 import com.limor.app.databinding.FragmentPatronPricingPlansBinding
 import com.limor.app.scenes.main.fragments.profile.ShortPagerAdapter
 import com.limor.app.scenes.main.viewmodels.PublishViewModel
+import com.limor.app.scenes.utils.LimorDialog
+import com.limor.app.service.DetailsAvailableListener
+import com.limor.app.service.PlayBillingHandler
+import com.limor.app.util.basePrice
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,22 +35,49 @@ import org.jetbrains.anko.support.v4.runOnUiThread
 import timber.log.Timber
 import javax.inject.Inject
 
-class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickListener {
+class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickListener,
+    DetailsAvailableListener {
     private lateinit var adapter: PricingPlansAdapter
-    private var selectedSku: SkuDetails? = null
+    private var selectedProduct: ProductDetails? = null
     private lateinit var billingClient: BillingClient
     private lateinit var binding: FragmentPatronPricingPlansBinding
+
+    @Inject
+    lateinit var playBillingHandler: PlayBillingHandler
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: PublishViewModel by activityViewModels { viewModelFactory }
 
+    private var currentCode: String? = null
+    private var currentPromoSubId: String? = null
+    private var currentPromoSkuDetails: ProductDetails? = null
+    private val defaultSkuDetails = mutableListOf<ProductDetails>()
+
+    enum class ViewPagerMode{
+        MONTHLY,
+        YEARLY
+    }
+
     private val purchasesUpdatedListener by lazy {
         PurchasesUpdatedListener { billingResult, purchases ->
+
+            if (BuildConfig.DEBUG) {
+                println("Billing result -> $billingResult")
+                if (null != purchases) {
+                    for (purchase in purchases) {
+                        println("Purchase: $purchase")
+                    }
+                }
+            }
+
             //This is called once there is some update about purchase after launching the billing flow
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
                 showProgressBar()
                 handlePurchase(purchases.first()!!)
+                if (BuildConfig.DEBUG) {
+                    println("Got ${purchases.size} purchases.")
+                }
             } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
                 // Handle an error caused by a user cancelling the purchase flow.
                 binding.root.snackbar(getString(R.string.cancelled))
@@ -86,7 +117,12 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         // Verify the purchase.
         Timber.d("PURCHASE ${purchase.purchaseToken}")
         Timber.d("PURCHASE ${purchase.packageName}")
-        model.consumePurchasedSub(purchase).observe(viewLifecycleOwner, {
+
+        if (BuildConfig.DEBUG) {
+            println("Will handle purchahse: $purchase")
+        }
+
+        model.consumePurchasedSub(purchase, currentCode).observe(viewLifecycleOwner) {
             if (BuildConfig.DEBUG) {
                 println("Successfully consumed purchase? -> $it, is on main -> ${Looper.getMainLooper().isCurrentThread}")
             }
@@ -97,7 +133,6 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
                 hideProgressBar()
             }
         }
-        )
         /*val consumeParams =
             ConsumeParams.newBuilder()
                 .setPurchaseToken(purchase.purchaseToken)
@@ -137,20 +172,51 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupViewPager()
+        setupViewPager(ViewPagerMode.MONTHLY)
         setBillingClient()
         startConnectingToClient()
 
         binding.continueButton.setOnClickListener {
             // findNavController().navigate(R.id.action_patronPricingPlansFragment_to_fragmentPatronCategories)
 
-            selectedSku?.let {
+            selectedProduct?.let { productDetails ->
+
+                val params = BillingFlowParams.ProductDetailsParams
+                    .newBuilder()
+                    .setProductDetails(productDetails).also { builder ->
+                        var baseOfferToken: String? = null
+                        var discountToken: String? = null
+                        productDetails.subscriptionOfferDetails?.forEach { offerDetail ->
+
+                            if (BuildConfig.DEBUG) {
+                                println("Processing Offer Detail with tags ${offerDetail.offerTags}")
+                            }
+
+                            if (offerDetail.offerTags.contains("discount")) {
+                                discountToken = offerDetail.offerToken
+
+                            } else if (offerDetail.offerTags.size == 1 && offerDetail.offerTags.contains("base")) {
+                                baseOfferToken = offerDetail.offerToken
+                            }
+                        }
+
+                        val effectiveToken = discountToken ?: baseOfferToken
+                        effectiveToken?.let {
+                            builder.setOfferToken(it)
+                        }
+                        if (BuildConfig.DEBUG) {
+                            println("Set offer token: $effectiveToken. Base is $baseOfferToken, discount token is $discountToken")
+                        }
+                    }
+                    .build()
+
+
                 val flowParams = BillingFlowParams.newBuilder()
-                    .setSkuDetails(it)
+                    .setProductDetailsParamsList(mutableListOf(params))
                     .build()
 
                 if (BuildConfig.DEBUG) {
-                    Timber.d("In App Purchases Details ->  $it")
+                    Timber.d("In App Purchases Details ->  $productDetails")
                 }
                 billingClient.launchBillingFlow(requireContext() as Activity, flowParams)
             }
@@ -170,11 +236,68 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         binding.backButton.setOnClickListener {
             activity?.onBackPressed()
         }
+
+        binding.applyCodeButton.setOnClickListener {
+            if (currentPromoSubId == null ) {
+                applyCode()
+            } else {
+                resetPromoStatus()
+                adapter.refreshItems(getExtraSkuDetails())
+                setPromoUI()
+            }
+        }
+    }
+
+    private fun resetPromoStatus() {
+        currentCode = null
+        currentPromoSubId = null
+        currentPromoSkuDetails = null
+    }
+
+    private fun applyCode() {
+        val code = binding.promoCodeTextInput.text.toString()
+        currentCode = code
+
+        if (code.isNotEmpty()) {
+            model.verifyPromoCode(code).observe(viewLifecycleOwner) { res ->
+                if (res.isDiscountCodeValid) {
+                    applyDiscountedSubscription(res.priceId)
+                } else {
+                    reportCodeInvalid(code)
+                }
+            }
+        }
+    }
+
+    private fun applyDiscountedSubscription(subId: String?) {
+        if (subId == null) {
+            return
+        }
+
+        // This needs to be lowercased because the shared sub ids (also used in iOS) contain
+        // uppercase letters, e.g. OFF as in com.limor.dev.annual_plan.90OFF
+        //
+        val normalizedId = subId.lowercase()
+        currentPromoSubId = normalizedId
+
+        if (BuildConfig.DEBUG) {
+            println("Will get discounted sub $subId")
+        }
+        playBillingHandler.getSubscriptionPrice(normalizedId, this)
+    }
+
+    private fun reportCodeInvalid(code: String) {
+        LimorDialog(layoutInflater).apply {
+            setTitle(R.string.title_invalid_code)
+            setMessage(R.string.message_enter_valid_code)
+            addButton(android.R.string.ok, true)
+        }.show()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         billingClient.endConnection()
+        playBillingHandler.removeListener(this)
     }
 
     private fun startConnectingToClient() {
@@ -214,28 +337,50 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
                 println("SKU IDs from the backend -> $skuIdList")
             }
 
-            val params = SkuDetailsParams.newBuilder()
-            params.setSkusList(skuIdList)
-            params.setType(BillingClient.SkuType.SUBS)
+            val params = QueryProductDetailsParams.newBuilder()
+                .setProductList(skuIdList.map { productId ->
+                    QueryProductDetailsParams.Product.newBuilder()
+                        .setProductId(productId)
+                        .setProductType(BillingClient.ProductType.SUBS)
+                        .build()
+                })
+                .build()
 
-            billingClient.querySkuDetailsAsync(params.build()) { result, skuDetails ->
+            billingClient.queryProductDetailsAsync(params) { result, productDetails ->
                 if (BuildConfig.DEBUG) {
                     println("Billing result code -> ${result.responseCode} (${result.debugMessage}")
                 }
-                runOnUiThread {  onSkuDetails(skuDetails) }
+                runOnUiThread {  onProductDetails(productDetails) }
             }
         }
 
     }
 
-    private fun onSkuDetails(skuDetailsList: List<SkuDetails>?) {
+    private fun getExtraSkuDetails(): List<ExtraProductDetails> {
+        val details: MutableList<ExtraProductDetails> = mutableListOf<ExtraProductDetails>()
+        for (product in defaultSkuDetails) {
+            if (product.productId.contains("annual")) {
+                details.add(ExtraProductDetails(product, currentPromoSkuDetails))
+            } else {
+                details.add(ExtraProductDetails(product))
+            }
+        }
+
+        return details
+    }
+
+    private fun onProductDetails(skuDetailsList: List<ProductDetails>?) {
         if (BuildConfig.DEBUG) {
             Timber.d("Billing SKUs-> $skuDetailsList")
         }
-
+        defaultSkuDetails.clear()
+        skuDetailsList?.let {
+            defaultSkuDetails.add(it[1])
+            defaultSkuDetails.add(it[0])
+        }
         if (skuDetailsList?.isNotEmpty() == true) {
             binding.patronPlansRV.layoutManager = LinearLayoutManager(requireContext())
-            adapter = PricingPlansAdapter(skuDetailsList, this)
+            adapter = PricingPlansAdapter(getExtraSkuDetails(), this)
             binding.patronPlansRV.adapter = adapter
         } else {
             binding.continueButton.visibility = View.GONE
@@ -246,41 +391,68 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         binding.progressBar.visibility = View.GONE
     }
 
-    private fun setupViewPager() {
-        val items: ArrayList<FragmentShortItemSlider> = getAdapterItems()
+    private fun setupViewPager(mode: ViewPagerMode) {
+        val items: ArrayList<FragmentShortItemSlider> = getAdapterItems(mode)
         binding.pager.adapter = ShortPagerAdapter(items, childFragmentManager, lifecycle)
         binding.indicator.setViewPager2(binding.pager)
     }
 
-    private fun getAdapterItems(): ArrayList<FragmentShortItemSlider> {
-        val item1 = FragmentShortItemSlider.newInstance(R.string.patron_carousel_slide_1_title,
-            R.drawable.patron_carousel_slide_1_image, R.string.patron_carousel_slide_1_sub_title)
-        val item2 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,
-            R.drawable.patron_carousel_slide_2_image, R.string.patron_carousel_slide_2_sub_title)
-        val item3 = FragmentShortItemSlider.newInstance(R.string.limor_patron_request,
-            R.drawable.patron_carousel_slide_3_image, R.string.patron_carousel_slide_3_sub_title)
+    private fun getAdapterItems(mode: ViewPagerMode): ArrayList<FragmentShortItemSlider> {
+        val item1 = if(mode == ViewPagerMode.MONTHLY) {
+            FragmentShortItemSlider.newInstance(R.string.monthly_patron_carousel_slide_1_title,
+                R.drawable.patron_carousel_slide_1_image, R.string.monthly_patron_carousel_slide_1_sub_title)
+        } else{
+            FragmentShortItemSlider.newInstance(R.string.yearly_patron_carousel_slide_1_title,
+                R.drawable.patron_carousel_slide_1_image, R.string.yearly_patron_carousel_slide_1_sub_title)
+        }
+        val item2 = if(mode == ViewPagerMode.MONTHLY){
+            FragmentShortItemSlider.newInstance(R.string.monthly_patron_carousel_slide_2_title,
+                    R.drawable.patron_carousel_slide_2_image, R.string.monthly_patron_carousel_slide_2_sub_title)
+        } else{
+            FragmentShortItemSlider.newInstance(R.string.yearly_patron_carousel_slide_2_title,
+                R.drawable.patron_carousel_slide_2_image, R.string.yearly_patron_carousel_slide_2_sub_title)
+        }
+        val item3 = if(mode == ViewPagerMode.MONTHLY){
+            FragmentShortItemSlider.newInstance(R.string.monthly_patron_carousel_slide_3_title,
+                R.drawable.patron_carousel_slide_3_image, R.string.monthly_patron_carousel_slide_3_sub_title)
+        } else{
+            FragmentShortItemSlider.newInstance(R.string.yearly_patron_carousel_slide_3_title,
+                R.drawable.patron_carousel_slide_3_image, R.string.yearly_patron_carousel_slide_3_sub_title)
+        }
         return arrayListOf(item1, item2, item3)
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onUserClicked(item: SkuDetails, position: Int) {
+    override fun onUserClicked(item: ExtraProductDetails, position: Int) {
 
         //   if (item.freeTrialPeriod.isNotEmpty()) {
-        selectedSku = item
-        adapter.selectedSku = item.sku
+        selectedProduct = item.currentProductDetails
+        adapter.selectedProductId = item.currentProductDetails.productId
         adapter.notifyDataSetChanged()
-        onSelectedSkuChange(item)
+        onSelectedProductChange(item)
         //  }
 
     }
 
-    override fun onSelectedSkuChange(item: SkuDetails) {
-        selectedSku = item
+    override fun onSelectedProductChange(item: ExtraProductDetails) {
+        if(item.defaultProductDetails.productId.contains("monthly")) {
+            setupViewPager(ViewPagerMode.MONTHLY)
+            resetPromoStatus()
+            setPromoUI()
+            binding.textView6.text = getString(R.string.patron)
+            binding.promoCodeLayout.visibility = View.GONE
+            adapter.refreshItems(getExtraSkuDetails())
+        } else{
+            binding.textView6.text = getString(R.string.patron_pro)
+            setupViewPager(ViewPagerMode.YEARLY)
+            binding.promoCodeLayout.visibility = View.VISIBLE
+        }
+        selectedProduct = item.currentProductDetails
         //TODO How to check if only free trial is selectable
         //if (item.freeTrialPeriod.isNotEmpty()) {
         val termsEnd = getString(R.string.plans_terms_text)
         val termsT: Spanned = HtmlCompat.fromHtml(
-            "${getString(R.string.after_free_trial)} ${item.originalPrice}" + termsEnd,
+            "${getString(R.string.after_free_trial)} ${item.currentProductDetails.subscriptionOfferDetails.basePrice()?.formattedPrice}" + " after Introductory Period. " + termsEnd,
             HtmlCompat.FROM_HTML_MODE_LEGACY)
         binding.termsTV.text = termsT
         binding.termsTV.movementMethod = LinkMovementMethod.getInstance()
@@ -291,6 +463,31 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         binding.ukAccountText.movementMethod = LinkMovementMethod.getInstance()
         // }
 
+    }
+
+    override fun onDetailsAvailable(details: Map<String, ProductDetails>) {
+        if (null == currentPromoSubId) {
+            return
+        }
+
+        currentPromoSkuDetails = details[currentPromoSubId]
+
+        if (BuildConfig.DEBUG) {
+            println("Details: $currentPromoSkuDetails")
+        }
+
+        adapter.refreshItems(getExtraSkuDetails())
+        setPromoUI()
+    }
+
+    private fun setPromoUI() {
+        val hasApplied = currentPromoSubId != null
+        binding.applyCodeButton.text = if (hasApplied) "Remove Code" else "Apply Code"
+        binding.promoCodeTextInput.apply {
+            isEnabled = !hasApplied
+            hint = if (hasApplied) "${this.text} Applied" else getString(R.string.enter_promo_code)
+            setText(if (hasApplied) "" else binding.promoCodeTextInput.text)
+        }
     }
 
 

@@ -64,6 +64,19 @@ class CommonsKt {
 
         var user: UserUIModel? = null
 
+        fun getDownloadDirectory(context: Context): File {
+            val downloadDirectory =
+                File(context.getExternalFilesDir(null)?.absolutePath, "/limorv2/download/")
+            if (!downloadDirectory.exists()) {
+                val isDirectoryCreated = downloadDirectory.mkdirs()
+            }
+            return downloadDirectory
+        }
+
+        fun getDownloadFile(context: Context, name: String): File {
+            return File(getDownloadDirectory(context), name)
+        }
+
         fun getDateTimeFormatted(): String {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val current = LocalDateTime.now()

@@ -10,7 +10,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
-import com.android.billingclient.api.SkuDetails
+import com.android.billingclient.api.ProductDetails
 import com.limor.app.R
 import com.limor.app.databinding.ActivityChangePriceBinding
 import com.limor.app.scenes.patron.viewmodels.CastPriceViewModel
@@ -43,7 +43,7 @@ class ChangePriceActivity : AppCompatActivity() {
     private var castId: Int = 0
     private var selectedPriceId = ""
     private var priceId: String = ""
-    private val details = mutableMapOf<String, SkuDetails>()
+    private val details = mutableMapOf<String, ProductDetails>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,35 +112,35 @@ class ChangePriceActivity : AppCompatActivity() {
         editText.onItemClickListener =
             AdapterView.OnItemClickListener { parent, arg1, pos, id ->
                 binding.yesButton.isEnabled = true
-                priceId = details[list[pos]]?.sku ?: ""
+                priceId = details[list[pos]]?.productId ?: ""
             }
 
         if(position != -1){
-            binding.tvPrices.setText(details[list[position]]?.price, false)
+            binding.tvPrices.setText(details[list[position]]?.oneTimePurchaseOfferDetails!!.formattedPrice, false)
             binding.yesButton.isEnabled = true
-            priceId = details[list[position]]?.sku ?: ""
+            priceId = details[list[position]]?.productId ?: ""
         }
     }
 
     private fun subscribeViewModel() {
-        model.priceUpdated.observe(this, {
+        model.priceUpdated.observe(this) {
             if (it == true) {
                 setResult(Activity.RESULT_OK)
                 finish()
             }
-        })
+        }
         var list = ArrayList<String>()
         var selectedPos = -1
-        playBillingHandler.getPrices().observe(this, { skuList ->
-            details.putAll(skuList.map { skuDetails -> skuDetails.originalPrice to skuDetails })
-            skuList.forEachIndexed { i, skuDetails ->
-                if(skuDetails.sku == selectedPriceId) {
+        playBillingHandler.getPrices().observe(this) { productList ->
+            details.putAll(productList.map { productDetails -> productDetails.oneTimePurchaseOfferDetails!!.formattedPrice to productDetails })
+            productList.forEachIndexed { i, productDetails ->
+                if (productDetails.productId == selectedPriceId) {
                     selectedPos = i
                 }
-                list.add(skuDetails.price)
+                list.add(productDetails.oneTimePurchaseOfferDetails!!.formattedPrice)
             }
             setPrices(list, selectedPos)
-        })
+        }
     }
 
     private fun initialiseViews() {

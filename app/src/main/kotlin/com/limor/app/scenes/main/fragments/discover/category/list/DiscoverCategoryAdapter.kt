@@ -60,12 +60,16 @@ class DiscoverCategoryAdapter(
         val binding: SimpleViewGroupBinding,
         var groupAdapter: CategoriesGroupAdapter
     ) : ViewHolderBindable<List<CastUIModel>>(binding) {
+
+        private val decorator = GridCastItemDecoration()
+
         override fun bind(item: List<CastUIModel>) {
             binding.castsList.apply {
                 layoutManager = GridLayoutManager(context, SPAN_COUNT).apply {
                     spanSizeLookup = groupAdapter.spanSizeLookup
                     adapter = groupAdapter
-                    addItemDecoration(GridCastItemDecoration())
+                    removeItemDecoration(decorator)
+                    addItemDecoration(decorator)
                 }
                 groupAdapter.updateTopCasts(item)
             }

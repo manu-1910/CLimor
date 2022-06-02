@@ -29,6 +29,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
+import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.SkuDetails
 import com.limor.app.BuildConfig
 import com.limor.app.R
@@ -338,7 +339,7 @@ class UserPatronFragmentNew : Fragment() {
         binding.castsList.adapter = castsAdapter
     }
     
-    private fun onPurchaseRequested(skuDetails: SkuDetails?, cast: CastUIModel) {
+    private fun onPurchaseRequested(skuDetails: ProductDetails?, cast: CastUIModel) {
         val sku = skuDetails ?: return
         val purchaseTarget = PurchaseTarget(sku, cast)
         playBillingHandler.launchBillingFlowFor(purchaseTarget, requireActivity()) { success ->
@@ -350,7 +351,7 @@ class UserPatronFragmentNew : Fragment() {
         }
     }
 
-    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?) {
+    private fun onCommentClick(cast: CastUIModel, sku: ProductDetails?) {
         if (cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(
                 requireContext())
         ) {
@@ -370,7 +371,7 @@ class UserPatronFragmentNew : Fragment() {
         }
     }
 
-    private fun onCastClick(cast: CastUIModel, sku: SkuDetails?) {
+    private fun onCastClick(cast: CastUIModel, sku: ProductDetails?) {
         Timber.d("Clicked ${activity}")
         if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
             LimorDialog(layoutInflater).apply {
@@ -387,7 +388,7 @@ class UserPatronFragmentNew : Fragment() {
         }
     }
 
-    private fun launchPurchaseCast(cast: CastUIModel, skuDetails: SkuDetails?) {
+    private fun launchPurchaseCast(cast: CastUIModel, skuDetails: ProductDetails?) {
         val sku = skuDetails ?: return
         val purchaseTarget = PurchaseTarget(sku, cast)
         playBillingHandler.launchBillingFlowFor(purchaseTarget, requireActivity()) { success ->

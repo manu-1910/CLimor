@@ -1,12 +1,11 @@
 package com.limor.app.scenes.main.fragments.profile.casts
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.view.View
 import androidx.core.content.ContextCompat
-import com.android.billingclient.api.SkuDetails
+import com.android.billingclient.api.ProductDetails
 import com.limor.app.R
 import com.limor.app.databinding.ItemUserCastBinding
 import com.limor.app.dm.ShareResult
@@ -17,32 +16,30 @@ import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.adapters.vh.ViewHolderBindable
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.service.DetailsAvailableListener
-import com.limor.app.service.ProductDetails
+import com.limor.app.service.ProductDetailsFetcher
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.TagUIModel
-import com.xwray.groupie.Item
-import com.xwray.groupie.viewbinding.BindableItem
 import timber.log.Timber
 
 class CastItem(
     val userId: Int,
     val binding: ItemUserCastBinding,
-    private val onCastClick: (CastUIModel, SkuDetails?) -> Unit,
+    private val onCastClick: (CastUIModel, ProductDetails?) -> Unit,
     private val onLikeClick: (CastUIModel, like: Boolean) -> Unit,
     private val onMoreDialogClick: (CastUIModel) -> Unit,
     private val onRecastClick: (CastUIModel, isRecasted: Boolean) -> Unit,
-    private val onCommentsClick: (CastUIModel, SkuDetails?) -> Unit,
+    private val onCommentsClick: (CastUIModel, ProductDetails?) -> Unit,
     private val onShareClick: (CastUIModel, onShared: ((shareResult: ShareResult) -> Unit)?) -> Unit,
     private val onHashTagClick: (hashTag: TagUIModel) -> Unit,
     private val isPurchased: Boolean = false,
-    private val onPurchaseCast: (cast: CastUIModel, sku: SkuDetails?) -> Unit,
+    private val onPurchaseCast: (cast: CastUIModel, product: ProductDetails?) -> Unit,
     private val onEditPreviewClick: (cast: CastUIModel) -> Unit,
     private val onPlayPreviewClick: (cast: CastUIModel, play: Boolean) -> Unit,
     private val onEditPriceClick: (cast: CastUIModel) -> Unit,
-    private val productDetailsFetcher: ProductDetails? = null,
+    private val productDetailsFetcher: ProductDetailsFetcher? = null,
 ) : ViewHolderBindable<CastUIModel>(binding), DetailsAvailableListener {
 
-    private var skuDetails: SkuDetails? = null
+    private var productDetails: ProductDetails? = null
     private lateinit var cast: CastUIModel
     private var playingPreview = false
 
@@ -108,15 +105,15 @@ class CastItem(
             btnPodcastReply.shared = cast.isShared == true
 
             clItemPodcastFeed.setOnClickListener {
-                onCastClick(cast, skuDetails)
+                onCastClick(cast, productDetails)
             }
 
             btnPodcastComments.throttledClick {
-                onCommentsClick(cast, skuDetails)
+                onCommentsClick(cast, productDetails)
             }
 
             tvPodcastComments.throttledClick {
-                onCommentsClick(cast, skuDetails)
+                onCommentsClick(cast, productDetails)
             }
 
             binding.btnAddPreview.setOnClickListener {
@@ -266,7 +263,7 @@ class CastItem(
             binding.patronCastIndicator.visibility = View.VISIBLE
 
             binding.btnBuyCast.setOnClickListener {
-                skuDetails?.let {
+                productDetails?.let {
                     onPurchaseCast(item, it)
                 }
             }
@@ -318,19 +315,19 @@ class CastItem(
     @SuppressLint("SetTextI18n")
     private fun setPricingLabel() {
         val priceId = cast.patronDetails?.priceId ?: return
-        val details = skuDetails
-        if (details == null || details.sku != priceId) {
+        val details = productDetails
+        if (details == null || details.productId != priceId) {
             productDetailsFetcher?.getPrice(priceId, this)
             return
         }
-        binding.btnBuyCast.text = "${context.getString(R.string.buy_cast)}\n${details.price}"
-        binding.btnEditPrice.text = "${context.getString(R.string.edit_price)}\n${details.price}"
+        binding.btnBuyCast.text = "${context.getString(R.string.buy_cast)}\n${details.oneTimePurchaseOfferDetails?.formattedPrice}"
+        binding.btnEditPrice.text = "${context.getString(R.string.edit_price)}\n${details.oneTimePurchaseOfferDetails?.formattedPrice}"
     }
 
-    override fun onDetailsAvailable(details: Map<String, SkuDetails>) {
+    override fun onDetailsAvailable(details: Map<String, ProductDetails>) {
         val priceId = cast.patronDetails?.priceId ?: return
         if (details.containsKey(priceId)) {
-            skuDetails = details[priceId]
+            productDetails = details[priceId]
             setPricingLabel()
         }
     }

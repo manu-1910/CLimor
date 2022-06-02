@@ -2,6 +2,7 @@ package com.limor.app.util
 
 import android.content.Context
 import android.content.Intent
+import com.limor.app.BuildConfig
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.MainActivityNew
@@ -15,6 +16,11 @@ object AppNavigationManager {
         val userProfileIntent = Intent(context, UserProfileActivity::class.java)
         userProfileIntent.putExtra(UserProfileFragment.USER_NAME_KEY,data.getString("initiatorUsername"))
         userProfileIntent.putExtra(UserProfileFragment.USER_ID_KEY,data.getString("initiatorId"))
+
+        if (BuildConfig.DEBUG) {
+            println("Notification data: $data")
+        }
+
         if (data.has("notificationType") && data.getString("notificationType") == "patronRequest") {
             userProfileIntent.putExtra(UserProfileFragment.TAB_POS, 1)
         } else {

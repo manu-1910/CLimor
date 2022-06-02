@@ -689,7 +689,7 @@
     <string name="requested">Requested</string>
     <string name="dummy_plan_text">Choose the best plan that works for you</string>
     <string name="limor_patron_empty_state">Record your first Limor Patron cast and start earning money from your voice</string>
-    <string name="plans_terms_text"><![CDATA[ <html>. <br>Please visit our <a href="https://www.limor.ie/terms-and-conditions"> <font color="black"><strong>Terms and Conditions</strong></font> </a> </html]]></string>
+    <string name="plans_terms_text"><![CDATA[ <html>Please visit our <a href="https://www.limor.ie/terms-and-conditions"> <font color="black"><strong>Terms and Conditions</strong></font> </a> </html]]></string>
     <string name="limor_patron_complete">Your Limor Patron onboarding is complete</string>
     <string name="limor_patron_manage_description">In order to begin receiving payment via your Limor Patron account please set up your digital wallet</string>
     <string name="limor_patron_manage">Manage Limor Patron</string>
@@ -759,7 +759,7 @@
     <string name="patron_carousel_slide_1_title">Share exclusive audio and spark dedicated <font fgcolor='#F9BB4B'>Social Audio</font> Conversations</string>
     <string name="patron_carousel_slide_2_title">Create premium <font fgcolor='#F9BB4B'>casts</font> for your community</string>
     <string name="patron_carousel_slide_3_title">Freedom to <font fgcolor='#F9BB4B'>monetize</font> your content</string>
-    <string name="patron_carousel_slide_approved_title">Congratulations! Your request has been approved.</string>
+    <string name="patron_carousel_slide_approved_title">Congratulations! You have been granted the Limor Patron access.</string>
     <string name="patron_complete_on_boarding_title">Complete your Patron Onboarding</string>
     <string name="patron_membership_purchased">You have purchased your patron membership</string>
     <string name="requesting">Requesting...</string>
@@ -773,7 +773,7 @@
     <string name="spot_secured_title">Spot Secured</string>
     <string name="sport_secured_description">You have secured your spot. You\'re going to have your digital wallet soon</string>
 
-    <string name="after_free_trial">After free trial ends it will cost</string>
+    <string name="after_free_trial">You will be charged</string>
     <string name="no_plans_found_message">No Plans Found</string>
     <string name="cancelled">Cancelled</string>
     <string name="patron_invite_not_required">Patron Invitation wasn\'t requested</string>
@@ -1032,8 +1032,10 @@
     <string name="newest_to_oldest">Newest to Oldest</string>
     <string name="oldest_to_newest">Oldest to Newest</string>
 
-    <string name="sub_tier_monthly">3 Months Free trial + 1 Month at</string>
-    <string name="sub_tier_yearly">3 Months Free trial + 1 Year at</string>
+    <string name="sub_tier_monthly">Patron - Introductory Monthly Subscription.</string>
+    <string name="sub_tier_yearly">Patron Pro - Introductory Annual Membership.</string>
+    <string name="monthly_subs_striked_description"><strike>Regular Monthly Subscription Price: %s</strike></string>
+    <string name="yearly_subs_striked_description"><strike>Regular Yearly Subscription Price: %s</strike></string>
     <string name="updated_app_toast">New Version Has been Installed</string>
 
     <string name="special_characters_not_allowed">Special characters are not allowed</string>
@@ -1041,5 +1043,29 @@
 
     <string name="categories_hint_description">Please select the categories that best describes the topic of your cast.</string>
     <string name="languages_hint">Please select the language of your cast</string>
+
+    <string name="enter_promo_code">Enter Promo Code here</string>
+    <string name="title_invalid_code">Invalid Code</string>
+    <string name="message_enter_valid_code">Please enter a valid code.</string>
+    <string name="cancel_subscription_text">You can cancel the subscription anytime</string>
+
+    <string name="yearly_patron_carousel_slide_1_sub_title">Monetize casts, access to webapp and share clickable links.</string>
+    <string name="yearly_patron_carousel_slide_2_sub_title">Exclusive access to online events, live events, networking events and upskilling.</string>
+    <string name="yearly_patron_carousel_slide_3_sub_title">Access to monthly Limor analytics reports</string>
+
+    <string name="yearly_patron_carousel_slide_1_title">Access to all <font fgcolor='#F9BB4B'>core features</font></string>
+    <string name="yearly_patron_carousel_slide_2_title">Patron Pro <font fgcolor='#F9BB4B'>Membership</font></string>
+    <string name="yearly_patron_carousel_slide_3_title">Social <font fgcolor='#F9BB4B'>audio analytics</font></string>
+
+    <string name="monthly_patron_carousel_slide_1_sub_title">Sell your social audio and podcast content.</string>
+    <string name="monthly_patron_carousel_slide_2_sub_title">1. Publish pre-recorded audio.\n2. Schedule publishing time for your audio</string>
+    <string name="monthly_patron_carousel_slide_3_sub_title">Sharing clickable links in comments and cast captions is exclusive to patron users.</string>
+
+    <string name="monthly_patron_carousel_slide_1_title">Freedom to monetize your content</string>
+    <string name="monthly_patron_carousel_slide_2_title">Access to Limor Webapp</string>
+    <string name="monthly_patron_carousel_slide_3_title">Share clickable links</string>
+    <string name="patron">Patron</string>
+    <string name="patron_pro">Patron Pro</string>
+    <string name="converting_audio">Converting audio...</string>
 
 </resources>

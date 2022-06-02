@@ -440,16 +440,26 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     private fun checkUserIdFromOneSignalNotification(){
         val userId = PrefsHandler.getUserIdFromOneSignalNotification(this)
         val userName = PrefsHandler.getUserNameFromOneSignalNotification(this) ?: ""
+        val tabId = PrefsHandler.getUserTabIdFromOneSignalNotification(this)
         if(userId != 0){
-            UserProfileActivity.show(this, userName, userId,0)
+            UserProfileActivity.show(this, userName, userId,tabId)
             PrefsHandler.saveUserIdFromOneSignalNotification(this, 0)
             PrefsHandler.saveUserNameFromOneSignalNotification(this, "")
+            PrefsHandler.saveUserTabIdFromOneSignalNotification(this, 0)
         } else{
             OneSignal.setNotificationOpenedHandler { result ->
                 val id: Int? = result.notification.additionalData.getString("targetId").toInt()
+                var tab = 0
+                if (result.notification.additionalData.has("notificationType") && result.notification.additionalData.getString(
+                        "notificationType"
+                    ) == "patronRequest"
+                ) {
+                    tab = 1
+                }
                 if(result.notification.additionalData.getString("targetType").equals("user")){
                     id?.let {
-                        UserProfileActivity.show(this,result.notification.additionalData.getString("initiatorUsername"),it,0)
+
+                        UserProfileActivity.show(this,result.notification.additionalData.getString("initiatorUsername"),it,tab)
                     }
                 } else{
                     id?.let {

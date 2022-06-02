@@ -301,6 +301,9 @@ class WavHelper {
 
         fun convertToWavFile(context: Context, fileToConvert : String, fileToOutput: String)  {
             val commandToExecute3 = "-i $fileToConvert $fileToOutput"
+            if (com.limor.app.BuildConfig.DEBUG) {
+                println("FFMPEG Version: ${FFmpeg.getFFmpegVersion()} at version ${FFmpeg.getVersion()}")
+            }
             FFmpeg.execute(commandToExecute3)
         }
 

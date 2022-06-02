@@ -6,6 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.Purchase
+import com.limor.app.BuildConfig
+import com.limor.app.CreatePodcastMutation
+import com.limor.app.UpdatePodcastMutation
 import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.apollo.PublishRepository
 import com.limor.app.common.SingleLiveEvent
@@ -93,7 +96,7 @@ class PublishViewModel @Inject constructor(
         super.onCleared()
     }
 
-    suspend fun createPodcast(podcast: CreatePodcastInput): String? {
+    suspend fun createPodcast(podcast: CreatePodcastInput): CreatePodcastMutation.CreatePodcast? {
 
         return withContext(Dispatchers.IO) {
             try {
@@ -109,7 +112,7 @@ class PublishViewModel @Inject constructor(
         }
     }
 
-    suspend fun updatePodcast(podcastId: Int, title: String, caption: String, matureContent: Boolean): String? {
+    suspend fun updatePodcast(podcastId: Int, title: String, caption: String, matureContent: Boolean): UpdatePodcastMutation.UpdatePodcast? {
         return withContext(Dispatchers.IO) {
             try {
                 val response = publishRepository.updatePodcast(podcastId, title, caption, matureContent)
@@ -121,10 +124,13 @@ class PublishViewModel @Inject constructor(
     }
 
 
-    fun consumePurchasedSub(purchase: Purchase): LiveData<String?> {
+    fun consumePurchasedSub(purchase: Purchase, code: String?): LiveData<String?> {
         val liveData = MutableLiveData<String?>()
+        if (BuildConfig.DEBUG) {
+            println("Will consume sub -> $purchase with code of $code")
+        }
         viewModelScope.launch(Dispatchers.IO) {
-            val status = publishRepository.updateSubscriptionDetails(purchase)
+            val status = publishRepository.updateSubscriptionDetails(purchase, code)
             liveData.postValue(status)
         }
         return liveData
@@ -175,6 +181,14 @@ class PublishViewModel @Inject constructor(
         val liveData = MutableLiveData<UserUIModel?>()
         viewModelScope.launch {
             liveData.postValue(generalInfoRepository.getUserProfile())
+        }
+        return liveData
+    }
+
+    fun verifyPromoCode(code: String): LiveData<VerifyPromoCodeResult> {
+        val liveData = MutableLiveData<VerifyPromoCodeResult>()
+        viewModelScope.launch {
+            liveData.postValue(publishRepository.verifyPromoCode(code))
         }
         return liveData
     }

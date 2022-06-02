@@ -1,5 +1,5 @@
 mutation CreatePodcastMutation($podcast: createPodcastInput!) {
     createPodcast(podcast: $podcast){
-        message, status
+        message, status, podcastId
     }
 }

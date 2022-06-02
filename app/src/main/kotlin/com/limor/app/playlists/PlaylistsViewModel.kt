@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.limor.app.BuildConfig
 import com.limor.app.apollo.CastsRepository
 import com.limor.app.playlists.models.*
 import com.limor.app.playlists.models.AddCastToPlaylistResponse
@@ -22,6 +23,9 @@ class PlaylistsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val playlists = castsRepository.getPlaylists()?.map { it?.mapToUIModel() }
+                if (BuildConfig.DEBUG) {
+                    println("Got playlists: $playlists")
+                }
                 liveData.postValue(playlists)
             } catch (throwable: Throwable) {
                 liveData.postValue(listOf())

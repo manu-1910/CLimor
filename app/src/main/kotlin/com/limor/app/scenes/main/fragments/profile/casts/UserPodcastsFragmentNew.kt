@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.SkuDetails
 import com.limor.app.R
 import com.limor.app.databinding.FragmentUserCastsBinding
@@ -171,7 +172,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         }
     }
 
-    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?) {
+    private fun onCommentClick(cast: CastUIModel, sku: ProductDetails?) {
         if (cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(
                 requireContext()
             )
@@ -192,7 +193,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         }
     }
 
-    private fun launchPurchaseCast(cast: CastUIModel, skuDetails: SkuDetails?) {
+    private fun launchPurchaseCast(cast: CastUIModel, skuDetails: ProductDetails?) {
         val sku = skuDetails ?: return
         val purchaseTarget = PurchaseTarget(sku, cast)
         playBillingHandler.launchBillingFlowFor(purchaseTarget, requireActivity()) { success ->
@@ -234,7 +235,7 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         }
     }
 
-    private fun onCastClick(cast: CastUIModel, sku: SkuDetails?) {
+    private fun onCastClick(cast: CastUIModel, sku: ProductDetails?) {
         Timber.d("Clicked ${activity}")
         (activity as? PlayerViewManager)?.showExtendedPlayer(cast.id)
     }

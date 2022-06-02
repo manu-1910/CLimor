@@ -3,8 +3,6 @@ package com.limor.app.scenes.main_new.fragments
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,9 +13,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.billingclient.api.SkuDetails
+import com.android.billingclient.api.ProductDetails
 import com.google.firebase.auth.FirebaseAuth
 import com.limor.app.BuildConfig
 import com.limor.app.R
@@ -49,14 +46,11 @@ import com.limor.app.util.SoundType
 import com.limor.app.util.Sounds
 import kotlinx.android.synthetic.main.fragment_home_new.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 
 class FragmentHomeNew : BaseFragment() {
 
@@ -102,9 +96,9 @@ class FragmentHomeNew : BaseFragment() {
         setOnClicks()
     }
 
-    private fun launchPurchaseCast(cast: CastUIModel, skuDetails: SkuDetails?) {
-        val sku = skuDetails ?: return
-        val purchaseTarget = PurchaseTarget(sku, cast)
+    private fun launchPurchaseCast(cast: CastUIModel, productDetails: ProductDetails?) {
+        val product = productDetails ?: return
+        val purchaseTarget = PurchaseTarget(product, cast)
         playBillingHandler.launchBillingFlowFor(purchaseTarget, requireActivity()) { success ->
             if (success) {
                 lifecycleScope.launch {
@@ -275,7 +269,7 @@ class FragmentHomeNew : BaseFragment() {
             }
         }
 
-    private fun onCastClick(cast: CastUIModel, sku: SkuDetails?) {
+    private fun onCastClick(cast: CastUIModel, sku: ProductDetails?) {
         if (cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(
                 requireContext()
             )
@@ -305,7 +299,7 @@ class FragmentHomeNew : BaseFragment() {
         }
     }
 
-    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?) {
+    private fun onCommentClick(cast: CastUIModel, sku: ProductDetails?) {
         if (BuildConfig.DEBUG) {
             println(
                 "Cast owner is ${cast.owner?.id}, current user is ${
@@ -464,6 +458,6 @@ class FragmentHomeNew : BaseFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        playBillingHandler.close()
+        // playBillingHandler.close()
     }
 }

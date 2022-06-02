@@ -15,10 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewbinding.ViewBinding
-import com.android.billingclient.api.ConsumeParams
-import com.android.billingclient.api.SkuDetails
+import com.android.billingclient.api.ProductDetails
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.limor.app.BuildConfig
@@ -28,7 +25,6 @@ import com.limor.app.databinding.FragmentPurchasesBinding
 import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.requireTag
 import com.limor.app.scenes.auth_new.util.PrefsHandler
-import com.limor.app.scenes.main.fragments.profile.casts.CastItem
 import com.limor.app.scenes.main.fragments.profile.casts.LoadMoreItem
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
@@ -36,8 +32,6 @@ import com.limor.app.scenes.main.viewmodels.SharePodcastViewModel
 import com.limor.app.scenes.main_new.adapters.CastsAdapter
 import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
-import com.limor.app.scenes.main_new.view.editpreview.EditPreviewDialog
-import com.limor.app.scenes.patron.manage.fragment.ChangePriceActivity
 import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.PlayerViewManager
 import com.limor.app.scenes.utils.showExtendedPlayer
@@ -48,8 +42,6 @@ import com.limor.app.uimodels.UserUIModel
 import com.limor.app.uimodels.mapToAudioTrack
 import com.limor.app.util.SoundType
 import com.limor.app.util.Sounds
-import com.xwray.groupie.GroupieAdapter
-import com.xwray.groupie.viewbinding.BindableItem
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -245,7 +237,7 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
         )
     }
 
-    private fun onCommentClick(cast: CastUIModel, sku: SkuDetails?){
+    private fun onCommentClick(cast: CastUIModel, product: ProductDetails?){
         if(cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(requireContext())) {
             LimorDialog(layoutInflater).apply {
                 setTitle(R.string.purchase_cast_title)
@@ -253,7 +245,7 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
                 setIcon(R.drawable.ic_comment_purchase)
                 addButton(R.string.cancel, false)
                 addButton(R.string.buy_now, true) {
-                    launchPurchaseCast(cast, sku)
+                    launchPurchaseCast(cast, product)
                 }
             }.show()
         } else{
@@ -263,7 +255,7 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
         }
     }
 
-    private fun launchPurchaseCast(cast: CastUIModel, skuDetails: SkuDetails?) {
+    private fun launchPurchaseCast(cast: CastUIModel, skuDetails: ProductDetails?) {
         val sku = skuDetails ?: return
         val purchaseTarget = PurchaseTarget(sku, cast)
         playBillingHandler.launchBillingFlowFor(purchaseTarget, requireActivity()) { success ->
@@ -275,7 +267,7 @@ class FragmentPurchases(var user: UserUIModel) : Fragment() {
         }
     }
 
-    private fun onCastClick(cast: CastUIModel, skuDetails: SkuDetails?) {
+    private fun onCastClick(cast: CastUIModel, skuDetails: ProductDetails?) {
         Timber.d("Clicked ${activity}")
         (activity as? PlayerViewManager)?.showExtendedPlayer(cast.id)
     }

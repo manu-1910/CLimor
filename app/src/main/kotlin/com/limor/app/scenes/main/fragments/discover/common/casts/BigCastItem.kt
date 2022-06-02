@@ -57,6 +57,8 @@ class BigCastItem(
                 Glide.with(root)
                     .load(cast.imageLinks.original)
                     .into(castImage)
+            } else if (cast.colorCode.isNullOrEmpty()) {
+                castImage.setBackgroundColor(Color.WHITE)
             } else {
                 castImage.setBackgroundColor(Color.parseColor(cast.colorCode))
             }

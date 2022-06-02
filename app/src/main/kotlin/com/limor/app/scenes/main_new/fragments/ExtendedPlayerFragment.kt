@@ -16,7 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.google.firebase.dynamiclinks.ktx.*
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.FragmentExtendedPlayerBinding
 import com.limor.app.dm.ui.ShareDialog
@@ -259,6 +259,9 @@ class ExtendedPlayerFragment : UserMentionFragment(),
             restarted = requireArguments().getBoolean(RESTARTED, false)
 
             val audioTrack = cast.audio!!.mapToAudioTrack()
+            if (BuildConfig.DEBUG) {
+                println("Audio Track URL: ${audioTrack.url}")
+            }
             if (autoPlay && playerBinder.audioTrackIsNotPlaying(audioTrack)) {
                 playerBinder.playPause(audioTrack, true)
             }

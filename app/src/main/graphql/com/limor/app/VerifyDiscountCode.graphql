@@ -1,0 +1,6 @@
+query VerifyDiscountCode($discountCode: String!) {
+    verifyDiscountCode(discountCode : $discountCode){
+        isDiscountCodeValid
+        priceId
+    }
+}

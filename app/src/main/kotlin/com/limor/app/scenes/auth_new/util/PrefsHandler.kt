@@ -32,6 +32,7 @@ object PrefsHandler {
     private const val KEY_ENABLE_SOUNDS = "key_enable_sounds"
     private const val KEY_USER_ID = "one_signal_notification_user_id"
     private const val KEY_USER_NAME = "one_signal_notification_user_name"
+    private const val KEY_TAB_ID = "one_signal_notification_tab_id"
     private const val KEY_JUST_LOGGED_IN = "just_logged_in"
     private const val KEY_CAN_SHOW_CATEGORY_SELECTION = "can_show_category_selection"
 
@@ -208,6 +209,15 @@ object PrefsHandler {
             putString(KEY_USER_NAME, name)
         }
     }
+
+    fun saveUserTabIdFromOneSignalNotification(context: Context, tabId: Int){
+        sharedPreferences(context).edit(true) {
+            putInt(KEY_TAB_ID, tabId)
+        }
+    }
+
+    fun getUserTabIdFromOneSignalNotification(context: Context) =
+        sharedPreferences(context).getInt(KEY_TAB_ID, 0)
 
     fun getUserNameFromOneSignalNotification(context: Context) =
         sharedPreferences(context).getString(KEY_USER_NAME, "")

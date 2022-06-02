@@ -96,16 +96,21 @@ class InviteLimorUsersAdapter(
                 inviteButton.setOnClickListener {
                     val count = CommonsKt.user?.availableInvitations ?: 0
                     if (count > 0) {
-                        userUIModel.patronStatus = "ALREADY_INVITED"
+                        userUIModel.patronStatus = /*"ALREADY_INVITED"*/"JOINED"
                         adapter.updateItemAt(position, userUIModel)
                         CommonsKt.user?.availableInvitations = if(count-1 < 0) 0 else count-1
                         onSelected(userUIModel)
                     } else {
                         inviteButton.snackbar("No More invites left!")
                     }
-
                 }
-
+                if((CommonsKt.user?.availableInvitations ?: 0) == 0){
+                    inviteButton.isEnabled = false
+                    inviteButton.backgroundColor = ContextCompat.getColor(
+                        accountName.context,
+                        R.color.main_button_background_follow
+                    )
+                }
         }
 
         fun alreadyInvited() {
@@ -131,6 +136,13 @@ class InviteLimorUsersAdapter(
             inviteButton.setOnClickListener {
                 onSelected(userUIModel)
                 inviteButton.snackbar("Reminder sent")
+            }
+            if((CommonsKt.user?.availableInvitations ?: 0) == 0){
+                inviteButton.isEnabled = false
+                inviteButton.backgroundColor = ContextCompat.getColor(
+                    accountName.context,
+                    R.color.main_button_background_follow
+                )
             }
         }
 

@@ -1,7 +1,6 @@
 package com.limor.app.scenes.main_new.view.editpreview
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,20 +10,29 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
+import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.waveform.MarkerSet
 import com.limor.app.scenes.utils.waveform.WaveformFragment
+import com.limor.app.scenes.utils.waveform.soundfile.SoundFile
 import com.limor.app.uimodels.CastUIModel
+import com.tonyodev.fetch2.*
+import com.tonyodev.fetch2core.DownloadBlock
 import kotlinx.android.synthetic.main.fragment_waveform.*
 import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.doAsync
-import java.io.File
-import java.io.FileOutputStream
+import java.io.*
 import java.net.URL
 import javax.inject.Inject
+
 
 class EditPreviewFragment : WaveformFragment() {
 
@@ -38,12 +46,17 @@ class EditPreviewFragment : WaveformFragment() {
     private var processingProgressBar: ProgressBar? = null
 
     private var marker: MarkerSet? = null
+    private var processingStartTime = 0L
 
     private val cast: CastUIModel by lazy {
         requireArguments().getParcelable(KEY_PODCAST)!!
     }
 
     private val audioFileName: String by lazy {
+        getAudioFileName("wav")
+    }
+
+    private fun getAudioFileName(extension: String? = null): String {
         val castURL = cast.audio?.url ?: ""
         val downloadDirectory =
             File(requireContext().getExternalFilesDir(null)?.absolutePath, "/limorv2/download/")
@@ -51,11 +64,20 @@ class EditPreviewFragment : WaveformFragment() {
             val isDirectoryCreated = downloadDirectory.mkdirs()
         }
         val fileName = castURL.substring(castURL.lastIndexOf("/") + 1)
-        downloadDirectory.absolutePath + "/" + fileName + ".wav"
+        val targetName = downloadDirectory.absolutePath + "/" + fileName
+        if (extension.isNullOrEmpty()) {
+            return targetName
+        } else {
+            return "$targetName.$extension"
+        }
     }
 
     override fun getFileName(): String {
-        return audioFileName
+        val fileName = getAudioFileName("wav")
+        if (BuildConfig.DEBUG) {
+            println("EditPreviewFragment will use $fileName")
+        }
+        return fileName
     }
 
     override fun populateMarkers() {
@@ -155,35 +177,242 @@ class EditPreviewFragment : WaveformFragment() {
 
     override fun onProcessingProgress(progress: Float) {
         val pb = processingProgressBar ?: return
-        pb.progress = (progress * pb.max).toInt()
-        if (progress >= 1) {
-            progressWrapper?.visibility = View.GONE
-            nextButtonEdit.isEnabled = true
+
+        pb.post {
+            pb.progress = (progress * pb.max).toInt()
+            if (progress >= 1) {
+                progressWrapper?.visibility = View.GONE
+                nextButtonEdit.isEnabled = true
+
+                if (BuildConfig.DEBUG) {
+                    val end = System.currentTimeMillis()
+                    println("EditPreviewFragment: Processing took ${end - processingStartTime}")
+                }
+
+            }
         }
+
     }
 
     override fun getLayoutId(): Int {
         return R.layout.fragment_waveform_condensed
     }
 
+    private fun downloadSamples() {
+        val context = context ?: return
+        val storageRef = Firebase.storage.reference
+        val samplesFileName = "${cast.id}.samples"
+        val samplesRef = storageRef.child("samples/$samplesFileName")
+        val localFile = CommonsKt.getDownloadFile(context, samplesFileName)
+
+        val start = System.currentTimeMillis()
+        samplesRef.getFile(localFile).addOnSuccessListener {
+            if (BuildConfig.DEBUG) {
+                println("EditPreviewFragment: Downloaded samples file in ${System.currentTimeMillis() - start} ms. Has error -> ${it.error}")
+            }
+            if (setSamplesFile(localFile)) {
+                fileName = getAudioFileName("")
+                onDownloadComplete()
+            } else {
+                convertAudio()
+            }
+
+        }.addOnFailureListener {
+            convertAudio()
+        }
+
+    }
+
+    private fun setSamplesFile(localFile: File): Boolean {
+        if (!localFile.exists()) {
+            if (BuildConfig.DEBUG) {
+                println("Samples file does not exist. Probably none uploaded to Firebase.")
+            }
+            return false
+        }
+        val start = System.currentTimeMillis()
+        try {
+            val fi = FileInputStream(localFile)
+            val oi = ObjectInputStream(fi)
+
+            val lean: SoundFile.Lean = oi.readObject() as SoundFile.Lean
+            leanSoundFile = lean
+
+            if (BuildConfig.DEBUG) {
+                println("EditPreviewFragment: Created Lean file: $leanSoundFile in ${System.currentTimeMillis() - start} ms.")
+            }
+
+            oi.close()
+            fi.close()
+
+            return true
+
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+            if (BuildConfig.DEBUG) {
+                println("EditPreviewFragment: Could not create local file.")
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            if (BuildConfig.DEBUG) {
+                println("EditPreviewFragment: IO error")
+            }
+        } catch (e: ClassNotFoundException) {
+            e.printStackTrace()
+            if (BuildConfig.DEBUG) {
+                println("EditPreviewFragment: Could not find clas.")
+            }
+        }
+
+        return false
+    }
+
     private fun downloadCast() {
+        val context = context ?: return
         val testURL = "https://limor-platform-development.s3-eu-west-1.amazonaws.com/podcast_audio_direct_upload/audioFile_163661872969286112_1636618729691.x-m4a"
+        val testURL2 = "https://limor-platform-production.s3.eu-west-1.amazonaws.com/podcast_audio_direct_upload%2Fc8aef6e8-eb77-4d38-accf-ac2e3c173f39.m4a"
+        val testURL3 = "https://limor-platform-development.s3.amazonaws.com/podcast_audio_direct_upload/_audioFile_4967_1653287354.083281.m4a"
         val castURL = cast.audio?.url ?: return
-        val original = "$audioFileName.original"
+        val downloadURL = castURL
+        val original = getAudioFileName()
         val file = File(original)
 
+        try {
+            file.delete()
+        } catch (t: Throwable) {
+            t.printStackTrace()
+        }
+
+        try {
+            File(getAudioFileName("wav"))
+        } catch (t: Throwable) {
+            t.printStackTrace()
+        }
+
+        var start = System.currentTimeMillis()
+
+        val fetchConfiguration = FetchConfiguration.Builder(requireContext())
+            .setDownloadConcurrentLimit(5)
+            .enableLogging(true)
+            .build()
+
+        val  fetch = Fetch.Impl.getInstance(fetchConfiguration);
+
+        val request = Request(downloadURL, original).also {
+
+        }
+
+
+        val fetchListener: FetchListener = object : FetchListener {
+            override fun onQueued(download: Download, waitingOnNetwork: Boolean) {
+
+            }
+
+            override fun onCompleted(download: Download) {
+                if (BuildConfig.DEBUG) {
+                    println("EditPreviewFragment: Downloading took ${System.currentTimeMillis() - start} ms, downloaded to: $file")
+                }
+                fetch.remove(request.id)
+                fetch.removeListener(this)
+
+                onDownloadedCastAudio()
+            }
+
+            override fun onError(download: Download, error: Error, throwable: Throwable?) {
+
+            }
+
+//            override fun onError(download: Download) {
+//                val error: java.lang.Error = download.getError()
+//            }
+
+            override fun onProgress(
+                download: Download,
+                etaInMilliSeconds: Long,
+                downloadedBytesPerSecond: Long
+            ) {
+                if (BuildConfig.DEBUG) {
+
+                    println("EditPreviewFragment: Progress -> ${download.progress}, eta: ${etaInMilliSeconds}")
+                }
+            }
+
+            override fun onPaused(download: Download) {}
+            override fun onResumed(download: Download) {}
+            override fun onStarted(
+                download: Download,
+                downloadBlocks: List<DownloadBlock>,
+                totalBlocks: Int
+            ) {
+                if (BuildConfig.DEBUG) {
+
+                    println("EditPreviewFragment: Started -> ${download.progress}")
+                }
+            }
+
+            override fun onWaitingNetwork(download: Download) {
+
+            }
+
+            override fun onAdded(download: Download) {
+
+            }
+
+            override fun onCancelled(download: Download) {}
+            override fun onRemoved(download: Download) {}
+            override fun onDeleted(download: Download) {}
+            override fun onDownloadBlockUpdated(
+                download: Download,
+                downloadBlock: DownloadBlock,
+                totalBlocks: Int
+            ) {
+
+            }
+        }
+
+        fetch.addListener(fetchListener)
+
+        fetch.enqueue(request,
+            { updatedRequest: Request? ->
+                println("EditPreviewFragment: Update request -> ${updatedRequest?.url} -> ${updatedRequest?.file}")
+            }
+        ) { error: Error? ->
+            println("EditPreviewFragment: Error $error")
+        }
+
+        if (true) {
+            return
+        }
+
+        val bufferSize = 1024 * 1024 * 32
         doAsync {
             try {
-                URL(castURL).openStream().use { input ->
-                    FileOutputStream(file).use { output ->
-                        input.copyTo(output)
-                        WavHelper.convertToWavFile(requireContext(), original, audioFileName)
-                        lifecycleScope.launch { onDownloadComplete() }
+                URL(downloadURL).openStream().use { input ->
+                    BufferedInputStream(input).use { bis ->
+                        FileOutputStream(file).use { output ->
+
+                            val data = ByteArray(bufferSize)
+                            var count: Int
+                            while (bis.read(data, 0, bufferSize).also { count = it } != -1) {
+                                output.write(data, 0, count)
+                            }
+                            // input.copyTo(output)
+
+
+                            if (BuildConfig.DEBUG) {
+                                println("EditPreviewFragment: Downloading took ${System.currentTimeMillis() - start} ms, downloaded to: $file")
+                            }
+                            start = System.currentTimeMillis()
+                            WavHelper.convertToWavFile(requireContext(), original, audioFileName)
+                            if (BuildConfig.DEBUG) {
+                                println("EditPreviewFragment: Converting took ${System.currentTimeMillis() - start} ms.")
+                            }
+                            lifecycleScope.launch { onDownloadComplete() }
+                        }
                     }
                 }
             } catch (e: Exception) {
-                // TODO show error ?
-                Log.d("sdvf", e.toString())
+                e.printStackTrace()
             }
 
             try {
@@ -191,6 +420,18 @@ class EditPreviewFragment : WaveformFragment() {
             } catch (t: Throwable) {
                 t.printStackTrace()
             }
+        }
+    }
+
+    private fun onDownloadedCastAudio() {
+        progressTitle?.text = context?.getString(R.string.converting_audio) ?: "Converting audio"
+
+        downloadSamples()
+    }
+
+    private fun convertAudio() {
+        lifecycleScope.launch {
+            convertAudio(getAudioFileName())
         }
     }
 
@@ -205,10 +446,25 @@ class EditPreviewFragment : WaveformFragment() {
         }
     }
 
+    private suspend fun convertAudio(original: String) {
+        val context = context ?: return
+
+        withContext(Dispatchers.IO) {
+            val start = System.currentTimeMillis()
+            WavHelper.convertToWavFile(context, original, audioFileName)
+            if (BuildConfig.DEBUG) {
+                println("EditPreviewFragment: Converting took ${System.currentTimeMillis() - start} ms. Produced a file of ${File(audioFileName).length()} bytes.")
+            }
+            lifecycleScope.launch { onDownloadComplete() }
+        }
+    }
+
     private fun onDownloadComplete() {
         progressTitle?.text = getString(R.string.processing_audio)
         progressBar?.visibility = View.GONE
         processingProgressBar?.visibility = View.VISIBLE
+
+        processingStartTime = System.currentTimeMillis()
 
         loadFromFile()
     }

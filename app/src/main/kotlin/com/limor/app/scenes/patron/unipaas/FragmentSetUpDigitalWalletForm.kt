@@ -5,6 +5,8 @@ import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Context
 import android.os.Bundle
 import android.telephony.TelephonyManager
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -22,6 +25,7 @@ import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.FragmentSetUpDigitalWalletFormBinding
 import com.limor.app.di.Injectable
+import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.Country
 import com.limor.app.scenes.auth_new.util.PrefsHandler
@@ -29,11 +33,17 @@ import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UserUIModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.*
+import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.etPhoneCode
+import kotlinx.android.synthetic.main.fragment_set_up_digital_wallet_form.*
 import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.toast
 import timber.log.Timber
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalDateTime.ofInstant
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
@@ -76,20 +86,31 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
         subscribeToViewModel()
         setClickListeners()
         setDefaults()
+        setListeners()
     }
 
     private fun setDefaults() {
         binding.etEnterDOBInner.setText(CommonsKt.getFormattedLocalDate(user?.dateOfBirth))
+        binding.etEnterFirstNameInner.setText(user?.firstName)
+        binding.etEnterLastNameInner.setText(user?.lastName)
     }
 
     private fun subscribeToViewModel() {
         model.countriesLiveData.observe(viewLifecycleOwner, Observer {
             setCountry(it)
         })
+        model.phoneIsValidLiveData.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                mainLayout.hideKeyboard()
+                enableSubmitButton()
+            } else{
+                binding.btnContinue.isEnabled = false
+            }
+        })
     }
 
     private fun setCountry(countries: List<Country>) {
-        val editText = etPhoneCode.editText as AutoCompleteTextView
+        val editText = binding.etPhoneCode.editText as AutoCompleteTextView
         val tM = requireContext().getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         val countryCodeValue = tM.networkCountryIso
         val country: Country? = countries.find { it.codeLetters.lowercase() == countryCodeValue}
@@ -102,6 +123,7 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
         model.countrySelected?.let {
             editText.setText(it.visualFormat)
         }
+        enableSubmitButton()
     }
 
     var date =
@@ -109,7 +131,12 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
             myCalendar.set(Calendar.YEAR, year)
             myCalendar.set(Calendar.MONTH, monthOfYear)
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-            updateLabel()
+
+            val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+            sdf.timeZone = TimeZone.getTimeZone("UTC")
+            val dateFormat = sdf.format(myCalendar.time)
+
+            binding.etEnterDOBInner.setText(CommonsKt.getFormattedLocalDate(LocalDateTime.ofInstant(myCalendar.toInstant(), ZoneId.systemDefault()).toLocalDate()))
         }
 
     private fun setClickListeners() {
@@ -129,6 +156,17 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
                 myCalendar.get(Calendar.DAY_OF_MONTH)
             ).show()
         }
+    }
+
+    private fun setListeners(){
+        binding.etEnterFirstNameInner.addTextChangedListener(GenericTextWatcher(binding.etEnterFirstNameInner, ::enableSubmitButton))
+        binding.etEnterLastNameInner.addTextChangedListener(GenericTextWatcher(binding.etEnterLastNameInner, ::enableSubmitButton))
+        binding.etEnterEmailInner.addTextChangedListener(GenericTextWatcher(binding.etEnterEmailInner, ::enableSubmitButton))
+        binding.etEnterPhoneInner.addTextChangedListener(GenericTextWatcher(binding.etEnterPhoneInner, ::validatePhoneNumber))
+    }
+
+    private fun validatePhoneNumber(){
+        model.setPhoneChanged(binding.etEnterPhoneInner.text.toString())
     }
 
     private fun validateInputAndContinue() {
@@ -161,13 +199,16 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
             binding.root.snackbar("Select a country code")
             return
         }
+        val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        val dateFormat = sdf.format(myCalendar.time)
 
         model.createVendor(
             binding.etEnterFirstNameInner.text.toString(),
             binding.etEnterLastNameInner.text.toString(),
             binding.etEnterEmailInner.text.toString(),
-            "+441122334455"/*"+${model.countrySelected?.code}${binding.etEnterPhoneInner.text.toString()}"*/,
-            "1995-01-01"/*binding.etEnterDOBInner.text.toString()*/
+            "${model.countrySelected?.code}${binding.etEnterPhoneInner.text.toString()}",
+            dateFormat
         ).observe(viewLifecycleOwner) { response ->
             if (BuildConfig.DEBUG) {
                 Timber.d("WALLET -> $response")
@@ -191,10 +232,40 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
         }
     }
 
-    private fun updateLabel() {
-        val myFormat = "dd/MM/yy" //In which you need put here
-        val sdf = SimpleDateFormat(myFormat, Locale.US)
-        binding.etEnterDOBInner.setText(sdf.format(myCalendar.time))
+    private fun enableSubmitButton(){
+        binding.btnContinue.isEnabled = (
+                binding.etEnterFirstNameInner.text.toString().isNotEmpty() &&
+                binding.etEnterLastNameInner.text.toString().isNotEmpty() &&
+                binding.etEnterDOBInner.text.toString().isNotEmpty() &&
+                binding.etEnterCountryInner.text.toString().isNotEmpty() &&
+                binding.etEnterEmailInner.text.toString().isNotEmpty() &&
+                binding.etEnterPhoneInner.text.toString().isNotEmpty() &&
+                model.countrySelected != null
+        )
     }
 
+}
+
+class GenericTextWatcher internal constructor(
+    private val view: View,
+    private val afterTextChange: () -> Unit
+) :
+    TextWatcher {
+    override fun afterTextChanged(editable: Editable) {}
+
+    override fun beforeTextChanged(
+        arg0: CharSequence,
+        arg1: Int,
+        arg2: Int,
+        arg3: Int
+    ) {}
+
+    override fun onTextChanged(
+        arg0: CharSequence,
+        arg1: Int,
+        arg2: Int,
+        arg3: Int
+    ) {
+        afterTextChange()
+    }
 }

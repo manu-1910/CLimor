@@ -25,6 +25,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.limor.app.BuildConfig;
 import com.limor.app.R;
 import com.limor.app.common.BaseFragment;
 import com.limor.app.scenes.utils.Commons;
@@ -117,6 +118,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
 
 
     private Runnable updaterPreview;
+    protected SoundFile.Lean leanSoundFile;
 
     //    private final int ALLOWED_PIXEL_OFFSET = 18; // unused, I don't know what was it for
     public static final int NEW_WIDTH = 20;
@@ -152,7 +154,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
     }
 
     protected void loadFromFile() {
-        // if the soundFile object is not loaded yet, then let's load it
+
         if (soundFile == null) {
             loadFromFile(fileName); // this method also calls reloadVisualizer
 
@@ -735,6 +737,7 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
             return loadingKeepGoing;
         };
 
+
         // Create the MediaPlayer in a background thread
         new Thread() {
             public void run() {
@@ -742,7 +745,11 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                     player = new MediaPlayer();
                     player.setDataSource(file.getAbsolutePath());
                     player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    if (BuildConfig.DEBUG) {
+                        System.out.println("Will play audio from: " + file);
+                    }
                     player.prepare();
+                    processAudio(listener);
                     enableDisableSeekButtons();
                 } catch (final IOException e) {
                     getActivity().runOnUiThread(() -> new AlertDialog.Builder(getContext())
@@ -755,10 +762,20 @@ public abstract class WaveformFragment extends BaseFragment implements WaveformV
                 }
             }
         }.start();
+
+    }
+
+    private void processAudio(SoundFile.ProgressListener listener) {
         new Thread() {
             public void run() {
                 try {
-                    soundFile = SoundFile.create(file.getAbsolutePath(), listener);
+                    if (null == leanSoundFile) {
+                        soundFile = SoundFile.create(file.getAbsolutePath(), listener);
+                    } else {
+                        soundFile = leanSoundFile.toSoundFile();
+                        listener.reportProgress(1);
+                    }
+
                 } catch (OutOfMemoryError e) {
                     e.printStackTrace();
                     if (!useCustomProgressCallback()) {

@@ -92,10 +92,15 @@ class SplashActivity : BaseActivity() {
 
         OneSignal.setNotificationOpenedHandler { result ->
             val id: Int? = result.notification.additionalData.getString("targetId").toInt()
+            var tabId = 0
+            if (result.notification.additionalData.has("notificationType") && result.notification.additionalData.getString("notificationType") == "patronRequest") {
+                tabId = 1
+            }
             if(result.notification.additionalData.getString("targetType").equals("user")){
                 id?.let {
                     PrefsHandler.saveUserIdFromOneSignalNotification(this, it)
                     PrefsHandler.saveUserNameFromOneSignalNotification(this, result.notification.additionalData.getString("initiatorUsername"))
+                    PrefsHandler.saveUserTabIdFromOneSignalNotification(this, tabId)
                 }
             } else{
                 id?.let {

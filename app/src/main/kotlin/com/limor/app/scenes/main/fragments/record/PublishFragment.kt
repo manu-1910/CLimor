@@ -29,7 +29,6 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextWatcher
 import android.text.style.UnderlineSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,17 +49,20 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
-import com.android.billingclient.api.SkuDetails
+import com.android.billingclient.api.ProductDetails
 import com.apollographql.apollo.api.Input
 import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.hendraanggrian.appcompat.widget.Hashtag
 import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter
 import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
 import com.limor.app.App
 import com.limor.app.BuildConfig
+import com.limor.app.CreatePodcastMutation
 import com.limor.app.R
 import com.limor.app.audio.wav.WavHelper
 import com.limor.app.common.BaseFragment
@@ -85,6 +87,7 @@ import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.scenes.utils.SpecialCharactersInputFilter
 import com.limor.app.scenes.utils.location.MyLocation
 import com.limor.app.scenes.utils.waveform.KeyboardUtils
+import com.limor.app.scenes.utils.waveform.soundfile.SoundFile
 import com.limor.app.service.PlayBillingHandler
 import com.limor.app.type.CreatePodcastInput
 import com.limor.app.type.PodcastAudio
@@ -125,7 +128,6 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 import kotlin.random.Random
 
-
 class PublishFragment : BaseFragment() {
 
     private lateinit var binding: FragmentPublishBinding
@@ -143,7 +145,7 @@ class PublishFragment : BaseFragment() {
     @Inject
     lateinit var playBillingHandler: PlayBillingHandler
     private var selectedPriceId: String? = null
-    private val details = mutableMapOf<String, SkuDetails>()
+    private val details = mutableMapOf<String, ProductDetails>()
 
     private val locationViewModel: LocationViewModel by activityViewModels()
 
@@ -198,6 +200,8 @@ class PublishFragment : BaseFragment() {
     private var podcastHasImage: Boolean = false
     private var isShowingTagsRecycler = false
     private var convertedFile: File? = null
+    private var soundFile: SoundFile? = null
+    private var samplesFile: File? = null
 
     private var isImageChosen: Boolean = false
     private var isCategorySelected: Boolean = false
@@ -275,7 +279,7 @@ class PublishFragment : BaseFragment() {
             binding.castPrices.setText(items[0])
         } else {
             for ((k, v) in details) {
-                if (v.sku == uiDraft.price) {
+                if (v.productId == uiDraft.price) {
                     binding.castPrices.setText(k)
                     break
                 }
@@ -284,7 +288,7 @@ class PublishFragment : BaseFragment() {
 
         binding.castPrices.setAdapter(adapter)
         binding.castPrices.onItemClickListener = AdapterView.OnItemClickListener { parent, arg1, pos, id ->
-            selectedPriceId = details[prices[pos]]?.sku ?: ""
+            selectedPriceId = details[prices[pos]]?.productId ?: ""
             uiDraft.price = selectedPriceId
         }
     }
@@ -370,23 +374,23 @@ class PublishFragment : BaseFragment() {
     }
 
     private fun loadDrafts() {
-        draftViewModel.loadDraftRealm()?.observe(viewLifecycleOwner, { drafts ->
+        draftViewModel.loadDraftRealm()?.observe(viewLifecycleOwner) { drafts ->
             existingDraftsTitles = drafts.mapNotNull { it.title?.lowercase() }
-        })
+        }
     }
 
     private fun fetchPrices() {
         if (isPatronUser()) {
             val list = ArrayList<String>()
-            playBillingHandler.getPrices().observe(viewLifecycleOwner, {
+            playBillingHandler.getPrices().observe(viewLifecycleOwner) {
                 details.clear()
-                details.putAll(it.map { skuDetails -> skuDetails.price to skuDetails })
+                details.putAll(it.map { productDetails -> productDetails.oneTimePurchaseOfferDetails!!.formattedPrice to productDetails })
                 it.forEach { skuDetails ->
-                    list.add(skuDetails.price)
+                    list.add(skuDetails.oneTimePurchaseOfferDetails?.formattedPrice ?: "")
                 }
                 loadCastTiers(list)
                 //setPrices(list)
-            })
+            }
         }
     }
 
@@ -977,7 +981,50 @@ class PublishFragment : BaseFragment() {
         }
         lifecycleScope.launch {
             convertedFile = WavHelper.convertWavFileToM4aFile(requireContext(), uiDraft.filePath!!)
-            publishConvertedPodcastAudio()
+
+            withContext(Dispatchers.IO) {
+                kotlin.runCatching {
+                    soundFile = SoundFile.create(
+                        uiDraft.filePath!!
+                    ) { fractionComplete ->
+                        if (BuildConfig.DEBUG) {
+                            println("Processing audio at ${uiDraft.filePath!!} at $fractionComplete")
+                        }
+                        if (fractionComplete >= 1) {
+                            publishConvertedPodcastAudio()
+                        }
+                        true
+                    }
+                }
+            }
+        }
+    }
+
+    private fun uploadSamples(podcastId: Int) {
+        val lean = soundFile?.toLean() ?: return completeUpload()
+        soundFile = null
+
+        val sFile = CommonsKt.getDownloadFile(requireContext(), "$podcastId.samples")
+        samplesFile = sFile
+        lean.serializeTo(sFile.absolutePath)
+
+        val storageRef = Firebase.storage.reference
+        val file = Uri.fromFile(sFile)
+        val samplesRef = storageRef.child("samples/$podcastId.samples")
+
+        val uploadTask = samplesRef.putFile(file)
+
+        uploadTask.addOnFailureListener {
+            if (BuildConfig.DEBUG) {
+                it.printStackTrace()
+                println("Error uploading samples file: $it")
+            }
+            completeUpload()
+        }.addOnSuccessListener { taskSnapshot ->
+            if (BuildConfig.DEBUG) {
+                println("Sucessfully uploaded samples to ${taskSnapshot.uploadSessionUri}")
+            }
+            completeUpload()
         }
     }
 
@@ -1115,17 +1162,7 @@ class PublishFragment : BaseFragment() {
             }
             toggleProgressVisibility(View.GONE)
             response?.let {
-                Timber.d("Cast Publish Success -> ")
-                convertedFile?.delete()
-                callToDeleteDraft()
-                isPublished = true
-                viewCastPublished.visibility = View.VISIBLE
-                btnDone.onClick {
-                    /*val mainIntent = Intent(context, MainActivity::class.java)
-                    startActivity(mainIntent)*/
-                    stopPlayer()
-                    activity?.finish()
-                }
+                onPodcastCreated(response)
             } ?: run {
                 //Publish Not Ok
                 val message: StringBuilder = StringBuilder()
@@ -1143,6 +1180,29 @@ class PublishFragment : BaseFragment() {
         }
         //  publishViewModel.uiPublishRequest = uiPublishRequest
         // publishPodcastTrigger.onNext(Unit)
+    }
+
+    private fun onPodcastCreated(result: CreatePodcastMutation.CreatePodcast) {
+        if (BuildConfig.DEBUG) {
+            Timber.d("Cast Publish Success -> $result")
+        }
+        result.podcastId?.let {
+            uploadSamples(it)
+        } ?: completeUpload()
+    }
+
+    private fun completeUpload() {
+        convertedFile?.delete()
+        samplesFile?.delete()
+        callToDeleteDraft()
+        isPublished = true
+        viewCastPublished.visibility = View.VISIBLE
+        btnDone.onClick {
+            /*val mainIntent = Intent(context, MainActivity::class.java)
+            startActivity(mainIntent)*/
+            stopPlayer()
+            activity?.finish()
+        }
     }
 
     private fun getRandomColorCode(): Input<String> {

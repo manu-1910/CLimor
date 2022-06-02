@@ -523,7 +523,7 @@ dependencies {
 
     implementation 'com.tbuonomo:dotsindicator:4.2'
 
-    def billing_version = "4.0.0"
+    def billing_version = "5.0.0"
     implementation "com.android.billingclient:billing-ktx:$billing_version"
 
     implementation "com.github.skydoves:balloon:1.4.0"
@@ -544,4 +544,6 @@ dependencies {
     def paging_version = "3.1.0"
 
     implementation "androidx.paging:paging-runtime:$paging_version"
+
+    implementation "androidx.tonyodev.fetch2:xfetch2:3.1.6"
 }

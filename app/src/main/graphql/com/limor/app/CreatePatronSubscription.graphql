@@ -1,5 +1,5 @@
-mutation CreatePatronSubscription($platform: String!,$planId: String!,$purchaseData:String!) {
-    createPatronSubscription(platform: $platform, planId: $planId, purchaseData: $purchaseData){
+mutation CreatePatronSubscription($platform: String!,$planId: String!,$purchaseData:String!, $discountCode: String) {
+    createPatronSubscription(platform: $platform, planId: $planId, purchaseData: $purchaseData, discountCode: $discountCode){
         message
         status
     }

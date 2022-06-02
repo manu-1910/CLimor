@@ -30,6 +30,7 @@ import android.view.View;
 
 import androidx.core.content.res.ResourcesCompat;
 
+import com.limor.app.BuildConfig;
 import com.limor.app.R;
 import com.limor.app.scenes.utils.Commons;
 import com.limor.app.scenes.utils.waveform.MarkerSet;
@@ -265,7 +266,7 @@ public class WaveformView extends View {
 
     public void setSoundFile(SoundFile soundFile) {
         this.soundFile = soundFile;
-        sampleRate = soundFile.getSampleRate();
+            sampleRate = soundFile.getSampleRate();
         samplesPerFrame = soundFile.getSamplesPerFrame();
 
         // If longer than 10 minutes add more zoom levels
@@ -668,6 +669,12 @@ public class WaveformView extends View {
 
     protected float getZoomedInHeight(float zoomLevel, int i) {
         int f = (int) zoomLevel;
+
+        if (BuildConfig.DEBUG) {
+            int numFrames = soundFile.getNumFrames();
+            int gainsCount =  soundFile.getFrameGains().length;
+            System.out.println("Num frames: " + numFrames + ", gains count: " + gainsCount);
+        }
 
         if (i == 0) {
             return 0.5f * getHeight(0, soundFile.getNumFrames(), soundFile.getFrameGains(), scaleFactor, minGain, range);

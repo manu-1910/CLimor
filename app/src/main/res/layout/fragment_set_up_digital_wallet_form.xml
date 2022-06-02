@@ -2,6 +2,7 @@
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -95,7 +96,6 @@
             android:layout_marginTop="@dimen/marginTwenty"
             android:hint="@string/date_of_birth"
             android:visibility="visible"
-            android:enabled="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etEnterLastName">
@@ -117,7 +117,7 @@
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:translationZ="4dp"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_marginStart="@dimen/marginTwenty"
             android:layout_marginEnd="@dimen/marginTwenty"
             android:layout_marginTop="@dimen/marginTwenty"

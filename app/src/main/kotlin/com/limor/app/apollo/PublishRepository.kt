@@ -1,11 +1,12 @@
 package com.limor.app.apollo
 
+import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.SkuDetails
 import com.apollographql.apollo.api.Input
 import com.limor.app.*
 import com.limor.app.type.CreatePodcastInput
 import com.limor.app.uimodels.CastUIModel
+import com.limor.app.uimodels.VerifyPromoCodeResult
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -14,21 +15,29 @@ import javax.inject.Inject
 
 class PublishRepository @Inject constructor(val apollo: Apollo) {
 
-    suspend fun createPodcast(podcast: CreatePodcastInput): String? {
+    suspend fun createPodcast(podcast: CreatePodcastInput): CreatePodcastMutation.CreatePodcast? {
         val query = CreatePodcastMutation(podcast)
         val queryResult = apollo.mutate(query)
         val createPodcastResult: CreatePodcastMutation.CreatePodcast? =
             queryResult?.data?.createPodcast
         Timber.d("CreatePodcastMutation -> ${createPodcastResult?.status}")
-        return createPodcastResult?.status
+        return createPodcastResult
     }
 
-    suspend fun updatePodcast(podcastId: Int, title: String, caption: String, matureContent: Boolean): String? {
-        val mutation = UpdatePodcastMutation(podcastId, Input.fromNullable(title), Input.fromNullable(caption), Input.fromNullable(matureContent))
+    suspend fun updatePodcast(
+        podcastId: Int,
+        title: String,
+        caption: String,
+        matureContent: Boolean
+    ): UpdatePodcastMutation.UpdatePodcast? {
+        val mutation = UpdatePodcastMutation(
+            podcastId,
+            Input.fromNullable(title),
+            Input.fromNullable(caption),
+            Input.fromNullable(matureContent)
+        )
         val result = apollo.mutate(mutation)
-        val updatePodcastResult: UpdatePodcastMutation.UpdatePodcast? =
-            result?.data?.updatePodcast
-        return updatePodcastResult?.status
+        return result?.data?.updatePodcast
     }
 
     suspend fun markPodcastAsMature(podcastId: Int): String? {
@@ -44,15 +53,29 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
         return updatePodcastResult?.status
     }
 
-    suspend fun updateSubscriptionDetails(purchase: Purchase): String?{
-        val mutation = CreatePatronSubscriptionMutation("and", purchase.skus[0],purchase.purchaseToken)
+    suspend fun updateSubscriptionDetails(purchase: Purchase, code: String?): String? {
+        val sku = purchase.skus.first() ?: return "error, no sku"
+
+        val mutation = CreatePatronSubscriptionMutation("and", sku, purchase.purchaseToken, Input.fromNullable(code))
+
+        if (BuildConfig.DEBUG) {
+            Timber.tag("Consume_Purchase_Sub").d("%s___%s", sku, purchase.purchaseToken)
+            println("Has ${purchase.skus.size} skus.")
+        }
 
         return try{
             val result = apollo.mutate(mutation)
+            if (BuildConfig.DEBUG) {
+                println("Result from CreatePatronSubscriptionMutation -> $result")
+            }
             val updatePodcastResult: CreatePatronSubscriptionMutation.CreatePatronSubscription? =
                 result?.data?.createPatronSubscription
             updatePodcastResult?.status
         }catch (e: Exception){
+            if (BuildConfig.DEBUG) {
+                println("Error in CreatePatronSubscriptionMutation")
+                e.printStackTrace()
+            }
             null
         }
 
@@ -92,6 +115,13 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
         return apollo.launchQuery(query)?.data?.getInAppPrices?.castPriceTiers?.map { it.toString() } ?: emptyList()
     }
 
+    suspend fun verifyPromoCode(code: String): VerifyPromoCodeResult {
+        val query = VerifyDiscountCodeQuery(code)
+        val res = apollo.launchQuery(query)?.data?.verifyDiscountCode
+            ?: return VerifyPromoCodeResult(isDiscountCodeValid = false)
+        return VerifyPromoCodeResult(isDiscountCodeValid = res.isDiscountCodeValid, res.priceId)
+    }
+
     suspend fun getPlans(): List<GetPlansQuery.Plan?>? {
         val query = GetPlansQuery()
         val queryResult = apollo.launchQuery(query)
@@ -114,10 +144,11 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
     }
 
 
-    suspend fun createCastPurchase(cast: CastUIModel, purchase: Purchase, sku: SkuDetails): String {
+    suspend fun createCastPurchase(cast: CastUIModel, purchase: Purchase, product: ProductDetails): String {
         // TODO use constants for those 'and' and 'IN' values
+        val details = product.oneTimePurchaseOfferDetails ?: return ""
 
-        val localRawPrice = sku.priceAmountMicros / 1_000_000.0
+        val localRawPrice = details.priceAmountMicros / 1_000_000.0
         val localPrice = "${BigDecimal(localRawPrice).setScale(2, RoundingMode.HALF_EVEN)}"
 
         val mutation = CreateCastPurchaseMutation(
@@ -127,11 +158,11 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
             regionCode = "", // as per Sasank we use an empty value
             // another option is sku.price.replace(Regex("\\p{Sc}"),""),
             purchasedAtLocalPrice =  localPrice,
-            purchasedInLocalCurrency = sku.priceCurrencyCode
+            purchasedInLocalCurrency = details.priceCurrencyCode
         )
 
         if (BuildConfig.DEBUG) {
-            println("Local price: $localPrice, sku.priceCurrencyCode -> ${sku.priceCurrencyCode}, purchase.purchaseToken -> ${ purchase.purchaseToken}")
+            println("Local price: $localPrice, sku.priceCurrencyCode -> ${details.priceCurrencyCode}, purchase.purchaseToken -> ${ purchase.purchaseToken}")
         }
 
         // TODO regionCode will be handled on BE, also last update from BE is getting error while

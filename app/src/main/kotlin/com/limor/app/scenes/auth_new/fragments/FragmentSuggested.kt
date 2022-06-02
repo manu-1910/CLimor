@@ -56,7 +56,7 @@ class FragmentSuggested : FragmentWithLoading() {
         })
 
         model.suggestedSelectedLiveData.observe(viewLifecycleOwner, {
-            btnNext.text = getString(if (it) R.string.continue_button else R.string.btn_skip)
+            btnNext.isEnabled = it
         })
 
         model.updateOnboardingStatusLiveData.observe(viewLifecycleOwner, Observer {
@@ -65,20 +65,15 @@ class FragmentSuggested : FragmentWithLoading() {
                 lifecycleScope.launch {
                     delay(1000)
                     Timber.d("Navigate to Onboarding")
+                    saveNavigationBreakPoint(NavigationBreakpoints.ONBOARDING_COMPLETION.destination)
                     navigateToHomeFeed()
-                    /*saveNavigationBreakPoint(NavigationBreakpoints.ONBOARDING_COMPLETION.destination)
-                    AuthNavigator.navigateToFragmentByNavigationBreakpoints(
-                        requireActivity(),
-                        NavigationBreakpoints.ONBOARDING_COMPLETION.destination
-                    )*/
                 }
             }
         })
 
         model.suggestedForwardNavigationLiveData.observe(viewLifecycleOwner, Observer {
             if (it) {
-                model.updateUserOnboardingStatus(NavigationBreakpoints.HOME_FEED.destination)
-                //model.updateUserOnboardingStatus(NavigationBreakpoints.ONBOARDING_COMPLETION.destination)
+                model.updateUserOnboardingStatus(NavigationBreakpoints.ONBOARDING_COMPLETION.destination)
             }
         })
     }
@@ -113,10 +108,12 @@ class FragmentSuggested : FragmentWithLoading() {
     }
 
     private fun navigateToHomeFeed() {
+        model.updateOnboardingStatusLiveData.removeObservers(viewLifecycleOwner)
         PrefsHandler.saveJustLoggedIn(requireContext(), true)
         view?.findNavController()?.navigate(R.id.go_to_main_activity)
         Timber.d("trying to finish activity")
         saveNavigationBreakPoint(NavigationBreakpoints.HOME_FEED.destination)
+        model.updateUserOnboardingStatus(NavigationBreakpoints.HOME_FEED.destination)
         requireActivity().finish()
     }
 
