@@ -1,6 +1,7 @@
-mutation UpdateUserProfile($userName: String!, $firstName:String!,$lastName:String!,
+mutation UpdateUserProfile($genderId: Int!, $userName: String!, $firstName:String!,$lastName:String!,
     $websiteUrl:String!,$bio:String!, $imageURL: String, $voiceBioURL: String, $duration: Float){
     updateUser(user:{
+        gender: $genderId,
         firstName:$firstName,
         lastName:$lastName,
         username:$userName,

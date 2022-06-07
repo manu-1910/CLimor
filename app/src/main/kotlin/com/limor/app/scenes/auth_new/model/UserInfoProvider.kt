@@ -355,6 +355,7 @@ class UserInfoProvider @Inject constructor(
 
 
     suspend fun updateUserProfile(
+        genderId: Int,
         userName: String,
         firstName: String,
         lastName: String,
@@ -365,6 +366,7 @@ class UserInfoProvider @Inject constructor(
         durationSeconds: Double?
     ): String? {
         return userRepository.updateUserProfile(
+            genderId,
             userName,
             firstName,
             lastName,

@@ -33,16 +33,17 @@ class GendersProvider @Inject constructor(val generalInfoRepository: GeneralInfo
 
     fun downloadGenders(scope: CoroutineScope) {
         _gendersLiveDataError.postValue("")
-        if (genders.isEmpty())
-            loadGendersRepo(scope)
+        loadGendersRepo(scope)
     }
 
     private fun loadGendersRepo(scope: CoroutineScope) {
         scope.launch(Dispatchers.Default) {
             try {
-                delay(300) //Smooth animation transition between screens
-                val response = generalInfoRepository.fetchGenders()
-                genders = response!!
+                if (genders.isEmpty()){
+                    delay(300) //Smooth animation transition between screens
+                    val response = generalInfoRepository.fetchGenders()
+                    genders = response!!
+                }
                 _genderLiveData.postValue(genders)
                 selectedGenderId = genders.first().id ?: 0
                 _gendersSelectionDone.postValue(true)

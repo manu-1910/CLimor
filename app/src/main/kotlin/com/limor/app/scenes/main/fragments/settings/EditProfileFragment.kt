@@ -33,8 +33,10 @@ import com.bumptech.glide.signature.ObjectKey
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.features.cameraonly.CameraOnlyConfig
 import com.esafirm.imagepicker.model.Image
+import com.google.android.material.button.MaterialButtonToggleGroup
 import com.limor.app.App
 import com.limor.app.BuildConfig
+import com.limor.app.GendersQuery
 import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.common.Constants
@@ -55,6 +57,8 @@ import com.yalantis.ucrop.UCrop
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.dialog_with_edittext.view.*
 import kotlinx.android.synthetic.main.fragment_first_and_last_name.*
+import kotlinx.android.synthetic.main.fragment_new_auth_gender.*
+import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import java.io.File
@@ -122,7 +126,6 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         super.onViewCreated(view, savedInstanceState)
 
         user = sessionManager.getStoredUser()
-
         configureToolbar()
         addViewModelOrbservers()
         addClickListeners()
@@ -134,6 +137,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
             user?.let {
                 currentUser = UIUserUpdateModel.createFrom(it)
                 bindUserDataToViews()
+                load()
                 hideLoading()
             }
         })
@@ -150,6 +154,71 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
             }
         }
 
+        model.gendersLiveData.observe(viewLifecycleOwner, Observer {
+            if (it.isNotEmpty()) {
+                setUpToggleButton(it)
+            }
+        })
+
+        model.gendersLiveDataError.observe(viewLifecycleOwner, Observer {
+            binding.toggleGender.visibility = View.GONE
+        })
+
+    }
+
+    private fun load() {
+        model.downloadGenders()
+    }
+
+    private fun setUpToggleButton(list: List<GendersQuery.Gender>) {
+        addToggleClickListener(list)
+        setUpInitialGender(list)
+    }
+
+    private fun addToggleClickListener(list: List<GendersQuery.Gender>) {
+        binding.btnGender1.text = list[0].gender
+        binding.btnGender2.text = list[1].gender
+        binding.btnGender3.text = list[2].gender
+        if(currentUser.gender == null){
+            binding.toggleGender.addOnButtonCheckedListener { toggleButton, checkedId, isChecked ->
+                if (isChecked) {
+                    val gender = when (checkedId) {
+                        R.id.btnGender1 -> list[0]
+                        R.id.btnGender2 -> list[1]
+                        R.id.btnGender3 -> list[2]
+                        else -> list[0]
+                    }
+                    model.selectGender(gender.id ?: 0)
+                }
+            }
+        }
+    }
+
+    private fun setUpInitialGender(list: List<GendersQuery.Gender>) {
+        val index = when(currentUser.gender){
+            list[0].gender -> list[0].id
+            list[1].gender -> list[1].id
+            list[2].gender -> list[2].id
+            else -> 0
+        }
+        model.selectGender(index ?: 0)
+        val checkedId = when (model.selectedGenderIndex) {
+            0 -> R.id.btnGender1
+            1 -> R.id.btnGender2
+            2 -> R.id.btnGender3
+            else -> R.id.btnGender1
+        }
+        binding.toggleGender.check(checkedId)
+        if(currentUser.gender != null){
+            val layout: MaterialButtonToggleGroup = binding.toggleGender
+            for (i in 0 until layout.childCount) {
+                val child: View = layout.getChildAt(i)
+                child.isEnabled = false
+                child.isClickable = false
+                child.backgroundColor = ContextCompat.getColor(requireContext(), R.color.transparent)
+            }
+        }
+        binding.toggleGender.visibility = View.VISIBLE
     }
 
     private fun hideLoading() {
@@ -312,6 +381,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         ensureNullableVoiceBio()
 
         model.updateUserInfo(
+            model.currentGenderId,
             binding.etUsernameInner.text.toString(),
             binding.etFirstNameInner.text.toString(),
             binding.etLastNameInner.text.toString(),
@@ -528,6 +598,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
 
 
     data class UIUserUpdateModel(
+        var gender: String?,
         var userName: String?,
         var firstName: String?,
         var lastName: String?,
@@ -541,6 +612,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
             fun createFrom(it: UserUIModel): UIUserUpdateModel {
                 return it.let { user ->
                     UIUserUpdateModel(
+                        user.gender,
                         user.username,
                         user.firstName,
                         user.lastName,

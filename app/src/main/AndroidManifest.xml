@@ -152,7 +152,7 @@
             android:name=".scenes.main.fragments.profile.UserProfileActivity"
             android:label="@string/app_name"
             android:theme="@style/MaterialMainTheme.FullScreen"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <activity
             android:name=".scenes.main.fragments.podcast.PodcastsByTagActivity"
             android:label="@string/app_name"
@@ -175,6 +175,7 @@
             android:name=".scenes.main.fragments.settings.SettingsActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/MaterialMainTheme.FullScreen" />
         <activity
             android:name=".scenes.main.fragments.onboarding.OnBoardingActivity"

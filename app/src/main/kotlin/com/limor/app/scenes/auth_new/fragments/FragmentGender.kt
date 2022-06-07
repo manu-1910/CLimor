@@ -69,7 +69,8 @@ class FragmentGender : FragmentWithLoading() {
         }
 
         btnSkip.setOnClickListener {
-            model.selectGender(0)
+            // TOD0: Update onboarding status to "SHOW_SUGGESTED_PROFILES"
+            // model.selectGender(0)
             it.findNavController()
                 .navigate(R.id.action_fragment_new_auth_gender_to_fragment_new_auth_suggested_people)
         }

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.*
 import com.limor.app.apollo.GeneralInfoRepository
+import com.limor.app.scenes.auth_new.model.GendersProvider
 import com.limor.app.scenes.auth_new.model.UserInfoProvider
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.UserUIModel
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     val generalInfoRepository: GeneralInfoRepository,
     val userInfoProvider: UserInfoProvider,
+    val genderInfoProvider: GendersProvider
 ) : ViewModel() {
     private var _settingsToolBarTitle =
         MutableLiveData<String>()
@@ -67,6 +69,18 @@ class SettingsViewModel @Inject constructor(
         MutableLiveData<List<UserUIModel?>?>()
     val searchFollowingsData: LiveData<List<UserUIModel?>?>
         get() = _searchFollowingsData
+
+    val gendersLiveData: LiveData<List<GendersQuery.Gender>>
+        get() = genderInfoProvider.gendersLiveData
+
+    val gendersLiveDataError: LiveData<String>
+        get() = genderInfoProvider.gendersLiveDataError
+
+    val selectedGenderIndex: Int
+        get() = genderInfoProvider.selectedGenderIndex()
+
+    val currentGenderId: Int
+        get() = genderInfoProvider.selectedGenderId
 
     fun getBlockedUsers(offset: Int) {
         viewModelScope.launch(Dispatchers.Default) {
@@ -150,6 +164,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun updateUserInfo(
+        genderId: Int,
         userName: String,
         firstName: String,
         lastName: String,
@@ -168,6 +183,7 @@ class SettingsViewModel @Inject constructor(
             try {
                 val response = withContext(Dispatchers.IO) {
                     userInfoProvider.updateUserProfile(
+                        genderId,
                         userName,
                         firstName,
                         lastName,
@@ -185,6 +201,10 @@ class SettingsViewModel @Inject constructor(
                 Timber.d("Updated UserInfo -> $e")
             }
         }
+    }
+
+    fun selectGender(id: Int) {
+        genderInfoProvider.selectedGenderId = id
     }
 
     fun searchFollowers(searchTerm: String, offset: Int) {
@@ -284,6 +304,8 @@ class SettingsViewModel @Inject constructor(
             userInfoProvider.deleteUserDevice()
         }
     }
+
+    fun downloadGenders() = genderInfoProvider.downloadGenders(viewModelScope)
 
     companion object {
         const val USER_UPDATE_SUCCESS = "Success"

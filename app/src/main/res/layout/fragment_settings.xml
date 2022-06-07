@@ -51,12 +51,12 @@
                     android:id="@+id/tvEditProfile"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/textSize16"
+                    android:layout_alignParentStart="true"
+                    android:drawableEnd="@drawable/ic_rigth_arrow"
                     android:fontFamily="@font/roboto_medium"
                     android:text="@string/settings_edit_profile"
-                    android:layout_alignParentStart="true"
-                    android:drawableEnd="@drawable/ic_rigth_arrow"/>
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/textSize16" />
 
             </RelativeLayout>
 

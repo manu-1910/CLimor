@@ -53,6 +53,7 @@ class UserRepository @Inject constructor(val apollo: Apollo) {
     }
 
     suspend fun updateUserProfile(
+        genderId: Int,
         userName: String,
         firstName: String,
         lastName: String,
@@ -66,6 +67,7 @@ class UserRepository @Inject constructor(val apollo: Apollo) {
             Input.absent()
         } else Input.fromNullable(imageURL)
         val query = UpdateUserProfileMutation(
+            genderId,
             userName,
             firstName,
             lastName,

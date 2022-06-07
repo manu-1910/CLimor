@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/sign_in_new_background">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -13,7 +14,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@color/sign_in_new_background"
             android:orientation="vertical">
 
             <LinearLayout
@@ -53,8 +54,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="51dp"
                     android:layout_marginTop="28dp"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginRight="51dp">
+                    android:layout_marginRight="51dp"
+                    android:layout_marginBottom="16dp">
 
                     <View
                         android:layout_width="match_parent"
@@ -130,20 +131,22 @@
                         android:textColor="@color/black" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/notification_secondary_text"
-                    android:textSize="@dimen/textSizeTiny"
-                    android:fontFamily="@font/roboto_bold"
-                    android:text="@string/required"
+                    android:layout_gravity="start"
                     android:layout_marginStart="@dimen/marginMedium"
                     android:layout_marginEnd="@dimen/marginMedium"
                     android:background="@color/white"
+                    android:fontFamily="@font/roboto_bold"
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp"
-                    android:layout_gravity="start"
-                    android:textAlignment="gravity" />
+                    android:text="@string/required"
+                    android:textAlignment="gravity"
+                    android:textColor="@color/notification_secondary_text"
+                    android:textSize="@dimen/textSizeTiny" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/etLastName"
                     style="@style/TextInputLayoutOutlineWithError"
@@ -168,20 +171,22 @@
                         android:textColor="@color/black" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/notification_secondary_text"
-                    android:textSize="@dimen/textSizeTiny"
-                    android:fontFamily="@font/roboto_bold"
-                    android:text="@string/required"
+                    android:layout_gravity="start"
                     android:layout_marginStart="@dimen/marginMedium"
                     android:layout_marginEnd="@dimen/marginMedium"
                     android:background="@color/white"
+                    android:fontFamily="@font/roboto_bold"
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp"
-                    android:layout_gravity="start"
-                    android:textAlignment="gravity" />
+                    android:text="@string/required"
+                    android:textAlignment="gravity"
+                    android:textColor="@color/notification_secondary_text"
+                    android:textSize="@dimen/textSizeTiny" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/etUsername"
                     style="@style/TextInputLayoutOutlineWithError"
@@ -206,20 +211,22 @@
                         android:textColor="@color/black" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/notification_secondary_text"
-                    android:textSize="@dimen/textSizeTiny"
-                    android:fontFamily="@font/roboto_bold"
-                    android:text="@string/required"
+                    android:layout_gravity="start"
                     android:layout_marginStart="@dimen/marginMedium"
                     android:layout_marginEnd="@dimen/marginMedium"
                     android:background="@color/white"
+                    android:fontFamily="@font/roboto_bold"
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp"
-                    android:layout_gravity="start"
-                    android:textAlignment="gravity" />
+                    android:text="@string/required"
+                    android:textAlignment="gravity"
+                    android:textColor="@color/notification_secondary_text"
+                    android:textSize="@dimen/textSizeTiny" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/etWebUrl"
                     style="@style/TextInputLayoutOutlineWithError"
@@ -275,6 +282,61 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="16dp">
+
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/toggleGender"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:selectionRequired="true"
+                        app:singleSelection="true"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <Button
+                            android:id="@+id/btnGender1"
+                            style="@style/ButtonStyleGenderOutlined"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            tools:text="@string/sex_male" />
+
+                        <Button
+                            android:id="@+id/btnGender2"
+                            style="@style/ButtonStyleGenderOutlined"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            tools:text="@string/sex_female" />
+
+                        <Button
+                            android:id="@+id/btnGender3"
+                            style="@style/ButtonStyleGenderOutlined"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            tools:text="@string/sex_other" />
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                    <View
+                        android:id="@+id/rectangle_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:alpha="0.06"
+                        android:background="@drawable/shape_grey_gender"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <Button
                     android:id="@+id/btnUpdate"
@@ -300,17 +362,18 @@
 
 
     <RelativeLayout
-        android:visibility="gone"
         android:id="@+id/loading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:visibility="gone">
+
         <ProgressBar
-            android:indeterminate="true"
-            android:indeterminateTint="@color/colorAccent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/colorAccent" />
 
     </RelativeLayout>
 
