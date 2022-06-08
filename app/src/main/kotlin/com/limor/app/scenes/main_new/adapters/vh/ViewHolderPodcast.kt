@@ -353,30 +353,12 @@ class ViewHolderPodcast(
             tv.tag = tv.text
         }
         Handler(Looper.getMainLooper()).post(Runnable {
-            if (maxCharacters == 0) {
-                val lineEndIndex = tv.layout.getLineEnd(0)
-                val text = tv.text.subSequence(0, lineEndIndex - expandText.length + 1)
-                    .toString() + " " + expandText
-                tv.text = text
-                tv.setText(
-                    addClickablePartTextViewResizable(
-                        Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
-                        viewMore, item
-                    ), TextView.BufferType.SPANNABLE
-                )
-            } else if (maxCharacters > 0 && tv.text.length > maxCharacters) {
+            if (maxCharacters > 0 && tv.text.length > maxCharacters) {
                 tv.text = tv.text.subSequence(0, 60)
                     .toString() + " " + expandText
                 tv.setText(
                     addClickablePartTextViewResizable(
                         Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
-                        viewMore, item
-                    ), TextView.BufferType.SPANNABLE
-                )
-            } else {
-                tv.setText(
-                    addClickablePartTextViewResizable(
-                        Html.fromHtml(tv.text.toString()), tv, maxCharacters, expandText,
                         viewMore, item
                     ), TextView.BufferType.SPANNABLE
                 )

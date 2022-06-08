@@ -44,7 +44,7 @@ fun TextView.setHighlighted(text: String, textToHighlight: String, colorValue: I
         .toRegex(RegexOption.IGNORE_CASE)
         .findAll(text)
         .map { it.range }
-        .filter { it.last + 1 <= text.length}
+        .filter { it.last + 1 <= text.length }
         .forEach {
             spanned.setSpan(
                 ForegroundColorSpan(colorValue),
@@ -67,7 +67,13 @@ fun TextView.setTextWithTagging(
     val commentContent = content ?: ""
     this.text = commentContent
 
-    val listMentions = mentions?.content ?: listOf()
+    val listMentions = (if (!mentions?.content.isNullOrEmpty()) {
+        mentions?.content
+    } else if (!mentions?.caption.isNullOrEmpty()) {
+        mentions?.caption
+    } else {
+        listOf()
+    }) ?: listOf()
     val listTags = tags ?: listOf()
 
     val color = ContextCompat.getColor(this.context, R.color.primaryYellowColor)

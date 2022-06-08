@@ -102,7 +102,7 @@
                                 android:textSize="@dimen/textSizeNormal" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <com.google.android.material.textfield.TextInputLayout
+                        <!--<com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/inputHashtags"
                             style="@style/TextInputLayout"
                             android:layout_width="match_parent"
@@ -112,7 +112,7 @@
                             android:layout_marginEnd="@dimen/marginTwenty"
                             app:boxStrokeColor="@color/colorAccent"
                             app:boxStrokeWidth="2dp"
-                            android:visibility="visible"
+                            android:visibility="gone"
                             app:helperText="@string/hastag_helper_text"
                             app:hintTextAppearance="@style/TextHintStyle"
                             app:hintTextColor="@color/colorAccent">
@@ -156,7 +156,7 @@
                             android:visibility="gone"
                             android:orientation="horizontal"
                             android:clipToPadding="false"
-                            tools:listitem="@layout/tag_item"/>
+                            tools:listitem="@layout/tag_item"/>-->
 
                     </LinearLayout>
 
