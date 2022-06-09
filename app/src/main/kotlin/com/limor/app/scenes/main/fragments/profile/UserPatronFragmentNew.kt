@@ -30,7 +30,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
 import com.android.billingclient.api.ProductDetails
-import com.android.billingclient.api.SkuDetails
 import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.common.Constants
@@ -70,6 +69,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import java.time.Duration
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 
@@ -738,32 +739,53 @@ class UserPatronFragmentNew : Fragment() {
         }
     }
 
+    private fun isEligibleForPatronRequest() : Boolean{
+        if (ChronoUnit.YEARS.between(user.dateOfBirth, LocalDate.now()) < 18) {
+            LimorDialog(layoutInflater).apply {
+                setIcon(R.drawable.ic_alert)
+                setTitle(R.string.age_restriction_title)
+                setMessage(R.string.patron_request_age_restrinction_message)
+                addButton(android.R.string.ok, true)
+            }.show()
+            return false
+        }
+        return true
+    }
+
     private fun setOnClicks() {
 
         binding.patronButton.setOnClickListener {
             when (user.patronInvitationStatus) {
                 null -> {
                     //Should request patron invitation
-                    binding.patronButton.isEnabled = false
-                    binding.patronButton.text = getString(R.string.requesting)
-                    requestInvitation()
+                    if(isEligibleForPatronRequest()){
+                        binding.patronButton.isEnabled = false
+                        binding.patronButton.text = getString(R.string.requesting)
+                        requestInvitation()
+                    }
                 }
                 "NOT_REQUESTED" -> {
                     //Should request patron invitation
-                    binding.patronButton.isEnabled = false
-                    binding.patronButton.text = getString(R.string.requesting)
-                    requestInvitation()
+                    if(isEligibleForPatronRequest()){
+                        binding.patronButton.isEnabled = false
+                        binding.patronButton.text = getString(R.string.requesting)
+                        requestInvitation()
+                    }
                 }
                 "APPROVED" -> checkPatronState()
                 "REJECTED" -> {
-                    binding.patronButton.isEnabled = false
-                    binding.patronButton.text = getString(R.string.requesting)
-                    requestInvitation()
+                    if(isEligibleForPatronRequest()){
+                        binding.patronButton.isEnabled = false
+                        binding.patronButton.text = getString(R.string.requesting)
+                        requestInvitation()
+                    }
                 }
                 "REVOKED" -> {
-                    binding.patronButton.isEnabled = false
-                    binding.patronButton.text = getString(R.string.requesting)
-                    requestInvitation()
+                    if(isEligibleForPatronRequest()){
+                        binding.patronButton.isEnabled = false
+                        binding.patronButton.text = getString(R.string.requesting)
+                        requestInvitation()
+                    }
                 }
 
             }
