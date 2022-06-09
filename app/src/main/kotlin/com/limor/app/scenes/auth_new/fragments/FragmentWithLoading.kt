@@ -7,6 +7,8 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import com.limor.app.R
+import com.limor.app.extensions.isOnline
 import kotlinx.android.synthetic.main.fragment_new_auth_loading_include.*
 import timber.log.Timber
 
@@ -41,7 +43,11 @@ abstract class FragmentWithLoading : Fragment() {
     protected open fun subscribeToViewModel() {
         errorLiveData.observe(viewLifecycleOwner, Observer {
             if (it.isNullOrEmpty()) return@Observer
-            tvErrorMessage.text = it
+            tvErrorMessage.text = if(!requireContext().isOnline()) {
+                requireContext().getString(R.string.default_no_internet)
+            } else{
+                it
+            }
             switchCommonVisibility(hasError = true)
         })
     }
