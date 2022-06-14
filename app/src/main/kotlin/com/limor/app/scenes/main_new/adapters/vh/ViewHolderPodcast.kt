@@ -2,11 +2,14 @@ package com.limor.app.scenes.main_new.adapters.vh
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Handler
 import android.os.Looper
-import android.text.Html
-import android.text.SpannableStringBuilder
-import android.text.Spanned
+import android.text.*
+import android.text.method.LinkMovementMethod
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.StyleSpan
+import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -65,7 +68,7 @@ class ViewHolderPodcast(
 
     private fun setPodcastGeneralInfo(item: CastUIModel) {
         binding.tvPodcastLength.text = item.audio?.duration?.let { CommonsKt.getFeedDuration(it) }
-        binding.tvPodcastTitle.text = item.title
+        binding.tvPodcastTitle.text = SpannableString(item.title)
         binding.tvPodcastSubtitle.setTextWithTagging(
             item.caption,
             item.mentions,
@@ -73,7 +76,16 @@ class ViewHolderPodcast(
             onUserMentionClick,
             onHashTagClick
         )
-        makeTextViewResizable(binding.tvPodcastSubtitle, 60, "..See More", true, item)
+        makeTextViewResizable(binding.tvPodcastTitle, 60, "..See More", true, item)
+        makeTextViewResizable(binding.tvPodcastSubtitle, 60, "..See More", true, item) {
+            binding.tvPodcastSubtitle.setTextWithTagging(
+                item.caption,
+                item.mentions,
+                item.tags,
+                onUserMentionClick,
+                onHashTagClick
+            )
+        }
         if (item.patronCast == true) {
             binding.patronCastIndicator.visibility = View.VISIBLE
         } else {
@@ -227,10 +239,6 @@ class ViewHolderPodcast(
             }
         }
 
-        binding.tvPodcastTitle.setOnClickListener {
-            var intent = Intent(context, UniPaasActivity::class.java)
-            context.startActivity(intent)
-        }
     }
 
     private fun openUserProfile(item: CastUIModel) {
@@ -330,8 +338,10 @@ class ViewHolderPodcast(
             productDetailsFetcher.getPrice(priceId, this)
             return
         }
-        binding.btnBuyCast.text = "${getString(R.string.buy_cast)}\n${details.oneTimePurchaseOfferDetails?.formattedPrice}"
-        binding.btnEditPrice.text = "${getString(R.string.edit_price)}\n${details.oneTimePurchaseOfferDetails?.formattedPrice}"
+        binding.btnBuyCast.text =
+            "${getString(R.string.buy_cast)}\n${details.oneTimePurchaseOfferDetails?.formattedPrice}"
+        binding.btnEditPrice.text =
+            "${getString(R.string.edit_price)}\n${details.oneTimePurchaseOfferDetails?.formattedPrice}"
     }
 
     override fun onDetailsAvailable(details: Map<String, ProductDetails>) {
@@ -347,7 +357,8 @@ class ViewHolderPodcast(
         maxCharacters: Int,
         expandText: String,
         viewMore: Boolean,
-        item: CastUIModel
+        item: CastUIModel,
+        reset: (() -> Unit)? = null
     ) {
         if (tv.tag == null) {
             tv.tag = tv.text
@@ -359,9 +370,10 @@ class ViewHolderPodcast(
                 tv.setText(
                     addClickablePartTextViewResizable(
                         Html.fromHtml(tv.text.toString()), tv, Int.MAX_VALUE, expandText,
-                        viewMore, item
+                        viewMore, item, reset
                     ), TextView.BufferType.SPANNABLE
                 )
+                tv.movementMethod = LinkMovementMethod.getInstance()
             }
         })
     }
@@ -369,11 +381,24 @@ class ViewHolderPodcast(
     private fun addClickablePartTextViewResizable(
         strSpanned: Spanned, tv: TextView,
         maxLine: Int, spanableText: String, viewMore: Boolean,
-        item: CastUIModel
+        item: CastUIModel,
+        reset: (() -> Unit)? = null
     ): SpannableStringBuilder {
         val str = strSpanned.toString()
         val ssb = SpannableStringBuilder(strSpanned)
         if (str.contains(spanableText)) {
+            ssb.setSpan(
+                StyleSpan(Typeface.NORMAL),
+                str.indexOf(spanableText),
+                str.indexOf(spanableText) + spanableText.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            ssb.setSpan(
+                AbsoluteSizeSpan(14, true),
+                str.indexOf(spanableText),
+                str.indexOf(spanableText) + spanableText.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
             ssb.setSpan(object : MySpannable(false) {
                 override fun onClick(widget: View) {
                     if (viewMore) {
@@ -381,18 +406,12 @@ class ViewHolderPodcast(
                         tv.maxLines = Int.MAX_VALUE
                         tv.layoutParams = tv.layoutParams
                         tv.setText(tv.tag.toString(), TextView.BufferType.SPANNABLE)
-                        binding.tvPodcastSubtitle.setTextWithTagging(
-                            item.caption,
-                            item.mentions,
-                            item.tags,
-                            onUserMentionClick,
-                            onHashTagClick
-                        )
+                        reset?.invoke()
                     } else {
                         tv.maxLines = 2
                         tv.layoutParams = tv.layoutParams
                         tv.setText(tv.tag.toString(), TextView.BufferType.SPANNABLE)
-                        makeTextViewResizable(tv, 3, "..See More", true, item)
+                        makeTextViewResizable(tv, 3, "..See More", true, item, reset)
                     }
                 }
             }, str.indexOf(spanableText), str.indexOf(spanableText) + spanableText.length, 0)
