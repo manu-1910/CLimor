@@ -76,7 +76,6 @@ class ViewHolderPodcast(
             onUserMentionClick,
             onHashTagClick
         )
-        makeTextViewResizable(binding.tvPodcastTitle, 60, "..See More", true, item)
         makeTextViewResizable(binding.tvPodcastSubtitle, 60, "..See More", true, item) {
             binding.tvPodcastSubtitle.setTextWithTagging(
                 item.caption,
