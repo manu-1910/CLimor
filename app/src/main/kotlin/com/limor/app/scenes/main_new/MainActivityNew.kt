@@ -322,11 +322,13 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         navigation.setOnItemSelectedListener(object : NavigationBarView.OnItemSelectedListener {
             override fun onNavigationItemSelected(item: MenuItem): Boolean {
                 if (item.itemId == navController.currentDestination?.id) {
+                    ensureLayout()
                     return true
                 }
 
                 // Try to navigate to the destination within the current back stack
                 if (navController.popBackStack(item.itemId, inclusive = false, saveState = true)) {
+                    ensureLayout()
                     return true
                 }
 
@@ -341,16 +343,10 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         })
     }
 
-
     private fun ensureLayout() {
         val manager = activityPlayerViewManager ?: return
-        manager.doAfterTransitionComplete {
-            ensureHostLayoutParams()
-        }
-    }
-
-    private fun ensureHostLayoutParams() {
         val host = binding.root.findViewById<View>(R.id.nav_host_fragment) ?: return
+
         val updateParams: () -> Unit = {
             host.updateLayoutParams {
                 width = ViewGroup.LayoutParams.MATCH_PARENT
@@ -358,8 +354,9 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
             }
         }
 
-        // This should work always
-        updateParams()
+        manager.doAfterTransitionComplete {
+            updateParams()
+        }
 
         // However to avoid any edge cases we update the params again after the aniamtion has
         // surely completed.
@@ -370,8 +367,8 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         host.postDelayed({
             updateParams()
         }, 600)
-    }
 
+    }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> =
         fragmentInjector

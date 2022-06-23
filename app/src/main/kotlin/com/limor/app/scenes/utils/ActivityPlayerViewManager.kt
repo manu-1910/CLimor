@@ -172,6 +172,15 @@ class ActivityPlayerViewManager(
         } else {
             showExtendedPlayer()
         }
+
+        triggerCallbacks()
+    }
+
+    private fun triggerCallbacks() {
+        completeCallbacks.copyOf().forEachIterable {
+            it()
+            completeCallbacks.remove(it)
+        }
     }
 
     override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int) {
@@ -183,11 +192,6 @@ class ActivityPlayerViewManager(
         // where the @+id/start ConstraintSet has the mini player height and position, so when the
         // currentId is the "start" ID we need to be showing the mini player
         toggleFragments(isAtStart)
-
-        completeCallbacks.copyOf().forEachIterable {
-            it()
-            completeCallbacks.remove(it)
-        }
     }
 
     override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int) {
