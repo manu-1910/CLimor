@@ -7,6 +7,8 @@ import com.google.android.exoplayer2.Player
 import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
+import com.limor.app.extensions.copyOf
+import com.limor.app.extensions.forEachIterable
 import com.limor.app.extensions.makeGone
 import com.limor.app.extensions.makeVisible
 import com.limor.app.scenes.main_new.fragments.ExtendedPlayerFragment
@@ -26,6 +28,8 @@ class ActivityPlayerViewManager(
     private var currentFragment: Fragment? = null
     private var currentArgs: PlayerViewManager.PlayerArgs? = null
     private var isPlayerVisible: Boolean = false
+
+    private val completeCallbacks = mutableListOf<() -> Unit>()
 
     init {
         playerBinding.motionLayout.apply {
@@ -130,6 +134,7 @@ class ActivityPlayerViewManager(
         if (currentFragment is T) {
             return
         }
+
         val targetFragment = fragment()
         currentFragment = targetFragment
         fragmentManager.beginTransaction().also {
@@ -178,6 +183,11 @@ class ActivityPlayerViewManager(
         // where the @+id/start ConstraintSet has the mini player height and position, so when the
         // currentId is the "start" ID we need to be showing the mini player
         toggleFragments(isAtStart)
+
+        completeCallbacks.copyOf().forEachIterable {
+            it()
+            completeCallbacks.remove(it)
+        }
     }
 
     override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int) {
@@ -210,5 +220,9 @@ class ActivityPlayerViewManager(
         if (BuildConfig.DEBUG) {
             println("onTransitionTrigger from $triggerId. Is positive -> $positive, at progress of $progress. ")
         }
+    }
+
+    fun doAfterTransitionComplete(callback: () -> Unit) {
+        completeCallbacks.add(callback)
     }
 }

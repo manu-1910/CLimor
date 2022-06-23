@@ -12,9 +12,11 @@ import android.os.Handler
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.ViewModelProvider
@@ -331,11 +333,45 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
                 // At this point we just have to navigate to the destination
                 navController.navigate(item.itemId)
 
+                ensureLayout()
+
                 // always select the item regardless of how the navigation was handled
                 return true
             }
         })
     }
+
+
+    private fun ensureLayout() {
+        val manager = activityPlayerViewManager ?: return
+        manager.doAfterTransitionComplete {
+            ensureHostLayoutParams()
+        }
+    }
+
+    private fun ensureHostLayoutParams() {
+        val host = binding.root.findViewById<View>(R.id.nav_host_fragment) ?: return
+        val updateParams: () -> Unit = {
+            host.updateLayoutParams {
+                width = ViewGroup.LayoutParams.MATCH_PARENT
+                height = ViewGroup.LayoutParams.MATCH_PARENT
+            }
+        }
+
+        // This should work always
+        updateParams()
+
+        // However to avoid any edge cases we update the params again after the aniamtion has
+        // surely completed.
+        //
+        // 600 ms because the transition animation duration is 500 + 100 ms slack
+        // check container_transition_player_scene.xml for the animation duration value
+        //
+        host.postDelayed({
+            updateParams()
+        }, 600)
+    }
+
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> =
         fragmentInjector
