@@ -110,6 +110,7 @@ class FragmentSuggested : FragmentWithLoading() {
     private fun navigateToHomeFeed() {
         model.updateOnboardingStatusLiveData.removeObservers(viewLifecycleOwner)
         PrefsHandler.saveJustLoggedIn(requireContext(), true)
+        PrefsHandler.setCanShowGenderSelection(requireContext(), true)
         view?.findNavController()?.navigate(R.id.go_to_main_activity)
         Timber.d("trying to finish activity")
         saveNavigationBreakPoint(NavigationBreakpoints.HOME_FEED.destination)

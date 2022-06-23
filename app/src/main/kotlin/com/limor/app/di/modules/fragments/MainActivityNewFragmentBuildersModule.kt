@@ -6,6 +6,7 @@ import com.limor.app.dm.ui.ShareFragment
 import com.limor.app.playlists.PlaylistsFragment
 import com.limor.app.playlists.SaveToPlaylistFragment
 import com.limor.app.scenes.auth_new.fragments.FragmentCategories
+import com.limor.app.scenes.auth_new.fragments.FragmentGender
 import com.limor.app.scenes.auth_new.fragments.FragmentLanguages
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverAllCategoriesFragment
 import com.limor.app.scenes.main.fragments.discover.category.DiscoverCategoryFragment
@@ -133,7 +134,7 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeFragmentPlaylistDetails(): FragmentPlaylistDetails
-  
+
     @ContributesAndroidInjector
     abstract fun contributePlaylistsFragment(): PlaylistsFragment
 
@@ -148,6 +149,9 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeFeedSuggestedPeople(): FeedSuggestedPeople
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentGender(): FragmentGender
 
 }
 

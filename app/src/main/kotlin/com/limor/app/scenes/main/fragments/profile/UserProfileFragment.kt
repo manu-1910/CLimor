@@ -2,6 +2,8 @@ package com.limor.app.scenes.main.fragments.profile
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,8 +22,10 @@ import com.limor.app.common.Constants
 import com.limor.app.components.tabselector.TabSelectorView
 import com.limor.app.databinding.UserProfileFragmentBinding
 import com.limor.app.di.Injectable
+import com.limor.app.scenes.auth_new.fragments.FragmentGender
 import com.limor.app.scenes.auth_new.fragments.FragmentWithLoading
 import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.adapters.ProfileViewPagerAdapter
 import com.limor.app.scenes.main.fragments.settings.OpenSettings
 import com.limor.app.scenes.patron.manage.ManagePatronActivity
@@ -69,6 +73,7 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         savedInstanceState: Bundle?
     ): View {
         binding = UserProfileFragmentBinding.inflate(inflater, container, false)
+        showGender()
         return binding.root
     }
 
@@ -418,4 +423,14 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
         super.onResume()
         binding.toolbar.invitePendingTv.text = "${CommonsKt.user?.availableInvitations ?: "0"}"
     }
+
+    private fun showGender() {
+        if (PrefsHandler.canShowGenderSelection(requireContext())) {
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                val dialog = FragmentGender.newInstance()
+                dialog.show(parentFragmentManager, FragmentGender.TAG)
+            }, 400)
+        }
+    }
+
 }

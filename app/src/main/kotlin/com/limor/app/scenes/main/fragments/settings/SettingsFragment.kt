@@ -217,6 +217,7 @@ class SettingsFragment : BaseFragment() {
                 PrefsHandler.setCanShowCategorySelection(requireContext(), false)
                 PrefsHandler.setPreferencesSelected(requireContext(), false)
                 PrefsHandler.setPreferencesScreenOpenedInThisSession(requireContext(), false)
+                PrefsHandler.setCanShowGenderSelection(requireContext(), false)
                 (activity)?.finishAffinity()
                 startActivity(
                     Intent(requireContext(), SplashActivity::class.java)

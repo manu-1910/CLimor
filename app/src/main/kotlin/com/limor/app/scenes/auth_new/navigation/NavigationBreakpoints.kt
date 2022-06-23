@@ -8,7 +8,7 @@ import com.limor.app.R
 
 enum class NavigationBreakpoints(val destination: String, @IdRes val actionId: Int) {
     ACCOUNT_CREATION("ACCOUNT_CREATION", R.id.fragment_new_auth_enter_email),
-    USERNAME_CREATION("USERNAME_CREATION", R.id.fragment_new_auth_enter_username),
+    USERNAME_CREATION("USERNAME_CREATION", R.id.fragment_new_auth_enter_first_name_last_name),
     DOB_PHONE_COLLECTION("DOB_PHONE_COLLECTION", R.id.fragment_new_auth_dob_picker),
     PREFERENCE_COLLECTION("PREFERENCE_COLLECTION", R.id.fragment_new_auth_gender),
     SHOW_PROFILES("SHOW_SUGGESTED_PROFILES", R.id.fragment_new_auth_suggested_people),

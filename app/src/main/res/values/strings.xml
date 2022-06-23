@@ -568,8 +568,8 @@
     <string name="sex_other">Other</string>
     <string name="first_name_last_name">First name &amp; Last name</string>
     <string name="name_description">Enter your first name and last name that people can find you easily</string>
-    <string name="enter_first_name">First name</string>
-    <string name="enter_last_name">Last name</string>
+    <string name="enter_first_name">First Name</string>
+    <string name="enter_last_name">Last Name</string>
     <string name="categories">Categories</string>
     <string name="languages">Languages</string>
     <string name="search_hint">Search…</string>
@@ -1070,5 +1070,7 @@
     
     <string name="age_restriction_title">Age Restriction</string>
     <string name="patron_request_age_restrinction_message">Users must be at least 18 years to become Patron members</string>
+    <string name="about_you">About you</string>
+    <string name="tell_us_about_you_description">Tell us about you so that people can find you easily</string>
 
 </resources>

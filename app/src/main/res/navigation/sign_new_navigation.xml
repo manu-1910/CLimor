@@ -80,27 +80,6 @@
             app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
     </fragment>
 
-    <!--    <fragment-->
-    <!--        android:id="@+id/fragment_new_auth_sign_up"-->
-    <!--        android:name="com.limor.app.scenes.auth_new.fragments.FragmentSignUp"-->
-    <!--        android:label="Sing Up"-->
-    <!--        tools:layout="@layout/fragment_new_auth_sign_up">-->
-    <!--        <action-->
-    <!--            android:id="@+id/action_fragment_new_auth_sign_up_to_fragment_new_auth_dob_picker"-->
-    <!--            app:destination="@id/fragment_new_auth_dob_picker"-->
-    <!--            app:enterAnim="@anim/slide_in_right_enter_no_alpha"-->
-    <!--            app:exitAnim="@anim/slide_out_left_exit_no_alpha"-->
-    <!--            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"-->
-    <!--            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />-->
-    <!--        <action-->
-    <!--            android:id="@+id/action_fragment_new_auth_sign_up_to_fragment_new_auth_sign_in"-->
-    <!--            app:destination="@id/fragment_new_auth_sign_in"-->
-    <!--            app:enterAnim="@anim/slide_in_right_enter_no_alpha"-->
-    <!--            app:exitAnim="@anim/slide_out_left_exit_no_alpha"-->
-    <!--            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"-->
-    <!--            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />-->
-    <!--    </fragment>-->
-
     <fragment
         android:id="@+id/fragment_new_auth_dob_picker"
         android:name="com.limor.app.scenes.auth_new.fragments.FragmentDobPicker"
@@ -203,22 +182,8 @@
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
             app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/fragment_new_auth_gender"
-        android:name="com.limor.app.scenes.auth_new.fragments.FragmentGender"
-        android:label="Enter Gender"
-        tools:layout="@layout/fragment_new_auth_gender">
-        <!--<action
-            android:id="@+id/action_fragment_new_auth_gender_to_fragment_new_auth_categories"
-            app:destination="@id/fragment_new_auth_categories"
-            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
-            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
-            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
-            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />-->
         <action
-            android:id="@+id/action_fragment_new_auth_gender_to_fragment_new_auth_suggested_people"
+            android:id="@+id/action_fragment_new_auth_first_last_name_to_fragment_new_auth_suggested_people"
             app:destination="@id/fragment_new_auth_suggested_people"
             app:enterAnim="@anim/slide_in_right_enter_no_alpha"
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"

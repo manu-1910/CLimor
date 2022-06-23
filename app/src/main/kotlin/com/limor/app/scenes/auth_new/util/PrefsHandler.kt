@@ -35,6 +35,7 @@ object PrefsHandler {
     private const val KEY_TAB_ID = "one_signal_notification_tab_id"
     private const val KEY_JUST_LOGGED_IN = "just_logged_in"
     private const val KEY_CAN_SHOW_CATEGORY_SELECTION = "can_show_category_selection"
+    private const val KEY_CAN_SHOW_GENDER_SELECTION = "can_show_gender_popup"
 
     private fun sp(context: Context) = sharedPreferences(context)
 
@@ -239,5 +240,14 @@ object PrefsHandler {
 
     fun canShowCategorySelection(context: Context) =
         sharedPreferences(context).getBoolean(KEY_CAN_SHOW_CATEGORY_SELECTION, false)
+
+    fun setCanShowGenderSelection(context: Context, show: Boolean){
+        sharedPreferences(context).edit(true){
+            putBoolean(KEY_CAN_SHOW_GENDER_SELECTION, show)
+        }
+    }
+
+    fun canShowGenderSelection(context: Context) =
+        sharedPreferences(context).getBoolean(KEY_CAN_SHOW_GENDER_SELECTION, false)
 
 }

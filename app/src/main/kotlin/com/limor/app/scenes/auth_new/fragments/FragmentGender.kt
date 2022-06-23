@@ -1,24 +1,42 @@
 package com.limor.app.scenes.auth_new.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.ViewModelProvider
 import com.limor.app.GendersQuery
 import com.limor.app.R
 import com.limor.app.scenes.auth_new.AuthViewModelNew
-import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import com.limor.app.scenes.auth_new.util.PrefsHandler
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_new_auth_gender.*
+import javax.inject.Inject
 
-class FragmentGender : FragmentWithLoading() {
+class FragmentGender : DialogFragment() {
 
-    private val model: AuthViewModelNew by activityViewModels()
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val model: AuthViewModelNew by activityViewModels { viewModelFactory }
+
+    companion object {
+        val TAG = FragmentGender::class.qualifiedName
+        fun newInstance(): FragmentGender {
+            return FragmentGender()
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.Theme_AppCompat_FloatingDialog)
+        load()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,51 +46,54 @@ class FragmentGender : FragmentWithLoading() {
         return inflater.inflate(R.layout.fragment_new_auth_gender, container, false)
     }
 
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        AndroidSupportInjection.inject(this)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setOnClickListeners()
-        saveNavigationBreakPoint()
+        subscribeToViewModel()
         toggleGender.isEnabled = false
     }
 
-    override fun load() {
+    fun load() {
         model.downloadGenders()
     }
 
-    override val errorLiveData: LiveData<String>
+    val errorLiveData: LiveData<String>
         get() = model.gendersLiveDataError
 
 
-    override fun subscribeToViewModel() {
-        super.subscribeToViewModel()
+    fun subscribeToViewModel() {
         model.gendersSelectionDone.observe(viewLifecycleOwner, Observer {
             btnContinue.isEnabled = it
         })
 
         model.gendersLiveData.observe(viewLifecycleOwner, Observer {
             if (it.isNotEmpty()) {
-                switchCommonVisibility()
                 setUpToggleButton(it)
             }
         })
         model.updatePreferredInfoLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
-            /*findNavController()
-                .navigate(R.id.action_fragment_new_auth_gender_to_fragment_new_auth_categories)*/
-            findNavController().navigate(R.id.action_fragment_new_auth_gender_to_fragment_new_auth_suggested_people)
+            PrefsHandler.setCanShowGenderSelection(requireContext(), false)
+            dismiss()
         })
     }
 
     private fun setOnClickListeners() {
         btnContinue.setOnClickListener {
             model.updateGenderInfo()
-        }
-
-        btnSkip.setOnClickListener {
-            // TOD0: Update onboarding status to "SHOW_SUGGESTED_PROFILES"
-            // model.selectGender(0)
-            it.findNavController()
-                .navigate(R.id.action_fragment_new_auth_gender_to_fragment_new_auth_suggested_people)
         }
     }
 
@@ -82,15 +103,15 @@ class FragmentGender : FragmentWithLoading() {
     }
 
     private fun addToggleClickListener(list: List<GendersQuery.Gender>) {
-        btnGender1.text = list[0].gender
-        btnGender2.text = list[1].gender
-        btnGender3.text = list[2].gender
+        btGender1.text = list[0].gender
+        btGender2.text = list[1].gender
+        btGender3.text = list[2].gender
         toggleGender.addOnButtonCheckedListener { toggleButton, checkedId, isChecked ->
             if (isChecked) {
                 val gender = when (checkedId) {
-                    R.id.btnGender1 -> list[0]
-                    R.id.btnGender2 -> list[1]
-                    R.id.btnGender3 -> list[2]
+                    R.id.btGender1 -> list[0]
+                    R.id.btGender2 -> list[1]
+                    R.id.btGender3 -> list[2]
                     else -> list[0]
                 }
                 model.selectGender(gender.id ?: 0)
@@ -100,18 +121,12 @@ class FragmentGender : FragmentWithLoading() {
 
     private fun setUpInitialGender() {
         val checkedId = when (model.selectedGenderIndex) {
-            0 -> R.id.btnGender1
-            1 -> R.id.btnGender2
-            2 -> R.id.btnGender3
-            else -> R.id.btnGender1
+            0 -> R.id.btGender1
+            1 -> R.id.btGender2
+            2 -> R.id.btGender3
+            else -> R.id.btGender1
         }
         toggleGender.check(checkedId)
     }
 
-    private fun saveNavigationBreakPoint() {
-        model.saveNavigationBreakPoint(
-            requireContext(),
-            NavigationBreakpoints.PREFERENCE_COLLECTION.destination
-        )
-    }
 }
