@@ -43,6 +43,7 @@ class FragmentGender : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        dialog?.setCancelable(false)
         return inflater.inflate(R.layout.fragment_new_auth_gender, container, false)
     }
 
