@@ -105,6 +105,16 @@
         <item name="endIconTint">@color/end_icon_tint</item>
     </style>
 
+    <style name="TextInputLayoutOutlineWithHelperText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="errorEnabled">true</item>
+        <item name="boxStrokeErrorColor">@color/approved_green</item>
+        <item name="errorTextColor">@color/approved_green</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.App.SmallComponent</item>
+        <item name="boxBackgroundColor">@color/transparent</item>
+        <item name="boxStrokeColor">@color/approved_green</item>
+        <item name="android:textColorHint">@color/approved_green</item>
+    </style>
+
     <style name="TextInputLayoutOutline" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.App.SmallComponent</item>
         <item name="boxBackgroundColor">@color/transparent</item>

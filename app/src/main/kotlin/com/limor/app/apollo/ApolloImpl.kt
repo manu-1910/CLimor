@@ -32,7 +32,10 @@ class ApolloImpl(val client: ApolloClient) : Apollo {
     private fun <T> checkResultForErrors(response: Response<T>, queryName: String) {
         if (response.hasErrors()) {
             val errorMessage = response.errors!!.joinToString("\n") { it.message }
-            val errorWithQueryPrefix = StringBuilder(queryName).append("-> ").append(errorMessage)
+            val errorWithQueryPrefix =
+                if (getMutationSpecificError(queryName).isNotEmpty()) getMutationSpecificError(
+                    queryName
+                ) else StringBuilder(queryName).append("-> ").append(errorMessage)
             val apiException = GraphqlClientException(errorWithQueryPrefix.toString())
             Timber.e(apiException)
             throw apiException
@@ -46,4 +49,11 @@ fun showHumanizedErrorMessage(e: Throwable): String {
     if (e is IOException || e.cause is IOException)
         return "Check internet"
     return e.message?.split("->")?.last() ?: "Network client error"
+}
+
+fun getMutationSpecificError(queryName: String): String {
+    return when (queryName) {
+        "UpdateUserNameMutation" -> "Already in Use"
+        else -> ""
+    }
 }

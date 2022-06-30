@@ -1,11 +1,15 @@
 package com.limor.app.scenes.auth_new.fragments
 
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.InputFilter
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
@@ -62,6 +66,7 @@ class FragmentFirstAndLastName : Fragment() {
         model.userInfoProviderErrorLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
             ToastMaker.showToast(requireContext(), it)
+            btnNamesPickerContinue.isEnabled = true
         })
         model.currentUserFullNameIsValid.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
@@ -92,7 +97,17 @@ class FragmentFirstAndLastName : Fragment() {
 
         model.updateUserNameLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
-            findNavController().navigate(R.id.action_fragment_new_auth_first_last_name_to_fragment_new_auth_suggested_people)
+            etEnterUsername.isErrorEnabled = true
+            etEnterUsername.error = "You're good to go"
+            etEnterUsername.boxStrokeErrorColor = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.approved_green))
+            etEnterUsername.setErrorTextColor(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.approved_green)))
+            etEnterUsername.hintTextColor = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.approved_green))
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                etEnterUsername.invalidate()
+            }, 100)
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                findNavController().navigate(R.id.action_fragment_new_auth_first_last_name_to_fragment_new_auth_suggested_people)
+            }, 3000)
         })
     }
 
@@ -125,6 +140,7 @@ class FragmentFirstAndLastName : Fragment() {
                 etEnterUsername.error = "Required"
                 etEnterUsername.requestFocus()
             } else {
+                btnNamesPickerContinue.isEnabled = false
                 model.submitNames()
             }
         }
