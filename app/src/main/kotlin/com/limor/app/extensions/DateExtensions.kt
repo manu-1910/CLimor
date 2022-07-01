@@ -3,6 +3,10 @@ package com.limor.app.extensions
 import java.time.*
 import java.time.format.DateTimeParseException
 import java.util.*
+import java.time.temporal.TemporalQueries.localDate
+
+
+
 
 fun Long.epochSecondToLocalDate(): LocalDate {
     return Instant.ofEpochSecond(this).atZone(ZoneId.systemDefault())
@@ -51,4 +55,13 @@ fun String.toLocalDateTime(): LocalDateTime {
 fun Calendar.isToday() : Boolean {
     val today = Calendar.getInstance()
     return today[Calendar.YEAR] == get(Calendar.YEAR) && today[Calendar.DAY_OF_YEAR] == get(Calendar.DAY_OF_YEAR)
+}
+
+fun LocalDate.toCalendar(): Calendar{
+    val zonedDateTime: ZonedDateTime = this.atStartOfDay(ZoneId.systemDefault())
+    val instant = zonedDateTime.toInstant()
+    val date = Date.from(instant)
+    val calendar = Calendar.getInstance()
+    calendar.time = date
+    return calendar
 }

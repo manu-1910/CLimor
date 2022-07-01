@@ -26,6 +26,7 @@ import com.limor.app.R
 import com.limor.app.databinding.FragmentSetUpDigitalWalletFormBinding
 import com.limor.app.di.Injectable
 import com.limor.app.extensions.hideKeyboard
+import com.limor.app.extensions.toCalendar
 import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.Country
 import com.limor.app.scenes.auth_new.util.PrefsHandler
@@ -60,7 +61,7 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
     }
     private lateinit var binding: FragmentSetUpDigitalWalletFormBinding
 
-    val myCalendar = Calendar.getInstance()
+    private var myCalendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +78,7 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
+        model.loadCountriesList(requireActivity().assets)
         binding = FragmentSetUpDigitalWalletFormBinding.inflate(layoutInflater)
         return binding.root
     }
@@ -91,6 +93,7 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
 
     private fun setDefaults() {
         binding.etEnterDOBInner.setText(CommonsKt.getFormattedLocalDate(user?.dateOfBirth))
+        myCalendar = user?.dateOfBirth?.toCalendar() ?: Calendar.getInstance()
         binding.etEnterFirstNameInner.setText(user?.firstName)
         binding.etEnterLastNameInner.setText(user?.lastName)
     }
@@ -113,7 +116,8 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
         val editText = binding.etPhoneCode.editText as AutoCompleteTextView
         val tM = requireContext().getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         val countryCodeValue = tM.networkCountryIso
-        val country: Country? = countries.find { it.codeLetters.lowercase() == countryCodeValue}
+        // Hardcoded for now
+        val country: Country? = countries.find { it.codeLetters.lowercase() == /*countryCodeValue*/"gb"}
         Timber.d("${country?.codeLetters}  $countryCodeValue")
         if(model.countrySelected == null){
             country?.let{
@@ -122,39 +126,14 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
         }
         model.countrySelected?.let {
             editText.setText(it.visualFormat)
+            editText.isEnabled = false
         }
         enableSubmitButton()
     }
 
-    var date =
-        OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            myCalendar.set(Calendar.YEAR, year)
-            myCalendar.set(Calendar.MONTH, monthOfYear)
-            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-
-            val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-            sdf.timeZone = TimeZone.getTimeZone("UTC")
-            val dateFormat = sdf.format(myCalendar.time)
-
-            binding.etEnterDOBInner.setText(CommonsKt.getFormattedLocalDate(LocalDateTime.ofInstant(myCalendar.toInstant(), ZoneId.systemDefault()).toLocalDate()))
-        }
-
     private fun setClickListeners() {
         binding.btnContinue.setOnClickListener {
             validateInputAndContinue()
-           // findNavController().navigate(R.id.action_set_up_digital_wallet_form_fragment_to_set_up_digital_wallet_confirmation)
-        }
-
-        binding.vCountryCode.setOnClickListener {
-            findNavController().navigate(R.id.action_set_up_digital_wallet_form_fragment_to_country_code_selection)
-        }
-
-        binding.dateOfBirthView.setOnClickListener {
-            DatePickerDialog(
-                requireContext(), date, myCalendar
-                    .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                myCalendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
         }
     }
 
@@ -191,6 +170,10 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
 
         if(binding.etEnterPhoneInner.text.isNullOrEmpty()){
             binding.etEnterPhoneInner.error = "Required"
+            binding.etEnterPhoneInner.requestFocus()
+            return
+        } else if(model.phoneIsValidLiveData.value == false){
+            binding.etEnterPhoneInner.error = "Invalid phone number"
             binding.etEnterPhoneInner.requestFocus()
             return
         }
@@ -240,6 +223,7 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
                 binding.etEnterCountryInner.text.toString().isNotEmpty() &&
                 binding.etEnterEmailInner.text.toString().isNotEmpty() &&
                 binding.etEnterPhoneInner.text.toString().isNotEmpty() &&
+                model.phoneIsValidLiveData.value == true &&
                 model.countrySelected != null
         )
     }
