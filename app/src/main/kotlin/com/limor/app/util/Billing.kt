@@ -36,8 +36,24 @@ fun Iterable<ProductDetails.SubscriptionOfferDetails>?.basePrice(): ProductDetai
         return null
     }
 
+    // First try those offers which only have a 'base' tag
     for (detail in this) {
         if (detail.offerTags.size == 1 && detail.offerTags.contains("base")) {
+            return detail.pricingPhases.pricingPhaseList.first()
+        }
+    }
+
+    // This is a workaround for incorrectly fetched google play product details, where there are
+    // no offerTags, in such cases we presume that is the base price
+    for (detail in this) {
+        if (detail.offerTags.isEmpty()) {
+            return detail.pricingPhases.pricingPhaseList.first()
+        }
+    }
+
+    // Finally try any offer containing the 'base' tag
+    for (detail in this) {
+        if (detail.offerTags.contains("base")) {
             return detail.pricingPhases.pricingPhaseList.first()
         }
     }
