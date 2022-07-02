@@ -39,7 +39,7 @@ class PatronPlanViewHolder(
             )
             return spannableString
         } else if (productDetails.defaultProductDetails.productId.contains("annual")) {
-            val spannableString = SpannableString(binding.root.context.getString(R.string.sub_tier_yearly))
+            val spannableString = if(productDetails.discountedProductDetails != null) SpannableString(binding.root.context.getString(R.string.sub_tier_yearly_discounted)) else SpannableString(binding.root.context.getString(R.string.sub_tier_yearly))
             spannableString.setSpan(
                 AbsoluteSizeSpan(18, true),
                 0,

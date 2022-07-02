@@ -1034,6 +1034,7 @@
 
     <string name="sub_tier_monthly">Patron - Introductory Monthly Subscription.</string>
     <string name="sub_tier_yearly">Patron Pro - Introductory Annual Membership.</string>
+    <string name="sub_tier_yearly_discounted">Patron Pro - Discounted Annual Membership.</string>
     <string name="monthly_subs_striked_description"><strike>Regular Monthly Subscription Price: %s</strike></string>
     <string name="yearly_subs_striked_description"><strike>Regular Yearly Subscription Price: %s</strike></string>
     <string name="updated_app_toast">New Version Has been Installed</string>
