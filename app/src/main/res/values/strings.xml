@@ -903,8 +903,8 @@
     <string name="do_it_later">Do it later</string>
     <string name="country">Country</string>
     <string name="date_of_birth">Date of Birth</string>
-    <string name="last_name">Last name</string>
-    <string name="first_name">First name</string>
+    <string name="last_name">Last name*</string>
+    <string name="first_name">First name*</string>
     <string name="setup_later">Setup Later</string>
     <string name="set_up_later_description">You will not be able to monetize your casts until your digital wallet setup is completed.</string>
 
@@ -1073,5 +1073,11 @@
     <string name="patron_request_age_restrinction_message">Users must be at least 18 years to become Patron members</string>
     <string name="about_you">About you</string>
     <string name="tell_us_about_you_description">Tell us about you so that people can find you easily</string>
+    
+    <string name="mandatory_first_name">First Name*</string>
+    <string name="mandatory_last_name">Last Name*</string>
+    <string name="mandatory_email">Email*</string>
+    <string name="mandatory_phone_number">Phone number*</string>
+    <string name="cant_be_empty">Field can\'t be empty.</string>
 
 </resources>

@@ -50,6 +50,8 @@ class FragmentFirstAndLastName : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setOnClickListeners()
         setTextChangedListener()
+        setHelperTexts()
+        setFocusListeners()
         subscribeToViewModel()
         saveNavigationBreakPoint()
     }
@@ -111,6 +113,16 @@ class FragmentFirstAndLastName : Fragment() {
         })
     }
 
+    private fun setHelperTexts(){
+        etEnterFirstName.helperText = getString(R.string.required)
+        etEnterLastName.helperText = getString(R.string.required)
+        etEnterUsername.helperText = getString(R.string.required)
+        Handler(Looper.getMainLooper()).postDelayed(Runnable {
+            etEnterUsername.error = null
+            etEnterUsername.helperText = getString(R.string.required)
+        }, 200)
+    }
+
     private fun setTextChangedListener() {
         etEnterFirstName.editText?.setText(model.firstName)
         etEnterFirstName.editText?.doAfterTextChanged {
@@ -126,6 +138,48 @@ class FragmentFirstAndLastName : Fragment() {
 
         etEnterUsername.editText?.setText(model.currentUsername)
         etEnterUsername.editText?.doAfterTextChanged { model.changeCurrentUserName(it?.toString()) }
+    }
+
+    private fun setFocusListeners(){
+        etEnterFirstNameInner.setOnFocusChangeListener { view, b ->
+            if(!b){
+                if(etEnterFirstNameInner.text.toString().isEmpty()){
+                    etEnterFirstName.error = getString(R.string.cant_be_empty)
+                } else{
+                    etEnterFirstName.error = null
+                    etEnterFirstName.helperText = getString(R.string.required)
+                }
+            } else{
+                etEnterFirstName.error = null
+                etEnterFirstName.helperText = getString(R.string.required)
+            }
+        }
+        etEnterLastNameInner.setOnFocusChangeListener { view, b ->
+            if(!b){
+                if(etEnterLastNameInner.text.toString().isEmpty()){
+                    etEnterLastName.error = getString(R.string.cant_be_empty)
+                } else{
+                    etEnterLastName.error = null
+                    etEnterLastName.helperText = getString(R.string.required)
+                }
+            } else{
+                etEnterLastName.error = null
+                etEnterLastName.helperText = getString(R.string.required)
+            }
+        }
+        etEnterUsernameInner.setOnFocusChangeListener { view, b ->
+            if(!b){
+                if(etEnterUsernameInner.text.toString().isEmpty()){
+                    etEnterUsername.error = getString(R.string.cant_be_empty)
+                } else{
+                    etEnterUsername.error = null
+                    etEnterUsername.helperText = getString(R.string.required)
+                }
+            } else{
+                etEnterUsername.error = null
+                etEnterUsername.helperText = getString(R.string.required)
+            }
+        }
     }
 
     private fun setOnClickListeners() {

@@ -3,6 +3,7 @@ package com.limor.app.scenes.patron.unipaas
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Context
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.telephony.TelephonyManager
 import android.text.Editable
@@ -13,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -33,11 +35,13 @@ import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.uimodels.UserUIModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
+import kotlinx.android.synthetic.main.fragment_first_and_last_name.*
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.*
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.etPhoneCode
 import kotlinx.android.synthetic.main.fragment_set_up_digital_wallet_form.*
 import kotlinx.android.synthetic.main.toolbar_with_2_icons.*
 import org.jetbrains.anko.design.snackbar
+import org.jetbrains.anko.textColor
 import org.jetbrains.anko.toast
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -87,6 +91,8 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
         super.onViewCreated(view, savedInstanceState)
         subscribeToViewModel()
         setClickListeners()
+        setHelperTexts()
+        setFocusListener()
         setDefaults()
         setListeners()
     }
@@ -117,7 +123,7 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
         val tM = requireContext().getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         val countryCodeValue = tM.networkCountryIso
         // Hardcoded for now
-        val country: Country? = countries.find { it.codeLetters.lowercase() == /*countryCodeValue*/"gb"}
+        val country: Country? = countries.find { it.codeLetters.lowercase() == countryCodeValue}
         Timber.d("${country?.codeLetters}  $countryCodeValue")
         if(model.countrySelected == null){
             country?.let{
@@ -135,6 +141,9 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
         binding.btnContinue.setOnClickListener {
             validateInputAndContinue()
         }
+        binding.vCountryCode.setOnClickListener {
+            findNavController().navigate(R.id.action_set_up_digital_wallet_form_fragment_to_country_code_selection)
+        }
     }
 
     private fun setListeners(){
@@ -142,6 +151,68 @@ class FragmentSetUpDigitalWalletForm : Fragment(), Injectable {
         binding.etEnterLastNameInner.addTextChangedListener(GenericTextWatcher(binding.etEnterLastNameInner, ::enableSubmitButton))
         binding.etEnterEmailInner.addTextChangedListener(GenericTextWatcher(binding.etEnterEmailInner, ::enableSubmitButton))
         binding.etEnterPhoneInner.addTextChangedListener(GenericTextWatcher(binding.etEnterPhoneInner, ::validatePhoneNumber))
+    }
+
+    private fun setHelperTexts(){
+        binding.etEnterFirstName.helperText = getString(R.string.required)
+        binding.etEnterLastName.helperText = getString(R.string.required)
+        binding.etEnterEmail.helperText = getString(R.string.required)
+        binding.etEnterPhone.helperText = getString(R.string.required)
+    }
+
+    private fun setFocusListener(){
+        binding.etEnterFirstNameInner.setOnFocusChangeListener { view, b ->
+            if(!b){
+                if(binding.etEnterFirstNameInner.text.toString().isEmpty()){
+                    binding.etEnterFirstName.error = getString(R.string.cant_be_empty)
+                } else{
+                    binding.etEnterFirstName.error = null
+                    binding.etEnterFirstName.helperText = getString(R.string.required)
+                }
+            } else{
+                binding.etEnterFirstName.error = null
+                binding.etEnterFirstName.helperText = getString(R.string.required)
+            }
+        }
+        binding.etEnterLastNameInner.setOnFocusChangeListener { view, b ->
+            if(!b){
+                if(binding.etEnterLastNameInner.text.toString().isEmpty()){
+                    binding.etEnterLastName.error = getString(R.string.cant_be_empty)
+                } else{
+                    binding.etEnterLastName.error = null
+                    binding.etEnterLastName.helperText = getString(R.string.required)
+                }
+            } else{
+                binding.etEnterLastName.error = null
+                binding.etEnterLastName.helperText = getString(R.string.required)
+            }
+        }
+        binding.etEnterPhoneInner.setOnFocusChangeListener { view, b ->
+            if(!b){
+                if(binding.etEnterPhoneInner.text.toString().isEmpty()){
+                    binding.etEnterPhone.error = getString(R.string.cant_be_empty)
+                } else{
+                    binding.etEnterPhone.error = null
+                    binding.etEnterPhone.helperText = getString(R.string.required)
+                }
+            } else{
+                binding.etEnterPhone.error = null
+                binding.etEnterPhone.helperText = getString(R.string.required)
+            }
+        }
+        binding.etEnterEmailInner.setOnFocusChangeListener { view, b ->
+            if(!b){
+                if(binding.etEnterEmailInner.text.toString().isEmpty()){
+                    binding.etEnterEmail.error = getString(R.string.cant_be_empty)
+                } else{
+                    binding.etEnterEmail.error = null
+                    binding.etEnterEmail.helperText = getString(R.string.required)
+                }
+            } else{
+                binding.etEnterEmail.error = null
+                binding.etEnterEmail.helperText = getString(R.string.required)
+            }
+        }
     }
 
     private fun validatePhoneNumber(){
