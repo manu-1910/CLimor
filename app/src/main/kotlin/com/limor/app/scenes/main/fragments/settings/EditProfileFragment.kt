@@ -213,9 +213,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
             val layout: MaterialButtonToggleGroup = binding.toggleGender
             for (i in 0 until layout.childCount) {
                 val child: View = layout.getChildAt(i)
-                child.isEnabled = false
                 child.isClickable = false
-                child.backgroundColor = ContextCompat.getColor(requireContext(), R.color.transparent)
             }
         }
         binding.toggleGender.visibility = View.VISIBLE
