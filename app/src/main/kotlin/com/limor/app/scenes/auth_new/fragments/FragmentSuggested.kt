@@ -56,7 +56,7 @@ class FragmentSuggested : FragmentWithLoading() {
         })
 
         model.suggestedSelectedLiveData.observe(viewLifecycleOwner, {
-            btnNext.isEnabled = it
+            btnNext.text = if(it) getString(R.string.btn_next) else getString(R.string.btn_skip)
         })
 
         model.updateOnboardingStatusLiveData.observe(viewLifecycleOwner, Observer {
