@@ -638,6 +638,7 @@ class PublishFragment : BaseFragment() {
         }
 
         btnPublishDraft?.onClick {
+            setPublishButtonClickable(false)
             handlePublishButtonClick()
         }
 
@@ -748,6 +749,11 @@ class PublishFragment : BaseFragment() {
 
     }
 
+    private fun setPublishButtonClickable(clickable: Boolean){
+        btnPublish.isClickable = clickable
+        btnPublish.isEnabled = clickable
+    }
+
     private fun handlePublishButtonClick() {
         if (BuildConfig.DEBUG) {
             println("The duration of the podcast is ${mediaPlayer.duration}")
@@ -756,7 +762,6 @@ class PublishFragment : BaseFragment() {
                 "publishPatronDialogShown") == false
         ) {
             showPublishPatronCastDialog()
-
         } else if (isPatronUser() && isPriceSelected() && mediaPlayer.duration < 30000) {
             LimorDialog(layoutInflater).apply {
                 setTitle(R.string.duration_warning_title)
@@ -765,6 +770,7 @@ class PublishFragment : BaseFragment() {
                 setIcon(R.drawable.ic_warning_dialog)
                 addButton(R.string.ok, true)
             }.show()
+            setPublishButtonClickable(true)
             return
         } else {
             publishCast()
@@ -800,7 +806,10 @@ class PublishFragment : BaseFragment() {
                 dialogView.checkNotShowAgain.isChecked)
             publishCast()
         }
-        dialogBinding.btnCLose.setOnClickListener { dialog.dismiss() }
+        dialogBinding.btnCLose.setOnClickListener {
+            setPublishButtonClickable(true)
+            dialog.dismiss()
+        }
         val inset = InsetDrawable(ColorDrawable(Color.TRANSPARENT), 20)
 
         dialog.apply {
@@ -939,12 +948,16 @@ class PublishFragment : BaseFragment() {
                 imageUploaded = false
                 audioUploaded = false
                 apiCallPublish()
+            } else{
+                setPublishButtonClickable(true)
             }
         } else {
             if (audioUploaded) {
                 imageUploaded = false
                 audioUploaded = false
                 apiCallPublish()
+            } else{
+                setPublishButtonClickable(true)
             }
         }
     }
@@ -968,7 +981,7 @@ class PublishFragment : BaseFragment() {
 
         Timber.d("Publishing audio podcast")
         if (!app!!.merlinsBeard!!.isConnected) {
-
+            setPublishButtonClickable(true)
             toggleProgressVisibility(View.GONE)
             showUnableToPublishCastDialog(
                 description = getString(R.string.default_no_internet),
@@ -1053,6 +1066,7 @@ class PublishFragment : BaseFragment() {
 
                 override fun onError(error: String?) {
                     toggleProgressVisibility(View.GONE)
+                    setPublishButtonClickable(true)
                     audioUploaded = false
                     alert(getString(R.string.error_uploading_audio)) {
                         okButton { }
@@ -1096,6 +1110,7 @@ class PublishFragment : BaseFragment() {
                     }
 
                     override fun onError(error: String?) {
+                        setPublishButtonClickable(true)
                         toggleProgressVisibility(View.GONE)
                         //  dialog.dismiss()
                         imageUploaded = false
@@ -1167,6 +1182,7 @@ class PublishFragment : BaseFragment() {
                 //Publish Not Ok
                 val message: StringBuilder = StringBuilder()
                 message.append(getString(R.string.publish_cast_error_message))
+                setPublishButtonClickable(true)
                 showUnableToPublishCastDialog(
                     description = message.toString(),
                     okText = getString(R.string.try_again),
@@ -1200,6 +1216,7 @@ class PublishFragment : BaseFragment() {
         btnDone.onClick {
             /*val mainIntent = Intent(context, MainActivity::class.java)
             startActivity(mainIntent)*/
+            setPublishButtonClickable(true)
             stopPlayer()
             activity?.finish()
         }
