@@ -36,10 +36,6 @@ class FragmentDigitalWalletSetUpConfirmation : Fragment() {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(browserIntent)
         }
-
-        binding.tvDoItLater.setOnClickListener {
-            activity?.finish()
-        }
     }
 
     override fun onCreateView(
