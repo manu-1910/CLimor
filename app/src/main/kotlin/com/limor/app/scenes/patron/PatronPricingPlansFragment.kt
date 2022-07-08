@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -332,13 +333,31 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
 
         binding.progressBar.visibility = View.VISIBLE
         model.getPlanIds().observe(viewLifecycleOwner) { skuIdList ->
-
+            val skuList = arrayListOf<String>()
+            skuList.addAll(skuIdList)
+            var monthlyPlanId :String?
+            var yearlyPlanId: String?
+            if(BuildConfig.DEBUG){
+                monthlyPlanId = "com.limor.dev.monthly_plan"
+                yearlyPlanId = "com.limor.dev.annual_plan"
+            } else {
+                monthlyPlanId = "com.limor.prod.monthly_plan"
+                yearlyPlanId = "com.limor.prod.annual_plan"
+            }
+            val monthlyPlanIndex = skuIdList.indexOf(monthlyPlanId)
+            val yearlyPlanIndex = skuIdList.indexOf(yearlyPlanId)
+            if(monthlyPlanIndex != -1) {
+                skuList[monthlyPlanIndex] = monthlyPlanId + "_new"
+            }
+            if(yearlyPlanIndex != -1){
+                skuList[yearlyPlanIndex] = yearlyPlanId + "_new"
+            }
             if (BuildConfig.DEBUG) {
                 println("SKU IDs from the backend -> $skuIdList")
             }
 
             val params = QueryProductDetailsParams.newBuilder()
-                .setProductList(skuIdList.map { productId ->
+                .setProductList(skuList.map { productId ->
                     QueryProductDetailsParams.Product.newBuilder()
                         .setProductId(productId)
                         .setProductType(BillingClient.ProductType.SUBS)
