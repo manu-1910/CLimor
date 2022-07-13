@@ -4,6 +4,7 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.apollographql.apollo.api.Input
 import com.limor.app.*
+import com.limor.app.service.PlayBillingHandler
 import com.limor.app.type.CreatePodcastInput
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.VerifyPromoCodeResult
@@ -53,27 +54,61 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
         return updatePodcastResult?.status
     }
 
-    suspend fun updateSubscriptionDetails(purchase: Purchase, code: String?): String? {
-        val sku = purchase.skus.first() ?: return "error, no sku"
+    private fun getBackendProductId(storeProductId: String): String {
+        return if (isNewProductId(storeProductId)) {
+            storeProductId.dropLast(PlayBillingHandler.subscriptionSuffix.length)
+        } else {
+            storeProductId
+        }
+    }
 
-        val mutation = CreatePatronSubscriptionMutation("and", sku, purchase.purchaseToken, Input.fromNullable(code))
+    private fun isNewProductId(storeProductId: String): Boolean {
+        val suffix = PlayBillingHandler.subscriptionSuffix
+        val raw = "^com\\.limor\\.(dev|prod|staging)\\.(monthly|annual)_plan${suffix}$"
+        return storeProductId.matches(Regex(raw))
+    }
+
+    suspend fun updateSubscriptionDetails(purchase: Purchase, code: String?): String? {
+        val product = purchase.products.first()
+
+        if (product == null ) {
+            if (BuildConfig.DEBUG) {
+                println("Could not updateSubscriptionDetails, due to missing products.")
+            }
+            return "error, no sku"
+        }
+
+        val planId = getBackendProductId(product)
+        val storePlanId = if (isNewProductId(product)) Input.fromNullable(product) else Input.absent()
 
         if (BuildConfig.DEBUG) {
-            Timber.tag("Consume_Purchase_Sub").d("%s___%s", sku, purchase.purchaseToken)
-            println("Has ${purchase.skus.size} skus.")
+            println("updateSubscriptionDetails plan IDs: $storePlanId -> $planId")
+        }
+
+        val mutation = CreatePatronSubscriptionMutation(
+            "and",
+            planId,
+            purchase.purchaseToken,
+            Input.fromNullable(code),
+            storePlanId
+        )
+
+        if (BuildConfig.DEBUG) {
+            Timber.tag("updateSubscriptionDetails").d("%s___%s", product, purchase.purchaseToken)
+            println("Has ${purchase.products.size} skus.")
         }
 
         return try{
             val result = apollo.mutate(mutation)
             if (BuildConfig.DEBUG) {
-                println("Result from CreatePatronSubscriptionMutation -> $result")
+                println("updateSubscriptionDetails Result from CreatePatronSubscriptionMutation -> $result")
             }
             val updatePodcastResult: CreatePatronSubscriptionMutation.CreatePatronSubscription? =
                 result?.data?.createPatronSubscription
             updatePodcastResult?.status
         }catch (e: Exception){
             if (BuildConfig.DEBUG) {
-                println("Error in CreatePatronSubscriptionMutation")
+                println("updateSubscriptionDetails Error in CreatePatronSubscriptionMutation")
                 e.printStackTrace()
             }
             null
