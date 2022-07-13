@@ -232,8 +232,9 @@ class UserProfileFragment : FragmentWithLoading(), Injectable {
     }
 
     private fun setupDefaultTab() {
-        var tabPos: Int?  = activity?.intent?.extras?.getInt(TAB_POS)
-        if(tabPos == null){
+        var tabPos: Int  = activity?.intent?.extras?.getInt(TAB_POS, -1) ?: -1
+        activity?.intent?.removeExtra(TAB_POS)
+        if(tabPos == -1){
             tabPos = when(selectedTab){
                 Tab.CASTS -> 0
                 Tab.PATRON -> 1
