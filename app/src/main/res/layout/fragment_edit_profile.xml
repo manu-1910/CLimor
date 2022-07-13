@@ -293,12 +293,12 @@
                         android:id="@+id/toggleGender"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:selectionRequired="true"
-                        app:singleSelection="true"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent">
+                        app:selectionRequired="true"
+                        app:singleSelection="true">
 
                         <Button
                             android:id="@+id/btnGender1"
@@ -331,10 +331,10 @@
                         android:layout_height="48dp"
                         android:alpha="0.06"
                         android:background="@drawable/shape_grey_gender"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -350,6 +350,7 @@
                     android:paddingStart="40dp"
                     android:paddingEnd="40dp"
                     android:text="@string/btnUpdate"
+                    android:enabled="false"
                     android:textAllCaps="false"
                     android:textColor="@color/black"
                     android:textSize="14sp" />

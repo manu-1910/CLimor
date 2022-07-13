@@ -13,10 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.text.InputFilter
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.TextUtils
+import android.text.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -76,6 +73,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         }
 
     private lateinit var currentUser: UIUserUpdateModel
+    private lateinit var updatedUser: UIUserUpdateModel
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -129,6 +127,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         configureToolbar()
         addViewModelOrbservers()
         addClickListeners()
+        setTextWatchers()
         fetchRequiredData()
     }
 
@@ -136,6 +135,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         model.userInfoLiveData.observe(viewLifecycleOwner, Observer { user ->
             user?.let {
                 currentUser = UIUserUpdateModel.createFrom(it)
+                updatedUser = currentUser
                 bindUserDataToViews()
                 load()
                 hideLoading()
@@ -242,6 +242,53 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
 
         binding.etFirstName.editText?.filters = arrayOf(AlphabetsInputFilter())
         binding.etLastName.editText?.filters = arrayOf(AlphabetsInputFilter())
+    }
+
+    private fun setTextWatchers(){
+        binding.etFirstName.editText?.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+            override fun afterTextChanged(editable: Editable) {
+                updatedUser = updatedUser.copy(firstName = binding.etFirstName.editText?.text.toString())
+                checkAndEnableUpdateButton()
+            }
+            override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
+        })
+        binding.etLastName.editText?.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+            override fun afterTextChanged(editable: Editable) {
+                updatedUser = updatedUser.copy(lastName = binding.etLastName.editText?.text.toString())
+                checkAndEnableUpdateButton()
+            }
+            override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
+        })
+        binding.etBio.editText?.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+            override fun afterTextChanged(editable: Editable) {
+                updatedUser = updatedUser.copy(bio = binding.etBio.editText?.text.toString())
+                checkAndEnableUpdateButton()
+            }
+            override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
+        })
+        binding.etUsername.editText?.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+            override fun afterTextChanged(editable: Editable) {
+                updatedUser = updatedUser.copy(userName = binding.etUsername.editText?.text.toString())
+                checkAndEnableUpdateButton()
+            }
+            override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
+        })
+        binding.etWebUrl.editText?.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+            override fun afterTextChanged(editable: Editable) {
+                updatedUser = updatedUser.copy(website = binding.etWebUrl.editText?.text.toString())
+                checkAndEnableUpdateButton()
+            }
+            override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
+        })
+    }
+
+    private fun checkAndEnableUpdateButton(){
+        binding.btnUpdate.isEnabled = updatedUser != currentUser
     }
 
     private fun showImageOptions() {
