@@ -40,6 +40,7 @@ import com.limor.app.uimodels.mapToAudioTrack
 import com.limor.app.util.SoundType
 import com.limor.app.util.Sounds
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -209,7 +210,9 @@ class UserPodcastsFragmentNew : Fragment(), Injectable {
         Timber.d("Profile Casts Loading for ${user.id}")
         lifecycleScope.launch {
             viewModel.getUserCasts(user.id).collectLatest { data ->
-                castsAdapter?.submitData(data)
+                if(isActive){
+                    castsAdapter?.submitData(data)
+                }
             }
         }
         castsAdapter?.addLoadStateListener { it ->

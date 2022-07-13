@@ -66,6 +66,7 @@ import com.xwray.groupie.viewbinding.BindableItem
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
@@ -135,7 +136,9 @@ class UserPatronFragmentNew : Fragment() {
         }
         lifecycleScope.launch {
             viewModel.getPatronCasts(user.id).collectLatest { data ->
-                castsAdapter?.submitData(data)
+                if(isActive){
+                    castsAdapter?.submitData(data)
+                }
             }
         }
         castsAdapter?.addLoadStateListener { it ->
