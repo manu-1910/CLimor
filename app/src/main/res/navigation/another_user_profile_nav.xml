@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_another_profile_fragment_to_discoverHashtagFragment"
             app:destination="@id/discoverHashtagFragment" />
+        <action
+            android:id="@+id/action_navigateProfileFragment_to_fragmentPlaylistDetails"
+            app:destination="@id/fragmentPlaylistDetails"/>
     </fragment>
 
     <fragment
@@ -26,6 +29,11 @@
             android:name="HASHTAG_KEY"
             app:argType="com.limor.app.uimodels.CastUIModel" />
     </fragment>
+
+    <fragment
+        android:id="@+id/fragmentPlaylistDetails"
+        android:name="com.limor.app.scenes.patron.FragmentPlaylistDetails"
+        android:label="FragmentPlaylistDetails" />
 
     <dialog
         android:id="@+id/dialog_user_profile_actions"
