@@ -107,21 +107,21 @@ class UserPodcastsViewModel @Inject constructor(
 
     fun getUserCasts(userId: Int): Flow<PagingData<CastUIModel>> {
         return Pager(
-            config = PagingConfig(pageSize = 20),
+            config = PagingConfig(pageSize = 10, initialLoadSize = 10),
             pagingSourceFactory = { getSource(userId) }
         ).flow.cachedIn(viewModelScope)
     }
 
     fun getPatronCasts(userId: Int): Flow<PagingData<CastUIModel>> {
         return Pager(
-            config = PagingConfig(pageSize = 20),
+            config = PagingConfig(pageSize = 10, initialLoadSize = 10),
             pagingSourceFactory = { getSource(userId, castType = PATRON_CASTS) }
         ).flow.cachedIn(viewModelScope)
     }
 
     fun getPurchases(userId: Int): Flow<PagingData<CastUIModel>> {
         return Pager(
-            config = PagingConfig(pageSize = 20),
+            config = PagingConfig(pageSize = 10, initialLoadSize = 10),
             pagingSourceFactory = { getSource(userId, castType = PURCHASED_CASTS) }
         ).flow.cachedIn(viewModelScope)
     }
