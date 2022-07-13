@@ -37,6 +37,7 @@ import com.limor.app.databinding.FragmnetUserPatronNewBinding
 import com.limor.app.dm.ui.ShareDialog
 import com.limor.app.extensions.isOnline
 import com.limor.app.extensions.requireTag
+import com.limor.app.extensions.visibleIf
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.casts.LoadMoreItem
 import com.limor.app.scenes.main.fragments.profile.casts.UserPodcastsViewModel
@@ -134,14 +135,12 @@ class UserPatronFragmentNew : Fragment() {
         }
         lifecycleScope.launch {
             viewModel.getPatronCasts(user.id).collectLatest { data ->
-                Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                    if (castsAdapter?.snapshot()?.isNullOrEmpty() == true) {
-                        binding.emptyStateLayout.visibility = View.VISIBLE
-                    } else{
-                        binding.emptyStateLayout.visibility = View.GONE
-                    }
-                }, 1000)
                 castsAdapter?.submitData(data)
+            }
+        }
+        castsAdapter?.addLoadStateListener { it ->
+            if (it.source.append.endOfPaginationReached) {
+                binding.emptyStateLayout.visibleIf(castsAdapter?.snapshot()?.isEmpty() ?: true)
             }
         }
     }
