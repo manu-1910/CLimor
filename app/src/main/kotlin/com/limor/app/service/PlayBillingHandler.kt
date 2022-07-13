@@ -435,6 +435,7 @@ class PlayBillingHandler @Inject constructor(
     companion object {
         // 1 day
         private const val refreshTimeLimit = 1 * 24 * 60 * 60 * 1000L
+        const val subscriptionSuffix = "_new"
     }
 
 }
