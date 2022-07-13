@@ -3,24 +3,20 @@ package com.limor.app.scenes.main.fragments.settings
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
-import android.text.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -28,7 +24,6 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.bumptech.glide.Glide
 import com.bumptech.glide.signature.ObjectKey
 import com.esafirm.imagepicker.features.ImagePicker
-import com.esafirm.imagepicker.features.cameraonly.CameraOnlyConfig
 import com.esafirm.imagepicker.model.Image
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.limor.app.App
@@ -40,8 +35,6 @@ import com.limor.app.common.Constants
 import com.limor.app.common.SessionManager
 import com.limor.app.databinding.FragmentEditProfileBinding
 import com.limor.app.extensions.drawSimpleSelectorDialog
-import com.limor.app.scenes.main.fragments.record.PublishFragment
-import com.limor.app.scenes.main.fragments.record.RecordFragment
 import com.limor.app.scenes.main.viewmodels.UpdateUserViewModel
 import com.limor.app.scenes.utils.AlphabetsInputFilter
 import com.limor.app.scenes.utils.Commons
@@ -49,13 +42,11 @@ import com.limor.app.scenes.utils.VoiceBioEvent
 import com.limor.app.scenes.utils.VoiceBioInfo
 import com.limor.app.uimodels.UIUser
 import com.limor.app.uimodels.UserUIModel
-import com.limor.app.util.*
+import com.limor.app.util.STORAGE_PERMISSIONS
+import com.limor.app.util.hasStoragePermissions
 import com.yalantis.ucrop.UCrop
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.dialog_with_edittext.view.*
-import kotlinx.android.synthetic.main.fragment_first_and_last_name.*
-import kotlinx.android.synthetic.main.fragment_new_auth_gender.*
-import org.jetbrains.anko.backgroundColor
+import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import java.io.File
@@ -127,8 +118,8 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
         configureToolbar()
         addViewModelOrbservers()
         addClickListeners()
-        setTextWatchers()
         fetchRequiredData()
+        setTextWatchers()
     }
 
     private fun addViewModelOrbservers() {
@@ -245,46 +236,26 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
     }
 
     private fun setTextWatchers(){
-        binding.etFirstName.editText?.addTextChangedListener(object : TextWatcher{
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun afterTextChanged(editable: Editable) {
-                updatedUser = updatedUser.copy(firstName = binding.etFirstName.editText?.text.toString())
-                checkAndEnableUpdateButton()
-            }
-            override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
-        })
-        binding.etLastName.editText?.addTextChangedListener(object : TextWatcher{
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun afterTextChanged(editable: Editable) {
-                updatedUser = updatedUser.copy(lastName = binding.etLastName.editText?.text.toString())
-                checkAndEnableUpdateButton()
-            }
-            override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
-        })
-        binding.etBio.editText?.addTextChangedListener(object : TextWatcher{
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun afterTextChanged(editable: Editable) {
-                updatedUser = updatedUser.copy(bio = binding.etBio.editText?.text.toString())
-                checkAndEnableUpdateButton()
-            }
-            override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
-        })
-        binding.etUsername.editText?.addTextChangedListener(object : TextWatcher{
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun afterTextChanged(editable: Editable) {
-                updatedUser = updatedUser.copy(userName = binding.etUsername.editText?.text.toString())
-                checkAndEnableUpdateButton()
-            }
-            override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
-        })
-        binding.etWebUrl.editText?.addTextChangedListener(object : TextWatcher{
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun afterTextChanged(editable: Editable) {
-                updatedUser = updatedUser.copy(website = binding.etWebUrl.editText?.text.toString())
-                checkAndEnableUpdateButton()
-            }
-            override fun onTextChanged(s: CharSequence, i: Int, i1: Int, i2: Int) {}
-        })
+        binding.etFirstName.editText?.doAfterTextChanged {
+            updatedUser = updatedUser.copy(firstName = binding.etFirstName.editText?.text.toString())
+            checkAndEnableUpdateButton()
+        }
+        binding.etLastName.editText?.doAfterTextChanged {
+            updatedUser = updatedUser.copy(lastName = binding.etLastName.editText?.text.toString())
+            checkAndEnableUpdateButton()
+        }
+        binding.etBio.editText?.doAfterTextChanged {
+            updatedUser = updatedUser.copy(bio = binding.etBio.editText?.text.toString())
+            checkAndEnableUpdateButton()
+        }
+        binding.etUsername.editText?.doAfterTextChanged {
+            updatedUser = updatedUser.copy(userName = binding.etUsername.editText?.text.toString())
+            checkAndEnableUpdateButton()
+        }
+        binding.etWebUrl.editText?.doAfterTextChanged {
+            updatedUser = updatedUser.copy(website = binding.etWebUrl.editText?.text.toString())
+            checkAndEnableUpdateButton()
+        }
     }
 
     private fun checkAndEnableUpdateButton(){
@@ -363,6 +334,7 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
                 .signature(ObjectKey("${it.imageURL}"))
                 .error(R.drawable.ic_podcast_listening)
                 .into(binding.profileImage)
+            btnUpdate.isEnabled = false
         }
     }
 
@@ -657,14 +629,14 @@ class EditProfileFragment : BaseFragment(), Commons.AudioUploadCallback {
             fun createFrom(it: UserUIModel): UIUserUpdateModel {
                 return it.let { user ->
                     UIUserUpdateModel(
-                        user.gender,
-                        user.username,
-                        user.firstName,
-                        user.lastName,
-                        user.description,
-                        user.website,
-                        user.imageLinks?.original,
-                        user.voiceBioURL,
+                        user.gender ?: "",
+                        user.username ?: "",
+                        user.firstName ?: "",
+                        user.lastName ?: "",
+                        user.description ?: "",
+                        user.website ?: "",
+                        user.imageLinks?.original ?: "",
+                        user.voiceBioURL ?: "",
                         user.durationSeconds
                     )
                 }
