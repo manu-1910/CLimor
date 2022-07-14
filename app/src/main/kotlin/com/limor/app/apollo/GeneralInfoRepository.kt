@@ -209,6 +209,9 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
         phone: String,
         birthDate: String,
     ): CreateVendorMutation.CreateVendor? {
+        if (BuildConfig.DEBUG) {
+            println("$firstName $lastName -> $email, $birthDate, $phone")
+        }
         val query = CreateVendorMutation(
             firstName,
             lastName,
@@ -217,6 +220,9 @@ class GeneralInfoRepository @Inject constructor(val apollo: Apollo) {
             phone
         )
         val result = apollo.mutate(query)
+        if (BuildConfig.DEBUG) {
+            println("Vendor result: $result")
+        }
         return result?.data?.createVendor
     }
 

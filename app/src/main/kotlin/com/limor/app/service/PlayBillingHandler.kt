@@ -435,7 +435,33 @@ class PlayBillingHandler @Inject constructor(
     companion object {
         // 1 day
         private const val refreshTimeLimit = 1 * 24 * 60 * 60 * 1000L
-        const val subscriptionSuffix = "_new"
+        private const val subscriptionSuffix = "_new"
+
+        fun getBackendProductId(storeProductId: String): String {
+            return if (isNewProductId(storeProductId)) {
+                storeProductId.dropLast(subscriptionSuffix.length)
+            } else {
+                storeProductId
+            }
+        }
+
+        fun isNewProductId(storeProductId: String): Boolean {
+            val raw = "^com\\.limor\\.(dev|prod|staging)\\.(monthly|annual)_plan${subscriptionSuffix}$"
+            return storeProductId.matches(Regex(raw))
+        }
+
+        private fun isOldProductId(productId: String): Boolean {
+            val raw = "^com\\.limor\\.(dev|prod|staging)\\.(monthly|annual)_plan$"
+            return productId.matches(Regex(raw))
+        }
+
+        fun toNewProductId(planId: String): String {
+            return if (isOldProductId(planId)) {
+                "$planId$subscriptionSuffix"
+            } else {
+                planId
+            }
+        }
     }
 
 }

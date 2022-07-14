@@ -54,20 +54,6 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
         return updatePodcastResult?.status
     }
 
-    private fun getBackendProductId(storeProductId: String): String {
-        return if (isNewProductId(storeProductId)) {
-            storeProductId.dropLast(PlayBillingHandler.subscriptionSuffix.length)
-        } else {
-            storeProductId
-        }
-    }
-
-    private fun isNewProductId(storeProductId: String): Boolean {
-        val suffix = PlayBillingHandler.subscriptionSuffix
-        val raw = "^com\\.limor\\.(dev|prod|staging)\\.(monthly|annual)_plan${suffix}$"
-        return storeProductId.matches(Regex(raw))
-    }
-
     suspend fun updateSubscriptionDetails(purchase: Purchase, code: String?): String? {
         val product = purchase.products.first()
 
@@ -78,8 +64,8 @@ class PublishRepository @Inject constructor(val apollo: Apollo) {
             return "error, no sku"
         }
 
-        val planId = getBackendProductId(product)
-        val storePlanId = if (isNewProductId(product)) Input.fromNullable(product) else Input.absent()
+        val planId = PlayBillingHandler.getBackendProductId(product)
+        val storePlanId = if (PlayBillingHandler.isNewProductId(product)) Input.fromNullable(product) else Input.absent()
 
         if (BuildConfig.DEBUG) {
             println("updateSubscriptionDetails plan IDs: $storePlanId -> $planId")

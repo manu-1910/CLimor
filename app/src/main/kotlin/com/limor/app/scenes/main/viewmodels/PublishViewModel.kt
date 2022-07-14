@@ -12,6 +12,7 @@ import com.limor.app.UpdatePodcastMutation
 import com.limor.app.apollo.GeneralInfoRepository
 import com.limor.app.apollo.PublishRepository
 import com.limor.app.common.SingleLiveEvent
+import com.limor.app.service.PlayBillingHandler
 import com.limor.app.type.CreatePodcastInput
 import com.limor.app.uimodels.*
 import com.limor.app.usecases.InAppPricesUseCase
@@ -158,7 +159,7 @@ class PublishViewModel @Inject constructor(
     fun getPlanIds(): LiveData<List<String>> {
         val liveData = MutableLiveData<List<String>>()
         viewModelScope.launch(Dispatchers.IO) {
-            val ids = publishRepository.getPlans()?.mapNotNull { it?.productId }
+            val ids = publishRepository.getPlans()?.mapNotNull { it?.productId }?.map(PlayBillingHandler::toNewProductId)
             liveData.postValue(ids ?: listOf())
         }
         return liveData

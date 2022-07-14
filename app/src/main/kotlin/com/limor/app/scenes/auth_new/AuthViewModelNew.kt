@@ -572,6 +572,9 @@ class AuthViewModelNew @Inject constructor(
                 )
             }.onFailure { throwable ->
                 throwable.printStackTrace()
+                if (BuildConfig.DEBUG) {
+                    println("Error vendor: ${throwable.message}")
+                }
                 callResult.postValue(ApiResult.errored<String?>(throwable.localizedMessage))
             }
         }

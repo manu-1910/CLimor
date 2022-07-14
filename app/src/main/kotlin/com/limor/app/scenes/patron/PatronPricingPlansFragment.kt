@@ -335,23 +335,7 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         model.getPlanIds().observe(viewLifecycleOwner) { skuIdList ->
             val skuList = arrayListOf<String>()
             skuList.addAll(skuIdList)
-            var monthlyPlanId :String?
-            var yearlyPlanId: String?
-            if(BuildConfig.DEBUG){
-                monthlyPlanId = "com.limor.dev.monthly_plan"
-                yearlyPlanId = "com.limor.dev.annual_plan"
-            } else {
-                monthlyPlanId = "com.limor.prod.monthly_plan"
-                yearlyPlanId = "com.limor.prod.annual_plan"
-            }
-            val monthlyPlanIndex = skuIdList.indexOf(monthlyPlanId)
-            val yearlyPlanIndex = skuIdList.indexOf(yearlyPlanId)
-            if(monthlyPlanIndex != -1) {
-                skuList[monthlyPlanIndex] = monthlyPlanId + "_new"
-            }
-            if(yearlyPlanIndex != -1){
-                skuList[yearlyPlanIndex] = yearlyPlanId + "_new"
-            }
+
             if (BuildConfig.DEBUG) {
                 println("SKU IDs from the backend -> $skuIdList")
             }
