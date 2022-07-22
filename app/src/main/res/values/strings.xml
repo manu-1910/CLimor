@@ -1085,5 +1085,8 @@
     <string name="something_went_wrong_message">An error occurred while trying the operation. Please check your internet connection and try again after sometime.</string>
 
     <string name="close_app">Close app</string>
+
+    <string name="item_purchased_title">Error</string>
+    <string name="item_purchased_description">You already own a subscription</string>
     
 </resources>

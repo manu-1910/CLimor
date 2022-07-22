@@ -125,4 +125,9 @@ class LimorDialog(private val layoutInflater: LayoutInflater) {
     fun dismiss() {
         dialog.dismiss()
     }
+
+    fun setCancelable(boolean: Boolean){
+        dialog.setCancelable(boolean)
+    }
+
 }

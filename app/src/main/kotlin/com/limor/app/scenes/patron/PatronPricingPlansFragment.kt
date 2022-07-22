@@ -322,6 +322,27 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         })
     }
 
+    private fun checkUserHasAnyPurchases(){
+       val params = QueryPurchaseHistoryParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build()
+        billingClient.queryPurchaseHistoryAsync(params){
+               billingResult, productDetailsList ->
+               if(billingResult.responseCode == BillingClient.BillingResponseCode.OK && productDetailsList?.isNotEmpty() == true) {
+                   runOnUiThread {
+                       LimorDialog(layoutInflater).apply {
+                           setTitle(R.string.item_purchased_title)
+                           setMessage(R.string.item_purchased_description)
+                           setIcon(R.drawable.ic_alert)
+                           setCancelable(false)
+                           addButton(R.string.ok, true){
+                               dismiss()
+                               requireActivity().finish()
+                           }
+                       }.show()
+                   }
+               }
+           }
+    }
+
     private fun setBillingClient() {
         billingClient = BillingClient.newBuilder(requireActivity())
             .setListener(purchasesUpdatedListener)
@@ -392,6 +413,8 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
 
         binding.checkLayout.visibility = View.VISIBLE
         binding.progressBar.visibility = View.GONE
+
+        checkUserHasAnyPurchases()
     }
 
     private fun setupViewPager(mode: ViewPagerMode) {
