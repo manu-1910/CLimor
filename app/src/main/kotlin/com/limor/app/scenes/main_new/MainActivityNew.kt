@@ -343,7 +343,7 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         })
     }
 
-    private fun ensureLayout() {
+    fun ensureLayout() {
         val manager = activityPlayerViewManager ?: return
         val host = binding.root.findViewById<View>(R.id.nav_host_fragment) ?: return
 

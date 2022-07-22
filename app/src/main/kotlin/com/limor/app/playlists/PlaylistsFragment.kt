@@ -13,6 +13,7 @@ import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.PlaylistsFragmentBinding
 import com.limor.app.playlists.adapter.PlaylistsAdapter
 import com.limor.app.playlists.models.PlaylistUIModel
+import com.limor.app.scenes.main_new.MainActivityNew
 import com.limor.app.scenes.patron.FragmentPlaylistDetails
 import com.limor.app.uimodels.UserUIModel
 import javax.inject.Inject
@@ -60,6 +61,9 @@ class PlaylistsFragment : BaseFragment() {
                         R.id.action_navigateProfileFragment_to_fragmentPlaylistDetails,
                         bundleOf(FragmentPlaylistDetails.KEY_PLAYLIST to playlist)
                     )
+                    if(activity is MainActivityNew){
+                        (activity as MainActivityNew).ensureLayout()
+                    }
                 }
             },
             onDeleteClick = { playlist ->
